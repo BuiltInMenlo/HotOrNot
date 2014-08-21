@@ -88,7 +88,7 @@
 //"firstrun_next" = "Avançar";
 //"Search for friends" = "Procurar amigos";
 "header_friends" = "友達";
-//"alert_member" = "PT >> You are already a member of %@!"
+"alert_member" = "You are already a member of %@!";
 "header_news" = "ニュース";
 "header_clubs" = "クラブ";
 "alert_join" = "%@ セルフィークラブに参加しますか?";
@@ -127,6 +127,7 @@
 "real_profile" = "プロフィール写真があればSelfieclubコミュニティーがあなたをもっとよく知ることができます";
 "take_photo" = "写真を撮る";
 "is_feeling" = "- 感じていること...";
+"is_feeling2" = "感じていること...";
 "enter_pin" = "Pinを入力する";
 "invalid_pin" = "Pinが無効です!";
 "invalid_pin_msg" = "Pin番号は4ケタにしてください";
@@ -138,14 +139,14 @@
 "cannot_send" = "この端末からSMSを送信できません!";
 "report_abuse" = "不正利用 / バグを報告する";
 "leave_club" = "クラブを辞める";
-"liked_selfie" = " あなたのセルフィーを気に入りました %@";
+"liked_selfie" = " %@ セルフィーを気に入りました %@";
 "submit_photo" = "写真を送りました %@";
 "user_notfound" = "ユーザーが見つかりません!";
 "lev" = "Leave %@";
 "lev_sure" = "本当に%@を辞めますか?";
 "flag_person" = "この人物はフラグが付けられレビューされます";
 "yes_flag" = "はい、ユーザーにフラグを付けます";
-"sent_invite" = " あなたに招待を送りました %@";
+"sent_invite" = " %@ に招待を送りました %@";
 "accept_invite" = " あなたの招待を受け入れました %@";
 "no_phone" = "電話番号がありません!";
 "phone_taken" = "電話番号を取得しました!";
@@ -166,11 +167,15 @@
 "alert_create_it" = "それを作成しますか?";
 "club_notfound" = "クラブが見つかりません!";
 "want_invite" = "%@に友人を招待しますか?";
-
+"add_photo" = "写真追加";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
+"select_cover" = "Select cover";
 
 
 "global_sticker" = "Sticker Packs";
 
+"activity_you" = "あなた";
 
 "my_sticker" = "My Stickers";
 

@@ -177,6 +177,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)leaveClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveClubByClubID:(int)clubID withOwnerID:(int)ownerID completion:(void (^)(id result))completion;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveLocalSchoolTypeClubsWithAreaCode:(NSString *)areaCode completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
 //- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion;

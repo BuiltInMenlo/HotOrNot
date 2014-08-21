@@ -65,7 +65,7 @@
 	
 	[[HONImageBroker sharedInstance] maskView:_coverOverlayView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
-	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 55.0, 80, 30.0)];
+	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-4.0, 10.0, 44.0, 44.0)];
 	[self.contentView addSubview:_badgeImageView];
 	
 	
@@ -108,14 +108,14 @@
 	
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
-		_badgeImageView.image = [UIImage imageNamed:@"inviteOverlay"];
+		_badgeImageView.image = [UIImage imageNamed:@"inviteIcon"];
 	
-	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
-		_badgeImageView.image = [UIImage imageNamed:@"suggestionOverlay"];
-	
-	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
-		_badgeImageView.image = [UIImage imageNamed:@"lockedOverlay"];
-		_badgeImageView.hidden = YES;
+//	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
+//		_badgeImageView.image = [UIImage imageNamed:@"suggestionOverlay"];
+//	
+//	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
+//		_badgeImageView.image = [UIImage imageNamed:@"lockedOverlay"];
+//		_badgeImageView.hidden = YES;
 	}
 }
 

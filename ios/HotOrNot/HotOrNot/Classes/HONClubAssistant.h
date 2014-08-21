@@ -19,20 +19,24 @@
 - (NSDictionary *)orthodoxThresholdClubDictionary;
 - (NSString *)userSignupClubCoverImageURL;
 - (NSString *)defaultCoverImageURL;
+- (NSString *)rndCoverImageURL;
 - (NSString *)defaultClubPhotoURL;
 - (NSArray *)clubCoverPhotoAlbumPrefixes;
 - (int)labelIDForAreaCode:(NSString *)areaCode;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
+- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (NSArray *)suggestedClubs;
 
 - (void)copyUserSignupClubToClipboardWithAlert:(BOOL)showsAlert;
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;
 
+- (NSArray *)suggestedClubs;//WithCompletion:(void (^)(NSArray *clubs))completion;
 - (HONUserClubVO *)suggestedAreaCodeClubVO;
 - (HONUserClubVO *)suggestedEmailClubVO:(NSArray *)domains;
 - (HONUserClubVO *)suggestedFamilyClubVO;
+- (HONUserClubVO *)suggestedSchoolClubVO;//WithCompletion:(void (^)(HONUserClubVO *schoolClubVO))completion;
+- (HONUserClubVO *)suggestedBAEClubVO;
 - (HONUserClubVO *)suggestedWorkplaceClubVO;
 
 - (void)writePreClubWithTitle:(NSString *)title andBlurb:(NSString *)blurb andCoverPrefixURL:(NSString *)coverPrefix;

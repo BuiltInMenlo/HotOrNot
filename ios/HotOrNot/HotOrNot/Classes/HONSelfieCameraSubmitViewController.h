@@ -9,6 +9,6 @@
 #import "HONSelectClubsViewController.h"
 
 @class HONSelfieCameraViewController;
-@interface HONSelfieCameraSubmitViewController : HONSelectClubsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONSelfieCameraSubmitViewController : HONSelectClubsViewController <UITableViewDataSource, UITableViewDelegate>
 - (id)initWithSubmitParameters:(NSDictionary *)submitParams;
 @end

@@ -148,7 +148,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 			
 			[UIView animateWithDuration:0.200 delay:0.125
 				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
-								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 			 
 							 animations:^(void) {
 								 imageView.alpha = 1.0;

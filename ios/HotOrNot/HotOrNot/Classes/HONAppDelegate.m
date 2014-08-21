@@ -54,6 +54,7 @@
 #import "HONContactsTabViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONCreateClubViewController.h"
 #import "HONSuspendedViewController.h"
 #import "HONSelfieCameraViewController.h"
 
@@ -72,7 +73,7 @@ NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_ios.json";
-NSString * const kAPIHost = @"data_api-stage";
+NSString * const kAPIHost = @"data_api-dev";
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
@@ -254,7 +255,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	key = [key stringByAppendingString:@"_total"];
 	int tot = ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) ? 0 : [[[NSUserDefaults standardUserDefaults] objectForKey:key] intValue] + 1;
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tot] forKey:key];
+	[[NSUserDefaults standardUserDefaults] setObject:@(tot) forKey:key];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	return (tot);
@@ -324,8 +325,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"timelineRefresh_total",
 						   @"feedItem_total",
 						   @"feedItemRefresh_total",
-						   @"activityView_total",
-						   @"activityViewRefresh_total",
+						   @"activity_total",
+						   @"activityRefresh_total",
 						   @"preview_total",
 						   @"camera_total",
 						   @"join_total",
@@ -342,17 +343,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:@-1 forKey:key];
+		[[NSUserDefaults standardUserDefaults] setObject:@(-1) forKey:key];
 	}
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"activity_total"];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"activity_updated"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@0 forKey:@"activity_total"];
-	[[NSUserDefaults standardUserDefaults] setObject:@"0000-00-00 00:00:00" forKey:@"activity_updated"];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -467,6 +459,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invalid_chars"] forKey:@"invalid_chars"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
@@ -521,15 +514,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					break;
 					
 				case 1:
-					notificationName = @"REFRESH_CLUBS_TAB";
+					notificationName = @"REFRESH_NEWS_TAB";
 					break;
 					
-//				case 2:
-//					notificationName = @"REFRESH_ALERTS_TAB";
-//					break;
-					
 				case 2:
-					notificationName = @"REFRESH_VERIFY_TAB";
+					notificationName = @"REFRESH_CLUBS_TAB";
 					break;
 					
 				default:
@@ -893,17 +882,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0 && [HONAppDelegate totalForCounter:@"background"] == 3) {
-				if (_insetOverlayView == nil) {
-					_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
-					_insetOverlayView.delegate = self;
-					
-					[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-					[_insetOverlayView introWithCompletion:nil];
+			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
+				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
+					if (_insetOverlayView == nil) {
+						_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
+						_insetOverlayView.delegate = self;
+						
+						[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+						[_insetOverlayView introWithCompletion:nil];
+					}
 				}
 			}
-			
 			
 			if (![HONAppDelegate canPingConfigServer]) {
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
@@ -916,14 +905,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
-				
-//		if ([HONAppDelegate incTotalForCounter:@"boot"] == 3) {
-//			_inviteOverlayView = [[HONInviteOverlayView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
-//			_inviteOverlayView.delegate = self;
-//			
-//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-//			[_inviteOverlayView introWithCompletion:nil];
-//		}
 	}
 }
 
@@ -957,118 +938,98 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		NSLog(@"PATH:[%@]", path);
 		
-		
 		if ([path count] == 2) {
 			NSString *username = [[path firstObject] lowercaseString];
-			NSString *clubname = [[path lastObject] lowercaseString];
+			NSString *clubName = [[path lastObject] lowercaseString];
 			
-			[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
-				int userID = 0;
-				if ([result count] > 0) {
-					
-					for (NSDictionary *user in result) {
-						if ([username isEqualToString:[[user objectForKey:@"username"] lowercaseString]]) {
-							userID = [[user objectForKey:@"id"] intValue];
-							break;
-						}
+			// already a member
+			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
+				for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"]) {
+					if ([[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+						NSLog(@"OWNER_ID:[%d]", [[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue]);
+						_selectedClubVO = [HONUserClubVO clubWithDictionary:dict];
+						break;
 					}
-					
-					NSLog(@"userID:[%d]", userID);
-					if (userID > 0) {
-						[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
-							int clubID = 0;
-							for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-								for (NSDictionary *club in [result objectForKey:key]) {
-									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubname]) {
-										clubID = [[club objectForKey:@"id"] intValue];
-										break;
-									}
-								}
-							}
-							
-							NSLog(@"clubID:[%d]", clubID);
-							if (clubID > 0) {
-								[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:userID completion:^(NSDictionary *result) {
-									HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:result];
-									_selectedClubVO = vo;
-									
-//									NSLog(@"_selectedClubVO.activeMembers:[%@]", _selectedClubVO.activeMembers);
-//									NSLog(@"_selectedClubVO.pendingMembers:[%@]", _selectedClubVO.pendingMembers);
-									BOOL isMember = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _selectedClubVO.ownerID);
-									for (HONTrivialUserVO *trivialUserVO in _selectedClubVO.activeMembers) {
-										NSLog(@"trivialUserVO:[%d](%d)", trivialUserVO.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-										if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == trivialUserVO.userID) {
-											isMember = YES;
-											break;
-										}
-									}
-									
-									for (HONTrivialUserVO *trivialUserVO in _selectedClubVO.pendingMembers) {
-										NSLog(@"trivialUserVO:[%d](%d)", trivialUserVO.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-										if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == trivialUserVO.userID) {
-											isMember = YES;
-											break;
-										}
-									}
-									
-									if (isMember) {
-										[self.tabBarController setSelectedIndex:2];
-										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
-										
-										[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", nil), _selectedClubVO.clubName] //@"You are already a member of"
-																							message:@""
-																						   delegate:nil
-																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-																				  otherButtonTitles:nil] show];
-									
-									} else {
-//										UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPreviewViewController alloc] initWithClub:_selectedClubVO]];
-//										[navigationController setNavigationBarHidden:YES];
-//										[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-										
-										
-										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]//@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
-																						   delegate:self
-																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-										
-										[alertView setTag:HONAppDelegateAlertTypeJoinCLub];
-										[alertView show];
-									}
-								}];
-							
-							} else {
-								_clubName = clubname;
-								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"club_notfound", nil) //@"Club Not Found!"
-																					message: NSLocalizedString(@"alert_create_it", nil) //@"Would you like to create it?"
-																				   delegate:self
-																		  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-																		  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-								[alertView setTag:HONAppDelegateAlertTypeCreateClub];
-								[alertView show];
-							}
-						}];
-					
-					} else {
-						[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"hud_usernameNotFound", nil) //@"Username Not Found!"
+				}
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of"), _selectedClubVO.clubName]
+																	message:NSLocalizedString(@"alert_enterClub", @"Want to go there now?")
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+				[alertView setTag:HONAppDelegateAlertTypeEnterClub];
+				[alertView show];
+				
+			} else { // search for this user
+				[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
+					int userID = 0;
+					if ([result count] == 0) {
+						[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
 													message:@""
 												   delegate:nil
 										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 										  otherButtonTitles:nil] show];
-					}
-				}
-			}];
-		}
-		
-		return (YES);
-	
-	} else {
-		return ([self handleKikAPIData:[KikAPIClient handleOpenURL:url sourceApplication:sourceApplication annotation:annotation]]);
-		return ([FBAppCall handleOpenURL:url sourceApplication:sourceApplication]);
+						
+					} else { // user found
+						for (NSDictionary *user in result) {
+							if ([username isEqualToString:[[user objectForKey:@"username"] lowercaseString]]) {
+								userID = [[user objectForKey:@"id"] intValue];
+								break;
+							}
+						}
+						
+						NSLog(@"userID:[%d]", userID);
+						if (userID == 0) { // didn't find the user
+							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
+														message:@""
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+											  otherButtonTitles:nil] show];
+							
+						} else { // found the user
+							[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
+								int clubID = 0;
+								for (NSDictionary *club in [result objectForKey:@"owned"]) {
+									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubName	]) {
+										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+										clubID = [[club objectForKey:@"id"] intValue];
+										break;
+									}
+								}
+								
+								if (clubID > 0) { // user is the owner, prompt for join
+									[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:userID completion:^(NSDictionary *result) {
+										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+										
+										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", @"Would you like to join the %@ Selfieclub?"), _selectedClubVO.clubName]
+																						   delegate:self
+																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+										[alertView setTag:HONAppDelegateAlertTypeJoinCLub];
+										[alertView show];
+									}];
+																	
+								} else { // user isn't the owner
+									_clubName = clubName;
+									UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"club_notfound", @"Club Not Found!")
+																						message: NSLocalizedString(@"alert_create_it", @"Would you like to create it?")
+																					   delegate:self
+																			  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+																			  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
+									[alertView setTag:HONAppDelegateAlertTypeCreateClub];
+									[alertView show];
+								}
+							}]; // clubs for owner
+						} // found club owner
+					} // user found
+				}]; // username search
+			} // two fields
+		} // path split
 	}
+	
+	return (YES);
 }
-
 
 - (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)notification {
 	[[UIApplication sharedApplication]cancelAllLocalNotifications];
@@ -1533,6 +1494,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Close"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
@@ -1542,6 +1504,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
@@ -1549,6 +1512,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		_insetOverlayView = nil;
 		
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+	}];
+}
+
+- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Acknowledge"];
+	
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}];
 }
 
@@ -1660,37 +1637,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeCreateClub) {
-		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
-			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-			[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
-			[alertView show];
-		}];
+		if (buttonIndex == 0) {
+			[self.tabBarController setSelectedIndex:2];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:_clubName]];
+			[navigationController setNavigationBarHidden:YES];
+			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+		}
 	
-	} else if (alertView.tag == HONAppDelegateAlertTypeAllowContactsAccess) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeEnterClub) {
 		if (buttonIndex == 1) {
-			if (ABAddressBookRequestAccessWithCompletion) {
-				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
-				
-				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-					});
-					
-				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-					});
-					
-				} else {
-				}
-			}
+			[self.tabBarController setSelectedIndex:1];
+			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
 	}
 }
@@ -1813,8 +1770,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", nil) //@"Email Error"
-											message:NSLocalizedString(@"email_errormsg", nil) //@"Cannot send email from this device!"
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
+											message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];

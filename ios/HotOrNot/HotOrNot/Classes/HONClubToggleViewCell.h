@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, HONClubToggleViewCellType) {
 - (void)toggleOnWithReset:(BOOL)isReset;
 - (void)toggleSelected:(BOOL)isSelected;
 - (void)toggleIndicator:(BOOL)isEnabled;
-- (BOOL)isSelected;
 
+@property (nonatomic) BOOL isSelected;
 @property (nonatomic, retain) HONUserClubVO *userClubVO;
 @property (nonatomic, assign) id <HONClubToggleViewCellDelegate> delegate;
 @end

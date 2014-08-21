@@ -19,10 +19,9 @@
 
 #import "HONCreateClubViewController.h"
 #import "HONHeaderView.h"
-#import "HONClubCoverCameraViewController.h"
 #import "HONInviteContactsViewController.h"
 
-@interface HONCreateClubViewController () //<HONClubCoverCameraViewControllerDelegate>
+@interface HONCreateClubViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *clubCoverImageView;
 @property (nonatomic, strong) UIButton *addImageButton;
@@ -48,15 +47,20 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_isFirstAppearance = YES;
-		
 		_clubName = @"";
-		_clubBlurb = @"";
-		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
+		_isFirstAppearance = YES;
 		
 		_totaAlbumAssets = 0;
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];
+	}
+	
+	return (self);
+}
+
+- (id)initWithClubTitle:(NSString *)title {
+	if ((self = [self init])) {
+		_clubName = title;
 	}
 	
 	return (self);
@@ -73,12 +77,11 @@
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+	UIImage *thumbImage = [[HONImageBroker sharedInstance] cropImage:tabImage toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)];
 	_clubCoverImageView.image = thumbImage;
 	
 	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
 	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
-	
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeClubs withFilename:filename completion:^(NSObject *result) {
 		if (_progressHUD != nil) {
@@ -86,7 +89,7 @@
 			_progressHUD = nil;
 		}
 		
-		[self _validateClubNameWithAlerts:NO];
+		[_clubNameButton setSelected:NO];
 	}];
 }
 
@@ -94,44 +97,6 @@
 - (void)_submitClub {
 	[[HONClubAssistant sharedInstance] writePreClubWithTitle:_clubName andBlurb:@"" andCoverPrefixURL:_clubImagePrefix];
 	[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initAsViewControllerPushed:YES] animated:YES];
-	
-//	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
-//		if (result != nil) {
-//			if (_progressHUD != nil) {
-//				[_progressHUD hide:YES];
-//				_progressHUD = nil;
-//			}
-//			
-//#if SC_ACCT_BUILD == 0
-//			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
-//				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
-//			
-//			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
-//#else
-//	[[[UIAlertView alloc] initWithTitle:@"WRITE THIS DOWN!"
-//										message:[@"Club ID = " stringByAppendingString:[result objectForKey:@"id"]]
-//									   delegate:nil
-//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//							  otherButtonTitles:nil] show];
-//			
-//			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
-//			}];
-//#endif
-//		} else {
-//			if (_progressHUD == nil)
-//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//			[_progressHUD setYOffset:-80.0];
-//			_progressHUD.minShowTime = kHUDTime;
-//			_progressHUD.mode = MBProgressHUDModeCustomView;
-//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-//			_progressHUD.labelText = @"Error!";
-//			[_progressHUD show:NO];
-//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//			_progressHUD = nil;
-//		}
-//	}];
 }
 
 
@@ -159,24 +124,21 @@
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
+		
 		[self _goClubName];
 		
 	} else {
-		if (showAlerts) {
-			if ([_clubName rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/'"]].location != NSNotFound) {
-				_clubNameCheckImageView.alpha = 1.0;
-				_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				
-				[[[UIAlertView alloc] initWithTitle:@"Invalid club name!"
-											message: NSLocalizedString(@"invalid_msg", @"You cannot have / or ' in your club's name")
+		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubName]) {
+			if (showAlerts) {
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_dupclub_t", nil)
+											message:[NSString stringWithFormat:NSLocalizedString(@"alert_dupclub_m", nil), _clubName]
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
-				[self _goClubName];
-			
+				
 			} else
-				[self _submitClub];
-			
+				[self _goClubName];
+		
 		} else
 			[self _submitClub];
 	}
@@ -190,7 +152,10 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];//@"Add Club"];
+	_clubBlurb = @"";
+	_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];
 	[self.view addSubview:headerView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -228,7 +193,6 @@
 	[self.view addSubview:_addImageButton];
 	
 	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(72.0, 87.0, 220.0, 22.0)];
-	//[_clubNameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_clubNameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_clubNameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_clubNameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -239,7 +203,7 @@
 	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_clubNameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_clubNameTextField.placeholder = NSLocalizedString(@"club_name", nil); //@"Club Name";
-	_clubNameTextField.text = @"";
+	_clubNameTextField.text = _clubName;
 	[_clubNameTextField setTag:0];
 	_clubNameTextField.delegate = self;
 	[self.view addSubview:_clubNameTextField];
@@ -297,11 +261,36 @@
 - (void)_goNext {
 	NSLog(@"_clubName:[%@] _clubImagePrefix:[%@]", _clubName, _clubImagePrefix);
 	
-	if ([_clubName length] == 0)
-		[self _goCamera];
-	
-	else
-		[self _validateClubNameWithAlerts:YES];
+	if ([_clubName length] == 0) {
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"please_enter_club", nil)
+									message:@""
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+	} else {
+		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubName]) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of %@!"), _clubName]
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			[self _goClubName];
+			
+		} else {
+			if (([_clubImagePrefix length] == 0) || [_clubImagePrefix isEqualToString:[[HONClubAssistant sharedInstance] defaultCoverImageURL]] ) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:[NSString stringWithFormat:NSLocalizedString(@"are_you_sure_create_club", @"Are you sure you want to create %@ without a cover image?"), _clubName]
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+														  otherButtonTitles:NSLocalizedString(@"select_cover", nil), nil];
+				[alertView setTag:0];
+				[alertView show];
+
+			} else
+				[self _validateClubNameWithAlerts:YES];
+		}
+	}
+		
 }
 
 - (void)_goCamera {
@@ -320,13 +309,6 @@
 		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
 		}];
 	}
-	
-//	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
-//	clubCoverCameraViewController.delegate = self;
-//	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubCoverCameraViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 
@@ -360,19 +342,6 @@
 }
 
 
-//#pragma mark - ClubCoverCameraViewController Delegates
-//- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix {
-//	NSLog(@"\n**_[clubCoverCameraViewController:didFinishProcessingImage:(%@)withPrefix:(%@)]_**\n", NSStringFromCGSize(image.size), imagePrefix);
-//	
-//	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
-//	_clubCoverImageView.image = thumbImage;
-//	_clubImagePrefix = imagePrefix;
-//	
-//	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
-//	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
-//}
-
-
 #pragma mark - ImagePickerViewController Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
@@ -403,6 +372,7 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+	[viewController.navigationItem setTitle:NSLocalizedString(@"add_photo", nil)];
 }
 
 
@@ -431,7 +401,11 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	return (YES);
+	NSCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
+	
+	_clubNameCheckImageView.image = [UIImage imageNamed:([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) ? @"xIcon" : @"checkmarkIcon"];
+	return (([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) ? NO : YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
@@ -583,6 +557,15 @@
 										  failure:imageFailureBlock];
 			}];
 		}
+	}
+}
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if(buttonIndex ==0)
+			[self _validateClubNameWithAlerts:YES];
+		else if(buttonIndex == 1)
+			[self _goCamera];
 	}
 }
 

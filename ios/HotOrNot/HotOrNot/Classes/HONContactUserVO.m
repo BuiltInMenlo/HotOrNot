@@ -19,10 +19,10 @@
 	vo.firstName = [dictionary objectForKey:@"f_name"];
 	vo.lastName = ([[dictionary objectForKey:@"l_name"] length] > 0) ? [dictionary objectForKey:@"l_name"] : @"";
 	vo.fullName = [NSString stringWithFormat:([vo.lastName length] > 0) ? @"%@ %@" : @"%@%@", vo.firstName, vo.lastName];
-	vo.email = [dictionary objectForKey:@"email"];
-	vo.rawNumber = [dictionary objectForKey:@"phone"];
-	vo.avatarData = [dictionary objectForKey:@"image"];
-	vo.avatarImage = [UIImage imageWithData:vo.avatarData];
+	vo.email = ([[dictionary objectForKey:@"email"] length] > 0) ? [dictionary objectForKey:@"email"] : @"";
+	vo.rawNumber = ([[dictionary objectForKey:@"phone"] length] > 0) ? [dictionary objectForKey:@"phone"] : @"";
+	vo.avatarData = ([dictionary objectForKey:@"image"] != nil) ? [dictionary objectForKey:@"image"] : nil;
+	vo.avatarImage = (vo.avatarData != nil) ? [UIImage imageWithData:vo.avatarData] : nil;
 	
 	if ([vo.rawNumber length] > 0) {
 		vo.email = @"";
@@ -33,9 +33,9 @@
 	
 	vo.isSMSAvailable = ([vo.mobileNumber length] > 0);
 	
-	vo.userID = 0;
-	vo.username = @"";
-	vo.avatarPrefix = @"";
+	vo.userID = ([dictionary objectForKey:@"id"] == nil) ? 0 : [[dictionary objectForKey:@"id"] intValue];
+	vo.username = ([dictionary objectForKey:@"id"] == nil) ? @"" : [dictionary objectForKey:@"username"];
+	vo.avatarPrefix = ([dictionary objectForKey:@"id"] == nil) ? @"" : [dictionary objectForKey:@"avatar_url"];
 	vo.contactType = HONContactTypeUnmatched;
 	
 	return (vo);

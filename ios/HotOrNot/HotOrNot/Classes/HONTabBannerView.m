@@ -13,7 +13,10 @@
 @interface HONTabBannerView ()
 @property (nonatomic, strong) NSArray *clubsDict;
 @property (nonatomic, strong) HONUserClubVO *areaCodeClubVO;
+@property (nonatomic, strong) HONUserClubVO *baeClubVO;
 @property (nonatomic, strong) HONUserClubVO *familyClubVO;
+@property (nonatomic, strong) HONUserClubVO *schoolClubVO;
+@property (nonatomic, strong) HONUserClubVO *workplaceClubVO;
 @property (nonatomic, strong) NSMutableArray *clubs;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) HONPaginationView *paginationView;
@@ -43,6 +46,7 @@
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
+		
 		__block int tot = 0;
 		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			HONUserClubVO *vo = (HONUserClubVO *)obj;
@@ -53,14 +57,13 @@
 				UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * tot, 0.0, 320.0, 65.0)];
 				[_scrollView addSubview:imageView];
 				
-				UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 190.0, 20.0)];
+				UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 205.0, 20.0)];
 				titleLabel.backgroundColor = [UIColor clearColor];
 				titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 				titleLabel.textColor = [UIColor blackColor];
-				titleLabel.text = vo.clubName;
 				[imageView addSubview:titleLabel];
 				
-				UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 190.0, 14.0)];
+				UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 205.0, 14.0)];
 				subtitleLabel.backgroundColor = [UIColor clearColor];
 				subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 				subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -68,19 +71,29 @@
 				
 				UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 				button.frame = imageView.frame;
+				button.backgroundColor = [UIColor clearColor];
 				[_scrollView addSubview:button];
 				
 				if (vo.clubID == -1) {
 					_areaCodeClubVO = vo;
 					imageView.image = [UIImage imageNamed:@"locationBanner"];
-					subtitleLabel.text = @"Stay connected. Join now!";
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", [[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber]];
+					subtitleLabel.text = @"Represent your area code.";
 					[button addTarget:self action:@selector(_goAreaCode) forControlEvents:UIControlEventTouchUpInside];
 					
 				} else if (vo.clubID == -2) {
 					_familyClubVO = vo;
 					imageView.image = [UIImage imageNamed:@"familyBanner"];
-					subtitleLabel.text = @"Stay connected. Join now!";
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@!", _familyClubVO.clubName];
+					subtitleLabel.text = @"Stay connected.";
 					[button addTarget:self action:@selector(_goFamily) forControlEvents:UIControlEventTouchUpInside];
+				
+				} else if (vo.clubID == -5) {
+					_baeClubVO = vo;
+					imageView.image = [UIImage imageNamed:@"baeBanner"];
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", _baeClubVO.clubName];
+					subtitleLabel.text = @"A private club.";
+					[button addTarget:self action:@selector(_goBae) forControlEvents:UIControlEventTouchUpInside];
 				}
 				
 				tot++;
@@ -91,16 +104,16 @@
 		imageView.frame = CGRectOffset(imageView.frame, _scrollView.frame.size.width * [_clubs count], 0.0);
 		[_scrollView addSubview:imageView];
 		
-		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 190.0, 20.0)];
+		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 205.0, 20.0)];
 		titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		titleLabel.textColor = [UIColor blackColor];
-		titleLabel.text = @"1000's of Stickers!";
+		titleLabel.text = @"Over 1M stickers!";
 		[imageView addSubview:titleLabel];
-
-		UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 190.0, 14.0)];
+		
+		UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 205.0, 14.0)];
 		subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 		subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		subtitleLabel.text = @"Invite now!";
+		subtitleLabel.text = @"Invite friends to unlock.";
 		[imageView addSubview:subtitleLabel];
 		
 		UIButton *unlockButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -122,13 +135,39 @@
 
 #pragma mark - Navigation
 - (void)_goAreaCode {
-	if ([self.delegate respondsToSelector:@selector(tabBannerView:joinAreaCodeClub:)])
-		[self.delegate tabBannerView:self joinAreaCodeClub:_areaCodeClubVO];
+	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_areaCodeClubVO.clubName considerWhitespace:YES]) {
+		if ([self.delegate respondsToSelector:@selector(tabBannerView:joinAreaCodeClub:)])
+			[self.delegate tabBannerView:self joinAreaCodeClub:_areaCodeClubVO];
+	
+	} else
+		[self _showAlreadyMemberAlert:_areaCodeClubVO.clubName];
 }
 
 - (void)_goFamily {
-	if ([self.delegate respondsToSelector:@selector(tabBannerView:joinFamilyClub:)])
-		[self.delegate tabBannerView:self joinFamilyClub:_familyClubVO];
+	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_familyClubVO.clubName considerWhitespace:YES]) {
+		if ([self.delegate respondsToSelector:@selector(tabBannerView:joinFamilyClub:)])
+			[self.delegate tabBannerView:self joinFamilyClub:_familyClubVO];
+	
+	} else
+		[self _showAlreadyMemberAlert:_familyClubVO.clubName];
+}
+
+- (void)_goSchool {
+	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_schoolClubVO.clubName considerWhitespace:YES]) {
+		if ([self.delegate respondsToSelector:@selector(tabBannerView:joinSchoolClub:)])
+			[self.delegate tabBannerView:self joinSchoolClub:_schoolClubVO];
+	
+	} else
+		[self _showAlreadyMemberAlert:_schoolClubVO.clubName];
+}
+
+- (void)_goBae {
+	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_baeClubVO.clubName considerWhitespace:YES]) {
+		if ([self.delegate respondsToSelector:@selector(tabBannerView:createBaeClub:)])
+			[self.delegate tabBannerView:self createBaeClub:_baeClubVO];
+	
+	} else
+		[self _showAlreadyMemberAlert:_baeClubVO.clubName];
 }
 
 - (void)_goUnlock {
@@ -137,6 +176,15 @@
 }
 
 
+#pragma mark - UI Presentation
+- (void)_showAlreadyMemberAlert:(NSString *)clubName {
+	[[[UIAlertView alloc] initWithTitle:@""
+								message:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of %@!"), clubName]
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+					  otherButtonTitles:nil] show];
+}
+
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	int offsetPage = MIN(MAX(round(scrollView.contentOffset.x / scrollView.frame.size.width), 0), _totalPages);
@@ -144,8 +192,8 @@
 	if (offsetPage != _prevPage) {
 		[_paginationView updateToPage:offsetPage];
 		
-//		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:didChangeToPage:withDirection:)])
-//			[self.delegate emotionsPickerView:self didChangeToPage:offsetPage withDirection:(_prevPage < offsetPage) ? 1 : -1];
+		if ([self.delegate respondsToSelector:@selector(tabBannerView:didScrollFromPage:toPage:)])
+			[self.delegate tabBannerView:self didScrollFromPage:_prevPage toPage:offsetPage];
 		
 		_prevPage = offsetPage;
 	}

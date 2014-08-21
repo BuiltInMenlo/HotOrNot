@@ -102,9 +102,12 @@
 	[self toggleSelected:!_isSelected];
 }
 
-- (void)toggleIndicator:(BOOL)isEnabled {
+- (void)toggleUI:(BOOL)isEnabled {
 	_toggledOffButton.hidden = !isEnabled;
 	_toggledOnButton.hidden = !isEnabled;
+	_nameLabel.hidden = !isEnabled;
+	_arrowImageView.hidden = !isEnabled;
+	_scoreLabel.hidden = !isEnabled;
 }
 
 - (void)toggleSelected:(BOOL)isSelected {

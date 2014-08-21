@@ -10,8 +10,12 @@
 
 @class HONTabBannerView;
 @protocol HONTabBannerViewDelegate <NSObject>
+@optional
+- (void)tabBannerView:(HONTabBannerView *)bannerView didScrollFromPage:(int)prevPage toPage:(int)nextPage;
+- (void)tabBannerView:(HONTabBannerView *)bannerView createBaeClub:(HONUserClubVO *)clubVO;
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinAreaCodeClub:(HONUserClubVO *)clubVO;
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO;
+- (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO;
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView;
 @end
 

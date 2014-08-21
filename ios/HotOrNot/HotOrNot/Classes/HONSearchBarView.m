@@ -99,7 +99,6 @@
 
 
 - (void)backgroundingReset {
-	//[self _goCancel];
 	[_searchTextField resignFirstResponder];
 	
 	_searchTextField.text = @"";
@@ -108,8 +107,6 @@
 		_cancelButton.alpha = 0.0;
 		_focusedBGImageView.alpha = 0.0;
 	}];
-	
-	NSLog(@"blah");
 	
 	_searchTextField.frame = CGRectMake(_searchTextField.frame.origin.x, _searchTextField.frame.origin.y, 296.0, _searchTextField.frame.size.height);
 }
@@ -170,10 +167,10 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {	
-	if ([textField.text isEqualToString:@""])
-		textField.text = @"";
+	NSCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
 	
-	return (YES);
+	return (([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) ? NO : YES);
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {

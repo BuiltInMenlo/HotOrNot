@@ -14,13 +14,14 @@
 #import "HONClubTimelineViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONInviteContactsViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONClubPhotoVO.h"
 
 
-@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate>
+@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONSelfieCameraViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
@@ -210,7 +211,7 @@
 	[headerView addButton:backButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(257,1.0, 64.0, 44.0);
+	shareButton.frame = CGRectMake(255, 1.0, 64.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
@@ -245,7 +246,7 @@
 - (void)_goShare {
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
     NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+//	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
     NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
     NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
 	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
@@ -304,6 +305,16 @@
 }
 
 
+#pragma mark - SelfieCameraViewController Delegates
+- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
+	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_clubVO viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - ClubPhotoViewCell Delegates
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
@@ -320,7 +331,10 @@
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
+	selfieCameraViewController.delegate = self;
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

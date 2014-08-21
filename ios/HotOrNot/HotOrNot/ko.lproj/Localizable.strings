@@ -89,7 +89,7 @@
 //"firstrun_next" = "Avançar";
 //"Search for friends" = "Procurar amigos";
 "header_friends" = "친구";
-//"alert_member" = "PT >> You are already a member of %@!"
+"alert_member" = "You are already a member of %@!";
 "header_news" = "친구";
 "header_clubs" = "클럽";
 "alert_join" = "%@ Selfieclub에 참가하실래요?";
@@ -128,6 +128,7 @@
 "real_profile" = "프로필 사진은 셀카 클럽 커뮤니티가 여러분의 진짜 얼굴을 알 수 있도록 도와줍니다";
 "take_photo" = "사진 촬영";
 "is_feeling" = "- 기분이...";
+"is_feeling2" = "기분이...";
 "enter_pin" = "PIN 번호 입력";
 "invalid_pin" = "잘못된 PIN 번호입니다!";
 "invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";
@@ -138,14 +139,14 @@
 "cannot_send" = "이 기기에서는 SMS를 전송할 수 없습니다!";
 "report_abuse" = "어뷰징 / 버그 신고";
 "leave_club" = "클럽 나가기";
-"liked_selfie" = " 님이 다음에 게시한 셀카를 좋아합니다:";
+"liked_selfie" = " 님이 다음에 %@ 게시한 셀카를 좋아합니다:";
 "submit_photo" = "님이 다음에 사진을 게시했습니다: %@";
 "user_notfound" = "사용자를 찾을 수 없습니다!";
 "lev" = "%@ 나가기";
 "lev_sure" = "%@에서 정말로 나가시겠습니까?";
 "flag_person" = "이 사람을 리뷰를 위해 체크합니다";
 "yes_flag" = "예, 체크하겠습니다";
-"sent_invite" = "님에 다음에 초대했습니다: %@";
+"sent_invite" = "님에 %@ 에 초대했습니다: %@";
 "no_phone" = "휴대폰 번호가 없습니다!";
 "phone_taken" = "이 전화번호는 이미 사용 중입니다!";
 "user_phone" = "이 사용자명 및 전화번호는 이미 사용 중입니다!";
@@ -165,10 +166,15 @@
 "alert_create_it" = "새로 만드시겠습니까?";
 "club_notfound" = "클럽을 찾을 수 없습니다!";
 "want_invite" = "%@에 친구를 초대하시겠습니까?";
-
+"add_photo" = "사진 추가";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
+"select_cover" = "Select cover";
+"accept_invite" = "%@ 이 다음 초대를 수락하셨습 %@:";
 
 "confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
+"activity_you" = "당신";
 
 
 

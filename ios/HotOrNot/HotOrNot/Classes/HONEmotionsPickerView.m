@@ -143,9 +143,7 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 //				}
 //			}];
 //		}
-			
-		
-		
+					
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
@@ -165,27 +163,18 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	return (self);
 }
 
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//	
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//	
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
-//		[self _goDelete];
-//	}
-//}
-
 
 #pragma mark - Public APIs
 - (void)scrollToPage:(int)page {
 	[_scrollView scrollRectToVisible:CGRectMake(page * _scrollView.frame.size.width, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height) animated:NO];
 	[_paginationView updateToPage:page];
+}
+
+- (void)disablePagesStartingAt:(int)page {
+	for (int i=page; i<[_pageViews count]; i++) {
+		UIView *pageView = (UIView *)[_pageViews objectAtIndex:i];
+		pageView.userInteractionEnabled = NO;
+	}
 }
 
 
@@ -196,6 +185,7 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	
 	[_selectedEmotions removeLastObject];
 }
+
 -(void)_goGlobal {
     [self.delegate emotionsPickerView:self globalButton:YES];
 
@@ -213,8 +203,6 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 //            view.hidden = NO;
 //        }
 //    }
-    
-
 }
 
 #pragma mark - UI Presentation
@@ -223,7 +211,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 	//NSLog(@"\t—//]> [%@ _buildGrid] (%d)", self.class, _totalPages);
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
-	
 	
 	int cnt = 0;
 	int row = 0;
@@ -293,8 +280,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 		_prevPage = offsetPage;
 	}
 }
-
-
 
 
 @end

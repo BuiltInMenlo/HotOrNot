@@ -13,11 +13,14 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONImageLoadingView.h"
 
-const CGRect kNormalFrame = {11.0f, 11.0f, 54.0f, 54.0f};
-const CGRect kActiveFrame = {6.0f, 6.0f, 64.0f, 64.0f};
-
 const CGRect kLargeNormalFrame = {20.0f, 15.0f, 150.0f, 150.0f};
 const CGRect kLargeActiveFrame = {15.0f, 10.0f, 160.0f, 160.0f};
+
+//const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
+//const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
+
+const CGRect kNormalFrame = {10.0f, 10.0f, 54.0f, 54.0f};
+const CGRect kActiveFrame = {5.0f, 5.0f, 64.0f, 64.0f};
 
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
@@ -165,6 +168,7 @@ const CGRect kLargeActiveFrame = {15.0f, 10.0f, 160.0f, 160.0f};
     } else {
         emojiImageView = [[UIImageView alloc] initWithFrame:CGRectInset(kLargeNormalFrame, 5.0, 5.0)];
     }
+
 	emojiImageView.alpha = 0.0;
 	[_imageView addSubview:emojiImageView];
 	

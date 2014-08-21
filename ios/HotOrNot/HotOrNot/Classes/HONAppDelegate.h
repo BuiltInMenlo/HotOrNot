@@ -14,8 +14,9 @@
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
-#define __FORCE_NEW_USER__ 0
 #define __FORCE_REGISTER__ 0
+//]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[//
+#define __FORCE_NEW_USER__ 0
 #define __RESET_TOTALS__ 0
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
@@ -38,8 +39,6 @@ typedef NS_ENUM(NSInteger, HONPushType) {
 	HONPushTypeShowChallengeDetailsIgnoringPushes	/** Brings up the challenge details modal, ignoring next pushes **/
 };
 
-
-
 // share sheet actions
 typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeInstagram = 0,
@@ -61,6 +60,7 @@ typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeJoinCLub,
 	HONAppDelegateAlertTypeInviteContacts,
 	HONAppDelegateAlertTypeCreateClub,
+	HONAppDelegateAlertTypeEnterClub,
 	HONAppDelegateAlertTypeAllowContactsAccess
 };
 
@@ -80,9 +80,10 @@ typedef NS_ENUM(NSInteger, HONAmazonS3BucketType) {
 };
 
 typedef NS_ENUM(NSUInteger, HONInsetOverlayViewType) {
-	HONInsetOverlayViewTypeAppReview = 0,
+	HONInsetOverlayViewTypeUnlock = 0,
 	HONInsetOverlayViewTypeSuggestions,
-	HONInsetOverlayViewTypeUnlock
+	HONInsetOverlayViewTypeAppReview,
+	HONInsetOverlayViewTypeInvite
 };
 
 

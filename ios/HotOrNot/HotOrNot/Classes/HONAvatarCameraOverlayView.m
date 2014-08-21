@@ -39,28 +39,35 @@
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
 		
-		_irisView = [[UIImageView alloc] initWithFrame:self.frame];
-		_irisView.backgroundColor = [UIColor blackColor];
-		_irisView.alpha = 0.0;
-		[self addSubview:_irisView];
+		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
+		_blackMatteView.backgroundColor = [UIColor blackColor];
+		_blackMatteView.alpha = 0.0;
+		[self addSubview:_blackMatteView];
 		
 		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 		[self addSubview:headerBGView];
 		
 		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flipButton.frame = CGRectMake(275.0, 0.0, 64.0, 64.0);
+		flipButton.frame = CGRectMake(271.0, 7.0, 44.0, 44.0);
 		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		[headerBGView addSubview:flipButton];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelbuttonwhite_nonactive"] forState:UIControlStateNormal];
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelbuttonwhite_active"] forState:UIControlStateHighlighted];
+		cancelButton.frame = CGRectMake(7.0, 7.0, 44.0, 44.0);
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_nonActive"] forState:UIControlStateNormal];
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_Active"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[headerBGView addSubview:cancelButton];
+		
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(270.0, [UIScreen mainScreen].bounds.size.height - 51.0, 44.0, 44.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goSkipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:skipButton];
 		
 //		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 141.0, 320.0, 141.0)];
 //		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
@@ -81,42 +88,32 @@
 		[self addSubview:_captureButton];
 		
 		_lastCameraRollImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRollBG"]];
-		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 257.0, [UIScreen mainScreen].bounds.size.height - 60.0);
+		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 9.0, [UIScreen mainScreen].bounds.size.height - 48.0);
 		[self addSubview:_lastCameraRollImageView];
 		
 		[[HONImageBroker sharedInstance] maskView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
 		[self _retrieveLastImage];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(220.0, [UIScreen mainScreen].bounds.size.height - 42.0, 93.0, 44.0);
+		cameraRollButton.frame = _lastCameraRollImageView.frame;
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cameraRollButton];
 		
-		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 64.0)];
-		[self addSubview:_submitHolderView];
-		
-		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
-		retakeButton.backgroundColor = [UIColor redColor];
-		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderView addSubview:retakeButton];
-		
-		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
-		retakeButton.backgroundColor = [UIColor greenColor];
-		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderView addSubview:skipButton];
-		
-		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 64.0);
-		retakeButton.backgroundColor = [UIColor blueColor];
-		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderView addSubview:submitButton];
-		
-		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
-		_blackMatteView.backgroundColor = [UIColor blackColor];
-		_blackMatteView.alpha = 0.0;
-		[self addSubview:_blackMatteView];
+//		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 64.0)];
+//		[self addSubview:_submitHolderView];
+//		
+//		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
+//		retakeButton.backgroundColor = [UIColor redColor];
+//		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
+//		[_submitHolderView addSubview:retakeButton];
+//				
+//		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 64.0);
+//		retakeButton.backgroundColor = [UIColor blueColor];
+//		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+//		[_submitHolderView addSubview:submitButton];
+//
 	}
 	
 	return (self);
@@ -206,7 +203,8 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePicture:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePicture:includeFilter:)])
+		[self.delegate cameraOverlayViewTakePicture:self includeFilter:NO];
 }
 
 - (void)_goCancel {
@@ -219,28 +217,38 @@
 	[alertView show];
 }
 
-- (void)_goSubmit {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blackMatteView.alpha = 0.65;
+- (void)_goSkipCamera {
+	_captureButton.hidden = YES;
+	
+	_blackMatteView.hidden = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_blackMatteView.alpha = 1.0;
 	} completion:^(BOOL finished) {
-		_submitHolderView.hidden = YES;
-		[self.delegate cameraOverlayViewSubmit:self];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blackMatteView.alpha = 0.0;
+		}];
 	}];
+	
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePicture:includeFilter:)])
+		[self.delegate cameraOverlayViewTakePicture:self includeFilter:YES];
 }
 
 - (void)_goFlipCamera {
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewChangeCamera:)])
 	[self.delegate cameraOverlayViewChangeCamera:self];
 }
 
 - (void)_goCameraRoll {
-	[self.delegate cameraOverlayViewShowCameraRoll:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewShowCameraRoll:)])
+		[self.delegate cameraOverlayViewShowCameraRoll:self];
 }
 
 - (void)_goCameraBack {
 	[self removePreview];
 	
 	_captureButton.hidden = NO;
-	[self.delegate cameraOverlayViewRetake:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewRetake:)])
+		[self.delegate cameraOverlayViewRetake:self];
 }
 
 
@@ -286,7 +294,8 @@
 		
 		switch(buttonIndex) {
 			case 0:
-				[self.delegate cameraOverlayViewCloseCamera:self];
+				if ([self.delegate respondsToSelector:@selector(cameraOverlayViewCloseCamera:)])
+					[self.delegate cameraOverlayViewCloseCamera:self];
 				break;
 				
 			case 1:

@@ -16,11 +16,11 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected;
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO;
-- (void)emotionsPickerViewShowActionSheet:(HONEmotionsPickerView *)emotionsPickerView;
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction;
 @end
 
 @interface HONEmotionsPickerView : UIView <UIScrollViewDelegate>
 - (void)scrollToPage:(int)page;
+- (void)disablePagesStartingAt:(int)page;
 @property (nonatomic, assign) id <HONEmotionsPickerViewDelegate> delegate;
 @end

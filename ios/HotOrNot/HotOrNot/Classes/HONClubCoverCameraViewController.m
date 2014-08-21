@@ -52,18 +52,14 @@
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	[self.delegate clubCoverCameraViewController:self didFinishProcessingImage:largeImage withPrefix:_imagePrefix];
+	if ([self.delegate respondsToSelector:@selector(clubCoverCameraViewController:didFinishProcessingImage:withPrefix:)])
+		[self.delegate clubCoverCameraViewController:self didFinishProcessingImage:largeImage withPrefix:_imagePrefix];
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeClubs withFilename:filename completion:^(NSObject *result) {
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
-		
-//		[_cameraOverlayView uploadComplete];
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[self.navigationController dismissViewControllerAnimated:NO completion:^(void) {}];
-		}];
 	}];
 }
 
@@ -85,7 +81,6 @@
 	
 	if (_isFirstAppearance) {
 		_isFirstAppearance = NO;
-		
 		[self _presentCamera];
 	}
 }
@@ -93,24 +88,6 @@
 
 #pragma mark - UI Presentation
 - (void)_presentCamera {
-//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		_imagePicker = [[UIImagePickerController alloc] init];
-//		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-//		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
-//		_imagePicker.delegate = self;
-//		
-//		_imagePicker.showsCameraControls = NO;
-//		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f);
-//		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-//		
-//		_cameraOverlayView = [[HONClubCoverCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_cameraOverlayView.delegate = self;
-//		_imagePicker.cameraOverlayView = _cameraOverlayView;
-//
-//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-//		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {}];
-//		
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -123,15 +100,8 @@
 		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
 		
 		self.modalPresentationStyle = UIModalPresentationCurrentContext;
-		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
-		}];
+		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {}];
 	}
-}
-
--(void)_destroyCamera {
-//	_cameraOverlayView = nil;
-	_imagePicker.cameraOverlayView = nil;
-	_imagePicker = nil;
 }
 
 
@@ -154,27 +124,9 @@
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-//		picker.showsCameraControls = NO;
-//		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-//		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f);
-//		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-//		
-//		_cameraOverlayView = [[HONClubCoverCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_cameraOverlayView.delegate = self;
-//		_imagePicker.cameraOverlayView = _cameraOverlayView;
-//		
-//	} else {
-		
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
 		[self _goCancel];
 	}];
-		
-//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//		}];
-//	}
 }
 
 
@@ -182,80 +134,5 @@
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 }
-
-
-#pragma mark - CameraOverlayView Delegates
-/*
-- (void)cameraOverlayViewCloseCamera:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Cancel"];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-				[self _destroyCamera];
-			}];
-		
-		} else
-			[self _destroyCamera];
-	}];
-}
-
-- (void)cameraOverlayViewChangeCamera:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Switch Camera"
-								   withCameraDevice:_imagePicker.cameraDevice];
-	
-	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		//overlay.flashButton.hidden = NO;
-		
-	} else {
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-		//overlay.flashButton.hidden = YES;
-	}
-}
-
-- (void)cameraOverlayViewShowCameraRoll:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Camera Roll"];
-	
-	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-}
-
-- (void)cameraOverlayViewTakePicture:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Take Photo"
-									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
-	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Loading…";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[_imagePicker takePicture];
-}
-
-- (void)cameraOverlayViewRetake:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Retake"];
-}
-
-- (void)cameraOverlayViewSubmit:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Submit"];
-	
-//	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
-//
-//	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
-//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
-//	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
-//
-//	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-//	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-//	[canvasView addSubview:overlayTintView];
-//
-//	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-//	[self _uploadPhotos:processedImage];
-}
-*/
 
 @end
