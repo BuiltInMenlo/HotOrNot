@@ -10,6 +10,9 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
+#define COLS_PER_ROW	1
+#define ROWS_PER_PAGE	1
+
 const CGSize kImageSpacingSize = {194.0f, 194.0f};
 
 @interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate, UIAlertViewDelegate>
