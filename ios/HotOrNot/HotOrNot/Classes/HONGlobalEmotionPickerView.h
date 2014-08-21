@@ -14,7 +14,6 @@
 - (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected;
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO;
-- (void)emotionsPickerViewShowActionSheet:(HONGlobalEmotionPickerView *)emotionsPickerView;
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction;
 @end
 
