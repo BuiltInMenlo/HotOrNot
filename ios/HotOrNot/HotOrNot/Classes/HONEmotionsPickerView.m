@@ -10,7 +10,7 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
-const CGSize kImageSpacingSize = {75.0f, 73.0f};
+const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
@@ -40,7 +40,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		_selectedEmotions = [NSMutableArray array];
 		
 		_prevPage = 0;
-		_totalPages = 0;
+		_totalPages = 10;
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
@@ -48,7 +48,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
 		[self addSubview:_bgImageView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 272.0)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 5.0, 320.0, 272.0)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.showsHorizontalScrollIndicator = NO;
 		_scrollView.showsVerticalScrollIndicator = NO;
@@ -57,13 +57,93 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
+        
+		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,3,280,18 )];
+        stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+        stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+        stickerPackLabel.backgroundColor = [UIColor clearColor];
+        stickerPackLabel.textAlignment = NSTextAlignmentCenter;
+        stickerPackLabel.text = NSLocalizedString(@"my_sticker", nil);
+        [self addSubview:stickerPackLabel];
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0);
+		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
+        
+        UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		globalButton.frame = CGRectMake(0, self.frame.size.height - 50.0, 160.0, 50.0);
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
+		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
+		[self addSubview:globalButton];
+		
+		
+		
+		//		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
+		//		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
+		//		__block int cnt = 0;
+		//		for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak]) {
+		//			[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+		//				[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		//					PCContent *content = (PCContent *)obj;
+		//					HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+		//																			 @"cg_id"	: contentGroupID,
+		//																			 @"name"	: content.name,
+		//																			 @"price"	: [content.price stringValue],
+		//																			 @"content"	: content,
+		//																			 @"img"		: @""}];
+		//					[_availableEmotions addObject:vo];
+		//
+		//				}];
+		//
+		//				if (++cnt >= free_tot) {
+		//
+		//					cnt = 0;
+		//					if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
+		//						for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
+		//							[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+		//								[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		//									PCContent *content = (PCContent *)obj;
+		//									HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+		//																							 @"cg_id"	: contentGroupID,
+		//																							 @"name"	: content.name,
+		//																							 @"price"	: [content.price stringValue],
+		//																							 @"content"	: content,
+		//																							 @"img"		: @""}];
+		//									[_availableEmotions addObject:vo];
+		//
+		//								}];
+		//
+		//								if (++cnt >= invite_tot) {
+		//									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+		//									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+		//
+		//									_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+		//									[_paginationView updateToPage:0];
+		//									[self addSubview:_paginationView];
+		//
+		//									[self _buildGrid];
+		//								}
+		//							}];
+		//						}
+		//
+		//					} else {
+		//						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+		//						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+		//
+		//						_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+		//						[_paginationView updateToPage:0];
+		//						[self addSubview:_paginationView];
+		//
+		//						[self _buildGrid];
+		//					}
+		//				}
+		//			}];
+		//		}
+		
 		
 		
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
@@ -85,6 +165,22 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	return (self);
 }
 
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
+//
+//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
+//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
+//
+//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
+//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
+//		[self _goDelete];
+//	}
+//}
+
 
 #pragma mark - Public APIs
 - (void)scrollToPage:(int)page {
@@ -99,7 +195,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	}
 }
 
-
 #pragma mark - Navigation
 - (void)_goDelete {
 	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
@@ -107,7 +202,27 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	
 	[_selectedEmotions removeLastObject];
 }
-
+-(void)_goGlobal {
+	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:globalButton:)])
+		[self.delegate emotionsPickerView:self globalButton:YES];
+	
+	//    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+	//    [self.delegate emotionsPickerViewShowActionSheet:self];
+	//    _isGlobal = !_isGlobal;
+	//    if(_isGlobal){
+	//        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
+	//        for(UIView *view in _pageViews){
+	//            view.hidden = YES;
+	//        }
+	//    } else {
+	//        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+	//        for(UIView *view in _pageViews){
+	//            view.hidden = NO;
+	//        }
+	//    }
+    
+	
+}
 
 #pragma mark - UI Presentation
 static dispatch_queue_t sticker_request_operation_queue;
@@ -116,24 +231,25 @@ static dispatch_queue_t sticker_request_operation_queue;
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	
+	
 	int cnt = 0;
 	int row = 0;
 	int col = 0;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 11.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacing2Size.width, ROWS_PER_PAGE * kImageSpacing2Size.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
 	}
 	
 	for (HONEmotionVO *vo in _availableEmotions) {
-		 dispatch_async(dispatch_get_main_queue(), ^{
+		dispatch_async(dispatch_get_main_queue(), ^{
 			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
 				
 			} else {
-//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
+				//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
 			}
 		});
 		
@@ -141,9 +257,11 @@ static dispatch_queue_t sticker_request_operation_queue;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.125];
+		// HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height, 75.0,73.0) withEmotion:vo withDelay:cnt * 0.125];
+		
 		emotionItemView.delegate = self;
-//		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
+		//		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];
 		
@@ -182,6 +300,8 @@ static dispatch_queue_t sticker_request_operation_queue;
 		_prevPage = offsetPage;
 	}
 }
+
+
 
 
 @end

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0717818419994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817A19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png */; };
+		0717818519994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817B19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png */; };
+		0717818619994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817C19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png */; };
 		0717818719994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */; };
 		0717818919994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */; };
 		0717818A19994CFC006CCB50 /* deleteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */; };
@@ -57,17 +60,17 @@
 		07B6E72C1988549100DA0805 /* newInviteOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E72E1988549100DA0805 /* newInviteOverlay@2x.png */; };
 		07B6E72F1988549400DA0805 /* suggestionOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E7311988549400DA0805 /* suggestionOverlay@2x.png */; };
 <<<<<<< HEAD
+		07F7448219A2ABFC00FE5B2A /* paidbadge_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07F7448019A2ABFC00FE5B2A /* paidbadge_2x.png */; };
+		07F7448319A2ABFC00FE5B2A /* basestoregraphic_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07F7448119A2ABFC00FE5B2A /* basestoregraphic_2x.png */; };
+		07F7448619A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F7448519A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m */; };
+=======
+>>>>>>> a67f5d51f039e7cc67118858e7aa3ea537c15c9b
 		300B1BD9199C0E4C006BB048 /* modalInviteBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BDB199C0E4C006BB048 /* modalInviteBackground@2x.png */; };
 		300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BEB199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png */; };
 		300B1BF8199C3E2C006BB048 /* addContacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BFA199C3E2C006BB048 /* addContacts@2x.png */; };
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		309F59C3199DAF5000EC6C1C /* noPostsYetRow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59C5199DAF5000EC6C1C /* noPostsYetRow@2x.png */; };
 		309F59CA199DAF9300EC6C1C /* shareFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59CC199DAF9300EC6C1C /* shareFriends@2x.png */; };
-=======
-		07F7448219A2ABFC00FE5B2A /* paidbadge_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07F7448019A2ABFC00FE5B2A /* paidbadge_2x.png */; };
-		07F7448319A2ABFC00FE5B2A /* basestoregraphic_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07F7448119A2ABFC00FE5B2A /* basestoregraphic_2x.png */; };
-		07F7448619A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F7448519A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m */; };
->>>>>>> e9dee4faabb2d8eaed01293605f6697aaa79a75a
 		4C00491B1946A994007FA9F5 /* HONClubsViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */; };
 		4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491D1946AEAC007FA9F5 /* HONClubCollectionViewCell.m */; };
 		4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */; };
@@ -540,7 +543,6 @@
 		07B6E738198854A600DA0805 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/suggestionOverlay@2x.png"; sourceTree = "<group>"; };
 		07B6E739198854A700DA0805 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/suggestionOverlay@2x.png"; sourceTree = "<group>"; };
 		07B6E73A198854A800DA0805 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/suggestionOverlay@2x.png"; sourceTree = "<group>"; };
-<<<<<<< HEAD
 		300B1BDA199C0E4C006BB048 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/modalInviteBackground@2x.png"; sourceTree = "<group>"; };
 		300B1BDC199C0E4E006BB048 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/modalInviteBackground@2x.png"; sourceTree = "<group>"; };
 		300B1BDD199C0E4F006BB048 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/modalInviteBackground@2x.png"; sourceTree = "<group>"; };
@@ -568,12 +570,13 @@
 		309F59CE199DAF9800EC6C1C /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		309F59CF199DAF9900EC6C1C /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		309F59D0199DAF9A00EC6C1C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
-=======
+<<<<<<< HEAD
 		07F7448019A2ABFC00FE5B2A /* paidbadge_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paidbadge_2x.png; sourceTree = "<group>"; };
 		07F7448119A2ABFC00FE5B2A /* basestoregraphic_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = basestoregraphic_2x.png; sourceTree = "<group>"; };
 		07F7448419A2C63C00FE5B2A /* HONGlobalEmotionPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGlobalEmotionPickerView.h; sourceTree = "<group>"; };
 		07F7448519A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGlobalEmotionPickerView.m; sourceTree = "<group>"; };
->>>>>>> e9dee4faabb2d8eaed01293605f6697aaa79a75a
+=======
+>>>>>>> a67f5d51f039e7cc67118858e7aa3ea537c15c9b
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCollectionViewCell.h; sourceTree = "<group>"; };
@@ -2276,13 +2279,12 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< HEAD
 				4C43224A18E37C960035FF06 /* Asset Catalogs */,
 				309F59BE199DA60000EC6C1C /* Search */,
 				309F59BD199DA5F300EC6C1C /* First Run */,
 				309F59BC199DA5AE00EC6C1C /* Emoji Board */,
 				309F59B8199DA4EC00EC6C1C /* Tabs */,
-=======
+<<<<<<< HEAD
 				07F7448019A2ABFC00FE5B2A /* paidbadge_2x.png */,
 				07F7448119A2ABFC00FE5B2A /* basestoregraphic_2x.png */,
 				0717817A19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png */,
@@ -2298,7 +2300,8 @@
 				072F5394199190B700738827 /* unlockBanner.png */,
 				072F53851991633000738827 /* inviteButton_Active@2x.png */,
 				072F53881991633300738827 /* inviteButton_nonActive@2x.png */,
->>>>>>> e9dee4faabb2d8eaed01293605f6697aaa79a75a
+=======
+>>>>>>> a67f5d51f039e7cc67118858e7aa3ea537c15c9b
 				4CC606DB198C58110042A951 /* Overlays */,
 				4C0A4CF7198B419700450680 /* Buttons */,
 				4C0F3CC81988E61F00703D09 /* Tab Bar */,
@@ -2511,8 +2514,6 @@
 			children = (
 				4C6ECF3E19061D1E00AC2402 /* HONEmoticonPickerItemView.h */,
 				4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */,
-				07F7448419A2C63C00FE5B2A /* HONGlobalEmotionPickerView.h */,
-				07F7448519A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m */,
 				4C60AF6917CCFEF800609792 /* HONEmotionsPickerView.h */,
 				4C60AF6A17CCFEF800609792 /* HONEmotionsPickerView.m */,
 				4CC94FEA19079D4900347A34 /* HONEmotionsPickerDisplayView.h */,
@@ -2797,7 +2798,6 @@
 				8F4E6211198ACD6500E8A171 /* cancelbuttonwhite_active@2x.png in Resources */,
 				07B6E65519884A2400DA0805 /* backButton_nonActive@2x.png in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
-				07F7448319A2ABFC00FE5B2A /* basestoregraphic_2x.png in Resources */,
 				4C0F3CDB1988E63700703D09 /* tabMenu_newsButton_Tapped@2x.png in Resources */,
 				4C2DD84018E3EEF100BC8759 /* FullScreenAssets.xcassets in Resources */,
 				07B6E6DF19884B3300DA0805 /* likeTimelineButton_nonActive@2x.png in Resources */,
@@ -2843,7 +2843,6 @@
 				07B6E66119884A3700DA0805 /* backWhiteButton_nonActive@2x.png in Resources */,
 				4C0148BD198C77D10006BCBC /* smallRowOfferBackground@2x.png in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
-				07F7448219A2ABFC00FE5B2A /* paidbadge_2x.png in Resources */,
 				0717818719994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x.png in Resources */,
 				072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */,
 				07B6E7011988515B00DA0805 /* inviteFriends_Active@2x.png in Resources */,
@@ -3031,7 +3030,6 @@
 				4C4328A818E3A9FA0035FF06 /* EGOImageButton.m in Sources */,
 				4C6A3E1817669D7400B6CD4D /* HONFollowContactViewCell.m in Sources */,
 				4C4328D418E3A9FA0035FF06 /* MPSurvey.m in Sources */,
-				07F7448619A2C63C00FE5B2A /* HONGlobalEmotionPickerView.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
 				4C4328B918E3A9FA0035FF06 /* JLBPagedView.m in Sources */,
 				4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */,

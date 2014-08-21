@@ -198,19 +198,19 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 -(void)_goGlobal {
     [self.delegate globalEmotionsPickerView:self globalButton:YES];
     //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-//    [self.delegate emotionsPickerViewShowActionSheet:self];
-//    _isGlobal = !_isGlobal;
-//    if(_isGlobal){
-//        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
-//        for(UIView *view in _pageViews){
-//            view.hidden = YES;
-//        }
-//    } else {
-//        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-//        for(UIView *view in _pageViews){
-//            view.hidden = NO;
-//        }
-//    }
+	//    [self.delegate emotionsPickerViewShowActionSheet:self];
+	//    _isGlobal = !_isGlobal;
+	//    if(_isGlobal){
+	//        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
+	//        for(UIView *view in _pageViews){
+	//            view.hidden = YES;
+	//        }
+	//    } else {
+	//        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+	//        for(UIView *view in _pageViews){
+	//            view.hidden = NO;
+	//        }
+	//    }
     
     
 }
@@ -248,7 +248,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-//        HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height, 194.0,194.0) withEmotion:vo withDelay:cnt * 0.125];
+		//        HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height, 194.0,194.0) withEmotion:vo withDelay:cnt * 0.125];
         HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtLargePosition:CGPointMake(col*kImageSpacingSize.width, row*kImageSpacingSize.height) withEmotion:vo withDelay:cnt * .125];
 		emotionItemView.delegate = self;
         //		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));

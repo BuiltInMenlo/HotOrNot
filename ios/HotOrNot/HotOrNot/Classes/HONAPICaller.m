@@ -1591,7 +1591,7 @@ static HONAPICaller *sharedInstance = nil;
 - (void)retrieveLocalSchoolTypeClubsWithAreaCode:(NSString *)areaCode completion:(void (^)(id result))completion {
 	if ([[HONClubAssistant sharedInstance] labelIDForAreaCode:areaCode] != 0) {
 		
-		NSString *apiEndPt = @"http://volley-api.selfieclubapp.com";
+		NSString *apiEndPt = @"http://api.devint.selfieclubapp.com";
 		NSString *clubLabel = [@"" stringFromInt:[[HONClubAssistant sharedInstance] labelIDForAreaCode:areaCode]];
 	
 		SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], apiEndPt, [NSString stringWithFormat:@"club/label/%@/", clubLabel]);

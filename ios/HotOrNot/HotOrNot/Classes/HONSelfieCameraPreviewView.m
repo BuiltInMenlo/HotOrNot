@@ -265,6 +265,8 @@
 }
 
 
+
+
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
