@@ -87,7 +87,7 @@
 //"firstrun_next" = "Avançar";
 //"Search for friends" = "Procurar amigos";
 "header_friends" = "Amigos";
-"alert_member" = "You are already a member of %@!";
+//"alert_member" = "PT >> You are already a member of %@!"
 "header_news" = "Novidades";
 "header_clubs" = "Clubes";
 "alert_join" = "Gostaria de participar do Selfieclub %@?";
@@ -126,7 +126,6 @@
 "real_profile" = "Sua foto do perfil ajuda a comunidade Selfieclub a conhecer sua verdadeira";
 "take_photo" = "Tirar Foto";
 "is_feeling" = "- está se sentindo…";
-"is_feeling2" = "está se sentindo...";
 "enter_pin" = "Digite o PIN";
 "invalid_pin" = "PIN inválido!";
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
@@ -136,15 +135,15 @@
 "not_now" = "Agora não";
 "cannot_send" = "Não é possível enviar SMS deste dispositivo!";
 "report_abuse" = "Reportar abuso / erro";
-"liked_selfie" = " curtiu %@ selfie em";
+"liked_selfie" = " curtiu sua selfie em";
 "submit_photo" = "enviou uma foto para %@";
 "user_notfound" = "Usuário não encontrado!";
 "lev" = "Sair de %@";
 "lev_sure" = "Tem certeza de que quer sair de %@?";
 "flag_person" = "Esta pessoa será marcada para análise";
 "yes_flag" = "Sim, marcar usuário";
-"sent_invite" = " enviou a %@ um convite para %@";
-"accept_invite" = " aceitou %@ convite para %@";
+"sent_invite" = " enviou a você um convite para %@";
+"accept_invite" = " aceitou seu convite para %@";
 "no_phone" = "Não há telefone!";
 "phone_taken" = "Nº de telefone já existe!";
 "user_phone" = "Nome de usuário e nº de telefone já existem!";
@@ -162,12 +161,13 @@
 "ok_access" = "Precisamos do seu OK para acessar o catálogo de endereços.";
 "tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://joinselfie.club/%@/%@";
 "alert_create_it" = "Gostaria de criá-lo?";
-"add_photo" = "Adicionar Foto";
-"please_enter_club" = "Please enter a club name!";
-"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
-"select_cover" = "Select cover";
+"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
-"activity_you" = "Você";
+"global_sticker" = "Sticker Packs";
+
+
+"my_sticker" = "My Stickers";
+
 
 
 

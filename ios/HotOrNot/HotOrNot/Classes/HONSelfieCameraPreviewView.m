@@ -22,16 +22,17 @@
 #import "HONEmotionsPickerDisplayView.h"
 #import "HONInviteContactsViewController.h"
 #import "HONEmotionsPickerView.h"
-
+#import "HONGlobalEmotionPickerView.h"
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate, HONGlobalEmotionPickerViewDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
+@property (nonatomic, strong) HONGlobalEmotionPickerView *globalEmotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
 @property (nonatomic, strong) UIButton *overlayToggleButton;
@@ -92,7 +93,7 @@
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:nextButton];
-	
+		
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 308.0)) withPreviewImage:_previewImage];
@@ -101,13 +102,18 @@
 	[self addSubview:_emotionsDisplayView];
 		
 	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
-	_emotionsPickerView.alpha = 0.0;
+	//_emotionsPickerView.alpha = 0.0;
 	_emotionsPickerView.hidden = YES;
 	_emotionsPickerView.delegate = self;
 	[self addSubview:_emotionsPickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
-	
+    _globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
+	//_globalEmotionsPickerView.alpha = 0.0;
+	_globalEmotionsPickerView.hidden = YES;
+	_globalEmotionsPickerView.delegate = self;
+	[self addSubview:_globalEmotionsPickerView];
+    
 	[self _showOverlay];
 }
 
@@ -251,19 +257,33 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
-		[_emotionsPickerView disablePagesStartingAt:2];
-		[_emotionsPickerView scrollToPage:1];
-		
-		if (_insetOverlayView == nil)
-			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-		_insetOverlayView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-		[_insetOverlayView introWithCompletion:nil];
-	}
+//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 1 && direction == 1) {
+//		[_emotionsPickerView scrollToPage:0];
+//		
+//		if (_insetOverlayView == nil) {
+//			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+//			_insetOverlayView.delegate = self;
+//			
+//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+//			[_insetOverlayView introWithCompletion:nil];
+//		}
+//	}
+}
+-(void) emotionsPickerViewShowActionSheet:(HONEmotionsPickerView *)emotionsPickerView {
+    [self.delegate cameraPreviewViewShowActionSheet:self];
 }
 
+-(void) globalEmotionsPickerViewShowActionSheet:(HONGlobalEmotionPickerView *)emotionsPickerView {
+    [self.delegate cameraPreviewViewShowActionSheet:self];
+}
+-(void) globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{
+    _globalEmotionsPickerView.hidden = YES;
+    _emotionsPickerView.hidden = NO;
+}
+- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
+    _emotionsPickerView.hidden = YES;
+    _globalEmotionsPickerView.hidden = NO;
+}
 
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
@@ -277,6 +297,7 @@
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
 		_insetOverlayView = nil;
+
 		
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
 			[self.delegate cameraPreviewViewShowInviteContacts:self];

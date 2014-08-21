@@ -82,14 +82,13 @@
 "title_joinNow" = " - Join Now!";
 
 
-
 "enter_username" = "Enter username";
 "enter_phone" = "Enter phone";
 "Register" = "Register";
 //"firstrun_next" = "Avançar";
 //"Search for friends" = "Procurar amigos";
 "header_friends" = "Friends";
-"alert_member" = "You are already a member of %@!";
+//"alert_member" = "PT >> You are already a member of %@!"
 "header_news" = "News";
 "header_clubs" = "Clubs";
 "alert_join" = "Would you like to join the %@ Selfieclub?";
@@ -128,7 +127,6 @@
 "real_profile" = "Your profile photo helps the Selfieclub community know your real.";
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
-"is_feeling2" = "is feeling...";
 "enter_pin" = "Enter Pin";
 "invalid_pin" = "Invalid Pin!";
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";
@@ -138,15 +136,15 @@
 "not_now" = "Not Now";
 "cannot_send" = "Cannot send SMS from this device!";
 "report_abuse" = "Report Abuse / Bug";
-"liked_selfie" = " liked %@ selfie in %@";
+"liked_selfie" = " liked your selfie in %@";
 "submit_photo" = " submitted a photo into %@";
 "user_notfound" = "User not found!";
 "lev" = "Leave %@";
 "lev_sure" = "Are you sure you want to leave %@?";
 "flag_person" = "This person will be flagged for review";
 "yes_flag" = "Yes, flag user";
-"sent_invite" = " sent %@ an invite to %@";
-"accept_invite" = " accepted %@ invite to %@";
+"sent_invite" = " sent you an invite to %@";
+"accept_invite" = " accepted your invite to %@";
 "no_phone" = "No Phone!";
 "phone_taken" = "Phone # taken!";
 "user_phone" = "Username & phone # taken!";
@@ -166,16 +164,11 @@
 "alert_create_it" = "Would you like to create it?";
 "club_notfound" = "Club Not Found!";
 "want_invite" = "Want to invite friends to %@?";
-"add_photo" = "Add Photo";
-"please_enter_club" = "Please enter a club name!";
-"are_you_sure_create_club" = "Are you sure you want to create %@ without a cover image?";
-"select_cover" = "Select cover";
+"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
+
+"global_sticker" = "Sticker Packs";
+"my_sticker" = "My Stickers";
 
 
-"activity_you" = "You";
-"no_selectclub_msg2" = "You have to choose at least one club to invite %@ to.";
-"alert_noClubs" = "No clubs found in your area code!";
-"alert_nofriends_t" = "No Friend Selected!";
-"alert_nofriends_m" = "You need to choose some friends to invite to %@";
-"activity_signup" = "You have just joined Selfieclub!";
-"alert_enterClub" = "Want to go there now?";
+
+

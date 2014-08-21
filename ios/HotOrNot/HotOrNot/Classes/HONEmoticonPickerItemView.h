@@ -14,11 +14,13 @@
 @protocol HONEmotionItemViewDelegate <NSObject>
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView deselectedEmotion:(HONEmotionVO *)emotionVO;
+- (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedLargeEmotion:(HONEmotionVO *)emotionVO;
+
 @end
 
 
 @interface HONEmoticonPickerItemView : UIView
 - (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay;
-
+-(id) initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay;
 @property (nonatomic, assign) id<HONEmotionItemViewDelegate> delegate;
 @end
