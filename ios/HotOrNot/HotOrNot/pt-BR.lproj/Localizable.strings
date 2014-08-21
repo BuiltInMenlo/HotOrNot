@@ -168,6 +168,13 @@
 
 "my_sticker" = "My Stickers";
 
+"add_photo" = "Adicionar Foto";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
+"select_cover" = "Select cover";
+
+"activity_you" = "Você";
+>>>>>>> stickerboard
 
 
 

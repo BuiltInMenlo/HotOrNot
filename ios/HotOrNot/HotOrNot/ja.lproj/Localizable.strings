@@ -168,9 +168,11 @@
 "want_invite" = "%@に友人を招待しますか?";
 
 
-
+"global_sticker" = "Sticker Packs";
 "global_sticker" = "Sticker Packs";
 
+"activity_you" = "あなた";
+>>>>>>> stickerboard
 
 "my_sticker" = "My Stickers";
 

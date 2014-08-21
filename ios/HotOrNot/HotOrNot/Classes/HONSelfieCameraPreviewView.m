@@ -22,10 +22,11 @@
 #import "HONEmotionsPickerDisplayView.h"
 #import "HONInviteContactsViewController.h"
 #import "HONEmotionsPickerView.h"
+#import "HONGlobalEmotionPickerView.h"
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONGlobalEmotionPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
@@ -33,6 +34,7 @@
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
+@property (nonatomic, strong) HONGlobalEmotionPickerView *globalEmotionsPickerView;
 
 @property (nonatomic, strong) UIButton *overlayToggleButton;
 
@@ -101,10 +103,14 @@
 	[self addSubview:_emotionsDisplayView];
 		
 	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
-	_emotionsPickerView.alpha = 0.0;
 	_emotionsPickerView.hidden = YES;
 	_emotionsPickerView.delegate = self;
 	[self addSubview:_emotionsPickerView];
+	
+	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
+	_globalEmotionsPickerView.hidden = YES;
+	_globalEmotionsPickerView.delegate = self;
+	[self addSubview:_globalEmotionsPickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
@@ -264,7 +270,14 @@
 	}
 }
 
-
+-(void) globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{
+    _globalEmotionsPickerView.hidden = YES;
+    _emotionsPickerView.hidden = NO;
+}
+- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
+    _emotionsPickerView.hidden = YES;
+    _globalEmotionsPickerView.hidden = NO;
+}
 
 
 #pragma mark - InsetOverlay Delegates

@@ -68,82 +68,17 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_nonActive"] forState:UIControlStateNormal];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
         
         UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		globalButton.frame = CGRectMake(0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_nonActive"] forState:UIControlStateNormal];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
-		
-		
-		
-		//		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
-		//		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
-		//		__block int cnt = 0;
-		//		for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak]) {
-		//			[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
-		//				[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		//					PCContent *content = (PCContent *)obj;
-		//					HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
-		//																			 @"cg_id"	: contentGroupID,
-		//																			 @"name"	: content.name,
-		//																			 @"price"	: [content.price stringValue],
-		//																			 @"content"	: content,
-		//																			 @"img"		: @""}];
-		//					[_availableEmotions addObject:vo];
-		//
-		//				}];
-		//
-		//				if (++cnt >= free_tot) {
-		//
-		//					cnt = 0;
-		//					if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
-		//						for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
-		//							[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
-		//								[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		//									PCContent *content = (PCContent *)obj;
-		//									HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
-		//																							 @"cg_id"	: contentGroupID,
-		//																							 @"name"	: content.name,
-		//																							 @"price"	: [content.price stringValue],
-		//																							 @"content"	: content,
-		//																							 @"img"		: @""}];
-		//									[_availableEmotions addObject:vo];
-		//
-		//								}];
-		//
-		//								if (++cnt >= invite_tot) {
-		//									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-		//									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-		//
-		//									_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
-		//									[_paginationView updateToPage:0];
-		//									[self addSubview:_paginationView];
-		//
-		//									[self _buildGrid];
-		//								}
-		//							}];
-		//						}
-		//
-		//					} else {
-		//						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-		//						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-		//
-		//						_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
-		//						[_paginationView updateToPage:0];
-		//						[self addSubview:_paginationView];
-		//
-		//						[self _buildGrid];
-		//					}
-		//				}
-		//			}];
-		//		}
-		
 		
 		
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
@@ -202,26 +137,24 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	
 	[_selectedEmotions removeLastObject];
 }
+
 -(void)_goGlobal {
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:globalButton:)])
-		[self.delegate emotionsPickerView:self globalButton:YES];
-	
-	//    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-	//    [self.delegate emotionsPickerViewShowActionSheet:self];
-	//    _isGlobal = !_isGlobal;
-	//    if(_isGlobal){
-	//        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
-	//        for(UIView *view in _pageViews){
-	//            view.hidden = YES;
-	//        }
-	//    } else {
-	//        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-	//        for(UIView *view in _pageViews){
-	//            view.hidden = NO;
-	//        }
-	//    }
-    
-	
+    [self.delegate emotionsPickerView:self globalButton:YES];
+
+//    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+//    [self.delegate emotionsPickerViewShowActionSheet:self];
+//    _isGlobal = !_isGlobal;
+//    if(_isGlobal){
+//        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
+//        for(UIView *view in _pageViews){
+//            view.hidden = YES;
+//        }
+//    } else {
+//        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+//        for(UIView *view in _pageViews){
+//            view.hidden = NO;
+//        }
+//    }
 }
 
 #pragma mark - UI Presentation

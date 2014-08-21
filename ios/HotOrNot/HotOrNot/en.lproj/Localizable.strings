@@ -172,3 +172,16 @@
 
 
 
+"add_photo" = "Add Photo";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create %@ without a cover image?";
+"select_cover" = "Select cover";
+
+
+"activity_you" = "You";
+"no_selectclub_msg2" = "You have to choose at least one club to invite %@ to.";
+"alert_noClubs" = "No clubs found in your area code!";
+"alert_nofriends_t" = "No Friend Selected!";
+"alert_nofriends_m" = "You need to choose some friends to invite to %@";
+"activity_signup" = "You have just joined Selfieclub!";
+"alert_enterClub" = "Want to go there now?";

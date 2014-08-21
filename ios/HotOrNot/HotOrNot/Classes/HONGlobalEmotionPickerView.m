@@ -10,6 +10,9 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
+#define COLS_PER_ROW	1
+#define ROWS_PER_PAGE	1
+
 const CGSize kImageSpacingSize = {194.0f, 194.0f};
 
 @interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate, UIAlertViewDelegate>
@@ -67,15 +70,15 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
         
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_nonActive"] forState:UIControlStateNormal];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
         
         UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		globalButton.frame = CGRectMake(0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_nonActive"] forState:UIControlStateNormal];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
         

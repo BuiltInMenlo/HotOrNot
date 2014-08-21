@@ -9,15 +9,11 @@
 
 #import "HONEmotionVO.h"
 
-#define COLS_PER_ROW	1
-#define ROWS_PER_PAGE	1
-
 @class HONGlobalEmotionPickerView;
 @protocol HONGlobalEmotionPickerViewDelegate <NSObject>
 - (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected;
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO;
-- (void)emotionsPickerViewShowActionSheet:(HONGlobalEmotionPickerView *)emotionsPickerView;
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction;
 @end
 

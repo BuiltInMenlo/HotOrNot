@@ -166,9 +166,11 @@
 "club_notfound" = "클럽을 찾을 수 없습니다!";
 "want_invite" = "%@에 친구를 초대하시겠습니까?";
 
+"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
 "confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
+"activity_you" = "당신";
 
 
 
