@@ -129,8 +129,15 @@ const CGRect kLargeActiveFrame = {15.0f, 10.0f, 160.0f, 160.0f};
 										  animations:^(void) {
 											  _imageView.transform = transform;
 										  } completion:^(BOOL finished) {
-											  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
-												  [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
+                                              if(_isLarge){
+                                                  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedLargeEmotion:)])
+                                                      [self.delegate emotionItemView:self selectedLargeEmotion:_emotionVO];
+                                              } else{
+                                                  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
+                                                      [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
+
+                                              }
+											 
 										  }];
 					 }];
 }

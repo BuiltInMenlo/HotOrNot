@@ -48,7 +48,7 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
 		[self addSubview:_bgImageView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 272.0)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 5.0, 320.0, 272.0)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.showsHorizontalScrollIndicator = NO;
 		_scrollView.showsVerticalScrollIndicator = NO;
@@ -57,6 +57,14 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
+        
+		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,3,280,18 )];
+        stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+        stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+        stickerPackLabel.backgroundColor = [UIColor clearColor];
+        stickerPackLabel.textAlignment = NSTextAlignmentCenter;
+        stickerPackLabel.text = NSLocalizedString(@"my_sticker", nil);
+        [self addSubview:stickerPackLabel];
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);

@@ -12,7 +12,7 @@
 
 const CGSize kImageSpacingSize = {194.0f, 194.0f};
 
-@interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate>
+@interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -57,7 +57,14 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-		
+		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,5,280,18 )];
+        stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+        stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+        stickerPackLabel.backgroundColor = [UIColor clearColor];
+        stickerPackLabel.textAlignment = NSTextAlignmentCenter;
+        stickerPackLabel.text = NSLocalizedString(@"global_sticker", nil);
+        [self addSubview:stickerPackLabel];
+        
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
@@ -254,6 +261,16 @@ static dispatch_queue_t sticker_request_operation_queue;
 
 
 #pragma mark - EmotionItemView Delegates
+- (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedLargeEmotion:(HONEmotionVO *)emotionVO{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"confirm_purchase", nil)
+                                                        message:nil
+                                                       delegate:self
+                                              cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+                                              otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
+    [alertView setTag:0];
+    [alertView show];
+}
+
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedEmotion:(HONEmotionVO *)emotionVO {
 	if ([_selectedEmotions count] < 100) {
 		[_selectedEmotions addObject:emotionVO];
@@ -283,7 +300,13 @@ static dispatch_queue_t sticker_request_operation_queue;
 		_prevPage = offsetPage;
 	}
 }
-
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if(alertView.tag == 0){
+        if(buttonIndex == 0){
+            [self _goGlobal];
+        }
+    }
+}
 
 
 

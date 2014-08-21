@@ -169,11 +169,14 @@
 
 
 
+"global_sticker" = "Sticker Packs";
+
+
+"my_sticker" = "My Stickers";
 
 
 
-
-
+"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
 
 

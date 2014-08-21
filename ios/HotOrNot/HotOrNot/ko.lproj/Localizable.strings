@@ -47,6 +47,7 @@
 //"timeline_99comments" = "99+ Comments";
 
 "voters_caption" = "@% 좋아했습니다";
+"my_sticker" = "My Stickers";
 
 //"activity_waiting" = "You are waiting…";
 //"activity_waiting_f" = "You are waiting… (F)";
@@ -58,7 +59,7 @@
 //"settings_support" = "Support";
 //"settings_privacy" = "Privacy Policy";
 "club_notfound" = "클럽을 찾을 수 없습니다!";
-
+"global_sticker" = "Sticker Packs";
 "alert_yes" = "예";
 "alert_no" = "아니요";
 "alert_ok" = "OK";
@@ -166,6 +167,7 @@
 "want_invite" = "%@에 친구를 초대하시겠습니까?";
 
 
+"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
 
 

@@ -164,11 +164,13 @@
 "alert_create_it" = "Gostaria de criá-lo?";
 "club_notfound" = "Clube não encontrado!";
 "want_invite" = "Quer convidar amigos para %@?";
+"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
 
+"global_sticker" = "Sticker Packs";
 
 
-
+"my_sticker" = "My Stickers";
 
 
 
