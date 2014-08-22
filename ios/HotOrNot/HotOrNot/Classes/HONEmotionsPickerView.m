@@ -128,12 +128,12 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	
 	_totalPages = 0;
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
+	[_availableEmotions removeAllObjects];
 	
-	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
+//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	}
+//	}
 	
 	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
 		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];

@@ -98,19 +98,10 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 
 #pragma mark - Navigation
 - (void)_goSelect {
-	CGSize scaleSize;
-	CGPoint offsetPt;
-	CGAffineTransform transform;
-	if(_isLarge == NO){
-		scaleSize = CGSizeMake(kActiveFrame.size.width / kNormalFrame.size.width, kActiveFrame.size.height / kNormalFrame.size.height);
-		offsetPt = CGPointMake(CGRectGetMidX(kActiveFrame) - CGRectGetMidX(kNormalFrame), CGRectGetMidY(kActiveFrame) - CGRectGetMidY(kNormalFrame));
-		transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
-	} else {
-		scaleSize = CGSizeMake(kLargeActiveFrame.size.width / kLargeNormalFrame.size.width, kLargeActiveFrame.size.height / kLargeNormalFrame.size.height);
-		offsetPt = CGPointMake(CGRectGetMidX(kLargeActiveFrame) - CGRectGetMidX(kLargeNormalFrame), CGRectGetMidY(kLargeActiveFrame) - CGRectGetMidY(kLargeNormalFrame));
-		transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
-		
-	}
+	CGSize scaleSize = (_isLarge) ? CGSizeMake(kLargeActiveFrame.size.width / kLargeNormalFrame.size.width, kLargeActiveFrame.size.height / kLargeNormalFrame.size.height) : CGSizeMake(kActiveFrame.size.width / kNormalFrame.size.width, kActiveFrame.size.height / kNormalFrame.size.height);;
+	CGPoint offsetPt = (_isLarge) ? CGPointMake(CGRectGetMidX(kLargeActiveFrame) - CGRectGetMidX(kLargeNormalFrame), CGRectGetMidY(kLargeActiveFrame) - CGRectGetMidY(kLargeNormalFrame)) : CGPointMake(CGRectGetMidX(kActiveFrame) - CGRectGetMidX(kNormalFrame), CGRectGetMidY(kActiveFrame) - CGRectGetMidY(kNormalFrame));
+	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
+	
 	[UIView animateWithDuration:0.0625 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
@@ -118,9 +109,6 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 					 animations:^(void) {
 						 _imageView.transform = transform;
 					 } completion:^(BOOL finished) {
-						 
-//						 CGSize scaleSize = CGSizeMake(kNormalFrame.size.width / kActiveFrame.size.width, kNormalFrame.size.height / kActiveFrame.size.height);
-//						 CGPoint offsetPt = CGPointMake(CGRectGetMidX(kNormalFrame) - CGRectGetMidX(kActiveFrame), CGRectGetMidY(kNormalFrame) - CGRectGetMidY(kActiveFrame));
 						 CGAffineTransform transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 						 
 						 NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
@@ -162,12 +150,7 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 //	}];
 	
 	
-	UIImageView *emojiImageView;
-	if(_isLarge == NO){
-		emojiImageView = [[UIImageView alloc] initWithFrame:CGRectInset(kNormalFrame, 5.0, 5.0)];
-	} else {
-		emojiImageView = [[UIImageView alloc] initWithFrame:CGRectInset(kLargeNormalFrame, 5.0, 5.0)];
-	}
+	UIImageView *emojiImageView = [[UIImageView alloc] initWithFrame:CGRectInset((_isLarge) ? kLargeNormalFrame : kNormalFrame, 5.0, 5.0)];
 	emojiImageView.alpha = 0.0;
 	[_imageView addSubview:emojiImageView];
 	

@@ -64,6 +64,9 @@
 	[[NSUserDefaults standardUserDefaults] setObject:@"Y" forKey:@"iap_01"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"RELOAD_EMOTION_PICKER"
+														object:nil];
+	
 	[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 @end

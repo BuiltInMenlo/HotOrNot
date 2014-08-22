@@ -47,6 +47,10 @@
 
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_reloadEmotionPicker:)
+													 name:@"RELOAD_EMOTION_PICKER" object:nil];
+		
 		
 		_subjectNames = [NSMutableArray array];
 		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
@@ -146,7 +150,12 @@
 						  cancelButtonTitle:  NSLocalizedString(@"alert_ok", nil) //@"OK"
 						  otherButtonTitles:nil] show];
 	}
-				
+}
+
+
+#pragma mark - Notifications
+- (void)_reloadEmotionPicker:(NSNotification *)notification {
+	[_emotionsPickerView reload];
 }
 
 

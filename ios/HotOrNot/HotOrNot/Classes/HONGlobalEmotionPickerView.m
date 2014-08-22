@@ -22,7 +22,6 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *bgImageView;
-//@property (nonatomic, strong) UIImageView *deleteButtonImageView;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic, strong) HONPaginationView *paginationView;
@@ -103,22 +102,6 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 	return (self);
 }
 
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
-//		[self _goDelete];
-//	}
-//}
-
 
 #pragma mark - Public APIs
 - (void)scrollToPage:(int)page {
@@ -173,7 +156,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-//	  HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height, 194.0,194.0) withEmotion:vo withDelay:cnt * 0.125];
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtLargePosition:CGPointMake(col*kImageSpacingSize.width, row*kImageSpacingSize.height) withEmotion:vo withDelay:cnt * .125];
 		emotionItemView.delegate = self;
 		[_itemViews addObject:emotionItemView];
@@ -226,40 +208,39 @@ static dispatch_queue_t sticker_request_operation_queue;
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if(alertView.tag == 0){
-		if(buttonIndex == 0){
-			// [self _goGlobal];
+	if (alertView.tag == 0) {
+		if (buttonIndex == 0) {
 			SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"Sticker_Pack_001", nil]];
 			request.delegate = self;
 			[request start];
-
+			
+			[self _goGlobal];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"RELOAD_EMOTION_PICKER"
+																object:nil];
 		}
 	}
 }
 
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-	
-	NSLog(@"Failed to load list of products.%@",error.description);
-	
+	NSLog(@"Failed to load list of products.\n%@", error.description);
 }
 
 
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
+	NSArray *skProducts = response.products;
 	
-	NSLog(@"Loaded list of products...");
-	
-	NSArray * skProducts = response.products;
-	for (SKProduct * skProduct in skProducts) {
-		NSLog(@"Found product: %@ %@ %0.2f",
-			  skProduct.productIdentifier,
-			  skProduct.localizedTitle,
-			  skProduct.price.floatValue);
+	SKProduct *product = (SKProduct *)[skProducts firstObject];
+	SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:product];
+	[[SKPaymentQueue defaultQueue] addPayment:myPayment];
 		
-		SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:skProduct];
-		[[SKPaymentQueue defaultQueue] addPayment:myPayment];
-	}
+//	for (SKProduct *skProduct in skProducts) {
+//		NSLog(@"Found product: %@ %@ %0.2f", skProduct.productIdentifier, skProduct.localizedTitle, skProduct.price.floatValue);
+//		
+//		SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:skProduct];
+//		[[SKPaymentQueue defaultQueue] addPayment:myPayment];
+//	}
 }
 
 
