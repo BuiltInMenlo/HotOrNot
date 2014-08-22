@@ -72,6 +72,24 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
+	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
+		NSMutableArray *schools = [NSMutableArray array];
+		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
+			NSMutableDictionary *dict = [club mutableCopy];
+			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
+			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
+			
+			NSLog(@"vo:[%@]", vo.clubName);
+			[schools addObject:dict];
+		}
+		
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"high_schools"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[schools copy] forKey:@"high_schools"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}];
+	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];

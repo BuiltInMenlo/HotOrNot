@@ -92,16 +92,16 @@ static HONContactsAssistant *sharedInstance = nil;
 	}
 	
 	if (isSorted) {
-        NSString *sortKey = (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? @"f_name" : @"l_name";
-        contactDicts = [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:sortKey ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy];
-    }
-    
-    [contactDicts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        NSDictionary *dict = (NSDictionary *)obj;
-        
-//        NSLog(@"CONTACT:[%d]=- (%@)(%@)", idx, [dict objectForKey:@"f_name"], [dict objectForKey:@"l_name"]);
-        [contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
-    }];
+		NSString *sortKey = (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? @"f_name" : @"l_name";
+		contactDicts = [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:sortKey ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy];
+	}
+	
+	[contactDicts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		
+//		NSLog(@"CONTACT:[%d]=- (%@)(%@)", idx, [dict objectForKey:@"f_name"], [dict objectForKey:@"l_name"]);
+		[contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
+	}];
 	
 	return ([contactVOs copy]);
 }
@@ -287,17 +287,17 @@ static HONContactsAssistant *sharedInstance = nil;
 	
 	int len = arc4random_uniform(7) + 4;
 	NSMutableString *fName = [NSMutableString stringWithCapacity:len];
-    for (int i=0; i<len; i++)
-        [fName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+	for (int i=0; i<len; i++)
+		[fName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
 	
 	
 	len = arc4random_uniform(13) + 5;
 	NSMutableString *lName = [NSMutableString stringWithCapacity:len];
-    for (int i=0; i<len; i++)
-        [lName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+	for (int i=0; i<len; i++)
+		[lName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
 	
 	
-    ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)(fName), &error);
+	ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)(fName), &error);
 	if (error)
 		NSLog(@"ERROR(kABPersonFirstNameProperty): - [%@]", error);
 	

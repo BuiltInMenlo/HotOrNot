@@ -651,8 +651,8 @@
 				
 			} else {
 				NSString *charKey = (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.firstName : vo.lastName;
-                charKey = ([charKey length] == 0) ? (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.lastName : vo.firstName : charKey;
-                charKey = [charKey substringToIndex:1];
+				charKey = ([charKey length] == 0) ? (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.lastName : vo.firstName : charKey;
+				charKey = [charKey substringToIndex:1];
 				if (![_segmentedKeys containsObject:charKey]) {
 					[_segmentedKeys addObject:charKey];
 					

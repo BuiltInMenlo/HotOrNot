@@ -267,7 +267,7 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
 	if ([_clubNameTextField isFirstResponder]) {
 		_clubNameCheckImageView.alpha = 1.0;

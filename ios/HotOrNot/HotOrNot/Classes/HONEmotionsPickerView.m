@@ -57,14 +57,14 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-        
+		
 		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,3,280,18 )];
-        stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-        stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-        stickerPackLabel.backgroundColor = [UIColor clearColor];
-        stickerPackLabel.textAlignment = NSTextAlignmentCenter;
-        stickerPackLabel.text = NSLocalizedString(@"my_sticker", nil);
-        [self addSubview:stickerPackLabel];
+		stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+		stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		stickerPackLabel.backgroundColor = [UIColor clearColor];
+		stickerPackLabel.textAlignment = NSTextAlignmentCenter;
+		stickerPackLabel.text = NSLocalizedString(@"my_sticker", nil);
+		[self addSubview:stickerPackLabel];
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
@@ -72,15 +72,19 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
-        
-        UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		
+		UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		globalButton.frame = CGRectMake(0, self.frame.size.height - 50.0, 160.0, 50.0);
 		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_nonActive"] forState:UIControlStateNormal];
 		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
 		
-		
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
+			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
+				[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+		}
+			
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
@@ -100,22 +104,6 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	return (self);
 }
 
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
-//		[self _goDelete];
-//	}
-//}
-
 
 #pragma mark - Public APIs
 - (void)scrollToPage:(int)page {
@@ -123,12 +111,46 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	[_paginationView updateToPage:page];
 }
 
-- (void)disablePagesStartingAt:(int)page {
-	for (int i=page; i<[_pageViews count]; i++) {
-		UIView *pageView = (UIView *)[_pageViews objectAtIndex:i];
-		pageView.userInteractionEnabled = NO;
+- (void)reload {
+	[_paginationView removeFromSuperview];
+	_paginationView = nil;
+	
+	for (UIView *view in _pageViews)
+		[view removeFromSuperview];
+	[_pageViews removeAllObjects];
+	
+	for (UIView *view in _scrollView.subviews)
+		[view removeFromSuperview];
+	
+	for (HONEmoticonPickerItemView *view in _itemViews)
+		[view removeFromSuperview];
+	[_itemViews removeAllObjects];
+	
+	_totalPages = 0;
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
+	
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
+			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 	}
+	
+	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
+		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+	
+	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
+		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+	
+	_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+	_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+	
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
+	[_paginationView updateToPage:0];
+	[self addSubview:_paginationView];
+	
+	[self _buildGrid];
 }
+
 
 #pragma mark - Navigation
 - (void)_goDelete {
@@ -139,22 +161,7 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 }
 
 -(void)_goGlobal {
-    [self.delegate emotionsPickerView:self globalButton:YES];
-
-//    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-//    [self.delegate emotionsPickerViewShowActionSheet:self];
-//    _isGlobal = !_isGlobal;
-//    if(_isGlobal){
-//        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
-//        for(UIView *view in _pageViews){
-//            view.hidden = YES;
-//        }
-//    } else {
-//        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-//        for(UIView *view in _pageViews){
-//            view.hidden = NO;
-//        }
-//    }
+	[self.delegate emotionsPickerView:self globalButton:YES];
 }
 
 #pragma mark - UI Presentation
@@ -182,7 +189,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
 				
 			} else {
-				//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
+//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
 			}
 		});
 		
@@ -191,10 +198,8 @@ static dispatch_queue_t sticker_request_operation_queue;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.125];
-		// HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height, 75.0,73.0) withEmotion:vo withDelay:cnt * 0.125];
 		
 		emotionItemView.delegate = self;
-		//		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];
 		
@@ -233,8 +238,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 		_prevPage = offsetPage;
 	}
 }
-
-
 
 
 @end

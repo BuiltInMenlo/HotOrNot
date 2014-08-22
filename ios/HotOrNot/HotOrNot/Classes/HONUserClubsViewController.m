@@ -200,7 +200,7 @@ static NSString * const kCamera = @"camera";
 - (void)_joinClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//			[[HONClubAssistant sharedInstance] writeUserClubs:result];
+			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 		}];
 	}];
@@ -282,9 +282,9 @@ static NSString * const kCamera = @"camera";
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_collectionView addSubview: _refreshControl];
 	
-//	@property(nonatomic) BOOL cancelsTouchesInView;       // default is YES. causes touchesCancelled:withEvent: to be sent to the view for all touches recognized as part of this gesture immediately before the action method is called
-//	@property(nonatomic) BOOL delaysTouchesBegan;         // default is NO.  causes all touch events to be delivered to the target view only after this gesture has failed recognition. set to YES to prevent views from processing any touches that may be recognized as part of this gesture
-//	@property(nonatomic) BOOL delaysTouchesEnded;         // default is YES. causes touchesEnded events to be delivered to the target view only after this gesture has failed recognition. this ensures that a touch that is part of the gesture can be cancelled if the gesture is recognized
+//	@property(nonatomic) BOOL cancelsTouchesInView;	   // default is YES. causes touchesCancelled:withEvent: to be sent to the view for all touches recognized as part of this gesture immediately before the action method is called
+//	@property(nonatomic) BOOL delaysTouchesBegan;		 // default is NO.  causes all touch events to be delivered to the target view only after this gesture has failed recognition. set to YES to prevent views from processing any touches that may be recognized as part of this gesture
+//	@property(nonatomic) BOOL delaysTouchesEnded;		 // default is YES. causes touchesEnded events to be delivered to the target view only after this gesture has failed recognition. this ensures that a touch that is part of the gesture can be cancelled if the gesture is recognized
 	UILongPressGestureRecognizer *longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	longPressGestureRecognizer.minimumPressDuration = 0.5;
 	longPressGestureRecognizer.cancelsTouchesInView = NO;
@@ -320,7 +320,7 @@ static NSString * const kCamera = @"camera";
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
-    
+	
 	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
 	[_activityHeaderView updateActivityBadge];
 	
@@ -360,7 +360,7 @@ static NSString * const kCamera = @"camera";
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan && gestureRecognizer.state != UIGestureRecognizerStateCancelled && gestureRecognizer.state != UIGestureRecognizerStateEnded)
 		return;
 	
-    NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:_collectionView]];
+	NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:_collectionView]];
 	
 	if (indexPath != nil) {
 		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
@@ -506,6 +506,19 @@ static NSString * const kCamera = @"camera";
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[[*:*]] tabBannerView:joinSchoolClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+	
+	_selectedClubVO = clubVO;
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+	[alertView setTag:HONUserClubsAlertTypeJoin];
+	[alertView show];
+}
+
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
 	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
 	
@@ -566,12 +579,12 @@ static NSString * const kCamera = @"camera";
 	[_tableView reloadData];
 	
 	
-	//	[UIView animateWithDuration:0.33 animations:^(void) {
-	//		_collectionView.alpha = 0.0;
+//	[UIView animateWithDuration:0.33 animations:^(void) {
+//		_collectionView.alpha = 0.0;
 	//
-	//	} completion:^(BOOL finished) {
+//	} completion:^(BOOL finished) {
 	_collectionView.hidden = YES;
-	//	}];
+//	}];
 	
 }
 
@@ -581,11 +594,11 @@ static NSString * const kCamera = @"camera";
 	_tableView.userInteractionEnabled = NO;
 	
 	_collectionView.hidden = NO;
-	//	[UIView animateWithDuration:0.33 animations:^(void) {
-	//		_collectionView.alpha = 1.0;
+//	[UIView animateWithDuration:0.33 animations:^(void) {
+//		_collectionView.alpha = 1.0;
 	//
-	//	} completion:^(BOOL finished) {
-	//	}];
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
@@ -650,33 +663,33 @@ static NSString * const kCamera = @"camera";
 	[cell resetSubviews];
 	cell.alpha = 0.0;
 	
-	//	NSLog(@"INDEXPATH:[%d][%d]", indexPath.section, indexPath.row);
-	//	HONUserClubVO *vo;
-	//	if (indexPath.section == 0) {
-	//		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
+//	NSLog(@"INDEXPATH:[%d][%d]", indexPath.section, indexPath.row);
+//	HONUserClubVO *vo;
+//	if (indexPath.section == 0) {
+//		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
 	//
-	//		if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
-	//			vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
+//		if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
+//			vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
 	//
-	//		else if (indexPath.row > [[_clubs objectForKey:@"suggested"] count])
-	//			vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
+//		else if (indexPath.row > [[_clubs objectForKey:@"suggested"] count])
+//			vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
 	//
-	//	} else if (indexPath.section == 1)
-	//		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row];
+//	} else if (indexPath.section == 1)
+//		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row];
 	
 	
-	//	HONUserClubVO *vo;
-	//	if (indexPath.row == 0)
-	//		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
+//	HONUserClubVO *vo;
+//	if (indexPath.row == 0)
+//		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
 	//
-	//	else if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
-	//		vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
+//	else if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
+//		vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
 	//
-	//	else if (indexPath.row >= [[_clubs objectForKey:@"suggested"] count] && indexPath.row <= ([[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count]))
-	//		vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
+//	else if (indexPath.row >= [[_clubs objectForKey:@"suggested"] count] && indexPath.row <= ([[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count]))
+//		vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
 	//
-	//	else
-	//		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count])];
+//	else
+//		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count])];
 	//
 	
 	
@@ -704,7 +717,7 @@ static NSString * const kCamera = @"camera";
 	_selectedClubVO = vo;
 	
 	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-    [cell applyTouchOverlayAndReset:YES];
+	[cell applyTouchOverlayAndReset:YES];
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
@@ -883,8 +896,8 @@ static NSString * const kCamera = @"camera";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	//	HONClubToggleViewCell *cell = (HONClubToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	//	[cell toggleSelected:YES];
+//	HONClubToggleViewCell *cell = (HONClubToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+//	[cell toggleSelected:YES];
 	
 	_selectedClubVO = (HONUserClubVO *)[_searchClubs objectAtIndex:indexPath.row];
 	if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {

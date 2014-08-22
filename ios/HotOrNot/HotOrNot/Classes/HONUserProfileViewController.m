@@ -196,7 +196,7 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
-    
+	
 	if (_userID != 0)
 		[self _retrieveUser];
 }
@@ -227,7 +227,7 @@
 
 #pragma mark - Navigation
 - (void)_goInvite {
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -367,15 +367,15 @@
 		[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
 		[_profileHolderView addSubview:changeAvatarButton];
 	
-    } else {
-        UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        inviteButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
-        [inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
-        [inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
-        [inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-        [_headerView addButton:inviteButton];
+	} else {
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
+		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addButton:inviteButton];
 
-    }
+	}
 }
 
 #pragma mark - InsetOverlay Delegates

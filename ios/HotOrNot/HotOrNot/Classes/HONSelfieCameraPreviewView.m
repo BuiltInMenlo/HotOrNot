@@ -257,26 +257,26 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
-		[_emotionsPickerView disablePagesStartingAt:2];
-		[_emotionsPickerView scrollToPage:1];
-		
-		if (_insetOverlayView == nil)
-			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-		_insetOverlayView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-		[_insetOverlayView introWithCompletion:nil];
-	}
+//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
+//		[_emotionsPickerView disablePagesStartingAt:2];
+//		[_emotionsPickerView scrollToPage:1];
+//		
+//		if (_insetOverlayView == nil)
+//			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+//		_insetOverlayView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+//		[_insetOverlayView introWithCompletion:nil];
+//	}
 }
 
 -(void) globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{
-    _globalEmotionsPickerView.hidden = YES;
-    _emotionsPickerView.hidden = NO;
+	_globalEmotionsPickerView.hidden = YES;
+	_emotionsPickerView.hidden = NO;
 }
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
-    _emotionsPickerView.hidden = YES;
-    _globalEmotionsPickerView.hidden = NO;
+	_emotionsPickerView.hidden = YES;
+	_globalEmotionsPickerView.hidden = NO;
 }
 
 

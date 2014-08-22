@@ -96,6 +96,14 @@
 					[button addTarget:self action:@selector(_goBae) forControlEvents:UIControlEventTouchUpInside];
 				}
 				
+				if (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
+					_schoolClubVO = vo;
+					imageView.image = [UIImage imageNamed:@"schoolBanner"];
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", _schoolClubVO.clubName];
+					subtitleLabel.text = @"Your local school.";
+					[button addTarget:self action:@selector(_goSchool) forControlEvents:UIControlEventTouchUpInside];
+				}
+				
 				tot++;
 			}
 		}];

@@ -54,7 +54,7 @@
 //		_avatarButton.frame = _avatarImageView.frame;
 //		[self.contentView addSubview:_avatarButton];
 			
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 22.0, 180.0, 18.0)];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 		_nameLabel.textColor = [UIColor blackColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
@@ -178,6 +178,7 @@
 	[_toggledOffButton addTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventTouchUpInside];
 	
 	
+	
 	NSString *nameCaption = _contactUserVO.fullName;//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 	
 //	_avatarImageView.image = _contactUserVO.avatarImage;
@@ -190,10 +191,10 @@
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
 	if ([_contactUserVO.lastName length] > 0)
-        [_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
-    
-    else
-        [_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
+		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
+	
+	else
+		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
 	
 	
 //	if (_contactUserVO.contactType == HONContactTypeMatched) {
@@ -216,6 +217,20 @@
 			verifiedImageView.hidden = !_trivialUserVO.isVerified;
 			[self.contentView addSubview:verifiedImageView];
 		}
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"] != nil) {
+		NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"];
+		
+		if ([[[[[dict objectForKey:@"name"] componentsSeparatedByString:@" "] firstObject] lowercaseString] isEqualToString:[_contactUserVO.lastName lowercaseString]]) {
+			UILabel *familyLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x + 25.0, _nameLabel.frame.origin.y + 20.0, 220.0, 15.0)];
+			familyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+			familyLabel.textColor = [UIColor blackColor];
+			familyLabel.backgroundColor = [UIColor clearColor];
+			familyLabel.text = [NSString stringWithFormat:@"Invite your family to join the %@ club!", _contactUserVO.lastName];
+			[self.contentView addSubview:familyLabel];
+		}
+	}
+	
 //	}
 }
 

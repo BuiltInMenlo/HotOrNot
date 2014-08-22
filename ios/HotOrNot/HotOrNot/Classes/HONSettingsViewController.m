@@ -35,14 +35,14 @@
 	if ((self = [super init])) {
 		_captions = @[ NSLocalizedString(@"settings_notification", @"Notifications"),
 					   NSLocalizedString(@"copy_url", @"Copy Club URL"),
-                       NSLocalizedString(@"share", @"Share club"),
+					   NSLocalizedString(@"share", @"Share club"),
 					   NSLocalizedString(@"terms_service", @"Terms of use"),
 					   NSLocalizedString(@"privacy_policy", @"Privacy policy"),
 					   NSLocalizedString(@"settings_support", @"Support"),
 					   NSLocalizedString(@"rate_app", @"Rate this app"),
 					   NSLocalizedString(@"network_status", @"Network status")];//,
 //					   NSLocalizedString(@"settings_logout", @"Logout")];
-        
+		
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];

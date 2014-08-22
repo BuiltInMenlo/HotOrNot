@@ -224,7 +224,7 @@ static HONClubAssistant *sharedInstance = nil;
 		[clubs addObject:areaCodeClubVO];
 	
 	// school
-	HONUserClubVO *schoolClubVO = [[HONClubAssistant sharedInstance] suggestedSchoolClubVO];//]WithCompletion:<#^(HONUserClubVO *schoolClubVO)completion#>];
+	HONUserClubVO *schoolClubVO = [[HONClubAssistant sharedInstance] suggestedSchoolClubVO];
 	if (schoolClubVO != nil)
 		[clubs addObject:schoolClubVO];
 	
@@ -334,7 +334,7 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 		
 		for (NSString *key in segmentedDict) {
-			NSLog(@"KEY:[%@]-=-(%d)", key, [[segmentedDict objectForKey:key] count]);
+//			NSLog(@"KEY:[%@]-=-(%d)", key, [[segmentedDict objectForKey:key] count]);
 			if ([key length] > 0 && [[segmentedDict objectForKey:key] count] >= 3) {
 				clubName = [NSString stringWithFormat:@"%@ Club", key];
 				break;
@@ -345,12 +345,15 @@ static HONClubAssistant *sharedInstance = nil;
 	clubName = ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) ? @"" : clubName;
 	if ([clubName length] > 1) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"-5" forKey:@"id"];
+		[dict setValue:@"-2" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"family"] forKey:@"img"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:vo.dictionary forKey:@"family_club"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
 	return (vo);
@@ -371,19 +374,11 @@ static HONClubAssistant *sharedInstance = nil;
 	return (vo);
 }
 
-- (HONUserClubVO *)suggestedSchoolClubVO {//WithCompletion:(void (^)(HONUserClubVO *schoolClubVO))completion {
-	__block HONUserClubVO *vo;
-	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
-		[[result objectForKey:@"clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];//[[[result objectForKey:@"clubs"] objectAtIndex:(rand() % [[result objectForKey:@"clubs"] count]) - 1] mutableCopy];
-			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
-			
-			vo = [HONUserClubVO clubWithDictionary:dict];
-			NSLog(@"vo:[%@]-=-(%d)", vo.clubName, idx);
-			if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:vo.clubName])
-				*stop = YES;
-		}];
-	}];
+- (HONUserClubVO *)suggestedSchoolClubVO {
+	HONUserClubVO *vo = nil;
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
+		vo = [HONUserClubVO clubWithDictionary:[[[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] firstObject]];
 	
 	return (vo);
 }

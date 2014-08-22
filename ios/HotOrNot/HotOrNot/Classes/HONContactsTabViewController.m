@@ -68,6 +68,23 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark -
 #pragma mark - Data Calls
+- (void)_retrieveLocalSchoolClubs {
+	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
+		NSMutableArray *schools = [NSMutableArray array];
+		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
+			NSMutableDictionary *dict = [club mutableCopy];
+			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
+			[schools addObject:dict];
+		}
+		
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"high_schools"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[schools copy] forKey:@"high_schools"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}];
+}
+
 #pragma mark - Data Handling
 
 #pragma mark - View lifecycle
@@ -88,6 +105,9 @@ static NSString * const kCamera = @"camera";
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
+			
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] == nil)
+				[self _retrieveLocalSchoolClubs];
 		}];
 	}
 }
@@ -278,7 +298,7 @@ static NSString * const kCamera = @"camera";
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-	[alertView setTag:1];
+	[alertView setTag:2];
 	[alertView show];
 }
 

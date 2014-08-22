@@ -21,6 +21,6 @@
 
 @interface HONEmotionsPickerView : UIView <UIScrollViewDelegate>
 - (void)scrollToPage:(int)page;
-- (void)disablePagesStartingAt:(int)page;
+- (void)reload;
 @property (nonatomic, assign) id <HONEmotionsPickerViewDelegate> delegate;
 @end

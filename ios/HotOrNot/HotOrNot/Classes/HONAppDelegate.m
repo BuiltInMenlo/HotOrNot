@@ -40,6 +40,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
+#import "HONStoreTransactionObserver.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONInsetOverlayView.h"
@@ -68,8 +69,8 @@ typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 };
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0006.json";
+NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com"; //@"http://volley-api.devint.selfieclubapp.com";
+NSString * const kConfigJSON = @"boot_sc0006.json"; //@"boot_ios.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
@@ -226,7 +227,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSDictionary *)emailShareCommentForIndex:(int)index {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
-    
+	
 }
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
@@ -397,13 +398,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 + (BOOL)canPingConfigServer {
-	//	struct sockaddr_in address;
-	//	address.sin_len = sizeof(address);
-	//	address.sin_family = AF_INET;
-	//	address.sin_port = htons(80);
-	//	address.sin_addr.s_addr = inet_addr(kConfigURL);
+//	struct sockaddr_in address;
+//	address.sin_len = sizeof(address);
+//	address.sin_family = AF_INET;
+//	address.sin_port = htons(80);
+//	address.sin_addr.s_addr = inet_addr(kConfigURL);
 	//
-	//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
+//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
 	
 	//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
 	return (YES);
@@ -780,9 +781,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[self _showFonts];
 #endif
 	
-	
+	[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
-	
 	
 	return (YES);
 }
@@ -1108,7 +1108,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
-	
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:NO completion:nil];
 	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
@@ -1664,7 +1664,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 //			
 //
-            if (buttonIndex == HONShareSheetActionTypeInstagram) {
+		if (buttonIndex == HONShareSheetActionTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
 									withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
@@ -1707,43 +1707,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 			}
-		
-//		} else if (buttonIndex == HONShareSheetActionTypeFacebook) {
-//			NSString *url = ([[_shareInfo objectForKey:@"url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [_shareInfo objectForKey:@"url"] : @"https://s3.amazonaws.com/hotornot-banners/shareTemplate_default.png";
-//			NSDictionary *params = @{@"name"		: @"Selfieclub",
-//									 @"caption"		: [[_shareInfo objectForKey:@"caption"] objectAtIndex:2],
-//									 @"description"	: @"Welcome @Selfieclub members!\nPost your selfie and how you feel. Right now.\nGet \"Selfie famous\" by getting the most shoutouts!",
-//									 @"link"		: [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]],
-//									 @"picture"		: url};
-//			
-//			[FBWebDialogs presentFeedDialogModallyWithSession:nil parameters:params handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
-//				NSString *mpAction = @"(UNKNOWN)";
-//				
-//				if (error) {
-//					mpAction = @"Error";
-//					NSLog(@"Error publishing story.");
-//					
-//				} else {
-//					mpAction = @"Canceled";
-//					if (result == FBWebDialogResultDialogNotCompleted) {
-//						NSLog(@"User canceled story publishing.");
-//						
-//					} else {
-//						NSDictionary *urlParams = [HONAppDelegate parseQueryString:[resultURL query]];
-//						if (![urlParams valueForKey:@"post_id"]) {
-//							mpAction = @"Canceled";
-//							NSLog(@"User canceled story publishing.");
-//							
-//						} else {
-//							mpAction = @"Posted";
-//							NSLog(@"Posted:[%@]", [urlParams valueForKey:@"post_id"]);
-//							[self _showOKAlert:@"" withMessage:@"Posted to your timeline!"];
-//						}
-//					}
-//				}
-//				
-//				//[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share Facebook (%@)", mpAction]]];
-//			 }];
 		
 		} else if (buttonIndex == HONShareSheetActionTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {

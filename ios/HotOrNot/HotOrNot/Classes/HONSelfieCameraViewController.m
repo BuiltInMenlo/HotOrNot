@@ -62,6 +62,7 @@
 		
 		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
 		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:NO completion:nil];
 	}
 	
 	return (self);
@@ -490,7 +491,7 @@
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
-    _isBlurred = false;
+	_isBlurred = false;
 	
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self.view addSubview:_previewView];
