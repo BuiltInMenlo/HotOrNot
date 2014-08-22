@@ -33,7 +33,7 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 @end
 
 @implementation HONEmoticonPickerItemView
--(id) initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay{
+-(id) initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
 	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 194.0, 194.0)])) {
 		_emotionVO = emotionVO;
 		_isSelected = NO;
@@ -52,13 +52,28 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
-		//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
+//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
 		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		selectButton.frame = _imageView.frame;
 		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:selectButton];
+		
+		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
+		_imageView.contentMode = UIViewContentModeRedraw;
+		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
+		_imageView.layer.borderWidth = 2.5f;
+		_imageView.layer.shouldRasterize = YES;
+		_imageView.layer.rasterizationScale = 3.0f;
+		[self addSubview:_imageView];
+		
+		if (delay == 0.0) {
+			UIImageView *badgeImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPaidBadge"]];
+			badgeImageView.frame = CGRectOffset(badgeImageView.frame, 140.0, 10.0);
+			[self addSubview:badgeImageView];
+		}
 	}
 	
 	return (self);
@@ -83,7 +98,7 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
-		//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
+//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
 		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];

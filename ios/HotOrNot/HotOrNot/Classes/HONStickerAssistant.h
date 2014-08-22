@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 - (BOOL)candyBoxContainsContentGroupForContentGroupID:(NSString *)contentGroupID;
 - (PicoSticker *)stickerFromCandyBoxWithContentID:(NSString *)contentID;
 
-
-- (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType ;
+- (NSDictionary *)fetchCoverStickerForContentGroup:(NSString *)contentGroupID;
+- (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
 - (void)retrieveContentsForContentGroup:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion;
 @end

@@ -71,23 +71,27 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_nonActive"] forState:UIControlStateNormal];
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteButton_Active"] forState:UIControlStateHighlighted];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
 		
 		UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		globalButton.frame = CGRectMake(0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_nonActive"] forState:UIControlStateNormal];
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalStoreButton_Active"] forState:UIControlStateHighlighted];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateNormal];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
 		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
-			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+//		for (NSString *contentGroupID in [[NSUserDefaults standardUserDefaults] objectForKey:@""]
+//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchCoverStickerForContentGroup:<#(NSString *)#>
+//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
-			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
+//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+//		
+//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
+//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
 		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -130,14 +134,13 @@ static dispatch_queue_t sticker_request_operation_queue;
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	
-	
 	int cnt = 0;
 	int row = 0;
 	int col = 0;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(63.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(63.0 + (i * _scrollView.frame.size.width), 30.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
@@ -148,7 +151,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
 				
 			} else {
-				//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
+//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
 			}
 		});
 		
@@ -156,7 +159,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtLargePosition:CGPointMake(col*kImageSpacingSize.width, row*kImageSpacingSize.height) withEmotion:vo withDelay:cnt * .125];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtLargePosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		emotionItemView.delegate = self;
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];

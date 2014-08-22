@@ -279,10 +279,11 @@
 //	}
 }
 
--(void) globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{
+- (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{
 	_globalEmotionsPickerView.hidden = YES;
 	_emotionsPickerView.hidden = NO;
 }
+
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
 	_emotionsPickerView.hidden = YES;
 	_globalEmotionsPickerView.hidden = NO;

@@ -164,7 +164,8 @@
 "alert_create_it" = "Gostaria de criá-lo?";
 "confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
 
-"global_sticker" = "Sticker Packs";
+"global_sticker" = "Sticker Store";
+"my_sticker" = "My Stickers";
 
 
 "my_sticker" = "My Stickers";
@@ -175,7 +176,6 @@
 "select_cover" = "Select cover";
 
 "activity_you" = "Você";
->>>>>>> stickerboard
 
 
 

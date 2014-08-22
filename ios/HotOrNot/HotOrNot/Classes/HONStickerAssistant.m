@@ -156,6 +156,16 @@ static HONStickerAssistant *sharedInstance = nil;
 }
 
 
+- (NSDictionary *)fetchCoverStickerForContentGroup:(NSString *)contentGroupID {
+	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+		if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
+			return (dict);
+		}
+	}
+	return (nil);
+}
+
+
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType {
 	if (stickerPakType == HONStickerPakTypeAvatars) {
 		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] objectForKey:kAvatarStickerPak]);

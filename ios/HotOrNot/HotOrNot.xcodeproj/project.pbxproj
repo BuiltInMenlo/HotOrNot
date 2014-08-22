@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0717818719994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */; };
-		0717818919994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */; };
-		0717818A19994CFC006CCB50 /* deleteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */; };
-		0717818B19994CFC006CCB50 /* deleteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */; };
-		0717818C19994CFC006CCB50 /* globalStoreButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */; };
-		0717818D19994CFC006CCB50 /* globalStoreButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */; };
 		072F53831991633000738827 /* inviteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53851991633000738827 /* inviteButton_Active@2x.png */; };
 		072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53881991633300738827 /* inviteButton_nonActive@2x.png */; };
 		072F5392199190B700738827 /* unlockBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F5394199190B700738827 /* unlockBanner.png */; };
@@ -359,12 +353,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Free@2x.png"; sourceTree = "<group>"; };
-		0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Paid@2x.png"; sourceTree = "<group>"; };
-		0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "deleteButton_Active@2x.png"; sourceTree = "<group>"; };
-		0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "deleteButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "globalStoreButton_Active@2x.png"; sourceTree = "<group>"; };
-		0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "globalStoreButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cameraEmojiBoardBackground_Free@2x.png"; path = "/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Resources/cameraEmojiBoardBackground_Free@2x.png"; sourceTree = "<absolute>"; };
+		0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cameraEmojiBoardBackground_Paid@2x.png"; path = "/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Resources/cameraEmojiBoardBackground_Paid@2x.png"; sourceTree = "<absolute>"; };
+		0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "deleteButton_Active@2x.png"; path = "/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Resources/deleteButton_Active@2x.png"; sourceTree = "<absolute>"; };
+		0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "deleteButton_nonActive@2x.png"; path = "/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Resources/deleteButton_nonActive@2x.png"; sourceTree = "<absolute>"; };
+		0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "globalStoreButton_Active@2x.png"; path = "/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Resources/globalStoreButton_Active@2x.png"; sourceTree = "<absolute>"; };
+		0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "globalStoreButton_nonActive@2x.png"; path = "/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Resources/globalStoreButton_nonActive@2x.png"; sourceTree = "<absolute>"; };
 		072F53841991633000738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
 		072F53871991633300738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		072F53891991673F00738827 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -537,7 +531,6 @@
 		07B6E739198854A700DA0805 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/suggestionOverlay@2x.png"; sourceTree = "<group>"; };
 		07B6E73A198854A800DA0805 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/suggestionOverlay@2x.png"; sourceTree = "<group>"; };
 		07F7448019A2ABFC00FE5B2A /* paidbadge_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paidbadge_2x.png; sourceTree = "<group>"; };
-		07F7448119A2ABFC00FE5B2A /* basestoregraphic_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = basestoregraphic_2x.png; sourceTree = "<group>"; };
 		300B1BDA199C0E4C006BB048 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/modalInviteBackground@2x.png"; sourceTree = "<group>"; };
 		300B1BDC199C0E4E006BB048 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/modalInviteBackground@2x.png"; sourceTree = "<group>"; };
 		300B1BDD199C0E4F006BB048 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/modalInviteBackground@2x.png"; sourceTree = "<group>"; };
@@ -2277,13 +2270,6 @@
 				309F59BC199DA5AE00EC6C1C /* Emoji Board */,
 				309F59B8199DA4EC00EC6C1C /* Tabs */,
 				07F7448019A2ABFC00FE5B2A /* paidbadge_2x.png */,
-				07F7448119A2ABFC00FE5B2A /* basestoregraphic_2x.png */,
-				0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */,
-				0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */,
-				0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */,
-				0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */,
-				0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */,
-				0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */,
 				072F5394199190B700738827 /* unlockBanner.png */,
 				072F53851991633000738827 /* inviteButton_Active@2x.png */,
 				072F53881991633300738827 /* inviteButton_nonActive@2x.png */,
@@ -2754,7 +2740,6 @@
 				07B6E69719884AC600DA0805 /* pinText@2x.png in Resources */,
 				07B6E643198849FC00DA0805 /* profileButton_Active@2x.png in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
-				0717818A19994CFC006CCB50 /* deleteButton_Active@2x.png in Resources */,
 				4C0F3CED1988E65300703D09 /* tabMenu_clubsButton_Tapped@2x.png in Resources */,
 				07B6E6BB19884B0100DA0805 /* settingsButton_nonActive@2x.png in Resources */,
 				309F59C3199DAF5000EC6C1C /* noPostsYetRow@2x.png in Resources */,
@@ -2782,7 +2767,6 @@
 				300B1BF8199C3E2C006BB048 /* addContacts@2x.png in Resources */,
 				4C0F3CE71988E64C00703D09 /* tabMenu_friendsButton_nonActive@2x.png in Resources */,
 				575B3967198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png in Resources */,
-				0717818C19994CFC006CCB50 /* globalStoreButton_Active@2x.png in Resources */,
 				300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */,
 				8F4E6211198ACD6500E8A171 /* cancelbuttonwhite_active@2x.png in Resources */,
 				07B6E65519884A2400DA0805 /* backButton_nonActive@2x.png in Resources */,
@@ -2801,7 +2785,6 @@
 				07B6E71A198851C300DA0805 /* modalSuggestionBackground@2x.png in Resources */,
 				07B6E6B519884AF300DA0805 /* settingsButton_Active@2x.png in Resources */,
 				4C4328EF18E3A9FA0035FF06 /* release_notes.md in Resources */,
-				0717818919994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png in Resources */,
 				07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */,
 				4C83FD95190F62E800CAEABB /* push_02.caf in Resources */,
 				07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */,
@@ -2832,7 +2815,6 @@
 				07B6E66119884A3700DA0805 /* backWhiteButton_nonActive@2x.png in Resources */,
 				4C0148BD198C77D10006BCBC /* smallRowOfferBackground@2x.png in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
-				0717818719994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x.png in Resources */,
 				072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */,
 				07B6E7011988515B00DA0805 /* inviteFriends_Active@2x.png in Resources */,
 				07B6E6D319884B2300DA0805 /* submitButtonLargeActive_nonActive@2x.png in Resources */,
@@ -2851,11 +2833,9 @@
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C783A95198E108B007A4045 /* inset1BG@2x.png in Resources */,
 				4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */,
-				0717818D19994CFC006CCB50 /* globalStoreButton_nonActive@2x.png in Resources */,
 				07B6E6F51988514B00DA0805 /* accessContacts@2x.png in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
 				4C4328CC18E3A9FA0035FF06 /* MPArrowRight.png in Resources */,
-				0717818B19994CFC006CCB50 /* deleteButton_nonActive@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
