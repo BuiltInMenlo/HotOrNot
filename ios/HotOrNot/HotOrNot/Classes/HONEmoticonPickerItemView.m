@@ -13,8 +13,8 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONImageLoadingView.h"
 
-const CGRect kLargeNormalFrame = {20.0f, 15.0f, 150.0f, 150.0f};
-const CGRect kLargeActiveFrame = {15.0f, 10.0f, 160.0f, 160.0f};
+const CGRect kLargeNormalFrame = {0.0f, 0.0f, 150.0f, 150.0f};
+const CGRect kLargeActiveFrame = {-5.0f, -5.0f, 160.0f, 160.0f};
 
 //const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
 //const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
@@ -33,13 +33,14 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 @end
 
 @implementation HONEmoticonPickerItemView
--(id) initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
-	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 194.0, 194.0)])) {
+- (id)initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
+	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 154.0, 149.0)])) {
 		_emotionVO = emotionVO;
 		_isSelected = NO;
 		_isLarge = YES;
+		
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
+		_imageView.image = [UIImage imageNamed:@"emojiLargeButtonBG"];
 		_imageView.contentMode = UIViewContentModeRedraw;
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
@@ -59,21 +60,25 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 		selectButton.frame = _imageView.frame;
 		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:selectButton];
+				
+		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 160.0, 154.0, 18.0)];
+		stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+		stickerPackLabel.textColor = [UIColor blackColor];
+		stickerPackLabel.textAlignment = NSTextAlignmentCenter;
+		[self addSubview:stickerPackLabel];
 		
-		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
-		_imageView.contentMode = UIViewContentModeRedraw;
-		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
-		_imageView.layer.borderWidth = 2.5f;
-		_imageView.layer.shouldRasterize = YES;
-		_imageView.layer.rasterizationScale = 3.0f;
-		[self addSubview:_imageView];
+		[[HONStickerAssistant sharedInstance] nameForContentGroupID:_emotionVO.contentGroupID completion:^(NSString *name) {
+			if ([[name lowercaseString] rangeOfString:@" - free"].location != NSNotFound)
+				name = [name substringToIndex:[[name lowercaseString] rangeOfString:@" - free"].location];
+			
+			stickerPackLabel.text = name;
+		}];
 		
-		if (delay == 0.0) {
-			UIImageView *badgeImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPaidBadge"]];
-			badgeImageView.frame = CGRectOffset(badgeImageView.frame, 140.0, 10.0);
-			[self addSubview:badgeImageView];
-		}
+//		if (delay == 0.0) {
+//			UIImageView *badgeImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPaidBadge"]];
+//			badgeImageView.frame = CGRectOffset(badgeImageView.frame, 120.0, 5.0);
+//			[self addSubview:badgeImageView];
+//		}
 	}
 	
 	return (self);

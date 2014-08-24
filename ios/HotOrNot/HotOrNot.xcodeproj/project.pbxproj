@@ -58,6 +58,17 @@
 		309F59C3199DAF5000EC6C1C /* noPostsYetRow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59C5199DAF5000EC6C1C /* noPostsYetRow@2x.png */; };
 		309F59CA199DAF9300EC6C1C /* shareFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59CC199DAF9300EC6C1C /* shareFriends@2x.png */; };
 		30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */; };
+		30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4019A829E900CDB2BC /* TSAppEventSourceImpl.m */; };
+		30FC8C5C19A829E900CDB2BC /* TSConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4219A829E900CDB2BC /* TSConfig.m */; };
+		30FC8C5D19A829E900CDB2BC /* TSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4419A829E900CDB2BC /* TSCore.m */; };
+		30FC8C5E19A829E900CDB2BC /* TSCoreListenerImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4719A829E900CDB2BC /* TSCoreListenerImpl.m */; };
+		30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4A19A829E900CDB2BC /* TSEvent.m */; };
+		30FC8C6019A829E900CDB2BC /* TSHit.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4D19A829E900CDB2BC /* TSHit.m */; };
+		30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4F19A829E900CDB2BC /* TSLogging.m */; };
+		30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5319A829E900CDB2BC /* TSPlatformImpl.m */; };
+		30FC8C6319A829E900CDB2BC /* TSResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5519A829E900CDB2BC /* TSResponse.m */; };
+		30FC8C6419A829E900CDB2BC /* TSTapstream.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5719A829E900CDB2BC /* TSTapstream.m */; };
+		30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5919A829E900CDB2BC /* TSUtils.m */; };
 		4C00491B1946A994007FA9F5 /* HONClubsViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */; };
 		4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491D1946AEAC007FA9F5 /* HONClubCollectionViewCell.m */; };
 		4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */; };
@@ -172,15 +183,6 @@
 		4C4328DB18E3A9FA0035FF06 /* UIImage+MPImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327C218E3A9F90035FF06 /* UIImage+MPImageEffects.m */; };
 		4C4328DC18E3A9FA0035FF06 /* UIView+MPSnapshotImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327C418E3A9F90035FF06 /* UIView+MPSnapshotImage.m */; };
 		4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327D818E3A9F90035FF06 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328E418E3A9FA0035FF06 /* TSConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327DD18E3A9F90035FF06 /* TSConfig.m */; };
-		4C4328E518E3A9FA0035FF06 /* TSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327DF18E3A9F90035FF06 /* TSCore.m */; };
-		4C4328E618E3A9FA0035FF06 /* TSCoreListenerImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327E218E3A9F90035FF06 /* TSCoreListenerImpl.m */; };
-		4C4328E718E3A9FA0035FF06 /* TSEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327E518E3A9F90035FF06 /* TSEvent.m */; };
-		4C4328E818E3A9FA0035FF06 /* TSHit.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327E818E3A9F90035FF06 /* TSHit.m */; };
-		4C4328E918E3A9FA0035FF06 /* TSLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327EA18E3A9F90035FF06 /* TSLogging.m */; };
-		4C4328EA18E3A9FA0035FF06 /* TSPlatformImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327EE18E3A9F90035FF06 /* TSPlatformImpl.m */; };
-		4C4328EB18E3A9FA0035FF06 /* TSResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327F018E3A9F90035FF06 /* TSResponse.m */; };
-		4C4328EC18E3A9FA0035FF06 /* TSTapstream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327F218E3A9F90035FF06 /* TSTapstream.m */; };
 		4C4328ED18E3A9FA0035FF06 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327F418E3A9F90035FF06 /* libTestFlight.a */; };
 		4C4328EE18E3A9FA0035FF06 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327F518E3A9F90035FF06 /* README.md */; };
 		4C4328EF18E3A9FA0035FF06 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327F618E3A9FA0035FF06 /* release_notes.md */; };
@@ -562,6 +564,36 @@
 		309F59D0199DAF9A00EC6C1C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		30FC8C3919A6F3F500CDB2BC /* HONStoreTransactionObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreTransactionObserver.h; sourceTree = "<group>"; };
 		30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreTransactionObserver.m; sourceTree = "<group>"; };
+		30FC8C3D19A829E900CDB2BC /* TSApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSApi.h; sourceTree = "<group>"; };
+		30FC8C3E19A829E900CDB2BC /* TSAppEventSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAppEventSource.h; sourceTree = "<group>"; };
+		30FC8C3F19A829E900CDB2BC /* TSAppEventSourceImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAppEventSourceImpl.h; sourceTree = "<group>"; };
+		30FC8C4019A829E900CDB2BC /* TSAppEventSourceImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAppEventSourceImpl.m; sourceTree = "<group>"; };
+		30FC8C4119A829E900CDB2BC /* TSConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSConfig.h; sourceTree = "<group>"; };
+		30FC8C4219A829E900CDB2BC /* TSConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSConfig.m; sourceTree = "<group>"; };
+		30FC8C4319A829E900CDB2BC /* TSCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCore.h; sourceTree = "<group>"; };
+		30FC8C4419A829E900CDB2BC /* TSCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCore.m; sourceTree = "<group>"; };
+		30FC8C4519A829E900CDB2BC /* TSCoreListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCoreListener.h; sourceTree = "<group>"; };
+		30FC8C4619A829E900CDB2BC /* TSCoreListenerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCoreListenerImpl.h; sourceTree = "<group>"; };
+		30FC8C4719A829E900CDB2BC /* TSCoreListenerImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCoreListenerImpl.m; sourceTree = "<group>"; };
+		30FC8C4819A829E900CDB2BC /* TSDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDelegate.h; sourceTree = "<group>"; };
+		30FC8C4919A829E900CDB2BC /* TSEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSEvent.h; sourceTree = "<group>"; };
+		30FC8C4A19A829E900CDB2BC /* TSEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSEvent.m; sourceTree = "<group>"; };
+		30FC8C4B19A829E900CDB2BC /* TSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSHelpers.h; sourceTree = "<group>"; };
+		30FC8C4C19A829E900CDB2BC /* TSHit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSHit.h; sourceTree = "<group>"; };
+		30FC8C4D19A829E900CDB2BC /* TSHit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSHit.m; sourceTree = "<group>"; };
+		30FC8C4E19A829E900CDB2BC /* TSLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSLogging.h; sourceTree = "<group>"; };
+		30FC8C4F19A829E900CDB2BC /* TSLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSLogging.m; sourceTree = "<group>"; };
+		30FC8C5019A829E900CDB2BC /* TSLogLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSLogLevel.h; sourceTree = "<group>"; };
+		30FC8C5119A829E900CDB2BC /* TSPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPlatform.h; sourceTree = "<group>"; };
+		30FC8C5219A829E900CDB2BC /* TSPlatformImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPlatformImpl.h; sourceTree = "<group>"; };
+		30FC8C5319A829E900CDB2BC /* TSPlatformImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPlatformImpl.m; sourceTree = "<group>"; };
+		30FC8C5419A829E900CDB2BC /* TSResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSResponse.h; sourceTree = "<group>"; };
+		30FC8C5519A829E900CDB2BC /* TSResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSResponse.m; sourceTree = "<group>"; };
+		30FC8C5619A829E900CDB2BC /* TSTapstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSTapstream.h; sourceTree = "<group>"; };
+		30FC8C5719A829E900CDB2BC /* TSTapstream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSTapstream.m; sourceTree = "<group>"; };
+		30FC8C5819A829E900CDB2BC /* TSUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUtils.h; sourceTree = "<group>"; };
+		30FC8C5919A829E900CDB2BC /* TSUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUtils.m; sourceTree = "<group>"; };
+		30FC8C5A19A829E900CDB2BC /* TSWordOfMouthDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSWordOfMouthDelegate.h; sourceTree = "<group>"; };
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCollectionViewCell.h; sourceTree = "<group>"; };
@@ -855,30 +887,6 @@
 		4C4327C418E3A9F90035FF06 /* UIView+MPSnapshotImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MPSnapshotImage.m"; sourceTree = "<group>"; };
 		4C4327D718E3A9F90035FF06 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		4C4327D818E3A9F90035FF06 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		4C4327DB18E3A9F90035FF06 /* TSApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSApi.h; sourceTree = "<group>"; };
-		4C4327DC18E3A9F90035FF06 /* TSConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSConfig.h; sourceTree = "<group>"; };
-		4C4327DD18E3A9F90035FF06 /* TSConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSConfig.m; sourceTree = "<group>"; };
-		4C4327DE18E3A9F90035FF06 /* TSCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCore.h; sourceTree = "<group>"; };
-		4C4327DF18E3A9F90035FF06 /* TSCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCore.m; sourceTree = "<group>"; };
-		4C4327E018E3A9F90035FF06 /* TSCoreListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCoreListener.h; sourceTree = "<group>"; };
-		4C4327E118E3A9F90035FF06 /* TSCoreListenerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCoreListenerImpl.h; sourceTree = "<group>"; };
-		4C4327E218E3A9F90035FF06 /* TSCoreListenerImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCoreListenerImpl.m; sourceTree = "<group>"; };
-		4C4327E318E3A9F90035FF06 /* TSDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDelegate.h; sourceTree = "<group>"; };
-		4C4327E418E3A9F90035FF06 /* TSEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSEvent.h; sourceTree = "<group>"; };
-		4C4327E518E3A9F90035FF06 /* TSEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSEvent.m; sourceTree = "<group>"; };
-		4C4327E618E3A9F90035FF06 /* TSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSHelpers.h; sourceTree = "<group>"; };
-		4C4327E718E3A9F90035FF06 /* TSHit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSHit.h; sourceTree = "<group>"; };
-		4C4327E818E3A9F90035FF06 /* TSHit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSHit.m; sourceTree = "<group>"; };
-		4C4327E918E3A9F90035FF06 /* TSLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSLogging.h; sourceTree = "<group>"; };
-		4C4327EA18E3A9F90035FF06 /* TSLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSLogging.m; sourceTree = "<group>"; };
-		4C4327EB18E3A9F90035FF06 /* TSLogLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSLogLevel.h; sourceTree = "<group>"; };
-		4C4327EC18E3A9F90035FF06 /* TSPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPlatform.h; sourceTree = "<group>"; };
-		4C4327ED18E3A9F90035FF06 /* TSPlatformImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPlatformImpl.h; sourceTree = "<group>"; };
-		4C4327EE18E3A9F90035FF06 /* TSPlatformImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPlatformImpl.m; sourceTree = "<group>"; };
-		4C4327EF18E3A9F90035FF06 /* TSResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSResponse.h; sourceTree = "<group>"; };
-		4C4327F018E3A9F90035FF06 /* TSResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSResponse.m; sourceTree = "<group>"; };
-		4C4327F118E3A9F90035FF06 /* TSTapstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSTapstream.h; sourceTree = "<group>"; };
-		4C4327F218E3A9F90035FF06 /* TSTapstream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSTapstream.m; sourceTree = "<group>"; };
 		4C4327F418E3A9F90035FF06 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		4C4327F518E3A9F90035FF06 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		4C4327F618E3A9FA0035FF06 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -1386,6 +1394,43 @@
 			name = Search;
 			sourceTree = "<group>";
 		};
+		30FC8C3C19A829E900CDB2BC /* Tapstream */ = {
+			isa = PBXGroup;
+			children = (
+				30FC8C3D19A829E900CDB2BC /* TSApi.h */,
+				30FC8C3E19A829E900CDB2BC /* TSAppEventSource.h */,
+				30FC8C3F19A829E900CDB2BC /* TSAppEventSourceImpl.h */,
+				30FC8C4019A829E900CDB2BC /* TSAppEventSourceImpl.m */,
+				30FC8C4119A829E900CDB2BC /* TSConfig.h */,
+				30FC8C4219A829E900CDB2BC /* TSConfig.m */,
+				30FC8C4319A829E900CDB2BC /* TSCore.h */,
+				30FC8C4419A829E900CDB2BC /* TSCore.m */,
+				30FC8C4519A829E900CDB2BC /* TSCoreListener.h */,
+				30FC8C4619A829E900CDB2BC /* TSCoreListenerImpl.h */,
+				30FC8C4719A829E900CDB2BC /* TSCoreListenerImpl.m */,
+				30FC8C4819A829E900CDB2BC /* TSDelegate.h */,
+				30FC8C4919A829E900CDB2BC /* TSEvent.h */,
+				30FC8C4A19A829E900CDB2BC /* TSEvent.m */,
+				30FC8C4B19A829E900CDB2BC /* TSHelpers.h */,
+				30FC8C4C19A829E900CDB2BC /* TSHit.h */,
+				30FC8C4D19A829E900CDB2BC /* TSHit.m */,
+				30FC8C4E19A829E900CDB2BC /* TSLogging.h */,
+				30FC8C4F19A829E900CDB2BC /* TSLogging.m */,
+				30FC8C5019A829E900CDB2BC /* TSLogLevel.h */,
+				30FC8C5119A829E900CDB2BC /* TSPlatform.h */,
+				30FC8C5219A829E900CDB2BC /* TSPlatformImpl.h */,
+				30FC8C5319A829E900CDB2BC /* TSPlatformImpl.m */,
+				30FC8C5419A829E900CDB2BC /* TSResponse.h */,
+				30FC8C5519A829E900CDB2BC /* TSResponse.m */,
+				30FC8C5619A829E900CDB2BC /* TSTapstream.h */,
+				30FC8C5719A829E900CDB2BC /* TSTapstream.m */,
+				30FC8C5819A829E900CDB2BC /* TSUtils.h */,
+				30FC8C5919A829E900CDB2BC /* TSUtils.m */,
+				30FC8C5A19A829E900CDB2BC /* TSWordOfMouthDelegate.h */,
+			);
+			path = Tapstream;
+			sourceTree = "<group>";
+		};
 		4C00491819467EE6007FA9F5 /* Clubs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1749,6 +1794,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30FC8C3C19A829E900CDB2BC /* Tapstream */,
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
 				4CD22C52195B8E0D00E6AD0B /* PicoCandy */,
 				4C6F71A519506A28009C4D53 /* CKRefreshControl */,
@@ -1765,7 +1811,6 @@
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
 				4C4327A718E3A9F90035FF06 /* Mixpanel */,
 				4C4327D618E3A9F90035FF06 /* Reachability */,
-				4C4327DA18E3A9F90035FF06 /* Tapstream */,
 				4C4327F318E3A9F90035FF06 /* TestFlightSDK */,
 			);
 			path = Classes;
@@ -1994,37 +2039,6 @@
 				4C4327D818E3A9F90035FF06 /* Reachability.m */,
 			);
 			path = Reachability;
-			sourceTree = "<group>";
-		};
-		4C4327DA18E3A9F90035FF06 /* Tapstream */ = {
-			isa = PBXGroup;
-			children = (
-				4C4327DB18E3A9F90035FF06 /* TSApi.h */,
-				4C4327DC18E3A9F90035FF06 /* TSConfig.h */,
-				4C4327DD18E3A9F90035FF06 /* TSConfig.m */,
-				4C4327DE18E3A9F90035FF06 /* TSCore.h */,
-				4C4327DF18E3A9F90035FF06 /* TSCore.m */,
-				4C4327E018E3A9F90035FF06 /* TSCoreListener.h */,
-				4C4327E118E3A9F90035FF06 /* TSCoreListenerImpl.h */,
-				4C4327E218E3A9F90035FF06 /* TSCoreListenerImpl.m */,
-				4C4327E318E3A9F90035FF06 /* TSDelegate.h */,
-				4C4327E418E3A9F90035FF06 /* TSEvent.h */,
-				4C4327E518E3A9F90035FF06 /* TSEvent.m */,
-				4C4327E618E3A9F90035FF06 /* TSHelpers.h */,
-				4C4327E718E3A9F90035FF06 /* TSHit.h */,
-				4C4327E818E3A9F90035FF06 /* TSHit.m */,
-				4C4327E918E3A9F90035FF06 /* TSLogging.h */,
-				4C4327EA18E3A9F90035FF06 /* TSLogging.m */,
-				4C4327EB18E3A9F90035FF06 /* TSLogLevel.h */,
-				4C4327EC18E3A9F90035FF06 /* TSPlatform.h */,
-				4C4327ED18E3A9F90035FF06 /* TSPlatformImpl.h */,
-				4C4327EE18E3A9F90035FF06 /* TSPlatformImpl.m */,
-				4C4327EF18E3A9F90035FF06 /* TSResponse.h */,
-				4C4327F018E3A9F90035FF06 /* TSResponse.m */,
-				4C4327F118E3A9F90035FF06 /* TSTapstream.h */,
-				4C4327F218E3A9F90035FF06 /* TSTapstream.m */,
-			);
-			path = Tapstream;
 			sourceTree = "<group>";
 		};
 		4C4327F318E3A9F90035FF06 /* TestFlightSDK */ = {
@@ -2862,12 +2876,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30FC8C5D19A829E900CDB2BC /* TSCore.m in Sources */,
 				4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */,
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
+				30FC8C5C19A829E900CDB2BC /* TSConfig.m in Sources */,
 				4C4328BA18E3A9FA0035FF06 /* JLBPagedViewController.m in Sources */,
 				4C45A9451996AE0D00A2086E /* HONTabBannerView.m in Sources */,
 				4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */,
 				4C663EDD18BFBC1800EDB1A2 /* HONUserClubsViewController.m in Sources */,
+				30FC8C6419A829E900CDB2BC /* TSTapstream.m in Sources */,
 				4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */,
 				4C4328AA18E3A9FA0035FF06 /* EGOImageLoader.m in Sources */,
 				4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */,
@@ -2881,7 +2898,6 @@
 				4C0204EE18EA6FF000FAE532 /* HONClubCoverCameraViewController.m in Sources */,
 				4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */,
 				4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */,
-				4C4328E718E3A9FA0035FF06 /* TSEvent.m in Sources */,
 				4C43280B18E3A9FA0035FF06 /* AFPropertyListRequestOperation.m in Sources */,
 				4C7DBBBE194FF43D00F7A487 /* HONTableView.m in Sources */,
 				4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */,
@@ -2892,7 +2908,6 @@
 				4C43280718E3A9FA0035FF06 /* AFHTTPRequestOperation.m in Sources */,
 				4CC94FF21908017900347A34 /* HONSelfieCameraSubmitViewController.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
-				4C4328E518E3A9FA0035FF06 /* TSCore.m in Sources */,
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
 				4CED33BD1840070900282A19 /* HONSuggestedFollowViewController.m in Sources */,
 				4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */,
@@ -2911,12 +2926,12 @@
 				B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */,
 				4C3DCCD8190AD9D60036F440 /* HONClubsNewsFeedViewController.m in Sources */,
 				4C6BBC861615455000145996 /* HONSelfieCameraOverlayView.m in Sources */,
+				30FC8C5E19A829E900CDB2BC /* TSCoreListenerImpl.m in Sources */,
 				4CEC4B0B18B9552A00F39C92 /* HONMessagesButtonView.m in Sources */,
 				4CD071AD19554A87003894F4 /* HONInviteClubsViewController.m in Sources */,
 				4CCA4168181C1BDE00FC9863 /* HONChallengeDetailsGridView.m in Sources */,
 				4C99EB5D194D5FC100283C1A /* HONClubPhotoViewCell.m in Sources */,
 				4C980586188C9B2800E4FEA4 /* HONMessageDetailsViewController.m in Sources */,
-				4C4328EC18E3A9FA0035FF06 /* TSTapstream.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
 				4CD071A819553039003894F4 /* UIView+ReverseSubviews.m in Sources */,
 				4C43280818E3A9FA0035FF06 /* AFImageRequestOperation.m in Sources */,
@@ -2944,6 +2959,7 @@
 				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
+				30FC8C6319A829E900CDB2BC /* TSResponse.m in Sources */,
 				4C43280618E3A9FA0035FF06 /* AFHTTPClient.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C616AE81911AF9700D9A6F5 /* HONUserToggleViewCell.m in Sources */,
@@ -2951,11 +2967,11 @@
 				4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */,
 				4C4328D618E3A9FA0035FF06 /* MPSurveyNavigationController.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
+				30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */,
 				4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */,
 				4CD42F2E188B8EC900264845 /* HONMessageVO.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */,
 				4C4328AC18E3A9FA0035FF06 /* EGORefreshTableHeaderView.m in Sources */,
-				4C4328E918E3A9FA0035FF06 /* TSLogging.m in Sources */,
 				4C70F9DC189082B900ED5C4E /* HONMessageRecipientsViewController.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */,
@@ -2983,13 +2999,13 @@
 				4C4328BB18E3A9FA0035FF06 /* JLBPopSlideTransition.m in Sources */,
 				4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
-				4C4328EB18E3A9FA0035FF06 /* TSResponse.m in Sources */,
 				4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
 				4C43280A18E3A9FA0035FF06 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				4CA246C519083C8B00512295 /* NSString+DataTypes.m in Sources */,
 				4CBDDBAC1913354E002F9723 /* HONContactsViewController.m in Sources */,
+				30FC8C6019A829E900CDB2BC /* TSHit.m in Sources */,
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
 				4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */,
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
@@ -3011,26 +3027,26 @@
 				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,
+				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
+				30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */,
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
 				4CCE75231843FA9D00FF09F7 /* HONSuggestedFollowViewCell.m in Sources */,
-				4C4328E618E3A9FA0035FF06 /* TSCoreListenerImpl.m in Sources */,
 				4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */,
+				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
 				4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */,
 				4CC94FEC19079D4900347A34 /* HONEmotionsPickerDisplayView.m in Sources */,
 				4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */,
 				4C382FF9178B8AA200C7FA7C /* HONSearchUsersViewController.m in Sources */,
 				4C3DCCDB190ADA490036F440 /* HONClubNewsFeedViewCell.m in Sources */,
 				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,
-				4C4328E418E3A9FA0035FF06 /* TSConfig.m in Sources */,
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
 				4CCA416B181C1BF200FC9863 /* HONUserProfileGridView.m in Sources */,
 				4C4328DB18E3A9FA0035FF06 /* UIImage+MPImageEffects.m in Sources */,
 				4C4328B818E3A9FA0035FF06 /* JLBAnimator.m in Sources */,
-				4C4328E818E3A9FA0035FF06 /* TSHit.m in Sources */,
 				4CD42F28188B410E00264845 /* HONMessagesViewController.m in Sources */,
+				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
-				4C4328EA18E3A9FA0035FF06 /* TSPlatformImpl.m in Sources */,
 				4C43280C18E3A9FA0035FF06 /* AFURLConnectionOperation.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONScreenManager.m in Sources */,
 				4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */,

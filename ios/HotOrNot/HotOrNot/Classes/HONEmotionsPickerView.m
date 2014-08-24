@@ -97,6 +97,13 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 
 
 #pragma mark - Public APIs
+- (void)disablePagesStartingAt:(int)page {
+	for (int i=page; i<[_pageViews count]; i++) {
+		UIView *pageView = (UIView *)[_pageViews objectAtIndex:i];
+		pageView.userInteractionEnabled = NO;
+	}
+}
+
 - (void)scrollToPage:(int)page {
 	[_scrollView scrollRectToVisible:CGRectMake(page * _scrollView.frame.size.width, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height) animated:NO];
 	[_paginationView updateToPage:page];

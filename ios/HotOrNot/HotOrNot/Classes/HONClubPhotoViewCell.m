@@ -124,7 +124,6 @@
 	feelingLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
 	feelingLabel.textColor = [UIColor whiteColor];
 	feelingLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-	//feelingLabel.backgroundColor = [UIColor redColor];
 	feelingLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	
 	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
@@ -136,6 +135,7 @@
 	emoticonsScrollView.showsVerticalScrollIndicator = NO;
 	emoticonsScrollView.pagingEnabled = NO;
 	emoticonsScrollView.contentInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
+	emoticonsScrollView.contentOffset = CGPointMake(-8.0, 0.0);
 	[self.contentView addSubview:emoticonsScrollView];
 	
 	NSMutableArray *prev = [NSMutableArray array];

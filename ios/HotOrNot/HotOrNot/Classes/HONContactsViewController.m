@@ -666,6 +666,18 @@
 				}
 			}
 		}
+		
+		for (NSString *key in dict) {
+//			[[[UIAlertView alloc] initWithTitle:@"Contacts"
+//										message:[NSString stringWithFormat:@"(%d) - %@", [[dict objectForKey:key] count], key]
+//									   delegate:nil
+//							  cancelButtonTitle:@"YES"
+//							  otherButtonTitles:nil] show];
+			
+			for (HONTrivialUserVO *vo in [dict objectForKey:key])
+				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.username);
+
+		}
 	}
 	
 	_segmentedKeys = [[_segmentedKeys sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"" ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {

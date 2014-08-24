@@ -37,9 +37,10 @@
 		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"sent_invite", @" sent %@ an invite to %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeInviteAccepted) {
-		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"accept_invite", @" accepted %@ invite to %@"), vo.recipientUsername, vo.clubName ]];
+		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"accept_invite", @" accepted %@ invite to %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeLike) {
+		NSLog(@"CLUB NAME(%d):[%@]", vo.activityType, vo.clubName);
 		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"liked_selfie", @" liked %@ selfie in %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {
@@ -48,6 +49,7 @@
 	} else {
 		vo.message = vo.originUsername;
 	}
+	
 	
 	return (vo);
 }

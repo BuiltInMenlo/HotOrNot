@@ -178,7 +178,7 @@
 
 
 
-"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
+"confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
 
 
 

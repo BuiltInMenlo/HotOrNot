@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 
 - (void)registerStickerStore;
 - (NSDictionary *)fetchStickerStoreInfo;
+- (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(id result))completion;
 - (NSArray *)retrieveStickerStoreProducts;
 - (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(id result))completion;
 - (void)purchaseStickerWithContentID:(NSString *)contentID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate;

@@ -137,7 +137,7 @@
 "not_now" = "Not Now";
 "cannot_send" = "Cannot send SMS from this device!";
 "report_abuse" = "Report Abuse / Bug";
-"liked_selfie" = " liked your selfie in %@";
+"liked_selfie" = " upvoted %@'s selfie in %@";
 "submit_photo" = " submitted a photo into %@";
 "user_notfound" = "User not found!";
 "lev" = "Leave %@";
@@ -165,7 +165,7 @@
 "alert_create_it" = "Would you like to create it?";
 "club_notfound" = "Club Not Found!";
 "want_invite" = "Want to invite friends to %@?";
-"confirm_purchase" = "Are you sure you want to unlock the [title] sticker pack?";
+"confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
 
 "global_sticker" = "Sticker Store";
 "my_sticker" = "My Stickers";

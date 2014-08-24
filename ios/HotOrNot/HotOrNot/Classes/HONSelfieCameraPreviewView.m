@@ -51,7 +51,6 @@
 												 selector:@selector(_reloadEmotionPicker:)
 													 name:@"RELOAD_EMOTION_PICKER" object:nil];
 		
-		
 		_subjectNames = [NSMutableArray array];
 		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
@@ -144,10 +143,10 @@
 			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", nil) //@"No Emotions Selected!"
-									message:NSLocalizedString(@"alert_noemotions_msg", nil) //@"You need to choose some emotions to make a status update."
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"No Emotions Selected!")
+									message:NSLocalizedString(@"alert_noemotions_msg", @"You need to choose some emotions to make a status update.")
 								   delegate:nil
-						  cancelButtonTitle:  NSLocalizedString(@"alert_ok", nil) //@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -210,7 +209,6 @@
 	NSLog(@"[*:*] purchaseController:purchaseStickerWithIdFailed:[%@] userInfo:[%@]", contentId, userInfo);
 }
 
-
 - (void)purchaseController:(id)controller downloadedStickerPackWithId:(NSString *)contentGroupId {
 	NSLog(@"[*:*] purchaseController:downloadedStickerPackWithId:[%@]", contentGroupId);
 }
@@ -266,17 +264,19 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
-//		[_emotionsPickerView disablePagesStartingAt:2];
-//		[_emotionsPickerView scrollToPage:1];
-//		
-//		if (_insetOverlayView == nil)
-//			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-//		_insetOverlayView.delegate = self;
-//		
-//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-//		[_insetOverlayView introWithCompletion:nil];
-//	}
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
+		if (!_emotionsPickerView.hidden) {
+			[_emotionsPickerView disablePagesStartingAt:2];
+			[_emotionsPickerView scrollToPage:1];
+			
+			if (_insetOverlayView == nil)
+				_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+			_insetOverlayView.delegate = self;
+			
+			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+			[_insetOverlayView introWithCompletion:nil];
+		}
+	}
 }
 
 - (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{

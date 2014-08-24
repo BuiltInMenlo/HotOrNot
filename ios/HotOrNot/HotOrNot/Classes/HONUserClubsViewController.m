@@ -151,10 +151,10 @@ static NSString * const kCamera = @"camera";
 			NSMutableArray *clubVOs = [_clubs objectForKey:([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) ? @"member" : key];
 			
 			for (NSDictionary *dict in [result objectForKey:key]) {
-				if ([[dict objectForKey:@"id"] intValue] != 100) {
+//				if ([[dict objectForKey:@"id"] intValue] != 100) {
 					[clubVOs addObject:[HONUserClubVO clubWithDictionary:dict]];
 					[_dictClubs addObject:dict];
-				}
+//				}
 			}
 			
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
@@ -509,14 +509,18 @@ static NSString * const kCamera = @"camera";
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[[*:*]] tabBannerView:joinSchoolClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
 	
-	_selectedClubVO = clubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-	[alertView setTag:HONUserClubsAlertTypeJoin];
-	[alertView show];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
+//	_selectedClubVO = clubVO;
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
+//													   delegate:self
+//											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+//	[alertView setTag:HONUserClubsAlertTypeJoin];
+//	[alertView show];
 }
 
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
@@ -618,9 +622,14 @@ static NSString * const kCamera = @"camera";
 			_progressHUD = nil;
 		}
 		
-		if ([[result objectForKey:@"clubs"] count] > 0) {
-			[[result objectForKey:@"clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:(NSDictionary *)obj];
+		if ([[result objectForKey:@"results"] count] > 0) {
+			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+				[dict setObject:@{@"id"			: [dict objectForKey:@"owner"],
+								  @"username"	: @"",
+								  @"avatar"		: @""} forKey:@"owner"];
+				
+				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 				if ([vo.clubName rangeOfString:searchQuery options:NSCaseInsensitiveSearch].location != NSNotFound)
 					[_searchClubs addObject:vo];
 			}];

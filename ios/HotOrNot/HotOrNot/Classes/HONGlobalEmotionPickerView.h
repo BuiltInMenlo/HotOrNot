@@ -17,7 +17,7 @@
 - (void)emotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction;
 @end
 
-@interface HONGlobalEmotionPickerView : UIView <UIScrollViewDelegate>
+@interface HONGlobalEmotionPickerView : UIView <UIAlertViewDelegate, UIScrollViewDelegate>
 - (void)scrollToPage:(int)page;
 @property (nonatomic, assign) id <HONGlobalEmotionPickerViewDelegate> delegate;
 @end

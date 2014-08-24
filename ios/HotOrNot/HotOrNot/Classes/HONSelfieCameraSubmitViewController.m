@@ -82,13 +82,11 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
 	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_selectclub", @"No Club Selected!")
-															message:NSLocalizedString(@"no_selectclub_msg", @"You have to choose at least one club to submit your photo into.")
-														   delegate:nil
-												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-												  otherButtonTitles:nil];
-		[alertView setTag:0];
-		[alertView show];
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_selectclub", @"No Club Selected!")
+									message:NSLocalizedString(@"no_selectclub_msg", @"You have to choose at least one club to submit your photo into.")
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
 	
 	} else {
 //		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];

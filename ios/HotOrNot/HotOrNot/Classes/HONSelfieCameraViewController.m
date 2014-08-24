@@ -24,6 +24,7 @@
 #import "HONSelfieCameraPreviewView.h"
 #import "HONSelfieCameraSubmitViewController.h"
 #import "HONInviteContactsViewController.h"
+#import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
 
 
@@ -49,6 +50,7 @@
 @property (nonatomic) BOOL isBlurred;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
+@property (nonatomic, strong) HONStoreTransactionObserver *storeTransactionObserver;
 @end
 
 
@@ -271,6 +273,9 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+//	_storeTransactionObserver = [[HONStoreTransactionObserver alloc] init];
+//	[[SKPaymentQueue defaultQueue] addTransactionObserver:_storeTransactionObserver];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -281,6 +286,13 @@
 		_isFirstAppearance = NO;
 		[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 	}
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
+	
+//	[[SKPaymentQueue defaultQueue] removeTransactionObserver:_storeTransactionObserver];
+//	_storeTransactionObserver = nil;
 }
 
 

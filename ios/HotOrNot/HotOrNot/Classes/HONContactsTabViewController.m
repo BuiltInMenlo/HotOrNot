@@ -119,6 +119,10 @@ static NSString * const kCamera = @"camera";
 	UIEdgeInsets edgeInsets = UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right);
 	[_tableView setContentInset:edgeInsets];
 	
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+	}];
+	
 	_tabBannerView = [[HONTabBannerView alloc] init];
 	_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
 	_tabBannerView.delegate = self;
@@ -126,15 +130,11 @@ static NSString * const kCamera = @"camera";
 	
 	[UIView animateWithDuration:0.250 delay:0.667
 		 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
-						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 					 animations:^(void) {
 						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
 					 } completion:^(BOOL finished) {
 					 }];
-	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		[[HONClubAssistant sharedInstance] writeUserClubs:result];
-	}];
 }
 
 
@@ -291,15 +291,19 @@ static NSString * const kCamera = @"camera";
 
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[[*:*]] tabBannerView:joinSchoolClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+		
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
-	_selectedClubVO = clubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-	[alertView setTag:2];
-	[alertView show];
+//	_selectedClubVO = clubVO;
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
+//													   delegate:self
+//											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+//	[alertView setTag:2];
+//	[alertView show];
 }
 
 - (void)tabBannerView:(HONTabBannerView *)bannerView createBaeClub:(HONUserClubVO *)clubVO {

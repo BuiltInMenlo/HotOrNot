@@ -15,9 +15,9 @@
 #define COLS_PER_ROW	1
 #define ROWS_PER_PAGE	1
 
-const CGSize kImageSpacingSize = {194.0f, 194.0f};
+const CGSize kImageSpacingSize = {154.0f, 149.0f};
 
-@interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate, UIAlertViewDelegate, SKProductsRequestDelegate>
+@interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate, SKProductsRequestDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -61,9 +61,9 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(20,5,280,18 )];
-		stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-		stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 9.0, 280.0, 18.0)];
+		stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+		stickerPackLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 		stickerPackLabel.backgroundColor = [UIColor clearColor];
 		stickerPackLabel.textAlignment = NSTextAlignmentCenter;
 		stickerPackLabel.text = NSLocalizedString(@"global_sticker", nil);
@@ -83,17 +83,12 @@ const CGSize kImageSpacingSize = {194.0f, 194.0f};
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
 		
-//		for (NSString *contentGroupID in [[NSUserDefaults standardUserDefaults] objectForKey:@""]
-//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchCoverStickerForContentGroup:<#(NSString *)#>
-//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
-//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
-//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-//		
-//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
-//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+		NSArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"paid"];
+		for (NSString *contentGroupID in contentGroupIDs)
+			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:[[HONStickerAssistant sharedInstance] fetchCoverStickerForContentGroup:contentGroupID]]];
 		
-		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE)));
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
 		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
@@ -140,7 +135,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(63.0 + (i * _scrollView.frame.size.width), 30.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(84.0 + (i * _scrollView.frame.size.width), 46.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
@@ -170,14 +165,30 @@ static dispatch_queue_t sticker_request_operation_queue;
 
 
 #pragma mark - EmotionItemView Delegates
-- (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedLargeEmotion:(HONEmotionVO *)emotionVO{
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"confirm_purchase", nil)
-														message:nil
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-	[alertView setTag:0];
-	[alertView show];
+- (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedLargeEmotion:(HONEmotionVO *)emotionVO {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Selected Sticker Pak"
+										withEmotion:emotionVO];
+	
+	[[HONStickerAssistant sharedInstance] nameForContentGroupID:emotionVO.contentGroupID completion:^(NSString *name) {
+		if ([[name lowercaseString] rangeOfString:@" - free"].location != NSNotFound)
+			name = [name substringToIndex:[[name lowercaseString] rangeOfString:@" - free"].location];
+
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"confirm_purchase", nil), name]
+															message:@""
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+		[alertView setTag:0];
+		[alertView show];
+		
+		
+//		if ([[name lowercaseString] rangeOfString:@" - free"].location != NSNotFound)
+//			name = [name substringToIndex:[[name lowercaseString] rangeOfString:@" - free"].location];
+//
+//		SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"Sticker_Pack_001", nil]];
+//		request.delegate = self;
+//		[request start];
+	}];
 }
 
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedEmotion:(HONEmotionVO *)emotionVO {
@@ -210,31 +221,15 @@ static dispatch_queue_t sticker_request_operation_queue;
 	}
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		if (buttonIndex == 0) {
-			SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"Sticker_Pack_001", nil]];
-			request.delegate = self;
-			[request start];
-			
-			[self _goGlobal];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"RELOAD_EMOTION_PICKER"
-																object:nil];
-		}
-	}
-}
-
-
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
 	NSLog(@"Failed to load list of products.\n%@", error.description);
 }
-
-
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
 	NSArray *skProducts = response.products;
 	
 	SKProduct *product = (SKProduct *)[skProducts firstObject];
+	NSLog(@"Found product: %@ %@ %0.2f", product.productIdentifier, product.localizedTitle, product.price.floatValue);
 	SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:product];
 	[[SKPaymentQueue defaultQueue] addPayment:myPayment];
 		
@@ -244,6 +239,22 @@ static dispatch_queue_t sticker_request_operation_queue;
 //		SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:skProduct];
 //		[[SKPaymentQueue defaultQueue] addPayment:myPayment];
 //	}
+}
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 1) {
+			
+			[[NSUserDefaults standardUserDefaults] setObject:@"Y" forKey:@"iap_01"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"RELOAD_EMOTION_PICKER"
+																object:nil];
+			[self _goGlobal];
+		}
+	}
+		
 }
 
 

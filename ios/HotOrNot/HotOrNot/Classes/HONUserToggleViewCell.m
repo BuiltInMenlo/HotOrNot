@@ -226,12 +226,10 @@
 			familyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 			familyLabel.textColor = [UIColor blackColor];
 			familyLabel.backgroundColor = [UIColor clearColor];
-			familyLabel.text = [NSString stringWithFormat:@"Invite your family to join the %@ club!", _contactUserVO.lastName];
+			familyLabel.text = [NSString stringWithFormat:@"Invite to join the %@ club!", _contactUserVO.lastName];
 			[self.contentView addSubview:familyLabel];
 		}
 	}
-	
-//	}
 }
 
 

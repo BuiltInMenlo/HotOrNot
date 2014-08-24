@@ -63,7 +63,9 @@
 	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor blackColor];
 	_titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
 	
-	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0)];
+	if (_titleLabel == nil)
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0)];
+	_titleLabel.frame = CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0);
 }
 
 

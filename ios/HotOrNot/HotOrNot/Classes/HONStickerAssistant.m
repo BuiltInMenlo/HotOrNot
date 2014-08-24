@@ -112,6 +112,17 @@ static HONStickerAssistant *sharedInstance = nil;
 	}];
 }
 
+
+- (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(id result))completion {
+//	NSLog(@"--- nameForContentGroupID:[%@] ---", contentGroupID);
+	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+	[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
+		NSLog(@"///// nameForContentGroupID:[%@]%@}--(%@) /////", contentGroupID, contentGroup, contentGroup.name);
+		if (completion)
+			completion(contentGroup.name);
+	}];
+}
+
 - (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(id result))completion {
 	NSString *key = (stickerPakType == HONStickerPakTypeSelfieclub) ? kSelfieclubStickerPak : (stickerPakType == HONStickerPakTypeAvatars) ? kAvatarStickerPak : (stickerPakType == HONStickerPakTypeClubCovers) ? kClubCoverStickerPak : (stickerPakType == HONStickerPakTypeFree) ? kFreeStickerPak : (stickerPakType == HONStickerPakTypeInviteBonus) ? kInviteStickerPak : (stickerPakType == HONStickerPakTypePaid) ? kPaidStickerPak : @"all";
 	NSLog(@"retrieveStickersWithPakType:[%@] ignoringCache:[%@]", key, [@"" stringFromBOOL:ignoreCache]);

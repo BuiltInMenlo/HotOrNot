@@ -27,6 +27,7 @@
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
@@ -99,6 +100,9 @@
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
 		
+		[_headerView setTitle:_clubVO.clubName];
+		[_headerView toggleLightStyle:YES];
+		
 		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
 		
 		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
@@ -120,6 +124,7 @@
 					break;
 				
 			}
+			
 			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
 											fromURLs:imageQueue
 											 withTag:@"club"];
@@ -196,23 +201,23 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName];
-	[headerView toggleLightStyle:YES];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName hasBackground:YES];
+	[_headerView toggleLightStyle:YES];
+	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(1.0, 1.0, 93.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
+	[_headerView addButton:backButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareButton.frame = CGRectMake(255, 1.0, 64.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:shareButton];
+	[_headerView addButton:shareButton];
 	
 	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -235,6 +240,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
