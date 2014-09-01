@@ -90,7 +90,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 - (NSString *)pushToken {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]);
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] : @"");
 }
 
 

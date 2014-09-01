@@ -890,7 +890,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)updateDeviceTokenWithCompletion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"token"	: [[HONDeviceIntrinsics sharedInstance] pushToken]};
+							 @"token"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersSetDeviceToken, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
