@@ -209,15 +209,21 @@ static HONAnalyticsParams *sharedInstance = nil;
 									 withProperties:nil];
 }
 
+
+#pragma mark -
 - (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties {
 	NSMutableDictionary *event = (properties == nil) ? [[NSMutableDictionary alloc] init] : [properties mutableCopy];
-	[event addEntriesFromDictionary:@{@"action"	: eventName}];
+	[event addEntriesFromDictionary:@{@"action"	: [[eventName componentsSeparatedByString:@" - "] lastObject]}];
+	
+	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
 	
 	NSError *error = nil;
-	[[KeenClient sharedClient] addEvent:[event copy]
-					  toEventCollection:kKeenIOEventCollection
+	[[KeenClient sharedClient] addEvent:event
+					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
 								  error:&error];
+	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
 }
+#pragma mark -
 
 
 - (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {

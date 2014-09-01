@@ -720,6 +720,10 @@
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
 	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	
+	[[NSUserDefaults standardUserDefaults] setObject:@{@"code"	: countryVO.callingCode,
+													   @"name"	: countryVO.countryName} forKey:@"country_code"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateNormal];
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateHighlighted];
 }

@@ -186,3 +186,9 @@
 "alert_nofriends_m" = "You need to choose some friends to invite to %@";
 "activity_signup" = "You have just joined Selfieclub!";
 "alert_enterClub" = "Want to go there now?";
+
+"header_findFriends" = "Find friends";
+"phone_number" = "phone number";
+"alert_inviteContact_t" = "Invite Friend";
+"alert_inviteContact_m" = "Want to invite %@ to your club?";
+

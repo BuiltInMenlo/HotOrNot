@@ -8,11 +8,11 @@
 
 #import "HONViewController.h"
 
-typedef NS_OPTIONS(NSInteger, HONUserClubsDataSetType) {
-	HONUserClubsDataSetTypeNone				= 0 << 0,
-	HONUserClubsDataSetTypeUserClubs		= 1 << 0,
-	HONUserClubsDataSetTypeSearchResults	= 1 << 1
-};
+//typedef NS_OPTIONS(NSInteger, HONUserClubsDataSetType) {
+//	HONUserClubsDataSetTypeNone				= 0 << 0,
+//	HONUserClubsDataSetTypeUserClubs		= 1 << 0,
+//	HONUserClubsDataSetTypeSearchResults	= 1 << 1
+//};
 
 typedef NS_ENUM(NSInteger, HONUserClubsViewControllerAppearedType) {
 	HONUserClubsViewControllerAppearedTypeClear	= 0,
@@ -39,5 +39,5 @@ typedef NS_ENUM(NSInteger, HONUserClubsAlertType) {
 	HONUserClubsAlertTypeInviteContacts
 };
 
-@interface HONUserClubsViewController : HONViewController <UIActionSheetDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONUserClubsViewController : HONViewController <UIActionSheetDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

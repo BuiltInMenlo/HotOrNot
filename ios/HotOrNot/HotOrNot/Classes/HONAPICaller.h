@@ -127,6 +127,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)removeAllChallengesForUserWithCompletion:(void (^)(id result))completion;
 - (void)removeUserFromVerifyListWithUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)searchUsersByPhoneNumber:(NSString *)phoneNumber completion:(void (^)(id result))completion;
 - (void)submitPasscodeToLiftAccountSuspension:(NSString *)passcode completion:(void (^)(id result))completion;
 - (void)togglePushNotificationsForUserByUserID:(int)userID areEnabled:(BOOL)isEnabled completion:(void (^)(id result))completion;
 - (void)updateAvatarWithImagePrefix:(NSString *)avatarPrefix completion:(void (^)(id result))completion;

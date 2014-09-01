@@ -49,7 +49,7 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (NSString *)defaultClubPhotoURL {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"club_photo"]);
+	return ([[HONClubAssistant sharedInstance] defaultCoverImageURL]);
 }
 
 - (NSArray *)clubCoverPhotoAlbumPrefixes {
@@ -125,6 +125,17 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict setValue:@"https://hotornot-challenges.s3.amazonaws.com/26mgmt" forKey:@"img"];
 	
 	return ([dict copy]);
+}
+
+- (NSDictionary *)emptyClubPhotoDictionary {
+	return (@{@"challenge_id"	: @"0",
+			  @"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+			  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+			  @"avatar"			: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+			  @"img"			: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
+			  @"score"			: @"0",
+			  @"subjects"		: @[],
+			  @"added"			: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]});
 }
 
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {

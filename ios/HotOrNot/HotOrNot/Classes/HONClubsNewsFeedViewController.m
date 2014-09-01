@@ -20,6 +20,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONInviteContactsViewController.h"
+#import "HONContactsSearchViewController.h"
 #import "HONTabBannerView.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONTableView.h"
@@ -218,7 +219,16 @@ static NSString * const kCamera = @"camera";
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
+	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+	searchBarView.userInteractionEnabled = NO;
+	[self.view addSubview:searchBarView];
+	
+	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	searchButton.frame = searchBarView.frame;
+	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:searchButton];
+	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -236,10 +246,10 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-	_tabBannerView = [[HONTabBannerView alloc] init];
-	_tabBannerView.delegate = self;
-	[self.view addSubview:_tabBannerView];
+//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+//	_tabBannerView = [[HONTabBannerView alloc] init];
+//	_tabBannerView.delegate = self;
+//	[self.view addSubview:_tabBannerView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -253,12 +263,12 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Activity"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Create Selfie"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Create Selfie"];
 	
 	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
 	selfieCameraViewController.delegate = self;
@@ -273,9 +283,15 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goCreateClub {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Create Club"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goContactsSearch {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -409,7 +425,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell enterTimelineForClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:enterTimelineForClub:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Club Timeline"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Club Timeline"
 									   withUserClub:userClubVO];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
@@ -419,7 +435,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:joinClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Join Club"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Join Club"
 									   withUserClub:userClubVO];
 	
 	_selectedClubVO = userClubVO;
@@ -446,7 +462,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:likeClubChallenge:(%d - %d)", clubPhotoVO.clubID, clubPhotoVO.userID);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Upvote"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Upvote"
 									  withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
@@ -459,7 +475,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.clubID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Activity Avatar"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity Avatar"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
 
@@ -503,11 +519,6 @@ static NSString * const kCamera = @"camera";
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
-}
-
-- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONClubNewsFeedViewCell *viewCell = (HONClubNewsFeedViewCell *)cell;
-	[viewCell toggleImageLoading:NO];
 }
 
 
@@ -585,6 +596,11 @@ static NSString * const kCamera = @"camera";
 			[alertView show];
 		}
 	}
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONClubNewsFeedViewCell *viewCell = (HONClubNewsFeedViewCell *)cell;
+	[viewCell toggleImageLoading:NO];
 }
 
 

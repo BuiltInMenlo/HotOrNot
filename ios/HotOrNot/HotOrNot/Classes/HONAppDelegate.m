@@ -69,8 +69,8 @@ typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 };
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com"; //@"http://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_sc0006.json"; //@"boot_ios.json";
+NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
+NSString * const kConfigJSON = @"boot_sc0007.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
@@ -711,7 +711,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
+	[KeenClient disableGeoLocation];
 	
 //	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
 //	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
@@ -777,6 +777,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
+	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -797,7 +799,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[HONAppDelegate incTotalForCounter:@"background"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Entering Background"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Entering Background"
 									 withProperties:@{@"total"		: [@"" stringFromInt:[HONAppDelegate incTotalForCounter:@"background"]],
 													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
 	
@@ -838,7 +840,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Finished Resuming Background"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Returning From Background"];
 	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
 	_isFromBackground = YES;
@@ -852,6 +854,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[KeenClient sharedClientWithProjectId:kKeenIOProductID
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
+	[KeenClient disableGeoLocation];
 	
 #if KEENIO_LOG == 1
 	[KeenClient enableLogging];
@@ -879,7 +882,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"App Leaving Background"
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
@@ -904,7 +907,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
 }
@@ -916,7 +919,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Terminating"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Terminating"
 									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
@@ -1499,7 +1502,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Close"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Close"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1509,7 +1512,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Acknowledge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1521,7 +1524,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Acknowledge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Invite Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1542,7 +1545,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == HONAppDelegateAlertTypeVerifiedNotification) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Notification - Verified Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification Verified Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
@@ -1569,7 +1572,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeInviteFriends) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Backgrounding - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1578,7 +1581,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeShare) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Backgrounding - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
@@ -1609,7 +1612,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Notification - " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:_userID]];
@@ -1755,22 +1758,22 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Presenting DocInteraction Shelf"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Presenting DocInteraction Shelf"
 									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Dismissing DocInteraction Shelf"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Dismissing DocInteraction Shelf"
 									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Launching DocInteraction App"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching DocInteraction App"
 									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Entering DocInteraction App Foreground"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Entering DocInteraction App Foreground"
 									 withProperties:@{@"controller"		: [controller name]}];
 }
 

@@ -182,7 +182,7 @@
 			break;
 			
 		case HONTabBarButtonTypeNewsFeed:
-			analyticsEventName = @"News";
+			analyticsEventName = @"Newsfeed";
 			notificationName = @"NEWS_TAB";
 			totalKey = @"newsTab";
 			
@@ -216,6 +216,8 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEventName]];
 	
 	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
 		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];

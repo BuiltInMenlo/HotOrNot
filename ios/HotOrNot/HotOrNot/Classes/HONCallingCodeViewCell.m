@@ -18,8 +18,8 @@
 @implementation HONCallingCodeViewCell
 @synthesize countryVO = _countryVO;
 
-- (id)initWithFrame:(CGRect)frame {
-	if ((self = [super initWithFrame:frame])) {
+- (id)init {
+	if ((self = [super init])) {
 		[self hideChevron];
 	}
 	

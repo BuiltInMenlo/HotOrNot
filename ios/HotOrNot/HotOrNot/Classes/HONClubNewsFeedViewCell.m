@@ -355,9 +355,6 @@
 	CGRect orgFrame = {0.0, 0.0, 150.0, 150.0};
 	CGRect adjFrame = {0.0, 0.0, 15.0, 15.0};
 	
-//	CGRect orgFrame = {0.0, 0.0, 150.0, 150.0};
-//	CGRect adjFrame = {0.0, 0.0, 25.0, 25.0};
-	
 	CGSize scaleSize = CGSizeMake(adjFrame.size.width / orgFrame.size.width, adjFrame.size.height / orgFrame.size.height);
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(adjFrame) - CGRectGetMidX(orgFrame), CGRectGetMidY(adjFrame) - CGRectGetMidY(orgFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
@@ -373,29 +370,6 @@
 	[imageView setTag:[emotionVO.emotionID intValue]];
 	imageView.transform = transform;
 	[view addSubview:imageView];
-	
-//	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//		[imageLoadingView stopAnimating];
-//		[imageLoadingView removeFromSuperview];
-//	};
-//	
-//	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//		imageView.image = image;
-//		
-//		[UIView animateWithDuration:0.125 animations:^(void) {
-//			imageView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//			[imageLoadingView stopAnimating];
-//			[imageLoadingView removeFromSuperview];
-//		}];
-//	};
-//	
-//	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
-//													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
-//												   timeoutInterval:[HONAppDelegate timeoutInterval]]
-//					 placeholderImage:nil
-//							  success:imageSuccessBlock
-//							  failure:imageFailureBlock];
 	
 	return (view);
 }

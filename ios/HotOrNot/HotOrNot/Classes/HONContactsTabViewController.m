@@ -24,6 +24,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONInviteClubsViewController.h"
 #import "HONInviteContactsViewController.h"
+#import "HONContactsSearchViewController.h"
 
 @interface HONContactsTabViewController () <HONInsetOverlayViewDelegate, HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
@@ -97,6 +98,13 @@ static NSString * const kCamera = @"camera";
 	[_headerView addButton:_activityHeaderView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
+	_searchBarView.userInteractionEnabled = NO;
+	
+	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	searchButton.frame = _searchBarView.frame;
+	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:searchButton];
+	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
 		[self _goRegistration];
@@ -115,26 +123,26 @@ static NSString * const kCamera = @"camera";
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	
-	UIEdgeInsets edgeInsets = UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right);
-	[_tableView setContentInset:edgeInsets];
-	
+
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 	}];
 	
-	_tabBannerView = [[HONTabBannerView alloc] init];
-	_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
-	_tabBannerView.delegate = self;
-	[self.view addSubview:_tabBannerView];
 	
-	[UIView animateWithDuration:0.250 delay:0.667
-		 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
-						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-					 animations:^(void) {
-						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
-					 } completion:^(BOOL finished) {
-					 }];
+//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+//	
+//	_tabBannerView = [[HONTabBannerView alloc] init];
+//	_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
+//	_tabBannerView.delegate = self;
+//	[self.view addSubview:_tabBannerView];
+//	
+//	[UIView animateWithDuration:0.250 delay:0.667
+//		 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
+//						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+//					 animations:^(void) {
+//						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
+//					 } completion:^(BOOL finished) {
+//					 }];
 }
 
 
@@ -165,6 +173,12 @@ static NSString * const kCamera = @"camera";
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goContactsSearch {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -226,7 +240,7 @@ static NSString * const kCamera = @"camera";
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidClose");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Close"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Review Overlay Close"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -236,7 +250,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Acknowledge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Review Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -248,7 +262,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidInvite");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Acknowledge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -334,7 +348,9 @@ static NSString * const kCamera = @"camera";
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friend Row Tap"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Friend"
+									withContactUser:contactUserVO];
+	
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
 	[viewCell toggleSelected:NO];

@@ -62,7 +62,6 @@ NSString * const kAPICheckNameAndEmail		= @"users/checkNameAndEmail";
 NSString * const kAPIGetActivity			= @"users/getactivity";
 NSString * const kAPIUsersGetClubs			= @"users/getOtherUsersClubs";//@"users/getclubs";
 NSString * const kAPIUsersGetClubInvites	= @"users/getclubinvites";
-//NSString * const kAPIUsersGetUsersClubs	= @"users/getOtherUsersClubs";
 NSString * const kAPIGetSubscribees			= @"users/getsubscribees";
 NSString * const kAPIEmailContacts			= @"users/ffemail";
 NSString * const kAPIUsersFirstRunComplete	= @"users/firstruncomplete";
@@ -657,6 +656,35 @@ static HONAPICaller *sharedInstance = nil;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)searchUsersByPhoneNumber:(NSString *)phoneNumber completion:(void (^)(id result))completion {
+	NSDictionary *params = @{@"action"	: [@"" stringFromInt:13],
+							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"phone"	: phoneNumber};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			result = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+													 sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }

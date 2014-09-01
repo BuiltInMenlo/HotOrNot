@@ -182,3 +182,9 @@
 
 "club_notfound" = "Clube não encontrado!";
 "want_invite" = "Quer convidar amigos para %@?";
+
+"header_findFriends" = "Find friends";
+"phone_number" = "phone number";
+
+"alert_inviteContact_t" = "Invite Friend";
+"alert_inviteContact_m" = "Want to invite %@ to your club?";

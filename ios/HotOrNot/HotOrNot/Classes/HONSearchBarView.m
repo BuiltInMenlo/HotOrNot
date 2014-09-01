@@ -62,7 +62,7 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isUser = YES;
 		
-		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_users"]];
+		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_contacts"]];
 		_unfocusedBGImageView.userInteractionEnabled = YES;
 		[self addSubview:_unfocusedBGImageView];
 		

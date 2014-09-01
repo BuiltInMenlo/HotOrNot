@@ -48,7 +48,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		[self addSubview:_previewImageView];
 		
 
-		[[HONImageBroker sharedInstance] maskView:_previewImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+		[[HONImageBroker sharedInstance] maskView:_previewImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
 		_emotions = [NSMutableArray array];
 		

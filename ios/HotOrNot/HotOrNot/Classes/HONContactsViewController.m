@@ -85,7 +85,7 @@
 	
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			NSLog(@"PHONE CONTACT:[%@]", dict);
+//			NSLog(@"PHONE CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
 			for (HONTrivialUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]] || vo.userID == [[dict objectForKey:@"id"] intValue]) {
@@ -134,7 +134,7 @@
 																																							  @"is_verified"	: @"N",
 																																							  @"abuse_ct"		: @"0"}], nil];
 	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[[HONDeviceIntrinsics sharedInstance] phoneNumber] completion:^(NSArray *result) {
-		NSLog(@"(MATCHED USERS *result[%@]", (NSArray *)result);
+//		NSLog(@"(MATCHED USERS *result[%@]", (NSArray *)result);
 		if ([(NSArray *)result count] > 1) {
 			for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
 				BOOL isDuplicate = NO;
@@ -194,11 +194,6 @@
 																			   @"username"	: [dict objectForKey:@"username"],
 																			   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
 			}
-		}
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
 		}
 		
 		if ([_searchUsers count] == 0) {

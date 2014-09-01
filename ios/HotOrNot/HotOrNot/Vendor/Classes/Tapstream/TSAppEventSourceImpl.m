@@ -139,7 +139,7 @@ static void TSLoadStoreKitClasses()
 				}
 				if(!receipt)
 				{
-					receipt = transaction.transactionReceipt;
+					receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];//transaction.transactionReceipt;
 				}
 #else
 				// For mac, try to load the receipt out of the bundle.  If appStoreReceiptURL method is
