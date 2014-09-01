@@ -33,6 +33,10 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
+	
 	_dictClubs = [NSMutableArray array];
 	_allClubs = [NSMutableArray array];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
@@ -40,48 +44,26 @@
 												  forKeys:@[@"owned",
 															@"member"]];
 	
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		
+		for (NSString *key in @[@"owned", @"member"]) {
+			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSString *key in @[@"owned", @"member"]) {
-				NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
-				
-				for (NSDictionary *dict in [result objectForKey:key])
-					[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-				
-				[_dictClubs addObjectsFromArray:[result objectForKey:key]];
-				[_clubIDs setValue:clubIDs forKey:key];
-			}
+			for (NSDictionary *dict in [result objectForKey:key])
+				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 			
-			for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
-				[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-			
-			_segmentedClubs = [self _populateSegmentedDictionary];
-			_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
-			
-			[self _didFinishDataRefresh];
-		}];
-	
-//	} else {
-//		for (NSString *key in @[@"owned", @"member"]) {
-//			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
-//			
-//			for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key])
-//				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-//			
-//			[_dictClubs addObjectsFromArray:[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]];
-//			[_clubIDs setValue:clubIDs forKey:key];
-//		}
-//		
-//		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
-//			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-//		
-//		_segmentedClubs = [self _populateSegmentedDictionary];
-//		
-//		_selectedClubs = [NSMutableArray array];
-//		_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
-//		
-//		[self _didFinishDataRefresh];
-//	}
+			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
+			[_clubIDs setValue:clubIDs forKey:key];
+		}
+		
+		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
+			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+		
+		_segmentedClubs = [self _populateSegmentedDictionary];
+		_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
+		
+		[self _didFinishDataRefresh];
+	}];
 }
 
 
@@ -100,6 +82,8 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
+	
+	_tableView.alpha = 1.0;
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
@@ -259,6 +243,12 @@
 	[cell hideChevron];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.1 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
 	
 	return (cell);
 }

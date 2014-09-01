@@ -95,11 +95,9 @@ static NSString * const kCamera = @"camera";
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	for (HONClubViewCell *cell in [_tableView visibleCells]) {
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			cell.alpha = 0.0;
-		}];
-	}
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
 	
 	_dictClubs = [NSMutableArray array];
 	_clubs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
@@ -187,6 +185,8 @@ static NSString * const kCamera = @"camera";
 		_progressHUD = nil;
 	}
 	
+	_tableView.alpha = 1.0;
+	
 	[_refreshControl endRefreshing];
 	[_tableView reloadData];
 }
@@ -244,12 +244,6 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-//	
-//	_tabBannerView = [[HONTabBannerView alloc] init];
-//	_tabBannerView.delegate = self;
-//	[self.view addSubview:_tabBannerView];
-	
 	if ([_dictClubs count] == 0)
 		[self _retrieveClubs];
 }
@@ -261,6 +255,14 @@ static NSString * const kCamera = @"camera";
 	UINavigationController *navigationController = (UINavigationController *)self.presentedViewController;
 	UIViewController *viewController = (UIViewController *)[navigationController.viewControllers lastObject];
 	NSLog(@"navigationController:[%@] presentedViewController.nameOfClass:[%@]", self.navigationController, viewController.nameOfClass);
+	
+	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
+		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+		
+		_tabBannerView = [[HONTabBannerView alloc] init];
+		_tabBannerView.delegate = self;
+		[self.view addSubview:_tabBannerView];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -597,9 +599,15 @@ static NSString * const kCamera = @"camera";
 			[cell toggleImageLoading:YES];
 	}
 	
-	cell.alpha = 1.0;
+	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setSelectionStyle:(indexPath.section == 0) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
+	
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.1 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
 	
 	return (cell);
 }
@@ -607,7 +615,7 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (74.0);
+	return (75.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

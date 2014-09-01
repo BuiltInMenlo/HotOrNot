@@ -101,6 +101,9 @@ static NSString * const kCamera = @"camera";
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
 	
 	_ownedClubs = [[NSMutableArray alloc] init];
 	_allClubs = [[NSMutableArray alloc] init];
@@ -196,6 +199,8 @@ static NSString * const kCamera = @"camera";
 		_progressHUD = nil;
 	}
 	
+	_tableView.alpha = 1.0;
+	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 }
@@ -245,11 +250,19 @@ static NSString * const kCamera = @"camera";
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewWillAppear:animated];
 	
-//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-//	_tabBannerView = [[HONTabBannerView alloc] init];
-//	_tabBannerView.delegate = self;
-//	[self.view addSubview:_tabBannerView];
+	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
+		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+		
+		_tabBannerView = [[HONTabBannerView alloc] init];
+		_tabBannerView.delegate = self;
+		[self.view addSubview:_tabBannerView];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -517,6 +530,12 @@ static NSString * const kCamera = @"camera";
 	
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.1 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
 	
 	return (cell);
 }

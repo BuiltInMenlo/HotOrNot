@@ -69,6 +69,10 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark -
 #pragma mark - Data Calls
+- (void)_generateClub:(HONUserClubVO *)vo {
+	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {}];
+}
+
 - (void)_retrieveLocalSchoolClubs {
 	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
 		NSMutableArray *schools = [NSMutableArray array];
@@ -114,6 +118,13 @@ static NSString * const kCamera = @"camera";
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			
+			__block int cnt = 0;
+			[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
+				HONUserClubVO *vo = (HONUserClubVO *)obj;
+				[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:cnt * 0.0];
+				cnt++;
+			}];
+			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] == nil)
 				[self _retrieveLocalSchoolClubs];
 		}];
@@ -123,28 +134,29 @@ static NSString * const kCamera = @"camera";
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		[[HONClubAssistant sharedInstance] writeUserClubs:result];
-	}];
-	
-	
-//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-//	
-//	_tabBannerView = [[HONTabBannerView alloc] init];
-//	_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
-//	_tabBannerView.delegate = self;
-//	[self.view addSubview:_tabBannerView];
-//	
-//	[UIView animateWithDuration:0.250 delay:0.667
-//		 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
-//						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-//					 animations:^(void) {
-//						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
-//					 } completion:^(BOOL finished) {
-//					 }];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewWillAppear:animated];
+	
+	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
+		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+		
+		_tabBannerView = [[HONTabBannerView alloc] init];
+		_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
+		_tabBannerView.delegate = self;
+		[self.view addSubview:_tabBannerView];
+		
+		[UIView animateWithDuration:0.250 delay:0.667
+			 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
+							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+						 animations:^(void) {
+							 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
+						 } completion:^(BOOL finished) {
+						 }];
+	}
+}
 
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");

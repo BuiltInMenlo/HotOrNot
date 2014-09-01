@@ -34,16 +34,16 @@
 	if ((self = [super init])) {
 		_loaderStartFrame = CGRectMake(17.0, 17.0, 42.0, 44.0);
 		
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 22.0, 180.0, 17.0)];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13];
-		_nameLabel.textColor = [UIColor blackColor];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 19.0, 170.0, 19.0)];
 		_nameLabel.backgroundColor = [UIColor clearColor];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+		_nameLabel.textColor = [UIColor blackColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_membersLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x, 37.0, 180.0, 14.0)];
+		_membersLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x, 38.0, 170.0, 14.0)];
+		_membersLabel.backgroundColor = [UIColor clearColor];
 		_membersLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 		_membersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_membersLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_membersLabel];
 	}
 	
@@ -118,14 +118,13 @@
 		}
 		
 		members = ([[members substringWithRange:NSMakeRange([members length] - 2, 2)] isEqualToString:@", "]) ? [members substringToIndex:[members length] - 2] : members;
-		
-	} else {
-		members = _clubVO.ownerName;
 	}
+	
+	members = ([_clubVO.activeMembers count] == 0 && [_clubVO.submissions count] == 0) ? members = NSLocalizedString(@"empty_club", @"Tap and hold to invite friends") : members;
 	
 	_nameLabel.frame = CGRectOffset(_nameLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
 	_membersLabel.frame = CGRectOffset(_membersLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
-	_membersLabel.text = members;
+	_membersLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : members;
 	
 }
 
@@ -137,23 +136,8 @@
 			view.hidden = NO;
 			
 			UIImageView *imageView = (UIImageView *)[[view subviews] firstObject];
-			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-				_statusUpdateImageLoadingView.frame = CGRectMake(_loaderStartFrame.origin.x + (18.0 * ++cnt), _loaderStartFrame.origin.y, _loaderStartFrame.size.width, _loaderStartFrame.size.height);
-				
-				if (cnt >= [_statusUpdateViews count] - 1) {
-					_statusUpdateImageLoadingView.hidden = YES;
-					[_statusUpdateImageLoadingView stopAnimating];
-					_statusUpdateImageLoadingView.frame = _loaderStartFrame;
-				}
-			};
-			
-			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-				imageView.image = image;
-				
-				[UIView animateWithDuration:0.125 delay:(0.10 * ([_statusUpdateViews count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-					view.alpha = 1.0;
-					
-				} completion:^(BOOL finished) {
+			if (imageView.image == nil) {
+				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 					_statusUpdateImageLoadingView.frame = CGRectMake(_loaderStartFrame.origin.x + (18.0 * ++cnt), _loaderStartFrame.origin.y, _loaderStartFrame.size.width, _loaderStartFrame.size.height);
 					
 					if (cnt >= [_statusUpdateViews count] - 1) {
@@ -161,15 +145,39 @@
 						[_statusUpdateImageLoadingView stopAnimating];
 						_statusUpdateImageLoadingView.frame = _loaderStartFrame;
 					}
-				}];
-			};
+				};
+				
+				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+					imageView.image = image;
+					
+					[UIView animateWithDuration:0.125 delay:(0.10 * ([_statusUpdateViews count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+						view.alpha = 1.0;
+						
+					} completion:^(BOOL finished) {
+						_statusUpdateImageLoadingView.frame = CGRectMake(_loaderStartFrame.origin.x + (18.0 * ++cnt), _loaderStartFrame.origin.y, _loaderStartFrame.size.width, _loaderStartFrame.size.height);
+						
+						if (cnt >= [_statusUpdateViews count] - 1) {
+							_statusUpdateImageLoadingView.hidden = YES;
+							[_statusUpdateImageLoadingView stopAnimating];
+							_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+						}
+					}];
+				};
+				
+				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[((HONClubPhotoVO *)[_statusUpdateVOs objectAtIndex:view.tag]).imagePrefix stringByAppendingString:kSnapThumbSuffix]]
+																   cachePolicy:NSURLRequestReloadIgnoringCacheData
+															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+								 placeholderImage:nil
+										  success:imageSuccessBlock
+										  failure:imageFailureBlock];
 			
-			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[((HONClubPhotoVO *)[_statusUpdateVOs objectAtIndex:view.tag]).imagePrefix stringByAppendingString:kSnapThumbSuffix]]
-															   cachePolicy:NSURLRequestReloadIgnoringCacheData
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							 placeholderImage:nil
-									  success:imageSuccessBlock
-									  failure:imageFailureBlock];
+			} else {
+				if (++cnt >= [_statusUpdateViews count] - 1) {
+					_statusUpdateImageLoadingView.hidden = YES;
+					[_statusUpdateImageLoadingView stopAnimating];
+					_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+				}
+			}
 		}];
 		
 	} else {
@@ -179,7 +187,6 @@
 		
 		[_statusUpdateViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			UIView *view = (UIView *)obj;
-			view.hidden = YES;
 			
 			UIImageView *imageView = (UIImageView *)[[view subviews] firstObject];
 			[imageView cancelImageRequestOperation];
@@ -192,6 +199,7 @@
 - (UIView *)_holderViewForStatusUpdate:(HONClubPhotoVO *)vo {
 	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 42.0, 44.0)];
 	view.alpha = 0.0;
+	view.hidden = YES;
 
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:view.frame];
 	[imageView setTag:0];

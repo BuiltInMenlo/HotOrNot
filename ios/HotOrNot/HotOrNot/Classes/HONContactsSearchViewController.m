@@ -10,8 +10,10 @@
 
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
+#import "HONInviteClubsViewController.h"
 #import "HONHeaderView.h"
 #import "HONTrivialUserVO.h"
+#import "HONContactUserVO.h"
 #import "HONUserClubVO.h"
 
 @interface HONContactsSearchViewController () <HONCallingCodesViewControllerDelegate>
@@ -23,6 +25,7 @@
 @property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) NSMutableArray *searchUsers;
 @property (nonatomic, strong) HONTrivialUserVO *searchUserVO;
+@property (nonatomic, strong) HONContactUserVO *contactUserVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic) BOOL isDismissing;
 @end
@@ -78,23 +81,28 @@
 																   @"username"	: [dict objectForKey:@"username"],
 																   @"img_url"	: [dict objectForKey:@"avatar_url"]}];
 			[_searchUsers addObject:_searchUserVO];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_inviteContact_t", nil)
-																message:[NSString stringWithFormat: NSLocalizedString(@"alert_inviteContact_m", nil), _searchUserVO.username]
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_inviteContact_t", nil), _searchUserVO.username]
+																message:NSLocalizedString(@"alert_inviteContact_m", nil)
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:@"Not Now", nil];
+													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 			[alertView setTag:0];
 			[alertView show];
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:NSLocalizedString(@"hud_noResults", nil)
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
 			
-			_phone = @"";
-			_phoneTextField.text = @"";
-			[_phoneTextField becomeFirstResponder];
+		} else {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_inviteNewContact_t", nil)
+										message:NSLocalizedString(@"alert_inviteContact_m", nil)
+									   delegate:self
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
+			[alertView setTag:1];
+			[alertView show];
+			
+			_contactUserVO = [HONContactUserVO contactWithDictionary:@{@"f_name"	: @" ",
+																	   @"l_name"	: @" ",
+																	   @"phone"		: _phone,
+																	   @"email"		: @"",
+																	   @"image"		: UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}];
 		}
 		
 		[self _didFinishDataRefresh];
@@ -124,14 +132,21 @@
 	_isDismissing = NO;
 	_searchUsers = [NSMutableArray array];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonBlue_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonBlue_Active"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	
+	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	submitButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_findFriends", @"Find friends")];
-	[headerView addButton:doneButton];
+	[headerView addButton:cancelButton];
+	[headerView addButton:submitButton];
 	[self.view addSubview:headerView];
 	
 	
@@ -201,9 +216,13 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goDone {
+- (void)_goCancel {
 	_isDismissing = YES;
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_goSubmit {
+	[_phoneTextField resignFirstResponder];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
@@ -312,14 +331,16 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] inviteInAppUsers:[_searchUsers copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-				for (HONTrivialUserVO *vo in _searchUsers)
-					[[HONContactsAssistant sharedInstance] writeTrivialUser:vo toInvitedClub:_clubVO];
-				
-				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-				}];
-			}];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:_searchUserVO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	
+	} else if (alertView.tag == 1) {
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:_contactUserVO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

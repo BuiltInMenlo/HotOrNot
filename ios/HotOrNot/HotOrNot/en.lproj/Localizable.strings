@@ -186,9 +186,19 @@
 "alert_nofriends_m" = "You need to choose some friends to invite to %@";
 "activity_signup" = "You have just joined Selfieclub!";
 "alert_enterClub" = "Want to go there now?";
+"empty_club" = "Tap and hold to invite friends";
 
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
-"alert_inviteContact_t" = "Invite Friend";
-"alert_inviteContact_m" = "Want to invite %@ to your club?";
+"alert_inviteContact_t" = "%@ found!";
+"alert_inviteNewContact_t" = "No user found!";
+"alert_inviteContact_m" = "Would you like to invite them to one of your private clubs?";
+"club_inviteSubText" = "You have been invited. Tap to join!";
+
+
+"areacode_club" = "%@Club";
+"family_club" = "My%@Club";
+"bff_club" = "MyBFFs";
+"bae_club" = "MyBAE";
+"school_club" = "MySchoolClub";
 

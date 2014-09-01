@@ -131,28 +131,28 @@
 			if (vo.clubID == -1) {
 				_areaCodeClubVO = vo;
 				imageView.image = [UIImage imageNamed:@"locationBanner"];
-				titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", [[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber]];
+				titleLabel.text = [NSString stringWithFormat:@"Join the %@!", _areaCodeClubVO.clubName];
 				subtitleLabel.text = @"Represent your area code.";
 				[button addTarget:self action:@selector(_goAreaCode) forControlEvents:UIControlEventTouchUpInside];
 				
 			} else if (vo.clubID == -2) {
 				_familyClubVO = vo;
 				imageView.image = [UIImage imageNamed:@"familyBanner"];
-				titleLabel.text = [NSString stringWithFormat:@"Create the %@ club!", _familyClubVO.clubName];
+				titleLabel.text = [NSString stringWithFormat:@"Create the %@!", _familyClubVO.clubName];
 				subtitleLabel.text = @"Stay connected.";
 				[button addTarget:self action:@selector(_goFamily) forControlEvents:UIControlEventTouchUpInside];
 				
 			} else if (vo.clubID == -5) {
 				_baeClubVO = vo;
 				imageView.image = [UIImage imageNamed:@"baeBanner"];
-				titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", _baeClubVO.clubName];
+				titleLabel.text = [NSString stringWithFormat:@"Join the %@!", _baeClubVO.clubName];
 				subtitleLabel.text = @"A private club.";
 				[button addTarget:self action:@selector(_goBae) forControlEvents:UIControlEventTouchUpInside];
 			
 			} else if (vo.clubID == -4) {
 				_schoolClubVO = vo;
 				imageView.image = [UIImage imageNamed:@"schoolBanner"];
-				titleLabel.text = [NSString stringWithFormat:@"Join the %@ club!", _schoolClubVO.clubName];
+				titleLabel.text = [NSString stringWithFormat:@"Join the %@!", _schoolClubVO.clubName];
 				subtitleLabel.text = @"Your local school.";
 				[button addTarget:self action:@selector(_goSchool) forControlEvents:UIControlEventTouchUpInside];
 			}

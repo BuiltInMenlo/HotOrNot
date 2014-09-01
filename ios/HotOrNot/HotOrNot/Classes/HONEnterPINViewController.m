@@ -37,6 +37,11 @@
 
 
 #pragma mark - Data Calls
+- (void)_generateClub:(HONUserClubVO *)vo {
+	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {
+	}];
+}
+
 - (void)_validatePinCode {
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -96,6 +101,14 @@
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
+		
+		
+		__block int cnt = 0;
+		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
+			HONUserClubVO *vo = (HONUserClubVO *)obj;
+			[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:0.0];
+			cnt++;
+		}];
 		
 //		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 //		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];

@@ -554,6 +554,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 			
+			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+				[[HONClubAssistant sharedInstance] writeUserClubs:result];
+			}];
+			
 			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
@@ -1637,7 +1641,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																	message:[NSString stringWithFormat: NSLocalizedString(@"want_invite", nil) , _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-														  otherButtonTitles: NSLocalizedString(@"not_now", nil), nil];
+														  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 				[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
 				[alertView show];
 			}];

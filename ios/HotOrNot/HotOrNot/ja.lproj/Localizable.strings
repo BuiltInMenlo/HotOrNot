@@ -185,7 +185,19 @@
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
 
-"alert_inviteContact_t" = "Invite Friend";
-"alert_inviteContact_m" = "Want to invite %@ to your club?";
+"alert_inviteContact_t" = "%@ 発見!";
+"alert_inviteNewContact_t" = "どのユーザーが見つかりませんでした！";
+"alert_inviteContact_m" = "あなたはあなたのプライベートクラブの一つに招待しますか？";
+"club_inviteSubText" = "あなたが招待されている。参加するをタップ！";
+"empty_club" = "タップして、友人を招待したまま";
 
 
+"areacode_club" = "%@クラブ";
+"family_club" = "私の%@クラブ";
+"bff_club" = "私のBFFs";
+"bae_club" = "私のBAE";
+"school_club" = "私の学校クラブ";
+
+
+
+//club = クラブ

@@ -38,6 +38,7 @@
 - (HONUserClubVO *)suggestedFamilyClubVO;
 - (HONUserClubVO *)suggestedSchoolClubVO;//WithCompletion:(void (^)(HONUserClubVO *schoolClubVO))completion;
 - (HONUserClubVO *)suggestedBAEClubVO;
+- (HONUserClubVO *)suggestedBFFsClubVO;
 - (HONUserClubVO *)suggestedWorkplaceClubVO;
 
 - (void)writePreClubWithTitle:(NSString *)title andBlurb:(NSString *)blurb andCoverPrefixURL:(NSString *)coverPrefix;

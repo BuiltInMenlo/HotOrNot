@@ -185,5 +185,17 @@
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
 
-"alert_inviteContact_t" = "Invite Friend";
-"alert_inviteContact_m" = "Want to invite %@ to your club?";
+"alert_inviteContact_t" = "%@ encontrado!";
+"alert_inviteNewContact_t" = "Nenhum usuário encontrado!";
+"alert_inviteContact_m" = "Gostaria de convidá-los para um de seus clubes privados?";
+"club_inviteSubText" = "Você foi convidado. Toque para participar!";
+"empty_club" = "Toque e segure para convidar amigos";
+
+
+"areacode_club" = "%@Clube";
+"family_club" = "My%@Clube";
+"bff_club" = "MyBFFs";
+"bae_club" = "MyBAE";
+"school_club" = "MyEscolaClube";
+
+// club = clube

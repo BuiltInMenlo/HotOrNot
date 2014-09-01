@@ -52,6 +52,10 @@
 - (void)_sendEmailContacts {
 	NSLog(@":/: _sendEmailContacts :/:");
 	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
+	
 	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
 			NSLog(@"EMAIL CONTACT:[%@]", dict);
@@ -82,6 +86,10 @@
 
 - (void)_sendPhoneContacts {
 	NSLog(@":/: _sendPhoneContacts :/:");
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
 	
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
@@ -122,6 +130,10 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
 	
 	_inAppUsers = [NSMutableArray array];
 	_inAppUsers = [NSMutableArray arrayWithObjects:[HONTrivialUserVO userWithDictionary:@{@"id"				: @"-2", // share shelf
@@ -168,6 +180,10 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
 	
 	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
@@ -280,6 +296,8 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
+	
+	_tableView.alpha = 1.0;
 	
 	for (HONUserToggleViewCell *cell in _cells)
 		[cell toggleSelected:NO];
@@ -480,13 +498,19 @@
 	if (![_cells containsObject:cell])
 		[_cells addObject:cell];
 	
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.1 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
 	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && indexPath.section == 0) ? 74.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
