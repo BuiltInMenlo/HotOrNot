@@ -547,7 +547,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 			}
 			
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];
+//			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
@@ -1057,15 +1057,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:pushToken forKey:@"device_token"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-		[self _enableNotifications:YES];
-	}];
+	double delayInSeconds = 2.0;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		NSLog(@"WRITE PUSH TOKEN");
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:pushToken forKey:@"device_token"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+			[self _enableNotifications:YES];
+		}];
+	});
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
@@ -1077,16 +1082,21 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
-	
-//	[[NSUserDefaults standardUserDefaults] setObject:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"] forKey:@"device_token"];
-	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"device_token"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-		[self _enableNotifications:NO];
-	}];
+	double delayInSeconds = 2.0;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		NSLog(@"WRITE PUSH TOKEN");
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
+		
+//		[[NSUserDefaults standardUserDefaults] setObject:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"] forKey:@"device_token"];
+		[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"device_token"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+			[self _enableNotifications:NO];
+		}];
+	});
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:@"didFailToRegisterForRemoteNotificationsWithError"
@@ -1154,12 +1164,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 		
 #if __FORCE_REGISTER__ == 1
-	for (NSString *key in userDefaults) {
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-	}
+//	for (NSString *key in userDefaults) {
+//		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+//		
+//		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+//	}
 	
 	[HONAppDelegate resetTotals];
 #endif
