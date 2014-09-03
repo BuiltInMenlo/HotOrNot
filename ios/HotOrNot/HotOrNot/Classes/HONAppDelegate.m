@@ -112,7 +112,7 @@ const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // ui
-const CGSize kTabSize = {80.0, 50.0};
+const CGSize kTabSize = {80.0, 34.0};
 const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
@@ -704,6 +704,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbarBG"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleDefault];
 	*/
+	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+
 }
 
 
@@ -1130,7 +1133,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]]];
+									   [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]]];
 	
 	
 	for (UINavigationController *navigationController in navigationControllers) {

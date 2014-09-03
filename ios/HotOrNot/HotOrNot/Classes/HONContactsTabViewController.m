@@ -25,6 +25,7 @@
 #import "HONInviteClubsViewController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONContactsSearchViewController.h"
+#import "HONClubTimelineViewController.h"
 
 @interface HONContactsTabViewController () <HONInsetOverlayViewDelegate, HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
@@ -104,6 +105,10 @@ static NSString * const kCamera = @"camera";
 	
 	_searchBarView.userInteractionEnabled = NO;
 	
+	//Go to Timeline
+	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
+	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	searchButton.frame = _searchBarView.frame;
 	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
@@ -176,6 +181,13 @@ static NSString * const kCamera = @"camera";
 
 - (void)_goProfile {
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+}
+
+- (void) _goTimeline {
+	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
+	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
+	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
+	
 }
 
 - (void)_goCreateChallenge {

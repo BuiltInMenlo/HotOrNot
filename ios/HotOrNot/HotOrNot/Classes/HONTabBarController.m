@@ -91,8 +91,8 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:selectedIndex] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	//if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
+		//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 
@@ -117,6 +117,7 @@
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	bgImageView.userInteractionEnabled = YES;
+	//bgImageView.frame=CGRectOffset(bgImageView.frame, 0.0, 16.0);
 	[_tabHolderView addSubview:bgImageView];
 	[bgImageView setTag:-1];
 	bgImageView.hidden = YES;
@@ -165,6 +166,11 @@
 	NSString *analyticsEventName = @"";
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";
+	
+	if(tabBarButtonType == HONTabBarButtonTypeNewsFeed)
+	{
+		return;
+	}
 	
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabBarButtonType];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
@@ -219,8 +225,8 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEventName]];
 	
-	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	//if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
+		//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 

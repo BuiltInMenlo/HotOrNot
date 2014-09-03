@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "timelineHeaderBG-1.png"
+      "filename" : "headerBackground@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "timelineHeaderBG@2x.png"
+      "filename" : "headerBackground@2x.png"
     }
   ],
   "info" : {
