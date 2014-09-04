@@ -69,17 +69,17 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Back"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 3 - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Refresh"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 3 - Refresh"];
 	[super _goRefresh];
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 3 - Submit"];
 	
 	if ([_selectedClubs count] == 0) {
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_selectclub", @"No Club Selected!")
@@ -127,15 +127,20 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell deselectedClub:userClubVO];
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 3 - Deselected Club" withUserClub:userClubVO];
+	
 	if (userClubVO.clubID == _clubVO.clubID)
 		_clubVO = nil;
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell selectedClub:userClubVO];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 3 - Selected Club" withUserClub:userClubVO];
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 3 - Select All Toggle " stringByAppendingString:(isSelected) ? @"On" : @"Off"]];
 	[super clubToggleViewCell:viewCell selectAllToggled:isSelected];
 }
 
@@ -151,7 +156,7 @@
 		HONClubToggleViewCell *cell = (HONClubToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell invertSelected];
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Create Selfie - %@elected Club", (cell.isSelected) ? @"S" : @"Des"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step 3 - %@elected Club", (cell.isSelected) ? @"S" : @"Des"]
 										   withUserClub:cell.userClubVO];
 		
 		if (cell.isSelected) {
@@ -166,8 +171,10 @@
 				_clubVO = nil;
 		}
 		
-	} else
+	} else {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 3 - Select All Toggle " stringByAppendingString:([_selectedClubs count] != [_allClubs count]) ? @"On" : @"Off"]];
 		[self _goSelectAllToggle];
+	}
 }
 
 

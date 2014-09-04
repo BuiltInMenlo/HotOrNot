@@ -93,7 +93,7 @@
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:_activityItemVO.message attributes:@{}];
 	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13] range:[_activityItemVO.message rangeOfString:_activityItemVO.originUsername]];
-	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.recipientUsername]];
+	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:[_activityItemVO.recipientUsername stringByAppendingString:@"'s"]]];
 	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.clubName]];
 	[self.contentView addSubview:titleLabel];
 	

@@ -514,7 +514,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
+	return (0.0);//((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

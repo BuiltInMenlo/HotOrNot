@@ -152,6 +152,8 @@
 }
 
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
+	
 	_index = 0;
 	_clubPhotoID = 0;
 	
@@ -247,6 +249,8 @@
 
 #pragma mark - Navigation
 - (void)_goShare {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Share" withUserClub:_clubVO];
+	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
 //	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
@@ -261,16 +265,11 @@
 																							@"view_controller"	: self}];
 }
 - (void)_goBack {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back" withUserClub:_clubVO];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	[self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)_goRefresh {
-	_index = 0;
-	_clubPhotoID = 0;
-	
-	[self _retrieveClub];
 }
 
 
@@ -332,6 +331,8 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply" withClubPhoto:clubPhotoVO];
+	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	
 	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
@@ -344,7 +345,7 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote" withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {

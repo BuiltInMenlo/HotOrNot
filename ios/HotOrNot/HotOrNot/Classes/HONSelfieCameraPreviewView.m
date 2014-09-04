@@ -255,7 +255,10 @@
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
-
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Deleted"
+										withEmotion:emotionVO];
+	
 	[_subjectNames removeObject:emotionVO.emotionName];
 	[_emotionsDisplayView removeEmotion:emotionVO];
 }
@@ -279,12 +282,16 @@
 	}
 }
 
-- (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected{
+- (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Toggle Standard Paks"];
+	
 	_globalEmotionsPickerView.hidden = YES;
 	_emotionsPickerView.hidden = NO;
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Toggle Locked Paks"];
+	
 	_emotionsPickerView.hidden = YES;
 	_globalEmotionsPickerView.hidden = NO;
 }

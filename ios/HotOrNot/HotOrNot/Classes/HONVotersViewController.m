@@ -149,8 +149,8 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Back"
-									  withChallenge:_challengeVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Back"
+//									  withChallenge:_challengeVO];
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
@@ -160,8 +160,8 @@
 - (void)_voterChallenge:(NSNotification *)notification {
 	_voterVO = (HONVoterVO *)[notification object];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Camera Step 1 hit Camera Button"
-									  withChallenge:_challengeVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Camera Step 1 hit Camera Button"
+//									  withChallenge:_challengeVO];
 	
 //	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 //												   [@"" stringFromInt:_voterVO.userID], @"id",
@@ -212,7 +212,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
 	_voterVO = (HONVoterVO *)[_voters objectAtIndex:indexPath.row];
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Selected Row"  withChallenge:_challengeVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Selected Row"  withChallenge:_challengeVO];
 }
 
 

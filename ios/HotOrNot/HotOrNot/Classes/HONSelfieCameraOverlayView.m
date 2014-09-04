@@ -133,8 +133,6 @@
 }
 
 - (void)_goSkipCamera {
-	NSLog(@"/:: _goSkipCamera ::/");
-	
 	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:includeFilter:)])
 		[self.delegate cameraOverlayViewTakePhoto:self includeFilter:YES];
 }

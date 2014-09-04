@@ -359,7 +359,7 @@
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Roll"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Camera Roll"];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -367,7 +367,7 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Flip Camera"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Flip Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
@@ -378,7 +378,7 @@
 
 - (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
 	NSLog(@"cameraOverlayViewCloseCamera");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Cancel"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Cancel"];
 	
 	[self _cancelUpload];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
@@ -393,7 +393,7 @@
 
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
 	_isBlurred = isFiltered;
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 2 Take Photo"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step 1 - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -410,7 +410,7 @@
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"[*:*] cameraPreviewViewBackToCamera");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Retake Photo"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Back"];
 	[self _cancelUpload];
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
@@ -452,7 +452,7 @@
 }
 
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Submit"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Next"];
 	
 	_hasSubmitted = NO;
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -474,7 +474,6 @@
 	
 	_isFirstAppearance = YES;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
 	[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
 }
 
@@ -488,6 +487,9 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
+	
+	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Camera Roll Photo"];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];

@@ -13,17 +13,24 @@
 #import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
+#import "HONActivityHeaderButtonView.h"
+#import "HONCreateSnapButtonView.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
+#import "HONSearchBarView.h"
 #import "HONSettingsViewCell.h"
 #import "HONPrivacyPolicyViewController.h"
 #import "HONTermsViewController.h"
+#import "HONUserProfileViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONNetworkStatusViewController.h"
+#import "HONSelfieCameraViewController.h"
+#import "HONContactsSearchViewController.h"
 
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
+@property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) NSArray *captions;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -33,6 +40,11 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedSettingsTab:) name:@"SELECTED_SETTINGS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareSettingsTab:) name:@"TARE_SETTINGS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		
 		_captions = @[ NSLocalizedString(@"settings_notification", @"Notifications"),
 					   NSLocalizedString(@"copy_url", @"Copy Club URL"),
 					   NSLocalizedString(@"share", @"Share club"),
@@ -86,18 +98,15 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
+	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
+	[headerView addButton:_activityHeaderView];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:doneButton];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0)];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
+	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -109,15 +118,43 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+	searchBarView.userInteractionEnabled = NO;
+	[self.view addSubview:searchBarView];
+	
+	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	searchButton.frame = searchBarView.frame;
+	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:searchButton];
 }
 
 
 #pragma mark - Navigation
-- (void)_goClose {
-	[self dismissViewControllerAnimated:YES completion:^(void) {}];
+- (void)_goProfile {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Activity"];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+}
+
+- (void)_goCreateChallenge {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Create Status Update"];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goContactsSearch {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Toggle Notifications " stringByAppendingString:(switchView.on) ? @"On" : @"Off"]];
+	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
 																  delegate:self
@@ -129,6 +166,20 @@
 
 
 #pragma mark - Notifications
+- (void)_selectedSettingsTab:(NSNotification *)notification {
+	NSLog(@"::|> _selectedSettingsTab <|::");
+}
+
+- (void)_tareSettingsTab:(NSNotification *)notification {
+	NSLog(@"::|> _tarSettingsTab <|::");
+}
+
+- (void)_refreshSettingsTab:(NSNotification *)notification {
+	NSLog(@"::|> _refreshSettingsTab <|::");
+}
+
+
+
 - (void)_inviteSMS:(NSNotification *)notification {
 	if ([MFMessageComposeViewController canSendText]) {
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -167,33 +218,42 @@
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
 	}
-			
+	
+	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.1 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
 	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-	return (40.0);
+	return (20.0);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)];
+	UIImageView *footerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
+	footerImageView.image = [UIImage imageNamed:@"tableHeaderBG"];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, 20.0)];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
 	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
 	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.textAlignment = NSTextAlignmentCenter;
 	label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
-	[footerView addSubview:label];
+	[footerImageView addSubview:label];
 	
-	return (footerView);
+	return (footerImageView);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return (74.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -204,9 +264,13 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if(indexPath.row == HONSettingsCellTypeCopyClub) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Copy Club"];
+		
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
 		
 	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Share Club"];
+		
 		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
 		NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
 //		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
@@ -221,17 +285,21 @@
 																								@"view_controller"	: self}];
 		
 	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
+		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypeSupport) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Support"];
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -250,21 +318,27 @@
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
+		
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
+		
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		
 	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Network Status"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
+		
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Logout"];
+		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
-		
 		[alertView setTag:HONSettingsAlertTypeLogout];
 		[alertView show];
 	}
@@ -337,7 +411,7 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSettingsAlertTypeNotifications) {
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[[NSString stringWithFormat:@"Settings Tab - Toggle Notifications %@ Alert ", (!_notificationSwitch.on) ? @"On" : @"Off"] stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 0)
 			_notificationSwitch.on = !_notificationSwitch.on;
@@ -350,6 +424,7 @@
 		}
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Deactivate Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
@@ -377,14 +452,17 @@
 		}
 	
 	} else if (alertView.tag == HONSettingsAlertTypeDeleteChallenges) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Remove Content Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] removeAllChallengesForUserWithCompletion:^(NSObject *result){
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 			}];
 		}
 	} else if (alertView.tag == HONSettingsAlertTypeLogout) {
-		if (buttonIndex == 1){
-			
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Logout Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		
+		if (buttonIndex == 1) {
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 			[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			

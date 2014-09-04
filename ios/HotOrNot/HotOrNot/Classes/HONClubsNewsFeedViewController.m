@@ -276,12 +276,12 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity"];
+	//[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Create Selfie"];
+	//[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Create Selfie"];
 	
 	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
 	selfieCameraViewController.delegate = self;
@@ -296,7 +296,7 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goCreateClub {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Create Club"];
+	//[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Create Club"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -438,8 +438,8 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell enterTimelineForClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:enterTimelineForClub:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Club Timeline"
-									   withUserClub:userClubVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Club Timeline"
+//									   withUserClub:userClubVO];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 	[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:userClubVO atPhotoIndex:0] animated:YES];
@@ -448,8 +448,8 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:joinClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Join Club"
-									   withUserClub:userClubVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Join Club"
+//									   withUserClub:userClubVO];
 	
 	_selectedClubVO = userClubVO;
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -475,8 +475,8 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:likeClubChallenge:(%d - %d)", clubPhotoVO.clubID, clubPhotoVO.userID);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Upvote"
-									  withClubPhoto:clubPhotoVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Upvote"
+//									  withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
@@ -488,7 +488,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.clubID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity Avatar"];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity Avatar"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
 

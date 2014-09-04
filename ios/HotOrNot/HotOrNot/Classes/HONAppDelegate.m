@@ -844,8 +844,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Returning From Background"];
 	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
+									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
+													  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 	
 	_isFromBackground = YES;
 }
@@ -885,11 +887,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
-			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
-											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
-															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
-			
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
 					if (_insetOverlayView == nil) {
@@ -1129,8 +1126,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
 	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]]];
+									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]]];
 	
 	
 	for (UINavigationController *navigationController in navigationControllers) {
@@ -1536,20 +1533,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
-- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Invite Overlay Acknowledge"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-	}];
-}
-
 
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -1708,8 +1691,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
-					//[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[@" - Share Twitter " stringByAppendingString:(result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]]];
-					
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				

@@ -206,7 +206,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 
 - (void)trackEvent:(NSString *)eventName {
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
-									 withProperties:nil];
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
 }
 
 

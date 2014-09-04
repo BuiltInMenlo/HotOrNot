@@ -300,7 +300,7 @@
 }
 
 - (void)_goCreateClub {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Create Club"];
+	//[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Create Club"];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];

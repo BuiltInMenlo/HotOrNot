@@ -56,6 +56,8 @@
 			_progressHUD = nil;
 		}
 		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Registration - PIN Validation %@", ([[result objectForKey:@"result"] intValue] == 0) ? @"Failed" : @"Pass"]];
+		
 		if ([[result objectForKey:@"result"] intValue] == 0) {
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
 										message: NSLocalizedString(@"try_again", @"Please try again or press the resend button")
@@ -77,6 +79,8 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Pass First Run"];
+	
 	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
 		NSMutableArray *schools = [NSMutableArray array];
 		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
@@ -101,7 +105,6 @@
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
-		
 		
 		__block int cnt = 0;
 		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {

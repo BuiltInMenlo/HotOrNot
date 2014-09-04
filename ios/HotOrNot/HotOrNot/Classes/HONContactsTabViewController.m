@@ -17,7 +17,6 @@
 #import "HONCreateSnapButtonView.h"
 #import "HONTabBannerView.h"
 #import "HONRegisterViewController.h"
-#import "HONInsetOverlayView.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -26,8 +25,7 @@
 #import "HONInviteContactsViewController.h"
 #import "HONContactsSearchViewController.h"
 
-@interface HONContactsTabViewController () <HONInsetOverlayViewDelegate, HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
-@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
+@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
@@ -91,6 +89,10 @@ static NSString * const kCamera = @"camera";
 }
 
 #pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Refresh"];
+	[super _goDataRefresh:sender];
+}
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -169,16 +171,20 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Navigation
 - (void)_goRegistration {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Start First Run"];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:^(void) {}];
 }
 
 - (void)_goProfile {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"];
 	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
 	selfieCameraViewController.delegate = self;
 	
@@ -188,6 +194,8 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goContactsSearch {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - User Search"];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -246,44 +254,6 @@ static NSString * const kCamera = @"camera";
 #pragma mark - UI Presentation
 - (void)_updateDeviceContactsWithMatchedUsers {
 	[super _updateDeviceContactsWithMatchedUsers];
-}
-
-
-#pragma mark - InsetOverlay Delegates
-- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidClose");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Review Overlay Close"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-	}];
-}
-
-- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Review Overlay Acknowledge"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-	}];
-}
-
-- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidInvite");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Overlay Acknowledge"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}];
 }
 
 
@@ -360,7 +330,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Friend"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
 									withContactUser:contactUserVO];
 	
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
@@ -374,6 +344,10 @@ static NSString * const kCamera = @"camera";
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+									withTrivialUser:trivialUserVO];
+	
 	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	
 	[viewCell toggleSelected:NO];
@@ -394,7 +368,16 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+		if (indexPath.section == 0 && indexPath.row == 0)
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Share Row"];
+		
+		if (indexPath.section == 0 && indexPath.row == 1)
+			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
+		
 		if (indexPath.section != 0) {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+											withTrivialUser:cell.trivialUserVO];
+			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:^(void) {
@@ -403,6 +386,9 @@ static NSString * const kCamera = @"camera";
 		}
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook && indexPath.section != 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+										withContactUser:cell.contactUserVO];
+		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:^(void) {

@@ -29,7 +29,7 @@
 		[self addSubview:_bgImageView];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 31.0, 170.0, 19.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 32.0, 170.0, 19.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 		_titleLabel.textColor = [UIColor blackColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);

@@ -208,6 +208,8 @@
 
 #pragma mark - Navigation
 - (void)_goCountryCodes {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Country Selector"];
+	
 	HONCallingCodesViewController *callingCodesViewController = [[HONCallingCodesViewController alloc] init];
 	callingCodesViewController.delegate = self;
 	
@@ -217,11 +219,14 @@
 }
 
 - (void)_goCancel {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel"];
+	
 	_isDismissing = YES;
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goSubmit {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Submit"];
 	[_phoneTextField resignFirstResponder];
 }
 
@@ -330,6 +335,8 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Found User Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"] withTrivialUser:_searchUserVO];
+		
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:_searchUserVO]];
 			[navigationController setNavigationBarHidden:YES];
@@ -337,6 +344,8 @@
 		}
 	
 	} else if (alertView.tag == 1) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"] withContactUser:_contactUserVO];
+		
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:_contactUserVO]];
 			[navigationController setNavigationBarHidden:YES];

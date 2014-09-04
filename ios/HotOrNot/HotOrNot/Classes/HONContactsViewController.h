@@ -52,6 +52,8 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONSearchBarView *_searchBarView;
 }
 
+- (void)_goDataRefresh:(CKRefreshControl *)sender;
+
 - (void)_promptForAddressBookAccess;
 - (void)_promptForAddressBookPermission;
 

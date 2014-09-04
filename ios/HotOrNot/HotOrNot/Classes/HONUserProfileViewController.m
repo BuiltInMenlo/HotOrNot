@@ -219,48 +219,51 @@
 	}
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewDidDisappear:animated];
-}
-
 
 #pragma mark - Navigation
 - (void)_goInvite {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Invite User"
+									 withCohortUser:_userVO];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 - (void)_goBack {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goChangeAvatar {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Change Avatar"];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRefresh {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Refresh"];
+	
 	_activityAlerts = [NSMutableArray array];
 	[self _retrieveUser];
 }
 
-- (void)_goShoutout {
-	[[HONAPICaller sharedInstance] createShoutoutChallengeWithUserID:_userVO.userID completion:^(NSObject *result) {
-		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
-									message:@"Check your Home timeline to like and reply."
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}];
-}
+//- (void)_goShoutout {
+//	[[HONAPICaller sharedInstance] createShoutoutChallengeWithUserID:_userVO.userID completion:^(NSObject *result) {
+//		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
+//									message:@"Check your Home timeline to like and reply."
+//								   delegate:nil
+//						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//						  otherButtonTitles:nil] show];
+//	}];
+//}
 
 - (void)_goFlag {
-
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Flag User" withCohortUser:_userVO];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil)  //@"Are you sure?"
-														message: NSLocalizedString(@"flag_person", nil) //@"This person will be flagged for review"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", @"Are you sure?")
+														message: NSLocalizedString(@"flag_person", @"This person will be flagged for review")
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
 											  otherButtonTitles: NSLocalizedString(@"yes_flag", nil) , nil];
@@ -269,17 +272,17 @@
 	[alertView show];
 }
 
-- (void)_goFAQ {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
+//- (void)_goFAQ {
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
 
-- (void)_goSettings {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
+//- (void)_goSettings {
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
 
 
 #pragma mark - Notifications
@@ -353,12 +356,12 @@
 	[_profileHolderView addSubview:scoreLabel];
 	
 	if (_userProfileType == HONUserProfileTypeUser) {
-		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		settingsButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
-		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
-		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
-		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addButton:settingsButton];
+//		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		settingsButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
+//		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
+//		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
+//		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+//		[_headerView addButton:settingsButton];
 		
 		UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		changeAvatarButton.frame = CGRectMake(257.0, 0.0, 64.0, 64.0);
@@ -415,6 +418,8 @@
 
 #pragma mark - ActivityItemView Delegates
 - (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Show User Activity" withTrivialUser:trivialUserVO];
+	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
 }
 
@@ -477,50 +482,35 @@
 	
 	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Selected Row"];
+	
 	NSLog(@"vo:[%@]", vo.dictionary);
 	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : @"UNKNOWN");
 	
-	NSString *mpAlertType;
-	NSDictionary *mpParams;
-	
 	UIViewController *viewController;
 	if (vo.activityType == HONActivityItemTypeInviteAccepted) {
-		mpAlertType = @"Accepted Invite";
-		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
-		mpAlertType = @"Club Invite";
-		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
-		
 		if (_userProfileType == HONUserProfileTypeOpponent) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO: _userVO]]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-		else{
+			
+		} else {
 			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
 			viewController = userPofileViewController;
 		}
 		
 	} else if (vo.activityType == HONActivityItemTypeLike) {
-		mpAlertType = @"Like";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
-		
 		HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:vo.challengeID];
 		viewController = clubTimelineViewControler;
 		
 	} else if (vo.activityType == HONActivityItemTypeShoutout) {
-		mpAlertType = @"Shoutout";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
-		
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
 		viewController = userPofileViewController;
 		
 	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {
-		mpAlertType = @"Reply";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
+		HONClubTimelineViewController *userPofileViewController = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:vo.challengeID];
 		viewController = userPofileViewController;
 	}
 	

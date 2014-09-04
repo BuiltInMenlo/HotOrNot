@@ -2423,7 +2423,6 @@
 			children = (
 				4CED977518E46B1800482813 /* User Profile */,
 				4C32B9A515FAB60A0023A0EE /* Selfie Camera */,
-				4C148F7E17815CA900EBD245 /* Settings */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 			);
 			name = "View Controllers";
@@ -2488,8 +2487,9 @@
 			isa = PBXGroup;
 			children = (
 				4C2DD82F18E3B41900BC8759 /* Friends */,
-				4CF7504818989DFA009E39E4 /* News */,
 				4C00491819467EE6007FA9F5 /* Clubs */,
+				4C148F7E17815CA900EBD245 /* Settings */,
+				4CF7504818989DFA009E39E4 /* News */,
 				4C066204194A0D33001941D1 /* -Shared- */,
 			);
 			name = Tabs;

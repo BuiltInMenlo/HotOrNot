@@ -54,29 +54,29 @@
 //		_avatarButton.frame = _avatarImageView.frame;
 //		[self.contentView addSubview:_avatarButton];
 			
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 180.0, 18.0)];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 21.0, 180.0, 21.0)];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 		_nameLabel.textColor = [UIColor blackColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unverifiedUserArrow"]];
-		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0 - 56, 28.0);
-		_arrowImageView.hidden = YES;
-		[self.contentView addSubview:_arrowImageView];
+//		_arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unverifiedUserArrow"]];
+//		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0 - 56, 28.0);
+//		_arrowImageView.hidden = YES;
+//		[self.contentView addSubview:_arrowImageView];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0 - 56, 33.0, 25.0, 15.0)];
-		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.hidden = YES;
-		_scoreLabel.text = @"0";
-		[self.contentView addSubview:_scoreLabel];
+//		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0 - 56, 33.0, 25.0, 15.0)];
+//		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+//		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//		_scoreLabel.backgroundColor = [UIColor clearColor];
+//		_scoreLabel.hidden = YES;
+//		_scoreLabel.text = @"0";
+//		[self.contentView addSubview:_scoreLabel];
 		
 		
-		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
-		_overlayTintView.backgroundColor = BOT_TINT_COLOR;
-		//[self.contentView addSubview:_overlayTintView];
+//		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
+//		_overlayTintView.backgroundColor = BOT_TINT_COLOR;
+//		[self.contentView addSubview:_overlayTintView];
 		
 		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -150,15 +150,15 @@
 //	
 //	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
-	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
-	_arrowImageView.hidden = NO;
-	
-	_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
-	_scoreLabel.hidden = NO;
-	
-	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-	_nameLabel.text = _trivialUserVO.username;
+//	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
+//	_arrowImageView.hidden = NO;
+//	
+//	_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+//	_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
+//	_scoreLabel.hidden = NO;
+//	
+//	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
+//	_nameLabel.text = _trivialUserVO.username;
 	
 //	if (trivialUserVO.isVerified) {
 //		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
@@ -191,45 +191,45 @@
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
 	if ([_contactUserVO.lastName length] > 0)
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
+		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_nameLabel.font.pointSize] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
 	
 	else
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
+		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_nameLabel.font.pointSize] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
 	
 	
 //	if (_contactUserVO.contactType == HONContactTypeMatched) {
 //		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
 //		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 //		
-		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-		
-		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
-		_arrowImageView.hidden = NO;
-		
-		
-		_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
-		_scoreLabel.hidden = NO;
-		
-		if (_trivialUserVO.isVerified) {
-			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
-			verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
-			verifiedImageView.hidden = !_trivialUserVO.isVerified;
-			[self.contentView addSubview:verifiedImageView];
-		}
+//		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
+//		
+//		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
+//		_arrowImageView.hidden = NO;
+//		
+//		
+//		_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+//		_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
+//		_scoreLabel.hidden = NO;
+//		
+//		if (_trivialUserVO.isVerified) {
+//			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
+//			verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
+//			verifiedImageView.hidden = !_trivialUserVO.isVerified;
+//			[self.contentView addSubview:verifiedImageView];
+//		}
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"] != nil) {
-		NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"];
-		
-		if ([[[[[dict objectForKey:@"name"] componentsSeparatedByString:@" "] firstObject] lowercaseString] isEqualToString:[_contactUserVO.lastName lowercaseString]]) {
-			UILabel *familyLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x + 25.0, _nameLabel.frame.origin.y + 20.0, 220.0, 15.0)];
-			familyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
-			familyLabel.textColor = [UIColor blackColor];
-			familyLabel.backgroundColor = [UIColor clearColor];
-			familyLabel.text = [NSString stringWithFormat:@"Invite to join the %@ club!", _contactUserVO.lastName];
-			[self.contentView addSubview:familyLabel];
-		}
-	}
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"] != nil) {
+//		NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"];
+//		
+//		if ([[[[[dict objectForKey:@"name"] componentsSeparatedByString:@" "] firstObject] lowercaseString] isEqualToString:[_contactUserVO.lastName lowercaseString]]) {
+//			UILabel *familyLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x + 25.0, _nameLabel.frame.origin.y + 20.0, 220.0, 15.0)];
+//			familyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+//			familyLabel.textColor = [UIColor blackColor];
+//			familyLabel.backgroundColor = [UIColor clearColor];
+//			familyLabel.text = [NSString stringWithFormat:@"Invite to join the %@ club!", _contactUserVO.lastName];
+//			[self.contentView addSubview:familyLabel];
+//		}
+//	}
 }
 
 

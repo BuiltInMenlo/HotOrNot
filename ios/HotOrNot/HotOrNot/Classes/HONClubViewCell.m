@@ -16,6 +16,7 @@
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *membersLabel;
+@property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic, strong) NSMutableArray *statusUpdateVOs;
 @property (nonatomic, strong) NSMutableArray *statusUpdateViews;
 @property (nonatomic, strong) HONImageLoadingView *statusUpdateImageLoadingView;
@@ -34,9 +35,9 @@
 	if ((self = [super init])) {
 		_loaderStartFrame = CGRectMake(17.0, 17.0, 42.0, 44.0);
 		
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 19.0, 170.0, 19.0)];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 26.0, 170.0, 22.0)];
 		_nameLabel.backgroundColor = [UIColor clearColor];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_nameLabel.textColor = [UIColor blackColor];
 		[self.contentView addSubview:_nameLabel];
 		
@@ -45,6 +46,13 @@
 		_membersLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 		_membersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		[self.contentView addSubview:_membersLabel];
+		
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(274.0, 8.0, 30.0, 14.0)];
+		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_timeLabel.backgroundColor = [UIColor clearColor];
+		_timeLabel.textAlignment = NSTextAlignmentRight;
+		[self.contentView addSubview:_timeLabel];
 	}
 	
 	return (self);
@@ -58,6 +66,7 @@
 	
 	_nameLabel.text = _clubVO.clubName;
 	_membersLabel.text = @"";
+	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate];
 	
 	_statusUpdateVOs = [NSMutableArray array];
 	_statusUpdateViews = [NSMutableArray array];
@@ -66,7 +75,7 @@
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 		
 		UIView *statusUpdateView = [self _holderViewForStatusUpdate:vo];
-		statusUpdateView.frame = CGRectOffset(statusUpdateView.frame, 17.0 + (idx * 18.0), 17.0);
+		statusUpdateView.frame = CGRectOffset(statusUpdateView.frame, 17.0 + (idx * 18.0), 16.0);
 		[statusUpdateView setTag:idx];
 		[self.contentView addSubview:statusUpdateView];
 		[_statusUpdateViews addObject:statusUpdateView];
@@ -117,14 +126,17 @@
 			idx++;
 		}
 		
-		members = ([[members substringWithRange:NSMakeRange([members length] - 2, 2)] isEqualToString:@", "]) ? [members substringToIndex:[members length] - 2] : members;
+		HONClubPhotoVO *vo = (HONClubPhotoVO *)[_statusUpdateVOs lastObject];
+		
+		members = [vo.username stringByAppendingFormat:@"has posted %d new emotion%@…", [vo.subjectNames count], ([vo.subjectNames count] == 1) ? @"" : @"s"];
+		//members = ([[members substringWithRange:NSMakeRange([members length] - 2, 2)] isEqualToString:@", "]) ? [members substringToIndex:[members length] - 2] : members;
 	}
 	
 	members = ([_clubVO.activeMembers count] == 0 && [_clubVO.submissions count] == 0) ? members = NSLocalizedString(@"empty_club", @"Tap and hold to invite friends") : members;
 	
 	_nameLabel.frame = CGRectOffset(_nameLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
-	_membersLabel.frame = CGRectOffset(_membersLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
-	_membersLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : members;
+	//_membersLabel.frame = CGRectOffset(_membersLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
+	//_membersLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : members;
 	
 }
 
