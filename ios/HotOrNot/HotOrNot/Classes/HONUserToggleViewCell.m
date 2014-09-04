@@ -56,22 +56,22 @@
 			
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
-		_nameLabel.textColor = [UIColor blackColor];
+		_nameLabel.textColor = [[HONColorAuthority sharedInstance]honGreyTextColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unverifiedUserArrow"]];
-		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0 - 56, 28.0);
-		_arrowImageView.hidden = YES;
-		[self.contentView addSubview:_arrowImageView];
+//		_arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unverifiedUserArrow"]];
+//		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0 - 56, 28.0);
+//		_arrowImageView.hidden = YES;
+//		[self.contentView addSubview:_arrowImageView];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0 - 56, 33.0, 25.0, 15.0)];
-		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.hidden = YES;
-		_scoreLabel.text = @"0";
-		[self.contentView addSubview:_scoreLabel];
+//		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0 - 56, 33.0, 25.0, 15.0)];
+//		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+//		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//		_scoreLabel.backgroundColor = [UIColor clearColor];
+//		_scoreLabel.hidden = YES;
+//		_scoreLabel.text = @"0";
+//		[self.contentView addSubview:_scoreLabel];
 		
 		
 		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
@@ -157,8 +157,8 @@
 	_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
 	_scoreLabel.hidden = NO;
 	
-	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-	_nameLabel.text = _trivialUserVO.username;
+//	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
+//	_nameLabel.text = _trivialUserVO.username;
 	
 //	if (trivialUserVO.isVerified) {
 //		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
@@ -179,8 +179,8 @@
 	
 	
 	
-	NSString *nameCaption = _contactUserVO.fullName;//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
-	
+	NSString *nameCaption = [[@"Invite " stringByAppendingString:_contactUserVO.fullName] stringByAppendingString:@" to this app"];//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
+
 //	_avatarImageView.image = _contactUserVO.avatarImage;
 //	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])
 //		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
@@ -190,18 +190,19 @@
 	
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
-	if ([_contactUserVO.lastName length] > 0)
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
-	
-	else
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
+	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+//	if ([_contactUserVO.lastName length] > 0)
+//		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
+//	
+//	else
+//		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
 	
 	
 //	if (_contactUserVO.contactType == HONContactTypeMatched) {
 //		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
 //		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 //		
-		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
+//		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
 		
 		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 		_arrowImageView.hidden = NO;

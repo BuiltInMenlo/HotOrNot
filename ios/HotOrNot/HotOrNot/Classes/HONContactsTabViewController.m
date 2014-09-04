@@ -101,9 +101,9 @@ static NSString * const kCamera = @"camera";
 	[super loadView];
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
-	[_headerView addButton:_activityHeaderView];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	//[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
+	//[_headerView addButton:_activityHeaderView];
+	//[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	_searchBarView.userInteractionEnabled = NO;
 	

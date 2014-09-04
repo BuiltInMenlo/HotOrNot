@@ -325,7 +325,7 @@
 	_clubInviteContacts = [NSMutableArray array];
 	_matchedUserIDs = [NSMutableArray array];
 
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
@@ -342,9 +342,9 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
 	[self.view addSubview:_headerView];
 	
-	_searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
-	_searchBarView.delegate = self;
-	[self.view addSubview:_searchBarView];
+	//_searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+	//_searchBarView.delegate = self;
+	//[self.view addSubview:_searchBarView];
 }
 
 - (void)viewDidLoad {
@@ -447,6 +447,8 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"SEARCH RESULTS" : [_segmentedKeys objectAtIndex:section]]);
+	
+	//return 0;
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
@@ -510,11 +512,23 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && indexPath.section == 0) ? 74.0 : kOrthodoxTableCellHeight);
+	//return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && indexPath.section == 0) ? 74.0 : kOrthodoxTableCellHeight);
+
+	if(indexPath.section == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return kOrthodoxTableCellHeight;
+	}
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
+	//return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
+
+	return 0;
+
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
