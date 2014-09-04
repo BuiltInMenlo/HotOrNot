@@ -93,7 +93,7 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@" "]; //@"Settings"];
 	[self.view addSubview:headerView];
 	
 	//_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)];
@@ -132,6 +132,7 @@
 
 
 - (void) _goTimeline {
+	
 	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
 	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
 	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
