@@ -73,13 +73,69 @@
 	NSLog(@"_checkUsername -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 	NSLog(@"_checkUsername -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
-		NSLog(@"\n\n******** USER/PHONE BY-PASS **********\n");
-		[self _finalizeUser];
-	}
-	
-	else {
+//	if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
+//		NSLog(@"\n\n******** USER/PHONE BY-PASS **********\n");
+//		[self _finalizeUser];
+//	}
+//	
+//	else {
 		NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
+		
+		[[HONAPICaller sharedInstance] checkForAvailableUsername:_username completion:^(NSDictionary *result) {
+			NSLog(@"RESULT:[%@]", result);
+			
+			if ((BOOL)[[result objectForKey:@"found"] intValue]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				[_progressHUD setYOffset:-80.0];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+				
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_usernameCheckImageView.alpha = 1.0;
+				
+				_clubNameLabel.text = @"joinselfie.club/";
+				_usernameTextField.text = @"";
+				[_usernameTextField becomeFirstResponder];
+			
+			} else {
+				[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
+					if ((BOOL)[[result objectForKey:@"found"] intValue]) {
+						if (_progressHUD == nil)
+							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+						[_progressHUD setYOffset:-80.0];
+						_progressHUD.minShowTime = kHUDTime;
+						_progressHUD.mode = MBProgressHUDModeCustomView;
+						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+						_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
+						[_progressHUD show:NO];
+						[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+						_progressHUD = nil;
+						
+						_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+						_phoneCheckImageView.alpha = 1.0;
+						
+						_phone = @"";
+						_phoneTextField.text = @"";
+						_phoneTextField.text = @"";
+						_phoneTextField.text = @"";
+						[_phoneTextField becomeFirstResponder];
+						
+					} else {
+						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
+						[self _finalizeUser];
+					}
+				}];
+			}
+		}];
+		
+		
+		/*
 		[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSDictionary *result) {
 			HONRegisterCheckErrorType checkErrorType = (HONRegisterCheckErrorType)[[result objectForKey:@"result"] intValue];
 			
@@ -151,8 +207,8 @@
 					_phoneTextField.text = @"";
 				}
 			}
-		}];
-	}
+		}];*/
+//	}
 }
 
 - (void)_uploadPhotos:(UIImage *)image {
@@ -649,8 +705,8 @@
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		_usernameCheckImageView.alpha = 1.0;
 		
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_user", nil) // @"No Username!"
-									message: NSLocalizedString(@"no_user_msg", nil) //@"You need to enter a username to use Selfieclub"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_user", @"No Username!")
+									message: NSLocalizedString(@"no_user_msg", @"You need to enter a username to use Selfieclub")
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
