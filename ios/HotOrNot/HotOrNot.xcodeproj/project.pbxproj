@@ -355,6 +355,8 @@
 		8F4E6217198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F4E6219198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png */; };
 		8F4E621A198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F4E621C198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png */; };
 		8F4E621D198ACD7800E8A171 /* inviteOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F4E621F198ACD7800E8A171 /* inviteOverlay@2x.png */; };
+		8FF637FD19B8E85100B7196B /* HONPostStatusUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FF637FC19B8E85100B7196B /* HONPostStatusUpdateViewController.m */; };
+		8FF6380019B8E8B200B7196B /* HONPostStatusUpdateViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FF637FF19B8E8B200B7196B /* HONPostStatusUpdateViewCell.m */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */; };
 /* End PBXBuildFile section */
@@ -1256,6 +1258,10 @@
 		8F4E6231198ACE0B00E8A171 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/closeButtonBlue_nonActive@2x.png"; sourceTree = "<group>"; };
 		8F4E6232198ACE0B00E8A171 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/closeButtonBlue_nonActive@2x.png"; sourceTree = "<group>"; };
 		8F4E6233198ACE0C00E8A171 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/closeButtonBlue_nonActive@2x.png"; sourceTree = "<group>"; };
+		8FF637FB19B8E85100B7196B /* HONPostStatusUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPostStatusUpdateViewController.h; sourceTree = "<group>"; };
+		8FF637FC19B8E85100B7196B /* HONPostStatusUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPostStatusUpdateViewController.m; sourceTree = "<group>"; };
+		8FF637FE19B8E8B200B7196B /* HONPostStatusUpdateViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPostStatusUpdateViewCell.h; sourceTree = "<group>"; };
+		8FF637FF19B8E8B200B7196B /* HONPostStatusUpdateViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPostStatusUpdateViewCell.m; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONSearchSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchSubjectVO.h; sourceTree = "<group>"; };
@@ -2425,6 +2431,10 @@
 				4C32B9A515FAB60A0023A0EE /* Selfie Camera */,
 				4C148F7E17815CA900EBD245 /* Settings */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
+				8FF637FB19B8E85100B7196B /* HONPostStatusUpdateViewController.h */,
+				8FF637FC19B8E85100B7196B /* HONPostStatusUpdateViewController.m */,
+				8FF637FE19B8E8B200B7196B /* HONPostStatusUpdateViewCell.h */,
+				8FF637FF19B8E8B200B7196B /* HONPostStatusUpdateViewCell.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -3009,6 +3019,7 @@
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */,
 				4C4328D618E3A9FA0035FF06 /* MPSurveyNavigationController.m in Sources */,
+				8FF637FD19B8E85100B7196B /* HONPostStatusUpdateViewController.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
 				30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */,
 				4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */,
@@ -3044,6 +3055,7 @@
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
+				8FF6380019B8E8B200B7196B /* HONPostStatusUpdateViewCell.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
 				4C43280A18E3A9FA0035FF06 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				4CA246C519083C8B00512295 /* NSString+DataTypes.m in Sources */,
