@@ -25,10 +25,13 @@
 #import "HONInviteClubsViewController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONContactsSearchViewController.h"
+#import "HONClubTimelineViewController.h"
+#import "HONPostStatusUpdateViewController.h"
+
 
 @interface HONContactsTabViewController () <HONInsetOverlayViewDelegate, HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
-@property (nonatomic, strong) HONTabBannerView *tabBannerView;
+//@property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @end
@@ -98,11 +101,15 @@ static NSString * const kCamera = @"camera";
 	[super loadView];
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
-	[_headerView addButton:_activityHeaderView];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	[_headerView setTitle:@"Emoji"];  //@"Friends"];
+	//[_headerView addButton:_activityHeaderView];
+	//[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	_searchBarView.userInteractionEnabled = NO;
+	
+	//Go to Timeline
+	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
+	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	searchButton.frame = _searchBarView.frame;
@@ -140,22 +147,22 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewWillAppear:animated];
 	
-	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
-		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-		
-		_tabBannerView = [[HONTabBannerView alloc] init];
-		_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
-		_tabBannerView.delegate = self;
-		[self.view addSubview:_tabBannerView];
-		
-		[UIView animateWithDuration:0.250 delay:0.667
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
-							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-						 animations:^(void) {
-							 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
-						 } completion:^(BOOL finished) {
-						 }];
-	}
+//	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
+//		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+//		
+//		_tabBannerView = [[HONTabBannerView alloc] init];
+//		_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
+//		_tabBannerView.delegate = self;
+//		[self.view addSubview:_tabBannerView];
+//		
+//		[UIView animateWithDuration:0.250 delay:0.667
+//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
+//							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+//						 animations:^(void) {
+//							 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
+//						 } completion:^(BOOL finished) {
+//						 }];
+//	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -178,11 +185,17 @@ static NSString * const kCamera = @"camera";
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
-- (void)_goCreateChallenge {
-	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
-	selfieCameraViewController.delegate = self;
+- (void) _goTimeline {
+	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
+	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
+	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+}
+
+- (void)_goCreateChallenge {
+	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -298,30 +311,30 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - TabBannerView Delegates
-- (void)tabBannerView:(HONTabBannerView *)bannerView joinAreaCodeClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[[*:*]] tabBannerView:joinAreaCodeClub:[%@]", clubVO.clubName);
-	
-	_selectedClubVO = clubVO;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
+//- (void)tabBannerView:(HONTabBannerView *)bannerView joinAreaCodeClub:(HONUserClubVO *)clubVO {
+//	NSLog(@"[[*:*]] tabBannerView:joinAreaCodeClub:[%@]", clubVO.clubName);
+//	
+//	_selectedClubVO = clubVO;
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
+//
+//- (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO {
+//	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
+//
+//- (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO {
+//	NSLog(@"[[*:*]] tabBannerView:joinSchoolClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+//		
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 
-- (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[[*:*]] tabBannerView:joinSchoolClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
-		
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-	
 //	_selectedClubVO = clubVO;
 //	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 //														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
@@ -330,24 +343,24 @@ static NSString * const kCamera = @"camera";
 //											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 //	[alertView setTag:2];
 //	[alertView show];
-}
-
-- (void)tabBannerView:(HONTabBannerView *)bannerView createBaeClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[[*:*]] tabBannerView:createBaeClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
-	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
-}
+//}
+//
+//- (void)tabBannerView:(HONTabBannerView *)bannerView createBaeClub:(HONUserClubVO *)clubVO {
+//	NSLog(@"[[*:*]] tabBannerView:createBaeClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
+//
+//- (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
+//	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:^(void) {
+//	}];
+//}
 
 
 #pragma mark - UserToggleViewCell Delegates

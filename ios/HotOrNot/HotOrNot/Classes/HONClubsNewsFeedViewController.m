@@ -441,7 +441,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Club Timeline"
 									   withUserClub:userClubVO];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 	[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:userClubVO atPhotoIndex:0] animated:YES];
 }
 
@@ -581,7 +581,7 @@ static NSString * const kCamera = @"camera";
 		
 		if (cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner || cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+			//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:cell.clubPhotoIndex] animated:YES];
 			
 		} else if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {

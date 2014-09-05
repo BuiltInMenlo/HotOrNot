@@ -31,7 +31,7 @@
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 31.0, 170.0, 19.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
-		_titleLabel.textColor = [UIColor blackColor];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
@@ -60,8 +60,8 @@
 - (void)toggleLightStyle:(BOOL)isLightStyle {
 	_bgImageView.image = (isLightStyle) ? [UIImage imageNamed:@"navHeaderBackgroundLight"] : [UIImage imageNamed:@"navHeaderBackground"];
 	
-	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor blackColor];
-	_titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
+	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor whiteColor];
+	// _titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
 	
 	if (_titleLabel == nil)
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0)];

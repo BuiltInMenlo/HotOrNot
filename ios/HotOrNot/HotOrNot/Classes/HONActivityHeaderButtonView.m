@@ -23,15 +23,15 @@ const CGFloat kMaxActivityWidth = 44.0;
 @implementation HONActivityHeaderButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 1.0, 93.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 1.0, 44.0, 44.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_completedFirstRun:) name:@"COMPLETED_FIRST_RUN" object:nil];
 		
 		
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
-		_button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-		[_button setBackgroundImage:[UIImage imageNamed:@"timelineButton_nonActive"] forState:UIControlStateNormal];
-		[_button setBackgroundImage:[UIImage imageNamed:@"timelineButton_Active"] forState:UIControlStateHighlighted];
-		[_button setBackgroundImage:[UIImage imageNamed:@"timelineButton_Active"] forState:UIControlStateSelected];
+		_button.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
+		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
 		[_button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_button];
 		

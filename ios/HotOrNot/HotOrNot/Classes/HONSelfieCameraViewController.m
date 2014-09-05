@@ -267,7 +267,7 @@
 	
 	[super loadView];
 	self.view.backgroundColor = [UIColor blackColor];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 - (void)viewDidLoad {

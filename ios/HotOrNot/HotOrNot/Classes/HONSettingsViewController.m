@@ -20,6 +20,12 @@
 #import "HONTermsViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONNetworkStatusViewController.h"
+#import "HONContactsTabViewController.h"
+#import "HONCreateSnapButtonView.h"
+#import "HONSelfieCameraViewController.h"
+#import "HONClubTimelineViewController.h"
+#import "HONActivityHeaderButtonView.h"
+
 
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -86,15 +92,22 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@" "]; //@"Settings"];
 	[self.view addSubview:headerView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:doneButton];
+	//_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)];
+	
+//	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
+//	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
+//	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
+//	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+//	[headerView addButton:doneButton];
+	
+	//Go to Timeline
+//	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
+//	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0)];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -115,6 +128,24 @@
 #pragma mark - Navigation
 - (void)_goClose {
 	[self dismissViewControllerAnimated:YES completion:^(void) {}];
+}
+
+
+- (void) _goTimeline {
+	
+	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
+	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
+	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
+	
+}
+
+- (void)_goCreateChallenge {
+	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
+	//selfieCameraViewController.delegate = self;
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
