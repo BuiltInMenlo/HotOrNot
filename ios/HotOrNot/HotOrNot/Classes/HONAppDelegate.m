@@ -736,7 +736,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
 //	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
 	
-	
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"Emoji_alert"]; //uncomment to reset Alert that tells user to use emoji keyboard
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;

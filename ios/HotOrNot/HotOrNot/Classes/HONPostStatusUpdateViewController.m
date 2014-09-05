@@ -22,7 +22,8 @@
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) NSArray *captions;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UITextField *emojiTextField;
+@property (nonatomic, strong) UITextView *emojiTextView;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONPostStatusUpdateViewController
@@ -62,8 +63,9 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Enter update"]; //@"Settings"];
-	[self.view addSubview:headerView];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Compose"]; //@"Settings"];
+	[self.view addSubview:_headerView];
 	
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -71,14 +73,14 @@
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:cancelButton];
+	[_headerView addSubview:cancelButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(self.view.frame.size.width - 45, 18.0, 44.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"statusUpdateButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"statusUpdateButton_Active"] forState:UIControlStateHighlighted];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:submitButton];
+	[_headerView addSubview:submitButton];
 	
 	//_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)];
 	
@@ -101,24 +103,33 @@
 //	_tableView.scrollsToTop = NO;
 //	[self.view addSubview:_tableView];
 	
-	_emojiTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 76.0, 294.0, 22.0)];
-	[_emojiTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_emojiTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_emojiTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_emojiTextField setReturnKeyType:UIReturnKeyDone];
-	[_emojiTextField setTextColor:[UIColor blackColor]];
-	[_emojiTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_emojiTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-//	_emojiTextField.font = textFont;
-	_emojiTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_emojiTextField.placeholder = @"Add Emoji...";
-	_emojiTextField.text = @"";
-	[_emojiTextField setTag:0];
-	_emojiTextField.delegate = self;
-	[self.view addSubview:_emojiTextField];
+	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(13.0, 72.0, 304.0, self.view.frame.size.height - 288)];
+	[_emojiTextView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_emojiTextView setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_emojiTextView.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_emojiTextView setReturnKeyType:UIReturnKeyDone];
+	[_emojiTextView setTextColor:[UIColor blackColor]];
+	_emojiTextView.font = [UIFont systemFontOfSize:40.0f];
+	_emojiTextView.keyboardType = UIKeyboardTypeDefault;
+//	_emojiTextView.backgroundColor = [UIColor redColor];
+	_emojiTextView.text = @"";
+	[_emojiTextView setTag:0];
+	_emojiTextView.delegate = self;
+	[self.view addSubview:_emojiTextView];
 	
-	[_emojiTextField becomeFirstResponder];
+	[_emojiTextView becomeFirstResponder];
 	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"Emoji_alert"] == nil) {
+		[[NSUserDefaults standardUserDefaults] setObject:@"Yes" forKey:@"Emoji_alert"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"This app will only accept emoji text so remember to turn your emoji keyboard on!"
+															message:nil
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:nil];
+		[alertView show];
+	} //only shows alert once
 }
 
 
@@ -133,31 +144,46 @@
 	[self dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
+#define ACCEPTABLE_CHARACTERS @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-/:;()$&@,?!\'\"[]{}#%^*+=\\|~<>€£¥•"
 
-#pragma mark - TextField Delegates
--(void)textFieldDidBeginEditing:(UITextField *)textField {
+#pragma mark - TextView Delegates
+-(BOOL)textViewShouldReturn:(UITextView *)textView {
 	
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+	NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:ACCEPTABLE_CHARACTERS];
+	
+	NSString *filtered = [[text componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
+	
+	return ([text isEqualToString:filtered] && ([textView.text length] < 200));
+}
+
+- (void)textViewDidChange:(UITextView *)textView {
+	
+	if ([textView.text length] > 0) {
+		[_headerView setTitle: [textView.text substringFromIndex: [textView.text length]-2]];
+
+	}
+	
+	else {
+		[_headerView setTitle:@"Compose"];
+	}
+}
+
+- (void)textViewDidBeginEditing:(UITextView *)textView {
 	
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	
-}
-
--(void)textFieldDidEndEditing:(UITextField *)textField {
-	
-}
-
-- (void)_onTextEditingDidEnd:(id)sender {
-	
-}
-
-- (void)_onTextEditingDidEndOnExit:(id)sender {
+- (void)textViewDidEndEditing:(UITextView *)textView {
 
 }
 
+- (void) animateTextView:(BOOL) up {
+}
 
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+
+}
 @end

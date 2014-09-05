@@ -29,9 +29,9 @@ const CGFloat kMaxActivityWidth = 44.0;
 		
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
 		_button.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
-		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
-		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
+		//[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+		//[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
+		//[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
 		[_button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_button];
 		
