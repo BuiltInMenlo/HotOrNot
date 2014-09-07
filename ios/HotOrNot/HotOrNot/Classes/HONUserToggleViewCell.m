@@ -56,7 +56,7 @@
 			
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
-		_nameLabel.textColor = [[HONColorAuthority sharedInstance]honGreyTextColor];
+		_nameLabel.textColor =  [UIColor blackColor]; //[[HONColorAuthority sharedInstance]honDarkGreyTextColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
@@ -81,14 +81,18 @@
 		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
-		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
-		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
+		//[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
+		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
+		//[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
+		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
 		[self.contentView addSubview:_toggledOffButton];
 		
 		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_toggledOnButton.frame = _toggledOffButton.frame;
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
+		//[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
+		//[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
 		_toggledOnButton.alpha = (int)_isSelected;
 		[self.contentView addSubview:_toggledOnButton];
 		
@@ -179,7 +183,7 @@
 	
 	
 	
-	NSString *nameCaption = [[@"Invite " stringByAppendingString:_contactUserVO.fullName] stringByAppendingString:@" to this app"];//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
+	NSString *nameCaption = [[@" " stringByAppendingString:_contactUserVO.fullName] stringByAppendingString:@" "];//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 
 //	_avatarImageView.image = _contactUserVO.avatarImage;
 //	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])

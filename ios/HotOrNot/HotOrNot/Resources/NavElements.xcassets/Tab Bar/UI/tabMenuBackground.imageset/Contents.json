@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "shortTabBackground@2x-1.png"
+      "filename" : "footerBackground@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "footerBackground100px.png"
+      "filename" : "footerBackground@2x-1.png"
     }
   ],
   "info" : {

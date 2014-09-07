@@ -108,7 +108,7 @@ static NSString * const kCamera = @"camera";
 	_searchBarView.userInteractionEnabled = NO;
 	
 	//Go to Timeline
-	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
+	//[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -380,9 +380,18 @@ static NSString * const kCamera = @"camera";
 	
 	[viewCell toggleSelected:NO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	//Uncomment later if necessary
+	
+	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
+	//[navigationController setNavigationBarHidden:YES];
+	//[self presentViewController:navigationController animated:YES completion:nil];
+
+	//Go to Timeline
+	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
+	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
+	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
+	
+
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
