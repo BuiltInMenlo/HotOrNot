@@ -37,7 +37,7 @@
 		
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 26.0, 170.0, 22.0)];
 		_nameLabel.backgroundColor = [UIColor clearColor];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 		_nameLabel.textColor = [UIColor blackColor];
 		[self.contentView addSubview:_nameLabel];
 		

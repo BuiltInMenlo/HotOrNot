@@ -510,7 +510,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && indexPath.section == 0) ? 74.0 : kOrthodoxTableCellHeight);
+	return(kOrthodoxTableCellHeight);// return ((_tableViewDataSource != HONContactsTableViewDataSourceSearchResults && indexPath.section == 0) ? 74.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -530,6 +530,10 @@
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0 && indexPath.row == 0) {
+			cell.backgroundView.alpha = 0.5;
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				cell.backgroundView.alpha = 1.0;
+			}];
 			HONUserClubVO *clubVO = (_userClubVO == nil) ? [[HONClubAssistant sharedInstance] userSignupClub] : _userClubVO;
 			NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], clubVO.ownerName, clubVO.clubName];
 			NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], clubVO.ownerName, clubVO.clubName];
@@ -558,6 +562,10 @@
 			
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0 && indexPath.row == 0) {
+			cell.backgroundView.alpha = 0.5;
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				cell.backgroundView.alpha = 1.0;
+			}];
 			HONUserClubVO *clubVO = (_userClubVO == nil) ? [[HONClubAssistant sharedInstance] userSignupClub] : _userClubVO;
 			NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], clubVO.ownerName, clubVO.clubName];
 			NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], clubVO.ownerName, clubVO.clubName];

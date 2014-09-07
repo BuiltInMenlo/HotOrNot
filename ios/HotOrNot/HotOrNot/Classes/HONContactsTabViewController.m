@@ -101,7 +101,7 @@ static NSString * const kCamera = @"camera";
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
-	[_headerView addButton:_activityHeaderView];
+//	[_headerView addButton:_activityHeaderView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	_searchBarView.userInteractionEnabled = NO;
@@ -142,22 +142,22 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewWillAppear:animated];
 	
-	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
-		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-		
-		_tabBannerView = [[HONTabBannerView alloc] init];
-		_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
-		_tabBannerView.delegate = self;
-		[self.view addSubview:_tabBannerView];
-		
-		[UIView animateWithDuration:0.250 delay:0.667
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
-							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-						 animations:^(void) {
-							 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
-						 } completion:^(BOOL finished) {
-						 }];
-	}
+//	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
+//		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+//		
+//		_tabBannerView = [[HONTabBannerView alloc] init];
+//		_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
+//		_tabBannerView.delegate = self;
+//		[self.view addSubview:_tabBannerView];
+//		
+//		[UIView animateWithDuration:0.250 delay:0.667
+//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
+//							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+//						 animations:^(void) {
+//							 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
+//						 } completion:^(BOOL finished) {
+//						 }];
+//	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {

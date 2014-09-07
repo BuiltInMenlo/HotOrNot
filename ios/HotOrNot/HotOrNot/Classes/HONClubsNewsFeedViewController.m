@@ -550,7 +550,7 @@ static NSString * const kCamera = @"camera";
 		HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[_timelineItems objectAtIndex:indexPath.row];
 		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[_clubVOPhotoIDs objectForKey:[@"" stringFromInt:clubPhotoVO.challengeID]]];
 		
-		return ((clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? 50.0 : 74.0);
+		return ((clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? 50.0 : kOrthodoxTableCellHeight);
 	}
 }
 

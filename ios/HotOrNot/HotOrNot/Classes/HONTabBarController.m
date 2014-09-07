@@ -144,11 +144,11 @@
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_settingsButton.frame = CGRectMake(213.0, 0.0, 107.0, kTabSize.height);
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateNormal];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Active"] forState:UIControlStateHighlighted];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateSelected];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateDisabled];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_NonActive"] forState:UIControlStateNormal];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Active"] forState:UIControlStateHighlighted];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Tapped"] forState:UIControlStateSelected];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_NonActive"] forState:UIControlStateDisabled];
 	[_settingsButton setTag:HONTabBarButtonTypeSettings];
 	[_tabHolderView addSubview:_settingsButton];
 	

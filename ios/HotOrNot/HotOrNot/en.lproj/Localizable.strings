@@ -103,7 +103,7 @@
 "grant_access" = "Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.";
 "select_club" = "Select Club";
 "club_name" = "Club Name";
-"settings_notification" = "Notification";
+"settings_notification" = "Notifications";
 "copy_url" = "Copy Club URL";
 "terms_service" = "Terms of service";
 "privacy_policy" = "Privacy policy";

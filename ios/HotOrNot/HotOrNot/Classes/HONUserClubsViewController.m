@@ -205,7 +205,7 @@ static NSString * const kCamera = @"camera";
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_clubs", @"Clubs")];
-	[headerView addButton:_activityHeaderView];
+//	[headerView addButton:_activityHeaderView];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
@@ -257,13 +257,13 @@ static NSString * const kCamera = @"camera";
 	UIViewController *viewController = (UIViewController *)[navigationController.viewControllers lastObject];
 	NSLog(@"navigationController:[%@] presentedViewController.nameOfClass:[%@]", self.navigationController, viewController.nameOfClass);
 	
-	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
-		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
-		
-		_tabBannerView = [[HONTabBannerView alloc] init];
-		_tabBannerView.delegate = self;
-		[self.view addSubview:_tabBannerView];
-	}
+//	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
+//		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+//		
+//		_tabBannerView = [[HONTabBannerView alloc] init];
+//		_tabBannerView.delegate = self;
+//		[self.view addSubview:_tabBannerView];
+//	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -611,13 +611,6 @@ static NSString * const kCamera = @"camera";
 		[cell hideChevron];
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClub"]];
 		
-		UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createClubButton.frame = CGRectMake(256.0, 16.0, 44.0, 44.0);
-		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_nonActive"] forState:UIControlStateNormal];
-		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_Active"] forState:UIControlStateHighlighted];
-		[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
-		[cell.contentView addSubview:createClubButton];
-		
 	} else if (indexPath.section == 1) {
 		cell.clubVO = (HONUserClubVO *)[[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row];
 		cell.delegate = self;
@@ -670,6 +663,11 @@ static NSString * const kCamera = @"camera";
 	
 	if (indexPath.section == 0) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Selected Create Club Row"];
+		
+		cell.backgroundView.alpha = 0.5;
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			cell.backgroundView.alpha = 1.0;
+		}];
 		[self _goCreateClub];
 	}
 	

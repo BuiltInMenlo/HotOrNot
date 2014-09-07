@@ -84,7 +84,9 @@
 		[[HONAPICaller sharedInstance] checkForAvailableUsername:_username completion:^(NSDictionary *result) {
 			NSLog(@"RESULT:[%@]", result);
 			
-			if ((BOOL)[[result objectForKey:@"found"] intValue]) {
+			if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+				[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Username Taken"];
+				
 				if (_progressHUD == nil)
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 				[_progressHUD setYOffset:-80.0];
@@ -105,7 +107,9 @@
 			
 			} else {
 				[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
-					if ((BOOL)[[result objectForKey:@"found"] intValue]) {
+					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+						[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Phone Taken"];
+						
 						if (_progressHUD == nil)
 							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 						[_progressHUD setYOffset:-80.0];
@@ -128,6 +132,7 @@
 						
 					} else {
 						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
+						[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Pass Signup"];
 						[self _finalizeUser];
 					}
 				}];
@@ -271,7 +276,7 @@
 		NSLog(@"\n\n******** FINALIZE W/ API **********");
 		[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																	@"username"	: _username,
-																	@"phone"	: _phone,
+																	@"phone"	: [_phone stringByAppendingString:@"@selfieclub.com"],
 																	@"filename"	: _imageFilename} completion:^(NSDictionary *result) {
 			if (result != nil) {
 				if (_progressHUD != nil) {
@@ -389,7 +394,7 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	_clubNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 97.0, 294, 18.0)];
+	_clubNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 98.0, 294, 18.0)];
 	_clubNameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 	_clubNameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_clubNameLabel.backgroundColor = [UIColor clearColor];
@@ -422,7 +427,7 @@
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
 	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1.0, 0.0, 0.0, 0.0)];
+	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(3.0, -3.0, 0.0, 0.0)];
 	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
@@ -437,9 +442,9 @@
 	[_phoneTextField setTextColor:[UIColor blackColor]];
 	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_phoneTextField.font = textFont;
+	_phoneTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 	_phoneTextField.keyboardType = UIKeyboardTypePhonePad;
-	_phoneTextField.placeholder = NSLocalizedString(@"enter_phone", nil); //@"Enter phone";
+	_phoneTextField.placeholder = NSLocalizedString(@"enter_phone", @"Enter phone");
 	_phoneTextField.text = @"";
 	[_phoneTextField setTag:1];
 	_phoneTextField.delegate = self;

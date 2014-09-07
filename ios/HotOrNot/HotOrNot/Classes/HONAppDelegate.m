@@ -108,7 +108,7 @@ NSString * const kKeenIOWriteKey = @"7f1b91140d0fcf8aeb5ccde1a22567ea9073838582e
 const CGFloat kNavHeaderHeight = 64.0;
 const CGFloat kSearchHeaderHeight = 43.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
-const CGFloat kOrthodoxTableCellHeight = 64.0f;
+const CGFloat kOrthodoxTableCellHeight = 74.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // ui
@@ -421,15 +421,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
-	if ([phoneNumber length] > 0) {
-		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
+//	if ([phoneNumber length] > 0) {
+//		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
 //		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
 //			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
 		
-		return ([@"+" stringByAppendingString:formattedNumber]);
+//		return ([@"+" stringByAppendingString:formattedNumber]);
 		
-	} else
-		return (@"");
+//	} else
+//		return (@"");
+	
+	return ([[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""]);
 }
 
 + (NSDictionary *)parseQueryString:(NSString *)queryString {
@@ -827,6 +829,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
 	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Backgrounding First Run"];
+		
 		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
 		localNotification.timeZone = [NSTimeZone systemTimeZone];

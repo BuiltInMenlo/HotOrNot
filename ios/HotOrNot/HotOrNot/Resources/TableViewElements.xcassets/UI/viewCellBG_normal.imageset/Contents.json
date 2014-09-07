@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "basicRowBackground.png"
+      "filename" : "commonRowBackground-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "basicRowBackground@2x.png"
+      "filename" : "commonRowBackground.png"
     }
   ],
   "info" : {

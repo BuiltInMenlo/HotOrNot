@@ -54,8 +54,8 @@
 //		_avatarButton.frame = _avatarImageView.frame;
 //		[self.contentView addSubview:_avatarButton];
 			
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 21.0, 180.0, 21.0)];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 26.0, 180.0, 21.0)];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 		_nameLabel.textColor = [UIColor blackColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
@@ -80,7 +80,7 @@
 		
 		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
+		_toggledOffButton.frame = CGRectMake(257.0, 15.0, 44.0, 44.0);
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[self.contentView addSubview:_toggledOffButton];
@@ -190,11 +190,11 @@
 	
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
-	if ([_contactUserVO.lastName length] > 0)
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_nameLabel.font.pointSize] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
-	
-	else
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_nameLabel.font.pointSize] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
+//	if ([_contactUserVO.lastName length] > 0)
+//		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_nameLabel.font.pointSize] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
+//	
+//	else
+//		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_nameLabel.font.pointSize] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
 	
 	
 //	if (_contactUserVO.contactType == HONContactTypeMatched) {

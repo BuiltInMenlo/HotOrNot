@@ -45,14 +45,16 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_captions = @[ NSLocalizedString(@"settings_notification", @"Notifications"),
-					   NSLocalizedString(@"copy_url", @"Copy Club URL"),
-					   NSLocalizedString(@"share", @"Share club"),
-					   NSLocalizedString(@"terms_service", @"Terms of use"),
-					   NSLocalizedString(@"privacy_policy", @"Privacy policy"),
-					   NSLocalizedString(@"settings_support", @"Support"),
-					   NSLocalizedString(@"rate_app", @"Rate this app"),
-					   NSLocalizedString(@"network_status", @"Network status")];//,
+		_captions = @[@" ",
+					  NSLocalizedString(@"settings_notification", @"Notifications"),
+					  NSLocalizedString(@"copy_url", @"Copy Club URL"),
+					  NSLocalizedString(@"share", @"Share club"),
+					  NSLocalizedString(@"terms_service", @"Terms of use"),
+					  NSLocalizedString(@"privacy_policy", @"Privacy policy"),
+					  NSLocalizedString(@"settings_support", @"Support"),
+					  NSLocalizedString(@"rate_app", @"Rate this app"),
+					  NSLocalizedString(@"network_status", @"Network status"),
+					  @" "];//,
 //					   NSLocalizedString(@"settings_logout", @"Logout")];
 		
 		
@@ -100,7 +102,7 @@
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
-	[headerView addButton:_activityHeaderView];
+//	[headerView addButton:_activityHeaderView];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
@@ -219,11 +221,27 @@
 		cell.accessoryView = _notificationSwitch;
 	}
 	
+	if (indexPath.row == HONSettingsCellTypeShareClub) {
+		[cell hideChevron];
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareFriends"]];
+	}
+	
+	if (indexPath.row == HONSettingsCellTypeVersion) {
+		[cell hideChevron];
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
+		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
+		label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		label.backgroundColor = [UIColor clearColor];
+		label.textAlignment = NSTextAlignmentCenter;
+		label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
+		[cell.contentView addSubview:label];
+	}
+	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:(indexPath.row == HONSettingsCellTypeShareClub || indexPath.row == HONSettingsCellTypeNotifications || indexPath.row == HONSettingsCellTypeVersion) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
 	
 	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.1 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.05 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		cell.alpha = 1.0;
 	} completion:^(BOOL finished) {
 	}];
@@ -234,7 +252,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-	return (20.0);
+	return (0.0);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -253,19 +271,37 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (74.0);
+	return ((indexPath.row != HONSettingsCellTypeVersion) ? kOrthodoxTableCellHeight : 20.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == HONSettingsCellTypeNotifications) ? nil : indexPath);
+	return ((indexPath.row == HONSettingsCellTypeNotifications || indexPath.row == HONSettingsCellTypeVersion) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	if(indexPath.row == HONSettingsCellTypeCopyClub) {
+	if (indexPath.row == HONSettingsCellTypeShareClub) {
+		cell.backgroundView.alpha = 0.5;
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			cell.backgroundView.alpha = 1.0;
+		}];
+		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+//		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName]];
+		NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
+																								@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																								@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																								@"club"				: [[HONClubAssistant sharedInstance] userSignupClub].dictionary,
+																								@"mp_event"			: @"User Profile - Share",
+																								@"view_controller"	: self}];
+
+	} else if (indexPath.row == HONSettingsCellTypeCopyClub) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Copy Club"];
-		
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
 		
 	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
