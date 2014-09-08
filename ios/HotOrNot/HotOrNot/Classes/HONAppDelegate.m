@@ -91,10 +91,10 @@ NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
-NSString * const kKeenIOProductID = @"5390d1f705cd660561000003";
-NSString * const kKeenIOMasterKey = @"D498C4D601DD4BEE1D65376E9D3D5248";
-NSString * const kKeenIOReadKey = @"19c453075e8eaf3d30b11292819aaa5e268c6c0855eaacb86637f25afbcde7774a605636fc6a61f2b09ac3e01833c3ad8cf6b1e469a5f5ba2f4bc9beedfc2376910748d47acadd89e3e18a8bf5ee95b6ed3698aee6f48ede001bf73c8ba31dbace6170ff86bb735eefc67dae6df0b52e";
-NSString * const kKeenIOWriteKey = @"7f1b91140d0fcf8aeb5ccde1a22567ea9073838582ee4725fae19a822f22d19ee243e95469f6b3d952007641901eaa8d5b4793af6ff7fe78f3d326e901d9fc14ed758e49f60c15b49cd85de79d7d04eace16ed79f79a7c9c012612c078f2d806b12f5ae060ec2a6f5c482720a4bdb3a8";
+NSString * const kKeenIOProductID = @"540e27cd383144486e40a51b";
+NSString * const kKeenIOMasterKey = @"A7163C89CB09500B80D14C8FF9904A4D";
+NSString * const kKeenIOReadKey = @"58db4a590b4e929f8aac96ea14d5c945b92cdbd0e86d8d522c16c534507dc824dc7e50ccd81d6811facc8fabdf75c086d73022807d75f618b7b538111b92389b0d88a039a5bf06bfbf5edaca2f47f3cd17a567eb0b6137fc4e5b7f4b933f1d5e2b5bea9d1e31eab229178376410a6acf ";
+NSString * const kKeenIOWriteKey = @"278b8733c5c2a4e186d6efe472b5f88eb5a62c631a151902f30e749e852fe3ec37eddc06bfba56301743b3c9bd02ce9f0f8b1f79e316f470db611fe52649e41a281af50eb3aefa5faa6e1e1ed39de54d81be6c01d9fc51c5ccb10e0794e40d560d21ee678c5fd6a9296dc2422f8a6888";
 
 
 
@@ -752,7 +752,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	
-
+	
 	[self _establishUserDefaults];
 	
 	if ([HONAppDelegate hasNetwork]) {

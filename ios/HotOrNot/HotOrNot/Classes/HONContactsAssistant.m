@@ -394,4 +394,17 @@ static HONContactsAssistant *sharedInstance = nil;
 		NSLog(@"ERROR(ABAddressBookAddRecord):[%@]", error);
 }
 
+
+- (void)sendInvitesToNonAppContacts {
+	[[[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONContactUserVO *vo = (HONContactUserVO *)obj;
+		
+		
+	}];
+}
+
+- (void)sendInvitesToInAppContacts {
+	
+}
+
 @end
