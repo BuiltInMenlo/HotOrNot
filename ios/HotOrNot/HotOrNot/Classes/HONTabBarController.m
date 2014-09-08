@@ -112,7 +112,7 @@
 	}
 	
 	
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (kTabSize.height-8), 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
@@ -122,8 +122,15 @@
 	[bgImageView setTag:-1];
 	bgImageView.hidden = YES;
 	
+	NSLog(@"---------%@",NSStringFromCGRect(bgImageView.frame));
+	bgImageView.backgroundColor=[UIColor blueColor];
+	
+	//_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, 25);
+	_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, 20);
+
+	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_contactsButton.frame = CGRectMake(0.0, -8.0, 107.0, kTabSize.height);
+	_contactsButton.frame = CGRectMake(0.0, -4.0, 107.0, kTabSize.height);
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateNormal];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Active"] forState:UIControlStateHighlighted];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateSelected];
@@ -144,7 +151,7 @@
 	[_tabHolderView addSubview:_newsButton];
 	
 	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(213.0, -8.0, 106.0, kTabSize.height);
+	_clubsButton.frame = CGRectMake(213.0, -4.0, 106.0, kTabSize.height);
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
@@ -232,31 +239,31 @@
 
 #pragma mark - Notifications
 - (void)_toggleTabs:(NSNotification *)notification {
-	if ([[notification object] isEqualToString:@"SHOW"]) {
-		[UIView animateWithDuration:0.333 delay:0.0
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
-								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
-								
-								_tabHolderView.alpha = 1.0;
-								_nativeTabBar.alpha = 1.0;
-							} completion:^(BOOL finished) {
-							}];
-		
-	} else {
-		[UIView animateWithDuration:0.333 delay:0.0
-			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
-								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
-								
-								_tabHolderView.alpha = 0.0;
-								_nativeTabBar.alpha = 0.0;
-								
-							} completion:^(BOOL finished) {
-							}];
-	}
+//	if ([[notification object] isEqualToString:@"SHOW"]) {
+//		[UIView animateWithDuration:0.333 delay:0.0
+//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+//								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
+//								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
+//								
+//								_tabHolderView.alpha = 1.0;
+//								_nativeTabBar.alpha = 1.0;
+//							} completion:^(BOOL finished) {
+//							}];
+//		
+//	} else {
+//		[UIView animateWithDuration:0.333 delay:0.0
+//			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
+//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+//								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
+//								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
+//								
+//								_tabHolderView.alpha = 0.0;
+//								_nativeTabBar.alpha = 0.0;
+//								
+//							} completion:^(BOOL finished) {
+//							}];
+//	}
 }
 
 - (void)_changeTab:(NSNotification *)notification {

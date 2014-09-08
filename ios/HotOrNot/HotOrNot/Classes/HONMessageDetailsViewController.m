@@ -153,6 +153,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+
 	return (nil);
 }
 

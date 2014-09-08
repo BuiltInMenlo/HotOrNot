@@ -187,7 +187,7 @@
 	_nameLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_nameLabel];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -7,12 +7,13 @@
 //
 
 @interface HONHeaderView : UIView
+- (id)initWithBranding;
 - (id)initWithTitle:(NSString *)title;
-- (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG;
+//- (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG;
 
 - (void)addButton:(UIView *)buttonView;
 - (void)leftAlignTitle;
-- (void)toggleLightStyle:(BOOL)isLightStyle;
+//- (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;

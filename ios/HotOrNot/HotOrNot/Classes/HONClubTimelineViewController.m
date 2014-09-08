@@ -106,7 +106,6 @@
 		
 		//[_headerView setTitle:_clubVO.clubName];
 		[_headerView setTitle:_clubVO.ownerName];
-		[_headerView toggleLightStyle:YES];
 		
 		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
 		
@@ -213,7 +212,7 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_clubVO != nil) ? _clubVO.ownerName : @"" hasBackground:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_clubVO != nil) ? _clubVO.ownerName : @""];
 	[self.view addSubview:_headerView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

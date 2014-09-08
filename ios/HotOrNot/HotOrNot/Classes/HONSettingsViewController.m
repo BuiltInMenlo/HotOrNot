@@ -95,7 +95,7 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"moji"]; //@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithBranding];
 	[self.view addSubview:headerView];
 	
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];

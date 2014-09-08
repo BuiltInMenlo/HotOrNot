@@ -152,7 +152,7 @@
 	_emptySetImageView.hidden = YES;
 	[_tableView addSubview:_emptySetImageView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Discover" hasBackground:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Discover"];
 	[headerView addButton:[[HONVerifyFlagButtonView alloc] initWithTarget:self action:@selector(_goFlag)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:YES]];
 	[headerView toggleLightStyle:YES];
