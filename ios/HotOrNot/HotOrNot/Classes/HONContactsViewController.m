@@ -344,7 +344,7 @@
 																						  @"is_verified"	: @"N",
 																						  @"abuse_ct"		: @"0"}], nil];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight) )]; // - (kNavHeaderHeight)
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
@@ -358,7 +358,7 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
+	_headerView = [[HONHeaderView alloc] initWithBranding];
 	[self.view addSubview:_headerView];
 	
 	//_searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];

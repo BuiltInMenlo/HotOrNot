@@ -99,14 +99,14 @@ NSString * const kKeenIOWriteKey = @"278b8733c5c2a4e186d6efe472b5f88eb5a62c631a1
 
 
 // view heights
-const CGFloat kNavHeaderHeight = 64.0;
+const CGFloat kNavHeaderHeight = 64.0; //64.0
 const CGFloat kSearchHeaderHeight = 43.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
 const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // ui
-const CGSize kTabSize = {80.0, 34.0};
+const CGSize kTabSize = {80.0, 34.0}; //80, 34
 const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
