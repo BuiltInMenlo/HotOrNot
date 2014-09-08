@@ -103,9 +103,9 @@
 "grant_access" = "アクセスを付与するには、設定 -> プライバシー -> 連絡先 -> セルフィークラブでスイッチをフリップします。";
 "select_club" = "クラブを選択する";
 "club_name" = "クラブ名";
-"settings_notification" = "通知";
-"copy_url" = "自分のクラブURLをコピーする";
-"terms_service" = "サービス規約";
+"settings_notification" = "SMS updates";
+"copy_url" = "About";
+"terms_service" = "Legal";
 "privacy_policy" = "プライバシーポリシー";
 "settings_support" = "サポート";
 "rate_app" = "このアプリを評価する";
