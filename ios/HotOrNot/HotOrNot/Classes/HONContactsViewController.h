@@ -42,6 +42,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	NSMutableArray *_inAppContacts;
 	NSMutableArray *_inAppUsers;
 	NSMutableArray *_searchUsers;
+	NSMutableDictionary *_contactClubs;
 	NSDictionary *_segmentedContacts;
 	NSMutableArray *_segmentedKeys;
 	HONUserClubVO *_userClubVO;

@@ -186,13 +186,6 @@ static NSString * const kCamera = @"camera";
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
-- (void) _goTimeline {
-	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
-	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
-	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
-	
-}
-
 - (void)_goCreateChallenge {
 	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
 	
@@ -379,20 +372,10 @@ static NSString * const kCamera = @"camera";
 	
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
-	[viewCell toggleSelected:NO];
-	
-	//Uncomment later if necessary
-	
-	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
-	//[navigationController setNavigationBarHidden:YES];
-	//[self presentViewController:navigationController animated:YES completion:nil];
-
-	//Go to Timeline
-	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
-	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
-	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
-	
-
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:^(void) {
+	}];
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
@@ -400,10 +383,6 @@ static NSString * const kCamera = @"camera";
 	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	
 	[viewCell toggleSelected:NO];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -413,32 +392,17 @@ static NSString * const kCamera = @"camera";
 	
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
-	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
+	NSLog(@"[[- cell.clubVO:[%@]", cell.clubVO);
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
-		if (indexPath.section != 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:^(void) {
-				[cell invertSelected];
-			}];
-		}
+	if (cell.clubVO != nil) {
+		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
 		
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook && indexPath.section != 0) {
+	} else {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:^(void) {
-			[cell invertSelected];
 		}];
-	
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:^(void) {
-			[cell invertSelected];
-		}];
-	}	
+	}
 }
 
 

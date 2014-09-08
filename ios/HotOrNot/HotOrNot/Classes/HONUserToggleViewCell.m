@@ -11,57 +11,52 @@
 #import <AddressBook/AddressBook.h>
 
 #import "HONUserToggleViewCell.h"
+#import "HONClubPhotoVO.h"
 
-
-#define TOP_TINT_COLOR		[UIColor colorWithRed:0.009f green:0.910 blue:0.178f alpha:0.500f]
-#define BOT_TINT_COLOR		[UIColor colorWithRed:0.009f green:0.910 blue:0.178f alpha:0.333f]
-
-#define TINT_FADE_DURATION		0.250f
-#define TINT_TIMER_DURATION		0.333f
 
 
 @interface HONUserToggleViewCell ()
-@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
-@property (nonatomic, strong) UIImageView *arrowImageView;
-@property (nonatomic, strong) UILabel *scoreLabel;
-@property (nonatomic, strong) UIButton *avatarButton;
+@property (nonatomic, strong) UILabel *emojiLabel;
 @property (nonatomic) BOOL isSelected;
+@property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
 @end
 
 @implementation HONUserToggleViewCell
 @synthesize delegate = _delegate;
 @synthesize contactUserVO = _contactUserVO;
 @synthesize trivialUserVO = _trivialUserVO;
+@synthesize clubVO = _clubVO;
 
 - (id)init {
 	if ((self = [super init])) {
-		[self hideChevron];
-		
 		_isSelected = NO;
 		
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 180.0, 18.0)];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 220.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 		_nameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
-				
-		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
-		//[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
-		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
-		//[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
-		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
-		[self.contentView addSubview:_toggledOffButton];
 		
-		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOnButton.frame = _toggledOffButton.frame;
-		//[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
-		//[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
-		_toggledOnButton.alpha = (int)_isSelected;
-		[self.contentView addSubview:_toggledOnButton];
+		_emojiLabel = [[UILabel alloc] initWithFrame:_nameLabel.frame];
+		_emojiLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+		_emojiLabel.textColor = [UIColor blackColor];
+		_emojiLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		_emojiLabel.text = @"";
+		[self.contentView addSubview:_emojiLabel];
+				
+//		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
+//		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
+//		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
+//		[self.contentView addSubview:_toggledOffButton];
+		
+//		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_toggledOnButton.frame = _toggledOffButton.frame;
+//		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
+//		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
+//		_toggledOnButton.alpha = (int)_isSelected;
+//		[self.contentView addSubview:_toggledOnButton];
 	}
 	
 	return (self);
@@ -75,8 +70,7 @@
 	_toggledOffButton.hidden = !isEnabled;
 	_toggledOnButton.hidden = !isEnabled;
 	_nameLabel.hidden = !isEnabled;
-	_arrowImageView.hidden = !isEnabled;
-	_scoreLabel.hidden = !isEnabled;
+	_emojiLabel.hidden = !isEnabled;
 }
 
 - (void)toggleSelected:(BOOL)isSelected {
@@ -103,20 +97,48 @@
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
-	NSString *nameCaption = [NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
+	NSString *nameCaption = _contactUserVO.fullName;//[NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
 	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+	
+	CGSize size = [nameCaption boundingRectWithSize:_nameLabel.frame.size
+											options:NSStringDrawingTruncatesLastVisibleLine
+										 attributes:@{NSFontAttributeName:_nameLabel.font}
+											context:nil].size;
+	
+	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, _nameLabel.frame.size.width), _nameLabel.frame.size.height);
+	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _nameLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
-	NSLog(@":|: CELL >> TRIVIALUSER:[%@]", trivialUserVO.username);
 	
-	NSString *nameCaption = [_trivialUserVO.username stringByAppendingString:@" is…"];
+	NSString *nameCaption = _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
 	
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption];
 	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_trivialUserVO.username]];
+	
+	CGSize size = [nameCaption boundingRectWithSize:_nameLabel.frame.size
+											options:NSStringDrawingTruncatesLastVisibleLine
+										 attributes:@{NSFontAttributeName:_nameLabel.font}
+											context:nil].size;
+	
+	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, 220.0), _nameLabel.frame.size.height);
+	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _nameLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
+	
+	[self hideChevron];
+}
+
+- (void)setClubVO:(HONUserClubVO *)clubVO {
+	_clubVO = clubVO;
+	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
+	
+	[_clubPhotoVO.subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSString *emoji = (NSString *)obj;
+		_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width + 18.0, _emojiLabel.frame.size.height);
+		_emojiLabel.text = [_emojiLabel.text stringByAppendingFormat:@" %@", emoji];
+	}];
 }
 
 
@@ -174,31 +196,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_loadAvatarImageFromPrefix:(NSString *)urlPrefix {
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_avatarImageView.image = image;
-		_contactUserVO.avatarImage = image;
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
-		
-		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
-	
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[urlPrefix stringByAppendingString:kSnapThumbSuffix]]
-															  cachePolicy:kURLRequestCachePolicy
-														  timeoutInterval:[HONAppDelegate timeoutInterval]]
-							placeholderImage:nil
-									 success:imageSuccessBlock
-									 failure:imageFailureBlock];
-}
+
 
 @end

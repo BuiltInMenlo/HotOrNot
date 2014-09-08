@@ -9,6 +9,7 @@
 #import "HONTableViewCell.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
+#import "HONUserClubVO.h"
 
 @class HONUserToggleViewCell;
 @protocol HONUserToggleViewCellDelegate <NSObject>
@@ -32,6 +33,7 @@
 
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, assign) id <HONUserToggleViewCellDelegate> delegate;
 
 @end
