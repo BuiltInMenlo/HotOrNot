@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "checkmarkIcon.png"
+      "filename" : "firstRunCheck@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "checkmarkIcon@2x.png"
+      "filename" : "firstRunCheck@2x.png"
     }
   ],
   "info" : {

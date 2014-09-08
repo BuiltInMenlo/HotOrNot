@@ -194,7 +194,7 @@
 	for (int i=0; i<8-[[uniFormat substringFromIndex:2] length]; i++)
 		emoji = [@"0" stringByAppendingString:emoji];
 	
-//	NSLog(@"Character (%@) = [\\u%06x]/[U+%@] (%d) {%@}", lastChar, [lastChar characterAtIndex:0], uniHex, [lastChar characterAtIndex:0], emoji);//@"\U0001F604");
+	NSLog(@"Character (%@) = [\\u%06x]/[U+%@] (%d) {%@}", lastChar, [lastChar characterAtIndex:0], uniHex, [lastChar characterAtIndex:0], emoji);//@"\U0001F604");
 }
 
 - (void)textViewDidBeginEditing:(UITextView *)textView {
