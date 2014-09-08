@@ -149,10 +149,6 @@
 #define ACCEPTABLE_CHARACTERS @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-/:;()$&@,?!\'\"[]{}#%^*+=\\|~<>€£¥•"
 
 #pragma mark - TextView Delegates
--(BOOL)textViewShouldReturn:(UITextView *)textView {
-	
-}
-
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
 	NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:ACCEPTABLE_CHARACTERS];
 	

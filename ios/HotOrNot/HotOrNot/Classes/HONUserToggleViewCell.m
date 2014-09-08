@@ -26,10 +26,6 @@
 @property (nonatomic, strong) UIImageView *arrowImageView;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UIButton *avatarButton;
-
-@property (nonatomic, strong) UIView *overlayTintView;
-@property (nonatomic, strong) NSTimer *tintTimer;
-@property (nonatomic) BOOL isTintCycleFull;
 @property (nonatomic) BOOL isSelected;
 @end
 
@@ -43,42 +39,13 @@
 		[self hideChevron];
 		
 		_isSelected = NO;
-		_isTintCycleFull = NO;
 		
-//		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
-//		[self.contentView addSubview:_avatarImageView];
-		
-//		[[HONImageBroker sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"contactMask"]];
-		
-//		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_avatarButton.frame = _avatarImageView.frame;
-//		[self.contentView addSubview:_avatarButton];
-			
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
-		_nameLabel.textColor =  [UIColor blackColor]; //[[HONColorAuthority sharedInstance]honDarkGreyTextColor];
+		_nameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
-		
-//		_arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unverifiedUserArrow"]];
-//		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0 - 56, 28.0);
-//		_arrowImageView.hidden = YES;
-//		[self.contentView addSubview:_arrowImageView];
-		
-//		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0 - 56, 33.0, 25.0, 15.0)];
-//		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-//		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-//		_scoreLabel.backgroundColor = [UIColor clearColor];
-//		_scoreLabel.hidden = YES;
-//		_scoreLabel.text = @"0";
-//		[self.contentView addSubview:_scoreLabel];
-		
-		
-		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
-		_overlayTintView.backgroundColor = BOT_TINT_COLOR;
-		//[self.contentView addSubview:_overlayTintView];
-		
-		
+				
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
 		//[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
@@ -95,8 +62,6 @@
 		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
 		_toggledOnButton.alpha = (int)_isSelected;
 		[self.contentView addSubview:_toggledOnButton];
-		
-		//[self _toggleTintCycle:_isSelected];
 	}
 	
 	return (self);
@@ -135,106 +100,23 @@
 	}];
 }
 
+- (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
+	_contactUserVO = contactUserVO;
+	
+	NSString *nameCaption = [NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
+	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
+	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+}
+
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	NSLog(@":|: CELL >> TRIVIALUSER:[%@]", trivialUserVO.username);
 	
-	[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
-	[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
+	NSString *nameCaption = [_trivialUserVO.username stringByAppendingString:@" is…"];
 	
-	[_toggledOnButton addTarget:self action:@selector(_goDeselectTrivialUser) forControlEvents:UIControlEventTouchUpInside];
-	[_toggledOffButton addTarget:self action:@selector(_goSelectTrivalUser) forControlEvents:UIControlEventTouchUpInside];
-	
-	NSLog(@"AVATAR:[%@]", _trivialUserVO.avatarPrefix);
-//	if ([_trivialUserVO.avatarPrefix rangeOfString:@"default"].location == NSNotFound)
-//		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
-//	
-//	else
-//		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-//	
-//	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-	
-	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
-	_arrowImageView.hidden = NO;
-	
-	_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
-	_scoreLabel.hidden = NO;
-	
-//	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-//	_nameLabel.text = _trivialUserVO.username;
-	
-//	if (trivialUserVO.isVerified) {
-//		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
-//		verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
-//		verifiedImageView.hidden = !trivialUserVO.isVerified;
-//		[self.contentView addSubview:verifiedImageView];
-//	}
-}
-
-- (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
-	_contactUserVO = contactUserVO;
-	
-	[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
-	[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
-	
-	[_toggledOnButton addTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventTouchUpInside];
-	[_toggledOffButton addTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventTouchUpInside];
-	
-	
-	
-	NSString *nameCaption = [[@" " stringByAppendingString:_contactUserVO.fullName] stringByAppendingString:@" "];//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
-
-//	_avatarImageView.image = _contactUserVO.avatarImage;
-//	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])
-//		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-	
-//	else
-//		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
-	
-	
-	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
-	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
-//	if ([_contactUserVO.lastName length] > 0)
-//		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
-//	
-//	else
-//		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
-	
-	
-//	if (_contactUserVO.contactType == HONContactTypeMatched) {
-//		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
-//		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-//		
-//		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-		
-		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
-		_arrowImageView.hidden = NO;
-		
-		
-		_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
-		_scoreLabel.hidden = NO;
-		
-		if (_trivialUserVO.isVerified) {
-			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
-			verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
-			verifiedImageView.hidden = !_trivialUserVO.isVerified;
-			[self.contentView addSubview:verifiedImageView];
-		}
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"] != nil) {
-		NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"family_club"];
-		
-		if ([[[[[dict objectForKey:@"name"] componentsSeparatedByString:@" "] firstObject] lowercaseString] isEqualToString:[_contactUserVO.lastName lowercaseString]]) {
-			UILabel *familyLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x + 25.0, _nameLabel.frame.origin.y + 20.0, 220.0, 15.0)];
-			familyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
-			familyLabel.textColor = [UIColor blackColor];
-			familyLabel.backgroundColor = [UIColor clearColor];
-			familyLabel.text = [NSString stringWithFormat:@"Invite to join the %@ club!", _contactUserVO.lastName];
-			[self.contentView addSubview:familyLabel];
-		}
-	}
+	_nameLabel.textColor = [UIColor blackColor];
+	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption];
+	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_trivialUserVO.username]];
 }
 
 
@@ -272,6 +154,7 @@
 			[self.delegate userToggleViewCell:self didSelectContactUser:_contactUserVO];
 	}];
 }
+
 - (void)_goSelectTrivalUser {
 	_isSelected = YES;
 	
