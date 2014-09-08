@@ -4000,13 +4000,11 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
 					"DEBUG=1",
-					"KEENIO_LOG=0",
-					MIXPANEL_DEBUG0,
-					MIXPANEL_LOG0,
+					"KEENIO_LOG=1",
 					"SC_JSON_LOG=1",
 					"VIEW_CONTROLLER_LOG=0",
-					"$(inherited)",
 					"DEBUGING_COLORS=1",
 					"SC_ACCT_BUILD=0",
 				);

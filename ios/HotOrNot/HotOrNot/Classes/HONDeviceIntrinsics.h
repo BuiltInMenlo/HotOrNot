@@ -20,6 +20,7 @@
 - (NSString *)locale;
 - (NSString *)modelName;
 - (NSString *)deviceName;
+- (NSString *)osVersion;
 - (NSString *)pushToken;
 
 - (void)writePhoneNumber:(NSString *)phoneNumber;

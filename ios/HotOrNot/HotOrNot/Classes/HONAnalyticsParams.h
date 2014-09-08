@@ -26,6 +26,7 @@
 @interface HONAnalyticsParams : NSObject
 + (HONAnalyticsParams *)sharedInstance;
 
+- (NSDictionary *)orthodoxProperties;
 - (NSDictionary *)userProperty;
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo;
 - (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;

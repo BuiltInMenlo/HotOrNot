@@ -75,7 +75,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 - (NSString *)locale {
-	return ([[NSLocale preferredLanguages] objectAtIndex:0]);
+	return ([[NSLocale preferredLanguages] firstObject]);
 }
 
 - (NSString *)deviceName {
@@ -87,6 +87,10 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	uname(&systemInfo);
 	
 	return ([NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+}
+
+- (NSString *)osVersion {
+	return ([NSString stringWithFormat:@"%@ %@", [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]]);
 }
 
 - (NSString *)pushToken {
