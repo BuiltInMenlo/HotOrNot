@@ -151,7 +151,7 @@
 	[_tabHolderView addSubview:_newsButton];
 	
 	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(213.0, -4.0, 106.0, kTabSize.height);
+	_clubsButton.frame = CGRectMake(213.0, -2.0, 106.0, kTabSize.height);
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
