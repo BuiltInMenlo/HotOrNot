@@ -41,14 +41,15 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_captions = @[ NSLocalizedString(@"settings_notification", @"Notifications"),
-					   NSLocalizedString(@"copy_url", @"Copy Club URL"),
-					   NSLocalizedString(@"share", @"Share club"),
-					   NSLocalizedString(@"terms_service", @"Terms of use"),
-					   NSLocalizedString(@"privacy_policy", @"Privacy policy"),
+		_captions = @[ NSLocalizedString(@"share", @"Share club"),
+                       NSLocalizedString(@"settings_notification", @"Notifications"),
+                       NSLocalizedString(@"copy_url", @"Copy Club URL"),
+                       NSLocalizedString(@"rate_app", @"Rate this app"),
+					   //NSLocalizedString(@"privacy_policy", @"Privacy policy"),
 					   NSLocalizedString(@"settings_support", @"Support"),
-					   NSLocalizedString(@"rate_app", @"Rate this app"),
-					   NSLocalizedString(@"network_status", @"Network status")];//,
+					   NSLocalizedString(@"terms_service", @"Terms of use"),
+					  // NSLocalizedString(@"network_status", @"Network status")
+                       ];//,
 //					   NSLocalizedString(@"settings_logout", @"Logout")];
 		
 		
@@ -259,12 +260,12 @@
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
-		
-	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+//		
+//	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
+//		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypeSupport) {
 		
@@ -287,12 +288,12 @@
 		}
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-		
-	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+//		
+//	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
+//		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
 															message:@""
