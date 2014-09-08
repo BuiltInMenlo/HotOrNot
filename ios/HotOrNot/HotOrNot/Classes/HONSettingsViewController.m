@@ -241,6 +241,13 @@
 	
 	if(indexPath.row == HONSettingsCellTypeCopyClub) {
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"moji is a super fast way to share how you feel using only emoji characters! Please tell your friends to get the app available now on the App Store!"
+                                                            message:nil
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+                                                  otherButtonTitles:nil];
+        [alertView show];
+
 		
 	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
 		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
