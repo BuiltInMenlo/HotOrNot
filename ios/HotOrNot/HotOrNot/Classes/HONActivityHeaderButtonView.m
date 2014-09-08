@@ -29,9 +29,9 @@ const CGFloat kMaxActivityWidth = 44.0;
 		
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
 		_button.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
-		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
-		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
+		//[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+		//[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
+		//[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
 		[_button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_button];
 		
@@ -56,26 +56,26 @@ const CGFloat kMaxActivityWidth = 44.0;
 }
 
 - (void)updateActivityBadge {
-	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
-		
-		__block int newTot = 0;
-		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONActivityItemVO *vo = [HONActivityItemVO activityWithDictionary:obj];
-			newTot += (int)([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:vo.sentDate] < 1800);
-		}];
-		
-		float delay = 0.125;
-		if (_isFirstRun) {
-			newTot++;
-			delay += 0.50;
-			_isFirstRun = NO;
-		}
-	
-		NSLog(@"updateActivityBadge -[%@]- newTot:[%d]", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]], newTot);
-		[UIView animateWithDuration:0.25 delay:delay options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
-			_activityBGImageView.alpha = (newTot > 0);
-		} completion:^(BOOL finished) {}];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+//		
+//		__block int newTot = 0;
+//		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			HONActivityItemVO *vo = [HONActivityItemVO activityWithDictionary:obj];
+//			newTot += (int)([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:vo.sentDate] < 1800);
+//		}];
+//		
+//		float delay = 0.125;
+//		if (_isFirstRun) {
+//			newTot++;
+//			delay += 0.50;
+//			_isFirstRun = NO;
+//		}
+//	
+//		NSLog(@"updateActivityBadge -[%@]- newTot:[%d]", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]], newTot);
+//		[UIView animateWithDuration:0.25 delay:delay options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
+//			_activityBGImageView.alpha = (newTot > 0);
+//		} completion:^(BOOL finished) {}];
+//	}];
 }
 
 

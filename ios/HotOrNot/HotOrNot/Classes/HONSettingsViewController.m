@@ -25,6 +25,8 @@
 #import "HONSelfieCameraViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONActivityHeaderButtonView.h"
+#import "HONCreateSnapButtonView.h"
+#import "HONPostStatusUpdateViewController.h"
 
 
 @interface HONSettingsViewController ()
@@ -93,8 +95,11 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@" "]; //@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"moji"]; //@"Settings"];
 	[self.view addSubview:headerView];
+	
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+
 	
 	//_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)];
 	
@@ -140,10 +145,9 @@
 }
 
 - (void)_goCreateChallenge {
-	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
-	//selfieCameraViewController.delegate = self;
+	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

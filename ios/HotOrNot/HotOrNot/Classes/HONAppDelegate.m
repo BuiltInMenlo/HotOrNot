@@ -70,22 +70,16 @@ typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_sc0007.json";
+NSString * const kConfigJSON = @"boot_moji_100.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_ios.json";
+NSString * const kConfigJSON = @"boot_moji_100.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
 NSString * const kBlowfishIV = @"„7ì”~ís";
-
-#if __APPSTORE_BUILD__ == 1
-NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
-#else
-NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
-#endif
 
 
 NSString * const kFacebookAppID = @"600550136636754";
@@ -141,11 +135,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-//@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate, PicoStickerDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, HONInsetOverlayViewDelegate>
 #else
-//@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate, HONInsetOverlayViewDelegate>
+@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -421,15 +413,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
-	if ([phoneNumber length] > 0) {
-		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
+	return (([phoneNumber length] > 0) ? [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""] : @"");
+	
+//	if ([phoneNumber length] > 0) {
+//		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
 //		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
 //			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
-		
-		return ([@"+" stringByAppendingString:formattedNumber]);
-		
-	} else
-		return (@"");
+//		
+//		return ([@"+" stringByAppendingString:formattedNumber]);
+//		
+//	} else
+//		return (@"");
 }
 
 + (NSDictionary *)parseQueryString:(NSString *)queryString {
@@ -465,11 +459,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invalid_chars"] forKey:@"invalid_chars"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"suggested_covers"] forKey:@"suggested_covers"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"schools"] forKey:@"schools"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
@@ -552,7 +543,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
-			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
+//			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 			
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
@@ -736,7 +727,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
 //	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
 	
-	
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"Emoji_alert"]; //uncomment to reset Alert that tells user to use emoji keyboard
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
@@ -784,7 +775,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+//	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
 	
 #ifdef FONTS
@@ -1125,12 +1116,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
-	
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
-	
+		
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]]];
@@ -1239,7 +1225,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 	
-	[[HONStickerAssistant sharedInstance] registerStickerStore];
+//	[[HONStickerAssistant sharedInstance] registerStickerStore];
 //	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] objectForKey:kFreeStickerPak]) {
 //		[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:nil];
 //	}
@@ -1880,34 +1866,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
 #endif
 	return (nil);
-}
-
-
-- (void)_picoCandyTest {
-	NSLog(@"CandyStore:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchStickerStoreInfo]);
-	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
-	NSLog(@"CandyBox:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents]);
-	
-	[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
-}
-
-- (void)_picoCandyTest2 {
-	__block int idx = 0;
-	[[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		PicoSticker *sticker = (PicoSticker *)obj;
-		sticker.frame = CGRectMake((idx % 5) * 60.0, (idx / 5) * 60.0, 50.0, 50.0);
-		sticker.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5];
-		sticker.userInteractionEnabled = YES;
-		sticker.delegate = self;
-		[sticker setTag:idx];
-		[self.tabBarController.view addSubview:sticker];
-		
-		idx++;
-	}];
-}
-
-- (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
-	NSLog(@"sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
 }
 #endif
 @end

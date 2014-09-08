@@ -118,9 +118,10 @@ static NSString * const kCamera = @"camera";
 															[NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
+	NSDictionary *result = [[HONClubAssistant sharedInstance] fetchUserClubs];
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqual:@"pending"])
 				continue;
@@ -163,7 +164,7 @@ static NSString * const kCamera = @"camera";
 			[_timelineItems addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
 	
 		[self _didFinishDataRefresh];
-	}];
+//	}];
 }
 
 - (void)_joinClub:(HONUserClubVO *)userClubVO {

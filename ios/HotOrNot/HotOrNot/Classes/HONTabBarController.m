@@ -123,12 +123,12 @@
 	bgImageView.hidden = YES;
 	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_contactsButton.frame = CGRectMake(0.0, 0.0, 107.0, kTabSize.height);
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateNormal];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Active"] forState:UIControlStateHighlighted];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateSelected];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateDisabled];
+	_contactsButton.frame = CGRectMake(0.0, -8.0, 107.0, kTabSize.height);
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateNormal];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Active"] forState:UIControlStateHighlighted];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateSelected];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateDisabled];
 	[_contactsButton setTag:HONTabBarButtonTypeFriends];
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];
@@ -144,12 +144,12 @@
 	[_tabHolderView addSubview:_newsButton];
 	
 	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(213.0, 0.0, 106.0, kTabSize.height);
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateNormal];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Active"] forState:UIControlStateHighlighted];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateDisabled];
+	_clubsButton.frame = CGRectMake(213.0, -8.0, 106.0, kTabSize.height);
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateDisabled];
 	[_clubsButton setTag:HONTabBarButtonTypeClubs];
 	[_tabHolderView addSubview:_clubsButton];
 	

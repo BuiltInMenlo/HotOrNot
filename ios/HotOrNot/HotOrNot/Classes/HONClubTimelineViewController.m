@@ -19,7 +19,7 @@
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONClubPhotoVO.h"
-
+#import "HONContactsSearchViewController.h"
 
 @interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONSelfieCameraViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
@@ -27,6 +27,9 @@
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
+//new property
+@property (nonatomic, strong) UILabel *emojiLabel;
+@property (nonatomic, strong) HONUserVO *contactVO;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
@@ -98,9 +101,11 @@
 	_clubPhotos = [NSArray array];
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:(_clubVO == nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : _clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
-		_clubPhotos = _clubVO.submissions;
+		//_clubPhotos = _clubVO.submissions;
+		//_contactVO = [HONUserVO userWithDictionary:result];
 		
-		[_headerView setTitle:_clubVO.clubName];
+		//[_headerView setTitle:_clubVO.clubName];
+		[_headerView setTitle:_clubVO.ownerName];
 		[_headerView toggleLightStyle:YES];
 		
 		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
@@ -177,34 +182,40 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor blackColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[@"emptyTimeline" stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? @"-568h" : @""]]];
 	_emptySetImageView.frame = [UIScreen mainScreen].bounds;
 	_emptySetImageView.hidden = ([_clubPhotos count] > 0);
 
 //	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
-	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
-	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.backgroundView = _emptySetImageView;
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.pagingEnabled = YES;
-	_tableView.showsHorizontalScrollIndicator = NO;
-	_tableView.alwaysBounceVertical = YES;
-	[self.view addSubview:_tableView];
+//	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
+//	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
+//	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//	_tableView.backgroundView = _emptySetImageView;
+//	_tableView.delegate = self;
+//	_tableView.dataSource = self;
+//	_tableView.pagingEnabled = YES;
+//	_tableView.showsHorizontalScrollIndicator = NO;
+//	_tableView.alwaysBounceVertical = YES;
+//	[self.view addSubview:_tableView];
 	
+	_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 72.0, 304.0, self.view.frame.size.height - 288)];
+	_emojiLabel.backgroundColor = [UIColor clearColor];
+	[_emojiLabel setTextColor:[UIColor blackColor]];
+	_emojiLabel.font = [UIFont systemFontOfSize:40.0f];
+	_emojiLabel.numberOfLines = 0;
+	_emojiLabel.text = @"";
+	[self.view addSubview:_emojiLabel];
 		
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName hasBackground:YES];
-	[_headerView toggleLightStyle:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_clubVO != nil) ? _clubVO.ownerName : @"" hasBackground:YES];
 	[self.view addSubview:_headerView];
-	
+		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(1.0, 1.0, 93.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_nonActive"] forState:UIControlStateNormal];
@@ -212,17 +223,24 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(255, 1.0, 64.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
-	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:shareButton];
+//	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	shareButton.frame = CGRectMake(255, 1.0, 64.0, 44.0);
+//	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
+//	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
+//	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+//	[_headerView addButton:shareButton];
 	
-	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
+//	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
 	if (_clubVO == nil && _clubID > 0)
 		[self _retrieveClub];
+	
+	else {
+		[[[_clubVO.submissions firstObject] subjectNames] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSString *emoji = [[(NSString *)obj componentsSeparatedByString:@"\\U"] lastObject];
+			_emojiLabel.text = [_emojiLabel.text stringByAppendingString:emoji];
+		}];
+	}
 	
 	if (_index > 0) {
 		_index = MIN(_index, [_clubPhotos count]);
