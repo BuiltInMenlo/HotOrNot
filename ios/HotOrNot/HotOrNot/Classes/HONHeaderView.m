@@ -16,16 +16,18 @@
 @implementation HONHeaderView
 @synthesize title = _title;
 
-- (id)initWithTitle:(NSString *)title {
-	if ((self = [self initWithTitle:title hasBackground:([title length] > 0)])) {
+- (id)initWithBranding {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBrandingBG"]];
+		[self addSubview:_bgImageView];
 	}
 	
 	return (self);
 }
 
-- (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG {
+- (id)initWithTitle:(NSString *)title {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
-		_bgImageView = [[UIImageView alloc] initWithImage:(withBG) ? [UIImage imageNamed:@"navHeaderBackground"] : [[UIImage alloc] init]];
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBG"]];
 		[self addSubview:_bgImageView];
 		
 		_title = title;
@@ -40,6 +42,13 @@
 	
 	return (self);
 }
+
+//- (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG {
+//	if ((self = [self initWithTitle:title])) {
+//	}
+//	
+//	return (self);
+//}
 
 
 - (void)setTitle:(NSString *)title {
@@ -57,16 +66,16 @@
 	_titleLabel.textAlignment = NSTextAlignmentLeft;
 }
 
-- (void)toggleLightStyle:(BOOL)isLightStyle {
-	_bgImageView.image = (isLightStyle) ? [UIImage imageNamed:@"navHeaderBackgroundLight"] : [UIImage imageNamed:@"navHeaderBackground"];
-	
-	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor whiteColor];
-	// _titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
-	
-	if (_titleLabel == nil)
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0)];
-	_titleLabel.frame = CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0);
-}
+//- (void)toggleLightStyle:(BOOL)isLightStyle {
+//	_bgImageView.image = (isLightStyle) ? [UIImage imageNamed:@"navHeaderBackgroundLight"] : [UIImage imageNamed:@"navHeaderBackground"];
+//	
+//	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor whiteColor];
+//	// _titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
+//	
+//	if (_titleLabel == nil)
+//		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0)];
+//	_titleLabel.frame = CGRectMake(75.0, (isLightStyle) ? 32.0 : 31.0, 170.0, 19.0);
+//}
 
 
 @end

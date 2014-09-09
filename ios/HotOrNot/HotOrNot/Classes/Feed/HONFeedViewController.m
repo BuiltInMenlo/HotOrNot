@@ -70,7 +70,6 @@
 	[self.pagedScrollView registerClass:[HONFeedItemViewController class] forViewControllerReuseIdentifier:@"FeedItem"];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[headerView toggleLightStyle:YES];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:YES]];
 	[self.view addSubview:headerView];
 	

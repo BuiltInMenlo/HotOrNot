@@ -96,6 +96,7 @@
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
+	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];

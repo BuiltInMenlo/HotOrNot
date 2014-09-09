@@ -64,7 +64,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 	
 	self.tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight) style:UITableViewStylePlain];

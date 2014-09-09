@@ -24,7 +24,7 @@
 "hud_searchUsers" = "사용자 검색 중...";
 "hud_searchHashtags" = "해시태그 검색 중...";
 "hud_sent" = "   전송   ";
-"share" = "클럽 공유";
+"share" = "클럽";
 "header_restricted" = "접근 제한";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -104,9 +104,9 @@
 "grant_access" = "접근을 허용하려면, 설정 > 개인 정보 보호 > 연락처 > Selfieclub의 스위치를 켜 주세요.";
 "select_club" = "클럽 선택하기";
 "club_name" = "클럽 이름";
-"settings_notification" = "알림";
-"copy_url" = "내 클럽 URL을 복사";
-"terms_service" = "서비스 약관";
+"settings_notification" = "SMS updates";
+"copy_url" = "About";
+"terms_service" = "Legal";
 "privacy_policy" = "개인정보 보호정책";
 "settings_support" = "지원 요청";
 "rate_app" = "이 앱을 평가하기";

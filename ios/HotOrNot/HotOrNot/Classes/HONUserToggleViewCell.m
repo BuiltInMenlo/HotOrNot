@@ -33,15 +33,15 @@
 		_isSelected = NO;
 		
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 220.0, 18.0)];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
-		_nameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:14];
+		//_nameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_emojiLabel = [[UILabel alloc] initWithFrame:_nameLabel.frame];
-		_emojiLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+		_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 11.0, 220.0, 42.0)];
+		_emojiLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:42];
 		_emojiLabel.textColor = [UIColor blackColor];
-		_emojiLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		//_emojiLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_emojiLabel.text = @"";
 		[self.contentView addSubview:_emojiLabel];
 				
@@ -99,7 +99,7 @@
 	
 	NSString *nameCaption = _contactUserVO.fullName;//[NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
-	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
 	
 	CGSize size = [nameCaption boundingRectWithSize:_nameLabel.frame.size
 											options:NSStringDrawingTruncatesLastVisibleLine
@@ -107,7 +107,7 @@
 											context:nil].size;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, _nameLabel.frame.size.width), _nameLabel.frame.size.height);
-	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _nameLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
+	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
@@ -117,7 +117,7 @@
 	
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption];
-	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_trivialUserVO.username]];
+	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_trivialUserVO.username]];
 	
 	CGSize size = [nameCaption boundingRectWithSize:_nameLabel.frame.size
 											options:NSStringDrawingTruncatesLastVisibleLine
@@ -125,7 +125,7 @@
 											context:nil].size;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, 220.0), _nameLabel.frame.size.height);
-	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _nameLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
+	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
 	
 	[self hideChevron];
 }
@@ -134,11 +134,24 @@
 	_clubVO = clubVO;
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
-	[_clubPhotoVO.subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		NSString *emoji = (NSString *)obj;
-		_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width + 18.0, _emojiLabel.frame.size.height);
-		_emojiLabel.text = [_emojiLabel.text stringByAppendingFormat:@" %@", emoji];
-	}];
+	
+	NSString *emojis = @"";
+	for (NSString *emoji in _clubPhotoVO.subjectNames) {
+		emojis = [emojis stringByAppendingString:emoji];
+	}
+	
+	NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:emojis];
+	
+	[attributedString addAttribute:NSFontAttributeName
+							 value:_emojiLabel.font
+							 range:NSMakeRange(0, [emojis length])];
+	
+	[attributedString addAttribute:NSKernAttributeName
+							 value:[NSNumber numberWithFloat:5.0]
+							 range:NSMakeRange(0, [emojis length])];
+	
+	_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, _emojiLabel.font.pointSize * [emojis length], _emojiLabel.frame.size.height);
+	_emojiLabel.attributedText = attributedString;
 }
 
 

@@ -367,7 +367,7 @@
 	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
 	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1.0, 0.0, 0.0, 0.0)];
-	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
+	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:26];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
 	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
@@ -404,7 +404,7 @@
 	}
 	
 	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"termsText"]];
-	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 204.0);
+	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 244.0);
 	[self.view addSubview:footerTextImageView];
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -24,7 +24,7 @@
 "hud_searchUsers" = "Searching users…";
 "hud_searchHashtags" = "Searching hashtags…";
 "hud_sent" = "   Sent   ";
-"share" = "Share club";
+"share" = "Share";
 "header_restricted" = "restricted access";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -103,9 +103,9 @@
 "grant_access" = "Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.";
 "select_club" = "Select Club";
 "club_name" = "Club Name";
-"settings_notification" = "Notification";
-"copy_url" = "Copy Club URL";
-"terms_service" = "Terms of service";
+"settings_notification" = "SMS updates";
+"copy_url" = "About";
+"terms_service" = "Legal";
 "privacy_policy" = "Privacy policy";
 "settings_support" = "Support";
 "rate_app" = "Rate this app";
