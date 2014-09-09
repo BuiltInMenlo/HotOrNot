@@ -216,6 +216,7 @@
 
 	
 	
+	
 //	NSLog(@"textView:[%@](%u)--{%d}", textView.text, [textView.text length], _offset);
 //	NSString *lastChar = ([textView.text length] > 0) ? [textView.text substringFromIndex:[textView.text length]  - _offset] : @"";
 //	[_headerView setTitle:([lastChar length] > 0) ? lastChar : @"Compose"];
