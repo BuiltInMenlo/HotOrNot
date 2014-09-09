@@ -26,7 +26,7 @@
 @end
 
 
-const CGFloat kEmojiCellFontSize = 48.0f;
+const CGFloat kEmojiCellFontSize = 51.0f;
 const CGFloat kEmojiCellFontSpacing = 3.0f;
 
 @implementation HONUserToggleViewCell
@@ -46,7 +46,7 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 6.0, 220.0, kEmojiCellFontSize)];
+		_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 7.5, 220.0, kEmojiCellFontSize)]; //y = 6.0
 		_emojiLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:kEmojiCellFontSize];
 		_emojiLabel.textColor = [UIColor blackColor];
 		_emojiLabel.text = @"";
