@@ -347,14 +347,16 @@
 		
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 	
-	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 42.0, 1.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed: @"arrowButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Sign up"];
-	[headerView addButton:_nextButton];
 	[self.view addSubview:headerView];
+	
+	
+	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_nextButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 66.0, 1.0, 64.0, 44.0);
+	[_nextButton setBackgroundImage:[UIImage imageNamed: @"arrowButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
+	[headerView addButton:_nextButton];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
