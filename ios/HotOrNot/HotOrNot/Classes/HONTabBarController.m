@@ -19,8 +19,7 @@
 @property (nonatomic, strong) UITabBar *nativeTabBar;
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, retain) UIButton *contactsButton;
-@property (nonatomic, retain) UIButton *clubsButton;
-@property (nonatomic, retain) UIButton *newsButton;
+@property (nonatomic, retain) UIButton *settingsButton;
 @property (nonatomic, retain) NSDictionary *badgeTotals;
 @end
 
@@ -57,8 +56,8 @@
 			totalKey = @"friendsTab";
 			
 			[_contactsButton setSelected:YES];
-			[_newsButton setSelected:NO];
-			[_clubsButton setSelected:NO];
+//			[_newsButton setSelected:NO];
+			[_settingsButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeNewsFeed:
@@ -66,8 +65,8 @@
 			totalKey = @"newsTab";
 			
 			[_contactsButton setSelected:NO];
-			[_newsButton setSelected:YES];
-			[_clubsButton setSelected:NO];
+//			[_newsButton setSelected:YES];
+			[_settingsButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeClubs:
@@ -75,8 +74,8 @@
 			totalKey = @"clubsTab";
 			
 			[_contactsButton setSelected:NO];
-			[_newsButton setSelected:NO];
-			[_clubsButton setSelected:YES];
+//			[_newsButton setSelected:NO];
+			[_settingsButton setSelected:YES];
 			break;
 			
 		default:
@@ -112,7 +111,7 @@
 	}
 	
 	
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (kTabSize.height-8), 320.0, kTabSize.height)];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (kTabSize.height-3), 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
@@ -126,11 +125,11 @@
 	bgImageView.backgroundColor=[UIColor blueColor];
 	
 	//_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, 25);
-	_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, 20);
+	_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, 15);
 
 	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_contactsButton.frame = CGRectMake(0.0, -4.0, 107.0, kTabSize.height);
+	_contactsButton.frame = CGRectMake(0.0, -3.0, 107.0, kTabSize.height);
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateNormal];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Active"] forState:UIControlStateHighlighted];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateSelected];
@@ -140,25 +139,25 @@
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];
 	
-	_newsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_newsButton.frame = CGRectMake(107.0, 0.0, 107.0, kTabSize.height);
-	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateNormal];
-	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Active"] forState:UIControlStateHighlighted];
-	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateSelected];
-	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateDisabled];
-	[_newsButton setTag:HONTabBarButtonTypeNewsFeed];
-	[_tabHolderView addSubview:_newsButton];
+//	_newsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_newsButton.frame = CGRectMake(107.0, 0.0, 107.0, kTabSize.height);
+//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateNormal];
+//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Active"] forState:UIControlStateHighlighted];
+//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateSelected];
+//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateDisabled];
+//	[_newsButton setTag:HONTabBarButtonTypeNewsFeed];
+//	[_tabHolderView addSubview:_newsButton];
 	
-	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(213.0, -2.0, 106.0, kTabSize.height);
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateDisabled];
-	[_clubsButton setTag:HONTabBarButtonTypeClubs];
-	[_tabHolderView addSubview:_clubsButton];
+	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_settingsButton.frame = CGRectMake(213.0, -2.0, 106.0, kTabSize.height);
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateDisabled];
+	[_settingsButton setTag:HONTabBarButtonTypeClubs];
+	[_tabHolderView addSubview:_settingsButton];
 	
 	
 	[self _toggleTabButtonsEnabled:YES];
@@ -182,6 +181,13 @@
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabBarButtonType];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
+
+	
+	[_contactsButton setSelected:(_contactsButton.tag == tabBarButtonType)];
+//	[_newsButton setSelected:(_newsButton.tag == tabBarButtonType)];];
+	[_settingsButton setSelected:(_settingsButton.tag == tabBarButtonType)];
+
+	
 	
 	switch (tabBarButtonType) {
 		case HONTabBarButtonTypeFriends:
@@ -190,8 +196,8 @@
 			totalKey = @"friendsTab";
 			
 			[_contactsButton setSelected:YES];
-			[_newsButton setSelected:NO];
-			[_clubsButton setSelected:NO];
+//			[_newsButton setSelected:NO];
+			[_settingsButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeNewsFeed:
@@ -200,8 +206,8 @@
 			totalKey = @"newsTab";
 			
 			[_contactsButton setSelected:NO];
-			[_newsButton setSelected:YES];
-			[_clubsButton setSelected:NO];
+//			[_newsButton setSelected:YES];
+			[_settingsButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeClubs:
@@ -210,8 +216,8 @@
 			totalKey = @"clubsTab";
 			
 			[_contactsButton setSelected:NO];
-			[_newsButton setSelected:NO];
-			[_clubsButton setSelected:YES];
+//			[_newsButton setSelected:NO];
+			[_settingsButton setSelected:YES];
 			break;
 			
 		default:
@@ -239,37 +245,38 @@
 
 #pragma mark - Notifications
 - (void)_toggleTabs:(NSNotification *)notification {
-//	if ([[notification object] isEqualToString:@"SHOW"]) {
-//		[UIView animateWithDuration:0.333 delay:0.0
-//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
-//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-//								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
-//								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
-//								
-//								_tabHolderView.alpha = 1.0;
-//								_nativeTabBar.alpha = 1.0;
-//							} completion:^(BOOL finished) {
-//							}];
-//		
-//	} else {
-//		[UIView animateWithDuration:0.333 delay:0.0
-//			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
-//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-//								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
-//								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
-//								
-//								_tabHolderView.alpha = 0.0;
-//								_nativeTabBar.alpha = 0.0;
-//								
-//							} completion:^(BOOL finished) {
-//							}];
-//	}
+	if ([[notification object] isEqualToString:@"SHOW"]) {
+		[UIView animateWithDuration:0.333 delay:0.0
+			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
+								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
+								
+								_tabHolderView.alpha = 1.0;
+								_nativeTabBar.alpha = 1.0;
+							} completion:^(BOOL finished) {
+							}];
+		
+	} else {
+		[UIView animateWithDuration:0.333 delay:0.0
+			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
+							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
+								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
+								
+								_tabHolderView.alpha = 0.0;
+								_nativeTabBar.alpha = 0.0;
+								
+							} completion:^(BOOL finished) {
+							}];
+	}
 }
 
 - (void)_changeTab:(NSNotification *)notification {
 	NSLog(@"Gets notification %d", [notification.object intValue]);
 	[super setSelectedIndex:[notification.object intValue]];
 }
+
 
 #pragma mark - UI Presentation
 - (void)_toggleBadges:(BOOL)isShown {

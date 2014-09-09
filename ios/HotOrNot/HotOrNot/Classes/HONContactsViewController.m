@@ -52,11 +52,6 @@
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-		
-		
-		
-		
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 	}];
 }
@@ -302,6 +297,15 @@
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	NSLog(@":/: _goDataRefresh :/:");
 	
+	_headerRows = [NSMutableArray array];
+	_headerRows = [NSMutableArray arrayWithObjects:[HONTrivialUserVO userWithDictionary:@{@"id"			: @"-1",
+																						  @"alt_id"		: @"-1",
+																						  @"username"	: @"",
+																						  @"img_url"	: @""}], [HONTrivialUserVO userWithDictionary:@{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																																						@"alt_id"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
+																																						@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],																																							@"img_url"		: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]}], nil];
+	
+	
 	_cells = [NSMutableArray array];
 	_inAppContacts = [NSMutableArray array];
 	_deviceContacts = [NSMutableArray array];
@@ -403,6 +407,7 @@
 	if ([passedRegistration length] != 0) {
 		_userClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
 		
+		_headerRows = [NSMutableArray array];
 		_headerRows = [NSMutableArray arrayWithObjects:[HONTrivialUserVO userWithDictionary:@{@"id"			: @"-1",
 																							  @"alt_id"		: @"-1",
 																							  @"username"	: @"",
@@ -525,7 +530,7 @@
 		} else {
 			cell.trivialUserVO = (HONTrivialUserVO *)[_headerRows objectAtIndex:indexPath.row];
 			if ([_userClubVO.submissions count] > 0)
-				cell.clubVO = _userClubVO;
+				cell.clubVO = [[HONClubAssistant sharedInstance] userSignupClub];//_userClubVO;
 		}
 	
 	} else if (indexPath.section == 1) {

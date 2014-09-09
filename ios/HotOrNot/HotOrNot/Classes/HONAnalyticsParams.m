@@ -181,10 +181,10 @@ static HONAnalyticsParams *sharedInstance = nil;
 }*/
 
 - (NSDictionary *)propertyForStringCharacter:(NSString *)stringChar {
-	NSData *utf32 = [stringChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
-	NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
-	
-	return (@{@"char"	: [NSString stringWithFormat:@"%@ - %@", [@"U+" stringByAppendingString:uniHex], stringChar]});
+//	NSData *utf32 = [stringChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
+//	NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
+//	
+	return (@{@"char"	: stringChar});
 }
 
 - (NSDictionary *)propertyForCharArray:(NSArray *)chars {

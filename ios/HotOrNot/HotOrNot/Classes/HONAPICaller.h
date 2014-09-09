@@ -75,6 +75,9 @@ extern NSString * const kAPIClubsFeatured;
 extern NSString * const kAPIUsersGetClubs;
 extern NSString * const kAPIUsersSetDeviceToken;
 extern NSString * const kAPIUsersGetClubInvites;
+extern NSString * const kAPIUsersCheckUsername;
+extern NSString * const kAPIUsersCheckPhone;
+
 
 // network times
 extern const CGFloat kNotifiyDelay;
@@ -114,7 +117,10 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Users
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)checkForAvailableUsername:(NSString *)username andPhone:(NSString *)phone completion:(void (^)(id result))completion;
+//- (void)checkForAvailableUsername:(NSString *)username andPhone:(NSString *)phone completion:(void (^)(id result))completion;
+- (void)checkForAvailableUsername:(NSString *)username completion:(void (^)(id result))completion;
+- (void)checkForAvailablePhone:(NSString *)phone completion:(void (^)(id result))completion;
+
 - (void)deactivateUserWithCompletion:(void (^)(id result))completion;
 - (void)finalizeUserWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)flagUserByUserID:(int)userID completion:(void (^)(id result))completion;

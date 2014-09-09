@@ -38,8 +38,8 @@
 
 #pragma mark - Data Calls
 - (void)_generateClub:(HONUserClubVO *)vo {
-	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {
-	}];
+//	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {
+//	}];
 }
 
 - (void)_validatePinCode {

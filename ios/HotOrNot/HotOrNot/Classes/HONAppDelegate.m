@@ -1646,7 +1646,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 //			
 //
-		NSLog(@"_shareInfo:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"]);
+		NSLog(@"_shareInfo:[%@]", [[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex]);
 		
 		if (buttonIndex == HONShareSheetActionTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/moji_instagram.igo"];

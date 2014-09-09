@@ -181,25 +181,44 @@
 	[_emojiTextView resignFirstResponder];
 }
 
-
+#define ACCEPTABLE_CHARACTERS @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-/:;()$&@,?!\'\"[]{}#%^*+=\\|~<>€£¥•"
 #pragma mark - TextView Delegates
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-	NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-/:;()$&@,?!\'\"[]{}#%^*+=\\|~<>€£¥•"];
+	
+	
+	NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:ACCEPTABLE_CHARACTERS];
+	
 	NSString *filtered = [[text componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
 	
-	NSLog(@"textView:[%@] shouldChangeTextInRange:[%@] replacementText:[%@] -- (%@)", textView.text, NSStringFromRange(range), text, NSStringFromRange([text rangeOfCharacterFromSet:cs]));
+	return ([text isEqualToString:filtered] && ([textView.text length] < 200));
+
 	
-	_offset = ([text isEqualToString:filtered] && ([textView.text length] < 200)) ? [text length] : 0;
 	
+//	NSLog(@"textView:[%@] shouldChangeTextInRange:[%@] replacementText:[%@] -- (%@)", textView.text, NSStringFromRange(range), text, NSStringFromRange([text rangeOfCharacterFromSet:cs]));
+//	
+//	_offset = ([text isEqualToString:filtered] && ([textView.text length] < 200)) ? [text length] : 0;
+//	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Compose View - Enter %@Unicode Char", ([text isEqualToString:filtered]) ? @"" : @"Non-"] withStringChar:text];
 	
-	return ((_offset > 0));
+	return (([text isEqualToString:filtered] && ([textView.text length] < 200)));
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
-	NSLog(@"textView:[%@](%u)--{%d}", textView.text, [textView.text length], _offset);
-	NSString *lastChar = ([textView.text length] > 0) ? [textView.text substringFromIndex:[textView.text length]  - _offset] : @"";
-	[_headerView setTitle:([lastChar length] > 0) ? lastChar : @"Compose"];
+	
+	if ([textView.text length] > 0) {
+		[_headerView setTitle: [textView.text substringFromIndex: [textView.text length]-2]];
+		
+	}
+	
+	else {
+		[_headerView setTitle:@"Compose"];
+	}
+
+	
+	
+//	NSLog(@"textView:[%@](%u)--{%d}", textView.text, [textView.text length], _offset);
+//	NSString *lastChar = ([textView.text length] > 0) ? [textView.text substringFromIndex:[textView.text length]  - _offset] : @"";
+//	[_headerView setTitle:([lastChar length] > 0) ? lastChar : @"Compose"];
 	
 
 //	int codeValue = strtol([lastChar UTF8String], NULL, 16);
@@ -209,15 +228,15 @@
 
 //	NSData *u = [lastChar dataUsingEncoding:NSUTF32StringEncoding]; //UTF-32LE (hex)
 //	NSData *u = [lastChar dataUsingEncoding:NSUTF32LittleEndianStringEncoding]; //UTF-32LE (hex)
-	NSData *utf32 = [lastChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
-	NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
-	NSString *uniFormat = [@"U+" stringByAppendingString:uniHex];
+//	NSData *utf32 = [lastChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
+//	NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
+//	NSString *uniFormat = [@"U+" stringByAppendingString:uniHex];
 	
-	NSString *emoji = [uniFormat substringFromIndex:2];
-	for (int i=0; i<8-[[uniFormat substringFromIndex:2] length]; i++)
-		emoji = [@"0" stringByAppendingString:emoji];
-	
-	NSLog(@"Character (%@) = [\\u%06x]/[U+%@] (%d) {%@}", lastChar, [lastChar characterAtIndex:0], uniHex, [lastChar characterAtIndex:0], emoji);//@"\U0001F604");
+//	NSString *emoji = [uniFormat substringFromIndex:[lastChar length]];
+//	for (int i=0; i<8-[[uniFormat substringFromIndex:[lastChar length]] length]; i++)
+//		emoji = [@"0" stringByAppendingString:emoji];
+//	
+//	NSLog(@"Character (%@) = [\\u%06x]/[U+%@] (%d) {%@}", lastChar, [lastChar characterAtIndex:0], uniHex, [lastChar characterAtIndex:0], emoji);//@"\U0001F604");
 }
 
 - (void)textViewDidBeginEditing:(UITextView *)textView {

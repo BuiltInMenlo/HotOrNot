@@ -593,18 +593,18 @@ static HONClubAssistant *sharedInstance = nil;
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"broadcast_enabled"] isEqualToString:@"YES"]) {
 		if ([smsInvites count] > 0) {
 			NSLog(@"\n\n~>>~<~>>~<~>>~<~>>~<~>>~<~>>~>>~<~>>~<~>>~<~>>~<~>>~<~>>\n\t[¡!¡] SENDING SMS TO (%d) RECIPIENTS [¡!¡]\n<<~>~<<~>~<<~>~<<~>~<<~>~<<~<<~>~<<~>~<<~>~<<~>~<<~>~<<~\n\n", [smsInvites count]);
-//			[[HONAPICaller sharedInstance] inviteNonAppUsers:[smsInvites copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-//			}];
+			[[HONAPICaller sharedInstance] inviteNonAppUsers:[smsInvites copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+			}];
 		}
 	}
 #endif
 #if __OVERRIDE_SNS_BROADCAST__ == 0
 	if ([users count] > 0) {
 		NSLog(@"\n\n~>>~<~>>~<~>>~<~>>~<~>>~<~>>~>>~<~>>~<~>>~<~>>~<~>>~<~>>\n\t[¡!¡] SENDING PUSH TO (%d) RECIPIENTS [¡!¡]\n<<~>~<<~>~<<~>~<<~>~<<~>~<<~<<~>~<<~>~<<~>~<<~>~<<~>~<<~\n\n", [appUsers count]);
-//		[[HONAPICaller sharedInstance] inviteInAppUsers:[appUsers copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-//		}];
+		[[HONAPICaller sharedInstance] inviteInAppUsers:[appUsers copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+		}];
 	}
 #endif
 }

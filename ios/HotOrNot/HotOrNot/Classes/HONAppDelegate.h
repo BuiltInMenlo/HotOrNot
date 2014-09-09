@@ -14,13 +14,13 @@
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
-#define __FORCE_REGISTER__ 0
+#define __FORCE_REGISTER__ 1
 //]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[//
 #define __FORCE_NEW_USER__ 0
-#define __RESET_TOTALS__ 1
+#define __RESET_TOTALS__ 0
 
-#define __OVERRIDE_SMS_BROADCAST__ 1
-#define __OVERRIDE_SNS_BROADCAST__ 1
+#define __OVERRIDE_SMS_BROADCAST__ 0
+#define __OVERRIDE_SNS_BROADCAST__ 0
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/

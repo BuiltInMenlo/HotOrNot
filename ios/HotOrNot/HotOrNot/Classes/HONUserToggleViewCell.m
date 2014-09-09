@@ -128,7 +128,7 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	
 //	_trivialUserVO.username = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : _trivialUserVO.username;
-	NSString *nameCaption = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	NSString *nameCaption = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
 	
 //	_nameLabel.textColor = [UIColor blackColor];
 //	_nameLabel.font = _nameLabelFont;
@@ -150,7 +150,7 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
-	_nameLabel.text = _clubVO.clubName;
+	_nameLabel.text = ([_clubVO.clubName isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) ? @"Me" : _clubVO.clubName;
 	
 	NSString *emojis = @"";
 	for (NSString *emoji in _clubPhotoVO.subjectNames) {

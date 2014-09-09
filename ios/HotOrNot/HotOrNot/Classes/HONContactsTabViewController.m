@@ -231,6 +231,15 @@ static NSString * const kCamera = @"camera";
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
 	
+	_headerRows = [NSMutableArray array];
+	_headerRows = [NSMutableArray arrayWithObjects:[HONTrivialUserVO userWithDictionary:@{@"id"			: @"-1",
+																						  @"alt_id"		: @"-1",
+																						  @"username"	: @"",
+																						  @"img_url"	: @""}], [HONTrivialUserVO userWithDictionary:@{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																																						@"alt_id"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
+																																						@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],																																							@"img_url"		: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]}], nil];
+	
+	
 	[_activityHeaderView updateActivityBadge];
 	
 	[self _submitPhoneNumberForMatching];
