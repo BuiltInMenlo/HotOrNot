@@ -8,6 +8,9 @@
 
 #import "HONHeaderView.h"
 
+const CGRect kNormalFrame = {75.0f, 33.0f, 170.0f, 19.0f};
+const CGRect kActiveFrame = {-95.0f, 14.0f, 510.0f, 57.0f};
+
 @interface HONHeaderView()
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -54,6 +57,32 @@
 - (void)setTitle:(NSString *)title {
 	_title = title;
 	_titleLabel.text = _title;
+	
+	
+	CGSize scaleSize = CGSizeMake(kActiveFrame.size.width / kNormalFrame.size.width, kActiveFrame.size.height / kNormalFrame.size.height);
+	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kActiveFrame) - CGRectGetMidX(kNormalFrame), CGRectGetMidY(kActiveFrame) - CGRectGetMidY(kNormalFrame));
+	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
+	
+	[UIView animateWithDuration:0.0625 delay:0.000
+		 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
+						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+	 
+					 animations:^(void) {
+						 _titleLabel.transform = transform;
+					 } completion:^(BOOL finished) {
+						 CGAffineTransform transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
+						 
+						 NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
+						 
+						 [UIView animateWithDuration:0.125 delay:0.000
+							  usingSpringWithDamping:0.875 initialSpringVelocity:0.333
+											 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+						  
+										  animations:^(void) {
+											  _titleLabel.transform = transform;
+										  } completion:^(BOOL finished) {
+										  }];
+					 }];
 }
 
 
