@@ -185,7 +185,7 @@
 	
 	switch (tabBarButtonType) {
 		case HONTabBarButtonTypeFriends:
-			analyticsEventName = @"Friends";
+			analyticsEventName = @"Main View";
 			notificationName = @"CONTACTS_TAB";
 			totalKey = @"friendsTab";
 			
@@ -205,7 +205,7 @@
 			break;
 			
 		case HONTabBarButtonTypeClubs:
-			analyticsEventName = @"Clubs";
+			analyticsEventName = @"Settings View";
 			notificationName = @"CLUBS_TAB";
 			totalKey = @"clubsTab";
 			
@@ -230,7 +230,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEventName]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"%@ - Entering", analyticsEventName]];
 	
 	//if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
 		//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];

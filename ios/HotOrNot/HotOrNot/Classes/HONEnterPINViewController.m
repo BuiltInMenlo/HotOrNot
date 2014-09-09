@@ -56,6 +56,8 @@
 			_progressHUD = nil;
 		}
 		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"First Run - %@ PIN Step 2", (BOOL)([[result objectForKey:@"result"] intValue] == 1) ? @"Success" : @"Failure"]];
+		
 		if ([[result objectForKey:@"result"] intValue] == 0) {
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
 										message: NSLocalizedString(@"try_again", @"Please try again or press the resend button")
@@ -194,6 +196,8 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Entering PIN Step 2"];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

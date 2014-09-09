@@ -203,13 +203,17 @@
 //	_tableView.alwaysBounceVertical = YES;
 //	[self.view addSubview:_tableView];
 	
-	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(8.0, 72.0, 304.0, self.view.frame.size.height - 88.0)];
+	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(8.0, 69.0, 304.0, self.view.frame.size.height - 88.0)];
 	_emojiTextView.backgroundColor = [UIColor clearColor];
 	[_emojiTextView setTextColor:[UIColor blackColor]];
-	_emojiTextView.font = [UIFont systemFontOfSize:40.0f];
+	_emojiTextView.font = [UIFont systemFontOfSize:42.0f];
+	_emojiTextView.userInteractionEnabled = NO;
+	_emojiTextView.alwaysBounceVertical = YES;
+	_emojiTextView.showsVerticalScrollIndicator = NO;
 //	_emojiTextView.numberOfLines = 0;
 	_emojiTextView.text = @"";
 	[self.view addSubview:_emojiTextView];
+	_emojiTextView.delegate = self;
 		
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -261,15 +265,23 @@
 		}];
 	}
 	
-	if (_index > 0) {
-		_index = MIN(_index, [_clubPhotos count]);
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-	}
+//	if (_index > 0) {
+//		_index = MIN(_index, [_clubVO.submissions count]);
+//		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+//	}
+}
+
+
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+	[textView resignFirstResponder];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Sub Details - Entering"
+									  withClubPhoto:_clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }
@@ -284,13 +296,19 @@
 
 #pragma mark - Navigation
 - (void)_goShare {
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
-	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
+	__block NSString *emojis = @"";
+	[((HONClubPhotoVO *)[[[HONClubAssistant sharedInstance] userSignupClub].submissions firstObject]).subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		emojis = [emojis stringByAppendingString:(NSString *)obj];
+	}];
+	
+	NSString *defaultCaption = [NSString stringWithFormat:[HONAppDelegate defaultShareMessageForIndex:1], emojis];
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], emojis];
+	NSString *twCaption = defaultCaption;//[NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], emojis];
+//	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], emojis];
+	NSString *smsCaption = defaultCaption;//[NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], emojis];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], emojis]];
+	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], emojis];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, smsCaption, emailCaption, clipboardCaption],
 																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 																							@"club"				: _clubVO.dictionary,
@@ -298,8 +316,10 @@
 																							@"view_controller"	: self}];
 }
 - (void)_goBack {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Sub Details - Close"
+									  withClubPhoto:_clubPhotoVO];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
-	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -309,6 +329,20 @@
 	
 	[self _retrieveClub];
 }
+
+
+- (void)_goLike {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Sub Details - Up Vote"
+									  withClubPhoto:_clubPhotoVO];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_clubPhotoVO.challengeID forOpponent:_clubPhotoVO completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveUserByUserID:_clubPhotoVO.userID completion:^(NSDictionary *result) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+		}];
+	}];
+}
+
 
 #pragma mark - Notifications
 - (void)_refreshClubTimeline:(NSNotification *)notification {
@@ -376,20 +410,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_goLike {
-	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", _clubPhotoVO.challengeID, _clubPhotoVO.username);
-	
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_clubPhotoVO.challengeID forOpponent:_clubPhotoVO completion:^(NSDictionary *result) {
-		[[HONAPICaller sharedInstance] retrieveUserByUserID:_clubPhotoVO.userID completion:^(NSDictionary *result) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
-		}];
-		
-//		[self _advanceTimelineFromCell:cell byAmount:1];
-	}];
 }
 
 

@@ -390,22 +390,30 @@ static HONImageBroker *sharedInstance = nil;
 	return (processedImage);
 }
 
-- (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {
-	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
-	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
-	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kInstagramSize.width, kInstagramSize.height)];
-	canvasView.backgroundColor = [UIColor blackColor];
-	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
-	imageView.image = processedImage;
-	[canvasView addSubview:imageView];
-	[canvasView addSubview:[[UIImageView alloc] initWithImage:templateImage]];
-	
-	return ([[HONImageBroker sharedInstance] createImageFromView:canvasView]);
-}
+//- (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {
+//	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
+//	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
+//	
+//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kInstagramSize.width, kInstagramSize.height)];
+//	canvasView.backgroundColor = [UIColor blackColor];
+//	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
+//	imageView.image = processedImage;
+//	[canvasView addSubview:imageView];
+//	[canvasView addSubview:[[UIImageView alloc] initWithImage:templateImage]];
+//	
+//	return ([[HONImageBroker sharedInstance] createImageFromView:canvasView]);
+//}
 
-- (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path {
+- (void)saveForInstagram:(UIImage *)shareImage withCaption:(NSString *)caption toPath:(NSString *)path {
+	
+	__block NSString *emojis = @"";
+	[((HONClubPhotoVO *)[[[HONClubAssistant sharedInstance] userSignupClub].submissions firstObject]).subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		emojis = [emojis stringByAppendingString:(NSString *)obj];
+	}];
+
+	
+	
 	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
 	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
 	
@@ -414,9 +422,55 @@ static HONImageBroker *sharedInstance = nil;
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
 	imageView.image = processedImage;
-	[canvasView addSubview:imageView];
-	[canvasView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeInstagram]]];
 	
+	//caption = [NSString stringWithFormat:@"What's your moji status?\n%@\nGet moji now & share yours! \n getmoji.me", emojis];
+	
+	UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 400.0, kInstagramSize.width, 220.0)];//CGRectMake(4.0, CGRectGetHeight(canvasView.frame) * 0.75, CGRectGetWidth(imageView.frame) - 8.0, CGRectGetMidY(canvasView.frame))];
+	captionLabel.backgroundColor = [UIColor clearColor];
+	captionLabel.textColor = [UIColor whiteColor];
+	captionLabel.textAlignment = NSTextAlignmentCenter;
+	captionLabel.numberOfLines = [[caption componentsSeparatedByString:@"\n"] count] + 1;
+	captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:42.0];
+	
+	NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:caption attributes:@{}];
+	[attrString addAttribute:NSFontAttributeName
+							 value:captionLabel.font
+							 range:NSMakeRange(0, [caption length])];
+	
+	
+//	[attrString addAttribute:NSKernAttributeName
+//							 value:[NSNumber numberWithFloat:kEmojiCellFontSpacing]
+//							 range:NSMakeRange(0, [emojis length])];
+	
+	
+	CGSize size = [caption boundingRectWithSize:captionLabel.frame.size
+										options:NSStringDrawingTruncatesLastVisibleLine
+									 attributes:@{NSFontAttributeName:captionLabel.font}
+										context:nil].size;
+	NSLog(@"SIZE:[%@]", NSStringFromCGSize(size));
+//	captionLabel.frame = CGRectMake(0.0, 0.0, size.width, size.height);
+//	captionLabel.attributedText = attrString;
+	captionLabel.text = caption;
+	
+//
+//	CGRect insetFrame = CGRectApplyAffineTransform(canvasView.frame, CGAffineTransformMakeScale(0.50f, 0.50f));
+//	insetFrame = CGRectOffset(imageView.frame, (CGRectGetWidth(imageView.frame) - size.width) * 0.5, (CGRectGetHeight(imageView.frame) - size.height) * 0.5);
+//	
+//	__block NSString *emojis = @"";
+//	[((HONClubPhotoVO *)[[[HONClubAssistant sharedInstance] userSignupClub].submissions firstObject]).subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		emojis = [emojis stringByAppendingString:(NSString *)obj];
+//	}];
+//
+//	captionLabel.text = caption;//[NSString stringWithFormat:@"\n\nWhat's your mojo status?\n%@\nGet moji now & share yours! getmoji.me", emojis];
+	
+	[canvasView addSubview:imageView];
+	[canvasView addSubview:captionLabel];
+	
+//	[canvasView.layer addSublayer:[[HONImageBroker sharedInstance] drawTextToLayer:caption
+//																		   inFrame:CGRectMake(2.0, 0.0, imageView.frame.size.width * 0.25, imageView.frame.size.height * 1.00)
+//																		  withFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:44.0]
+//																		 textColor:[UIColor whiteColor]]];
+//	
 	[UIImageJPEGRepresentation([[HONImageBroker sharedInstance] createImageFromView:canvasView], 1.0f) writeToFile:path atomically:YES];
 }
 

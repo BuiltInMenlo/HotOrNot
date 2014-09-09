@@ -207,6 +207,7 @@
 			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+				[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Completing Step 1"];
 				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			}];
 		}];
@@ -240,7 +241,8 @@
 					}
 				}];
 				
-				[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {				
+				[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+					[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Completing Registration Step 1"];
 					[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 				}];
 							
@@ -282,8 +284,6 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Step 1"];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 		
@@ -343,7 +343,7 @@
 //	[self.view addSubview:_clubNameLabel];
 	
 	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 51.0);
+	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 266.0, 74.0);
 	_usernameCheckImageView.alpha = 0.0;
 	[self.view addSubview:_usernameCheckImageView];
 	
@@ -392,8 +392,8 @@
 	[self.view addSubview:_phoneTextField];
 	
 	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 258.0, 129.0);
-	_phoneCheckImageView.alpha = 0.0;
+	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, _usernameCheckImageView.frame.origin.x, 139.0);
+	_phoneCheckImageView.alpha = _usernameCheckImageView.alpha;
 	[self.view addSubview:_phoneCheckImageView];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
@@ -406,7 +406,7 @@
 	}
 	
 	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"termsText"]];
-	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 244.0);
+	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 212.0);
 	[self.view addSubview:footerTextImageView];
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -422,6 +422,8 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Entering Registration Step 1"];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -790,6 +792,8 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"First Run - Entering %@", (textField.tag == 0) ? @"Username" : @"Phone Number"]];
+	
 	if (textField.tag == 0) {
 //		_usernameCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:YES];

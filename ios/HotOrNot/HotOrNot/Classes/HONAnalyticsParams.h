@@ -43,6 +43,8 @@ typedef NS_ENUM(NSInteger, HONAnalyticsEventCollectionType) {
 - (NSDictionary *)propertyForCohortUser:(HONUserVO *)vo;
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo;
+- (NSDictionary *)propertyForStringCharacter:(NSString *)stringChar;
+- (NSDictionary *)propertyForCharArray:(NSArray *)chars;
 //- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo;
 //- (NSDictionary *)propertyForMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)participantVO;
 //- (NSDictionary *)propertyForMessageParticipant:(HONOpponentVO *)vo;
@@ -59,6 +61,8 @@ typedef NS_ENUM(NSInteger, HONAnalyticsEventCollectionType) {
 - (void)trackEvent:(NSString *)eventName withCohortUser:(HONUserVO *)userVO;
 - (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO;
+- (void)trackEvent:(NSString *)eventName withStringChar:(NSString *)stringChar;
+- (void)trackEvent:(NSString *)eventName withCharArray:(NSArray *)chars;
 //- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO;
 //- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO;
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO;

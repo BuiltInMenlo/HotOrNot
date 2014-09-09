@@ -128,9 +128,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, HONInsetOverlayViewDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate>
 #else
-@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
+@interface HONAppDelegate()
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -196,6 +196,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSString *)instagramShareMessageForIndex:(int)index { //[0]:Details //[1]:Profile
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index]);
+}
+
+
++ (NSString *)defaultShareMessageForIndex:(int)index { //[0]:Details //[1]:Profile
+	NSLog(@"sssssssss %@", [[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"]);
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"default"] objectAtIndex:index]);
 }
 
 + (NSString *)twitterShareCommentForIndex:(int)index { //[0]:Details //[1]:Profile
@@ -471,12 +477,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
-														   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
-														   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
-														   @"sms"		: [[result objectForKey:@"share_formats"] objectForKey:@"sms"],
-														   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
+//		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_formats"] forKey:@"share_formats"];
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
@@ -598,7 +600,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Instagram", @"Twitter", @"SMS", @"Email", NSLocalizedString(@"copy_url", @"Copy Club URL"), nil];
+													otherButtonTitles:@"Instagram", @"Twitter", @"SMS", @"Email", nil];
 	[actionSheet setTag:HONAppDelegateAlertTypeExit];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
 }
@@ -722,6 +724,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"Emoji_alert"]; //uncomment to reset Alert that tells user to use emoji keyboard
 	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"broadcast_enabled"] == nil) {
+		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:YES] forKey:@"broadcast_enabled"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
@@ -831,8 +838,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Returning From Background"];
-	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Returning From Background"
+									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
+													  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
+	
 	
 	_isFromBackground = YES;
 }
@@ -859,11 +876,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
-			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
-											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
-															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
-			
 //			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 //				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
 //					if (_insetOverlayView == nil) {
@@ -1451,41 +1463,41 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #pragma mark - InsetOverlay Delegates
-- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Close"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-	}];
-}
-
-- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-	}];
-}
-
-- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Invite Overlay Acknowledge"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-	}];
-}
+//- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+//	NSLog(@"[*:*] insetOverlayViewDidReview");
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Close"];
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//	}];
+//}
+//
+//- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
+//	NSLog(@"[*:*] insetOverlayViewDidReview");
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+//	}];
+//}
+//
+//- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
+//	NSLog(@"[*:*] insetOverlayViewDidReview");
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Invite Overlay Acknowledge"];
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+//	}];
+//}
 
 
 #pragma mark - AlertView delegates
@@ -1496,14 +1508,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == HONAppDelegateAlertTypeVerifiedNotification) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification Verified Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		//[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification Verified Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
-																									@"image"			: [HONAppDelegate avatarImage],
-																									@"url"				: @"",
-																									@"mp_event"			: @"App Root",
-																									@"view_controller"	: self.tabBarController}];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+//																									@"image"			: [HONAppDelegate avatarImage],
+//																									@"url"				: @"",
+//																									@"mp_event"			: @"App Root",
+//																									@"view_controller"	: self.tabBarController}];
 		}
 	}
 	
@@ -1523,7 +1535,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeInviteFriends) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		//[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1532,10 +1544,22 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeShare) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		//[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+			__block NSString *emojis = @"";
+			[((HONClubPhotoVO *)[[[HONClubAssistant sharedInstance] userSignupClub].submissions firstObject]).subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				emojis = [emojis stringByAppendingString:(NSString *)obj];
+			}];
+			
+			NSString *defaultCaption = [NSString stringWithFormat:[HONAppDelegate defaultShareMessageForIndex:1], emojis];
+			NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], emojis];
+			NSString *twCaption = defaultCaption;//[NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], emojis];
+//			NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], emojis];
+			NSString *smsCaption = defaultCaption;//[NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], emojis];
+			NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], emojis]];
+			NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], emojis];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, smsCaption, emailCaption, clipboardCaption],
 																									@"image"			: [HONAppDelegate avatarImage],
 																									@"url"				: @"",
 																									@"mp_event"			: @"App Root",
@@ -1563,7 +1587,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		//[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:_userID]];
@@ -1614,23 +1638,34 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"%@ - Share on %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == HONShareSheetActionTypeInstagram) ? @"Instagram" : (buttonIndex == HONShareSheetActionTypeTwitter) ? @"Twitter" : (buttonIndex == HONShareSheetActionTypeSMS) ? @"SMS" : (buttonIndex == HONShareSheetActionTypeEmail) ? @"Email" : @"CANCEL"]];
+		
 		//[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[@" - Share " stringByAppendingString:(buttonIndex == HONShareSheetActionTypeKik) ? @"Kik" : (buttonIndex == HONShareSheetActionTypeInstagram) ? @"Instagram" : (buttonIndex == HONShareSheetActionTypeTwitter) ? @"Twitter" : (buttonIndex == HONShareSheetActionTypeFacebook) ? @"Facebook" : (buttonIndex == HONShareSheetActionTypeSMS) ? @"SMS" : (buttonIndex == HONShareSheetActionTypeEmail) ? @"Email" : (buttonIndex == HONShareSheetActionTypeClipboard) ? @"Link" : @"Cancel"]]];
 		
 //		if (buttonIndex == HONShareSheetActionTypeKik) {
 //			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 //			
 //
+		NSLog(@"_shareInfo:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"]);
+		
 		if (buttonIndex == HONShareSheetActionTypeInstagram) {
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/moji_instagram.igo"];
 			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
-									withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
-										  toPath:savePath];
+												 withCaption:[[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex]
+													   toPath:savePath];
+			
+			__block NSString *emojis = @"";
+			HONClubPhotoVO *vo = [[[HONClubAssistant sharedInstance] userSignupClub].submissions firstObject];
+			
+			[vo.subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				emojis = [emojis stringByAppendingString:(NSString *)obj];
+			}];
 			
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = @"com.instagram.exclusivegram";
 				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"caption"] objectAtIndex:0] forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], emojis] forKey:@"InstagramCaption"];
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {
@@ -1650,7 +1685,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"caption"] objectAtIndex:1]];
+				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex]];
 				[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
 				twitterComposeViewController.completionHandler = completionBlock;
 				
@@ -1667,7 +1702,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else if (buttonIndex == HONShareSheetActionTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [[_shareInfo objectForKey:@"caption"] objectAtIndex:3];
+				messageComposeViewController.body = [[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex];
 				messageComposeViewController.messageComposeDelegate = self;
 				
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
@@ -1682,10 +1717,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		} else if (buttonIndex == HONShareSheetActionTypeEmail) {
 			if ([MFMailComposeViewController canSendMail]) {
-				NSRange range = [[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] rangeOfString:@"|"];
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] substringToIndex:range.location]];
-				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] substringFromIndex:range.location + 1] isHTML:NO];
+				[mailComposeViewController setSubject:[[[[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex] componentsSeparatedByString:@"|"] firstObject]];
+				[mailComposeViewController setMessageBody:[[[[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex] componentsSeparatedByString:@"|"] lastObject] isHTML:NO];
 				mailComposeViewController.mailComposeDelegate = self;
 				
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
@@ -1709,48 +1743,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Presenting DocInteraction Shelf"
-									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Dismissing DocInteraction Shelf"
-									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching DocInteraction App"
-									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Entering DocInteraction App Foreground"
-									 withProperties:@{@"controller"		: [controller name]}];
 }
 
 
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	NSString *mpAction = @"";
-	switch (result) {
-		case MessageComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-			
-		case MessageComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		case MessageComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
-	
-//	[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share via SMS (%@)", mpAction]]];
 	[controller dismissViewControllerAnimated:YES completion:nil];
 	_shareInfo = nil;
 }
@@ -1758,31 +1764,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-		
-	NSString *mpAction = @"";
-	switch (result) {
-		case MFMailComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-			
-		case MFMailComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		case MFMailComposeResultSaved:
-			mpAction = @"Saved";
-			break;
-			
-		case MFMailComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
-	
-//	[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share via Email (%@)", mpAction]]];
 	[controller dismissViewControllerAnimated:YES completion:nil];
 	_shareInfo = nil;
 }

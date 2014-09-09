@@ -13,7 +13,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONPostStatusUpdateViewController.h"
-#import "HONPostStatusUpdateViewCell.h"
 #import "HONHeaderView.h"
 
 @interface HONPostStatusUpdateViewController ()
@@ -22,12 +21,14 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UITextView *emojiTextView;
 @property (nonatomic) BOOL isSubmitting;
+@property (nonatomic) NSUInteger offset;
 @end
 
 @implementation HONPostStatusUpdateViewController
 
 - (id)init {
 	if ((self = [super init])) {
+		_offset = 0;
     }
 	
     return (self);
@@ -47,6 +48,9 @@
 		[emojis addObject:[_emojiTextView.text substringWithRange:NSMakeRange(i, 2)]];
 	
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Submit Update"
+									  withCharArray:emojis];
+	
 	NSError *error;
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:emojis options:0 error:&error]
 												 encoding:NSUTF8StringEncoding];
@@ -61,6 +65,8 @@
 								   @"recipients"	: @"",
 								   @"api_endpt"		: kAPICreateChallenge};
 	NSLog(@"SUBMIT PARAMS:[%@]", submitParams);
+	[[NSUserDefaults standardUserDefaults] setValue:emojis forKey:@"last_emojis"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:submitParams completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
@@ -75,10 +81,20 @@
 			_progressHUD = nil;
 		
 		} else {
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONClubAssistant sharedInstance] defaultClubPhotoURL]
+															   forBucketType:HONS3BucketTypeSelfies
+																  completion:nil];
+			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
+			
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONClubAssistant sharedInstance] defaultClubPhotoURL]
+															   forBucketType:HONS3BucketTypeSelfies
+																  completion:nil];
+			
+			[[HONClubAssistant sharedInstance] broadcastLastStatusUpdate];
 			
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
@@ -131,6 +147,8 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Entering"];
+	
 	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"emoji_alert"] isEqualToString:@"YES"]) {
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"emoji_alert"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -154,6 +172,7 @@
 
 #pragma mark - Navigation
 - (void)_goCancel {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Cancel"];
 	[self dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
@@ -168,14 +187,18 @@
 	NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-/:;()$&@,?!\'\"[]{}#%^*+=\\|~<>€£¥•"];
 	NSString *filtered = [[text componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
 	
+	NSLog(@"textView:[%@] shouldChangeTextInRange:[%@] replacementText:[%@] -- (%@)", textView.text, NSStringFromRange(range), text, NSStringFromRange([text rangeOfCharacterFromSet:cs]));
 	
-//	NSLog(@"textView:[%@] shouldChangeTextInRange:[%@] replacementText:[%@] -- (%@)", textView.text, NSStringFromRange(range), text, NSStringFromRange([text rangeOfCharacterFromSet:cs]));
+	_offset = ([text isEqualToString:filtered] && ([textView.text length] < 200)) ? [text length] : 0;
 	
-	return ([text isEqualToString:filtered] && ([textView.text length] < 200));
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Compose View - Enter %@Unicode Char", ([text isEqualToString:filtered]) ? @"" : @"Non-"] withStringChar:text];
+	
+	return ((_offset > 0));
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
-	NSString *lastChar = ([textView.text length] > 0) ? [textView.text substringFromIndex:[textView.text length] - 2] : @"";
+	NSLog(@"textView:[%@](%u)--{%d}", textView.text, [textView.text length], _offset);
+	NSString *lastChar = ([textView.text length] > 0) ? [textView.text substringFromIndex:[textView.text length]  - _offset] : @"";
 	[_headerView setTitle:([lastChar length] > 0) ? lastChar : @"Compose"];
 	
 
@@ -199,6 +222,7 @@
 
 - (void)textViewDidBeginEditing:(UITextView *)textView {
 	_isSubmitting = NO;
+	_offset = 0;
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView {

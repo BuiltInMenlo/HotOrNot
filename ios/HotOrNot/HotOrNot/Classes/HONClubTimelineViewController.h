@@ -9,7 +9,7 @@
 #import "HONUserClubVO.h"
 #import "HONViewController.h"
 
-@interface HONClubTimelineViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONClubTimelineViewController : HONViewController <UITableViewDataSource, UITableViewDelegate, UITextViewDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index;
 - (id)initWithClubID:(int)clubID atPhotoIndex:(int)index;
 - (id)initWithClubID:(int)clubID withClubPhotoID:(int)photoID;

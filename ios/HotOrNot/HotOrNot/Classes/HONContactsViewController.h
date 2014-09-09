@@ -38,11 +38,11 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONContactsSendType _contactsSendType;
 	
 	NSMutableArray *_cells;
-	NSMutableArray *_deviceContacts;
+	NSMutableArray *_headerRows;
 	NSMutableArray *_inAppContacts;
-	NSMutableArray *_inAppUsers;
+	NSMutableArray *_deviceContacts;
 	NSMutableArray *_searchUsers;
-	NSMutableDictionary *_contactClubs;
+	NSMutableDictionary *_userOwnedClubs;
 	NSDictionary *_segmentedContacts;
 	NSMutableArray *_segmentedKeys;
 	HONUserClubVO *_userClubVO;

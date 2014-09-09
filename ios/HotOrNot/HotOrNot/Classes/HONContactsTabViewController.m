@@ -34,6 +34,7 @@
 //@property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
+@property (nonatomic, strong) HONContactUserVO *selectedContactUserVO;
 @end
 
 
@@ -187,11 +188,9 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goCreateChallenge {
-	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goContactsSearch {
@@ -215,13 +214,13 @@ static NSString * const kCamera = @"camera";
 	[self _submitPhoneNumberForMatching];
 	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[self _retrieveDeviceContacts];
+		[super _retrieveDeviceContacts];
 	
-	else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-		[self _promptForAddressBookPermission];
-	
-	else
-		[self _promptForAddressBookAccess];
+	else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+		[super _promptForAddressBookPermission];
+		
+	} else
+		[super _promptForAddressBookAccess];
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
@@ -234,12 +233,20 @@ static NSString * const kCamera = @"camera";
 	
 	[_activityHeaderView updateActivityBadge];
 	
-	if ([_cells count] > 0)
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-	
 	[self _submitPhoneNumberForMatching];
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
 		[self _retrieveDeviceContacts];
+		
+	} else
+		_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
+	
+//	if ([_cells count] > 0)
+//		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	
+//	[self _submitPhoneNumberForMatching];
+//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//		[super _retrieveDeviceContacts];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {
@@ -390,18 +397,74 @@ static NSString * const kCamera = @"camera";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	
+	
+	/*
+	 
+	 if (indexPath.section == 0) {
+	 if (indexPath.row == 0) {
+	 if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+	 [self _promptForAddressBookPermission];
+	 
+	 else
+	 [self _promptForAddressBookAccess];
+	 
+	 } else {
+	 
+	 }
+	 
+	 } else if (indexPath.section == 1) {
+	 
+	 
+	 } else {
+	 
+	 }
+	 
+	 
+	 */
+	
+	
+	
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	NSLog(@"[[- cell.clubVO:[%@]", cell.clubVO);
 	
 	if (cell.clubVO != nil) {
-		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Main View - Row Tap %@ Status", (cell.clubVO.clubID == [[HONClubAssistant sharedInstance] userSignupClub].clubID) ? @"My" : @"Member"]
+										   withUserClub:cell.clubVO];
+		
+		
+		if ([cell.clubVO.submissions count] == 0) {
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
+		
+		} else
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
 		
 	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:^(void) {
-		}];
+		
+		if (indexPath.section == 0 && indexPath.row == 0) {
+			[self _promptForAddressBookPermission];
+			
+		} else if (indexPath.section == 0 && indexPath.row == 1) {
+			[self _goCreateChallenge];
+		
+		} else if (indexPath.section == 2) {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Main View - Row Tap Non-Member Invite"
+											withContactUser:cell.contactUserVO];
+			
+			_selectedContactUserVO = cell.contactUserVO;
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+			[alertView setTag:3];
+			[alertView show];
+			
+		} else if ( indexPath.section == 1) {
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+		}
 	}
 }
 
@@ -424,6 +487,22 @@ static NSString * const kCamera = @"camera";
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 			}];
+		}
+	
+	} else if (alertView.tag == 3) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Main View - Non-Member Invite Alert Prompt %@", (buttonIndex == 0) ? @"Yes" : @"No"]
+																   withContactUser:_selectedContactUserVO];
+		
+		if (buttonIndex == 0) {
+			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_selectedContactUserVO] toClubWithID:[[HONClubAssistant sharedInstance] userSignupClub].clubID withClubOwnerID:[[HONClubAssistant sharedInstance] userSignupClub].ownerID completion:^(NSDictionary *result) {
+				[[HONContactsAssistant sharedInstance] writeContactUser:_selectedContactUserVO toInvitedClub:[[HONClubAssistant sharedInstance] userSignupClub]];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+			}];
+			
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:_selectedContactUserVO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:^(void) {
+//			}];
 		}
 	}
 }

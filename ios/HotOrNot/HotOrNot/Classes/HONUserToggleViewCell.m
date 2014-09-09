@@ -20,7 +20,14 @@
 @property (nonatomic, strong) UILabel *emojiLabel;
 @property (nonatomic) BOOL isSelected;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
+
+
+@property (nonatomic, strong) UIFont *nameLabelFont;
 @end
+
+
+const CGFloat kEmojiCellFontSize = 48.0f;
+const CGFloat kEmojiCellFontSpacing = 3.0f;
 
 @implementation HONUserToggleViewCell
 @synthesize delegate = _delegate;
@@ -32,16 +39,16 @@
 	if ((self = [super init])) {
 		_isSelected = NO;
 		
+		_nameLabelFont =[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 22.0, 220.0, 18.0)];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:14];
+		_nameLabel.font = _nameLabelFont;
 		//_nameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 11.0, 220.0, 42.0)];
-		_emojiLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:42];
+		_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 6.0, 220.0, kEmojiCellFontSize)];
+		_emojiLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:kEmojiCellFontSize];
 		_emojiLabel.textColor = [UIColor blackColor];
-		//_emojiLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_emojiLabel.text = @"";
 		[self.contentView addSubview:_emojiLabel];
 				
@@ -97,13 +104,17 @@
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
-	NSString *nameCaption = _contactUserVO.fullName;//[NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
-	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
-	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+	//NSLog(@"CONTACT_USER:[%@]", _contactUserVO.dictionary);
 	
-	CGSize size = [nameCaption boundingRectWithSize:_nameLabel.frame.size
+	NSString *nameCaption = _contactUserVO.fullName;//[NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
+	_nameLabel.font = _nameLabelFont;
+	_nameLabel.text = nameCaption;
+//	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
+//	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+	
+		CGSize size = [[nameCaption stringByAppendingString:@"   "] boundingRectWithSize:_nameLabel.frame.size
 											options:NSStringDrawingTruncatesLastVisibleLine
-										 attributes:@{NSFontAttributeName:_nameLabel.font}
+										 attributes:@{NSFontAttributeName:_nameLabelFont}
 											context:nil].size;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, _nameLabel.frame.size.width), _nameLabel.frame.size.height);
@@ -113,30 +124,37 @@
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
-	NSString *nameCaption = _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	//NSLog(@"TRIVIAL_USER:[%@]", _trivialUserVO.dictionary);
 	
-	_nameLabel.textColor = [UIColor blackColor];
-	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption];
-	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_trivialUserVO.username]];
 	
-	CGSize size = [nameCaption boundingRectWithSize:_nameLabel.frame.size
+//	_trivialUserVO.username = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : _trivialUserVO.username;
+	NSString *nameCaption = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	
+//	_nameLabel.textColor = [UIColor blackColor];
+//	_nameLabel.font = _nameLabelFont;
+	_nameLabel.text = nameCaption;
+	
+	CGSize size = [_nameLabel.text boundingRectWithSize:_nameLabel.frame.size
 											options:NSStringDrawingTruncatesLastVisibleLine
 										 attributes:@{NSFontAttributeName:_nameLabel.font}
 											context:nil].size;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, 220.0), _nameLabel.frame.size.height);
 	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
-	
 	[self hideChevron];
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
+	//NSLog(@"CLUB:[%@]", _clubVO.dictionary);
+	
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
+	_nameLabel.text = _clubVO.clubName;
 	
 	NSString *emojis = @"";
 	for (NSString *emoji in _clubPhotoVO.subjectNames) {
+		//NSLog(@"SUBJECT.LEN:[%u / %u / %u / %u] (%@)", [emoji length], [emoji lengthOfBytesUsingEncoding:NSUTF16StringEncoding], [emoji lengthOfBytesUsingEncoding:NSUTF32StringEncoding], [emoji lengthOfBytesUsingEncoding:NSUTF32BigEndianStringEncoding], emoji);
 		emojis = [emojis stringByAppendingString:emoji];
 	}
 	
@@ -147,10 +165,10 @@
 							 range:NSMakeRange(0, [emojis length])];
 	
 	[attributedString addAttribute:NSKernAttributeName
-							 value:[NSNumber numberWithFloat:5.0]
+							 value:[NSNumber numberWithFloat:kEmojiCellFontSpacing]
 							 range:NSMakeRange(0, [emojis length])];
 	
-	_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, _emojiLabel.font.pointSize * [emojis length], _emojiLabel.frame.size.height);
+	_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, (kEmojiCellFontSize + kEmojiCellFontSpacing) * ([emojis length] * 1.0), _emojiLabel.frame.size.height);
 	_emojiLabel.attributedText = attributedString;
 }
 

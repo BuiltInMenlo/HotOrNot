@@ -24,7 +24,17 @@
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.challengeID = [[dictionary objectForKey:@"challenge_id"] intValue];
 	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
-	vo.subjectNames = [dictionary objectForKey:@"subjects"];
+	
+	NSMutableArray *subjects = [NSMutableArray array];
+	for (NSString *subject in [dictionary objectForKey:@"subjects"]) {
+		NSMutableString *nrml = [subject mutableCopy];
+		[nrml replaceOccurrencesOfString:@" " withString:@""
+									 options:NSCaseInsensitiveSearch
+									   range:NSMakeRange(0, [subject length])];
+		[subjects addObject:[nrml copy]];
+	}
+	
+	vo.subjectNames = [subjects copy];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	

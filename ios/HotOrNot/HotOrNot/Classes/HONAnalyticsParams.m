@@ -180,6 +180,17 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }*/
 
+- (NSDictionary *)propertyForStringCharacter:(NSString *)stringChar {
+	NSData *utf32 = [stringChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
+	NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
+	
+	return (@{@"char"	: [NSString stringWithFormat:@"%@ - %@", [@"U+" stringByAppendingString:uniHex], stringChar]});
+}
+
+- (NSDictionary *)propertyForCharArray:(NSArray *)chars {
+	return (@{@"chars"	: chars});
+}
+
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
@@ -294,6 +305,22 @@ static HONAnalyticsParams *sharedInstance = nil;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForEmotion:emotionVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)eventName withStringChar:(NSString *)stringChar {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForStringCharacter:stringChar]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)eventName withCharArray:(NSArray *)chars {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCharArray:chars]];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];

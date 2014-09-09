@@ -50,4 +50,8 @@
 - (void)writeUserClubs:(NSDictionary *)clubs;
 
 - (NSArray *)excludedClubDomains;
+
+- (HONClubPhotoVO *)lastStatusUpdate;
+- (void)broadcastLastStatusUpdate;
+
 @end
