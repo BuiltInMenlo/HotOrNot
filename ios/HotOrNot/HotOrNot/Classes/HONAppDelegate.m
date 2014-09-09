@@ -24,7 +24,6 @@
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
-#import "Chartboost.h"
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
@@ -32,11 +31,6 @@
 #import "PicoSticker.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
-//#import "UAConfig.h"
-//#import "UAirship.h"
-//#import "UAAnalytics.h"
-//#import "UAPush.h"
-//#import "UATagUtils.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
@@ -860,17 +854,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
-	//[[UAPush shared] resetBadge];
-	
-//	Chartboost *chartboost = [Chartboost sharedChartboost];
-//	chartboost.appId = kChartboostAppID;
-//	chartboost.appSignature = kChartboostAppSignature;
-//	chartboost.delegate = self;
-//	
-//	[chartboost startSession];
-//	[chartboost showInterstitial];
-	
-	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
 	
@@ -884,17 +867,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
-				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
-					if (_insetOverlayView == nil) {
-						_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
-						_insetOverlayView.delegate = self;
-						
-						[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-						[_insetOverlayView introWithCompletion:nil];
-					}
-				}
-			}
+//			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
+//				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
+//					if (_insetOverlayView == nil) {
+//						_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
+//						_insetOverlayView.delegate = self;
+//						
+//						[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+//						[_insetOverlayView introWithCompletion:nil];
+//					}
+//				}
+//			}
 			
 			if (![HONAppDelegate canPingConfigServer]) {
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
@@ -1453,36 +1436,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else
 			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}
-}
-
-
-#pragma mark - Chartboost Delegates
-- (BOOL)shouldRequestInterstitialsInFirstSession {
-	return (NO);
-}
-
-- (BOOL)shouldRequestInterstitial:(NSString *)location {
-	return (YES);
-}
-
-- (BOOL)shouldDisplayInterstitial:(NSString *)location {
-	return (YES);
-}
-
-- (void)didDismissInterstitial:(NSString *)location {
-	
-}
-
-- (void)didCloseInterstitial:(NSString *)location {
-	
-}
-
-- (void)didClickInterstitial:(NSString *)location {
-	
-}
-
-- (void)didFailToLoadInterstitial:(NSString *)location withError:(CBLoadError)error {
-	
 }
 
 

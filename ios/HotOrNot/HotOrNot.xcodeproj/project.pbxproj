@@ -142,7 +142,6 @@
 		4C43280E18E3A9FA0035FF06 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4325B918E3A9F80035FF06 /* UIImageView+AFNetworking.m */; };
 		4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43274C18E3A9F90035FF06 /* BitHelper.m */; };
 		4C4328A518E3A9FA0035FF06 /* BlowfishAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43274E18E3A9F90035FF06 /* BlowfishAlgorithm.m */; };
-		4C4328A618E3A9FA0035FF06 /* libChartboost.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C43275118E3A9F90035FF06 /* libChartboost.a */; };
 		4C4328A718E3A9FA0035FF06 /* EGOCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43275518E3A9F90035FF06 /* EGOCache.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328A818E3A9FA0035FF06 /* EGOImageButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43275818E3A9F90035FF06 /* EGOImageButton.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328A918E3A9FA0035FF06 /* EGOImageLoadConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43275B18E3A9F90035FF06 /* EGOImageLoadConnection.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -165,30 +164,7 @@
 		4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278A18E3A9F90035FF06 /* UIView+HONSnapshot.m */; };
 		4C4328BD18E3A9FA0035FF06 /* kikapilib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C43278D18E3A9F90035FF06 /* kikapilib.a */; };
 		4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328C918E3A9FA0035FF06 /* Mixpanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327A918E3A9F90035FF06 /* Mixpanel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328CA18E3A9FA0035FF06 /* MPArrowLeft.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327AA18E3A9F90035FF06 /* MPArrowLeft.png */; };
-		4C4328CB18E3A9FA0035FF06 /* MPArrowLeft@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327AB18E3A9F90035FF06 /* MPArrowLeft@2x.png */; };
-		4C4328CC18E3A9FA0035FF06 /* MPArrowRight.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327AC18E3A9F90035FF06 /* MPArrowRight.png */; };
-		4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327AD18E3A9F90035FF06 /* MPArrowRight@2x.png */; };
-		4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327AE18E3A9F90035FF06 /* MPCheckmark.png */; };
-		4C4328CF18E3A9FA0035FF06 /* MPCheckmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327AF18E3A9F90035FF06 /* MPCheckmark@2x.png */; };
-		4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327B018E3A9F90035FF06 /* MPDismissKeyboard.png */; };
-		4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327B118E3A9F90035FF06 /* MPDismissKeyboard@2x.png */; };
-		4C4328D218E3A9FA0035FF06 /* MPLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327B218E3A9F90035FF06 /* MPLogo.png */; };
-		4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327B318E3A9F90035FF06 /* MPLogo@2x.png */; };
-		4C4328D418E3A9FA0035FF06 /* MPSurvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327B518E3A9F90035FF06 /* MPSurvey.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328D518E3A9FA0035FF06 /* MPSurvey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327B618E3A9F90035FF06 /* MPSurvey.storyboard */; };
-		4C4328D618E3A9FA0035FF06 /* MPSurveyNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327B818E3A9F90035FF06 /* MPSurveyNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328D718E3A9FA0035FF06 /* MPSurveyQuestion.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327BA18E3A9F90035FF06 /* MPSurveyQuestion.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328D818E3A9FA0035FF06 /* MPSurveyQuestionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327BC18E3A9F90035FF06 /* MPSurveyQuestionViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328D918E3A9FA0035FF06 /* NSData+MPBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327BE18E3A9F90035FF06 /* NSData+MPBase64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328DA18E3A9FA0035FF06 /* UIImage+MPAverageColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327C018E3A9F90035FF06 /* UIImage+MPAverageColor.m */; };
-		4C4328DB18E3A9FA0035FF06 /* UIImage+MPImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327C218E3A9F90035FF06 /* UIImage+MPImageEffects.m */; };
-		4C4328DC18E3A9FA0035FF06 /* UIView+MPSnapshotImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327C418E3A9F90035FF06 /* UIView+MPSnapshotImage.m */; };
 		4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327D818E3A9F90035FF06 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328ED18E3A9FA0035FF06 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327F418E3A9F90035FF06 /* libTestFlight.a */; };
-		4C4328EE18E3A9FA0035FF06 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327F518E3A9F90035FF06 /* README.md */; };
-		4C4328EF18E3A9FA0035FF06 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 4C4327F618E3A9FA0035FF06 /* release_notes.md */; };
 		4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */; };
 		4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */; };
 		4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */; };
@@ -839,8 +815,6 @@
 		4C43274C18E3A9F90035FF06 /* BitHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BitHelper.m; sourceTree = "<group>"; };
 		4C43274D18E3A9F90035FF06 /* BlowfishAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlowfishAlgorithm.h; sourceTree = "<group>"; };
 		4C43274E18E3A9F90035FF06 /* BlowfishAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlowfishAlgorithm.m; sourceTree = "<group>"; };
-		4C43275018E3A9F90035FF06 /* Chartboost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chartboost.h; sourceTree = "<group>"; };
-		4C43275118E3A9F90035FF06 /* libChartboost.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libChartboost.a; sourceTree = "<group>"; };
 		4C43275418E3A9F90035FF06 /* EGOCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGOCache.h; sourceTree = "<group>"; };
 		4C43275518E3A9F90035FF06 /* EGOCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EGOCache.m; sourceTree = "<group>"; };
 		4C43275718E3A9F90035FF06 /* EGOImageButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGOImageButton.h; sourceTree = "<group>"; };
@@ -886,43 +860,8 @@
 		4C43278D18E3A9F90035FF06 /* kikapilib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = kikapilib.a; sourceTree = "<group>"; };
 		4C4327A518E3A9F90035FF06 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
-		4C4327A818E3A9F90035FF06 /* Mixpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mixpanel.h; sourceTree = "<group>"; };
-		4C4327A918E3A9F90035FF06 /* Mixpanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mixpanel.m; sourceTree = "<group>"; };
-		4C4327AA18E3A9F90035FF06 /* MPArrowLeft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MPArrowLeft.png; sourceTree = "<group>"; };
-		4C4327AB18E3A9F90035FF06 /* MPArrowLeft@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MPArrowLeft@2x.png"; sourceTree = "<group>"; };
-		4C4327AC18E3A9F90035FF06 /* MPArrowRight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MPArrowRight.png; sourceTree = "<group>"; };
-		4C4327AD18E3A9F90035FF06 /* MPArrowRight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MPArrowRight@2x.png"; sourceTree = "<group>"; };
-		4C4327AE18E3A9F90035FF06 /* MPCheckmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MPCheckmark.png; sourceTree = "<group>"; };
-		4C4327AF18E3A9F90035FF06 /* MPCheckmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MPCheckmark@2x.png"; sourceTree = "<group>"; };
-		4C4327B018E3A9F90035FF06 /* MPDismissKeyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MPDismissKeyboard.png; sourceTree = "<group>"; };
-		4C4327B118E3A9F90035FF06 /* MPDismissKeyboard@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MPDismissKeyboard@2x.png"; sourceTree = "<group>"; };
-		4C4327B218E3A9F90035FF06 /* MPLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MPLogo.png; sourceTree = "<group>"; };
-		4C4327B318E3A9F90035FF06 /* MPLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MPLogo@2x.png"; sourceTree = "<group>"; };
-		4C4327B418E3A9F90035FF06 /* MPSurvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPSurvey.h; sourceTree = "<group>"; };
-		4C4327B518E3A9F90035FF06 /* MPSurvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPSurvey.m; sourceTree = "<group>"; };
-		4C4327B618E3A9F90035FF06 /* MPSurvey.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MPSurvey.storyboard; sourceTree = "<group>"; };
-		4C4327B718E3A9F90035FF06 /* MPSurveyNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPSurveyNavigationController.h; sourceTree = "<group>"; };
-		4C4327B818E3A9F90035FF06 /* MPSurveyNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPSurveyNavigationController.m; sourceTree = "<group>"; };
-		4C4327B918E3A9F90035FF06 /* MPSurveyQuestion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPSurveyQuestion.h; sourceTree = "<group>"; };
-		4C4327BA18E3A9F90035FF06 /* MPSurveyQuestion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPSurveyQuestion.m; sourceTree = "<group>"; };
-		4C4327BB18E3A9F90035FF06 /* MPSurveyQuestionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPSurveyQuestionViewController.h; sourceTree = "<group>"; };
-		4C4327BC18E3A9F90035FF06 /* MPSurveyQuestionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPSurveyQuestionViewController.m; sourceTree = "<group>"; };
-		4C4327BD18E3A9F90035FF06 /* NSData+MPBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MPBase64.h"; sourceTree = "<group>"; };
-		4C4327BE18E3A9F90035FF06 /* NSData+MPBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MPBase64.m"; sourceTree = "<group>"; };
-		4C4327BF18E3A9F90035FF06 /* UIImage+MPAverageColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MPAverageColor.h"; sourceTree = "<group>"; };
-		4C4327C018E3A9F90035FF06 /* UIImage+MPAverageColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MPAverageColor.m"; sourceTree = "<group>"; };
-		4C4327C118E3A9F90035FF06 /* UIImage+MPImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MPImageEffects.h"; sourceTree = "<group>"; };
-		4C4327C218E3A9F90035FF06 /* UIImage+MPImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MPImageEffects.m"; sourceTree = "<group>"; };
-		4C4327C318E3A9F90035FF06 /* UIView+MPSnapshotImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MPSnapshotImage.h"; sourceTree = "<group>"; };
-		4C4327C418E3A9F90035FF06 /* UIView+MPSnapshotImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MPSnapshotImage.m"; sourceTree = "<group>"; };
 		4C4327D718E3A9F90035FF06 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		4C4327D818E3A9F90035FF06 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		4C4327F418E3A9F90035FF06 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
-		4C4327F518E3A9F90035FF06 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		4C4327F618E3A9FA0035FF06 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
-		4C4327F718E3A9FA0035FF06 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
-		4C4327F818E3A9FA0035FF06 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
-		4C4327F918E3A9FA0035FF06 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDK.framework; sourceTree = "<group>"; };
 		4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
@@ -958,7 +897,7 @@
 		4C60AF6A17CCFEF800609792 /* HONEmotionsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONEmotionsPickerView.m; sourceTree = "<group>"; };
 		4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserToggleViewCell.h; sourceTree = "<group>"; };
 		4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserToggleViewCell.m; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* Selfieclub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selfieclub.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* moji.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = moji.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1375,11 +1314,9 @@
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4C4328F618E3A9FA0035FF06 /* Tapjoy.framework in Frameworks */,
 				4C4328BD18E3A9FA0035FF06 /* kikapilib.a in Frameworks */,
-				4C4328A618E3A9FA0035FF06 /* libChartboost.a in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
-				4C4328ED18E3A9FA0035FF06 /* libTestFlight.a in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1913,7 +1850,6 @@
 				4C6F71A519506A28009C4D53 /* CKRefreshControl */,
 				4C4325A618E3A9F80035FF06 /* AFNetworking */,
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
-				4C43274F18E3A9F90035FF06 /* Chartboost */,
 				4C43275218E3A9F90035FF06 /* EGOImageLoading */,
 				4C43276118E3A9F90035FF06 /* EGOTableViews */,
 				4C43276A18E3A9F90035FF06 /* ios-image-filters */,
@@ -1922,9 +1858,7 @@
 				4C69A1FD19410CA300971D3F /* KeenClient */,
 				4C43278B18E3A9F90035FF06 /* KikAPI */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
-				4C4327A718E3A9F90035FF06 /* Mixpanel */,
 				4C4327D618E3A9F90035FF06 /* Reachability */,
-				4C4327F318E3A9F90035FF06 /* TestFlightSDK */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1964,15 +1898,6 @@
 				4C43274E18E3A9F90035FF06 /* BlowfishAlgorithm.m */,
 			);
 			path = Blowfish;
-			sourceTree = "<group>";
-		};
-		4C43274F18E3A9F90035FF06 /* Chartboost */ = {
-			isa = PBXGroup;
-			children = (
-				4C43275018E3A9F90035FF06 /* Chartboost.h */,
-				4C43275118E3A9F90035FF06 /* libChartboost.a */,
-			);
-			path = Chartboost;
 			sourceTree = "<group>";
 		};
 		4C43275218E3A9F90035FF06 /* EGOImageLoading */ = {
@@ -2109,42 +2034,6 @@
 			path = MBProgressHUD;
 			sourceTree = "<group>";
 		};
-		4C4327A718E3A9F90035FF06 /* Mixpanel */ = {
-			isa = PBXGroup;
-			children = (
-				4C4327A818E3A9F90035FF06 /* Mixpanel.h */,
-				4C4327A918E3A9F90035FF06 /* Mixpanel.m */,
-				4C4327AA18E3A9F90035FF06 /* MPArrowLeft.png */,
-				4C4327AB18E3A9F90035FF06 /* MPArrowLeft@2x.png */,
-				4C4327AC18E3A9F90035FF06 /* MPArrowRight.png */,
-				4C4327AD18E3A9F90035FF06 /* MPArrowRight@2x.png */,
-				4C4327AE18E3A9F90035FF06 /* MPCheckmark.png */,
-				4C4327AF18E3A9F90035FF06 /* MPCheckmark@2x.png */,
-				4C4327B018E3A9F90035FF06 /* MPDismissKeyboard.png */,
-				4C4327B118E3A9F90035FF06 /* MPDismissKeyboard@2x.png */,
-				4C4327B218E3A9F90035FF06 /* MPLogo.png */,
-				4C4327B318E3A9F90035FF06 /* MPLogo@2x.png */,
-				4C4327B418E3A9F90035FF06 /* MPSurvey.h */,
-				4C4327B518E3A9F90035FF06 /* MPSurvey.m */,
-				4C4327B618E3A9F90035FF06 /* MPSurvey.storyboard */,
-				4C4327B718E3A9F90035FF06 /* MPSurveyNavigationController.h */,
-				4C4327B818E3A9F90035FF06 /* MPSurveyNavigationController.m */,
-				4C4327B918E3A9F90035FF06 /* MPSurveyQuestion.h */,
-				4C4327BA18E3A9F90035FF06 /* MPSurveyQuestion.m */,
-				4C4327BB18E3A9F90035FF06 /* MPSurveyQuestionViewController.h */,
-				4C4327BC18E3A9F90035FF06 /* MPSurveyQuestionViewController.m */,
-				4C4327BD18E3A9F90035FF06 /* NSData+MPBase64.h */,
-				4C4327BE18E3A9F90035FF06 /* NSData+MPBase64.m */,
-				4C4327BF18E3A9F90035FF06 /* UIImage+MPAverageColor.h */,
-				4C4327C018E3A9F90035FF06 /* UIImage+MPAverageColor.m */,
-				4C4327C118E3A9F90035FF06 /* UIImage+MPImageEffects.h */,
-				4C4327C218E3A9F90035FF06 /* UIImage+MPImageEffects.m */,
-				4C4327C318E3A9F90035FF06 /* UIView+MPSnapshotImage.h */,
-				4C4327C418E3A9F90035FF06 /* UIView+MPSnapshotImage.m */,
-			);
-			path = Mixpanel;
-			sourceTree = "<group>";
-		};
 		4C4327D618E3A9F90035FF06 /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
@@ -2152,19 +2041,6 @@
 				4C4327D818E3A9F90035FF06 /* Reachability.m */,
 			);
 			path = Reachability;
-			sourceTree = "<group>";
-		};
-		4C4327F318E3A9F90035FF06 /* TestFlightSDK */ = {
-			isa = PBXGroup;
-			children = (
-				4C4327F418E3A9F90035FF06 /* libTestFlight.a */,
-				4C4327F518E3A9F90035FF06 /* README.md */,
-				4C4327F618E3A9FA0035FF06 /* release_notes.md */,
-				4C4327F718E3A9FA0035FF06 /* TestFlight+AsyncLogging.h */,
-				4C4327F818E3A9FA0035FF06 /* TestFlight+ManualSessions.h */,
-				4C4327F918E3A9FA0035FF06 /* TestFlight.h */,
-			);
-			path = TestFlightSDK;
 			sourceTree = "<group>";
 		};
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
@@ -2304,7 +2180,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* Selfieclub.app */,
+				4C62652515F96C7100AA7FCE /* moji.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2805,7 +2681,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* Selfieclub.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* moji.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2876,8 +2752,6 @@
 				8F4E621D198ACD7800E8A171 /* inviteOverlay@2x.png in Resources */,
 				8FF6385019BA6E5800B7196B /* statusUpdateButton_nonActive@2x.png in Resources */,
 				8FF6384219BA46D900B7196B /* arrowButton_nonActive@2x.png in Resources */,
-				4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */,
-				4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */,
 				07B6E66D19884A6C00DA0805 /* cancelButtonBlue_nonActive@2x.png in Resources */,
 				4C0F3CF01988E65700703D09 /* tabMenu_clubsButton_nonActive@2x.png in Resources */,
 				07B6E67F19884A8600DA0805 /* doneButtonBlue_nonActive@2x.png in Resources */,
@@ -2891,12 +2765,10 @@
 				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
-				4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */,
 				4C0F3CE11988E64400703D09 /* tabMenu_newsButton_Active@2x.png in Resources */,
 				300B1BD9199C0E4C006BB048 /* modalInviteBackground@2x.png in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
 				07B6E6A319884AD800DA0805 /* replyTimelineButton_nonActive@2x.png in Resources */,
-				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,
 				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
 				07B6E6E519884B3B00DA0805 /* likeTimelineButton_Active@2x.png in Resources */,
 				8FF6389D19BA76BD00B7196B /* mainButton_Active@2x.png in Resources */,
@@ -2926,7 +2798,6 @@
 				4C45A9471996B20100A2086E /* TabBannerElements.xcassets in Resources */,
 				07B6E68519884A9100DA0805 /* nextButton_Active@2x.png in Resources */,
 				8FF6384D19BA6E5500B7196B /* statusUpdateButton_Active@2x.png in Resources */,
-				4C4328CB18E3A9FA0035FF06 /* MPArrowLeft@2x.png in Resources */,
 				072F53831991633000738827 /* inviteButton_Active@2x.png in Resources */,
 				07B6E6C119884B0A00DA0805 /* submitButton_Active@2x.png in Resources */,
 				4CA5AE1E1941DE4F007EF9EF /* ContactsElements.xcassets in Resources */,
@@ -2934,7 +2805,6 @@
 				4C47745E18F50A7F00D78654 /* ClubItemElements.xcassets in Resources */,
 				07B6E71A198851C300DA0805 /* modalSuggestionBackground@2x.png in Resources */,
 				07B6E6B519884AF300DA0805 /* settingsButton_Active@2x.png in Resources */,
-				4C4328EF18E3A9FA0035FF06 /* release_notes.md in Resources */,
 				07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */,
 				4C83FD95190F62E800CAEABB /* push_02.caf in Resources */,
 				07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */,
@@ -2944,7 +2814,6 @@
 				4C83FD9D190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf in Resources */,
 				4C0148CD198C7A930006BCBC /* emptyTimeline@2x.png in Resources */,
 				8FF6387619BA737100B7196B /* settings_tab_Button_Active@2x.png in Resources */,
-				4C4328D518E3A9FA0035FF06 /* MPSurvey.storyboard in Resources */,
 				07B6E6D919884B2A00DA0805 /* termsText@2x.png in Resources */,
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,
 				07B6E72F1988549400DA0805 /* suggestionOverlay@2x.png in Resources */,
@@ -2955,7 +2824,6 @@
 				4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */,
 				07B6E68B19884AB400DA0805 /* nextButton_nonActive@2x.png in Resources */,
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
-				4C4328CA18E3A9FA0035FF06 /* MPArrowLeft.png in Resources */,
 				07B6E69D19884ACF00DA0805 /* replyTimelineButton_Active@2x.png in Resources */,
 				8FF6387C19BA737700B7196B /* settings_tab_Button_Tapped@2x.png in Resources */,
 				8F4E621A198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png in Resources */,
@@ -2964,7 +2832,6 @@
 				4C0F3CF31988E65A00703D09 /* tabMenu_clubsButton_Active@2x.png in Resources */,
 				309F59CA199DAF9300EC6C1C /* shareFriends@2x.png in Resources */,
 				4C250E941938031B007CA4E2 /* EmojiElements.xcassets in Resources */,
-				4C4328EE18E3A9FA0035FF06 /* README.md in Resources */,
 				07B6E66119884A3700DA0805 /* backWhiteButton_nonActive@2x.png in Resources */,
 				4C0148BD198C77D10006BCBC /* smallRowOfferBackground@2x.png in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
@@ -2975,23 +2842,19 @@
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
 				4C0148C2198C7A870006BCBC /* emptyTimeline-568h@2x.png in Resources */,
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
-				4C4328CF18E3A9FA0035FF06 /* MPCheckmark@2x.png in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
 				07B2533B198C1FEE00F6D8B1 /* modalReviewBackground@2x.png in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				8FF6383B19BA46B200B7196B /* arrowButton_Active@2x.png in Resources */,
 				072F5392199190B700738827 /* unlockBanner.png in Resources */,
-				4C4328D218E3A9FA0035FF06 /* MPLogo.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
 				07B6E6FE1988515600DA0805 /* inviteFriends_nonActive@2x.png in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				8FF638A319BA76C100B7196B /* mainButton_Tapped@2x.png in Resources */,
 				4C783A95198E108B007A4045 /* inset1BG@2x.png in Resources */,
-				4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */,
 				07B6E6F51988514B00DA0805 /* accessContacts@2x.png in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
-				4C4328CC18E3A9FA0035FF06 /* MPArrowRight.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3063,7 +2926,6 @@
 				4C99EB5A194D5B1700283C1A /* HONClubTimelineViewController.m in Sources */,
 				4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */,
 				4CC606DA198C3E650042A951 /* HONInsetOverlayView.m in Sources */,
-				4C4328D718E3A9FA0035FF06 /* MPSurveyQuestion.m in Sources */,
 				4C4328A518E3A9FA0035FF06 /* BlowfishAlgorithm.m in Sources */,
 				4C2400ED18C2916C00C9AE53 /* HONClubSettingsViewController.m in Sources */,
 				B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */,
@@ -3084,7 +2946,6 @@
 				4C7341921616C078001F9F11 /* HONPrivacyPolicyViewController.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */,
-				4C4328DA18E3A9FA0035FF06 /* UIImage+MPAverageColor.m in Sources */,
 				4C00491B1946A994007FA9F5 /* HONClubsViewFlowLayout.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4C86C43517FF990A007DC458 /* HONFollowingViewController.m in Sources */,
@@ -3109,7 +2970,6 @@
 				4C616AE81911AF9700D9A6F5 /* HONUserToggleViewCell.m in Sources */,
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */,
-				4C4328D618E3A9FA0035FF06 /* MPSurveyNavigationController.m in Sources */,
 				8FF637FD19B8E85100B7196B /* HONPostStatusUpdateViewController.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
 				30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */,
@@ -3162,14 +3022,10 @@
 				57BD9A2D19BCFCD0008C1CD7 /* HONMainViewCell.m in Sources */,
 				4C4328A818E3A9FA0035FF06 /* EGOImageButton.m in Sources */,
 				4C6A3E1817669D7400B6CD4D /* HONFollowContactViewCell.m in Sources */,
-				4C4328D418E3A9FA0035FF06 /* MPSurvey.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
 				4C4328B918E3A9FA0035FF06 /* JLBPagedView.m in Sources */,
 				4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */,
-				4C4328DC18E3A9FA0035FF06 /* UIView+MPSnapshotImage.m in Sources */,
 				4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */,
-				4C4328D818E3A9FA0035FF06 /* MPSurveyQuestionViewController.m in Sources */,
-				4C4328D918E3A9FA0035FF06 /* NSData+MPBase64.m in Sources */,
 				300FCF3319B25D1E0009F5B5 /* HONClubViewCell.m in Sources */,
 				4CEF9204196DFFE3007D56BE /* HONCountryVO.m in Sources */,
 				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
@@ -3190,7 +3046,6 @@
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
 				4CCA416B181C1BF200FC9863 /* HONUserProfileGridView.m in Sources */,
-				4C4328DB18E3A9FA0035FF06 /* UIImage+MPImageEffects.m in Sources */,
 				4C4328B818E3A9FA0035FF06 /* JLBAnimator.m in Sources */,
 				4CD42F28188B410E00264845 /* HONMessagesViewController.m in Sources */,
 				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
@@ -3203,7 +3058,6 @@
 				4CC6AD1417B1F267004E7A3F /* HONTimelineCellHeaderView.m in Sources */,
 				4C71BF40181B25C8005044F8 /* HONSuspendedViewController.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */,
-				4C4328C918E3A9FA0035FF06 /* Mixpanel.m in Sources */,
 				4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */,
 				4C60AF6B17CCFEF800609792 /* HONEmotionsPickerView.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
@@ -4267,20 +4121,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/Airship",
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/KikAPI",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/TestFlightSDK",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/Mixpanel",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/Chartboost",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/TestFlightSDK",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Chartboost",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Selfieclub;
+				PRODUCT_NAME = moji;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -4313,20 +4161,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/Airship",
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/KikAPI",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/TestFlightSDK",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/Mixpanel",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/Chartboost",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/TestFlightSDK",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Chartboost",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Selfieclub;
+				PRODUCT_NAME = moji;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";

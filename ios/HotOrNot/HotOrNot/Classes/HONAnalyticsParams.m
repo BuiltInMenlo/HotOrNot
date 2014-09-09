@@ -53,7 +53,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (@{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]});
 }
 
-- (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
+/*- (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
 //	
@@ -106,7 +106,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 //	});
 	
 	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
-}
+}*/
 
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
 //	static NSDictionary *properties = nil;
@@ -142,11 +142,10 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
-	
 	return (@{@"emotion"	: [NSString stringWithFormat:@"%@ - %@", vo.emotionID, vo.emotionName]});
 }
 
-- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
+/*- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
 //	
@@ -179,7 +178,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 //	});
 	
 	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
-}
+}*/
 
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
 //	static NSDictionary *properties = nil;
@@ -217,16 +216,16 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
 	
-	NSError *error = nil;
-	[[KeenClient sharedClient] addEvent:event
-					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
-								  error:&error];
-	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
+//	NSError *error = nil;
+//	[[KeenClient sharedClient] addEvent:event
+//					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
+//								  error:&error];
+//	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
 }
 #pragma mark -
 
 
-- (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {
+/*- (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForActivityItem:activityItemVO]];
 	
@@ -266,7 +265,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
-}
+}*/
 
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
@@ -300,7 +299,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO {
+/*- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForMessage:messageVO]];
 	
@@ -314,7 +313,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
-}
+}*/
 
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
@@ -333,11 +332,11 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 
-- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties {
-	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-	[mixpanel.people set:properties];
-}
+/*- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties {
+//	Mixpanel *mixpanel = [Mixpanel sharedInstance];
+//	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
+//	[mixpanel.people set:properties];
+}*/
 
 - (void)forceAnalyticsUpload {
 	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];

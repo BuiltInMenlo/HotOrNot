@@ -49,8 +49,7 @@
 					   NSLocalizedString(@"settings_support", @"Support"),
 					   NSLocalizedString(@"terms_service", @"Terms of use"),
 					  // NSLocalizedString(@"network_status", @"Network status")
-                       ];//,
-//					   NSLocalizedString(@"settings_logout", @"Logout")];
+                       ];// NSLocalizedString(@"settings_logout", @"Logout")];
 		
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
@@ -393,16 +392,7 @@
 		}
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
-		
 		if (buttonIndex == 1) {
-			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-								   @"deactivated"	: @"YES"}];
-			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
 				[HONAppDelegate resetTotals];
 				

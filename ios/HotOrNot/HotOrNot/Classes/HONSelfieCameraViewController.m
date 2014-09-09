@@ -367,8 +367,8 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Flip Camera"
-								   withCameraDevice:self.imagePickerController.cameraDevice];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Flip Camera"
+//								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
 	
