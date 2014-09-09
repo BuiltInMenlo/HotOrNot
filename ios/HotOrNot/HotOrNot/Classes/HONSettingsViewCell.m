@@ -33,7 +33,7 @@
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
 		[self.contentView addSubview:_bgImageView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 19.0, 260.0, 26.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 19.0, 260.0, 26.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 		_captionLabel.textColor =  [UIColor blackColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
