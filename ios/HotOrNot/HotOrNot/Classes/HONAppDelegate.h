@@ -19,6 +19,9 @@
 #define __FORCE_NEW_USER__ 0
 #define __RESET_TOTALS__ 0
 
+#define __OVERRIDE_SMS_BROADCAST__ 0
+#define __OVERRIDE_SNS_BROADCAST__ 0
+
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 #define __APPSTORE_BUILD__ 0
@@ -156,6 +159,7 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
++ (NSString *)defaultShareMessageForIndex:(int)index;
 + (NSString *)instagramShareMessageForIndex:(int)index;
 + (NSString *)twitterShareCommentForIndex:(int)index;
 + (NSString *)facebookShareCommentForIndex:(int)index;

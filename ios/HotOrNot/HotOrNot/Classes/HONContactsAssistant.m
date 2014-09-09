@@ -118,7 +118,7 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
 	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] mutableCopy];
-	NSLog(@"CLUB INVITES:[%@]", invites);
+//	NSLog(@"CLUB INVITES:[% F@]", invites);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
@@ -137,8 +137,8 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold])
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
+//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold])
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
 }
 
 - (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {
@@ -147,7 +147,7 @@ static HONContactsAssistant *sharedInstance = nil;
 	
 	
 	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] mutableCopy];
-	NSLog(@"CLUB INVITES:[%@]", invites);
+//	NSLog(@"CLUB INVITES:[%@]", invites);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
@@ -395,16 +395,5 @@ static HONContactsAssistant *sharedInstance = nil;
 }
 
 
-- (void)sendInvitesToNonAppContacts {
-	[[[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONContactUserVO *vo = (HONContactUserVO *)obj;
-		
-		
-	}];
-}
-
-- (void)sendInvitesToInAppContacts {
-	
-}
 
 @end

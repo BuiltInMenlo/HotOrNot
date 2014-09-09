@@ -32,7 +32,7 @@
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
-@property (nonatomic, strong) UISwitch *notificationSwitch;
+@property (nonatomic, strong) UISwitch *smsBroadcastSwitch;
 @property (nonatomic, strong) NSArray *captions;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -49,18 +49,13 @@
 					   NSLocalizedString(@"settings_support", @"Support"),
 					   NSLocalizedString(@"terms_service", @"Terms of use"),
 					  // NSLocalizedString(@"network_status", @"Network status")
-                       ];//,
-//					   NSLocalizedString(@"settings_logout", @"Logout")];
+                       ];// NSLocalizedString(@"settings_logout", @"Logout")];
 		
 		
-		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
-		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
-		if ([HONAppDelegate infoForUser] != nil)
-			_notificationSwitch.on = [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"];
-		
-		else
-			_notificationSwitch.on = YES;
-		
+		_smsBroadcastSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
+		_smsBroadcastSwitch.on = ([[[HONAppDelegate infoForUser] objectForKey:@"broadcast_enabled"] isEqualToString:@"YES"]);
+		[_smsBroadcastSwitch addTarget:self action:@selector(_goBroadcastSMSUpdatesSwitch:) forControlEvents:UIControlEventValueChanged];
+				
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 	}
 	
@@ -100,7 +95,7 @@
 	[self.view addSubview:headerView];
 	
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
-
+	
 	
 	//_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)];
 	
@@ -150,15 +145,18 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goNotificationsSwitch:(UISwitch *)switchView {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
-																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
-																  delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+- (void)_goBroadcastSMSUpdatesSwitch:(UISwitch *)switchView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings View - SMS Updates Toggle %@", (switchView.on) ? @"On" : @"Off"]];
+	
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS updates"
+														message:[NSString stringWithFormat:@"Turn SMS updates %@?", (switchView.on) ? @"On" : @"Off"]
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 	[alertView setTag:HONSettingsAlertTypeNotifications];
 	[alertView show];
 }
@@ -199,9 +197,9 @@
 	if (cell == nil)
 		cell = [[HONSettingsViewCell alloc] initWithCaption:[_captions objectAtIndex:indexPath.row]];
 	
-	if (indexPath.row == HONSettingsCellTypeNotifications) {
+	if (indexPath.row == HONSettingsCellTypeSMSToggle) {
 		[cell hideChevron];
-		cell.accessoryView = _notificationSwitch;
+		cell.accessoryView = _smsBroadcastSwitch;
 	}
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -233,16 +231,18 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == HONSettingsCellTypeNotifications) ? nil : indexPath);
+	return ((indexPath.row == HONSettingsCellTypeSMSToggle) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if(indexPath.row == HONSettingsCellTypeCopyClub) {
-		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"moji is a super fast way to share how you feel using only emoji characters! Please tell your friends to get the app available now on the App Store!"
-                                                            message:nil
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings View - Selected %@ Row", (indexPath.row == HONSettingsCellTypeShareSignupClub) ? @"Share Club" : (indexPath.row == HONSettingsCellTypeAbout) ? @"About" : (indexPath.row == HONSettingsCellTypeRateThisApp) ? @"Rate App" : (indexPath.row == HONSettingsCellTypeSupport) ? @"Support" : (indexPath.row == HONSettingsCellTypeLegal) ? @"Legal" : @"OTHER"]];
+	
+	if (indexPath.row == HONSettingsCellTypeAbout) {
+		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"moji is a super fast way to share how you feel using only emoji characters!"
+                                                            message:@"Please tell your friends to get the app available now on the App Store!"
                                                            delegate:nil
                                                   cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
                                                   otherButtonTitles:nil];
@@ -250,20 +250,28 @@
 
 		
 	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
-		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-//		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName]];
-		NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
-																								@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																								@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+		NSLog(@"CLUB:[%d]", [[[HONClubAssistant sharedInstance] userSignupClub].submissions count]);
+		
+		__block NSString *emojis = @"";
+		[((HONClubPhotoVO *)[[[HONClubAssistant sharedInstance] userSignupClub].submissions firstObject]).subjectNames enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			emojis = [emojis stringByAppendingString:(NSString *)obj];
+		}];
+		
+		NSString *defaultCaption = [NSString stringWithFormat:[HONAppDelegate defaultShareMessageForIndex:1], emojis];
+		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], emojis];
+		NSString *twCaption = defaultCaption;//[NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], emojis];
+//		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], emojis];
+		NSString *smsCaption = defaultCaption;//[NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], emojis];
+		NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], emojis]];
+		NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], emojis];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, smsCaption, emailCaption, clipboardCaption],
+																								@"image"			: [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																								@"url"				: @"getmoji.me",
 																								@"club"				: [[HONClubAssistant sharedInstance] userSignupClub].dictionary,
-																								@"mp_event"			: @"User Profile - Share",
+																								@"mp_event"			: @"Settings - Share",
 																								@"view_controller"	: self}];
 		
-	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
+	} else if (indexPath.row == HONSettingsCellTypeLegal) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
@@ -301,15 +309,15 @@
 //		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
 //		[navigationController setNavigationBarHidden:YES];
 //		[self presentViewController:navigationController animated:YES completion:nil];
-	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
-		
-		[alertView setTag:HONSettingsAlertTypeLogout];
-		[alertView show];
+//	} else if (indexPath.row == HONSettingsCellTypeLogout) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
+//		
+//		[alertView setTag:HONSettingsAlertTypeLogout];
+//		[alertView show];
 	}
 }
 
@@ -380,29 +388,23 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSettingsAlertTypeNotifications) {
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings View - SMS Updates Toggle %@ Alert %@", (_smsBroadcastSwitch.on) ? @"On" : @"Off", (buttonIndex == 0) ? @"Cancel" : @"OK"]];
 		
 		if (buttonIndex == 0)
-			_notificationSwitch.on = !_notificationSwitch.on;
+			_smsBroadcastSwitch.on = !_smsBroadcastSwitch.on;
 		
 		else {
-			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:_notificationSwitch.on completion:^(NSDictionary *result) {
+			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:_smsBroadcastSwitch.on completion:^(NSDictionary *result) {
 				if ([result objectForKey:@"id"] != [NSNull null])
 					[HONAppDelegate writeUserInfo:result];
 			}];
 		}
 		
-	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
+		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:_smsBroadcastSwitch.on] forKey:@"broadcast_enabled"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 		
+	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
 		if (buttonIndex == 1) {
-			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-								   @"deactivated"	: @"YES"}];
-			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
 				[HONAppDelegate resetTotals];
 				

@@ -96,12 +96,12 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (void)writePhoneNumber:(NSString *)phoneNumber {
 	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
+//		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
 	
-	phoneNumber = [[phoneNumber componentsSeparatedByString:@"@"] firstObject];
-	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	phoneNumber = [[phoneNumber componentsSeparatedByString:@"@"] firstObject];
+//	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	[keychain setObject:phoneNumber forKey:CFBridgingRelease(kSecAttrService)];

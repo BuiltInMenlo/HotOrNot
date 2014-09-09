@@ -15,7 +15,7 @@
 @implementation HONTermsViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"terms"]
+	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"legal"]
 							 title:NSLocalizedString(@"terms_service", nil)])) { //@"Terms of Use"])) {
 	}
 	

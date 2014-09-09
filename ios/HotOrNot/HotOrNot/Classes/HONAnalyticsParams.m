@@ -53,7 +53,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (@{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]});
 }
 
-- (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
+/*- (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
 //	
@@ -106,7 +106,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 //	});
 	
 	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
-}
+}*/
 
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
 //	static NSDictionary *properties = nil;
@@ -142,11 +142,10 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
-	
 	return (@{@"emotion"	: [NSString stringWithFormat:@"%@ - %@", vo.emotionID, vo.emotionName]});
 }
 
-- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
+/*- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
 //	
@@ -179,6 +178,17 @@ static HONAnalyticsParams *sharedInstance = nil;
 //	});
 	
 	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
+}*/
+
+- (NSDictionary *)propertyForStringCharacter:(NSString *)stringChar {
+//	NSData *utf32 = [stringChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
+//	NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
+//	
+	return (@{@"char"	: stringChar});
+}
+
+- (NSDictionary *)propertyForCharArray:(NSArray *)chars {
+	return (@{@"chars"	: chars});
 }
 
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
@@ -217,16 +227,16 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
 	
-	NSError *error = nil;
-	[[KeenClient sharedClient] addEvent:event
-					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
-								  error:&error];
-	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
+//	NSError *error = nil;
+//	[[KeenClient sharedClient] addEvent:event
+//					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
+//								  error:&error];
+//	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
 }
 #pragma mark -
 
 
-- (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {
+/*- (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForActivityItem:activityItemVO]];
 	
@@ -266,7 +276,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
-}
+}*/
 
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
@@ -300,7 +310,23 @@ static HONAnalyticsParams *sharedInstance = nil;
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO {
+- (void)trackEvent:(NSString *)eventName withStringChar:(NSString *)stringChar {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForStringCharacter:stringChar]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)eventName withCharArray:(NSArray *)chars {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCharArray:chars]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:properties];
+}
+
+/*- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForMessage:messageVO]];
 	
@@ -314,7 +340,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
-}
+}*/
 
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
@@ -333,11 +359,11 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 
-- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties {
-	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-	[mixpanel.people set:properties];
-}
+/*- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties {
+//	Mixpanel *mixpanel = [Mixpanel sharedInstance];
+//	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
+//	[mixpanel.people set:properties];
+}*/
 
 - (void)forceAnalyticsUpload {
 	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];

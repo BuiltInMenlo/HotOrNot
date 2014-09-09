@@ -50,6 +50,6 @@ typedef NS_ENUM(NSInteger, HONImageBrokerImageFormat) {
 - (UIImage *)mirrorImage:(UIImage *)image;
 
 - (UIImage *)prepForUploading:(UIImage *)image;
-- (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username;
-- (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path;
+//- (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username;
+- (void)saveForInstagram:(UIImage *)shareImage withCaption:(NSString *)caption toPath:(NSString *)path;
 @end

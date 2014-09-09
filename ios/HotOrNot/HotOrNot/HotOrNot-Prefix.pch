@@ -26,8 +26,6 @@
 	#import <SystemConfiguration/SystemConfiguration.h>
 	#import <MobileCoreServices/MobileCoreServices.h>
 
-	#import "Mixpanel.h"
-
 	#import "HONAppDelegate.h"
 	#import "HONUtilsSuite.h"
 #endif

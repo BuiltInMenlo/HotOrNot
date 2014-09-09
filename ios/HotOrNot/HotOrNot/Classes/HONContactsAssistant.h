@@ -27,7 +27,5 @@
 
 - (void)writeTrivialUserToDeviceContacts:(HONTrivialUserVO *)trivialUserVO;
 
-- (void)sendInvitesToNonAppContacts;
-- (void)sendInvitesToInAppContacts;
 
 @end

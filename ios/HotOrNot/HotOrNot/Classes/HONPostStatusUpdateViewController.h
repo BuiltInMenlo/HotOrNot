@@ -8,6 +8,5 @@
 
 #import "HONViewController.h"
 
-@interface HONPostStatusUpdateViewController : HONViewController <UITextFieldDelegate, UIAlertViewDelegate, UITextViewDelegate>
-
+@interface HONPostStatusUpdateViewController : HONViewController <UIAlertViewDelegate, UITextViewDelegate>
 @end

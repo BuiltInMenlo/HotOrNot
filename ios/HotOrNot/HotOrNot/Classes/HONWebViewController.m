@@ -81,6 +81,10 @@
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)_goErroredDismiss {
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
 
 #pragma mark - UI Presentation
 - (void)_removeHUD {
@@ -128,10 +132,12 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+	_progressHUD.labelText = @"404 Error!";
 	[_progressHUD show:NO];
 	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 	_progressHUD = nil;
+	
+	[self performSelector:@selector(_goErroredDismiss) withObject:nil afterDelay:kHUDErrorTime * 1.33];
 }
 
 @end
