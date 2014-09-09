@@ -166,7 +166,6 @@
 		4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327D818E3A9F90035FF06 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */; };
-		4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */; };
 		4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */; };
 		4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */; };
 		4C4328F518E3A9FA0035FF06 /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C43280418E3A9FA0035FF06 /* TapjoyResources.bundle */; };
@@ -863,7 +862,6 @@
 		4C4327D718E3A9F90035FF06 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		4C4327D818E3A9F90035FF06 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDK.framework; sourceTree = "<group>"; };
-		4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		4C43280018E3A9FA0035FF06 /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
@@ -1309,7 +1307,6 @@
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */,
 				4CD22C90195BD5C800E6AD0B /* CouchbaseLite.framework in Frameworks */,
-				4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */,
 				4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4C4328F618E3A9FA0035FF06 /* Tapjoy.framework in Frameworks */,
@@ -2048,7 +2045,6 @@
 			children = (
 				4CD22C8F195BD5C700E6AD0B /* CouchbaseLite.framework */,
 				4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */,
-				4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */,
 				4C4327FD18E3A9FA0035FF06 /* HockeySDK.embeddedframework */,
 				4C43280218E3A9FA0035FF06 /* Tapjoy.embeddedframework */,
 			);
@@ -4047,8 +4043,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
+				PROVISIONING_PROFILE = "92ef02fd-181a-40c3-bc28-9dead57fbc91";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "92ef02fd-181a-40c3-bc28-9dead57fbc91";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";
@@ -4088,7 +4084,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				PROVISIONING_PROFILE = "43321721-83a1-4b60-8958-b8853704dfe2";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -4121,16 +4117,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/KikAPI",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = moji;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
+				PROVISIONING_PROFILE = "92ef02fd-181a-40c3-bc28-9dead57fbc91";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "92ef02fd-181a-40c3-bc28-9dead57fbc91";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
 				WRAPPER_EXTENSION = app;
@@ -4161,15 +4155,13 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/HotOrNot/Vendor/Classes/KikAPI",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = moji;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "43321721-83a1-4b60-8958-b8853704dfe2";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
 				WRAPPER_EXTENSION = app;

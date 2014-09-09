@@ -283,6 +283,8 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Step 1"];
+	
 	self.view.backgroundColor = [UIColor whiteColor];
 		
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];

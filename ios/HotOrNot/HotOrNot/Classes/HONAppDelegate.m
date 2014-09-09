@@ -14,7 +14,6 @@
 #import <Social/SLServiceTypes.h>
 #import <sys/utsname.h>
 
-#import <FacebookSDK/FacebookSDK.h>
 #import <HockeySDK/HockeySDK.h>
 #import <Tapjoy/Tapjoy.h>
 
@@ -841,8 +840,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
 	
-	[FBAppEvents activateApp];
-	
 	[KeenClient sharedClientWithProjectId:kKeenIOProductID
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
@@ -895,8 +892,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationWillTerminate] [:|:]");
-	
-	[FBSession.activeSession close];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
