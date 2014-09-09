@@ -21,14 +21,15 @@
 #import "HONClubPhotoVO.h"
 #import "HONContactsSearchViewController.h"
 
-@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONSelfieCameraViewControllerDelegate>
+@interface HONClubTimelineViewController () <HONSelfieCameraViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
 //new property
-@property (nonatomic, strong) UILabel *emojiLabel;
+@property (nonatomic, strong) UITextView *emojiTextView;
 @property (nonatomic, strong) HONUserVO *contactVO;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) int clubID;
@@ -57,6 +58,7 @@
 		_clubPhotoID = 0;
 		_index = index;
 		_clubPhotos = _clubVO.submissions;
+		_clubPhotoVO = (HONClubPhotoVO *) [_clubPhotos objectAtIndex: index];
 	}
 	
 	return (self);
@@ -103,6 +105,7 @@
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		//_clubPhotos = _clubVO.submissions;
 		//_contactVO = [HONUserVO userWithDictionary:result];
+		_clubPhotoVO = (HONClubPhotoVO *) [_clubVO.submissions objectAtIndex: _index];
 		
 		//[_headerView setTitle:_clubVO.clubName];
 		[_headerView setTitle:_clubVO.ownerName];
@@ -200,13 +203,13 @@
 //	_tableView.alwaysBounceVertical = YES;
 //	[self.view addSubview:_tableView];
 	
-	_emojiLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 72.0, 304.0, self.view.frame.size.height - 288)];
-	_emojiLabel.backgroundColor = [UIColor clearColor];
-	[_emojiLabel setTextColor:[UIColor blackColor]];
-	_emojiLabel.font = [UIFont systemFontOfSize:40.0f];
-	_emojiLabel.numberOfLines = 0;
-	_emojiLabel.text = @"";
-	[self.view addSubview:_emojiLabel];
+	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(8.0, 72.0, 304.0, self.view.frame.size.height - 88.0)];
+	_emojiTextView.backgroundColor = [UIColor clearColor];
+	[_emojiTextView setTextColor:[UIColor blackColor]];
+	_emojiTextView.font = [UIFont systemFontOfSize:40.0f];
+//	_emojiTextView.numberOfLines = 0;
+	_emojiTextView.text = @"";
+	[self.view addSubview:_emojiTextView];
 		
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -216,18 +219,35 @@
 	[self.view addSubview:_headerView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(1.0, 1.0, 93.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(-4.0, 1.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
-//	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	shareButton.frame = CGRectMake(255, 1.0, 64.0, 44.0);
-//	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
-//	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
-//	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-//	[_headerView addButton:shareButton];
+	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likeButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 46.0, 1.0, 44.0, 44.0);
+	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addButton:likeButton];
+	
+	UIImageView *subHeaderBackground = [[UIImageView alloc] initWithImage: [UIImage imageNamed:@"subHeaderBackground"]];
+    subHeaderBackground.frame = CGRectOffset(subHeaderBackground.frame, 0.0, 64.0);
+	subHeaderBackground.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:subHeaderBackground];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(215.0, 68.0, 100.0, 16.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	//	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	
+	//	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate]; //stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
+	[self.view addSubview:timeLabel];
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -237,7 +257,7 @@
 	else {
 		[[[_clubVO.submissions firstObject] subjectNames] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSString *emoji = [[(NSString *)obj componentsSeparatedByString:@"\\U"] lastObject];
-			_emojiLabel.text = [_emojiLabel.text stringByAppendingString:emoji];
+			_emojiTextView.text = [_emojiTextView.text stringByAppendingString:emoji];
 		}];
 	}
 	
@@ -289,7 +309,6 @@
 	
 	[self _retrieveClub];
 }
-
 
 #pragma mark - Notifications
 - (void)_refreshClubTimeline:(NSNotification *)notification {
@@ -359,17 +378,17 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
-	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+- (void)_goLike {
+	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", _clubPhotoVO.challengeID, _clubPhotoVO.username);
 	
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
-		[[HONAPICaller sharedInstance] retrieveUserByUserID:clubPhotoVO.userID completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_clubPhotoVO.challengeID forOpponent:_clubPhotoVO completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveUserByUserID:_clubPhotoVO.userID completion:^(NSDictionary *result) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
 		}];
 		
-		[self _advanceTimelineFromCell:cell byAmount:1];
+//		[self _advanceTimelineFromCell:cell byAmount:1];
 	}];
 }
 
@@ -393,7 +412,6 @@
 	if (cell == nil)
 		cell = [[HONClubPhotoViewCell alloc] init];
 	
-	cell.delegate = self;
 	cell.clubName = _clubVO.clubName;
 	cell.indexPath = indexPath;
 	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.section];
