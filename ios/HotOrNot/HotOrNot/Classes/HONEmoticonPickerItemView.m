@@ -58,7 +58,7 @@
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		selectButton.frame = _imageView.frame;
-		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+//		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:selectButton];
 				
 		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 160.0, 154.0, 18.0)];
@@ -108,7 +108,7 @@
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		selectButton.frame = _imageView.frame;
-		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+//		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:selectButton];
 	}
 	

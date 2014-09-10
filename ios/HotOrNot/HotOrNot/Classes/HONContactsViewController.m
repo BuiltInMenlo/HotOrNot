@@ -535,11 +535,11 @@
 //		if (indexPath.row == 0) {
 //			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareFriends"]];
 			
-//		} else {
+		if (indexPath.row == 1) {
 			cell.trivialUserVO = (HONTrivialUserVO *)[_headerRows objectAtIndex:indexPath.row];
 			if ([_userClubVO.submissions count] > 0)
 				cell.clubVO = [[HONClubAssistant sharedInstance] userSignupClub];//_userClubVO;
-//		}
+		}
 	
 	} else if (indexPath.section == 1) {
 		cell.trivialUserVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
