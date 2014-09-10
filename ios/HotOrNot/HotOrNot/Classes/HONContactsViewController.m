@@ -419,8 +419,16 @@
 			_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
 			[self _retrieveDeviceContacts];
 		
-		} else
+		} else {
 			_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
+		
+			[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
+										message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+		}
+
 	
 	} else
 		_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
@@ -524,14 +532,14 @@
 	
 //	NSLog(@"INDEXPATH:[%d][%d]", indexPath.section, indexPath.row);
 	if (indexPath.section == 0) {
-		if (indexPath.row == 0) {
-			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareFriends"]];
+//		if (indexPath.row == 0) {
+//			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareFriends"]];
 			
-		} else {
+//		} else {
 			cell.trivialUserVO = (HONTrivialUserVO *)[_headerRows objectAtIndex:indexPath.row];
 			if ([_userClubVO.submissions count] > 0)
 				cell.clubVO = [[HONClubAssistant sharedInstance] userSignupClub];//_userClubVO;
-		}
+//		}
 	
 	} else if (indexPath.section == 1) {
 		cell.trivialUserVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
