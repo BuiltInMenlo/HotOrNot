@@ -13,15 +13,6 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONImageLoadingView.h"
 
-//const CGRect kLargeNormalFrame = {0.0f, 0.0f, 150.0f, 150.0f};
-//const CGRect kLargeActiveFrame = {-5.0f, -5.0f, 160.0f, 160.0f};
-//
-////const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
-////const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
-//
-//const CGRect kNormalFrame = {-1.0f, -1.0f, 76.0f, 76.0f};
-//const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
-
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
 @property (nonatomic, strong) PicoSticker *picoSticker;
@@ -60,7 +51,7 @@
 		selectButton.frame = _imageView.frame;
 //		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:selectButton];
-				
+		
 		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 160.0, 154.0, 18.0)];
 		stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 		stickerPackLabel.textColor = [UIColor blackColor];
@@ -148,7 +139,6 @@
 //													  [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
 //												  
 //											  }
-//											  
 //										  }];
 //					 }];
 //}
