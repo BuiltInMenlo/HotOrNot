@@ -148,56 +148,21 @@
 	[headerView addButton:doneButton];
 	
 	 
-	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateHighlighted];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateSelected];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-	[self.view addSubview:_pinButton];
-	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 81.0, 77.0, 30.0)];
-	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_pinTextField setReturnKeyType:UIReturnKeyDone];
-	[_pinTextField setTextColor:[UIColor blackColor]];
-	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
-	_pinTextField.text = @"";
-	_pinTextField.delegate = self;
-	[self.view addSubview:_pinTextField];
-	
-	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
-	_pinCheckImageView.alpha = 0.0;
-	[self.view addSubview:_pinCheckImageView];
-	
-	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"pinText"]]; //@"pinFooterText"]];
-	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 129.0);
-	[self.view addSubview:footerTextImageView];
-	
-	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	resendButton.frame = CGRectMake(200.0, 160.0, 55.0, 24.0);
-	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:resendButton];
-	
-	
-#if __APPSTORE_BUILD__ == 0
-	UIButton *cheatButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cheatButton.frame = CGRectMake(152.0, kNavHeaderHeight - 8.0, 16.0, 16.0);
-	[cheatButton addTarget:self action:@selector(_goCheat) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:cheatButton];
-#endif
-}
+	}
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Entering PIN Step 2"];
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+        				[self _promptForAddressBookPermission];
+    
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+    
+    } else
+        				[self _promptForAddressBookAccess];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -218,28 +183,25 @@
 }
 
 - (void)_goDone {
-	_pin = _pinTextField.text;
-	if ([_pin length] < 4) {
-		_pin = @"";
-		_pinTextField.text = @"";
-		[_pinTextField becomeFirstResponder];
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-									message:NSLocalizedString(@"invalid_pin_msg", @"Pin numbers need to be 4 numbers")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	
-	} else {
-		[_pinTextField resignFirstResponder];
-	}
+		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+		
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	}];
 }
 
-- (void)_goResend {
-	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-		_pinTextField.text = @"";
-		[_pinTextField becomeFirstResponder];
-	}];
+- (void)_goAlert {
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+        [self _promptForAddressBookPermission];
+    
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+        
+    } else
+        [self _promptForAddressBookAccess];
+    
 }
 
 - (void)_goCheat {
@@ -312,6 +274,49 @@
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
+}
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Main View - Alert Prompt Access Contacts %@", (buttonIndex == 0) ? @"No" : @"Yes"]];
+		
+		NSLog(@"CONTACTS:[%d]", buttonIndex);
+		if (buttonIndex == 1) {
+			if (ABAddressBookRequestAccessWithCompletion) {
+				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+                    });
+                    
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+					});
+                    
+				} else {
+				}
+			}
+		}
+	}
+}
+#pragma mark - UI Presentation
+- (void)_promptForAddressBookAccess {
+	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
+								message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+					  otherButtonTitles:nil] show];
+}
+
+- (void)_promptForAddressBookPermission {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to your contacts?")
+														message:nil
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 @end
