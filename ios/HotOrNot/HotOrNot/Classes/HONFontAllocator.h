@@ -18,7 +18,8 @@
 - (UIFont *)helveticaNeueFontLight;
 - (UIFont *)helveticaNeueFontMedium;
 - (UIFont *)helveticaNeueFontRegular;
-
+- (UIFont *)helveticaNeueFontThin;
+- (UIFont *)helveticaNeueFontUltaLight;
 - (NSShadow *)orthodoxShadowAttribute;
 
 - (NSParagraphStyle *)doubleLineSpacingParagraphStyleForFont:(UIFont *)font;

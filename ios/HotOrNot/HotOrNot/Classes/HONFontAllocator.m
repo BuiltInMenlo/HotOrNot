@@ -67,6 +67,15 @@ static HONFontAllocator *sharedInstance = nil;
 	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
 }
 
+- (UIFont *)helveticaNeueFontUltaLight {
+	return ([UIFont fontWithName:@"HelveticaNeue-UltraLight" size:18.0]);
+}
+
+
+- (UIFont *)helveticaNeueFontThin {
+	return ([UIFont fontWithName:@"HelveticaNeue-Thin" size:18.0]);
+}
+
 
 - (NSShadow *)orthodoxShadowAttribute {
 	NSShadow *shadow = [[NSShadow alloc] init];

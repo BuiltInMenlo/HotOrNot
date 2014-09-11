@@ -53,7 +53,7 @@
 		
 		
 		_smsBroadcastSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
-		_smsBroadcastSwitch.on = ([[[HONAppDelegate infoForUser] objectForKey:@"broadcast_enabled"] isEqualToString:@"YES"]);
+		_smsBroadcastSwitch.on = ([[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"]);
 		[_smsBroadcastSwitch addTarget:self action:@selector(_goBroadcastSMSUpdatesSwitch:) forControlEvents:UIControlEventValueChanged];
 				
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
@@ -400,7 +400,7 @@
 			}];
 		}
 		
-		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:_smsBroadcastSwitch.on] forKey:@"broadcast_enabled"];
+		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:_smsBroadcastSwitch.on] forKey:@"Y"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {

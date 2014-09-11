@@ -1665,7 +1665,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = @"com.instagram.exclusivegram";
 				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], emojis] forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = @{@"InstagramCaption"	: [[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex]};
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {

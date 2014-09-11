@@ -173,6 +173,7 @@ static NSString * const kCamera = @"camera";
 	
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
 	[_activityHeaderView updateActivityBadge];
+
 }
 
 
