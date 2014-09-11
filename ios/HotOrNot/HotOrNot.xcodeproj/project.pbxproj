@@ -1439,7 +1439,6 @@
 		309F59B7199DA47700EC6C1C /* Banner */ = {
 			isa = PBXGroup;
 			children = (
-				072F5394199190B700738827 /* unlockBanner.png */,
 			);
 			name = Banner;
 			sourceTree = "<group>";
@@ -1598,8 +1597,6 @@
 			children = (
 				8FCD5EBD19BE6C4200347605 /* backArrowButton_Active@2x.png */,
 				8FCD5EC419BE6C4A00347605 /* backArrowButton_nonActive@2x.png */,
-				072F53851991633000738827 /* inviteButton_Active@2x.png */,
-				072F53881991633300738827 /* inviteButton_nonActive@2x.png */,
 				8F4E6213198ACD6500E8A171 /* cancelbuttonwhite_active@2x.png */,
 				8F4E6216198ACD6900E8A171 /* cancelbuttonwhite_nonactive@2x.png */,
 				8F4E6219198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png */,
