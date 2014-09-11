@@ -36,93 +36,6 @@
 }
 
 
-#pragma mark - Data Calls
-- (void)_generateClub:(HONUserClubVO *)vo {
-//	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {
-//	}];
-}
-
-- (void)_validatePinCode {
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"First Run - %@ PIN Step 2", (BOOL)([[result objectForKey:@"result"] intValue] == 1) ? @"Success" : @"Failure"]];
-		
-		if ([[result objectForKey:@"result"] intValue] == 0) {
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-										message: NSLocalizedString(@"try_again", @"Please try again or press the resend button")
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			_pin = @"";
-			_pinTextField.text = @"";
-			[_pinTextField becomeFirstResponder];
-			
-//			_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-//			_pinCheckImageView.alpha = 1.0;
-			
-		} else
-			[self _finishFirstRun];
-	}];
-}
-
-
-#pragma mark - Data Manip
-- (void)_finishFirstRun {
-	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
-		NSMutableArray *schools = [NSMutableArray array];
-		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
-			NSMutableDictionary *dict = [club mutableCopy];
-			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
-			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
-			
-			NSLog(@"vo:[%@]", vo.clubName);
-			[schools addObject:dict];
-		}
-		
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"high_schools"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[schools copy] forKey:@"high_schools"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}];
-	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		
-		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
-		
-		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
-		
-		
-		__block int cnt = 0;
-		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
-			HONUserClubVO *vo = (HONUserClubVO *)obj;
-			[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:0.0];
-			cnt++;
-		}];
-		
-//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
-		
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
-		
-		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-	}];
-}
-
-
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
@@ -133,22 +46,31 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter Pin"])];
 	[self.view addSubview:headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(-4.0, 1.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
+//	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	backButton.frame = CGRectMake(-4.0, 1.0, 44.0, 44.0);
+//	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_nonActive"] forState:UIControlStateNormal];
+//	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_Active"] forState:UIControlStateHighlighted];
+//	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+//	[headerView addButton:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 66.0, 1.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 40.0, 1.0, 44.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	 
-	}
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessContactsBackground@2x"]];
+	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 103.0);
+	[self.view addSubview:bgImageView];
+	
+	UIButton *accessButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	accessButton.frame = CGRectMake(0.0, 411.0, 320.0, 48.0);
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_nonActive@2x"] forState:UIControlStateNormal];
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_active@2x"] forState:UIControlStateHighlighted];
+	[accessButton addTarget:self action:@selector(_goAlert) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:accessButton];
+}
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
@@ -198,7 +120,8 @@
         [self _promptForAddressBookPermission];
     
     else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-        
+		[self _goDone];
+		
     } else
         [self _promptForAddressBookAccess];
     
@@ -209,7 +132,7 @@
 	_pin = _pinTextField.text;
 	
 	_isPopping = YES;
-	[self _finishFirstRun];
+	[self _goDone];
 }
 
 #pragma mark - Notifications
@@ -264,8 +187,7 @@
 			_pinTextField.text = @"";
 			[_pinTextField becomeFirstResponder];
 			
-		} else
-			[self _validatePinCode];
+		}
 	}
 }
 
