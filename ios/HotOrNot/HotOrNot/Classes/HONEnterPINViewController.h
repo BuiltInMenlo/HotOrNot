@@ -7,6 +7,6 @@
 //
 
 #import "HONViewController.h"
-
+#import <AddressBook/AddressBook.h>
 @interface HONEnterPINViewController : HONViewController <UITextFieldDelegate>
 @end
