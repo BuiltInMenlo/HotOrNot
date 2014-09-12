@@ -128,7 +128,7 @@
 	[_headerView addSubview:cancelButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 66.0, 1.0, 64.0, 44.0);
+	submitButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 40.0, 1.0, 44.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

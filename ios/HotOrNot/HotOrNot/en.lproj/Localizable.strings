@@ -82,7 +82,7 @@
 "title_joinNow" = " - Join Now!";
 
 
-"enter_username" = "Enter username";
+"enter_username" = "Enter name";
 "enter_phone" = "Enter phone";
 "Register" = "Register";
 //"firstrun_next" = "Avançar";
@@ -128,7 +128,7 @@
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
 "is_feeling2" = "is feeling...";
-"enter_pin" = "Enter Pin";
+"enter_pin" = "Contact Access";
 "invalid_pin" = "Invalid Pin!";
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";
 

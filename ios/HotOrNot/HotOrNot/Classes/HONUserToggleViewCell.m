@@ -52,18 +52,27 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 		_emojiLabel.text = @"";
 		[self.contentView addSubview:_emojiLabel];
 				
-//		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
-//		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
-//		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
-//		[self.contentView addSubview:_toggledOffButton];
+		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
+		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateNormal];
+		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
+		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+		_toggledOffButton.hidden = YES;
+		[self.contentView addSubview:_toggledOffButton];
 		
-//		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_toggledOnButton.frame = _toggledOffButton.frame;
-//		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateNormal];
-//		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"chevron"] forState:UIControlStateHighlighted];
-//		_toggledOnButton.alpha = (int)_isSelected;
-//		[self.contentView addSubview:_toggledOnButton];
+		
+		
+		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_toggledOnButton.frame = _toggledOffButton.frame;
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateNormal];
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
+		[_toggledOffButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
+		_toggledOnButton.alpha = (int)_isSelected;
+		_toggledOnButton.hidden = YES;
+		[self.contentView addSubview:_toggledOnButton];
+		
+		
+		
 	}
 	
 	return (self);
@@ -119,6 +128,10 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, _nameLabel.frame.size.width), _nameLabel.frame.size.height);
 	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
+	[self hideChevron];
+	
+	_toggledOffButton.hidden = NO;
+	_toggledOnButton.hidden = NO;
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
@@ -141,7 +154,7 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, 220.0), _nameLabel.frame.size.height);
 	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
-	[self hideChevron];
+	//[self hideChevron];
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
@@ -170,11 +183,12 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, (kEmojiCellFontSize + kEmojiCellFontSpacing) * ([emojis length] * 1.0), _emojiLabel.frame.size.height);
 	_emojiLabel.attributedText = attributedString;
+	[self hideChevron];
 }
 
 
 #pragma mark - Navigation
-- (void)_goDeselectContactUser {
+- (void)_goDeselect {
 	_isSelected = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -185,48 +199,14 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	}];
 }
 
-- (void)_goDeselectTrivialUser {
+- (void)_goSelect {
 	_isSelected = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_toggledOnButton.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
-			[self.delegate userToggleViewCell:self didDeselectTrivialUser:_trivialUserVO];
-	}];
-}
-
-
-- (void)_goSelectContactUser {
-	_isSelected = YES;
-	
-	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
-		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectContactUser:)])
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didSelectContactUser:)])
 			[self.delegate userToggleViewCell:self didSelectContactUser:_contactUserVO];
-	}];
-}
-
-- (void)_goSelectTrivalUser {
-	_isSelected = YES;
-	
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		_toggledOnButton.alpha = 1.0;
-	} completion:^(BOOL finished) {
-		
-		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
-			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
-	}];
-}
-
-- (void)_goUserProfile {
-	if ([self.delegate respondsToSelector:@selector(userToggleViewCell:showProfileForTrivialUser:)])
-		[self.delegate userToggleViewCell:self showProfileForTrivialUser:_trivialUserVO];
-}
-
-
-#pragma mark - UI Presentation
-
+	}];}
 
 @end

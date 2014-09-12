@@ -36,93 +36,6 @@
 }
 
 
-#pragma mark - Data Calls
-- (void)_generateClub:(HONUserClubVO *)vo {
-//	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {
-//	}];
-}
-
-- (void)_validatePinCode {
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"First Run - %@ PIN Step 2", (BOOL)([[result objectForKey:@"result"] intValue] == 1) ? @"Success" : @"Failure"]];
-		
-		if ([[result objectForKey:@"result"] intValue] == 0) {
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-										message: NSLocalizedString(@"try_again", @"Please try again or press the resend button")
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			_pin = @"";
-			_pinTextField.text = @"";
-			[_pinTextField becomeFirstResponder];
-			
-//			_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-//			_pinCheckImageView.alpha = 1.0;
-			
-		} else
-			[self _finishFirstRun];
-	}];
-}
-
-
-#pragma mark - Data Manip
-- (void)_finishFirstRun {
-	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
-		NSMutableArray *schools = [NSMutableArray array];
-		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
-			NSMutableDictionary *dict = [club mutableCopy];
-			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
-			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
-			
-			NSLog(@"vo:[%@]", vo.clubName);
-			[schools addObject:dict];
-		}
-		
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"high_schools"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[schools copy] forKey:@"high_schools"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}];
-	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		
-		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
-		
-		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
-		
-		
-		__block int cnt = 0;
-		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
-			HONUserClubVO *vo = (HONUserClubVO *)obj;
-			[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:0.0];
-			cnt++;
-		}];
-		
-//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
-		
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
-		
-		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-	}];
-}
-
-
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
@@ -133,64 +46,30 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter Pin"])];
 	[self.view addSubview:headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(-4.0, 1.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
+//	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	backButton.frame = CGRectMake(-4.0, 1.0, 44.0, 44.0);
+//	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_nonActive"] forState:UIControlStateNormal];
+//	[backButton setBackgroundImage:[UIImage imageNamed:@"backArrowButton_Active"] forState:UIControlStateHighlighted];
+//	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+//	[headerView addButton:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 66.0, 1.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 40.0, 1.0, 44.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	 
-	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateHighlighted];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateSelected];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-	[self.view addSubview:_pinButton];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessContactsBackground@2x"]];
+	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 103.0);
+	[self.view addSubview:bgImageView];
 	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 81.0, 77.0, 30.0)];
-	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_pinTextField setReturnKeyType:UIReturnKeyDone];
-	[_pinTextField setTextColor:[UIColor blackColor]];
-	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
-	_pinTextField.text = @"";
-	_pinTextField.delegate = self;
-	[self.view addSubview:_pinTextField];
-	
-	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
-	_pinCheckImageView.alpha = 0.0;
-	[self.view addSubview:_pinCheckImageView];
-	
-	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"pinText"]]; //@"pinFooterText"]];
-	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 129.0);
-	[self.view addSubview:footerTextImageView];
-	
-	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	resendButton.frame = CGRectMake(200.0, 160.0, 55.0, 24.0);
-	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:resendButton];
-	
-	
-#if __APPSTORE_BUILD__ == 0
-	UIButton *cheatButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cheatButton.frame = CGRectMake(152.0, kNavHeaderHeight - 8.0, 16.0, 16.0);
-	[cheatButton addTarget:self action:@selector(_goCheat) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:cheatButton];
-#endif
+	UIButton *accessButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	accessButton.frame = CGRectMake(0.0, 411.0, 320.0, 48.0);
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_nonActive@2x"] forState:UIControlStateNormal];
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_active@2x"] forState:UIControlStateHighlighted];
+	[accessButton addTarget:self action:@selector(_goAlert) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:accessButton];
 }
 
 - (void)viewDidLoad {
@@ -198,6 +77,14 @@
 	[super viewDidLoad];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First Run - Entering PIN Step 2"];
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+        				[self _promptForAddressBookPermission];
+    
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+    
+    } else
+        				[self _promptForAddressBookAccess];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -218,28 +105,26 @@
 }
 
 - (void)_goDone {
-	_pin = _pinTextField.text;
-	if ([_pin length] < 4) {
-		_pin = @"";
-		_pinTextField.text = @"";
-		[_pinTextField becomeFirstResponder];
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-									message:NSLocalizedString(@"invalid_pin_msg", @"Pin numbers need to be 4 numbers")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	
-	} else {
-		[_pinTextField resignFirstResponder];
-	}
+		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+		
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	}];
 }
 
-- (void)_goResend {
-	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-		_pinTextField.text = @"";
-		[_pinTextField becomeFirstResponder];
-	}];
+- (void)_goAlert {
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+        [self _promptForAddressBookPermission];
+    
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		[self _goDone];
+		
+    } else
+        [self _promptForAddressBookAccess];
+    
 }
 
 - (void)_goCheat {
@@ -247,7 +132,7 @@
 	_pin = _pinTextField.text;
 	
 	_isPopping = YES;
-	[self _finishFirstRun];
+	[self _goDone];
 }
 
 #pragma mark - Notifications
@@ -302,8 +187,7 @@
 			_pinTextField.text = @"";
 			[_pinTextField becomeFirstResponder];
 			
-		} else
-			[self _validatePinCode];
+		}
 	}
 }
 
@@ -312,6 +196,49 @@
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
+}
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Main View - Alert Prompt Access Contacts %@", (buttonIndex == 0) ? @"No" : @"Yes"]];
+		
+		NSLog(@"CONTACTS:[%d]", buttonIndex);
+		if (buttonIndex == 1) {
+			if (ABAddressBookRequestAccessWithCompletion) {
+				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+                    });
+                    
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+					});
+                    
+				} else {
+				}
+			}
+		}
+	}
+}
+#pragma mark - UI Presentation
+- (void)_promptForAddressBookAccess {
+	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
+								message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+					  otherButtonTitles:nil] show];
+}
+
+- (void)_promptForAddressBookPermission {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to your contacts?")
+														message:nil
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 @end

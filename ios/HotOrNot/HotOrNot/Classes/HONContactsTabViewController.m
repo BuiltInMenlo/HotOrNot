@@ -375,13 +375,6 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - UserToggleViewCell Delegates
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:showProfileForTrivialUser");
-	
-	[super userToggleViewCell:viewCell showProfileForTrivialUser:trivialUserVO];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
-}
-
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Friend"
@@ -389,15 +382,19 @@ static NSString * const kCamera = @"camera";
 	
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
+	_selectedContactUserVO = contactUserVO;
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+	[alertView setTag:3];
+	[alertView show];
 }
 
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
-	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectContactUser:(HONContactUserVO *)contactUserVO {
+	NSLog(@"[[*:*]] userToggleViewCell:didDeselectContactUser");
+	[super userToggleViewCell:viewCell didDeselectContactUser:contactUserVO];
 	
 	[viewCell toggleSelected:NO];
 }
@@ -406,33 +403,6 @@ static NSString * const kCamera = @"camera";
 #pragma mark - TableView Delegates
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
-	
-	
-	/*
-	 
-	 if (indexPath.section == 0) {
-	 if (indexPath.row == 0) {
-	 if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-	 [self _promptForAddressBookPermission];
-	 
-	 else
-	 [self _promptForAddressBookAccess];
-	 
-	 } else {
-	 
-	 }
-	 
-	 } else if (indexPath.section == 1) {
-	 
-	 
-	 } else {
-	 
-	 }
-	 
-	 
-	 */
-	
-	
 	
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
@@ -443,16 +413,11 @@ static NSString * const kCamera = @"camera";
 										   withUserClub:cell.clubVO];
 		
 		
-		if ([cell.clubVO.submissions count] == 0) {
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:YES completion:nil];
-		
-		} else
+		if ([cell.clubVO.submissions count] != 0) {
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+		}
 		
 	} else {
-		
 		if (indexPath.section == 0 && indexPath.row == 0) {
 			[self _promptForAddressBookPermission];
 			
@@ -471,6 +436,8 @@ static NSString * const kCamera = @"camera";
 													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 			[alertView setTag:3];
 			[alertView show];
+			
+			[cell toggleOnWithReset:YES];
 			
 		} else if ( indexPath.section == 1) {
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
