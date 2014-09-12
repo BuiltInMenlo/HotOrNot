@@ -460,15 +460,7 @@
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Deactivate Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
-		if (buttonIndex == 1) {
-			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-								   @"deactivated"	: @"YES"}];
-			
+		if (buttonIndex == 1) {			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
 				[HONAppDelegate resetTotals];
 				
