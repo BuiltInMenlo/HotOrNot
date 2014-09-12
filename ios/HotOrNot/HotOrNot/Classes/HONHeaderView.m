@@ -34,8 +34,8 @@ const CGRect kActiveFrame = {-95.0f, 14.0f, 510.0f, 57.0f};
 		[self addSubview:_bgImageView];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 33.0, 170.0, 19.0)];
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 29.0, 170.0, 23.0)];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
