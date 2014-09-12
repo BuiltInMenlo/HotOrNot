@@ -160,9 +160,6 @@
 - (void)_voterChallenge:(NSNotification *)notification {
 	_voterVO = (HONVoterVO *)[notification object];
 	
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Camera Step 1 hit Camera Button"
-//									  withChallenge:_challengeVO];
-	
 //	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 //												   [@"" stringFromInt:_voterVO.userID], @"id",
 //												   [@"" stringFromInt:_voterVO.points], @"points",

@@ -274,12 +274,13 @@
 
 #pragma mark - Navigation
 - (void)_goCamera {
+	_isBlurred = NO;
 	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Camera Roll"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -287,7 +288,7 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Flip Camera"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Flip Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
@@ -297,21 +298,18 @@
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	NSLog(@"cameraOverlayViewCloseCamera");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Cancel"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Close Camera"
+								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		
-//		if ([self.delegate respondsToSelector:@selector(selfieCameraViewController:didDismissByCanceling:)])
-//			[self.delegate selfieCameraViewController:self didDismissByCanceling:YES];
 	}];
 }
 
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
 	_isBlurred = isFiltered;
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step 1 - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -325,50 +323,21 @@
 
 
 #pragma mark - CameraPreviewView Delegates
-- (void)cameraPreviewViewShowCamera:(HONSelfieCameraPreviewView *)previewView {
+- (void)cameraPreviewView:(HONSelfieCameraPreviewView *)previewView showCameraFromLargeButton:(BOOL)isLarge {
 	NSLog(@"[*:*] cameraPreviewViewShowCamera");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Back"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Open Camera" withProperties:@{@"source"	: (isLarge) ? @"main" : @"thumb"}];
 	[self _goCamera];
 }
 
-- (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
-	NSLog(@"[*:*] cameraPreviewViewBackToCamera");
+- (void)cameraPreviewViewCancel:(HONSelfieCameraPreviewView *)previewView {
+	NSLog(@"[*:*] cameraPreviewViewCancel");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Back"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Cancel"];
 	[self _cancelUpload];
 	
-	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
-	
-	
-//	_isBlurred = NO;
-//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
-//		
-//		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-//		self.imagePickerController.showsCameraControls = NO;
-//		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-//		self.imagePickerController.cameraViewTransform = CGAffineTransformScale(self.imagePickerController.cameraViewTransform, scale, scale);
-//		self.imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-//		
-//		_cameraOverlayView = [[HONSelfieCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_cameraOverlayView.delegate = self;
-//		
-//		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
-//			self.imagePickerController.cameraOverlayView = _cameraOverlayView;
-//		}];
-//	}
-//	
-//	if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
-//		}];
-//	}
 }
 
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView {
@@ -382,7 +351,7 @@
 }
 
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Next"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next"];
 	
 	_hasSubmitted = NO;
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -419,7 +388,7 @@
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 1 - Camera Roll Photo"];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll Photo"];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
@@ -435,27 +404,27 @@
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	[_previewView updateProcessedImage:_processedImage];
 
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-	}];
-	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
-
-	[self _uploadPhotos];
+	
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[self _uploadPhotos];
+	}];
+	
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-	NSLog(@"imagePickerControllerDidCancel");
+	NSLog(@"imagePickerControllerDidCancel:[%@]", (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) ? @"CAMERA" : @"LIBRARY");
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Cancel Camera Roll"];
 	
 	_isBlurred = NO;
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
 		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
-		
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
 		self.imagePickerController.showsCameraControls = NO;
 		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
@@ -467,17 +436,12 @@
 		_cameraOverlayView.delegate = self;
 		
 		self.imagePickerController.cameraOverlayView = _cameraOverlayView;
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
-			
 		}];
-		
-//		if ([self.delegate respondsToSelector:@selector(selfieCameraViewController:didDismissByCanceling:)])
-//			[self.delegate selfieCameraViewController:self didDismissByCanceling:YES];
-//		
-//		[self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 

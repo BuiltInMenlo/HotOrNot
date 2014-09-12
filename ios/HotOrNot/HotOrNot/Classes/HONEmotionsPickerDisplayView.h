@@ -13,7 +13,7 @@ extern const CGSize kMaxLabelSize;
 @class HONEmotionsPickerDisplayView;
 @protocol HONEmotionsPickerDisplayViewDelegate <NSObject>
 @optional
-- (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView;
+- (void)emotionsPickerDisplayView:(HONEmotionsPickerDisplayView *)pickerDisplayView showCameraFromLargeButton:(BOOL)isLarge;
 @end
 
 @interface HONEmotionsPickerDisplayView : UIView

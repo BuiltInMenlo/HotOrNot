@@ -53,7 +53,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraButton.frame = CGRectMake(0.0, 0.0, 134.0, 134.0);
-		[cameraButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+		[cameraButton setTag:0];
+		[cameraButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
 		[_previewImageView addSubview:cameraButton];
 		
 		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 3.0, 22.0, 3.0, 144.0)];
@@ -78,8 +79,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		
 		UIButton *previewThumbButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		previewThumbButton.frame = CGRectMake(0.0, 0.0, 44.0, 64.0);
-		[previewThumbButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
-		[_previewThumbImageView addSubview:previewThumbButton];
+		[previewThumbButton setTag:1];
+		[previewThumbButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
+		 [_previewThumbImageView addSubview:previewThumbButton];
 		
 		[self _updateDisplay];
 	}
@@ -115,9 +117,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
 
 #pragma mark - Navigation
-- (void)_goCamera {
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayViewShowCamera:)])
-		[self.delegate emotionsPickerDisplayViewShowCamera:self];
+- (void)_goCamera:(id)sender {
+	UIButton *button = (UIButton *)sender;
+	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayView:showCameraFromLargeButton:)])
+		[self.delegate emotionsPickerDisplayView:self showCameraFromLargeButton:(button.tag == 0)];
 }
 
 

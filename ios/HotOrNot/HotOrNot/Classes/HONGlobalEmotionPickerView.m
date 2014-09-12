@@ -166,7 +166,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 
 #pragma mark - EmotionItemView Delegates
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedLargeEmotion:(HONEmotionVO *)emotionVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Selected Sticker Pak"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Sticker Pak"
 										withEmotion:emotionVO];
 	
 	[[HONStickerAssistant sharedInstance] nameForContentGroupID:emotionVO.contentGroupID completion:^(NSString *name) {

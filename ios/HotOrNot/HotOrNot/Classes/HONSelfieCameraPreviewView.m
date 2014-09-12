@@ -92,7 +92,7 @@
 	backButton.frame = CGRectMake(0.0, 1.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -125,7 +125,6 @@
 
 #pragma mark - Navigation
 - (void)_goToggleOverlay {
-	
 	if (_emotionsPickerView.hidden)
 		[self _showOverlay];
 	
@@ -133,9 +132,7 @@
 		[self _removeOverlayAndRemove:NO];
 }
 
-- (void)_goBack {
-//	[[UIApplication sharedApplication] performSelector:@selector(setStatusBarHidden:withAnimation:) withObject:@YES afterDelay:0.125];
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+- (void)_goClose {
 	[self _removeOverlayAndRemove:YES];
 }
 
@@ -187,8 +184,8 @@
 		if (isRemoved) {
 			[self removeFromSuperview];
 			
-		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewBackToCamera:)])
-			[self.delegate cameraPreviewViewBackToCamera:self];
+		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewCancel:)])
+			[self.delegate cameraPreviewViewCancel:self];
 		}
 	}];
 }
@@ -233,7 +230,7 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
 										withEmotion:emotionVO];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -258,7 +255,7 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Deleted"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
 										withEmotion:emotionVO];
 	
 	[_subjectNames removeObject:emotionVO.emotionName];
@@ -268,7 +265,7 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
 		if (!_emotionsPickerView.hidden) {
 			[_emotionsPickerView disablePagesStartingAt:2];
@@ -285,14 +282,14 @@
 }
 
 - (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Toggle Standard Paks"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Toggle Standard Paks"];
 	
 	_globalEmotionsPickerView.hidden = YES;
 	_emotionsPickerView.hidden = NO;
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Toggle Locked Paks"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Toggle Locked Paks"];
 	
 	_emotionsPickerView.hidden = YES;
 	_globalEmotionsPickerView.hidden = NO;
@@ -300,9 +297,9 @@
 
 
 #pragma mark - EmotionsPickerDisplayView Delegates
-- (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView {
-	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
-		[self.delegate cameraPreviewViewShowCamera:self];
+- (void)emotionsPickerDisplayView:(HONEmotionsPickerDisplayView *)pickerDisplayView showCameraFromLargeButton:(BOOL)isLarge {
+	if ([self.delegate respondsToSelector:@selector(cameraPreviewView:showCameraFromLargeButton:)])
+		[self.delegate cameraPreviewView:self showCameraFromLargeButton:isLarge];
 }
 
 
