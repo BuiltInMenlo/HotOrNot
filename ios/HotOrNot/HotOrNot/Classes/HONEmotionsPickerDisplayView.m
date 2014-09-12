@@ -28,6 +28,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 @interface HONEmotionsPickerDisplayView () <PicoStickerDelegate>
 @property (nonatomic, strong) NSMutableArray *emotions;
 @property (nonatomic, strong) UILabel *label;
+@property (nonatomic, strong) UIButton *cameraThumbButton;
 @property (nonatomic, strong) UIView *loaderHolderView;
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
@@ -37,6 +38,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 @end
 
 @implementation HONEmotionsPickerDisplayView
+@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
@@ -44,10 +46,17 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		
 		_isDragging = NO;
 		_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 49.0, 88.0, 88.0)];
+		_previewImageView.userInteractionEnabled = YES;
 		_previewImageView.image = image;
 		[self addSubview:_previewImageView];
 		
-
+		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraButton.frame = CGRectMake(0.0, 0.0, 134.0, 134.0);
+		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addSelfieButton_nonActive"] forState:UIControlStateNormal];
+		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addSelfieButton_Active"] forState:UIControlStateHighlighted];
+		[cameraButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+		[_previewImageView addSubview:cameraButton];
+		
 		[[HONImageBroker sharedInstance] maskView:_previewImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
 		_emotions = [NSMutableArray array];
@@ -72,33 +81,20 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 25.0, 0.0, 0.0)];
 		[self addSubview:_emotionHolderView];
 		
+		
+		_cameraThumbButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_cameraThumbButton.frame = CGRectMake(250.0, 200.0, 44.0, 64.0);
+		[_cameraThumbButton setBackgroundImage:[UIImage imageNamed:@"addSelfieButtonB_nonActive"] forState:UIControlStateNormal];
+		[_cameraThumbButton setBackgroundImage:[UIImage imageNamed:@"addSelfieButtonB_Active"] forState:UIControlStateHighlighted];
+		[_cameraThumbButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+		_cameraThumbButton.hidden = YES;
+		[self addSubview:_cameraThumbButton];
+		
 		[self _updateDisplay];
 	}
 	
 	return (self);
 }
-
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	_prevPt = [[touches anyObject] locationInView:self];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	if (CGRectContainsPoint(_emotionHolderView.frame, [[touches anyObject] locationInView:self]))
-//		[self _updateDisplay];
-//}
-//
-//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchPt = [[touches anyObject] locationInView:self];
-//	
-//	if (CGRectContainsPoint(_emotionHolderView.frame, touchPt)) {
-//		_previewImageView.frame = CGRectOffset(_previewImageView.frame, -(_prevPt.x - touchPt.x), 0.0);
-//		_label.frame = CGRectOffset(_label.frame, -(_prevPt.x - touchPt.x), 0.0);
-//		_emotionHolderView.frame = CGRectOffset(_emotionHolderView.frame, -(_prevPt.x - touchPt.x), 0.0);
-//		_cursorImageView.frame = CGRectOffset(_cursorImageView.frame, -(_prevPt.x - touchPt.x), 0.0);
-//	}
-//	
-//	_prevPt = touchPt;
-//}
 
 
 #pragma mark - Public APIs
@@ -117,6 +113,13 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 }
 
 
+#pragma mark - Navigation
+- (void)_goCamera {
+	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayViewShowCamera:)])
+		[self.delegate emotionsPickerDisplayViewShowCamera:self];
+}
+
+
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
 	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
@@ -132,9 +135,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	imageView.transform = transform;
 	[_emotionHolderView addSubview:imageView];
 	
-	
-	
-//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
 		
 //	if (emotionVO.picoSticker == nil) {
 		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
@@ -238,6 +238,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 						 _cursorImageView.frame = CGRectMake(_emotionHolderView.frame.origin.x + _emotionHolderView.frame.size.width + 3.0, _cursorImageView.frame.origin.y, _cursorImageView.frame.size.width, _cursorImageView.frame.size.height);
 						 
 					 } completion:^(BOOL finished) {
+						 _cameraThumbButton.hidden = ([_emotions count] == 0);
 					 }];
 	
 			 

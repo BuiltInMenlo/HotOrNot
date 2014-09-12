@@ -99,7 +99,7 @@
 "header_activity" = "Activity";
 "alert_status" = "This club does not have any status updates yet!";
 "alert_create" = "Would you like to create one?";
-"select_feeling" = "Select Feeling";
+"select_feeling" = "Select";
 "grant_access" = "Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.";
 "select_club" = "Select Club";
 "club_name" = "Club Name";

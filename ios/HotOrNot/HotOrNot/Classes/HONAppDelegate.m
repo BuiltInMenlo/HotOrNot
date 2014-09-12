@@ -719,6 +719,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	[KeenClient disableGeoLocation];
 	
+	NSLog(@"PAD:%@", [NSString stringWithFormat:@"%0*d", 8, [@"1F604" length]]);
+	
 //	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
 //	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
 //	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];

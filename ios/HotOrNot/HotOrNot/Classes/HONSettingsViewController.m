@@ -69,14 +69,12 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 	}
 	
+	
 	return (self);
 }
 
 
 #pragma mark - Data Calls
-
-
-
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.33];

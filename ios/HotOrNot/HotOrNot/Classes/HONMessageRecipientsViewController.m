@@ -148,9 +148,9 @@
 						  otherButtonTitles:nil] show];
 		
 	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewMessageWithRecipients:[_selectedRecipients copy]]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewMessageWithRecipients:[_selectedRecipients copy]]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:NO completion:nil];
 	}
 }
 

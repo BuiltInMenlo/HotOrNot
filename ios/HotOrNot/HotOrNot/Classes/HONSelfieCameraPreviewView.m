@@ -26,7 +26,7 @@
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONGlobalEmotionPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerDisplayViewDelegate, HONEmotionsPickerViewDelegate, HONGlobalEmotionPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
@@ -81,13 +81,13 @@
 	[_overlayToggleButton addTarget:self action:@selector(_goToggleOverlay) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:_overlayToggleButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"select_feeling", nil)]; //@"Select Feeling"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"select_feeling", nil)]; //@"Select"];
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(0.0, 1.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
@@ -101,13 +101,14 @@
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 308.0)) withPreviewImage:_previewImage];
+	_emotionsDisplayView.delegate = self;
 	_emotionsDisplayView.alpha = 0.0;
 	_emotionsDisplayView.hidden = YES;
 	[self addSubview:_emotionsDisplayView];
 		
 	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
-	_emotionsPickerView.hidden = YES;
 	_emotionsPickerView.delegate = self;
+	_emotionsPickerView.hidden = YES;
 	[self addSubview:_emotionsPickerView];
 	
 	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
@@ -294,6 +295,13 @@
 	
 	_emotionsPickerView.hidden = YES;
 	_globalEmotionsPickerView.hidden = NO;
+}
+
+
+#pragma mark - EmotionsPickerDisplayView Delegates
+- (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView {
+	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
+		[self.delegate cameraPreviewViewShowCamera:self];
 }
 
 

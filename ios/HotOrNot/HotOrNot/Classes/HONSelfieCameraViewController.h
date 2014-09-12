@@ -30,13 +30,8 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 @end
 
 @interface HONSelfieCameraViewController : HONViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
-- (id)initWithClub:(HONUserClubVO *)clubVO;
-
-
 - (id)initAsNewChallenge;
-- (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
-- (id)initAsNewMessageWithRecipients:(NSArray *)recipients;
-- (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients;
+- (id)initWithClub:(HONUserClubVO *)clubVO;
 
 @property (nonatomic, assign) id <HONSelfieCameraViewControllerDelegate> delegate;
 @end

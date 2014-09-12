@@ -115,9 +115,9 @@
 			[recipients addObject:vo];
 	}
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsMessageReply:_messageVO withRecipients:[recipients copy]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsMessageReply:_messageVO withRecipients:[recipients copy]]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 
