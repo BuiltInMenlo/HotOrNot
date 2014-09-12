@@ -310,17 +310,14 @@
 		[_emojiTextView becomeFirstResponder];
 	}
 	
-	else if (alertView.tag == 1){
+	else if (alertView.tag == 1) {
 		NSLog(@"DID SUBMIT -> POP ALERT %d", buttonIndex);
-		if (buttonIndex == 1) {
-			NSLog(@"ALL CONTACTS");
-		}
-		if (buttonIndex == 2) {
-			NSLog(@"ALL MOJI FRIENDS");
-		}
 		
-		if(!(buttonIndex == 0)){
-			[[HONClubAssistant sharedInstance] broadcastLastStatusUpdateToAllContacts: (buttonIndex == 1)];
+		if (buttonIndex == 0)
+			[_emojiTextView becomeFirstResponder];
+		
+		else {
+			[[HONClubAssistant sharedInstance] broadcastLastStatusUpdateToAllContacts:(buttonIndex == 1)];
 			
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];

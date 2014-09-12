@@ -60,14 +60,14 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessContactsBackground@2x"]];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessContactsBackground"]];
 	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 103.0);
 	[self.view addSubview:bgImageView];
 	
 	UIButton *accessButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	accessButton.frame = CGRectMake(0.0, 411.0, 320.0, 48.0);
-	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_nonActive@2x"] forState:UIControlStateNormal];
-	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_active@2x"] forState:UIControlStateHighlighted];
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_nonActive"] forState:UIControlStateNormal];
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_active"] forState:UIControlStateHighlighted];
 	[accessButton addTarget:self action:@selector(_goAlert) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:accessButton];
 }
