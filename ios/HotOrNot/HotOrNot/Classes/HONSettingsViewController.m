@@ -88,15 +88,6 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
-	
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithBranding];
-	[self.view addSubview:headerView];
-	
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
-	
-	
 	//_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)];
 	
 //	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -108,7 +99,6 @@
 	
 	//Go to Timeline
 //	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
-//	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0)];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -123,6 +113,10 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithBranding];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	[self.view addSubview:headerView];
 }
 
 
@@ -133,7 +127,6 @@
 
 
 - (void) _goTimeline {
-	
 	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] userSignupClub];
 	HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:0];
 	[self.navigationController pushViewController:clubTimelineViewControler animated:YES];
@@ -400,7 +393,7 @@
 			}];
 		}
 		
-		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:_smsBroadcastSwitch.on] forKey:@"Y"];
+		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:_smsBroadcastSwitch.on] forKey:@"sms_enabled"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {

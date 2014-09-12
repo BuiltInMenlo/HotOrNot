@@ -78,6 +78,9 @@ extern NSString * const kAPIUsersGetClubInvites;
 extern NSString * const kAPIUsersCheckUsername;
 extern NSString * const kAPIUsersCheckPhone;
 
+extern NSString * const kAPIMojiBroadcastSMS;
+extern NSString * const kAPIMojiBroadcastPush;
+
 
 // network times
 extern const CGFloat kNotifiyDelay;
@@ -195,6 +198,9 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Invite / Social
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+- (void)broadcastSMSStatusUpdate:(NSString *)emojis toRecipients:(NSArray *)recipients completion:(void (^)(id result))completion;
+- (void)broadcastPushStatusUpdate:(NSString *)emojis toRecipients:(NSArray *)recipients completion:(void (^)(id result))completion;
+
 - (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(id result))completion;
 - (void)sendEmailInvitesWithDelimitedList:(NSString *)emailAddresses completion:(void (^)(id result))completion;
 - (void)sendSMSInvitesWithDelimitedList:(NSString *)phoneNumbers completion:(void (^)(id result))completion;

@@ -52,6 +52,6 @@
 - (NSArray *)excludedClubDomains;
 
 - (HONClubPhotoVO *)lastStatusUpdate;
-- (void)broadcastLastStatusUpdateToAllContacts:(BOOL)allContacts;
+- (void)broadcastStatusUpdate:(NSString *)emojis toAllContacts:(BOOL)allContacts;
 
 @end

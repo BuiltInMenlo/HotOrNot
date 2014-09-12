@@ -20,9 +20,10 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UITextView *emojiTextView;
+@property (nonatomic, strong) UILabel *placeholderLabel;
+@property (nonatomic, strong) NSString *unicodeEmojis;
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) NSUInteger offset;
-@property (nonatomic, strong) UILabel *composePlaceholder;
 @end
 
 @implementation HONPostStatusUpdateViewController
@@ -44,9 +45,15 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	_unicodeEmojis = @"";
 	NSMutableArray *emojis = [NSMutableArray array];
-	for (int i=0; i<[_emojiTextView.text length]; i+=2)
-		[emojis addObject:[_emojiTextView.text substringWithRange:NSMakeRange(i, 2)]];
+	for (int i=0; i<[_emojiTextView.text length]; i+=2) {
+		NSString *emojiChar = [_emojiTextView.text substringWithRange:NSMakeRange(i, 2)];
+		[emojis addObject:emojiChar];
+		
+		NSData *utf32 = [emojiChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
+		_unicodeEmojis = [_unicodeEmojis stringByAppendingString:[@"\\U000" stringByAppendingString:[[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] lowercaseString]]];
+	}
 	
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Submit Update"
@@ -66,6 +73,7 @@
 								   @"recipients"	: @"",
 								   @"api_endpt"		: kAPICreateChallenge};
 	NSLog(@"SUBMIT PARAMS:[%@]", submitParams);
+	
 	[[NSUserDefaults standardUserDefaults] setValue:emojis forKey:@"last_emojis"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -82,10 +90,6 @@
 			_progressHUD = nil;
 		
 		} else {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONClubAssistant sharedInstance] defaultClubPhotoURL]
-															   forBucketType:HONS3BucketTypeSelfies
-																  completion:nil];
-			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
@@ -96,8 +100,8 @@
 																  completion:nil];
 
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: @"Confirm your moji update:"
-																message: [NSString stringWithFormat:@"%@%@", [_emojiTextView.text substringToIndex:MIN([_emojiTextView.text length], 42)], ([_emojiTextView.text length] > 42) ? @"..." : @""]
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirm your moji update:"
+																message:[[_emojiTextView.text substringToIndex:MIN([_emojiTextView.text length], 42)] stringByAppendingString:([_emojiTextView.text length] > 42) ? @"…" : @""]
 															   delegate:self
 													  cancelButtonTitle:@"Cancel"
 													  otherButtonTitles:@"Send to all contacts", @"Send to all moji friends", nil, nil];
@@ -135,12 +139,12 @@
 	[_headerView addButton:submitButton];
 	
 	
-	_composePlaceholder = [[UILabel alloc] initWithFrame:CGRectMake(17.0, 81.0, 304.0, 42)];
-	_composePlaceholder.backgroundColor = [UIColor clearColor];
-	[_composePlaceholder setTextColor:[UIColor lightGrayColor]];
-	_composePlaceholder.font = [UIFont systemFontOfSize:36.0f];
-	_composePlaceholder.text = @"Type emoji...";
-	[self.view addSubview:_composePlaceholder];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(17.0, 81.0, 304.0, 42)];
+	_placeholderLabel.backgroundColor = [UIColor clearColor];
+	[_placeholderLabel setTextColor:[UIColor lightGrayColor]];
+	_placeholderLabel.font = [UIFont systemFontOfSize:36.0f];
+	_placeholderLabel.text = @"Type emoji...";
+	[self.view addSubview:_placeholderLabel];
 	
 	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(13.0, 72.0, 304.0, self.view.frame.size.height - 288)];
 	_emojiTextView.backgroundColor = [UIColor clearColor];
@@ -195,19 +199,22 @@
 	[_emojiTextView resignFirstResponder];
 }
 
-#define ACCEPTABLE_CHARACTERS @"😄😃😀😊☺️😉😍😘😚😗😙😜😝😛😳😁😔😌😒😞😣😢😂😭😪😥😰😅😓😩😫😨😱😠😡😤😖😆😋😷😎😴😵😲😟😦😧😈👿😮😬😐😕😯😶😇😏😑👲👳👮👷💂👶👦👧👨👩👴👵👱👼👸😺😸😻😽😼🙀😿😹😾👹👺🙈🙉🙊💀👽💩🔥✨🌟💫💥💢💦💧💤💨👂👀👃👅👄👍👎👌👊✊✌️👋✋👐👆👇👉👈🙌🙏☝️👏💪🚶🏃💃👫👪👬👭💏💑👯🙆🙅💁🙋💆💇💅👰🙎🙍🙇🎩👑👒👟👞👡👠👢👕👔👚👗🎽👖👘👙💼👜👝👛👓🎀🌂💄💛💙💜💚❤️💔💗💓💕💖💞💘💌💋💍💎👤👥💬👣💭🐶🐺🐱🐭🐹🐰🐯🐨🐻🐷🐽🐮🐗🐵🐒🐴🐑🐘🐼🐧🐦🐤🐥🐣🐔🐍🐢🐛🐝🐜🐞🐌🐙🐚🐠🐟🐬🐳🐋🐄🐏🐀🐃🐅🐇🐉🐎🐐🐓🐕🐖🐁🐂🐲🐡🐊🐫🐪🐆🐈🐩🐾💐🌸🌷🍀🌹🌻🌺🍁🍃🍂🌿🌾🍄🌵🌴🌲🌳🌰🌱🌼🌐🌞🌝🌚🌑🌒🌓🌔🌕🌖🌗🌘🌜🌛🌙🌍🌎🌏🌋🌌🌠⭐️☀️⛅️☁️⚡️☔️❄️⛄️🌀🌁🌈🌊🎍💝🎎🎒🎓🎏🎆🎇🎐🎑🎃👻🎅🎄🎁🎋🎉🎊🎈🎌🔮🎥📷📹📼💿📀💽💾💻📱☎️📞📟📠📡📺📻🔊🔉🔈🔇🔔🔕📢📣⏳⌛️⏰⌚️🔓🔒🔏🔐🔑🔎💡🔦🔆🔅🔌🔋🔍🛁🛀🚿🚽🔧🔩🔨🚪🚬💣🔫🔪💊💉💰💴💵💷💶💳💸📲📧📥📤✉️📩📨📯📫📪📬📭📮📦📝📄📃📑📊📈📉📜📋📅📆📇📁📂✂️📌📎✒️✏️📏📐📕📗📘📙📓📔📒📚📖🔖📛🔬🔭📰🎨🎬🎤🎧🎼🎵🎶🎹🎻🎺🎷🎸👾🎮🃏🎴🀄️🎲🎯🏈🏀⚽️⚾️🎾🎱🏉🎳⛳️🚵🚴🏁🏇🏆🎿🏂🏊🏄🎣☕️🍵🍶🍼🍺🍻🍸🍹🍷🍴🍕🍔🍟🍗🍖🍝🍛🍤🍱🍣🍥🍙🍘🍚🍜🍲🍢🍡🍳🍞🍩🍮🍦🍨🍧🎂🍰🍪🍫🍬🍭🍯🍎🍏🍊🍋🍒🍇🍉🍓🍑🍈🍌🍐🍍🍠🍆🍅🌽🏠🏡🏫🏢🏣🏥🏦🏪🏩🏨💒⛪️🏬🏤🌇🌆🏯🏰⛺️🏭🗼🗾🗻🌄🌅🌃🗽🌉🎠🎡⛲️🎢🚢⛵️🚤🚣⚓️🚀✈️💺🚁🚂🚊🚉🚞🚆🚄🚅🚈🚇🚝🚋🚃🚎🚌🚍🚙🚘🚗🚕🚖🚛🚚🚨🚓🚔🚒🚑🚐🚲🚡🚟🚠🚜💈🚏🎫🚦🚥⚠️🚧🔰⛽️🏮🎰♨️🗿🎪🎭📍🚩🇯🇵🇰🇷🇩🇪🇨🇳🇺🇸🇫🇷🇪🇸🇮🇹🇷🇺🇬🇧1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣0️⃣🔟🔢#️⃣🔣⬆️⬇️⬅️➡️🔠🔡🔤↗️↖️↘️↙️↔️↕️🔄◀️▶️🔼🔽↩️↪️ℹ️⏪⏩⏫⏬⤵️⤴️🆗🔀🔁🔂🆕🆙🆒🆓🆖📶🎦🈁🈯️🈳🈵🈴🈲🉐🈹🈺🈶🈚️🚻🚹🚺🚼🚾🚰🚮🅿️♿️🚭🈷🈸🈂Ⓜ️🛂🛄🛅🛃🉑㊙️㊗️🆑🆘🆔🚫🔞📵🚯🚱🚳🚷🚸⛔️✳️❇️❎✅✴️💟🆚📳📴🅰🅱🆎🅾💠➿♻️♈️♉️♊️♋️♌️♍️♎️♏️♐️♑️♒️♓️⛎🔯🏧💹💲💱©®™❌‼️⁉️❗️❓❕❔⭕️🔝🔚🔙🔛🔜🔃🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕖🕗🕘🕙🕚🕡🕢🕣🕤🕥🕦✖️➕➖➗♠️♥️♣️♦️💮💯✔️☑️🔘🔗➰〰〽️🔱◼️◻️◾️◽️▪️▫️🔺🔲🔳⚫️⚪️🔴🔵🔻⬜️⬛️🔶🔷🔸🔹"
+
+#define kACCEPTABLE_CHARACTERS @"😄😃😀😊☺️😉😍😘😚😗😙😜😝😛😳😁😔😌😒😞😣😢😂😭😪😥😰😅😓😩😫😨😱😠😡😤😖😆😋😷😎😴😵😲😟😦😧😈👿😮😬😐😕😯😶😇😏😑👲👳👮👷💂👶👦👧👨👩👴👵👱👼👸😺😸😻😽😼🙀😿😹😾👹👺🙈🙉🙊💀👽💩🔥✨🌟💫💥💢💦💧💤💨👂👀👃👅👄👍👎👌👊✊✌️👋✋👐👆👇👉👈🙌🙏☝️👏💪🚶🏃💃👫👪👬👭💏💑👯🙆🙅💁🙋💆💇💅👰🙎🙍🙇🎩👑👒👟👞👡👠👢👕👔👚👗🎽👖👘👙💼👜👝👛👓🎀🌂💄💛💙💜💚❤️💔💗💓💕💖💞💘💌💋💍💎👤👥💬👣💭🐶🐺🐱🐭🐹🐰🐯🐨🐻🐷🐽🐮🐗🐵🐒🐴🐑🐘🐼🐧🐦🐤🐥🐣🐔🐍🐢🐛🐝🐜🐞🐌🐙🐚🐠🐟🐬🐳🐋🐄🐏🐀🐃🐅🐇🐉🐎🐐🐓🐕🐖🐁🐂🐲🐡🐊🐫🐪🐆🐈🐩🐾💐🌸🌷🍀🌹🌻🌺🍁🍃🍂🌿🌾🍄🌵🌴🌲🌳🌰🌱🌼🌐🌞🌝🌚🌑🌒🌓🌔🌕🌖🌗🌘🌜🌛🌙🌍🌎🌏🌋🌌🌠⭐️☀️⛅️☁️⚡️☔️❄️⛄️🌀🌁🌈🌊🎍💝🎎🎒🎓🎏🎆🎇🎐🎑🎃👻🎅🎄🎁🎋🎉🎊🎈🎌🔮🎥📷📹📼💿📀💽💾💻📱☎️📞📟📠📡📺📻🔊🔉🔈🔇🔔🔕📢📣⏳⌛️⏰⌚️🔓🔒🔏🔐🔑🔎💡🔦🔆🔅🔌🔋🔍🛁🛀🚿🚽🔧🔩🔨🚪🚬💣🔫🔪💊💉💰💴💵💷💶💳💸📲📧📥📤✉️📩📨📯📫📪📬📭📮📦📝📄📃📑📊📈📉📜📋📅📆📇📁📂✂️📌📎✒️✏️📏📐📕📗📘📙📓📔📒📚📖🔖📛🔬🔭📰🎨🎬🎤🎧🎼🎵🎶🎹🎻🎺🎷🎸👾🎮🃏🎴🀄️🎲🎯🏈🏀⚽️⚾️🎾🎱🏉🎳⛳️🚵🚴🏁🏇🏆🎿🏂🏊🏄🎣☕️🍵🍶🍼🍺🍻🍸🍹🍷🍴🍕🍔🍟🍗🍖🍝🍛🍤🍱🍣🍥🍙🍘🍚🍜🍲🍢🍡🍳🍞🍩🍮🍦🍨🍧🎂🍰🍪🍫🍬🍭🍯🍎🍏🍊🍋🍒🍇🍉🍓🍑🍈🍌🍐🍍🍠🍆🍅🌽🏠🏡🏫🏢🏣🏥🏦🏪🏩🏨💒⛪️🏬🏤🌇🌆🏯🏰⛺️🏭🗼🗾🗻🌄🌅🌃🗽🌉🎠🎡⛲️🎢🚢⛵️🚤🚣⚓️🚀✈️💺🚁🚂🚊🚉🚞🚆🚄🚅🚈🚇🚝🚋🚃🚎🚌🚍🚙🚘🚗🚕🚖🚛🚚🚨🚓🚔🚒🚑🚐🚲🚡🚟🚠🚜💈🚏🎫🚦🚥⚠️🚧🔰⛽️🏮🎰♨️🗿🎪🎭📍🚩🇯🇵🇰🇷🇩🇪🇨🇳🇺🇸🇫🇷🇪🇸🇮🇹🇷🇺🇬🇧1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣0️⃣🔟🔢#️⃣🔣⬆️⬇️⬅️➡️🔠🔡🔤↗️↖️↘️↙️↔️↕️🔄◀️▶️🔼🔽↩️↪️ℹ️⏪⏩⏫⏬⤵️⤴️🆗🔀🔁🔂🆕🆙🆒🆓🆖📶🎦🈁🈯️🈳🈵🈴🈲🉐🈹🈺🈶🈚️🚻🚹🚺🚼🚾🚰🚮🅿️♿️🚭🈷🈸🈂Ⓜ️🛂🛄🛅🛃🉑㊙️㊗️🆑🆘🆔🚫🔞📵🚯🚱🚳🚷🚸⛔️✳️❇️❎✅✴️💟🆚📳📴🅰🅱🆎🅾💠➿♻️♈️♉️♊️♋️♌️♍️♎️♏️♐️♑️♒️♓️⛎🔯🏧💹💲💱©®™❌‼️⁉️❗️❓❕❔⭕️🔝🔚🔙🔛🔜🔃🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕖🕗🕘🕙🕚🕡🕢🕣🕤🕥🕦✖️➕➖➗♠️♥️♣️♦️💮💯✔️☑️🔘🔗➰〰〽️🔱◼️◻️◾️◽️▪️▫️🔺🔲🔳⚫️⚪️🔴🔵🔻⬜️⬛️🔶🔷🔸🔹"
 #pragma mark - TextView Delegates
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+	NSLog(@"textView:[%@] shouldChangeTextInRange:[%@] replacementText:[%@] -- (%@)", textView.text, NSStringFromRange(range), text, NSStringFromRange([text rangeOfCharacterFromSet:[[NSCharacterSet characterSetWithCharactersInString:kACCEPTABLE_CHARACTERS] invertedSet]]));
 	
-	
-	NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:ACCEPTABLE_CHARACTERS] invertedSet];
+	NSCharacterSet *invalidCharSet = [[NSCharacterSet characterSetWithCharactersInString:kACCEPTABLE_CHARACTERS] invertedSet];
 	
 	if([text isEqualToString:@"\n"]) {
 		[textView resignFirstResponder];
-		return NO;
+		return (NO);
 	}
 	
-	if ([text rangeOfCharacterFromSet:cs].location != NSNotFound) {
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Compose View - Enter %@Unicode Char", ([text rangeOfCharacterFromSet:invalidCharSet].location == NSNotFound) ? @"" : @"Non-"] withStringChar:text];
+	
+	if ([text rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) {
 		[[[UIAlertView alloc] initWithTitle:@"This app requires you to use the Emoji iOS 8 Keyboard!"
 									message:nil
 								   delegate:nil
@@ -216,44 +223,24 @@
 		NSLog(@"This string contains illegal characters");
 	}
 	
-	
-	
-	NSString *filtered = [[text componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
-	
-	return ([text isEqualToString:filtered] && ([textView.text length] < 200));
-
-	
-	
-//	NSLog(@"textView:[%@] shouldChangeTextInRange:[%@] replacementText:[%@] -- (%@)", textView.text, NSStringFromRange(range), text, NSStringFromRange([text rangeOfCharacterFromSet:cs]));
-//	
-//	_offset = ([text isEqualToString:filtered] && ([textView.text length] < 200)) ? [text length] : 0;
-//	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Compose View - Enter %@Unicode Char", ([text isEqualToString:filtered]) ? @"" : @"Non-"] withStringChar:text];
-	
-	return (([text isEqualToString:filtered] && ([textView.text length] < 200)));
+	return ([text rangeOfCharacterFromSet:invalidCharSet].location == NSNotFound);
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
+	_placeholderLabel.hidden = ([textView.text length] > 0);
 	
 	if ([textView.text length] > 0) {
-		NSString *lastChar = [textView.text substringFromIndex: [textView.text length]-2];
-
-		[_headerView setTitle: [textView.text substringFromIndex: [textView.text length]-2]];
+		NSString *lastChar = [textView.text substringFromIndex: [textView.text length] - 2];
+		[_headerView setTitle:lastChar];
 		
 		NSData *utf32 = [lastChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
 		NSString *uniHex = [[[[[[utf32 description] substringWithRange:NSMakeRange(1, [[utf32 description] length] - 2)] componentsSeparatedByString:@" "] lastObject] substringFromIndex:3] uppercaseString];
 		NSString *uniFormat = [@"U+" stringByAppendingString:uniHex];
 		
-		NSLog(@"Character (%@) = {%@}", lastChar, uniFormat);//@"\U0001F604");
+		NSLog(@"Character (%@) = [%@] /// {%@}", lastChar, uniFormat, [utf32 description]);//@"\U0001F604");
 
-	}
-	
-	else {
+	} else
 		[_headerView setTitle:@"Compose"];
-	}
-	
-	_composePlaceholder.hidden = ([_emojiTextView.text length] > 0);
-	
 	
 	
 //	NSLog(@"textView:[%@](%u)--{%d}", textView.text, [textView.text length], _offset);
@@ -317,8 +304,7 @@
 			[_emojiTextView becomeFirstResponder];
 		
 		else {
-			[[HONClubAssistant sharedInstance] broadcastLastStatusUpdateToAllContacts:(buttonIndex == 1)];
-			
+			[[HONClubAssistant sharedInstance] broadcastStatusUpdate:_unicodeEmojis toAllContacts:(buttonIndex == 1)];
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 			}];

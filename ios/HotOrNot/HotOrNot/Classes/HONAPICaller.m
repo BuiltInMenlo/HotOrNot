@@ -79,6 +79,9 @@ NSString * const kAPIUsersValidatePIN		= @"userPhone/validatePhone";
 NSString * const kAPIUsersCheckUsername		= @"users/checkUsername";
 NSString * const kAPIUsersCheckPhone		= @"users/checkPhone";
 
+NSString * const kAPIMojiBroadcastSMS		= @"moji/invite";
+NSString * const kAPIMojiBroadcastPush		= @"moji/DERP";
+
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
 
@@ -1750,6 +1753,71 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Invite / Social
+- (void)broadcastSMSStatusUpdate:(NSString *)emojis toRecipients:(NSArray *)recipients completion:(void (^)(id result))completion {
+	NSError *error;
+	NSString *jsonRecipients = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:recipients options:0 error:&error]
+													 encoding:NSUTF8StringEncoding];
+	
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"emoji"		: emojis,
+							 @"nonUsers"	: jsonRecipients};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIMojiBroadcastSMS, params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+	[httpClient postPath:kAPIMojiBroadcastSMS parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIMojiBroadcastSMS, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)broadcastPushStatusUpdate:(NSString *)emojis toRecipients:(NSArray *)recipients completion:(void (^)(id result))completion {
+	NSError *error;
+	NSString *jsonRecipients = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:recipients options:0 error:&error]
+													 encoding:NSUTF8StringEncoding];
+	
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"emoji"	: emojis,
+							 @"users"	: jsonRecipients};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIMojiBroadcastPush, params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+	[httpClient postPath:kAPIMojiBroadcastPush parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIMojiBroadcastPush, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+
 - (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:1],
 							 @"username"	: username};

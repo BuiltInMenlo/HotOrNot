@@ -413,17 +413,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
-	return (([phoneNumber length] > 0) ? [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""] : @"");
+	NSString *strippedChars = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
 	
-//	if ([phoneNumber length] > 0) {
-//		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-//		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-//			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
-//		
-//		return ([@"+" stringByAppendingString:formattedNumber]);
-//		
-//	} else
-//		return (@"");
+	return (([strippedChars length] > 0) ? ([[strippedChars substringToIndex:1] isEqualToString:@"1"]) ? [@"+" stringByAppendingString:strippedChars] : strippedChars : @"");
 }
 
 + (NSDictionary *)parseQueryString:(NSString *)queryString {
