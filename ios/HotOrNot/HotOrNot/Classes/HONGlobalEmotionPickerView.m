@@ -69,19 +69,19 @@ const CGSize kImageSpacingSize = {154.0f, 149.0f};
 		stickerPackLabel.text = NSLocalizedString(@"global_sticker", nil);
 		[self addSubview:stickerPackLabel];
 		
-		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
-		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:deleteButton];
-		
 		UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		globalButton.frame = CGRectMake(0, self.frame.size.height - 50.0, 160.0, 50.0);
+		globalButton.frame = CGRectMake(0, self.frame.size.height - 49.0, 160.0, 49.0);
 		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateNormal];
 		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
+		
+		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 49.0, 160.0, 49.0);
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
+		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
+		[self addSubview:deleteButton];
 		
 		
 		NSArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"paid"];

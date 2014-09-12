@@ -18,6 +18,7 @@
 
 @interface HONSelfieCameraPreviewView : UIView
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image;
+- (void)updateProcessedImage:(UIImage *)image;
 - (void)uploadComplete;
 
 @property (nonatomic, assign) id <HONSelfieCameraPreviewViewDelegate> delegate;

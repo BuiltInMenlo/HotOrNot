@@ -66,6 +66,10 @@
 
 
 #pragma mark - Puplic APIs
+- (void)updateProcessedImage:(UIImage *)image {
+	[_emotionsDisplayView updatePreview:image];
+}
+
 - (void)uploadComplete {
 	NSLog(@"uploadComplete");
 }
@@ -100,18 +104,15 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 308.0)) withPreviewImage:_previewImage];
+	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 305.0)) withPreviewImage:_previewImage];
 	_emotionsDisplayView.delegate = self;
-	_emotionsDisplayView.alpha = 0.0;
-	_emotionsDisplayView.hidden = YES;
 	[self addSubview:_emotionsDisplayView];
 		
-	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
+	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 305.0, 320.0, 305.0)];
 	_emotionsPickerView.delegate = self;
-	_emotionsPickerView.hidden = YES;
 	[self addSubview:_emotionsPickerView];
 	
-	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
+	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 305.0, 320.0, 305.0)];
 	_globalEmotionsPickerView.hidden = YES;
 	_globalEmotionsPickerView.delegate = self;
 	[self addSubview:_globalEmotionsPickerView];

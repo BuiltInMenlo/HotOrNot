@@ -260,13 +260,13 @@
 		
 		_cameraOverlayView = [[HONSelfieCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
+		imagePickerController.cameraOverlayView = _cameraOverlayView;
  	}
 	
 	self.imagePickerController = imagePickerController;
 	[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
 		if (sourceType == UIImagePickerControllerSourceTypeCamera) {
 			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-			self.imagePickerController.cameraOverlayView = _cameraOverlayView;
 		}
 	}];
 }
@@ -304,10 +304,8 @@
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		
-		if ([self.delegate respondsToSelector:@selector(selfieCameraViewController:didDismissByCanceling:)])
-			[self.delegate selfieCameraViewController:self didDismissByCanceling:YES];
-		
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+//		if ([self.delegate respondsToSelector:@selector(selfieCameraViewController:didDismissByCanceling:)])
+//			[self.delegate selfieCameraViewController:self didDismissByCanceling:YES];
 	}];
 }
 
@@ -342,6 +340,7 @@
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 	
@@ -434,13 +433,10 @@
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
 	
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-//	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
-//	_previewView.delegate = self;
-//	_isBlurred = false;
-//	
-//	[self dismissViewControllerAnimated:NO completion:^(void) {
-//		[self.view addSubview:_previewView];
-//	}];
+	[_previewView updateProcessedImage:_processedImage];
+
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+	}];
 	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];

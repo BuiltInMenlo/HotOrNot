@@ -66,6 +66,8 @@
 		30C7F0BA19C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */; };
 		30C7F0BD19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */; };
 		30C7F0BE19C2824D00450BA9 /* StatusCloseButtonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */; };
+		30D8028D19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */; };
+		30D8028E19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */; };
 		30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */; };
 		30E6150A19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150C19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png */; };
 		30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150F19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png */; };
@@ -584,6 +586,8 @@
 		30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addSelfieButtonB_nonActive@2x.png"; sourceTree = "<group>"; };
 		30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusCloseButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusCloseButtonActive@2x.png"; sourceTree = "<group>"; };
+		30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusBackButton_Active@2x.png"; sourceTree = "<group>"; };
+		30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusBackButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30E6150819B903930028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Active@2x.png"; sourceTree = "<group>"; };
 		30E6150B19B903990028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_NonActive@2x.png"; sourceTree = "<group>"; };
 		30E6150E19B9039D0028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Tapped@2x.png"; sourceTree = "<group>"; };
@@ -2324,6 +2328,8 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */,
+				30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */,
 				30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */,
 				30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */,
 				30C7F0B719C27B6800450BA9 /* addSelfieButtonB_Active@2x.png */,
@@ -2787,6 +2793,7 @@
 				30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				07B25327198C177000F6D8B1 /* dimBackground@2x.png in Resources */,
+				30D8028D19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png in Resources */,
 				07B25328198C177B00F6D8B1 /* tapToReview_Active@2x.png in Resources */,
 				30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
@@ -2860,6 +2867,7 @@
 				30C7F0BA19C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png in Resources */,
 				07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */,
 				4C83FD95190F62E800CAEABB /* push_02.caf in Resources */,
+				30D8028E19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png in Resources */,
 				07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */,
 				07B6E65B19884A2E00DA0805 /* backWhiteButton_Active@2x.png in Resources */,
 				07B6E6FB1988515400DA0805 /* accessContacts_Active@2x.png in Resources */,
@@ -3998,7 +4006,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4042,8 +4050,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4064,8 +4072,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -4080,7 +4088,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/Selfieclub.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
@@ -4125,8 +4133,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/Selfieclub.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
