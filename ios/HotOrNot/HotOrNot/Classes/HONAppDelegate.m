@@ -52,6 +52,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONSuspendedViewController.h"
 #import "HONSelfieCameraViewController.h"
+#import "HONPostStatusUpdateViewController.h"
 
 typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 	HONAppDelegateBitTesting0	= 0 << 0,
@@ -722,7 +723,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
 //	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
 	
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"Emoji_alert"]; //uncomment to reset Alert that tells user to use emoji keyboard
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"Emoji_alert"]; //uncomment to reset Alert that tells user to use emoji keyboard
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"broadcast_enabled"] == nil) {
 		[[NSUserDefaults standardUserDefaults] setValue:[@"" stringFromBOOL:YES] forKey:@"broadcast_enabled"];
@@ -894,6 +895,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			} else
 				[self _retrieveConfigJSON];
+		}
+		
+		if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_compose"] isEqualToString:@"YES"]) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self.tabBarController.selectedViewController presentViewController:navigationController animated:YES completion:nil];
+			
+			NSLog(@"^^^^^^NOT IN COMPOSE MODAL^^^^^^");
+		}
+		else {
+			NSLog(@"^^^^^^IN COMPOSE MODAL^^^^^^");
 		}
 	
 	} else {

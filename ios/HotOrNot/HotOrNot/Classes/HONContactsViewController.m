@@ -797,8 +797,8 @@
 //							  cancelButtonTitle:@"YES"
 //							  otherButtonTitles:nil] show];
 			
-			for (HONTrivialUserVO *vo in [dict objectForKey:key])
-				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.username);
+//			for (HONTrivialUserVO *vo in [dict objectForKey:key])
+//				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.username);
 
 		}
 	}

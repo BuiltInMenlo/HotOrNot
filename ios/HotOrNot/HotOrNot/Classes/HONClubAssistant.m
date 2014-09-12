@@ -564,19 +564,22 @@ static HONClubAssistant *sharedInstance = nil;
 	return ([HONClubPhotoVO clubPhotoWithDictionary:[dict copy]]);
 }
 
-- (void)broadcastLastStatusUpdate {
+- (void)broadcastLastStatusUpdateToAllContacts:(BOOL)allContacts {
 	NSLog(@"LAST:[%@]", [[HONClubAssistant sharedInstance] lastStatusUpdate].dictionary);
 	
 	HONUserClubVO *signupClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
 	
 	NSMutableArray *smsInvites = [NSMutableArray array];
-	[[[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONContactUserVO *vo = (HONContactUserVO *)obj;
-		if (vo.isSMSAvailable) {
-			[[HONContactsAssistant sharedInstance] writeContactUser:vo toInvitedClub:signupClubVO];
-			[smsInvites addObject:vo];
-		}
-	}];
+	
+	if (allContacts) {
+		[[[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONContactUserVO *vo = (HONContactUserVO *)obj;
+			if (vo.isSMSAvailable) {
+				[[HONContactsAssistant sharedInstance] writeContactUser:vo toInvitedClub:signupClubVO];
+				[smsInvites addObject:vo];
+			}
+		}];
+	}
 	
 	NSMutableArray *appUsers = [NSMutableArray array];
 	NSArray *users = ([[NSUserDefaults standardUserDefaults] objectForKey:@"app_users"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"app_users"] : @[];
@@ -593,18 +596,18 @@ static HONClubAssistant *sharedInstance = nil;
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"broadcast_enabled"] isEqualToString:@"YES"]) {
 		if ([smsInvites count] > 0) {
 			NSLog(@"\n\n~>>~<~>>~<~>>~<~>>~<~>>~<~>>~>>~<~>>~<~>>~<~>>~<~>>~<~>>\n\t[¡!¡] SENDING SMS TO (%d) RECIPIENTS [¡!¡]\n<<~>~<<~>~<<~>~<<~>~<<~>~<<~<<~>~<<~>~<<~>~<<~>~<<~>~<<~\n\n", [smsInvites count]);
-			[[HONAPICaller sharedInstance] inviteNonAppUsers:[smsInvites copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-			}];
+//			[[HONAPICaller sharedInstance] inviteNonAppUsers:[smsInvites copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+//			}];
 		}
 	}
 #endif
 #if __OVERRIDE_SNS_BROADCAST__ == 0
 	if ([users count] > 0) {
 		NSLog(@"\n\n~>>~<~>>~<~>>~<~>>~<~>>~<~>>~>>~<~>>~<~>>~<~>>~<~>>~<~>>\n\t[¡!¡] SENDING PUSH TO (%d) RECIPIENTS [¡!¡]\n<<~>~<<~>~<<~>~<<~>~<<~>~<<~<<~>~<<~>~<<~>~<<~>~<<~>~<<~\n\n", [appUsers count]);
-		[[HONAPICaller sharedInstance] inviteInAppUsers:[appUsers copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-		}];
+//		[[HONAPICaller sharedInstance] inviteInAppUsers:[appUsers copy] toClubWithID:signupClubVO.clubID withClubOwnerID:signupClubVO.ownerID completion:^(NSDictionary *result) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+//		}];
 	}
 #endif
 }
