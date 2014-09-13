@@ -222,6 +222,8 @@ static NSString * const kCamera = @"camera";
 		
 	} else
 		[super _promptForAddressBookAccess];
+	
+	[self _goCreateChallenge];
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
