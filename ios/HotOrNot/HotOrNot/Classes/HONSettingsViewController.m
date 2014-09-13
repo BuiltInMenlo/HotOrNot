@@ -231,8 +231,12 @@
 		label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.textAlignment = NSTextAlignmentCenter;
-		label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
+		label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
 		[cell.contentView addSubview:label];
+		
+#if __APPSTORE_BUILD__ != 1
+		label.text = [label.text stringByAppendingFormat:@" (%d)", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]];
+#endif
 	}
 	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];

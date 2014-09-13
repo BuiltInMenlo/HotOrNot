@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "largeAvatarMask@2x-1.png"
+      "filename" : "selfieMask.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "largeAvatarMask@2x.png"
+      "filename" : "selfieMask@2x.png"
     }
   ],
   "info" : {

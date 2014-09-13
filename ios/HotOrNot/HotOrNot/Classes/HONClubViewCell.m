@@ -52,7 +52,9 @@
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textAlignment = NSTextAlignmentRight;
-		[self.contentView addSubview:_timeLabel];
+//		[self.contentView addSubview:_timeLabel];
+		
+		[self hideChevron];
 	}
 	
 	return (self);
@@ -75,7 +77,7 @@
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 		
 		UIView *statusUpdateView = [self _holderViewForStatusUpdate:vo];
-		statusUpdateView.frame = CGRectOffset(statusUpdateView.frame, 17.0 + (idx * 18.0), 16.0);
+		statusUpdateView.frame = CGRectOffset(statusUpdateView.frame, 17.0 + (idx * 18.0), 14.0);
 		[statusUpdateView setTag:idx];
 		[self.contentView addSubview:statusUpdateView];
 		[_statusUpdateViews addObject:statusUpdateView];
@@ -217,7 +219,7 @@
 	[imageView setTag:0];
 	[view addSubview:imageView];
 	
-	[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"statusUpdateStackMask"]];
+	//[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"statusUpdateStackMask"]];
 	return (view);
 }
 

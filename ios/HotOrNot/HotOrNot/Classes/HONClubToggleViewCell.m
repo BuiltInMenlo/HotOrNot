@@ -42,7 +42,7 @@
 		_coverImageView.alpha = 0.0;
 		[self.contentView addSubview:_coverImageView];
 		
-		[[HONImageBroker sharedInstance] maskView:_coverImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+//		[[HONImageBroker sharedInstance] maskView:_coverImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 23.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];

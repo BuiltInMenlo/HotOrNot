@@ -40,7 +40,7 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 		_isLarge = YES;
 		
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-		_imageView.image = [UIImage imageNamed:@"emojiLargeButtonBG"];
+//		_imageView.image = [UIImage imageNamed:@"emojiLargeButtonBG"];
 		_imageView.contentMode = UIViewContentModeRedraw;
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
@@ -90,7 +90,7 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 		_isSelected = NO;
 		_isLarge = NO;
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
+//		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
 		_imageView.contentMode = UIViewContentModeRedraw;
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
@@ -146,7 +146,6 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 											  } else{
 												  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
 													  [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
-												  
 											  }
 											  
 										  }];

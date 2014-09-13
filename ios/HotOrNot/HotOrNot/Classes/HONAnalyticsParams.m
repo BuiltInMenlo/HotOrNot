@@ -54,9 +54,14 @@ static HONAnalyticsParams *sharedInstance = nil;
 //	});
 
 	return (@{@"user"		: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]],
+			  @"app_ver"	: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+			  @"app_build"	: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
+			  @"api_env"	: ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod",
+			  @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject],
 			  @"device"		: [[HONDeviceIntrinsics sharedInstance] modelName],
 			  @"os"			: [[HONDeviceIntrinsics sharedInstance] osVersion],
-			  @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject]});
+			  @"locale"		: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
+			  @"timestamp"	: [[NSDate date] descriptionWithLocale:[NSLocale currentLocale]]});
 }
 
 - (NSDictionary *)userProperty {

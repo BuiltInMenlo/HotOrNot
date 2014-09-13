@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "nextCameraButton_Active.png"
+      "filename" : "arrowButtonBlue_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "nextCameraButton_Active@2x.png"
+      "filename" : "arrowButtonBlue_Active@2x.png"
     }
   ],
   "info" : {

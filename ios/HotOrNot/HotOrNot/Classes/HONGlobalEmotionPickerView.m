@@ -91,7 +91,7 @@ const CGSize kImageSpacingSize = {154.0f, 149.0f};
 		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE)));
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
-		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
+		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 5.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
 		

@@ -89,30 +89,30 @@
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 1.0, 44.0, 44.0);
+	backButton.frame = CGRectMake(0.0, 3.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(227.0, 1.0, 93.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	nextButton.frame = CGRectMake(282.0, 3.0, 44.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:nextButton];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 305.0)) withPreviewImage:_previewImage];
+	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 280.0)) withPreviewImage:_previewImage];
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 		
-	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 305.0, 320.0, 305.0)];
+	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
 	_emotionsPickerView.delegate = self;
 	[self addSubview:_emotionsPickerView];
 	
-	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 305.0, 320.0, 305.0)];
+	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
 	_globalEmotionsPickerView.hidden = YES;
 	_globalEmotionsPickerView.delegate = self;
 	[self addSubview:_globalEmotionsPickerView];

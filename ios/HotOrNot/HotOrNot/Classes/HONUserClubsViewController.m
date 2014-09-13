@@ -209,7 +209,7 @@ static NSString * const kCamera = @"camera";
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -218,16 +218,6 @@ static NSString * const kCamera = @"camera";
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-	
-	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
-	searchBarView.userInteractionEnabled = NO;
-	[self.view addSubview:searchBarView];
-	
-	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = searchBarView.frame;
-	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:searchButton];
-	
 	
 //	@property(nonatomic) BOOL cancelsTouchesInView;	   // default is YES. causes touchesCancelled:withEvent: to be sent to the view for all touches recognized as part of this gesture immediately before the action method is called
 //	@property(nonatomic) BOOL delaysTouchesBegan;		 // default is NO.  causes all touch events to be delivered to the target view only after this gesture has failed recognition. set to YES to prevent views from processing any touches that may be recognized as part of this gesture

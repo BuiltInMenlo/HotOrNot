@@ -60,8 +60,6 @@
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		309F59C3199DAF5000EC6C1C /* noPostsYetRow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59C5199DAF5000EC6C1C /* noPostsYetRow@2x.png */; };
 		309F59CA199DAF9300EC6C1C /* shareFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59CC199DAF9300EC6C1C /* shareFriends@2x.png */; };
-		30C7F0B519C27A8500450BA9 /* addSelfieButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0B319C27A8500450BA9 /* addSelfieButton_Active@2x.png */; };
-		30C7F0B619C27A8500450BA9 /* addSelfieButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0B419C27A8500450BA9 /* addSelfieButton_nonActive@2x.png */; };
 		30C7F0B919C27B6800450BA9 /* addSelfieButtonB_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0B719C27B6800450BA9 /* addSelfieButtonB_Active@2x.png */; };
 		30C7F0BA19C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */; };
 		30C7F0BD19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */; };
@@ -580,8 +578,6 @@
 		309F59CE199DAF9800EC6C1C /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		309F59CF199DAF9900EC6C1C /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		309F59D0199DAF9A00EC6C1C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
-		30C7F0B319C27A8500450BA9 /* addSelfieButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addSelfieButton_Active@2x.png"; sourceTree = "<group>"; };
-		30C7F0B419C27A8500450BA9 /* addSelfieButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addSelfieButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30C7F0B719C27B6800450BA9 /* addSelfieButtonB_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addSelfieButtonB_Active@2x.png"; sourceTree = "<group>"; };
 		30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addSelfieButtonB_nonActive@2x.png"; sourceTree = "<group>"; };
 		30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusCloseButton_nonActive@2x.png"; sourceTree = "<group>"; };
@@ -2334,8 +2330,6 @@
 				30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */,
 				30C7F0B719C27B6800450BA9 /* addSelfieButtonB_Active@2x.png */,
 				30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */,
-				30C7F0B319C27A8500450BA9 /* addSelfieButton_Active@2x.png */,
-				30C7F0B419C27A8500450BA9 /* addSelfieButton_nonActive@2x.png */,
 				300FCF3B19B29DB50009F5B5 /* findFriendBackgorund@2x.png */,
 				4C43224A18E37C960035FF06 /* Asset Catalogs */,
 				309F59BE199DA60000EC6C1C /* Search */,
@@ -2828,7 +2822,6 @@
 				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,
 				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
 				07B6E6E519884B3B00DA0805 /* likeTimelineButton_Active@2x.png in Resources */,
-				30C7F0B619C27A8500450BA9 /* addSelfieButton_nonActive@2x.png in Resources */,
 				4C0F3CEA1988E65000703D09 /* tabMenu_friendsButton_Active@2x.png in Resources */,
 				8F4E6217198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png in Resources */,
 				4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */,
@@ -2839,7 +2832,6 @@
 				300FCF3919B29DB50009F5B5 /* findFriendBackgorund@2x.png in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
 				4C0F3CDE1988E64000703D09 /* tabMenu_newsButton_nonActive@2x.png in Resources */,
-				30C7F0B519C27A8500450BA9 /* addSelfieButton_Active@2x.png in Resources */,
 				4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */,
 				07B6E6C719884B1200DA0805 /* submitButton_nonActive@2x.png in Resources */,
 				300B1BF8199C3E2C006BB048 /* addContacts@2x.png in Resources */,
