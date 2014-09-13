@@ -9,5 +9,4 @@
 #import "NSString+Random.h"
 
 @implementation NSString (Random)
-
 @end

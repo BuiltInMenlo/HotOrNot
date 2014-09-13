@@ -14,6 +14,7 @@
 @implementation HONUserClubVO
 @synthesize dictionary;
 @synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
+@synthesize visibleMembers;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
@@ -109,6 +110,11 @@
 	NSLog(@"//-/--/--/ {%@} -(%@)- [%d | %@] /--/--/-//", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:vo.updatedDate], (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName);
 //	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	return (vo);
+}
+
+
+- (int)visibleMembers {
+	return ([self.activeMembers count] + 1);
 }
 
 

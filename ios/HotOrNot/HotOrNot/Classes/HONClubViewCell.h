@@ -9,6 +9,14 @@
 #import "HONTableViewCell.h"
 #import "HONUserClubVO.h"
 
+typedef NS_ENUM(NSInteger, HONClubViewCellType) {
+	HONClubViewCellTypeCreate = 0,
+	HONClubViewCellTypeUserSignup,
+	HONClubViewCellTypeOwner,
+	HONClubViewCellTypeMember,
+	HONClubViewCellTypeInvite
+};
+
 @class HONClubViewCell;
 @protocol HONClubViewCellDelegate <NSObject>
 - (void)clubViewCell:(HONClubViewCell *)viewCell selectedClub:(HONUserClubVO *)clubVO;
@@ -16,8 +24,13 @@
 
 @interface HONClubViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
+- (id)initAsCellType:(HONClubViewCellType)cellType;
 - (void)toggleImageLoading:(BOOL)isLoading;
 
+@property (nonatomic, retain) HONContactUserVO *contactUserVO;
+@property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
 @property (nonatomic, retain) HONUserClubVO *clubVO;
+@property (nonatomic, assign) HONClubViewCellType cellType;
 @property (nonatomic, assign) id <HONClubViewCellDelegate> delegate;
 @end

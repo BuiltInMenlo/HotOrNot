@@ -162,6 +162,9 @@
 	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];
 	
+//	if (tabBarButtonType == HONTabBarButtonTypeClubs)
+//		return;
+	
 	NSString *analyticsEventName = @"";
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";

@@ -7,6 +7,8 @@
 //
 
 #import "UIImageView+AFNetworking.h"
+#import "NSString+DataTypes.h"
+#import "UILabel+FormattedText.h"
 
 #import "HONClubViewCell.h"
 #import "HONClubPhotoVO.h"
@@ -14,6 +16,7 @@
 
 @interface HONClubViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UIView *statsHolderView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *membersLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
@@ -25,6 +28,8 @@
 
 @implementation HONClubViewCell
 @synthesize delegate = _delegate;
+@synthesize contactUserVO = _contactUserVO;
+@synthesize trivialUserVO = _trivialUserVO;
 @synthesize clubVO = _clubVO;
 
 + (NSString *)cellReuseIdentifier {
@@ -37,7 +42,7 @@
 		
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 26.0, 170.0, 22.0)];
 		_nameLabel.backgroundColor = [UIColor clearColor];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_nameLabel.textColor = [UIColor blackColor];
 		[self.contentView addSubview:_nameLabel];
 		
@@ -46,6 +51,9 @@
 		_membersLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 		_membersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		[self.contentView addSubview:_membersLabel];
+		
+		_statsHolderView = [[UIView alloc] initWithFrame:CGRectMake(275.0, 30.0, 16.0, 16.0)];
+		[self.contentView addSubview:_statsHolderView];
 		
 		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(274.0, 8.0, 30.0, 14.0)];
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
@@ -61,13 +69,62 @@
 	
 }
 
+- (id)initAsCellType:(HONClubViewCellType)cellType {
+	if ((self = [self init])) {
+		_cellType = cellType;
+	}
+	
+	return (self);
+}
+
 
 #pragma mark - Public APIs
+- (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
+	_contactUserVO = contactUserVO;
+	
+	NSString *nameCaption = _contactUserVO.fullName;//[NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
+	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
+	_nameLabel.text = nameCaption;
+	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
+	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+	
+	
+	CGSize size = [[nameCaption stringByAppendingString:@""] boundingRectWithSize:_nameLabel.frame.size
+																		  options:NSStringDrawingTruncatesLastVisibleLine
+																	   attributes:@{NSFontAttributeName:_nameLabel.font}
+																		  context:nil].size;
+	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(_nameLabel.frame.size.width, size.width), MIN(_nameLabel.frame.size.height, size.height));
+}
+
+- (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
+	_trivialUserVO = trivialUserVO;
+	
+	NSString *nameCaption = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	_nameLabel.text = nameCaption;
+	
+	CGSize size = [_nameLabel.text boundingRectWithSize:_nameLabel.frame.size
+												options:NSStringDrawingTruncatesLastVisibleLine
+											 attributes:@{NSFontAttributeName:_nameLabel.font}
+												context:nil].size;
+	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(_nameLabel.frame.size.width, size.width), MIN(_nameLabel.frame.size.height, size.height));
+}
+
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
+	_statusUpdateVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
-	_nameLabel.text = _clubVO.clubName;
-	_membersLabel.text = @"";
+	//_nameLabel.text = _clubVO.clubName;
+	_nameLabel.text = ([_clubVO.clubName isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) ? @"Me" : _clubVO.clubName;
+	
+	UILabel *statsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 16.0, 16.0)];
+	statsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+	statsLabel.textColor = [UIColor blackColor];
+	statsLabel.backgroundColor = [UIColor clearColor];
+	statsLabel.textAlignment = NSTextAlignmentCenter;
+	statsLabel.text = [@"" stringFromInt:_clubVO.visibleMembers];
+	[_statsHolderView addSubview:statsLabel];
+	
+	
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate];
 	
 	_statusUpdateVOs = [NSMutableArray array];

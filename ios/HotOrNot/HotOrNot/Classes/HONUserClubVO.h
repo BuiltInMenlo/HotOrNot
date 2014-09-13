@@ -44,4 +44,5 @@ typedef NS_ENUM(NSInteger, HONClubEnrollmentType) {
 
 @property (nonatomic, retain) NSArray *submissions;
 @property (nonatomic) int totalScore;
+@property (nonatomic) int visibleMembers;
 @end
