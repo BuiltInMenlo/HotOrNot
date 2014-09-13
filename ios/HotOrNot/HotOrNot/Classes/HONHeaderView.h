@@ -13,6 +13,7 @@
 
 - (void)addButton:(UIView *)buttonView;
 - (void)leftAlignTitle;
+- (void)setFont:(UIFont *)font;
 //- (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;

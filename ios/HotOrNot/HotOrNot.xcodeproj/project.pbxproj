@@ -328,6 +328,8 @@
 		8F4E6217198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F4E6219198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png */; };
 		8F4E621A198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F4E621C198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png */; };
 		8F4E621D198ACD7800E8A171 /* inviteOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F4E621F198ACD7800E8A171 /* inviteOverlay@2x.png */; };
+		8F99578A19C38A90009255D2 /* sendButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F99578C19C38A90009255D2 /* sendButton_Active@2x.png */; };
+		8F99578D19C38A93009255D2 /* sendButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F99578F19C38A93009255D2 /* sendButton_nonActive@2x.png */; };
 		8FCD5EA019BE541C00347605 /* likeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FCD5EA219BE541C00347605 /* likeButton_Active@2x.png */; };
 		8FCD5EA319BE542000347605 /* likeButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FCD5EA519BE542000347605 /* likeButton_nonActive@2x.png */; };
 		8FCD5EB019BE5BA400347605 /* subHeaderBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FCD5EB219BE5BA400347605 /* subHeaderBackground@2x.png */; };
@@ -1185,6 +1187,25 @@
 		8F4E6231198ACE0B00E8A171 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/closeButtonBlue_nonActive@2x.png"; sourceTree = "<group>"; };
 		8F4E6232198ACE0B00E8A171 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/closeButtonBlue_nonActive@2x.png"; sourceTree = "<group>"; };
 		8F4E6233198ACE0C00E8A171 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/closeButtonBlue_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99578B19C38A90009255D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99578E19C38A93009255D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579019C38A96009255D2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579119C38A97009255D2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579219C38A98009255D2 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579319C38A98009255D2 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579419C38A99009255D2 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579519C38A99009255D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = es; path = "es.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579619C38A9A009255D2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ru; path = "ru.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579719C38A9A009255D2 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/sendButton_Active@2x.png"; sourceTree = "<group>"; };
+		8F99579819C38AA0009255D2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579919C38AA1009255D2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579A19C38AA2009255D2 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579B19C38AA2009255D2 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579C19C38AA4009255D2 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579D19C38AA4009255D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = es; path = "es.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579E19C38AA5009255D2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ru; path = "ru.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F99579F19C38AA6009255D2 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		8F9957A019C38AA6009255D2 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		8FCD5EA119BE541C00347605 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/likeButton_Active@2x.png"; sourceTree = "<group>"; };
 		8FCD5EA419BE542000347605 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/likeButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		8FCD5EA619BE542400347605 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/likeButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -2339,6 +2360,8 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8F99578C19C38A90009255D2 /* sendButton_Active@2x.png */,
+				8F99578F19C38A93009255D2 /* sendButton_nonActive@2x.png */,
 				8FCD5EB219BE5BA400347605 /* subHeaderBackground@2x.png */,
 				8FCD5EA219BE541C00347605 /* likeButton_Active@2x.png */,
 				8FCD5EA519BE542000347605 /* likeButton_nonActive@2x.png */,
@@ -2876,9 +2899,11 @@
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
 				07B6E69D19884ACF00DA0805 /* replyTimelineButton_Active@2x.png in Resources */,
 				8FF6387C19BA737700B7196B /* settings_tab_Button_Tapped@2x.png in Resources */,
+				8F99578D19C38A93009255D2 /* sendButton_nonActive@2x.png in Resources */,
 				8F4E621A198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png in Resources */,
 				07B6E72C1988549100DA0805 /* newInviteOverlay@2x.png in Resources */,
 				07B6E717198851BD00DA0805 /* modalUnlockBackground@2x.png in Resources */,
+				8F99578A19C38A90009255D2 /* sendButton_Active@2x.png in Resources */,
 				4C0F3CF31988E65A00703D09 /* tabMenu_clubsButton_Active@2x.png in Resources */,
 				309F59CA199DAF9300EC6C1C /* shareFriends@2x.png in Resources */,
 				4C250E941938031B007CA4E2 /* EmojiElements.xcassets in Resources */,
@@ -3858,6 +3883,39 @@
 				8F4E6223198ACDEB00E8A171 /* ko */,
 			);
 			name = "inviteOverlay@2x.png";
+			sourceTree = "<group>";
+		};
+		8F99578C19C38A90009255D2 /* sendButton_Active@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8F99578B19C38A90009255D2 /* en */,
+				8F99579019C38A96009255D2 /* ja */,
+				8F99579119C38A97009255D2 /* ko */,
+				8F99579219C38A98009255D2 /* id */,
+				8F99579319C38A98009255D2 /* zh-Hant */,
+				8F99579419C38A99009255D2 /* vi */,
+				8F99579519C38A99009255D2 /* es */,
+				8F99579619C38A9A009255D2 /* ru */,
+				8F99579719C38A9A009255D2 /* pt */,
+			);
+			name = "sendButton_Active@2x.png";
+			sourceTree = "<group>";
+		};
+		8F99578F19C38A93009255D2 /* sendButton_nonActive@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8F99578E19C38A93009255D2 /* en */,
+				8F99579819C38AA0009255D2 /* ja */,
+				8F99579919C38AA1009255D2 /* ko */,
+				8F99579A19C38AA2009255D2 /* zh-Hant */,
+				8F99579B19C38AA2009255D2 /* id */,
+				8F99579C19C38AA4009255D2 /* vi */,
+				8F99579D19C38AA4009255D2 /* es */,
+				8F99579E19C38AA5009255D2 /* ru */,
+				8F99579F19C38AA6009255D2 /* pt */,
+				8F9957A019C38AA6009255D2 /* pt-BR */,
+			);
+			name = "sendButton_nonActive@2x.png";
 			sourceTree = "<group>";
 		};
 		8FCD5EA219BE541C00347605 /* likeButton_Active@2x.png */ = {
