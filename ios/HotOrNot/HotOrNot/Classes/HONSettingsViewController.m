@@ -43,7 +43,7 @@
 	if ((self = [super init])) {
 		_captions = @[ NSLocalizedString(@"share", @"Share club"),
                        NSLocalizedString(@"settings_notification", @"Notifications"),
-                       NSLocalizedString(@"copy_url", @"Copy Club URL"),
+                       //NSLocalizedString(@"copy_url", @"Copy Club URL"),
                        NSLocalizedString(@"rate_app", @"Rate this app"),
 					   //NSLocalizedString(@"privacy_policy", @"Privacy policy"),
 					   NSLocalizedString(@"settings_support", @"Support"),
@@ -230,19 +230,19 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings View - Selected %@ Row", (indexPath.row == HONSettingsCellTypeShareSignupClub) ? @"Share Club" : (indexPath.row == HONSettingsCellTypeAbout) ? @"About" : (indexPath.row == HONSettingsCellTypeRateThisApp) ? @"Rate App" : (indexPath.row == HONSettingsCellTypeSupport) ? @"Support" : (indexPath.row == HONSettingsCellTypeLegal) ? @"Legal" : @"OTHER"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings View - Selected %@ Row", (indexPath.row == HONSettingsCellTypeShareSignupClub) ? @"Share Club" : (indexPath.row == HONSettingsCellTypeRateThisApp) ? @"Rate App" : (indexPath.row == HONSettingsCellTypeSupport) ? @"Support" : (indexPath.row == HONSettingsCellTypeLegal) ? @"Legal" : @"OTHER"]];  // : (indexPath.row == HONSettingsCellTypeAbout) ? @"About"
 	
-	if (indexPath.row == HONSettingsCellTypeAbout) {
-		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"moji is a super fast way to share how you feel using only emoji characters!"
-                                                            message:@"Please tell your friends to get the app available now on the App Store!"
-                                                           delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-                                                  otherButtonTitles:nil];
-        [alertView show];
+//	if (indexPath.row == HONSettingsCellTypeAbout) {
+//		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
+//        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"moji is a super fast way to share how you feel using only emoji characters!"
+//                                                            message:@"Please tell your friends to get the app available now on the App Store!"
+//                                                           delegate:nil
+//                                                  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//                                                  otherButtonTitles:nil];
+//        [alertView show];
 
-		
-	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
+//}
+	if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
 		NSLog(@"CLUB:[%d]", [[[HONClubAssistant sharedInstance] userSignupClub].submissions count]);
 		
 		__block NSString *emojis = @"";

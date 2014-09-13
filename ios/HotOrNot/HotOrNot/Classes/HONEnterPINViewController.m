@@ -13,6 +13,7 @@
 
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
+#import "HONPostStatusUpdateViewController.h"
 
 @interface HONEnterPINViewController ()
 @property (nonatomic, strong) NSString *pin;

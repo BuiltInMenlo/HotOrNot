@@ -88,6 +88,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 	[UIView animateWithDuration:0.25 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
 		_activityBGImageView.alpha = 1.0;
 	} completion:^(BOOL finished) {}];
+
 }
 
 

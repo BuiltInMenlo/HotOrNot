@@ -16,7 +16,7 @@
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
     HONSettingsCellTypeShareSignupClub = 0,
     HONSettingsCellTypeSMSToggle,
-	HONSettingsCellTypeAbout,
+//	HONSettingsCellTypeAbout,
     HONSettingsCellTypeRateThisApp,
 	//HONSettingsCellTypePrivacyPolicy,
 	HONSettingsCellTypeSupport,
