@@ -79,8 +79,6 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
-	
 	_formHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.view addSubview:_formHolderView];
 	

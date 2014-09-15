@@ -13,6 +13,19 @@
 
 @implementation HONCreateSnapButtonView
 
+- (id)initWithTarget:(id)target action:(SEL)action {
+	if ((self = [super initWithFrame:CGRectMake(227.0, 1.0, 93.0, 44.0)])) {
+		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+		button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+		[button setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
+		[button setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
+		[button addTarget:target action:action forControlEvents:UIControlEventTouchDown];
+		[self addSubview:button];
+	}
+	
+	return (self);
+}
+
 - (id)initWithTarget:(id)target action:(SEL)action asLightStyle:(BOOL)isLightStyle {
 	if ((self = [super initWithFrame:CGRectMake(227.0, 1.0, 93.0, 44.0)])) {
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];

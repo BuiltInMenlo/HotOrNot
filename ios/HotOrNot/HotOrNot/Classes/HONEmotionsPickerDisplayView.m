@@ -46,15 +46,14 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		_emotions = [NSMutableArray array];
 		_isDragging = NO;
 		
-		_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 38.0, 150.0, 150.0)];
-		_previewImageView.image = [UIImage imageNamed:@"addSelfie"];
+		[self addSubview:[[UIImageView alloc] initWithImage:image]];
+		
+		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
 		_previewImageView.userInteractionEnabled = YES;
 		[self addSubview:_previewImageView];
 		
-		[[HONImageBroker sharedInstance] maskView:_previewImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
-		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraButton.frame = CGRectMake(0.0, 0.0, 150.0, 150.0);
+		cameraButton.frame = self.frame;
 		[cameraButton setTag:0];
 		[cameraButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
 		[_previewImageView addSubview:cameraButton];
@@ -66,22 +65,22 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		//[self addSubview:_cursorImageView];
 		//[_cursorImageView startAnimating];
 		
-		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 5.0, 25.0, 0.0, 0.0)];
+		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 100.0, 0.0, 0.0)];
 		[self addSubview:_loaderHolderView];
 		
-		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 5.0, 25.0, 0.0, 0.0)];
+		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 100.0, 0.0, 0.0)];
 		[self addSubview:_emotionHolderView];
 		
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 130.0, 44.0, 64.0)];
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 240.0, 44.0, 44.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
-		_previewThumbImageView.alpha = 0.0;
-		_previewThumbImageView.hidden = YES;
+//		_previewThumbImageView.alpha = 0.0;
+//		_previewThumbImageView.hidden = YES;
 		[self addSubview:_previewThumbImageView];
 		
 		UIButton *previewThumbButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		previewThumbButton.frame = CGRectMake(0.0, 0.0, 44.0, 64.0);
+		previewThumbButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 		[previewThumbButton setTag:1];
 		[previewThumbButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
 		 [_previewThumbImageView addSubview:previewThumbButton];
@@ -109,13 +108,17 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
-	UIImageView *holderImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, 150.0, 200.0)];
-	holderImageView.image = previewImage;
-	[_previewImageView addSubview:holderImageView];
+//	_previewImageView.image = previewImage;
+	
+//	UIImageView *holderImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, 150.0, 200.0)];
+//	holderImageView.image = previewImage;
+//	[_previewImageView addSubview:holderImageView];
 	
 	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 3.0, 44.0, 59.0)];
 	thumbImageView.image = previewImage;
 	[_previewThumbImageView addSubview:thumbImageView];
+	
+	
 }
 
 
@@ -230,7 +233,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
 
 - (void)_updateDisplay {
-	int offset = 155.0 - (([_emotions count] >= 1) ? (kImageSize.width + kImagePaddingSize.width) : 0);
+	int offset = 0.0 - (([_emotions count] >= 1) ? (kImageSize.width + kImagePaddingSize.width) : 0);
 	int orgX = ((320.0 - offset) * 0.5) - (_emotionHolderView.frame.size.width + (([_emotions count] > 0) ? 3.0 : 0.0));
 	
 	[UIView animateWithDuration:0.333 delay:0.000
@@ -238,15 +241,15 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 	 
 					 animations:^(void) {
-						 _previewImageView.frame = CGRectMake(orgX, _previewImageView.frame.origin.y, _previewImageView.frame.size.width, _previewImageView.frame.size.height);
-						 _emotionHolderView.frame = CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 3.0, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
+//						 _previewImageView.frame = CGRectMake(orgX, _previewImageView.frame.origin.y, _previewImageView.frame.size.width, _previewImageView.frame.size.height);
+						 _emotionHolderView.frame = CGRectMake(orgX + 3.0, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
 						 _loaderHolderView.frame = _emotionHolderView.frame;
 						 _cursorImageView.frame = CGRectMake(_emotionHolderView.frame.origin.x + _emotionHolderView.frame.size.width + 3.0, _cursorImageView.frame.origin.y, _cursorImageView.frame.size.width, _cursorImageView.frame.size.height);
 						 
 					 } completion:^(BOOL finished) {
-						 [UIView animateWithDuration:0.25 animations:^(void) {
-							 _previewThumbImageView.alpha = (BOOL)([_emotions count] > 1);
-						 }];
+//						 [UIView animateWithDuration:0.25 animations:^(void) {
+//							 _previewThumbImageView.alpha = (BOOL)([_emotions count] > 1);
+//						 }];
 					 }];
 	
 			 

@@ -15,7 +15,7 @@
 
 - (NSArray *)clubTypeKeys;
 - (NSDictionary *)createClubDictionary;
-- (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
+- (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSDictionary *)orthodoxThresholdClubDictionary;
 - (NSDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
@@ -50,4 +50,7 @@
 - (void)writeUserClubs:(NSDictionary *)clubs;
 
 - (NSArray *)excludedClubDomains;
+
+- (HONUserClubVO *)clubWithParticipants:(NSArray *)participants;
+
 @end

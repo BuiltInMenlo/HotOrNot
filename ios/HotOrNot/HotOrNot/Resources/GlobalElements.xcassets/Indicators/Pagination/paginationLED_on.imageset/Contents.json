@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "smallDot_Active.png"
+      "filename" : "blackPaginationDot.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "smallDot_Active@2x.png"
+      "filename" : "blackPaginationDot@2x.png"
     }
   ],
   "info" : {

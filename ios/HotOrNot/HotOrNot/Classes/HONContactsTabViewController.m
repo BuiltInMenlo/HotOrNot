@@ -13,7 +13,6 @@
 
 #import "HONContactsTabViewController.h"
 #import "HONActivityHeaderButtonView.h"
-#import "HONUserToggleViewCell.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONTabBannerView.h"
 #import "HONRegisterViewController.h"
@@ -24,8 +23,9 @@
 #import "HONInviteClubsViewController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONContactsSearchViewController.h"
+#import "HONClubTimelineViewController.h"
 
-@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
+@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
@@ -71,22 +71,6 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {}];
 }
 
-- (void)_retrieveLocalSchoolClubs {
-	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
-		NSMutableArray *schools = [NSMutableArray array];
-		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
-			NSMutableDictionary *dict = [club mutableCopy];
-			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
-			[schools addObject:dict];
-		}
-		
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"high_schools"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[schools copy] forKey:@"high_schools"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}];
-}
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
@@ -94,22 +78,17 @@ static NSString * const kCamera = @"camera";
 	[super _goDataRefresh:sender];
 }
 
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
+//	[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
 //	[_headerView addButton:_activityHeaderView];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
-	
-	_searchBarView.userInteractionEnabled = NO;
-	
-	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = _searchBarView.frame;
-	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:searchButton];
+	[_headerView addTitleImage:[UIImage imageNamed:@"friendsTitle"]];
+	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
@@ -118,16 +97,6 @@ static NSString * const kCamera = @"camera";
 	else {
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
-			
-			__block int cnt = 0;
-			[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
-				HONUserClubVO *vo = (HONUserClubVO *)obj;
-				[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:cnt * 0.0];
-				cnt++;
-			}];
-			
-			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] == nil)
-				[self _retrieveLocalSchoolClubs];
 		}];
 	}
 }
@@ -166,6 +135,8 @@ static NSString * const kCamera = @"camera";
 	
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
 	[_activityHeaderView updateActivityBadge];
+	
+	//[self _goDataRefresh:nil];
 }
 
 
@@ -190,7 +161,7 @@ static NSString * const kCamera = @"camera";
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goContactsSearch {
@@ -227,20 +198,18 @@ static NSString * const kCamera = @"camera";
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
-	[_activityHeaderView updateActivityBadge];
+//	[_activityHeaderView updateActivityBadge];
+	
+	[super _goDataRefresh:nil];
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
 	
-	[_activityHeaderView updateActivityBadge];
-	
 	if ([_cells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 	
-	[self _submitPhoneNumberForMatching];
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[self _retrieveDeviceContacts];
+	[super _goDataRefresh:nil];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {
@@ -320,38 +289,36 @@ static NSString * const kCamera = @"camera";
 }
 
 
-#pragma mark - UserToggleViewCell Delegates
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:showProfileForTrivialUser");
+#pragma mark - ClubViewCell Delegates
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
-	[super userToggleViewCell:viewCell showProfileForTrivialUser:trivialUserVO];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
+									withUserClub:clubVO];
+	
+	[super clubViewCell:viewCell didSelectClub:clubVO];
 }
 
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
+	NSLog(@"[*:*] clubViewCell:didSelectContactUser");
+	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
 									withContactUser:contactUserVO];
 	
-	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
-	
-	[viewCell toggleSelected:NO];
-	
+	[super clubViewCell:viewCell didSelectContactUser:contactUserVO];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+
 }
 
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
 									withTrivialUser:trivialUserVO];
 	
-	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
-	
-	[viewCell toggleSelected:NO];
-	
+	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -362,46 +329,91 @@ static NSString * const kCamera = @"camera";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	
-	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
-		if (indexPath.section == 0 && indexPath.row == 0)
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Share Row"];
+	
+	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Search Result"];
 		
-		if (indexPath.section == 0 && indexPath.row == 1)
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+		if (indexPath.section == 0) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
-		
-		if (indexPath.section != 0) {
+			
+		} else if (indexPath.section == 1) {
+			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
+			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"];
+			
+			if ([cell.clubVO.submissions count] > 0)
+				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+			
+			else {
+				[[[UIAlertView alloc] initWithTitle:@"No Status Updates!"
+											message:@""
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (indexPath.section == 2) {
+			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
+			
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
 											withTrivialUser:cell.trivialUserVO];
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:cell.trivialUserVO]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:^(void) {
-				[cell invertSelected];
-			}];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 		
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook && indexPath.section != 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
-										withContactUser:cell.contactUserVO];
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+		if (indexPath.section == 0) {
+			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:^(void) {
-			[cell invertSelected];
-		}];
-	
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:^(void) {
-			[cell invertSelected];
-		}];
-	}	
+		} else if (indexPath.section == 1) {
+			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
+			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"];
+			
+			if ([cell.clubVO.submissions count] > 0)
+				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+			
+			else {
+				[[[UIAlertView alloc] initWithTitle:@"No Status Updates!"
+											message:@""
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (indexPath.section == 2) {
+			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
+			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+											withTrivialUser:cell.trivialUserVO];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:cell.trivialUserVO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			
+		} else if (indexPath.section == 3) {
+			NSLog(@"DEVICE CONTACT:[%@]", cell.contactUserVO.fullName);
+			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+											withContactUser:cell.contactUserVO];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	}
 }
 
 

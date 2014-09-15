@@ -100,7 +100,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_users = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];

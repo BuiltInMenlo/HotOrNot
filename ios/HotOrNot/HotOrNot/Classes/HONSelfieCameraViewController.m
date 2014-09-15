@@ -23,6 +23,7 @@
 #import "HONSelfieCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
 #import "HONSelfieCameraSubmitViewController.h"
+#import "HONStatusUpdateSubmitViewController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
@@ -36,6 +37,8 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
+@property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, strong) HONContactUserVO *contactUserVO;
 @property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic, strong) S3PutObjectRequest *por1;
 @property (nonatomic, strong) S3PutObjectRequest *por2;
@@ -45,7 +48,6 @@
 @property (nonatomic, strong) NSDictionary *submitParams;
 @property (nonatomic, strong) UIImageView *submitImageView;
 @property (nonatomic) BOOL hasSubmitted;
-@property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) BOOL isBlurred;
 @property (nonatomic) int uploadCounter;
@@ -60,7 +62,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
-		_isFirstAppearance = YES;
+		_filename = @"defaultClubCover";
 		
 		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
 		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
@@ -70,12 +72,32 @@
 	return (self);
 }
 
+- (id)initWithContact:(HONContactUserVO *)contactUserVO {
+	NSLog(@"%@ - initWithContact", [self description]);
+	if ((self = [self init])) {
+		_contactUserVO = contactUserVO;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateClub;
+	}
+	
+	return (self);
+}
+
+- (id)initWithUser:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"%@ - initWithUser", [self description]);
+	if ((self = [self init])) {
+		_trivialUserVO = trivialUserVO;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateClub;
+	}
+	
+	return (self);
+}
 
 - (id)initWithClub:(HONUserClubVO *)clubVO {
 	NSLog(@"%@ - initWithClub:[%d] (%@)", [self description], clubVO.clubID, clubVO.clubName);
 	if ((self = [self init])) {
 		_userClubVO = clubVO;
-		_selfieSubmitType = (_userClubVO != nil) ? HONSelfieCameraSubmitTypeReplyClub : HONSelfieCameraSubmitTypeCreateClub;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeReplyClub;
+//		_selfieSubmitType = (_userClubVO != nil) ? HONSelfieCameraSubmitTypeReplyClub : HONSelfieCameraSubmitTypeCreateClub;
 	}
 	
 	return (self);
@@ -172,17 +194,8 @@
 		
 		if (_isUploadComplete) {
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
-				
-				if (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateMessage)
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
-				
-				else if (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyMessage) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGE" object:nil];
-				}
 			}];
 		}
 	}
@@ -192,11 +205,15 @@
 	_isUploadComplete = NO;
 	_uploadCounter = 0;
 	
-	[_por1.urlConnection cancel];
-	_por1 = nil;
+	if (_por1 != nil) {
+		[_por1.urlConnection cancel];
+		_por1 = nil;
+	}
 	
-	[_por2.urlConnection cancel];
-	_por2 = nil;
+	if (_por2 != nil) {
+		[_por2.urlConnection cancel];
+		_por2 = nil;
+	}
 }
 
 - (void)_uploadTimeout {
@@ -226,16 +243,6 @@
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
 	[self.view addSubview:_previewView];
-}
-
-- (void)viewDidLoad {
-	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
-	[super viewDidLoad];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
 }
 
 
@@ -278,6 +285,7 @@
 	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
+
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONSelfieCameraOverlayView *)cameraOverlayView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"];
@@ -302,7 +310,7 @@
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
-	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
+	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	}];
 }
@@ -354,7 +362,6 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next"];
 	
 	_hasSubmitted = NO;
-	self.view.backgroundColor = [UIColor whiteColor];
 	
 	NSError *error;
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
@@ -367,13 +374,12 @@
 					  @"subject"		: @"",
 					  @"subjects"		: jsonString,
 					  @"challenge_id"	: [@"" stringFromInt:0],
-					  @"recipients"		: @"",
+					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? _contactUserVO.mobileNumber : @"",
 					  @"api_endpt"		: kAPICreateChallenge};
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
 	
-	_isFirstAppearance = YES;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
+	[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 }
 
 
@@ -403,7 +409,7 @@
 	
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	[_previewView updateProcessedImage:_processedImage];
-
+	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
@@ -412,7 +418,6 @@
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self _uploadPhotos];
 	}];
-	
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

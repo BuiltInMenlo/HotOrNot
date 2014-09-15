@@ -14,7 +14,7 @@
 @implementation HONUserClubVO
 @synthesize dictionary;
 @synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
-@synthesize visibleMembers;
+@synthesize visibleMembers, totalMembers;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
@@ -43,16 +43,21 @@
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
 	vo.ownerImagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
 	
+	vo.visibleMembers = 1;
+	vo.totalMembers = 1;
 	
 	NSMutableArray *pending = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"pending"])
 		[pending addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	vo.pendingMembers = pending;
+	vo.totalMembers += [vo.pendingMembers count];
 	
 	NSMutableArray *members = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
 		[members addObject:([[dict objectForKey:@"id"] length] == 0) ? [HONTrivialUserVO userFromContactVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
 	vo.activeMembers = members;
+	vo.totalMembers += [vo.activeMembers count];
+	vo.visibleMembers += [vo.activeMembers count];
 	
 	NSMutableArray *banned = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"blocked"])

@@ -45,10 +45,9 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_captions = @[@" ",
+		_captions = @[@"Search", @" ",
 					  NSLocalizedString(@"settings_notification", @"Notifications"),
 					  NSLocalizedString(@"copy_url", @"Copy Club URL"),
-					  NSLocalizedString(@"share", @"Share club"),
 					  NSLocalizedString(@"terms_service", @"Terms of use"),
 					  NSLocalizedString(@"privacy_policy", @"Privacy policy"),
 					  NSLocalizedString(@"settings_support", @"Support"),
@@ -96,16 +95,13 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
-	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
-//	[headerView addButton:_activityHeaderView];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"settingsTitle"]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
@@ -118,15 +114,6 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-	
-	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
-	searchBarView.userInteractionEnabled = NO;
-	[self.view addSubview:searchBarView];
-	
-	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = searchBarView.frame;
-	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:searchButton];
 }
 
 
@@ -142,14 +129,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_goContactsSearch {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
@@ -235,7 +214,7 @@
 		[cell.contentView addSubview:label];
 		
 #if __APPSTORE_BUILD__ != 1
-		label.text = [label.text stringByAppendingFormat:@" (%d)", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]];
+		label.text = [label.text stringByAppendingFormat:@" (b%d)", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]];
 #endif
 	}
 	
@@ -284,7 +263,14 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	if (indexPath.row == HONSettingsCellTypeShareClub) {
+	if (indexPath.row == HONSettingsCellTypeSearch) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (indexPath.row == HONSettingsCellTypeShareClub) {
 		cell.backgroundView.alpha = 0.5;
 		[UIView animateWithDuration:0.33 animations:^(void) {
 			cell.backgroundView.alpha = 1.0;
@@ -305,22 +291,6 @@
 	} else if (indexPath.row == HONSettingsCellTypeCopyClub) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Copy Club"];
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
-		
-	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Share Club"];
-		
-		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-//		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName]];
-		NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
-																								@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																								@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-																								@"club"				: [[HONClubAssistant sharedInstance] userSignupClub].dictionary,
-																								@"mp_event"			: @"User Profile - Share",
-																								@"view_controller"	: self}];
 		
 	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];

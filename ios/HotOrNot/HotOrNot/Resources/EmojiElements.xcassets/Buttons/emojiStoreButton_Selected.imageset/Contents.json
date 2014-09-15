@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "keyboardButton_Tapped.png"
+      "filename" : "storeButton_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "keyboardButton_Tapped@2x.png"
+      "filename" : "storeButton_nonActive@2x.png"
     }
   ],
   "info" : {

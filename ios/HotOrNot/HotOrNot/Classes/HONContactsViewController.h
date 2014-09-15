@@ -13,7 +13,7 @@
 #import "HONViewController.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
-#import "HONUserToggleViewCell.h"
+#import "HONClubViewCell.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
@@ -38,12 +38,11 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONContactsSendType _contactsSendType;
 	
 	NSMutableArray *_cells;
+	NSMutableArray *_headRows;
+	NSMutableArray *_recentClubs;
 	NSMutableArray *_deviceContacts;
-	NSMutableArray *_inAppContacts;
 	NSMutableArray *_inAppUsers;
 	NSMutableArray *_searchUsers;
-	NSDictionary *_segmentedContacts;
-	NSMutableArray *_segmentedKeys;
 	HONUserClubVO *_userClubVO;
 	
 	HONTableView *_tableView;
@@ -64,12 +63,10 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 - (void)_searchUsersWithUsername:(NSString *)username;
 
 - (void)_updateDeviceContactsWithMatchedUsers;
--(NSDictionary *)_populateSegmentedDictionary;
 
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectContactUser:(HONContactUserVO *)contactUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 
 @end

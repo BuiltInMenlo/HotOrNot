@@ -230,7 +230,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
 	self.navigationController.navigationBar.topItem.title = @"Comments";
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0)) style:UITableViewStylePlain];

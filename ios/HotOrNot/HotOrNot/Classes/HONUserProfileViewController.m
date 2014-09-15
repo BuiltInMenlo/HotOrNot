@@ -159,8 +159,6 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
-	
 	_activityAlerts = [NSMutableArray array];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + kOrthodoxTableCellHeight - 20, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kOrthodoxTableCellHeight - 20))];
@@ -187,7 +185,7 @@
 	_nameLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_nameLabel];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

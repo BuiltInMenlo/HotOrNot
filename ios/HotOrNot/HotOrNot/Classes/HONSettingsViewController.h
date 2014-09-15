@@ -14,10 +14,10 @@
 
 
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
-	HONSettingsCellTypeShareClub = 0,
+	HONSettingsCellTypeSearch = 0,
+	HONSettingsCellTypeShareClub,
 	HONSettingsCellTypeNotifications,
 	HONSettingsCellTypeCopyClub,
-	HONSettingsCellTypeShareSignupClub,
 	HONSettingsCellTypeTermsOfService,
 	HONSettingsCellTypePrivacyPolicy,
 	HONSettingsCellTypeSupport,

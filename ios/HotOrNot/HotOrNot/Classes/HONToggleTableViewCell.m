@@ -27,7 +27,7 @@
 		[self hideChevron];
 		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
+		_toggledOffButton.frame = CGRectMake(263.0, 10.0, 44.0, 44.0);
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateNormal];
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
 		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
@@ -56,6 +56,14 @@
 
 
 #pragma mark - Public APIs
+- (void)setSize:(CGSize)size {
+	[super setSize:size];
+	
+	_toggledOffButton.frame = CGRectMake(_toggledOffButton.frame.origin.x, MAX(0, (size.height - _toggledOffButton.frame.size.height) * 0.5), _toggledOffButton.frame.size.width, _toggledOffButton.frame.size.height);
+	_toggledOnButton.frame = CGRectMake(_toggledOnButton.frame.origin.x, MAX(0, (size.height - _toggledOnButton.frame.size.height) * 0.5), _toggledOnButton.frame.size.width, _toggledOnButton.frame.size.height);
+}
+
+
 - (void)invertSelected {
 	[self toggleSelected:!_isSelected];
 }

@@ -36,7 +36,7 @@
 		
 		NSDictionary *preClub = [[HONClubAssistant sharedInstance] fetchPreClub];
 		if (preClub != nil) {
-			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+			NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
 			[dict setValue:[preClub objectForKey:@"name"] forKey:@"name"];
 			[dict setValue:[preClub objectForKey:@"description"] forKey:@"description"];
 			[dict setValue:[preClub objectForKey:@"img"] forKey:@"img"];
@@ -209,32 +209,9 @@
 
 
 #pragma mark - UserToggleViewCell Delegates
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[*:*] userToggleViewCell:showProfileForTrivialUser");
-	
-	[super userToggleViewCell:viewCell showProfileForTrivialUser:trivialUserVO];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
-}
-
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectContactUser:(HONContactUserVO *)contactUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didDeselectContactUser");
-	[super userToggleViewCell:viewCell didDeselectContactUser:contactUserVO];
-	
-	if ([_selectedNonAppContacts containsObject:contactUserVO])
-		[_selectedNonAppContacts removeObject:contactUserVO];
-}
-
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didDeselectTrivialUser");
-	[super userToggleViewCell:viewCell didDeselectTrivialUser:trivialUserVO];
-	
-	if ([_selectedInAppContacts containsObject:trivialUserVO])
-		[_selectedInAppContacts removeObject:trivialUserVO];
-}
-
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
-	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
+	[super clubViewCell:viewCell didSelectContactUser:contactUserVO];
 	
 	if (![_selectedNonAppContacts containsObject:contactUserVO])
 		[_selectedNonAppContacts addObject:contactUserVO];
@@ -243,7 +220,7 @@
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
 	
-	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
+	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	
 	if (![_selectedInAppContacts containsObject:trivialUserVO])
 		[_selectedInAppContacts addObject:trivialUserVO];

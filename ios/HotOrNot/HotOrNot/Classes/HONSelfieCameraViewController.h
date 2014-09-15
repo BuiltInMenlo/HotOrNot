@@ -10,6 +10,8 @@
 #import "HONChallengeVO.h"
 #import "HONUserClubVO.h"
 #import "HONMessageVO.h"
+#import "HONContactUserVO.h"
+#import "HONTrivialUserVO.h"
 
 typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 	HONSelfieSubmitTypeCreateChallenge = 0,
@@ -31,6 +33,8 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 
 @interface HONSelfieCameraViewController : HONViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initAsNewChallenge;
+- (id)initWithUser:(HONTrivialUserVO *)trivialUserVO;
+- (id)initWithContact:(HONContactUserVO *)contactUserVO;
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 
 @property (nonatomic, assign) id <HONSelfieCameraViewControllerDelegate> delegate;

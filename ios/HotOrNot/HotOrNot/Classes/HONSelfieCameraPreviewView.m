@@ -37,7 +37,6 @@
 @property (nonatomic, strong) HONGlobalEmotionPickerView *globalEmotionsPickerView;
 
 @property (nonatomic, strong) UIButton *overlayToggleButton;
-
 @property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
 @end
 
@@ -67,7 +66,7 @@
 
 #pragma mark - Puplic APIs
 - (void)updateProcessedImage:(UIImage *)image {
-	[_emotionsDisplayView updatePreview:image];
+	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 }
 
 - (void)uploadComplete {
@@ -85,7 +84,24 @@
 	[_overlayToggleButton addTarget:self action:@selector(_goToggleOverlay) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:_overlayToggleButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"select_feeling", nil)]; //@"Select"];
+	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
+	
+	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:self.frame withPreviewImage:_previewImage];
+	_emotionsDisplayView.delegate = self;
+	[self addSubview:_emotionsDisplayView];
+	
+	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
+	_emotionsPickerView.delegate = self;
+	[self addSubview:_emotionsPickerView];
+	
+	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
+	_globalEmotionsPickerView.hidden = YES;
+	_globalEmotionsPickerView.delegate = self;
+	[self addSubview:_globalEmotionsPickerView];
+	
+	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
+	
+	_headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"composeTitle"]];
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -101,23 +117,6 @@
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:nextButton];
-	
-	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
-	
-	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 280.0)) withPreviewImage:_previewImage];
-	_emotionsDisplayView.delegate = self;
-	[self addSubview:_emotionsDisplayView];
-		
-	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
-	_emotionsPickerView.delegate = self;
-	[self addSubview:_emotionsPickerView];
-	
-	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
-	_globalEmotionsPickerView.hidden = YES;
-	_globalEmotionsPickerView.delegate = self;
-	[self addSubview:_globalEmotionsPickerView];
-	
-	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 	[self _showOverlay];
 }
@@ -170,24 +169,10 @@
 }
 
 - (void)_removeOverlayAndRemove:(BOOL)isRemoved {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_emotionsPickerView.alpha = 0.0;
-		_emotionsDisplayView.alpha = 0.0;
-		
-		if (isRemoved)
-			_headerView.alpha = 0.0;
-		
-	} completion:^(BOOL finished) {
-		_emotionsPickerView.hidden = YES;
-		_emotionsDisplayView.hidden = YES;
-		
-		if (isRemoved) {
-			[self removeFromSuperview];
-			
+	if (isRemoved) {
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewCancel:)])
 			[self.delegate cameraPreviewViewCancel:self];
-		}
-	}];
+	}
 }
 
 

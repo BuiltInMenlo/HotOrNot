@@ -203,7 +203,7 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName hasBackground:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName];
 	[_headerView toggleLightStyle:YES];
 	[self.view addSubview:_headerView];
 	

@@ -106,12 +106,12 @@
 		
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
 		
-		__block int cnt = 0;
-		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
-			HONUserClubVO *vo = (HONUserClubVO *)obj;
-			[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:0.0];
-			cnt++;
-		}];
+//		__block int cnt = 0;
+//		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
+//			HONUserClubVO *vo = (HONUserClubVO *)obj;
+//			[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:0.0];
+//			cnt++;
+//		}];
 		
 //		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 //		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
@@ -129,9 +129,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter Pin"])];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"enterPinTitle"]];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

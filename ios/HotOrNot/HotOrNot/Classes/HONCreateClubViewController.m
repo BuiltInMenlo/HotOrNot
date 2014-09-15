@@ -150,8 +150,6 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
-	
 	_clubBlurb = @"";
 	_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 	

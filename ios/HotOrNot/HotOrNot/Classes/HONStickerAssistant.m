@@ -117,7 +117,7 @@ static HONStickerAssistant *sharedInstance = nil;
 //	NSLog(@"--- nameForContentGroupID:[%@] ---", contentGroupID);
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
 	[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
-		NSLog(@"///// nameForContentGroupID:[%@]%@}--(%@) /////", contentGroupID, contentGroup, contentGroup.name);
+//		NSLog(@"///// nameForContentGroupID:[%@]%@}--(%@) /////", contentGroupID, contentGroup, contentGroup.name);
 		if (completion)
 			completion(contentGroup.name);
 	}];
@@ -149,7 +149,7 @@ static HONStickerAssistant *sharedInstance = nil;
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 					PCContent *content = (PCContent *)obj;
-//					NSLog(@"PCContent:\n[%@]/[%@] -=- (%@) -- %@", content.content_id, contentGroupID, content.name, [content.large_image stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
+//					NSLog(@"PCContent:\n[%@]/[%@] -=- (%@)", content.content_id, contentGroupID, content.name);
 					
 					[stickers addObject:@{@"id"		: content.content_id,
 										  @"cg_id"	: contentGroupID,

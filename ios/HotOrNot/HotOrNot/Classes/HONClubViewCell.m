@@ -15,16 +15,17 @@
 #import "HONImageLoadingView.h"
 
 @interface HONClubViewCell ()
-@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UIView *statsHolderView;
-@property (nonatomic, strong) UILabel *nameLabel;
-@property (nonatomic, strong) UILabel *membersLabel;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *subtitleLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic, strong) NSMutableArray *statusUpdateVOs;
 @property (nonatomic, strong) NSMutableArray *statusUpdateViews;
 @property (nonatomic, strong) HONImageLoadingView *statusUpdateImageLoadingView;
-@property (nonatomic) CGRect loaderStartFrame;
+@property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
 @end
+
+const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 @implementation HONClubViewCell
 @synthesize delegate = _delegate;
@@ -38,19 +39,17 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_loaderStartFrame = CGRectMake(17.0, 17.0, 42.0, 44.0);
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(18.0, 24.0, 200.0, 26.0)];
+		_titleLabel.backgroundColor = [UIColor clearColor];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		_titleLabel.textColor = [UIColor blackColor];
+		[self.contentView addSubview:_titleLabel];
 		
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 26.0, 170.0, 22.0)];
-		_nameLabel.backgroundColor = [UIColor clearColor];
-		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_nameLabel.textColor = [UIColor blackColor];
-		[self.contentView addSubview:_nameLabel];
-		
-		_membersLabel = [[UILabel alloc] initWithFrame:CGRectMake(_nameLabel.frame.origin.x, 38.0, 170.0, 14.0)];
-		_membersLabel.backgroundColor = [UIColor clearColor];
-		_membersLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
-		_membersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		[self.contentView addSubview:_membersLabel];
+		_subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(_titleLabel.frame.origin.x, 38.0, 200.0, 14.0)];
+		_subtitleLabel.backgroundColor = [UIColor clearColor];
+		_subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
+		_subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		[self.contentView addSubview:_subtitleLabel];
 		
 		_statsHolderView = [[UIView alloc] initWithFrame:CGRectMake(275.0, 30.0, 16.0, 16.0)];
 		[self.contentView addSubview:_statsHolderView];
@@ -83,46 +82,59 @@
 	_contactUserVO = contactUserVO;
 	
 	NSString *nameCaption = _contactUserVO.fullName;//[NSString stringWithFormat:@"Invite %@ to this app", _contactUserVO.fullName];
-	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-	_nameLabel.text = nameCaption;
-	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
-	[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.fullName]];
+	_titleLabel.text = nameCaption;
+	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
+	[_titleLabel setFont:_titleLabel.font range:[nameCaption rangeOfString:_contactUserVO.fullName]];
 	
 	
-	CGSize size = [[nameCaption stringByAppendingString:@""] boundingRectWithSize:_nameLabel.frame.size
+	CGSize size = [[nameCaption stringByAppendingString:@""] boundingRectWithSize:_titleLabel.frame.size
 																		  options:NSStringDrawingTruncatesLastVisibleLine
-																	   attributes:@{NSFontAttributeName:_nameLabel.font}
+																	   attributes:@{NSFontAttributeName:_titleLabel.font}
 																		  context:nil].size;
-	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(_nameLabel.frame.size.width, size.width), MIN(_nameLabel.frame.size.height, size.height));
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
 	NSString *nameCaption = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
-	_nameLabel.text = nameCaption;
+	_titleLabel.text = nameCaption;
 	
-	CGSize size = [_nameLabel.text boundingRectWithSize:_nameLabel.frame.size
+	CGSize size = [_titleLabel.text boundingRectWithSize:_titleLabel.frame.size
 												options:NSStringDrawingTruncatesLastVisibleLine
-											 attributes:@{NSFontAttributeName:_nameLabel.font}
+											 attributes:@{NSFontAttributeName:_titleLabel.font}
 												context:nil].size;
-	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(_nameLabel.frame.size.width, size.width), MIN(_nameLabel.frame.size.height, size.height));
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
+	[super toggleUI:NO];
+	
 	_clubVO = clubVO;
 	_statusUpdateVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
-	//_nameLabel.text = _clubVO.clubName;
-	_nameLabel.text = ([_clubVO.clubName isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) ? @"Me" : _clubVO.clubName;
+	NSString *titleCaption = (_clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me, " : @"";
+	
+	for (HONTrivialUserVO *vo in _clubVO.activeMembers)
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+	
+	for (HONTrivialUserVO *vo in _clubVO.pendingMembers) {
+		if ([vo.username length] == 0)
+			continue;
+		
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+	}
+	
+	titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
+	_titleLabel.text = titleCaption;
 	
 	UILabel *statsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 16.0, 16.0)];
 	statsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	statsLabel.textColor = [UIColor blackColor];
 	statsLabel.backgroundColor = [UIColor clearColor];
 	statsLabel.textAlignment = NSTextAlignmentCenter;
-	statsLabel.text = [@"" stringFromInt:_clubVO.visibleMembers];
-	[_statsHolderView addSubview:statsLabel];
+	statsLabel.text = [@"" stringFromInt:[_clubVO.submissions count]];
+//	[_statsHolderView addSubview:statsLabel];
 	
 	
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate];
@@ -130,7 +142,7 @@
 	_statusUpdateVOs = [NSMutableArray array];
 	_statusUpdateViews = [NSMutableArray array];
 	
-	[_clubVO.submissions enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, MIN([_clubVO.submissions count], 3))] options:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	[_clubVO.submissions enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, MIN([_clubVO.submissions count], 1))] options:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 		
 		UIView *statusUpdateView = [self _holderViewForStatusUpdate:vo];
@@ -159,27 +171,27 @@
 	_statusUpdateVOs = [[[_statusUpdateVOs reverseObjectEnumerator] allObjects] mutableCopy];
 	
 	_statusUpdateImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointZero asLargeLoader:NO];
-	_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+	_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
 	_statusUpdateImageLoadingView.alpha = 0.75;
 	[self.contentView addSubview:_statusUpdateImageLoadingView];
 	
-	NSString *members = @"";
+	NSString *subtitle = @"";
 	if ([_statusUpdateVOs count] > 0) {
 		int idx = 0;
 		for (HONClubPhotoVO *vo in [_statusUpdateVOs reverseObjectEnumerator]) {
-			if ([members rangeOfString:vo.username].location == NSNotFound) {
-				NSString *caption = [members stringByAppendingString:vo.username];
-				CGSize size = [caption boundingRectWithSize:_membersLabel.frame.size
+			if ([subtitle rangeOfString:vo.username].location == NSNotFound) {
+				NSString *caption = [subtitle stringByAppendingString:vo.username];
+				CGSize size = [caption boundingRectWithSize:_subtitleLabel.frame.size
 													options:NSStringDrawingTruncatesLastVisibleLine
-												 attributes:@{NSFontAttributeName:_membersLabel.font}
+												 attributes:@{NSFontAttributeName:_subtitleLabel.font}
 													context:nil].size;
 				
-				if (size.width >= _membersLabel.frame.size.width) {
-					members = [[members substringToIndex:[members length] - 2] stringByAppendingString:@"…"];
+				if (size.width >= _subtitleLabel.frame.size.width) {
+					subtitle = [[subtitle substringToIndex:[subtitle length] - 2] stringByAppendingString:@"…"];
 					break;
 				}
 				
-				members = [members stringByAppendingFormat:@"%@, ", vo.username];
+				subtitle = [subtitle stringByAppendingFormat:@"%@, ", vo.username];
 			}
 			
 			idx++;
@@ -187,15 +199,15 @@
 		
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)[_statusUpdateVOs lastObject];
 		
-		members = [vo.username stringByAppendingFormat:@"has posted %d new emotion%@…", [vo.subjectNames count], ([vo.subjectNames count] == 1) ? @"" : @"s"];
-		//members = ([[members substringWithRange:NSMakeRange([members length] - 2, 2)] isEqualToString:@", "]) ? [members substringToIndex:[members length] - 2] : members;
+		subtitle = [vo.username stringByAppendingFormat:@"has posted %d new emotion%@…", [vo.subjectNames count], ([vo.subjectNames count] == 1) ? @"" : @"s"];
+		//subtitle = ([[subtitle substringWithRange:NSMakeRange([subtitle length] - 2, 2)] isEqualToString:@", "]) ? [subtitle substringToIndex:[subtitle length] - 2] : subtitle;
 	}
 	
-	members = ([_clubVO.activeMembers count] == 0 && [_clubVO.submissions count] == 0) ? members = NSLocalizedString(@"empty_club", @"Tap and hold to invite friends") : members;
+	subtitle = ([_clubVO.activeMembers count] == 0 && [_clubVO.submissions count] == 0) ? subtitle = NSLocalizedString(@"empty_club", @"Tap and hold to invite friends") : subtitle;
 	
-	_nameLabel.frame = CGRectOffset(_nameLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
-	//_membersLabel.frame = CGRectOffset(_membersLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
-	//_membersLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : members;
+	_titleLabel.frame = CGRectOffset(_titleLabel.frame, 35.0 + [_statusUpdateVOs count] * 18.0, 0.0);
+	//_subtitleLabel.frame = CGRectOffset(_subtitleLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
+	//_subtitleLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : subtitle;
 	
 }
 
@@ -209,12 +221,12 @@
 			UIImageView *imageView = (UIImageView *)[[view subviews] firstObject];
 			if (imageView.image == nil) {
 				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-					_statusUpdateImageLoadingView.frame = CGRectMake(_loaderStartFrame.origin.x + (18.0 * ++cnt), _loaderStartFrame.origin.y, _loaderStartFrame.size.width, _loaderStartFrame.size.height);
+					_statusUpdateImageLoadingView.frame = CGRectMake(kOrgLoaderFrame.origin.x + (18.0 * ++cnt), kOrgLoaderFrame.origin.y, kOrgLoaderFrame.size.width, kOrgLoaderFrame.size.height);
 					
 					if (cnt >= [_statusUpdateViews count] - 1) {
 						_statusUpdateImageLoadingView.hidden = YES;
 						[_statusUpdateImageLoadingView stopAnimating];
-						_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+						_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
 					}
 				};
 				
@@ -225,12 +237,12 @@
 						view.alpha = 1.0;
 						
 					} completion:^(BOOL finished) {
-						_statusUpdateImageLoadingView.frame = CGRectMake(_loaderStartFrame.origin.x + (18.0 * ++cnt), _loaderStartFrame.origin.y, _loaderStartFrame.size.width, _loaderStartFrame.size.height);
+						_statusUpdateImageLoadingView.frame = CGRectMake(kOrgLoaderFrame.origin.x + (18.0 * ++cnt), kOrgLoaderFrame.origin.y, kOrgLoaderFrame.size.width, kOrgLoaderFrame.size.height);
 						
 						if (cnt >= [_statusUpdateViews count] - 1) {
 							_statusUpdateImageLoadingView.hidden = YES;
 							[_statusUpdateImageLoadingView stopAnimating];
-							_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+							_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
 						}
 					}];
 				};
@@ -246,13 +258,13 @@
 				if (++cnt >= [_statusUpdateViews count] - 1) {
 					_statusUpdateImageLoadingView.hidden = YES;
 					[_statusUpdateImageLoadingView stopAnimating];
-					_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+					_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
 				}
 			}
 		}];
 		
 	} else {
-		_statusUpdateImageLoadingView.frame = _loaderStartFrame;
+		_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
 		_statusUpdateImageLoadingView.alpha = 1.0;
 		_statusUpdateImageLoadingView.hidden = NO;
 		
@@ -263,6 +275,10 @@
 			[imageView cancelImageRequestOperation];
 		}];
 	}
+}
+
+- (void)toggleUI:(BOOL)isEnabled {
+	
 }
 
 

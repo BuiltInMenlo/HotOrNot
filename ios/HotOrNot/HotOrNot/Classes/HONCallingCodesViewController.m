@@ -80,7 +80,6 @@
 	[super loadView];
 	
 	_cells = [NSMutableArray array];
-	self.view.backgroundColor = [UIColor whiteColor];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);

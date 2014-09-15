@@ -122,7 +122,7 @@
 	bgImageView.hidden = YES;
 	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_contactsButton.frame = CGRectMake(0.0, 0.0, 107.0, kTabSize.height);
+	_contactsButton.frame = CGRectMake(34.0, 0.0, 107.0, kTabSize.height);
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateNormal];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Active"] forState:UIControlStateHighlighted];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateSelected];
@@ -140,10 +140,10 @@
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateDisabled];
 	[_clubsButton setTag:HONTabBarButtonTypeClubs];
-	[_tabHolderView addSubview:_clubsButton];
+//	[_tabHolderView addSubview:_clubsButton];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(213.0, 0.0, 107.0, kTabSize.height);
+	_settingsButton.frame = CGRectMake(182.0, 0.0, 107.0, kTabSize.height);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_NonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Active"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Tapped"] forState:UIControlStateSelected];
@@ -162,8 +162,8 @@
 	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];
 	
-//	if (tabBarButtonType == HONTabBarButtonTypeClubs)
-//		return;
+	if (tabBarButtonType == HONTabBarButtonTypeClubs)
+		return;
 	
 	NSString *analyticsEventName = @"";
 	NSString *notificationName = @"";
@@ -242,7 +242,7 @@
 							}];
 		
 	} else {
-		[UIView animateWithDuration:0.333 delay:0.0
+		[UIView animateWithDuration:0.333 delay:0.125
 			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
 								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);

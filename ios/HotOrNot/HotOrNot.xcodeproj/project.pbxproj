@@ -58,8 +58,15 @@
 		300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
-		305ED7BC19C4180D00BDCB04 /* HONMemberClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7BB19C4180D00BDCB04 /* HONMemberClubViewCell.m */; };
 		3068E4A819A58620008AB0C2 /* HONGlobalEmotionPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */; };
+		309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */; };
+		309122AA19C5343A0081B141 /* composeTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A319C5343A0081B141 /* composeTitle@2x.png */; };
+		309122AB19C5343A0081B141 /* enterPinTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A419C5343A0081B141 /* enterPinTitle@2x.png */; };
+		309122AC19C5343A0081B141 /* friendsTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A519C5343A0081B141 /* friendsTitle@2x.png */; };
+		309122AD19C5343A0081B141 /* searchTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A619C5343A0081B141 /* searchTitle@2x.png */; };
+		309122AE19C5343A0081B141 /* selectFriendsTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A719C5343A0081B141 /* selectFriendsTitle@2x.png */; };
+		309122AF19C5343A0081B141 /* settingsTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A819C5343A0081B141 /* settingsTitle@2x.png */; };
+		309122B019C5343A0081B141 /* signUpTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A919C5343A0081B141 /* signUpTitle@2x.png */; };
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		309F59C3199DAF5000EC6C1C /* noPostsYetRow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59C5199DAF5000EC6C1C /* noPostsYetRow@2x.png */; };
 		309F59CA199DAF9300EC6C1C /* shareFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59CC199DAF9300EC6C1C /* shareFriends@2x.png */; };
@@ -571,10 +578,17 @@
 		305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleTableViewCell.m; sourceTree = "<group>"; };
 		305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Random.h"; sourceTree = "<group>"; };
 		305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Random.m"; sourceTree = "<group>"; };
-		305ED7BA19C4180D00BDCB04 /* HONMemberClubViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMemberClubViewCell.h; sourceTree = "<group>"; };
-		305ED7BB19C4180D00BDCB04 /* HONMemberClubViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMemberClubViewCell.m; sourceTree = "<group>"; };
 		3068E4A619A58620008AB0C2 /* HONGlobalEmotionPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGlobalEmotionPickerView.h; sourceTree = "<group>"; };
 		3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGlobalEmotionPickerView.m; sourceTree = "<group>"; };
+		3091229F19C501F60081B141 /* HONStatusUpdateSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateSubmitViewController.h; sourceTree = "<group>"; };
+		309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateSubmitViewController.m; sourceTree = "<group>"; };
+		309122A319C5343A0081B141 /* composeTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "composeTitle@2x.png"; sourceTree = "<group>"; };
+		309122A419C5343A0081B141 /* enterPinTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "enterPinTitle@2x.png"; sourceTree = "<group>"; };
+		309122A519C5343A0081B141 /* friendsTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "friendsTitle@2x.png"; sourceTree = "<group>"; };
+		309122A619C5343A0081B141 /* searchTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchTitle@2x.png"; sourceTree = "<group>"; };
+		309122A719C5343A0081B141 /* selectFriendsTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selectFriendsTitle@2x.png"; sourceTree = "<group>"; };
+		309122A819C5343A0081B141 /* settingsTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settingsTitle@2x.png"; sourceTree = "<group>"; };
+		309122A919C5343A0081B141 /* signUpTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signUpTitle@2x.png"; sourceTree = "<group>"; };
 		309F59B1199D7FE400EC6C1C /* NSString+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Random.h"; sourceTree = "<group>"; };
 		309F59B2199D7FE400EC6C1C /* NSString+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Random.m"; sourceTree = "<group>"; };
 		309F59C4199DAF5000EC6C1C /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
@@ -1348,6 +1362,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		309122A219C533D10081B141 /* Titles */ = {
+			isa = PBXGroup;
+			children = (
+				309122A319C5343A0081B141 /* composeTitle@2x.png */,
+				309122A419C5343A0081B141 /* enterPinTitle@2x.png */,
+				309122A519C5343A0081B141 /* friendsTitle@2x.png */,
+				309122A619C5343A0081B141 /* searchTitle@2x.png */,
+				309122A719C5343A0081B141 /* selectFriendsTitle@2x.png */,
+				309122A819C5343A0081B141 /* settingsTitle@2x.png */,
+				309122A919C5343A0081B141 /* signUpTitle@2x.png */,
+			);
+			name = Titles;
+			sourceTree = "<group>";
+		};
 		309F59B5199DA45B00EC6C1C /* Banner */ = {
 			isa = PBXGroup;
 			children = (
@@ -1787,6 +1815,8 @@
 				4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */,
 				4CC94FF01908017900347A34 /* HONSelfieCameraSubmitViewController.h */,
 				4CC94FF11908017900347A34 /* HONSelfieCameraSubmitViewController.m */,
+				3091229F19C501F60081B141 /* HONStatusUpdateSubmitViewController.h */,
+				309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */,
 			);
 			name = "Selfie Camera";
 			sourceTree = "<group>";
@@ -2333,6 +2363,7 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				309122A219C533D10081B141 /* Titles */,
 				30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */,
 				30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */,
 				30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */,
@@ -2436,8 +2467,6 @@
 				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
 				4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */,
 				4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */,
-				305ED7BA19C4180D00BDCB04 /* HONMemberClubViewCell.h */,
-				305ED7BB19C4180D00BDCB04 /* HONMemberClubViewCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -2817,6 +2846,7 @@
 				07B6E66D19884A6C00DA0805 /* cancelButtonBlue_nonActive@2x.png in Resources */,
 				4C0F3CF01988E65700703D09 /* tabMenu_clubsButton_nonActive@2x.png in Resources */,
 				07B6E67F19884A8600DA0805 /* doneButtonBlue_nonActive@2x.png in Resources */,
+				309122AE19C5343A0081B141 /* selectFriendsTitle@2x.png in Resources */,
 				4C0F3CB51988DDE300703D09 /* Localizable.strings in Resources */,
 				30C7F0BD19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png in Resources */,
 				4C783A94198E108B007A4045 /* inset2BG@2x.png in Resources */,
@@ -2832,7 +2862,9 @@
 				4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */,
 				4C0F3CE11988E64400703D09 /* tabMenu_newsButton_Active@2x.png in Resources */,
 				300B1BD9199C0E4C006BB048 /* modalInviteBackground@2x.png in Resources */,
+				309122B019C5343A0081B141 /* signUpTitle@2x.png in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
+				309122AC19C5343A0081B141 /* friendsTitle@2x.png in Resources */,
 				07B6E6A319884AD800DA0805 /* replyTimelineButton_nonActive@2x.png in Resources */,
 				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,
 				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
@@ -2875,6 +2907,7 @@
 				07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */,
 				4C83FD95190F62E800CAEABB /* push_02.caf in Resources */,
 				30D8028E19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png in Resources */,
+				309122AA19C5343A0081B141 /* composeTitle@2x.png in Resources */,
 				07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */,
 				07B6E65B19884A2E00DA0805 /* backWhiteButton_Active@2x.png in Resources */,
 				07B6E6FB1988515400DA0805 /* accessContacts_Active@2x.png in Resources */,
@@ -2886,12 +2919,14 @@
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,
 				07B6E72F1988549400DA0805 /* suggestionOverlay@2x.png in Resources */,
 				30E6150A19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png in Resources */,
+				309122AD19C5343A0081B141 /* searchTitle@2x.png in Resources */,
 				4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */,
 				07B6E64919884A0500DA0805 /* profileButton_nonActive@2x.png in Resources */,
 				4C4328F518E3A9FA0035FF06 /* TapjoyResources.bundle in Resources */,
 				4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */,
 				07B6E68B19884AB400DA0805 /* nextButton_nonActive@2x.png in Resources */,
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
+				309122AB19C5343A0081B141 /* enterPinTitle@2x.png in Resources */,
 				4C4328CA18E3A9FA0035FF06 /* MPArrowLeft.png in Resources */,
 				07B6E69D19884ACF00DA0805 /* replyTimelineButton_Active@2x.png in Resources */,
 				8F4E621A198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png in Resources */,
@@ -2924,6 +2959,7 @@
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C783A95198E108B007A4045 /* inset1BG@2x.png in Resources */,
 				4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */,
+				309122AF19C5343A0081B141 /* settingsTitle@2x.png in Resources */,
 				07B6E6F51988514B00DA0805 /* accessContacts@2x.png in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
 				4C4328CC18E3A9FA0035FF06 /* MPArrowRight.png in Resources */,
@@ -3037,7 +3073,6 @@
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
 				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
-				305ED7BC19C4180D00BDCB04 /* HONMemberClubViewCell.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				30FC8C6319A829E900CDB2BC /* TSResponse.m in Sources */,
 				4C43280618E3A9FA0035FF06 /* AFHTTPClient.m in Sources */,
@@ -3127,6 +3162,7 @@
 				4C4328DB18E3A9FA0035FF06 /* UIImage+MPImageEffects.m in Sources */,
 				4C4328B818E3A9FA0035FF06 /* JLBAnimator.m in Sources */,
 				4CD42F28188B410E00264845 /* HONMessagesViewController.m in Sources */,
+				309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */,
 				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				4C43280C18E3A9FA0035FF06 /* AFURLConnectionOperation.m in Sources */,
@@ -4024,7 +4060,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"DEBUG=1",
-					"KEENIO_LOG=1",
+					"KEENIO_LOG=0",
 					"SC_JSON_LOG=1",
 					"VIEW_CONTROLLER_LOG=0",
 					"DEBUGING_COLORS=1",

@@ -8,10 +8,11 @@
 
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
-- (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG;
+- (id)initWithTitleImage:(UIImage *)image;
 
 - (void)addButton:(UIView *)buttonView;
 - (void)leftAlignTitle;
+- (void)addTitleImage:(UIImage *)image;
 - (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;
