@@ -505,13 +505,26 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					
 				default:
 					notificationName = @"REFRESH_ALL_TABS";
+					[self _goDone];
 					break;
 			}
 			
 			NSLog(@"REFRESHING:[%@]", notificationName);
 			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 			_isFromBackground = NO;
+			
 		}
+	}];
+}
+
+- (void)_goDone {
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		
+		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+		
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	}];
 }
 
@@ -868,7 +881,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (_isFromBackground) {
-		if ([HONAppDelegate hasNetwork]) {
+		if ([HONAppDelegate hasNetwork])
+		{
 //			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 //				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
 //					if (_insetOverlayView == nil) {
@@ -881,12 +895,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //				}
 //			}
 			
-			if (![HONAppDelegate canPingConfigServer]) {
+			if (![HONAppDelegate canPingConfigServer])
+			{
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
-			} else
+			}
+			else
+			{
 				[self _retrieveConfigJSON];
+			}
 		}
 		
 		if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_compose"] isEqualToString:@"YES"]) {
@@ -899,11 +917,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		else {
 			NSLog(@"^^^^^^IN COMPOSE MODAL^^^^^^");
 		}
-	
+		
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
+	
+//	if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_compose"] isEqualToString:@"YES"]) {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self.tabBarController.selectedViewController presentViewController:navigationController animated:YES completion:nil];
+//		
+//		NSLog(@"^^^^^^NOT IN COMPOSE MODAL^^^^^^");
+//	}
+//	else {
+//		//[self _goDone];
+//		NSLog(@"^^^^^^IN COMPOSE MODAL^^^^^^");
+//	}
+	
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

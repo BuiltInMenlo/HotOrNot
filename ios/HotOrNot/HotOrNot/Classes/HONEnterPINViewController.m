@@ -55,20 +55,25 @@
 //	[headerView addButton:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 40.0, 1.0, 44.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
+	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 45.0, 1.0, 44.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessContactsBackground"]];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactListGraphic"]];
 	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 103.0);
 	[self.view addSubview:bgImageView];
 	
+	UIButton *bgImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	bgImageButton.frame = bgImageView.frame;
+	[bgImageButton addTarget:self action:@selector(_goAlertContacts) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:bgImageButton];
+	
 	UIButton *accessButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	accessButton.frame = CGRectMake(0.0, 411.0, 320.0, 48.0);
-	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_nonActive"] forState:UIControlStateNormal];
-	[accessButton setBackgroundImage:[UIImage imageNamed:@"accceContactsButton_active"] forState:UIControlStateHighlighted];
+	accessButton.frame = CGRectMake(0.0, 520.0, 320.0, 48.0);
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accessContacts_nonActive@2x"] forState:UIControlStateNormal];
+	[accessButton setBackgroundImage:[UIImage imageNamed:@"accessContacts_Active@2x"] forState:UIControlStateHighlighted];
 	[accessButton addTarget:self action:@selector(_goAlert) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:accessButton];
 }
@@ -126,6 +131,15 @@
     } else
         [self _promptForAddressBookAccess];
     
+}
+
+- (void)_goAlertContacts {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"moji uses your contacts to allow you to send emoji updates to all of your friends. It is fast, easy, and you will always be in control over who can see."
+														message:nil
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+											  otherButtonTitles:nil];
+	[alertView show];
 }
 
 - (void)_goCheat {

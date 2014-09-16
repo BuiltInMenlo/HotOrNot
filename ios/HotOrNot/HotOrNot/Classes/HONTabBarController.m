@@ -12,7 +12,7 @@
 #import "HONTabBarController.h"
 #import "HONChallengeVO.h"
 #import "HONChangeAvatarViewController.h"
-
+#import "HONPostStatusUpdateViewController.h"
 
 @interface HONTabBarController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -21,6 +21,8 @@
 @property (nonatomic, retain) UIButton *contactsButton;
 @property (nonatomic, retain) UIButton *settingsButton;
 @property (nonatomic, retain) NSDictionary *badgeTotals;
+@property(nonatomic, retain) UIView *backgroundView;
+@property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
 @end
 
 @implementation HONTabBarController
@@ -37,7 +39,33 @@
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 }
-
+//
+//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+//{
+//	UITableViewHeaderFooterView *footerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:kSHCRecipeDetailIngredientSectionHeaderReuseIdentifier];
+//	
+//	UILabel *titleLabel = (UILabel *)[footerView.contentView viewWithTag:1];
+//	if (titleLabel == nil) {
+//		UIColor *backgroundColor = [UIColor blackColor];
+//		footerView.contentView.backgroundColor = backgroundColor;
+//		titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0f, 0.0f, 300.0f, 44.0f)];
+//		titleLabel.textColor = [UIColor whiteColor];
+//		titleLabel.backgroundColor = backgroundColor;
+//		titleLabel.shadowOffset = CGSizeMake(0.0f, 0.0f);
+//		titleLabel.tag = 1;
+//		titleLabel.font = [UIFont systemFontOfSize:24.0f];
+//		[footerView.contentView addSubview:titleLabel];
+//	}
+//	
+//	NSString *sectionTitle = [self.sections objectAtIndex:section];
+//	if (sectionTitle == nil) {
+//		sectionTitle = @"Uploaded Just Now";
+//	}
+//	
+//	titleLabel.text = sectionTitle;
+//	
+//	return footerView;
+//}
 
 - (void)setSelectedIndex:(NSUInteger)selectedIndex {
 	[super setSelectedIndex:selectedIndex];
@@ -97,6 +125,7 @@
 
 #pragma mark - View Lifecycle
 - (void)loadView {
+	
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
@@ -110,61 +139,82 @@
 			_nativeTabBar = (UITabBar *)view;
 	}
 	
-	
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (kTabSize.height-3), 320.0, kTabSize.height)];
+	[_nativeTabBar removeFromSuperview];
+		_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (kTabSize.height-3), 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
-	bgImageView.userInteractionEnabled = YES;
+	//UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
+	//bgImageView.userInteractionEnabled = YES;
 	//bgImageView.frame=CGRectOffset(bgImageView.frame, 0.0, 16.0);
-	[_tabHolderView addSubview:bgImageView];
-	[bgImageView setTag:-1];
-	bgImageView.hidden = YES;
+	//[_tabHolderView addSubview:bgImageView];
+	//[bgImageView setTag:-1];
+	//bgImageView.hidden = YES;
 	
-	NSLog(@"---------%@",NSStringFromCGRect(bgImageView.frame));
-	bgImageView.backgroundColor=[UIColor blueColor];
+	//NSLog(@"---------%@",NSStringFromCGRect(bgImageView.frame));
+	//bgImageView.backgroundColor=[UIColor blueColor];
 	
 	//_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, 25);
 	_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, 15);
-
+	//[self.view addSubview:_toolbar];
+	[self.navigationController.view setFrame:self.view.frame];
 	
-	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_contactsButton.frame = CGRectMake(0.0, -3.0, 107.0, kTabSize.height);
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateNormal];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Active"] forState:UIControlStateHighlighted];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateSelected];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateDisabled];
-	[_contactsButton setTag:HONTabBarButtonTypeFriends];
-	[_contactsButton setSelected:YES];
-	[_tabHolderView addSubview:_contactsButton];
+//	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_contactsButton.frame = CGRectMake(0.0, -3.0, 107.0, kTabSize.height);
+//	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateNormal];
+//	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Active"] forState:UIControlStateHighlighted];
+//	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateSelected];
+//	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+//	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"mainButton_nonActive"] forState:UIControlStateDisabled];
+//	[_contactsButton setTag:HONTabBarButtonTypeFriends];
+//	[_contactsButton setSelected:YES];
+//	[_tabHolderView addSubview:_contactsButton];
 	
-//	_newsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	_newsButton.frame = CGRectMake(107.0, 0.0, 107.0, kTabSize.height);
-//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateNormal];
-//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Active"] forState:UIControlStateHighlighted];
-//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateSelected];
-//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-//	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateDisabled];
-//	[_newsButton setTag:HONTabBarButtonTypeNewsFeed];
-//	[_tabHolderView addSubview:_newsButton];
-	
-	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(213.0, -2.0, 106.0, kTabSize.height);
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateDisabled];
-	[_settingsButton setTag:HONTabBarButtonTypeClubs];
-	[_tabHolderView addSubview:_settingsButton];
+//	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_settingsButton.frame = CGRectMake(213.0, -2.0, 106.0, kTabSize.height);
+//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateNormal];
+//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Active"] forState:UIControlStateHighlighted];
+//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateSelected];
+//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_tab_Button_nonActive"] forState:UIControlStateDisabled];
+//	[_settingsButton setTag:HONTabBarButtonTypeClubs];
+//	[_tabHolderView addSubview:_settingsButton];
 	
 	
 	[self _toggleTabButtonsEnabled:YES];
+	
+	_toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0,[UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
+	_toolbar.backgroundColor = [UIColor lightGrayColor];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(100.0, [UIScreen mainScreen].bounds.size.height - 44.0 , 320, 44.0)];
+	label.backgroundColor = [UIColor clearColor];
+	[self.view addSubview:_toolbar];
+	label.text = @"Updated Just Now";
+	label.font=[label.font fontWithSize:12];
+	[self.view addSubview:label];
+	
+	self.view.userInteractionEnabled = YES;
+	_toolbar.userInteractionEnabled = YES;
+	_toolbar.tintColor = [UIColor orangeColor];
+	[_toolbar setItems:@[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil], [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(_goCompose:)]]];
+	
+
+}
+
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+}
+
+#pragma mark - Navigation
+- (void)_goCompose:(id)sender {
+	NSLog(@"YJFJYFJFJTFJTMFJYDJDMJ");
+	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
-#pragma mark - Navigation
 - (void)_goTabButton:(id)sender event:(UIEvent *)event {
 	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];

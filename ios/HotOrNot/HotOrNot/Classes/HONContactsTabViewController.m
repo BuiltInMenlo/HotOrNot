@@ -110,7 +110,7 @@ static NSString * const kCamera = @"camera";
 	
 	//Go to Timeline
 	//[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goTimeline)]];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	//[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	searchButton.frame = _searchBarView.frame;
@@ -385,9 +385,14 @@ static NSString * const kCamera = @"camera";
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
 	_selectedContactUserVO = contactUserVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
-													   delegate:self
+	
+	NSString *emojis = @"";
+	for (NSString *emoji in [[NSUserDefaults standardUserDefaults] objectForKey:@"last_emojis"])
+		emojis = [emojis stringByAppendingString:emoji];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
+														message:emojis
+														delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 	[alertView setTag:3];
@@ -431,8 +436,13 @@ static NSString * const kCamera = @"camera";
 											withContactUser:cell.contactUserVO];
 			
 			_selectedContactUserVO = cell.contactUserVO;
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
+			
+			NSString *emojis = @"";
+			for (NSString *emoji in [[NSUserDefaults standardUserDefaults] objectForKey:@"last_emojis"])
+				emojis = [emojis stringByAppendingString:emoji];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
+																message:emojis
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];

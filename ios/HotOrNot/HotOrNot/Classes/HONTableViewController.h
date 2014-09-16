@@ -20,6 +20,7 @@
 	
 	HONHeaderView *_headerView;
 	HONRefreshControl *_refreshControl;
+	
 }
 
 - (void)_goDataRefresh:(HONRefreshControl *)sender;

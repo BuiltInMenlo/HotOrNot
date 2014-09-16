@@ -133,13 +133,13 @@
 	
 }
 
-- (void)_goCreateChallenge {
-	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
+//- (void)_goCreateChallenge {
+//	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
 
 - (void)_goBroadcastSMSUpdatesSwitch:(UISwitch *)switchView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings View - SMS Updates Toggle %@", (switchView.on) ? @"On" : @"Off"]];

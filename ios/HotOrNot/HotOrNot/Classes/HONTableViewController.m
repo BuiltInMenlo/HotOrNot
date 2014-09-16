@@ -10,8 +10,8 @@
 
 #import "HONTableViewController.h"
 
-
 @interface HONTableViewController ()
+@property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
 @end
 
 @implementation HONTableViewController
