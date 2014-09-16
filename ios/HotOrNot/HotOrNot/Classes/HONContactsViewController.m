@@ -124,7 +124,7 @@
 	[_searchBarView backgroundingReset];
 	
 	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		//_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
@@ -271,7 +271,7 @@
 	
 	else {
 		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			//_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
 		_progressHUD.minShowTime = kHUDTime;
@@ -295,6 +295,8 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_STARTED" object:nil];
+	
 	NSLog(@":/: _goDataRefresh :/:");
 	
 	_headerRows = [NSMutableArray array];
@@ -321,6 +323,8 @@
 }
 
 - (void)_didFinishDataRefresh {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ENDED" object:nil];
+	
 	_segmentedContacts = [self _populateSegmentedDictionary];
 	NSLog(@"_segmentedContacts:[%d]", [_segmentedContacts count]);
 	
@@ -339,18 +343,22 @@
 	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook)
 		[self _updateDeviceContactsWithMatchedUsers];
 	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
 	
-	_tableView.alpha = 1.0;
 	
 	for (HONUserToggleViewCell *cell in _cells)
 		[cell toggleSelected:NO];
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	[UIView animateWithDuration:0.125 delay:3.33 options:UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction animations:^(void) {
+		_tableView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+	}];
 }
 
 
