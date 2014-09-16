@@ -25,6 +25,12 @@
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) NSUInteger offset;
 @property (nonatomic, strong) NSString *currentCharacter;
+@property (nonatomic, strong) UIImageView *introModal;
+@property (nonatomic, strong) UIImageView *introTint;
+@property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) UIImageView *animation1;
+@property (nonatomic, strong) UIImageView *animation2;
+@property (nonatomic, strong) UIImageView *animation3;
 @end
 
 @implementation HONPostStatusUpdateViewController
@@ -101,7 +107,7 @@
 																  completion:nil];
 
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirm your moji update:"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirm your moji update:\n"
 																message:[[_emojiTextView.text substringToIndex:MIN([_emojiTextView.text length], 42)] stringByAppendingString:([_emojiTextView.text length] > 42) ? @"…" : @""]
 															   delegate:self
 													  cancelButtonTitle:@"Cancel"
@@ -122,13 +128,13 @@
 	
 	_isSubmitting = NO;
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Compose"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"New Update"];
 	[self.view addSubview:_headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(0.0, 19.0, 44.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+	cancelButton.frame = CGRectMake(5.0, 19.0, 64.0, 44.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:cancelButton];
 	
@@ -140,31 +146,73 @@
 	[_headerView addButton:submitButton];
 	
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(17.0, 81.0, 304.0, 42)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 180.0, 320.0, 20)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	[_placeholderLabel setTextColor:[UIColor lightGrayColor]];
-	_placeholderLabel.font = [UIFont systemFontOfSize:36.0f];
-	_placeholderLabel.text = @"Type emoji...";
+	[_placeholderLabel setTextColor:[UIColor colorWithRed:0.69 green:0.698 blue:0.71 alpha:1]];
+	_placeholderLabel.font = [UIFont systemFontOfSize:18.0f];
+	_placeholderLabel.text = @"( select emoji )";
+	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
 	[self.view addSubview:_placeholderLabel];
 	
-	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(13.0, 72.0, 304.0, self.view.frame.size.height - 288)];
+	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(13.0, 64.0, 304.0, self.view.frame.size.height - 280)];
 	_emojiTextView.backgroundColor = [UIColor clearColor];
 	[_emojiTextView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_emojiTextView setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_emojiTextView.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_emojiTextView setTextColor:[UIColor blackColor]];
-	_emojiTextView.font = [UIFont systemFontOfSize:40.0f];
+	_emojiTextView.font = [UIFont systemFontOfSize:55.0f];
 	_emojiTextView.keyboardType = UIKeyboardTypeDefault;
 	_emojiTextView.text = @"";
 	_emojiTextView.delegate = self;
 	[self.view addSubview:_emojiTextView];
+	
 	
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	[_emojiTextView becomeFirstResponder];
+	
+	_introTint= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"darkBackgroundTint"]];
+	_introTint.frame = CGRectOffset(_introTint.frame, 0.0, 0.0);
+	[self.view addSubview:_introTint]; //intro background tint
+	
+	_introModal = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalBackgroundOrange"]];
+	_introModal.frame = CGRectOffset(_introModal.frame, 0.0, 568.0);
+	[self.view addSubview:_introModal]; //intro modal explaining app
+	
+	[UIView animateWithDuration:0.75f delay:0.0f options: UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+					 animations:^{
+						 _introModal.frame = CGRectOffset(_introModal.frame, 0.0, -568.0);
+					 }
+					 completion:^(BOOL finished){
+						 NSLog( @"Intro Modal Animated" );
+						 _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+						 _closeButton.frame = CGRectMake(250.0, 70.0, 44.0, 44.0);
+						 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+						 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+						 [_closeButton addTarget:self action:@selector(_goCloseModal) forControlEvents:UIControlEventTouchUpInside];
+						 [self.view addSubview:_closeButton]; //cancel button for intro modal
+					 }];
+	
+	_animation1= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation1"]];
+	_animation1.frame = CGRectOffset(_animation1.frame, 0.0, 178.0);
+	_animation1.alpha = 0.0;
+	[self.view addSubview:_animation1]; //textAnimation1 for intro modal
+	
+	_animation2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation2"]];
+	_animation2.frame = CGRectOffset(_animation2.frame, 0.0, 178.0);
+	_animation2.alpha = 0.0;
+	[self.view addSubview:_animation2]; //textAnimation2 for intro modal
+	
+	_animation3 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation3"]];
+	_animation3.frame = CGRectOffset(_animation3.frame, 0.0, 178.0);
+	_animation3.alpha = 0.0;
+	[self.view addSubview:_animation3]; //textAnimation3 for intro modal
+	
+	[self _animationLoop];
+	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Entering"];
 	
@@ -172,9 +220,9 @@
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"in_compose"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		
 		NSLog(@"^^^^^^IN COMPOSE MODAL^^^^^^");
 	} //sets key to YES so that app knows it's in the compose modal already when resuming from background
+	
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -186,10 +234,11 @@
 
 #pragma mark - Navigation
 - (void)_goCancel {
+	[_emojiTextView resignFirstResponder];
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Cancel"];
 	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"in_compose"];
 	NSLog(@"^^^^^^NOT IN COMPOSE MODAL^^^^^^");
-	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 	[self dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
@@ -198,6 +247,56 @@
 	[_emojiTextView resignFirstResponder];
 }
 
+- (void)_goCloseModal {
+	_introModal.hidden = YES;
+	_introTint.hidden = YES;
+	_closeButton.hidden = YES;
+	_animation1.hidden = YES;
+	_animation2.hidden = YES;
+	_animation3.hidden = YES;
+	[_emojiTextView becomeFirstResponder];
+}
+
+- (void)_animationLoop {
+	[UIView animateWithDuration:0.5f delay:1.25f options: UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+					 animations:^{
+						 _animation1.alpha = 1.0;
+					 }
+					 completion:^(BOOL finished){
+						 [UIView animateWithDuration:0.5f delay:1.0f options: UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionAllowUserInteraction
+										  animations:^{
+											  _animation1.alpha = 0.0;
+										  }
+										  completion:^(BOOL finished){ //ANIMATION 1 END
+											  [UIView animateWithDuration:0.5f delay:0.0f options: UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+															   animations:^{
+																   _animation2.alpha = 1.0;
+															   }
+															   completion:^(BOOL finished){
+																   [UIView animateWithDuration:0.5f delay:1.0f options: UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionAllowUserInteraction
+																					animations:^{
+																						_animation2.alpha = 0.0;
+																					}
+																					completion:^(BOOL finished){ //ANIMATION 2 END
+																						[UIView animateWithDuration:0.5f delay:0.0f options: UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+																										 animations:^{
+																											 _animation3.alpha = 1.0;
+																										 }
+																										 completion:^(BOOL finished){
+																											 [UIView animateWithDuration:0.5f delay:1.0f options: UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionAllowUserInteraction
+																															  animations:^{
+																																  _animation3.alpha = 0.0;
+																															  }
+																															  completion:^(BOOL finished){ //ANIMATION 3 END
+																																  [self _animationLoop];
+					
+																															  }];
+																										 }];
+																					}];
+															   }];
+										  }];
+					 }];
+}
 
 #define kACCEPTABLE_CHARACTERS @"\n😄😃😀😊☺️😉😍😘😚😗😙😜😝😛😳😁😔😌😒😞😣😢😂😭😪😥😰😅😓😩😫😨😱😠😡😤😖😆😋😷😎😴😵😲😟😦😧😈👿😮😬😐😕😯😶😇😏😑👲👳👮👷💂👶👦👧👨👩👴👵👱👼👸😺😸😻😽😼🙀😿😹😾👹👺🙈🙉🙊💀👽💩🔥✨🌟💫💥💢💦💧💤💨👂👀👃👅👄👍👎👌👊✊✌️👋✋👐👆👇👉👈🙌🙏☝️👏💪🚶🏃💃👫👪👬👭💏💑👯🙆🙅💁🙋💆💇💅👰🙎🙍🙇🎩👑👒👟👞👡👠👢👕👔👚👗🎽👖👘👙💼👜👝👛👓🎀🌂💄💛💙💜💚❤️💔💗💓💕💖💞💘💌💋💍💎👤👥💬👣💭🐶🐺🐱🐭🐹🐰🐯🐨🐻🐷🐽🐮🐗🐵🐒🐴🐑🐘🐼🐧🐦🐤🐥🐣🐔🐍🐢🐛🐝🐜🐞🐌🐙🐚🐠🐟🐬🐳🐋🐄🐏🐀🐃🐅🐇🐉🐎🐐🐓🐕🐖🐁🐂🐲🐡🐊🐫🐪🐆🐈🐩🐾💐🌸🌷🍀🌹🌻🌺🍁🍃🍂🌿🌾🍄🌵🌴🌲🌳🌰🌱🌼🌐🌞🌝🌚🌑🌒🌓🌔🌕🌖🌗🌘🌜🌛🌙🌍🌎🌏🌋🌌🌠⭐️☀️⛅️☁️⚡️☔️❄️⛄️🌀🌁🌈🌊🎍💝🎎🎒🎓🎏🎆🎇🎐🎑🎃👻🎅🎄🎁🎋🎉🎊🎈🎌🔮🎥📷📹📼💿📀💽💾💻📱☎️📞📟📠📡📺📻🔊🔉🔈🔇🔔🔕📢📣⏳⌛️⏰⌚️🔓🔒🔏🔐🔑🔎💡🔦🔆🔅🔌🔋🔍🛁🛀🚿🚽🔧🔩🔨🚪🚬💣🔫🔪💊💉💰💴💵💷💶💳💸📲📧📥📤✉️📩📨📯📫📪📬📭📮📦📝📄📃📑📊📈📉📜📋📅📆📇📁📂✂️📌📎✒️✏️📏📐📕📗📘📙📓📔📒📚📖🔖📛🔬🔭📰🎨🎬🎤🎧🎼🎵🎶🎹🎻🎺🎷🎸👾🎮🃏🎴🀄️🎲🎯🏈🏀⚽️⚾️🎾🎱🏉🎳⛳️🚵🚴🏁🏇🏆🎿🏂🏊🏄🎣☕️🍵🍶🍼🍺🍻🍸🍹🍷🍴🍕🍔🍟🍗🍖🍝🍛🍤🍱🍣🍥🍙🍘🍚🍜🍲🍢🍡🍳🍞🍩🍮🍦🍨🍧🎂🍰🍪🍫🍬🍭🍯🍎🍏🍊🍋🍒🍇🍉🍓🍑🍈🍌🍐🍍🍠🍆🍅🌽🏠🏡🏫🏢🏣🏥🏦🏪🏩🏨💒⛪️🏬🏤🌇🌆🏯🏰⛺️🏭🗼🗾🗻🌄🌅🌃🗽🌉🎠🎡⛲️🎢🚢⛵️🚤🚣⚓️🚀✈️💺🚁🚂🚊🚉🚞🚆🚄🚅🚈🚇🚝🚋🚃🚎🚌🚍🚙🚘🚗🚕🚖🚛🚚🚨🚓🚔🚒🚑🚐🚲🚡🚟🚠🚜💈🚏🎫🚦🚥⚠️🚧🔰⛽️🏮🎰♨️🗿🎪🎭📍🚩🇯🇵🇰🇷🇩🇪🇨🇳🇺🇸🇫🇷🇪🇸🇮🇹🇷🇺🇬🇧1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣0️⃣🔟🔢#️⃣🔣⬆️⬇️⬅️➡️🔠🔡🔤↗️↖️↘️↙️↔️↕️🔄◀️▶️🔼🔽↩️↪️ℹ️⏪⏩⏫⏬⤵️⤴️🆗🔀🔁🔂🆕🆙🆒🆓🆖📶🎦🈁🈯️🈳🈵🈴🈲🉐🈹🈺🈶🈚️🚻🚹🚺🚼🚾🚰🚮🅿️♿️🚭🈷🈸🈂Ⓜ️🛂🛄🛅🛃🉑㊙️㊗️🆑🆘🆔🚫🔞📵🚯🚱🚳🚷🚸⛔️✳️❇️❎✅✴️💟🆚📳📴🅰🅱🆎🅾💠➿♻️♈️♉️♊️♋️♌️♍️♎️♏️♐️♑️♒️♓️⛎🔯🏧💹💲💱©®™❌‼️⁉️❗️❓❕❔⭕️🔝🔚🔙🔛🔜🔃🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕖🕗🕘🕙🕚🕡🕢🕣🕤🕥🕦✖️➕➖➗♠️♥️♣️♦️💮💯✔️☑️🔘🔗➰〰〽️🔱◼️◻️◾️◽️▪️▫️🔺🔲🔳⚫️⚪️🔴🔵🔻⬜️⬛️🔶🔷🔸🔹"
 #pragma mark - TextView Delegates
@@ -237,6 +336,7 @@
 //		[_headerView setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:40]];
 		
 		NSString *lastChar = [textView.text substringFromIndex: [textView.text length] - 2];
+		[_headerView setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:152.0]];
 		[_headerView setTitle:lastChar];
 		
 		NSData *utf32 = [lastChar dataUsingEncoding:NSUTF32BigEndianStringEncoding]; //Unicode Code Point
@@ -256,9 +356,8 @@
 	}
 	
 	else {
-//		textView.text = @"";
-		[_headerView setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18]];
-		[_headerView setTitle:@"Compose"];
+		[_headerView setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:75.0]];
+		[_headerView setTitle:@"New Update"];
 	}
 	
 //	NSLog(@"textView:[%@](%u)--{%d}", textView.text, [textView.text length], _offset);

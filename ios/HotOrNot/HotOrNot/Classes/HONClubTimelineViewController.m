@@ -206,7 +206,7 @@
 	_emojiTextView = [[UITextView alloc] initWithFrame:CGRectMake(8.0, 69.0, 304.0, self.view.frame.size.height - 88.0)];
 	_emojiTextView.backgroundColor = [UIColor clearColor];
 	[_emojiTextView setTextColor:[UIColor blackColor]];
-	_emojiTextView.font = [UIFont systemFontOfSize:42.0f];
+	_emojiTextView.font = [UIFont systemFontOfSize:55.0f];
 	_emojiTextView.userInteractionEnabled = NO;
 	_emojiTextView.alwaysBounceVertical = YES;
 	_emojiTextView.showsVerticalScrollIndicator = NO;
@@ -219,7 +219,7 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_clubVO != nil) ? _clubVO.ownerName : @""];
+	_headerView = [[HONHeaderView alloc] initWithDetail:(_clubVO != nil) ? _clubVO.ownerName : @""];
 	[self.view addSubview:_headerView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

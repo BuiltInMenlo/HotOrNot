@@ -9,11 +9,13 @@
 @interface HONHeaderView : UIView
 - (id)initWithBranding;
 - (id)initWithTitle:(NSString *)title;
+- (id)initWithDetail:(NSString *)title;
 //- (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG;
 
 - (void)addButton:(UIView *)buttonView;
 - (void)leftAlignTitle;
 - (void)setFont:(UIFont *)font;
+- (void)setTransform:(CGAffineTransform)transform;
 //- (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;
