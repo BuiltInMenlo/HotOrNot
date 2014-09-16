@@ -93,12 +93,6 @@ static NSString * const kCamera = @"camera";
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
 		[self _goRegistration];
-	
-	else {
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-			[[HONClubAssistant sharedInstance] writeUserClubs:result];
-		}];
-	}
 }
 
 - (void)viewDidLoad {

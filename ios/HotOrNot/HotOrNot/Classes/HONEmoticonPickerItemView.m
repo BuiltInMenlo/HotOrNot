@@ -19,7 +19,7 @@ const CGRect kLargeActiveFrame = {-5.0f, -5.0f, 160.0f, 160.0f};
 //const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
 //const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 
-const CGRect kNormalFrame = {-1.0f, -1.0f, 76.0f, 76.0f};
+const CGRect kNormalFrame = {0.0f, 0.0f, 72.0f, 72.0f};
 const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 
 @interface HONEmoticonPickerItemView ()

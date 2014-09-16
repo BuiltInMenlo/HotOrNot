@@ -23,7 +23,7 @@ int __pyStderrWrite(void *inFD, const char *buffer, int size)
     return _oldStdWrite(inFD, buffer, size);
 }
 
-
+	
 int main(int argc, char *argv[])
 {
 	_oldStdWrite = stderr->_write;

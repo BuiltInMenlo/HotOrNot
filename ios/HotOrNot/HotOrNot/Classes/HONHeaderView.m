@@ -62,7 +62,7 @@
 	_title = @"";
 	
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:image];
-	titleImageView.frame = CGRectOffset(titleImageView.frame, 62.0, 20.0);
+	titleImageView.frame = CGRectOffset(titleImageView.frame, 61.0, 19.0);
 	[self addSubview:titleImageView];
 }
 
@@ -73,6 +73,10 @@
 
 - (void)leftAlignTitle {
 	_titleLabel.textAlignment = NSTextAlignmentLeft;
+}
+
+- (void)removeBackground {
+	_bgImageView.hidden = YES;
 }
 
 - (void)toggleLightStyle:(BOOL)isLightStyle {

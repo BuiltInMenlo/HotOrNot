@@ -27,6 +27,7 @@
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
@@ -198,28 +199,50 @@
 	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
-		
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName];
-	[_headerView toggleLightStyle:YES];
-	[self.view addSubview:_headerView];
+	NSString *titleCaption = [NSString stringWithFormat:@"%@, ", _clubVO.ownerName];//(_clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me, " : @"";
+	
+	for (HONTrivialUserVO *vo in _clubVO.activeMembers)
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+	
+	for (HONTrivialUserVO *vo in _clubVO.pendingMembers) {
+		if ([vo.username length] == 0)
+			continue;
+		
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+	}
+	
+	titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
+	
+	
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)];
+	[self.view addSubview:headerView];
+	
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 18.0, 170.0, 30.0)];
+	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
+	titleLabel.textColor = [UIColor whiteColor];
+	titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	titleLabel.textAlignment = NSTextAlignmentCenter;
+	titleLabel.text = titleCaption;
+	[headerView addSubview:titleLabel];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(1.0, 1.0, 93.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(12.0, 13.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:backButton];
+	[headerView addSubview:backButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(255, 1.0, 64.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
+	shareButton.frame = CGRectMake(260, 13.0, 44.0, 44.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:shareButton];
+	[headerView addSubview:shareButton];
 	
 	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -235,34 +258,51 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewDidAppear:animated];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+//	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 }
+
+- (void)viewWillDisappear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewDidDisappear:animated];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+}
+
 
 
 #pragma mark - Navigation
 - (void)_goShare {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Share" withUserClub:_clubVO];
+	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Share" withClubPhoto:_clubPhotoVO];
 	
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Share", @"Upvote", @"Reply", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
+	
+	
+//	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+//	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
 //	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
-	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
-																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-																							@"club"				: _clubVO.dictionary,
-																							@"mp_event"			: @"User Profile - Share",
-																							@"view_controller"	: self}];
+//	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+//	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
+//	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
+//																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+//																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+//																							@"club"				: _clubVO.dictionary,
+//																							@"mp_event"			: @"Club Timeline - Share",
+//																							@"view_controller"	: self}];
 }
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back" withUserClub:_clubVO];
@@ -286,8 +326,8 @@
 - (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
 	int rows = MIN(amount, (([_tableView numberOfSections] - 1) - [_tableView indexPathForCell:cell].section));
 	
-	NSIndexPath *indexPath = [_tableView indexPathForCell:(UITableViewCell *)cell];
-	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:indexPath.section + rows] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	_index = [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows;
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 - (void)_jumpToPhotoFromID {
@@ -432,6 +472,58 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath {
 	return (proposedDestinationIndexPath);
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	_index = ((NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject]).section;
+}
+
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		if (buttonIndex == 0) {
+			NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+			NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+			NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+			NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
+			NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
+																									@"image"			: _clubPhotoVO.imagePrefix, //([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																									@"club"				: _clubVO.dictionary,
+																									@"mp_event"			: @"Club Timeline - Share",
+																									@"view_controller"	: self}];
+
+		
+		} else if (buttonIndex == 1) {
+			NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote" withClubPhoto:_clubPhotoVO];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+			[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_clubPhotoVO.challengeID forOpponent:_clubPhotoVO completion:^(NSDictionary *result) {
+				[[HONAPICaller sharedInstance] retrieveUserByUserID:_clubPhotoVO.userID completion:^(NSDictionary *result) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+				}];
+				
+				[self _advanceTimelineFromCell:(HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]] byAmount:1];
+			}];
+		
+		} else if (buttonIndex == 2) {
+			NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply" withClubPhoto:_clubPhotoVO];
+			
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+			
+			HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
+			selfieCameraViewController.delegate = self;
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	}
 }
 
 

@@ -31,6 +31,7 @@
 @property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
+@property (nonatomic, strong) UIImageView *emptyImageView;
 
 @property (nonatomic, strong) UITableViewController *refreshControlTableViewController;
 @end
@@ -65,6 +66,13 @@
 					}];
 				}
 				
+				if ([[result objectForKey:key] count] > 0) {
+					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:key] count]]
+												message:@""
+											   delegate:nil
+									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+									  otherButtonTitles:nil] show];
+				}
 			
 			} else
 				continue;
@@ -85,7 +93,6 @@
 		
 		_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
 	}];
-	
 }
 
 - (void)_sendEmailContacts {
@@ -321,6 +328,7 @@
 		_progressHUD = nil;
 	}
 	
+	_emptyImageView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
 	_tableView.alpha = 1.0;
 	
 	[_tableView reloadData];
@@ -360,6 +368,11 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessDefaultFriendsText"]];
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, 111.0);
+	_emptyImageView.hidden = YES;
+	[_tableView addSubview:_emptyImageView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
@@ -489,6 +502,9 @@
 			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addContacts"]];
 			[cell toggleUI:NO];
 			
+			for (UIView *view in cell.contentView.subviews)
+				view.hidden = YES;
+			
 		} else if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
 			cell.clubVO = vo;
@@ -507,6 +523,9 @@
 		if (indexPath.section == 0) {
 			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addContacts"]];
 			[cell toggleUI:NO];
+			
+			for (UIView *view in cell.contentView.subviews)
+				view.hidden = YES;
 			
 		} else if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
@@ -640,7 +659,7 @@
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
 						_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-						[self _retrieveDeviceContacts];
+						[self _goDataRefresh:nil];
 					});
 				
 				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {

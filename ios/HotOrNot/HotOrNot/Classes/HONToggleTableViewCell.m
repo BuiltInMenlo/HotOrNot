@@ -27,7 +27,7 @@
 		[self hideChevron];
 		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOffButton.frame = CGRectMake(263.0, 10.0, 44.0, 44.0);
+		_toggledOffButton.frame = CGRectMake(260.0, 10.0, 44.0, 44.0);
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateNormal];
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
 		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];

@@ -13,6 +13,7 @@
 - (void)addButton:(UIView *)buttonView;
 - (void)leftAlignTitle;
 - (void)addTitleImage:(UIImage *)image;
+- (void)removeBackground;
 - (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;

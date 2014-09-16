@@ -19,11 +19,11 @@
 #define SPACING
 
 //NSString * const kBaseCaption = @"- is feeling…";
-const CGSize kImageSize = {128.0f, 128.0f};
+const CGSize kImageSize = {188.0f, 188.0f};
 const CGSize kImagePaddingSize = {0.0f, 0.0f};
 
 const CGRect kEmotionIntroFrame = {50.0f, 50.0f, 24.0f, 24.0f};
-const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
+const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 @interface HONEmotionsPickerDisplayView () <PicoStickerDelegate>
 @property (nonatomic, strong) NSMutableArray *emotions;
@@ -32,6 +32,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
 @property (nonatomic, strong) UIImageView *cursorImageView;
+@property (nonatomic, strong) UILabel *emptyLabel;
 @property (nonatomic) CGPoint prevPt;
 @property (nonatomic) BOOL isDragging;
 @end
@@ -58,26 +59,38 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		[cameraButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
 		[_previewImageView addSubview:cameraButton];
 		
-		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 3.0, 22.0, 3.0, 144.0)];
+		_emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 160.0, 200.0, 26.0)];
+		_emptyLabel.backgroundColor = [UIColor clearColor];
+		_emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_emptyLabel.textColor = [UIColor lightGrayColor];
+		_emptyLabel.textAlignment = NSTextAlignmentCenter;
+		_emptyLabel.text = @"(Select a sticker)";
+		[self addSubview:_emptyLabel];
+		
+		
+		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 3.0, 22.0, 3.0, 188.0)];
 		_cursorImageView.animationImages = @[[UIImage imageNamed:@"emojiCursor_off"], [UIImage imageNamed:@"emojiCursor_on"]];
 		_cursorImageView.animationDuration = 0.875;
 		_cursorImageView.animationRepeatCount = 0;
 		//[self addSubview:_cursorImageView];
 		//[_cursorImageView startAnimating];
 		
-		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 100.0, 0.0, 0.0)];
+		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 69.0, 0.0, 0.0)];
 		[self addSubview:_loaderHolderView];
 		
-		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 100.0, 0.0, 0.0)];
+		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 69.0, 0.0, 0.0)];
 		[self addSubview:_emotionHolderView];
 		
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 240.0, 44.0, 44.0)];
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(271.0, 244.0, 44.0, 44.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
+//		_previewThumbImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_previewThumbImageView.userInteractionEnabled = YES;
 //		_previewThumbImageView.alpha = 0.0;
 //		_previewThumbImageView.hidden = YES;
 		[self addSubview:_previewThumbImageView];
+		
+		[[HONImageBroker sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
 		UIButton *previewThumbButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		previewThumbButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
@@ -114,7 +127,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 //	holderImageView.image = previewImage;
 //	[_previewImageView addSubview:holderImageView];
 	
-	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 3.0, 44.0, 59.0)];
+	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -7.0, 44.0, 59.0)];
 	thumbImageView.image = previewImage;
 	[_previewThumbImageView addSubview:thumbImageView];
 	
@@ -247,6 +260,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 						 _cursorImageView.frame = CGRectMake(_emotionHolderView.frame.origin.x + _emotionHolderView.frame.size.width + 3.0, _cursorImageView.frame.origin.y, _cursorImageView.frame.size.width, _cursorImageView.frame.size.height);
 						 
 					 } completion:^(BOOL finished) {
+						 _emptyLabel.hidden = ([_emotions count] > 0);
 //						 [UIView animateWithDuration:0.25 animations:^(void) {
 //							 _previewThumbImageView.alpha = (BOOL)([_emotions count] > 1);
 //						 }];

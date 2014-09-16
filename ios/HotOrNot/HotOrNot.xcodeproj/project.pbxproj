@@ -74,6 +74,8 @@
 		30C7F0BA19C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */; };
 		30C7F0BD19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */; };
 		30C7F0BE19C2824D00450BA9 /* StatusCloseButtonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */; };
+		30D5AD8919C7A700004EDA22 /* accessDefaultFriendsText.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D5AD8719C7A700004EDA22 /* accessDefaultFriendsText.png */; };
+		30D5AD8A19C7A700004EDA22 /* accessDefaultFriendsText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D5AD8819C7A700004EDA22 /* accessDefaultFriendsText@2x.png */; };
 		30D8028D19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */; };
 		30D8028E19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */; };
 		30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */; };
@@ -605,6 +607,8 @@
 		30C7F0B819C27B6800450BA9 /* addSelfieButtonB_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addSelfieButtonB_nonActive@2x.png"; sourceTree = "<group>"; };
 		30C7F0BB19C2824D00450BA9 /* StatusCloseButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusCloseButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusCloseButtonActive@2x.png"; sourceTree = "<group>"; };
+		30D5AD8719C7A700004EDA22 /* accessDefaultFriendsText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = accessDefaultFriendsText.png; sourceTree = "<group>"; };
+		30D5AD8819C7A700004EDA22 /* accessDefaultFriendsText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "accessDefaultFriendsText@2x.png"; sourceTree = "<group>"; };
 		30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusBackButton_Active@2x.png"; sourceTree = "<group>"; };
 		30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusBackButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30E6150819B903930028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -2363,6 +2367,8 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				30D5AD8719C7A700004EDA22 /* accessDefaultFriendsText.png */,
+				30D5AD8819C7A700004EDA22 /* accessDefaultFriendsText@2x.png */,
 				309122A219C533D10081B141 /* Titles */,
 				30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */,
 				30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */,
@@ -2870,6 +2876,7 @@
 				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
 				07B6E6E519884B3B00DA0805 /* likeTimelineButton_Active@2x.png in Resources */,
 				4C0F3CEA1988E65000703D09 /* tabMenu_friendsButton_Active@2x.png in Resources */,
+				30D5AD8919C7A700004EDA22 /* accessDefaultFriendsText.png in Resources */,
 				8F4E6217198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png in Resources */,
 				4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */,
 				4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */,
@@ -2895,6 +2902,7 @@
 				4C45A9471996B20100A2086E /* TabBannerElements.xcassets in Resources */,
 				07B6E68519884A9100DA0805 /* nextButton_Active@2x.png in Resources */,
 				4C4328CB18E3A9FA0035FF06 /* MPArrowLeft@2x.png in Resources */,
+				30D5AD8A19C7A700004EDA22 /* accessDefaultFriendsText@2x.png in Resources */,
 				072F53831991633000738827 /* inviteButton_Active@2x.png in Resources */,
 				07B6E6C119884B0A00DA0805 /* submitButton_Active@2x.png in Resources */,
 				4CA5AE1E1941DE4F007EF9EF /* ContactsElements.xcassets in Resources */,

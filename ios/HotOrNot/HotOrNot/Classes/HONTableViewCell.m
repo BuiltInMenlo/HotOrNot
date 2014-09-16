@@ -41,5 +41,9 @@
 	_chevronImageView.hidden = YES;
 }
 
+- (void)removeBackground {
+	self.backgroundView = nil;
+}
+
 
 @end

@@ -249,8 +249,8 @@ static dispatch_queue_t sticker_request_operation_queue;
 			[[NSUserDefaults standardUserDefaults] setObject:@"Y" forKey:@"iap_01"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"RELOAD_EMOTION_PICKER"
-																object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"RELOAD_EMOTION_PICKER"
+//																object:nil];
 			[self _goGlobal];
 		}
 	}

@@ -10,6 +10,7 @@
 @interface HONTableViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)hideChevron;
+- (void)removeBackground;
 
 @property (nonatomic) CGSize size;
 @end

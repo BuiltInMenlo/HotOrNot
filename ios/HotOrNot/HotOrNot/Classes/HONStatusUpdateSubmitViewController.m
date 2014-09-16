@@ -110,9 +110,13 @@
 	
 	//[_headerView setTitle:NSLocalizedString(@"select_club", @"Select Club")];
 	[_headerView addTitleImage:[UIImage imageNamed:@"selectFriendsTitle"]];
+	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
+	[_headerView removeBackground];
+	
+	_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 10.0, _tableView.frame.size.width, _tableView.frame.size.height + 10);
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 1.0, 44.0, 44.0);
+	backButton.frame = CGRectMake(6.0, 1.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusBackButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];

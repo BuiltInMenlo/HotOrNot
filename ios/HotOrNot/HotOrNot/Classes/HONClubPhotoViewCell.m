@@ -72,7 +72,7 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
-//		imageView.image = [UIImage imageNamed:@"defaultClubCover"];
+		imageView.image = [UIImage imageNamed:@"defaultClubPhoto"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -101,35 +101,36 @@
 	usernameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
 	usernameLabel.text = _clubPhotoVO.username;
-	[self.contentView addSubview:usernameLabel];
+	//[self.contentView addSubview:usernameLabel];
 	
 	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	usernameButton.frame = usernameLabel.frame;
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:usernameButton];
-			
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 110.0, 200.0, 16.0)];
+	//[self.contentView addSubview:usernameButton];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 138.0, 200.0, 24.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
-	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	
-	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@" ago…"];
 	[self.contentView addSubview:timeLabel];
+					  
+//	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
+//	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
+//	
+//	UILabel *feelingLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 208.0, 200.0, 26.0)];
+//	feelingLabel.backgroundColor = [UIColor clearColor];
+//	feelingLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
+//	feelingLabel.textColor = [UIColor whiteColor];
+//	feelingLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+//	feelingLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+//	
+//	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
+//	[self.contentView addSubview:feelingLabel];
 	
-	UILabel *feelingLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 208.0, 200.0, 26.0)];
-	feelingLabel.backgroundColor = [UIColor clearColor];
-	feelingLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
-	feelingLabel.textColor = [UIColor whiteColor];
-	feelingLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-	feelingLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	
-	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
-	[self.contentView addSubview:feelingLabel];
-	
-	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 320.0, 84.0)];
+	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 98.0, 320.0, 84.0)];
 	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
 	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
 	emoticonsScrollView.showsVerticalScrollIndicator = NO;
@@ -138,42 +139,42 @@
 	emoticonsScrollView.contentOffset = CGPointMake(-8.0, 0.0);
 	[self.contentView addSubview:emoticonsScrollView];
 	
-	NSMutableArray *prev = [NSMutableArray array];
+//	NSMutableArray *prev = [NSMutableArray array];
 	
 	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
-		BOOL isFound = NO;
-		for (NSString *name in prev) {
-			if ([name isEqualToString:emotionVO.emotionName]) {
-				isFound = YES;
-				break;
-			}
-		}
-		
-		if (!isFound) {
+//		BOOL isFound = NO;
+//		for (NSString *name in prev) {
+//			if ([name isEqualToString:emotionVO.emotionName]) {
+//				isFound = YES;
+//				break;
+//			}
+//		}
+//		
+//		if (!isFound) {
 			UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
 			emotionView.frame = CGRectOffset(emotionView.frame, cnt * 90.0, 0.0);
 			[emoticonsScrollView addSubview:emotionView];
 			
-			[prev addObject:emotionVO.emotionName];
+//			[prev addObject:emotionVO.emotionName];
 			cnt++;
-		}
+//		}
 	}
 	
 	
-	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
-	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
-	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
-	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:likeButton];
-	
-	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(174, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
-	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:replyButton];
+//	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
+//	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
+//	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
+//	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+//	[self.contentView addSubview:likeButton];
+//	
+//	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	replyButton.frame = CGRectMake(174, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
+//	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
+//	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
+//	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+//	[self.contentView addSubview:replyButton];
 	
 	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 50.0, 50.0, 16.0)];
 	_scoreLabel.backgroundColor = [UIColor clearColor];
@@ -181,7 +182,7 @@
 	_scoreLabel.textColor = [UIColor whiteColor];
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
 	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
-	[self.contentView addSubview:_scoreLabel];
+//	[self.contentView addSubview:_scoreLabel];
 }
 
 - (void)setIndexPath:(NSIndexPath *)indexPath {
@@ -287,6 +288,7 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 84.0f, 84.0f};
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
+		NSLog(@"SIZE:[%@]", NSStringFromCGSize(image.size));
 		
 		[UIView beginAnimations:@"fade" context:nil];
 		[UIView setAnimationDuration:0.250];

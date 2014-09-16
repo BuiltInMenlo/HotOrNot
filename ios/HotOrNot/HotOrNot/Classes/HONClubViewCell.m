@@ -39,9 +39,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(18.0, 24.0, 200.0, 26.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 23.0, 190.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor blackColor];
 		[self.contentView addSubview:_titleLabel];
 		
@@ -97,7 +97,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
-	NSString *nameCaption = (_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	NSString *nameCaption = _trivialUserVO.username;//(_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
 	_titleLabel.text = nameCaption;
 	
 	CGSize size = [_titleLabel.text boundingRectWithSize:_titleLabel.frame.size
@@ -108,21 +108,19 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
-	[super toggleUI:NO];
-	
 	_clubVO = clubVO;
 	_statusUpdateVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
-	NSString *titleCaption = (_clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me, " : @"";
+	NSString *titleCaption = [NSString stringWithFormat:@"%@, ", _clubVO.ownerName];//(_clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me, " : @"";
 	
 	for (HONTrivialUserVO *vo in _clubVO.activeMembers)
-		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
 	
 	for (HONTrivialUserVO *vo in _clubVO.pendingMembers) {
 		if ([vo.username length] == 0)
 			continue;
-		
-		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+	
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
 	}
 	
 	titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
@@ -136,7 +134,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	statsLabel.text = [@"" stringFromInt:[_clubVO.submissions count]];
 //	[_statsHolderView addSubview:statsLabel];
 	
-	
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate];
 	
 	_statusUpdateVOs = [NSMutableArray array];
@@ -146,7 +143,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 		
 		UIView *statusUpdateView = [self _holderViewForStatusUpdate:vo];
-		statusUpdateView.frame = CGRectOffset(statusUpdateView.frame, 17.0 + (idx * 18.0), 14.0);
+		statusUpdateView.frame = CGRectOffset(statusUpdateView.frame, 17.0 + (idx * 18.0), 11.0);
 		[statusUpdateView setTag:idx];
 		[self.contentView addSubview:statusUpdateView];
 		[_statusUpdateViews addObject:statusUpdateView];
@@ -284,7 +281,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 #pragma mark - UI Presentation
 - (UIView *)_holderViewForStatusUpdate:(HONClubPhotoVO *)vo {
-	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 42.0, 44.0)];
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 50.0, 50.0)];
 	view.alpha = 0.0;
 	view.hidden = YES;
 

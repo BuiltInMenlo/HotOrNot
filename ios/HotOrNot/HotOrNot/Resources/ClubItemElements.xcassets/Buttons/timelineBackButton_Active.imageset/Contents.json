@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "smallSelfieMask.png"
+      "filename" : "timelineBackButton_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "smallSelfieMask@2x.png"
+      "filename" : "timelineBackButton_Active@2x.png"
     }
   ],
   "info" : {

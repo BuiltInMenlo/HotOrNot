@@ -45,16 +45,12 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_captions = @[@"Search", @" ",
+		_captions = @[@"Search",
 					  NSLocalizedString(@"settings_notification", @"Notifications"),
-					  NSLocalizedString(@"copy_url", @"Copy Club URL"),
 					  NSLocalizedString(@"terms_service", @"Terms of use"),
 					  NSLocalizedString(@"privacy_policy", @"Privacy policy"),
-					  NSLocalizedString(@"settings_support", @"Support"),
-					  NSLocalizedString(@"rate_app", @"Rate this app"),
-					  NSLocalizedString(@"network_status", @"Network status"),
-					  @" "];//,
-//					   NSLocalizedString(@"settings_logout", @"Logout")];
+					  @"Share",
+					  @" "];
 		
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
@@ -200,11 +196,12 @@
 	
 	if (indexPath.row == HONSettingsCellTypeShareClub) {
 		[cell hideChevron];
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareFriends"]];
 	}
 	
 	if (indexPath.row == HONSettingsCellTypeVersion) {
 		[cell hideChevron];
+		cell.backgroundView = nil;
+		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
 		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
 		label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -288,10 +285,10 @@
 																								@"mp_event"			: @"User Profile - Share",
 																								@"view_controller"	: self}];
 
-	} else if (indexPath.row == HONSettingsCellTypeCopyClub) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Copy Club"];
-		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
-		
+//	} else if (indexPath.row == HONSettingsCellTypeCopyClub) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Copy Club"];
+//		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
+//		
 	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
 		
@@ -306,19 +303,19 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
-	} else if (indexPath.row == HONSettingsCellTypeSupport) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Support"];
-		
-		if ([MFMailComposeViewController canSendMail]) {
-			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
-			[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
-			[mailComposeViewController setMessageBody:@"" isHTML:NO];
-			
-			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-			
+//	} else if (indexPath.row == HONSettingsCellTypeSupport) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Support"];
+//		
+//		if ([MFMailComposeViewController canSendMail]) {
+//			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+//			mailComposeViewController.mailComposeDelegate = self;
+//			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
+//			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
+//			[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
+//			[mailComposeViewController setMessageBody:@"" isHTML:NO];
+//			
+//			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+//			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
 										message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
@@ -327,29 +324,29 @@
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-		
-	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Network Status"];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-		
-	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Logout"];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
-		[alertView setTag:HONSettingsAlertTypeLogout];
-		[alertView show];
-	}
+//	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
+//		
+//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+//		
+//	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Network Status"];
+//		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
+//		
+//	} else if (indexPath.row == HONSettingsCellTypeLogout) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Logout"];
+//		
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
+//		[alertView setTag:HONSettingsAlertTypeLogout];
+//		[alertView show];
+//	}
 }
 
 

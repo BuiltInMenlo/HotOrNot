@@ -245,6 +245,21 @@
 	[self.view addSubview:_previewView];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewDidAppear:animated];
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewDidAppear:animated];
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+}
+
+
 
 #pragma mark - UI Presentation
 - (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType {
@@ -377,8 +392,6 @@
 					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? _contactUserVO.mobileNumber : @"",
 					  @"api_endpt"		: kAPICreateChallenge};
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 }
 
@@ -396,7 +409,6 @@
 	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll Photo"];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	_processedImage = (_isBlurred) ? [_processedImage applyBlurWithRadius:32.0
 																tintColor:[UIColor colorWithWhite:0.00 alpha:0.50]

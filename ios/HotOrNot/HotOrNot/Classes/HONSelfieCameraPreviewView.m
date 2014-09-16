@@ -101,18 +101,21 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"composeTitle"]];
+//	_headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"composeTitle"]];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Compose"];
+	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
+	[_headerView removeBackground];
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 3.0, 44.0, 44.0);
+	backButton.frame = CGRectMake(7.0, 1.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(282.0, 3.0, 44.0, 44.0);
+	nextButton.frame = CGRectMake(268.0, 1.0, 44.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -233,6 +236,7 @@
 		}
 	});
 	
+	[_headerView setTitle:emotionVO.emotionName];
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
@@ -245,6 +249,8 @@
 	
 	[_subjectNames removeObject:emotionVO.emotionName];
 	[_emotionsDisplayView removeEmotion:emotionVO];
+	
+	[_headerView setTitle:[_subjectNames lastObject]];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
