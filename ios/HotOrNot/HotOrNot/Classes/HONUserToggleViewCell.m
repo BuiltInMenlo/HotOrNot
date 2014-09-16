@@ -154,7 +154,11 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, MIN(size.width, 220.0), _nameLabel.frame.size.height);
 	_emojiLabel.frame = CGRectMake((_nameLabel.frame.origin.x + _nameLabel.frame.size.width) + 5.0, _emojiLabel.frame.origin.y, _emojiLabel.frame.size.width, _emojiLabel.frame.size.height);
-	//[self hideChevron];
+	
+	[self hideChevron];
+	
+	_toggledOffButton.hidden = NO;
+	_toggledOnButton.hidden = NO;
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
@@ -183,7 +187,11 @@ const CGFloat kEmojiCellFontSpacing = 3.0f;
 	
 	_emojiLabel.frame = CGRectMake(_emojiLabel.frame.origin.x, _emojiLabel.frame.origin.y, (kEmojiCellFontSize + kEmojiCellFontSpacing) * ([emojis length] * 1.0), _emojiLabel.frame.size.height);
 	_emojiLabel.attributedText = attributedString;
+	
 	[self hideChevron];
+	
+	_toggledOffButton.hidden = YES;
+	_toggledOnButton.hidden = YES;
 }
 
 
