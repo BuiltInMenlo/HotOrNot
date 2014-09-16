@@ -348,14 +348,14 @@
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Sign up"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithDetail:@"Sign up"];
 	[self.view addSubview:headerView];
 	
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 40.0, 1.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed: @"arrowButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"arrowButton_Active"] forState:UIControlStateHighlighted];
+	_nextButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 64.0, 1.0, 64.0, 44.0);
+	[_nextButton setBackgroundImage:[UIImage imageNamed: @"sendButton_white_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"sendButton_white_Active"] forState:UIControlStateHighlighted];
 	[headerView addButton:_nextButton];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -379,7 +379,7 @@
 //	[_addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:_addAvatarButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 85.0, 294.0, 22.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 85.0, 294.0, 24.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;

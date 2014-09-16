@@ -44,7 +44,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter Pin"])];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithDetail:@"Access Contacts"];
 	[self.view addSubview:headerView];
 	
 //	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -55,7 +55,7 @@
 //	[headerView addButton:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 45.0, 1.0, 44.0, 44.0);
+	doneButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 45.0, 3.0, 44.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
@@ -113,9 +113,11 @@
 - (void)_goDone {
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		
+		
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+		
+	    [[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 		
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	}];

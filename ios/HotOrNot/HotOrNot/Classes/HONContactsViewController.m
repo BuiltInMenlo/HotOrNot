@@ -295,6 +295,8 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_STARTED" object:nil];
+
 	NSLog(@":/: _goDataRefresh :/:");
 	
 	_headerRows = [NSMutableArray array];
@@ -321,6 +323,8 @@
 }
 
 - (void)_didFinishDataRefresh {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ENDED" object:nil];
+	
 	_segmentedContacts = [self _populateSegmentedDictionary];
 	NSLog(@"_segmentedContacts:[%d]", [_segmentedContacts count]);
 	

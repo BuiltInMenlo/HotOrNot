@@ -907,34 +907,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			}
 		}
 		
-		if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_compose"] isEqualToString:@"YES"]) {
+		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+		if (![[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController.selectedViewController presentViewController:navigationController animated:YES completion:nil];
-			
-			NSLog(@"^^^^^^NOT IN COMPOSE MODAL^^^^^^");
 		}
-		else {
-			NSLog(@"^^^^^^IN COMPOSE MODAL^^^^^^");
-		}
+		
 		
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
 	
-//	if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_compose"] isEqualToString:@"YES"]) {
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self.tabBarController.selectedViewController presentViewController:navigationController animated:YES completion:nil];
-//		
-//		NSLog(@"^^^^^^NOT IN COMPOSE MODAL^^^^^^");
-//	}
-//	else {
-//		//[self _goDone];
-//		NSLog(@"^^^^^^IN COMPOSE MODAL^^^^^^");
-//	}
-	
+	[self performSelector:@selector(_delayedLaunch) withObject:nil afterDelay: 0.25];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -1282,6 +1268,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
 		for (NSString *key in [dict keyEnumerator])
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
+	}
+}
+
+- (void)_delayedLaunch {
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	if (![[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
+		NSLog(@"YOOOOOOOOOOOO");
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.tabBarController.selectedViewController presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 

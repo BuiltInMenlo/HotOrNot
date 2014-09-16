@@ -223,6 +223,12 @@ static NSString * const kCamera = @"camera";
 	} else
 		[super _promptForAddressBookAccess];
 	
+	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"intro_modal"] isEqualToString:@"YES"]) {
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"intro_modal"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		NSLog(@"INTRO MODAL TO BE DISPLAYED ON FIRST RUN -> (YES)");
+	}
 	[self _goCreateChallenge];
 }
 

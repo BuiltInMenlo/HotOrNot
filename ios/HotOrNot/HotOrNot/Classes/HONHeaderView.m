@@ -21,8 +21,9 @@ const CGRect kActiveFrame = {0.01f, 0.01f, 0.01f, 0.01f};
 @synthesize title = _title;
 
 - (id)initWithBranding {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
-		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBrandingBG"]];
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, CGRectGetWidth([UIScreen mainScreen].bounds), (CGRectGetWidth([UIScreen mainScreen].bounds) / 5))])) {
+		_bgImageView = [[UIImageView alloc] initWithFrame: self.frame];
+		_bgImageView.image = [UIImage imageNamed:@"navHeaderMoji"];
 		[self addSubview:_bgImageView];
 	}
 	
@@ -35,9 +36,9 @@ const CGRect kActiveFrame = {0.01f, 0.01f, 0.01f, 0.01f};
 		[self addSubview:_bgImageView];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 6.0, 320, 64.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 10.0, 320, 64.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18.0];
-		_titleLabel.textColor = [UIColor blackColor];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;

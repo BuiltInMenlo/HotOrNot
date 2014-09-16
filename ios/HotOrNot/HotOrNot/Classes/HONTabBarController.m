@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSDictionary *badgeTotals;
 @property(nonatomic, retain) UIView *backgroundView;
 @property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (strong, nonatomic) UILabel *label;
 @end
 
 @implementation HONTabBarController
@@ -31,6 +32,8 @@
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleTabs:) name:@"TOGGLE_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshStarted:) name:@"REFRESH_STARTED" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshEnded:) name:@"REFRESH_ENDED" object:nil];
 	}
 	
 	return (self);
@@ -184,12 +187,13 @@
 	
 	_toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0,[UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
 	_toolbar.backgroundColor = [UIColor lightGrayColor];
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(100.0, [UIScreen mainScreen].bounds.size.height - 44.0 , 320, 44.0)];
-	label.backgroundColor = [UIColor clearColor];
+	_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0 , 320, 44.0)];
+	_label.backgroundColor = [UIColor clearColor];
 	[self.view addSubview:_toolbar];
-	label.text = @"Updated Just Now";
-	label.font=[label.font fontWithSize:12];
-	[self.view addSubview:label];
+	_label.text = @"Updated Just Now";
+	_label.textAlignment = NSTextAlignmentCenter;
+	_label.font=[_label.font fontWithSize:12];
+	[self.view addSubview:_label];
 	
 	self.view.userInteractionEnabled = YES;
 	_toolbar.userInteractionEnabled = YES;
@@ -206,7 +210,7 @@
 
 #pragma mark - Navigation
 - (void)_goCompose:(id)sender {
-	NSLog(@"YJFJYFJFJTFJTMFJYDJDMJ");
+	NSLog(@"OMG LOOK HERE $@&$*&@#(*$&(@*$&(*@&$@&$");
 	HONPostStatusUpdateViewController *postStatusViewController = [[HONPostStatusUpdateViewController alloc] init];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:postStatusViewController];
@@ -327,6 +331,13 @@
 	[super setSelectedIndex:[notification.object intValue]];
 }
 
+- (void)_refreshStarted:(NSNotification *)notification {
+	_label.text = @"Loading...";
+}
+
+- (void)_refreshEnded:(NSNotification *)notification {
+	_label.text = @"Updated Just Now";
+}
 
 #pragma mark - UI Presentation
 - (void)_toggleBadges:(BOOL)isShown {
