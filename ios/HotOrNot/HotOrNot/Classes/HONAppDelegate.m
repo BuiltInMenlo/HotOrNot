@@ -920,7 +920,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
 	
-	[self performSelector:@selector(_delayedLaunch) withObject:nil afterDelay: 0.25];
+	[self performSelector:@selector(_delayedLaunch) withObject:nil afterDelay: 0.667];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -1274,7 +1274,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_delayedLaunch {
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if (![[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
-		NSLog(@"YOOOOOOOOOOOO");
+		NSLog(@"****DELAYED LAUNCH****");
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPostStatusUpdateViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self.tabBarController.selectedViewController presentViewController:navigationController animated:YES completion:nil];
