@@ -48,6 +48,8 @@
 	
 }
 
+
+	
 -(void)completeTransaction:(SKPaymentTransaction *)transaction {
 	//If you want to save the transaction
 	//[self recordTransaction: transaction];

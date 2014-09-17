@@ -19,7 +19,6 @@
 @property (nonatomic, strong) UITabBar *nativeTabBar;
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, retain) UIButton *contactsButton;
-@property (nonatomic, retain) UIButton *clubsButton;
 @property (nonatomic, retain) UIButton *settingsButton;
 @property (nonatomic, retain) NSDictionary *badgeTotals;
 @end
@@ -55,33 +54,19 @@
 		case HONTabBarButtonTypeFriends:
 			notificationName = @"CONTACTS_TAB";
 			totalKey = @"friendsTab";
-			
-			[_contactsButton setSelected:YES];
-			[_clubsButton setSelected:NO];
-			[_settingsButton setSelected:NO];
 			break;
 			
-		case HONTabBarButtonTypeClubs:
-			notificationName = @"CLUBS_TAB";
-			totalKey = @"clubsTab";
-			
-			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:YES];
-			[_settingsButton setSelected:NO];
-			break;
-		
 		case HONTabBarButtonTypeSettings:
 			notificationName = @"SETTINGS_TAB";
 			totalKey = @"settingsTab";
-			
-			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:NO];
-			[_settingsButton setSelected:YES];
 			break;
 			
 		default:
 			break;
 	}
+	
+	[_contactsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeFriends)];
+	[_settingsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeSettings)];
 	
 	[HONAppDelegate incTotalForCounter:totalKey];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
@@ -132,16 +117,6 @@
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];
 	
-	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(107.0, 0.0, 106.0, kTabSize.height);
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateNormal];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Active"] forState:UIControlStateHighlighted];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateDisabled];
-	[_clubsButton setTag:HONTabBarButtonTypeClubs];
-//	[_tabHolderView addSubview:_clubsButton];
-	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_settingsButton.frame = CGRectMake(182.0, 0.0, 107.0, kTabSize.height);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_NonActive"] forState:UIControlStateNormal];
@@ -162,9 +137,6 @@
 	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];
 	
-	if (tabBarButtonType == HONTabBarButtonTypeClubs)
-		return;
-	
 	NSString *analyticsEventName = @"";
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";
@@ -178,35 +150,20 @@
 			analyticsEventName = @"Friends";
 			notificationName = @"CONTACTS_TAB";
 			totalKey = @"friendsTab";
-			
-			[_contactsButton setSelected:YES];
-			[_clubsButton setSelected:NO];
-			[_settingsButton setSelected:NO];
-			break;
-			
-		case HONTabBarButtonTypeClubs:
-			analyticsEventName = @"Clubs";
-			notificationName = @"CLUBS_TAB";
-			totalKey = @"clubsTab";
-			
-			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:YES];
-			[_settingsButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeSettings:
 			analyticsEventName = @"Settings";
 			notificationName = @"SETTINGS_TAB";
 			totalKey = @"settingsTab";
-			
-			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:NO];
-			[_settingsButton setSelected:YES];
 			break;
 			
 		default:
 			break;
 	}
+	
+	[_contactsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeFriends)];
+	[_settingsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeSettings)];
 	
 	
 	[HONAppDelegate incTotalForCounter:totalKey];
@@ -230,7 +187,7 @@
 #pragma mark - Notifications
 - (void)_toggleTabs:(NSNotification *)notification {
 	if ([[notification object] isEqualToString:@"SHOW"]) {
-		[UIView animateWithDuration:0.333 delay:0.0
+		[UIView animateWithDuration:0.333 delay:0.125
 			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
 								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);

@@ -127,7 +127,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	holderImageView.image = previewImage;
 //	[_previewImageView addSubview:holderImageView];
 	
-	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -7.0, 44.0, 59.0)];
+	for (UIView *view in _previewThumbImageView.subviews) {
+		if (view.tag != 1)
+			[view removeFromSuperview];
+	}
+	
+	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -17.0, 44.0, 78.0)];
 	thumbImageView.image = previewImage;
 	[_previewThumbImageView addSubview:thumbImageView];
 	

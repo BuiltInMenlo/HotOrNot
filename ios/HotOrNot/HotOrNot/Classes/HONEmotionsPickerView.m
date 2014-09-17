@@ -10,7 +10,7 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
-const CGSize kImageSpacing2Size = {75.0f, 73.0f};
+const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
@@ -128,10 +128,10 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 	[_availableEmotions removeAllObjects];
 	
-//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-//	}
+	}
 	
 	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
 		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
@@ -183,19 +183,11 @@ static dispatch_queue_t sticker_request_operation_queue;
 	}
 	
 	for (HONEmotionVO *vo in _availableEmotions) {
-		dispatch_async(dispatch_get_main_queue(), ^{
-			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
-				
-			} else {
-//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
-			}
-		});
-		
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.125];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.25];
 		
 		emotionItemView.delegate = self;
 		[_itemViews addObject:emotionItemView];

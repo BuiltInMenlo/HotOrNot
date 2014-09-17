@@ -29,6 +29,7 @@
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
 #import "KikAPI.h"
+#import "NHThreadThis.h"
 #import "PicoSticker.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
@@ -1130,13 +1131,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
-	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]]];
 	
 	
@@ -1154,6 +1149,40 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window.rootViewController = self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor blackColor];
+	
+	
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
+	
+	double delayInSeconds = 2.0;
+	dispatch_time_t popTime1 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime1, dispatch_get_main_queue(), ^(void) {
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
+		
+		dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime2, dispatch_get_main_queue(), ^(void) {
+			[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
+			
+			dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+			dispatch_after(popTime3, dispatch_get_main_queue(), ^(void) {
+				[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
+				
+				dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+				dispatch_after(popTime4, dispatch_get_main_queue(), ^(void) {
+				});
+			});
+		});
+	});
+	
+	
+//	[[[[[[[[[NHThreadThis backgroundThis] groupThese] doThis:^{
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
+//    }] waitForever] doThis:^{
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
+//	}] waitForever] doThis:^{
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
+//	}] waitForever] doThis:^{
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
+//    }];
 }
 
 - (void)_establishUserDefaults {

@@ -89,8 +89,16 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return ([NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
 }
 
-- (NSString *)osVersion {
+- (NSString *)osName {
+	return ([[UIDevice currentDevice] systemName]);
+}
+
+- (NSString *)osNameVersion {
 	return ([NSString stringWithFormat:@"%@ %@", [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]]);
+}
+
+- (NSString *)osVersion {
+	return ([[UIDevice currentDevice] systemVersion]);
 }
 
 - (NSString *)pushToken {

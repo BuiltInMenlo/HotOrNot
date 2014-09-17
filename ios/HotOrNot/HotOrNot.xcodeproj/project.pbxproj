@@ -76,6 +76,8 @@
 		30C7F0BE19C2824D00450BA9 /* StatusCloseButtonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */; };
 		30D5AD8919C7A700004EDA22 /* accessDefaultFriendsText.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D5AD8719C7A700004EDA22 /* accessDefaultFriendsText.png */; };
 		30D5AD8A19C7A700004EDA22 /* accessDefaultFriendsText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D5AD8819C7A700004EDA22 /* accessDefaultFriendsText@2x.png */; };
+		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
+		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30D8028D19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */; };
 		30D8028E19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */; };
 		30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */; };
@@ -609,6 +611,10 @@
 		30C7F0BC19C2824D00450BA9 /* StatusCloseButtonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusCloseButtonActive@2x.png"; sourceTree = "<group>"; };
 		30D5AD8719C7A700004EDA22 /* accessDefaultFriendsText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = accessDefaultFriendsText.png; sourceTree = "<group>"; };
 		30D5AD8819C7A700004EDA22 /* accessDefaultFriendsText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "accessDefaultFriendsText@2x.png"; sourceTree = "<group>"; };
+		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
+		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
+		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
+		30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHThreadThis.m; sourceTree = "<group>"; };
 		30D8028B19C2925B00F4C8B7 /* StatusBackButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusBackButton_Active@2x.png"; sourceTree = "<group>"; };
 		30D8028C19C2925B00F4C8B7 /* StatusBackButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusBackButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30E6150819B903930028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -1478,6 +1484,17 @@
 			name = Search;
 			sourceTree = "<group>";
 		};
+		30D5AD8B19C8C980004EDA22 /* NHThreadThis */ = {
+			isa = PBXGroup;
+			children = (
+				30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */,
+				30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */,
+				30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */,
+				30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */,
+			);
+			path = NHThreadThis;
+			sourceTree = "<group>";
+		};
 		30FC08A219B3FD2200085E7C /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -1883,6 +1900,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
 				30FC8C3C19A829E900CDB2BC /* Tapstream */,
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
 				4CD22C52195B8E0D00E6AD0B /* PicoCandy */,
@@ -3023,6 +3041,7 @@
 				4C7DBBBE194FF43D00F7A487 /* HONTableView.m in Sources */,
 				4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */,
 				4CE0399E185727150005256F /* HONAPICaller.m in Sources */,
+				30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */,
 				4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */,
 				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
@@ -3107,6 +3126,7 @@
 				4C3A1D0B19920BA1007A85B8 /* NSString+Base64.m in Sources */,
 				4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */,
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
+				30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
 				4C4328AB18E3A9FA0035FF06 /* EGOImageView.m in Sources */,
 				4C41071F18C16300009E9F9E /* HONEnterPINViewController.m in Sources */,

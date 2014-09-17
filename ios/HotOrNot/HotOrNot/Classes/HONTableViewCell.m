@@ -41,6 +41,10 @@
 	_chevronImageView.hidden = YES;
 }
 
+- (void)toggleChevron {
+	_chevronImageView.hidden = !_chevronImageView.hidden;
+}
+
 - (void)removeBackground {
 	self.backgroundView = nil;
 }

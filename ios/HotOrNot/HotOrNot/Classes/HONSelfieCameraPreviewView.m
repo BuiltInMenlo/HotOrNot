@@ -221,20 +221,20 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
 										withEmotion:emotionVO];
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
-			NSLog(@"Content in CandyBox --(%@)", emotionVO.contentGroupID);
-			
-//			PicoSticker *sticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
-//			[sticker use];
-//			emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
-//			[emotionVO.picoSticker use];
-	
-		} else {
-//			NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
-//			[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
-		}
-	});
+//	dispatch_async(dispatch_get_main_queue(), ^{
+//		if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
+//			NSLog(@"Content in CandyBox --(%@)", emotionVO.contentGroupID);
+//			
+////			PicoSticker *sticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+////			[sticker use];
+////			emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+////			[emotionVO.picoSticker use];
+//	
+//		} else {
+////			NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
+////			[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
+//		}
+//	});
 	
 	[_headerView setTitle:emotionVO.emotionName];
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];

@@ -20,6 +20,8 @@
 - (NSString *)locale;
 - (NSString *)modelName;
 - (NSString *)deviceName;
+- (NSString *)osName;
+- (NSString *)osNameVersion;
 - (NSString *)osVersion;
 - (NSString *)pushToken;
 

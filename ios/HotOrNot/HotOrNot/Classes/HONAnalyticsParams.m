@@ -52,16 +52,55 @@ static HONAnalyticsParams *sharedInstance = nil;
 //					   @"os"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
 //					   @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject]};
 //	});
+	
+	NSDictionary *user = @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+						   @"name"			: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+						   @"cohort-date"	: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+						   @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONAppDelegate infoForUser] objectForKey:@"added"] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSWeekCalendarUnit fromDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]]] week]]};
+	
+	NSDictionary *device = @{@"os"				: [[HONDeviceIntrinsics sharedInstance] osName],
+							 @"os-version"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
+							 @"hardware-make"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringToIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
+							 @"hardware-model"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringFromIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
+							 @"resolution"		: NSStringFromCGSize([UIScreen mainScreen].bounds.size),
+							 @"adid"			: [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO],
+							 @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
+							 @"time"			: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
+							 @"tz"				: [[HONDateTimeAlloter sharedInstance] timezoneFromDeviceLocale],
+							 @"battery-per"		: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100)]};
+	
+	NSDictionary *session = @{@"id"				: @"",
+							  @"id-last"		: @"",
+							  @"session-gap"	: @"",
+							  @"duration"		: @"",
+							  @"idle"			: @"",
+							  @"count"			: @"",
+							  @"entry-point"	: @""};
+	
+	NSDictionary *application = @{@"version"		: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+								  @"build"			: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
+								  @"service-env"	: ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod",
+								  @"api-release"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject]};
+	
+	NSDictionary *screenState = @{@"current"	: @"",
+								  @"previous"	: @""};
+	
+	
+	return (@{@"user"			: user,
+			  @"device"			: device,
+			  @"session"		: session,
+			  @"application"	: application,
+			  @"screen-state"	: screenState});
 
-	return (@{@"user"		: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]],
-			  @"app_ver"	: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
-			  @"app_build"	: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
-			  @"api_env"	: ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod",
-			  @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject],
-			  @"device"		: [[HONDeviceIntrinsics sharedInstance] modelName],
-			  @"os"			: [[HONDeviceIntrinsics sharedInstance] osVersion],
-			  @"locale"		: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
-			  @"timestamp"	: [[NSDate date] descriptionWithLocale:[NSLocale currentLocale]]});
+//	return (@{@"user"		: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]],
+//			  @"app_ver"	: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+//			  @"app_build"	: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
+//			  @"api_env"	: ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod",
+//			  @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject],
+//			  @"device"		: [[HONDeviceIntrinsics sharedInstance] modelName],
+//			  @"os"			: [[HONDeviceIntrinsics sharedInstance] osNameVersion],
+//			  @"locale"		: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
+//			  @"timestamp"	: [[NSDate date] descriptionWithLocale:[NSLocale currentLocale]]});
 }
 
 - (NSDictionary *)userProperty {
@@ -72,7 +111,9 @@ static HONAnalyticsParams *sharedInstance = nil;
 //		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
 //	});
 	
-	return (@{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]});
+	return (@{@"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+			  @"name"			: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+			  @"cohort-date"	: [[HONAppDelegate infoForUser] objectForKey:@"added"]});
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {

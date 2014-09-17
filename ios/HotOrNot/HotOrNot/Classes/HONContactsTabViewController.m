@@ -98,12 +98,16 @@ static NSString * const kCamera = @"camera";
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	
+	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0)
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewWillAppear:animated];
+	
+	_tableView.alpha = 1.0;
 	
 //	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
 //		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
@@ -130,7 +134,12 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
 	[_activityHeaderView updateActivityBadge];
 	
-	//[self _goDataRefresh:nil];
+		//[self _goDataRefresh:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewDidDisappear:animated];
 }
 
 
@@ -291,6 +300,15 @@ static NSString * const kCamera = @"camera";
 									withUserClub:clubVO];
 	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
+	
+	if ([clubVO.submissions count] > 0)
+		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:YES];
+	
+	else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
@@ -300,7 +318,11 @@ static NSString * const kCamera = @"camera";
 									withContactUser:contactUserVO];
 	
 	[super clubViewCell:viewCell didSelectContactUser:contactUserVO];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:contactUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 
@@ -313,9 +335,30 @@ static NSString * const kCamera = @"camera";
 									withTrivialUser:trivialUserVO];
 	
 	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:trivialUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+	
+	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - TableView DataSource
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
+	
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+		if (indexPath.section == 1) {
+			[cell toggleUI:NO];
+			[cell toggleChevron];
+		}
+	}
+	
+	return (cell);
 }
 
 
@@ -324,6 +367,7 @@ static NSString * const kCamera = @"camera";
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	[cell toggleOnWithReset:YES];
 	
 	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
@@ -349,11 +393,9 @@ static NSString * const kCamera = @"camera";
 				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
 			
 			else {
-				[[[UIAlertView alloc] initWithTitle:@"No Status Updates!"
-											message:@""
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:cell.clubVO]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
 			}
 			
 		} else if (indexPath.section == 2) {
@@ -380,11 +422,9 @@ static NSString * const kCamera = @"camera";
 				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
 			
 			else {
-				[[[UIAlertView alloc] initWithTitle:@"No Status Updates!"
-											message:@""
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:cell.clubVO]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
 			}
 			
 		} else if (indexPath.section == 2) {

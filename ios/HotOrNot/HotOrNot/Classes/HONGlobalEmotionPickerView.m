@@ -48,7 +48,6 @@ const CGSize kImageSpacingSize = {154.0f, 149.0f};
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
-		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
 		[self addSubview:_bgImageView];
 		
@@ -82,7 +81,6 @@ const CGSize kImageSpacingSize = {154.0f, 149.0f};
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
-		
 		
 		NSArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"paid"];
 		for (NSString *contentGroupID in contentGroupIDs)
@@ -142,13 +140,13 @@ static dispatch_queue_t sticker_request_operation_queue;
 	}
 	
 	for (HONEmotionVO *vo in _availableEmotions) {
-		dispatch_async(dispatch_get_main_queue(), ^{
-			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
-				
-			} else {
-//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
-			}
-		});
+//		dispatch_async(dispatch_get_main_queue(), ^{
+//			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
+//				
+//			} else {
+////				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
+//			}
+//		});
 		
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
@@ -180,7 +178,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 		[alertView setTag:0];
 		[alertView show];
-		
 		
 //		if ([[name lowercaseString] rangeOfString:@" - free"].location != NSNotFound)
 //			name = [name substringToIndex:[[name lowercaseString] rangeOfString:@" - free"].location];
@@ -254,7 +251,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 			[self _goGlobal];
 		}
 	}
-		
 }
 
 

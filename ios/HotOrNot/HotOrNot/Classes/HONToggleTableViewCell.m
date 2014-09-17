@@ -26,18 +26,18 @@
 	if ((self = [super init])) {
 		[self hideChevron];
 		
-		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_toggledOffButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"toggledOffButton_nonActive"]];// [UIButton buttonWithType:UIButtonTypeCustom];
 		_toggledOffButton.frame = CGRectMake(260.0, 10.0, 44.0, 44.0);
-		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateNormal];
-		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
-		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+//		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateNormal];
+//		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
+//		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_toggledOffButton];
 		
-		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_toggledOnButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"toggledOnButton_nonActive"]];//[UIButton buttonWithType:UIButtonTypeCustom];
 		_toggledOnButton.frame = _toggledOffButton.frame;
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateNormal];
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateHighlighted];
-		[_toggledOffButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
+//		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateNormal];
+//		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateHighlighted];
+//		[_toggledOffButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
 		_toggledOnButton.alpha = 0.0;
 		[self.contentView addSubview:_toggledOnButton];
 	}
@@ -82,8 +82,8 @@
 - (void)toggleSelected:(BOOL)isSelected {
 	_isSelected = isSelected;
 	
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		_toggledOnButton.alpha = (int)isSelected;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_toggledOnButton.alpha = (int)_isSelected;
 	} completion:^(BOOL finished) {
 	}];
 }

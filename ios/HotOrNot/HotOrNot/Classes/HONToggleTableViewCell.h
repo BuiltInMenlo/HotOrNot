@@ -16,8 +16,8 @@
 @end
 
 @interface HONToggleTableViewCell : HONTableViewCell {
-	UIButton *_toggledOffButton;
-	UIButton *_toggledOnButton;
+	UIImageView *_toggledOffButton;
+	UIImageView *_toggledOnButton;
 }
 
 + (NSString *)cellReuseIdentifier;

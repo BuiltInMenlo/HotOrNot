@@ -63,10 +63,6 @@
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
 		_filename = @"defaultClubCover";
-		
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:NO completion:nil];
 	}
 	
 	return (self);

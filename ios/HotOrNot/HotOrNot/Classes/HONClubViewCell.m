@@ -60,8 +60,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textAlignment = NSTextAlignmentRight;
 //		[self.contentView addSubview:_timeLabel];
-		
-		[self hideChevron];
 	}
 	
 	return (self);
@@ -205,7 +203,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_titleLabel.frame = CGRectOffset(_titleLabel.frame, 35.0 + [_statusUpdateVOs count] * 18.0, 0.0);
 	//_subtitleLabel.frame = CGRectOffset(_subtitleLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
 	//_subtitleLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : subtitle;
-	
 }
 
 - (void)toggleImageLoading:(BOOL)isLoading {
@@ -275,7 +272,49 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 }
 
 - (void)toggleUI:(BOOL)isEnabled {
+	[super toggleUI:isEnabled];
+}
+
+- (void)_goDeselect {
+	[super _goDeselect];
 	
+	NSLog(@"[*:*] clubViewCell:_goDeselect");
+	
+	if (_clubVO != nil) {
+		if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectClub:)])
+			[self.delegate clubViewCell:self didSelectClub:_clubVO];
+	
+	} else {
+		if (_trivialUserVO != nil) {
+			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectTrivialUser:)])
+				[self.delegate clubViewCell:self didSelectTrivialUser:_trivialUserVO];
+		
+		} else {
+			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectContactUser:)])
+				[self.delegate clubViewCell:self didSelectContactUser:_contactUserVO];
+		}
+	}
+}
+
+- (void)_goSelect {
+	[super _goSelect];
+	
+	NSLog(@"[*:*] clubViewCell:_goSelect");
+	
+	if (_clubVO != nil) {
+		if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectClub:)])
+			[self.delegate clubViewCell:self didSelectClub:_clubVO];
+		
+	} else {
+		if (_trivialUserVO != nil) {
+			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectTrivialUser:)])
+				[self.delegate clubViewCell:self didSelectTrivialUser:_trivialUserVO];
+			
+		} else {
+			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectContactUser:)])
+				[self.delegate clubViewCell:self didSelectContactUser:_contactUserVO];
+		}
+	}
 }
 
 

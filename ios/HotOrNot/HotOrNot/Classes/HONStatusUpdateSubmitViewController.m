@@ -129,6 +129,8 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
+	[self _retrieveRecentClubs];
+	
 	//[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 48.0, _tableView.contentInset.right)];
 }
 
@@ -347,6 +349,7 @@
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Select Club"
 											   withUserClub:cell.clubVO];
 			
+			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])
 				[_selectedClubs removeObject:cell.clubVO];
 			
@@ -373,6 +376,7 @@
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Select Club"
 											   withUserClub:cell.clubVO];
 			
+			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])
 				[_selectedClubs removeObject:cell.clubVO];
 			

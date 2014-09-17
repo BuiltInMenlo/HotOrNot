@@ -17,7 +17,6 @@
 #import "HONInviteContactsViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONClubPhotoVO.h"
 
 
@@ -28,7 +27,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
-@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
@@ -100,9 +99,6 @@
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:(_clubVO == nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : _clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
-		
-		[_headerView setTitle:_clubVO.clubName];
-		[_headerView toggleLightStyle:YES];
 		
 		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
 		
@@ -215,20 +211,20 @@
 		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
 	}
 	
-	titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
+	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
 	
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)];
 	[self.view addSubview:headerView];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 18.0, 170.0, 30.0)];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
-	titleLabel.textColor = [UIColor whiteColor];
-	titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-	titleLabel.textAlignment = NSTextAlignmentCenter;
-	titleLabel.text = titleCaption;
-	[headerView addSubview:titleLabel];
+	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 18.0, 170.0, 30.0)];
+	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
+	_titleLabel.textColor = [UIColor whiteColor];
+	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	_titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	_titleLabel.textAlignment = NSTextAlignmentCenter;
+	_titleLabel.text = titleCaption;
+	[headerView addSubview:_titleLabel];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(12.0, 13.0, 44.0, 44.0);
@@ -474,8 +470,11 @@
 	return (proposedDestinationIndexPath);
 }
 
+
+#pragma mark - ScrollView Delegates
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	_index = ((NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject]).section;
+	_titleLabel.text = ((HONClubPhotoVO *)[_clubPhotos objectAtIndex:_index]).username;
 }
 
 

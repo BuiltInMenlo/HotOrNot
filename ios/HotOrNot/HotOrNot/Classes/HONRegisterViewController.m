@@ -256,15 +256,15 @@
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
-				NSString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+//				NSString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 //				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
 //				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
 //					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
-				
-				if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
-					}];
-				}
+//				
+//				if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
+//					[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
+//					}];
+//				}
 			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
@@ -288,17 +288,17 @@
 				[HONAppDelegate writeUserInfo:result];
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
 				
-				NSMutableString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+//				NSMutableString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 //				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
 //					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
 				
 				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 					[[HONClubAssistant sharedInstance] writeUserClubs:result];
 					
-					if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
-						[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
-						}];
-					}
+//					if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
+//						[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
+//						}];
+//					}
 				}];
 				
 				[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {				

@@ -54,6 +54,14 @@
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
+		if ([[result objectForKey:@"pending"] count] > 0) {
+			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:@"pending"] count]]
+										message:@""
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+		}
+		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 				for (NSDictionary *dict in [result objectForKey:key])
@@ -65,33 +73,10 @@
 						[self _retrieveRecentClubs];
 					}];
 				}
-				
-				if ([[result objectForKey:key] count] > 0) {
-					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:key] count]]
-												message:@""
-											   delegate:nil
-									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									  otherButtonTitles:nil] show];
-				}
 			
 			} else
 				continue;
 		}
-		
-		_recentClubs = [[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
-			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
-			
-			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
-				return ((NSComparisonResult)NSOrderedAscending);
-			
-			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
-				return ((NSComparisonResult)NSOrderedDescending);
-			
-			return ((NSComparisonResult)NSOrderedSame);
-		}] mutableCopy];
-		
-		_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
 	}];
 }
 
@@ -328,6 +313,21 @@
 		_progressHUD = nil;
 	}
 	
+	_recentClubs = [[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+		HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
+		HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+		
+		if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+			return ((NSComparisonResult)NSOrderedAscending);
+		
+		if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+			return ((NSComparisonResult)NSOrderedDescending);
+		
+		return ((NSComparisonResult)NSOrderedSame);
+	}] mutableCopy];
+	
+	_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
+	
 	_emptyImageView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
 	_tableView.alpha = 1.0;
 	
@@ -390,18 +390,23 @@
 	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
 	if ([passedRegistration length] != 0) {
-		[self _retrieveRecentClubs];
 		[self _submitPhoneNumberForMatching];
 		
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 			_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
 			[self _retrieveDeviceContacts];
-		
+			
 		} else
 			_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
-	
+		
 	} else
 		_tableViewDataSource = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? HONContactsTableViewDataSourceAddressBook : HONContactsTableViewDataSourceMatchedUsers;
+	
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewDidAppear:animated];
 }
 
 
@@ -452,15 +457,15 @@
 
 #pragma mark - ClubViewCell Delegates
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[*:*] clubViewCell:didSelectClub");
+	NSLog(@"[[*:*]] clubViewCell:didSelectClub");
 }
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
-	NSLog(@"[*:*] clubViewCell:didSelectContactUser");
+	NSLog(@"[[*:*]] clubViewCell:didSelectContactUser");
 }
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
+	NSLog(@"[[*:*]] clubViewCell:didSelectTrivialUser");
 }
 
 
@@ -508,7 +513,6 @@
 		} else if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
 			cell.clubVO = vo;
-			[cell toggleUI:NO];
 			
 		} else if (indexPath.section == 2) {
 			HONTrivialUserVO *vo = (HONTrivialUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
@@ -530,7 +534,6 @@
 		} else if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
 			cell.clubVO = vo;
-			[cell toggleUI:NO];
 			
 		} else if (indexPath.section == 2) {
 			HONTrivialUserVO *vo = (HONTrivialUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
@@ -569,7 +572,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	[cell toggleOnWithReset:YES];
 	
 	NSLog(@"-[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
