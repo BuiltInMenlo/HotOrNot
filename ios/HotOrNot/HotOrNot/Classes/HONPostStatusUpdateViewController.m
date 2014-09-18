@@ -31,6 +31,7 @@
 @property (nonatomic, strong) UIImageView *animation1;
 @property (nonatomic, strong) UIImageView *animation2;
 @property (nonatomic, strong) UIImageView *animation3;
+@property (nonatomic, strong) UIScrollView *scrollView;
 @end
 
 @implementation HONPostStatusUpdateViewController
@@ -38,8 +39,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_offset = 0;
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_completedFirstRun:) name:@"COMPLETED_FIRST_RUN" object:nil];
-    }
+	}
 	
     return (self);
 }
@@ -54,6 +54,10 @@
 	_progressHUD.taskInProgress = YES;
 	
 	_unicodeEmojis = @"";
+	
+//	NSString *masterlist = @"😄😃😀😊☺️😉😍😘😚😗😙😜😝😛😳😁😔😌😒😞😣😢😂😭😪😥😰😅😓😩😫😨😱😠😡😤😖😆😋😷😎😴😵😲😟😦😧😈👿😮😬😐😕😯😶😇😏😑👲👳👮👷💂👶👦👧👨👩👴👵👱👼👸😺😸😻😽😼🙀😿😹😾👹👺🙈🙉🙊💀👽💩🔥✨🌟💫💥💢💦💧💤💨👂👀👃👅👄👍👎👌👊✊✌️👋✋👐👆👇👉👈🙌🙏☝️👏💪🚶🏃💃👫👪👬👭💏💑👯🙆🙅💁🙋💆💇💅👰🙎🙍🙇🎩👑👒👟👞👡👠👢👕👔👚👗🎽👖👘👙💼👜👝👛👓🎀🌂💄💛💙💜💚❤️💔💗💓💕💖💞💘💌💋💍💎👤👥💬👣💭🐶🐺🐱🐭🐹🐰🐯🐨🐻🐷🐽🐮🐗🐵🐒🐴🐑🐘🐼🐧🐦🐤🐥🐣🐔🐍🐢🐛🐝🐜🐞🐌🐙🐚🐠🐟🐬🐳🐋🐄🐏🐀🐃🐅🐇🐉🐎🐐🐓🐕🐖🐁🐂🐲🐡🐊🐫🐪🐆🐈🐩🐾💐🌸🌷🍀🌹🌻🌺🍁🍃🍂🌿🌾🍄🌵🌴🌲🌳🌰🌱🌼🌐🌞🌝🌚🌑🌒🌓🌔🌕🌖🌗🌘🌜🌛🌙🌍🌎🌏🌋🌌🌠⭐️☀️⛅️☁️⚡️☔️❄️⛄️🌀🌁🌈🌊🎍💝🎎🎒🎓🎏🎆🎇🎐🎑🎃👻🎅🎄🎁🎋🎉🎊🎈🎌🔮🎥📷📹📼💿📀💽💾💻📱☎️📞📟📠📡📺📻🔊🔉🔈🔇🔔🔕📢📣⏳⌛️⏰⌚️🔓🔒🔏🔐🔑🔎💡🔦🔆🔅🔌🔋🔍🛁🛀🚿🚽🔧🔩🔨🚪🚬💣🔫🔪💊💉💰💴💵💷💶💳💸📲📧📥📤✉️📩📨📯📫📪📬📭📮📦📝📄📃📑📊📈📉📜📋📅📆📇📁📂✂️📌📎✒️✏️📏📐📕📗📘📙📓📔📒📚📖🔖📛🔬🔭📰🎨🎬🎤🎧🎼🎵🎶🎹🎻🎺🎷🎸👾🎮🃏🎴🀄️🎲🎯🏈🏀⚽️⚾️🎾🎱🏉🎳⛳️🚵🚴🏁🏇🏆🎿🏂🏊🏄🎣☕️🍵🍶🍼🍺🍻🍸🍹🍷🍴🍕🍔🍟🍗🍖🍝🍛🍤🍱🍣🍥🍙🍘🍚🍜🍲🍢🍡🍳🍞🍩🍮🍦🍨🍧🎂🍰🍪🍫🍬🍭🍯🍎🍏🍊🍋🍒🍇🍉🍓🍑🍈🍌🍐🍍🍠🍆🍅🌽🏠🏡🏫🏢🏣🏥🏦🏪🏩🏨💒⛪️🏬🏤🌇🌆🏯🏰⛺️🏭🗼🗾🗻🌄🌅🌃🗽🌉🎠🎡⛲️🎢🚢⛵️🚤🚣⚓️🚀✈️💺🚁🚂🚊🚉🚞🚆🚄🚅🚈🚇🚝🚋🚃🚎🚌🚍🚙🚘🚗🚕🚖🚛🚚🚨🚓🚔🚒🚑🚐🚲🚡🚟🚠🚜💈🚏🎫🚦🚥⚠️🚧🔰⛽️🏮🎰♨️🗿🎪🎭📍🚩🇯🇵🇰🇷🇩🇪🇨🇳🇺🇸🇫🇷🇪🇸🇮🇹🇷🇺🇬🇧1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣0️⃣🔟🔢#️⃣🔣⬆️⬇️⬅️➡️🔠🔡🔤↗️↖️↘️↙️↔️↕️🔄◀️▶️🔼🔽↩️↪️ℹ️⏪⏩⏫⏬⤵️⤴️🆗🔀🔁🔂🆕🆙🆒🆓🆖📶🎦🈁🈯️🈳🈵🈴🈲🉐🈹🈺🈶🈚️🚻🚹🚺🚼🚾🚰🚮🅿️♿️🚭🈷🈸🈂Ⓜ️🛂🛄🛅🛃🉑㊙️㊗️🆑🆘🆔🚫🔞📵🚯🚱🚳🚷🚸⛔️✳️❇️❎✅✴️💟🆚📳📴🅰🅱🆎🅾💠➿♻️♈️♉️♊️♋️♌️♍️♎️♏️♐️♑️♒️♓️⛎🔯🏧💹💲💱©®™❌‼️⁉️❗️❓❕❔⭕️🔝🔚🔙🔛🔜🔃🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕖🕗🕘🕙🕚🕡🕢🕣🕤🕥🕦✖️➕➖➗♠️♥️♣️♦️💮💯✔️☑️🔘🔗➰〰〽️🔱◼️◻️◾️◽️▪️▫️🔺🔲🔳⚫️⚪️🔴🔵🔻⬜️⬛️🔶🔷🔸🔹";
+	
+	
 	NSMutableArray *emojis = [NSMutableArray array];
 	for (int i=0; i<[_emojiTextView.text length]; i+=2) {
 		NSString *emojiChar = [_emojiTextView.text substringWithRange:NSMakeRange(i, 2)];
@@ -166,8 +170,7 @@
 	_emojiTextView.text = @"";
 	_emojiTextView.delegate = self;
 	[self.view addSubview:_emojiTextView];
-	
-	
+
 }
 
 - (void)viewDidLoad {
@@ -179,52 +182,92 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Compose View - Entering"];
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"intro_modal"] isEqualToString:@"YES"]) {
-		NSLog(@"^^^^^^^^^^^^^^^ENTERED COMPOSE AFTER FIRST RUN^^^^^^^^^^^^^^^");
+		NSLog(@"^^^^^^^^^^^^^^^ENTERED COMPOSE DURING FIRST RUN^^^^^^^^^^^^^^^");
 		_emojiTextView.userInteractionEnabled = NO; //disallows user from focusing on textview behind intro modal
 		
-		_introTint= [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_introTint= [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_introTint.image = [UIImage imageNamed:@"darkBackgroundTint"];
+//		[self.view addSubview:_introTint]; //intro background tint
+//		
+//		_introModal = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalBackgroundOrange"]];
+//		_introModal.frame = CGRectOffset(_introModal.frame, 0.0, 568.0);
+//		[self.view addSubview:_introModal]; //intro modal explaining app
+//		
+//		[UIView animateWithDuration:0.75f delay:0.0f options: UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+//						 animations:^{
+//							 _introModal.frame = CGRectOffset(_introModal.frame, 0.0, -568.0);
+//						 }
+//						 completion:^(BOOL finished){
+//							 NSLog( @"Intro Modal Animated" );
+//							 _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//							 _closeButton.frame = CGRectMake(250.0, 70.0, 44.0, 44.0);
+//							 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+//							 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+//							 [_closeButton addTarget:self action:@selector(_goCloseModal) forControlEvents:UIControlEventTouchUpInside];
+//							 [self.view addSubview:_closeButton]; //cancel button for intro modal
+//						 }];
+//		
+//		_animation1= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation1"]];
+//		_animation1.frame = CGRectOffset(_animation1.frame, 0.0, 178.0);
+//		_animation1.alpha = 0.0;
+//		[self.view addSubview:_animation1]; //textAnimation1 for intro modal
+//		
+//		_animation2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation2"]];
+//		_animation2.frame = CGRectOffset(_animation2.frame, 0.0, 178.0);
+//		_animation2.alpha = 0.0;
+//		[self.view addSubview:_animation2]; //textAnimation2 for intro modal
+//		
+//		_animation3 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation3"]];
+//		_animation3.frame = CGRectOffset(_animation3.frame, 0.0, 178.0);
+//		_animation3.alpha = 0.0;
+//		[self.view addSubview:_animation3]; //textAnimation3 for intro modal
+//		
+//		[self _animationLoop]; //looping text animations
+		_introTint = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_introTint.image = [UIImage imageNamed:@"darkBackgroundTint"];
-		[self.view addSubview:_introTint]; //intro background tint
+		[self.view addSubview:_introTint]; //add background tint
 		
-		_introModal = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalBackgroundOrange"]];
-		_introModal.frame = CGRectOffset(_introModal.frame, 0.0, 568.0);
-		[self.view addSubview:_introModal]; //intro modal explaining app
+		NSMutableArray *animationsArray = [NSMutableArray array]; //array for images for intro
 		
-		[UIView animateWithDuration:0.75f delay:0.0f options: UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
-						 animations:^{
-							 _introModal.frame = CGRectOffset(_introModal.frame, 0.0, -568.0);
-						 }
-						 completion:^(BOOL finished){
-							 NSLog( @"Intro Modal Animated" );
-							 _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-							 _closeButton.frame = CGRectMake(250.0, 70.0, 44.0, 44.0);
-							 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-							 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-							 [_closeButton addTarget:self action:@selector(_goCloseModal) forControlEvents:UIControlEventTouchUpInside];
-							 //[_closeButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
-							 [self.view addSubview:_closeButton]; //cancel button for intro modal
-						 }];
+		for (NSUInteger i = 1; i <= 3; i++) {
+			NSString *imageName = [NSString stringWithFormat:@"page%d", i];
+			[animationsArray addObject:[UIImage imageNamed:imageName]];
+		} //adds images to array
 		
-		_animation1= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation1"]];
-		_animation1.frame = CGRectOffset(_animation1.frame, 0.0, 178.0);
-		_animation1.alpha = 0.0;
-		[self.view addSubview:_animation1]; //textAnimation1 for intro modal
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)]; //scroll view to swipe through images
+		_scrollView.contentSize = CGSizeMake((_scrollView.frame.size.width)*3, _scrollView.frame.size.height);
+		_scrollView.showsHorizontalScrollIndicator = NO;
+		_scrollView.showsVerticalScrollIndicator = NO;
+		_scrollView.alwaysBounceHorizontal = YES;
+		_scrollView.pagingEnabled = YES;
+		_scrollView.backgroundColor = [UIColor clearColor];
+		_scrollView.delegate = self;
 		
-		_animation2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation2"]];
-		_animation2.frame = CGRectOffset(_animation2.frame, 0.0, 178.0);
-		_animation2.alpha = 0.0;
-		[self.view addSubview:_animation2]; //textAnimation2 for intro modal
+		CGFloat scrollWidth = 0.0;
+		for (UIImage *someImage in animationsArray) {
+			UIImageView *theView = [[UIImageView alloc] initWithFrame:CGRectMake(scrollWidth, 0.0, 320.0, 568.0)];
+			theView.image = someImage;
+			[_scrollView addSubview:theView]; //adds the page
+			
+			_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			_closeButton.frame = CGRectMake(250.0 + scrollWidth, 70.0, 44.0, 44.0);
+			[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+			[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+			[_closeButton addTarget:self action:@selector(_goCloseModal) forControlEvents:UIControlEventTouchUpInside];
+			[_scrollView addSubview:_closeButton]; //adds close button to every page
+			
+			scrollWidth += 320.0;
+		} //add images to scrollview
 		
-		_animation3 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"textAnimation3"]];
-		_animation3.frame = CGRectOffset(_animation3.frame, 0.0, 178.0);
-		_animation3.alpha = 0.0;
-		[self.view addSubview:_animation3]; //textAnimation3 for intro modal
-		
-		[self _animationLoop]; //looping text animations
+		[self.view addSubview:_scrollView]; //adds scrollView
 		
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"intro_modal"]; //prohibits intro modal from showing after first run
 	} //displays intro modal ONLY if first run
 	
+	else {
+		NSLog(@"^^^^^^^^^^^^^^^ENTERED COMPOSE AFTER FIRST RUN^^^^^^^^^^^^^^^");
+		[_emojiTextView becomeFirstResponder];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -255,6 +298,7 @@
 	_animation1.hidden = YES;
 	_animation2.hidden = YES;
 	_animation3.hidden = YES;
+	_scrollView.hidden = YES;
 	_emojiTextView.userInteractionEnabled = YES;
 	[_emojiTextView becomeFirstResponder];
 }
