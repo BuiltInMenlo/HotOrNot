@@ -8,5 +8,4 @@
 
 @interface HONCreateSnapButtonView : UIView
 - (id)initWithTarget:(id)target action:(SEL)action;
-- (id)initWithTarget:(id)target action:(SEL)action asLightStyle:(BOOL)isLightStyle;
 @end

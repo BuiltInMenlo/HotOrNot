@@ -40,7 +40,7 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		_selectedEmotions = [NSMutableArray array];
 		
 		_prevPage = 0;
-		_totalPages = 10;
+		_totalPages = 0;
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
@@ -82,7 +82,7 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
-		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE)));
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
 		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 16.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
@@ -139,7 +139,7 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
 		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 	
-	_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+	_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE)));
 	_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 	
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
@@ -165,7 +165,7 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 #pragma mark - UI Presentation
 static dispatch_queue_t sticker_request_operation_queue;
 - (void)_buildGrid {
-	//NSLog(@"\t—//]> [%@ _buildGrid] (%d)", self.class, _totalPages);
+	NSLog(@"\t—//]> [%@ _buildGrid] (%d)/(%d)", self.class, _totalPages, [_availableEmotions count]);
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	

@@ -42,6 +42,14 @@
 	return (self);
 }
 
+- (id)initUsingAltFontWithTitle:(NSString *)title {
+	if ((self = [self initWithTitle:title])) {
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
+	}
+	
+	return (self);
+}
+
 - (id)initWithTitleImage:(UIImage *)image {
 	if ((self = [self init])) {
 		_title = @"";
@@ -53,42 +61,31 @@
 }
 
 
-- (void)setTitle:(NSString *)title {
-	_title = title;
-	_titleLabel.text = _title;
-}
-
-- (void)addTitleImage:(UIImage *)image {
-	_title = @"";
-	
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:image];
-	titleImageView.frame = CGRectOffset(titleImageView.frame, 61.0, 19.0);
-	[self addSubview:titleImageView];
-}
-
 - (void)addButton:(UIView *)buttonView {
 	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 19.0);
 	[self addSubview:buttonView];
+}
+
+- (void)setTitle:(NSString *)title {
+	_title = title;
+	_titleLabel.text = _title;
 }
 
 - (void)leftAlignTitle {
 	_titleLabel.textAlignment = NSTextAlignmentLeft;
 }
 
+
+- (void)addTitleImage:(UIImage *)image {
+	_title = @"";
+	
+	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:image];
+	titleImageView.frame = CGRectOffset(titleImageView.frame, (self.frame.size.width - image.size.width) * 0.5, 22.0);
+	[self addSubview:titleImageView];
+}
+
 - (void)removeBackground {
 	_bgImageView.hidden = YES;
 }
-
-- (void)toggleLightStyle:(BOOL)isLightStyle {
-	_bgImageView.image = (isLightStyle) ? [UIImage imageNamed:@"navHeaderBackgroundLight"] : [UIImage imageNamed:@"navHeaderBackground"];
-	
-	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor blackColor];
-	_titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
-	
-	if (_titleLabel == nil)
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(_titleLabel.frame.origin.x, (isLightStyle) ? 32.0 : 31.0, _titleLabel.frame.size.width, _titleLabel.frame.size.height)];
-	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, (isLightStyle) ? 32.0 : 31.0, _titleLabel.frame.size.width, _titleLabel.frame.size.height);
-}
-
 
 @end

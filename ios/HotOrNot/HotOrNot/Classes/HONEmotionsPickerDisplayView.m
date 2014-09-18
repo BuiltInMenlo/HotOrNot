@@ -22,7 +22,7 @@
 const CGSize kImageSize = {188.0f, 188.0f};
 const CGSize kImagePaddingSize = {0.0f, 0.0f};
 
-const CGRect kEmotionIntroFrame = {50.0f, 50.0f, 24.0f, 24.0f};
+const CGRect kEmotionIntroFrame = {88.0f, 88.0f, 12.0f, 12.0f};
 const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 @interface HONEmotionsPickerDisplayView () <PicoStickerDelegate>
@@ -31,8 +31,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
-@property (nonatomic, strong) UIImageView *cursorImageView;
-@property (nonatomic, strong) UILabel *emptyLabel;
+@property (nonatomic, strong) UIImageView *emptyImageView;
 @property (nonatomic) CGPoint prevPt;
 @property (nonatomic) BOOL isDragging;
 @end
@@ -59,21 +58,19 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[cameraButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
 		[_previewImageView addSubview:cameraButton];
 		
-		_emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 160.0, 200.0, 26.0)];
-		_emptyLabel.backgroundColor = [UIColor clearColor];
-		_emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_emptyLabel.textColor = [UIColor lightGrayColor];
-		_emptyLabel.textAlignment = NSTextAlignmentCenter;
-		_emptyLabel.text = @"(Select a sticker)";
-		[self addSubview:_emptyLabel];
+		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
+		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
+		[self addSubview:_emptyImageView];
 		
+		UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 67.0, 194.0, 46.0)];
+		emptyLabel.backgroundColor = [UIColor clearColor];
+		emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		emptyLabel.textColor = [UIColor lightGrayColor];
+		emptyLabel.textAlignment = NSTextAlignmentCenter;
+		emptyLabel.numberOfLines = 2;
+		emptyLabel.text = @"select a sticker\nor take selfie";
+		[_emptyImageView addSubview:emptyLabel];
 		
-		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.height + 3.0, 22.0, 3.0, 188.0)];
-		_cursorImageView.animationImages = @[[UIImage imageNamed:@"emojiCursor_off"], [UIImage imageNamed:@"emojiCursor_on"]];
-		_cursorImageView.animationDuration = 0.875;
-		_cursorImageView.animationRepeatCount = 0;
-		//[self addSubview:_cursorImageView];
-		//[_cursorImageView startAnimating];
 		
 		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 69.0, 0.0, 0.0)];
 		[self addSubview:_loaderHolderView];
@@ -82,7 +79,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[self addSubview:_emotionHolderView];
 		
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(271.0, 244.0, 44.0, 44.0)];
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(271.0, 239.0, 39.0, 39.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
 //		_previewThumbImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_previewThumbImageView.userInteractionEnabled = YES;
@@ -132,11 +129,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 			[view removeFromSuperview];
 	}
 	
-	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -17.0, 44.0, 78.0)];
+	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -15.0, 39.0, 69.0)];
 	thumbImageView.image = previewImage;
 	[_previewThumbImageView addSubview:thumbImageView];
-	
-	
 }
 
 
@@ -150,6 +145,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
+	if ([_emotions count] == 1) {
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_emptyImageView.alpha = 0.0;
+		}];
+	}
+	
 	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
 	_loaderHolderView.frame = _emotionHolderView.frame;
 	
@@ -166,7 +167,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		
 //	if (emotionVO.picoSticker == nil) {
 		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
-		imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
+		imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, (kImageSize.width - imageLoadingView.frame.size.width) * 0.5, (kImageSize.height - imageLoadingView.frame.size.height) * 0.5);
 		imageLoadingView.alpha = 0.667;
 		[imageLoadingView startAnimating];
 		[_loaderHolderView addSubview:imageLoadingView];
@@ -262,13 +263,11 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //						 _previewImageView.frame = CGRectMake(orgX, _previewImageView.frame.origin.y, _previewImageView.frame.size.width, _previewImageView.frame.size.height);
 						 _emotionHolderView.frame = CGRectMake(orgX + 3.0, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
 						 _loaderHolderView.frame = _emotionHolderView.frame;
-						 _cursorImageView.frame = CGRectMake(_emotionHolderView.frame.origin.x + _emotionHolderView.frame.size.width + 3.0, _cursorImageView.frame.origin.y, _cursorImageView.frame.size.width, _cursorImageView.frame.size.height);
 						 
 					 } completion:^(BOOL finished) {
-						 _emptyLabel.hidden = ([_emotions count] > 0);
-//						 [UIView animateWithDuration:0.25 animations:^(void) {
-//							 _previewThumbImageView.alpha = (BOOL)([_emotions count] > 1);
-//						 }];
+						 [UIView animateWithDuration:0.25 animations:^(void) {
+							 _emptyImageView.alpha = ([_emotions count] == 0);
+						 }];
 					 }];
 	
 			 

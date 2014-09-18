@@ -18,11 +18,11 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableHeaderHeight)])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]]];
 		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 6.0, 200.0, 11.0)];
-		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];
-		label.textColor = [UIColor colorWithRed:0.741 green:0.741 blue:0.741 alpha:1] /*#bdbdbd*/;
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 11.0, 200.0, 20.0)];
+		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+		label.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor] /*#bdbdbd*/;
 		label.backgroundColor = [UIColor clearColor];
-		label.text = [title uppercaseString];
+		label.text = title;
 		[self addSubview:label];
 	}
 	

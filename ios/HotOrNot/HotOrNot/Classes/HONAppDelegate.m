@@ -108,7 +108,7 @@ NSString * const kKeenIOWriteKey = @"7f1b91140d0fcf8aeb5ccde1a22567ea9073838582e
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
 const CGFloat kSearchHeaderHeight = 43.0f;
-const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
+const CGFloat kOrthodoxTableHeaderHeight = 44.0f;
 const CGFloat kOrthodoxTableCellHeight = 74.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
@@ -155,6 +155,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int challengeID;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) NSString *clubName;
+@property (nonatomic) int clubID;
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
@@ -916,6 +917,28 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			} else
 				[self _retrieveConfigJSON];
+			
+			[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
+			
+			double delayInSeconds = 2.0;
+			dispatch_time_t popTime1 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+			dispatch_after(popTime1, dispatch_get_main_queue(), ^(void) {
+				[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
+				
+				dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+				dispatch_after(popTime2, dispatch_get_main_queue(), ^(void) {
+					[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
+					
+					dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+					dispatch_after(popTime3, dispatch_get_main_queue(), ^(void) {
+						[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
+						
+						dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+						dispatch_after(popTime4, dispatch_get_main_queue(), ^(void) {
+						});
+					});
+				});
+			});
 		}
 	
 	} else {
@@ -1117,8 +1140,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
 	[HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
-	application.applicationIconBadgeNumber = 0;
+	_clubID = [[[userInfo objectForKey:@"aps"] objectForKey:@"club_id"] intValue];
+	_userID = [[[userInfo objectForKey:@"aps"] objectForKey:@"owner_id"] intValue];
 	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+														message:@""
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+	[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
+	[alertView show];
+	
+	application.applicationIconBadgeNumber = 0;
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
@@ -1172,17 +1205,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			});
 		});
 	});
-	
-	
-//	[[[[[[[[[NHThreadThis backgroundThis] groupThese] doThis:^{
-//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
-//    }] waitForever] doThis:^{
-//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
-//	}] waitForever] doThis:^{
-//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
-//	}] waitForever] doThis:^{
-//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
-//    }];
 }
 
 - (void)_establishUserDefaults {
@@ -1580,17 +1602,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if (alertView.tag == HONAppDelegateAlertTypeExit)
 		NSLog(@"EXIT APP");//exit(0);
 	
-	else if (alertView.tag == HONAppDelegateAlertTypeVerifiedNotification) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification Verified Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
-		
-		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
-																									@"image"			: [HONAppDelegate avatarImage],
-																									@"url"				: @"",
-																									@"mp_event"			: @"App Root",
-																									@"view_controller"	: self.tabBarController}];
-		}
-	}
+//	else if (alertView.tag == HONAppDelegateAlertTypeVerifiedNotification) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+//		
+//		if (buttonIndex == 1) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+//		}
+//	}
 	
 	else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
 		switch(buttonIndex) {
@@ -1651,16 +1670,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:_userID]];
-			[navigationController setNavigationBarHidden:YES];
-			
-			if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-				}];
-				
-			} else
-				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeJoinCLub) {

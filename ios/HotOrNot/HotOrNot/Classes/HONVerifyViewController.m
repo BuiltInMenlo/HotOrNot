@@ -154,8 +154,7 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Discover" hasBackground:NO];
 	[headerView addButton:[[HONVerifyFlagButtonView alloc] initWithTarget:self action:@selector(_goFlag)]];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:YES]];
-	[headerView toggleLightStyle:YES];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)x]];
 	[self.view addSubview:headerView];
 	
 	

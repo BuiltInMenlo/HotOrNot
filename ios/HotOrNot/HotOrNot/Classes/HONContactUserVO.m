@@ -15,12 +15,12 @@
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary {
 	HONContactUserVO *vo = [[HONContactUserVO alloc] init];
 	vo.dictionary = dictionary;
-	
-	vo.firstName = [dictionary objectForKey:@"f_name"];
-	vo.lastName = ([[dictionary objectForKey:@"l_name"] length] > 0) ? [dictionary objectForKey:@"l_name"] : @"";
+	vo.firstName = ([dictionary objectForKey:@"f_name"] != nil) ? [dictionary objectForKey:@"f_name"] : @"";
+	vo.lastName = ([dictionary objectForKey:@"l_name"] != nil) ? ([[dictionary objectForKey:@"l_name"] length] > 0) ? [dictionary objectForKey:@"l_name"] : @"" : @"";
 	vo.fullName = [NSString stringWithFormat:([vo.lastName length] > 0) ? @"%@ %@" : @"%@%@", vo.firstName, vo.lastName];
-	vo.email = ([[dictionary objectForKey:@"email"] length] > 0) ? [dictionary objectForKey:@"email"] : @"";
-	vo.rawNumber = ([[dictionary objectForKey:@"phone"] length] > 0) ? [dictionary objectForKey:@"phone"] : @"";
+	vo.fullName = ([dictionary objectForKey:@"extern_name"] != nil && [[dictionary objectForKey:@"extern_name"] length] > 0) ? [dictionary objectForKey:@"extern_name"] : vo.fullName;
+	vo.email = ([dictionary objectForKey:@"email"] != nil) ? [dictionary objectForKey:@"email"] : @"";
+	vo.rawNumber = ([dictionary objectForKey:@"phone"] != nil) ? [dictionary objectForKey:@"phone"] : @"";
 	vo.avatarData = ([dictionary objectForKey:@"image"] != nil) ? [dictionary objectForKey:@"image"] : nil;
 	vo.avatarImage = (vo.avatarData != nil) ? [UIImage imageWithData:vo.avatarData] : nil;
 	
@@ -35,8 +35,10 @@
 	
 	vo.userID = ([dictionary objectForKey:@"id"] == nil) ? 0 : [[dictionary objectForKey:@"id"] intValue];
 	vo.username = ([dictionary objectForKey:@"id"] == nil) ? @"" : [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = ([dictionary objectForKey:@"id"] == nil) ? @"" : [dictionary objectForKey:@"avatar_url"];
+	vo.avatarPrefix = ([dictionary objectForKey:@"id"] == nil || [[dictionary objectForKey:@"id"] length] == 0) ? @"" : [dictionary objectForKey:@"avatar_url"];
 	vo.contactType = HONContactTypeUnmatched;
+	
+	vo.invitedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]];
 	
 	return (vo);
 }

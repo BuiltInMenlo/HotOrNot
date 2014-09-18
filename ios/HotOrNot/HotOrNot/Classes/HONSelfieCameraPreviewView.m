@@ -102,7 +102,7 @@
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 //	_headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"composeTitle"]];
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Compose"];
+	_headerView = [[HONHeaderView alloc] initUsingAltFontWithTitle:@"Compose"];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	[self addSubview:_headerView];
@@ -242,15 +242,15 @@
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
-	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
+//	NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
 										withEmotion:emotionVO];
 	
-	[_subjectNames removeObject:emotionVO.emotionName];
+	[_subjectNames removeObject:emotionVO.emotionName inRange:NSMakeRange([_subjectNames count] - 1, 1)];
 	[_emotionsDisplayView removeEmotion:emotionVO];
 	
-	[_headerView setTitle:[_subjectNames lastObject]];
+	[_headerView setTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Compose"];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {

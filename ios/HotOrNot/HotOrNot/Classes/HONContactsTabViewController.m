@@ -132,9 +132,8 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
-	[_activityHeaderView updateActivityBadge];
-	
-		//[self _goDataRefresh:nil];
+	//[_activityHeaderView updateActivityBadge];
+	//[self _goDataRefresh:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -208,17 +207,14 @@ static NSString * const kCamera = @"camera";
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
-	
-	if ([_cells count] > 0)
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-	
+		
 	[super _goDataRefresh:nil];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> tareContactsTab <|::");
 	
-	if ([_cells count] > 0)
+	if ([_tableView.visibleCells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
@@ -352,10 +348,8 @@ static NSString * const kCamera = @"camera";
 	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-		if (indexPath.section == 1) {
+		if (indexPath.section == 1)
 			[cell toggleUI:NO];
-			[cell toggleChevron];
-		}
 	}
 	
 	return (cell);
@@ -443,7 +437,7 @@ static NSString * const kCamera = @"camera";
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
 											withContactUser:cell.contactUserVO];
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:cell.contactUserVO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}

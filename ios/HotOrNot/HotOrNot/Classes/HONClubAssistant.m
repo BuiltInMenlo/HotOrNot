@@ -210,10 +210,10 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat: NSLocalizedString(@"tap_join", @"Join my private club in @Selfieclub"), clubVO.ownerName, clubVO.clubName];
+	pasteboard.string = NSLocalizedString(@"tap_join", @"Join my private club in @Selfieclub");
 	
 	if (showsAlert) {
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), clubVO.clubName]
+		[[[UIAlertView alloc] initWithTitle:@"Copied to your clipboard!"
 									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -221,7 +221,7 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 }
 
-- (NSArray *)suggestedClubs { //WithCompletion:(void (^)(NSArray *clubs))completion {
+- (NSArray *)suggestedClubs {
 	NSMutableArray *clubs = [NSMutableArray array];
 	
 	// family
@@ -569,14 +569,14 @@ static HONClubAssistant *sharedInstance = nil;
 		
 		for (HONTrivialUserVO *participantVO in participants) {
 			for (HONTrivialUserVO *vo in ownedClubVO.activeMembers) {
-				NSLog(@"MATCHING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
+				NSLog(@"OWNED MATCHING ACTIVE(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
 				avail -= (int)(participantVO.userID == vo.userID);
 			}
 			
 			if (avail > 0) {
 				for (HONTrivialUserVO *vo in ownedClubVO.pendingMembers) {
-					NSLog(@"MATCHING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
-					avail -= (int)(participantVO.userID == vo.userID);
+					NSLog(@"OWNED MATCHING PENDING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID || [participantVO.altID isEqualToString:vo.altID]), vo.username);
+					avail -= (int)(participantVO.userID == vo.userID || [participantVO.altID isEqualToString:vo.altID]);
 				}
 			}
 		}
@@ -600,14 +600,14 @@ static HONClubAssistant *sharedInstance = nil;
 				avail -= (int)(memberClubVO.ownerID == participantVO.userID);
 				
 				for (HONTrivialUserVO *vo in memberClubVO.activeMembers) {
-					NSLog(@"MATCHING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
+					NSLog(@"MEMBER MATCHING ACTIVE(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
 					avail -= (int)(participantVO.userID == vo.userID);
 				}
 				
 				if (avail > 0) {
 					for (HONTrivialUserVO *vo in memberClubVO.pendingMembers) {
-						NSLog(@"MATCHING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
-						avail -= (int)(participantVO.userID == vo.userID);
+						NSLog(@"MEMBER MATCHING PENDING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, ((participantVO.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])), vo.username);
+						avail -= (int)((participantVO.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID]));
 					}
 				}
 			}
@@ -630,14 +630,14 @@ static HONClubAssistant *sharedInstance = nil;
 					avail -= (int)(pendingClubVO.ownerID == participantVO.userID);
 					
 					for (HONTrivialUserVO *vo in pendingClubVO.activeMembers) {
-						NSLog(@"MATCHING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
+						NSLog(@"PENDING MATCHING ACTIVE (%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
 						avail -= (int)(participantVO.userID == vo.userID);
 					}
 					
 					if (avail > 0) {
 						for (HONTrivialUserVO *vo in pendingClubVO.pendingMembers) {
-							NSLog(@"MATCHING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
-							avail -= (int)(participantVO.userID == vo.userID);
+							NSLog(@"PENDING MATCHING PENDING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, ((participantVO.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])), vo.username);
+							avail -= (int)((participantVO.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID]));
 						}
 					}
 				}

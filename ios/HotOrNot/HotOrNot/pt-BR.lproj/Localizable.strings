@@ -160,7 +160,7 @@
 "invalid_user" = "Nome de usuário inválido";
 "allow_access" = "Permitir acesso aos seus contatos?";
 "ok_access" = "Precisamos do seu OK para acessar o catálogo de endereços.";
-"tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://joinselfie.club/%@/%@";
+"tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://sel.club";
 "alert_create_it" = "Gostaria de criá-lo?";
 "confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
 

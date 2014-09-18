@@ -107,7 +107,7 @@
 	bgImageView.hidden = YES;
 	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_contactsButton.frame = CGRectMake(34.0, 0.0, 107.0, kTabSize.height);
+	_contactsButton.frame = CGRectMake(31.0, 0.0, 107.0, kTabSize.height);
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateNormal];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Active"] forState:UIControlStateHighlighted];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateSelected];
@@ -118,7 +118,7 @@
 	[_tabHolderView addSubview:_contactsButton];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(182.0, 0.0, 107.0, kTabSize.height);
+	_settingsButton.frame = CGRectMake(180.0, 0.0, 107.0, kTabSize.height);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_NonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Active"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_settingsButton_Tapped"] forState:UIControlStateSelected];

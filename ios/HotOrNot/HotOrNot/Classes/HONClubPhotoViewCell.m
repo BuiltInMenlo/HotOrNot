@@ -56,9 +56,9 @@
 	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-	gradientImageView.image = [UIImage imageNamed:@"selfieFullSizeGradientOverlay"];
-	[self.contentView addSubview:gradientImageView];
+//	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
+//	gradientImageView.image = [UIImage imageNamed:@"selfieFullSizeGradientOverlay"];
+//	[self.contentView addSubview:gradientImageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;

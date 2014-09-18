@@ -11,6 +11,7 @@
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
 #import "HONInviteClubsViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONHeaderView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
@@ -81,8 +82,8 @@
 																   @"username"	: [dict objectForKey:@"username"],
 																   @"img_url"	: [dict objectForKey:@"avatar_url"]}];
 			[_searchUsers addObject:_searchUserVO];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_inviteContact_t", nil), _searchUserVO.username]
-																message:NSLocalizedString(@"alert_inviteContact_m", nil)
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Phone number found"
+																message:@"Would you like to send them an update?"
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
@@ -90,10 +91,10 @@
 			[alertView show];
 			
 		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_inviteNewContact_t", nil)
-										message:NSLocalizedString(@"alert_inviteContact_m", nil)
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Phone number not found"
+										message:@"Would you like to invite them to Selfieclub?"
 									   delegate:self
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 							  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 			[alertView setTag:1];
 			[alertView show];
@@ -116,9 +117,6 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
-	
-//	[_tableView reloadData];
-//	[_refreshControl endRefreshing];
 }
 
 
@@ -131,16 +129,17 @@
 	_searchUsers = [NSMutableArray array];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonBlue_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonBlue_Active"] forState:UIControlStateHighlighted];
+	cancelButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	submitButton.frame = CGRectMake(281.0, 2.0, 44.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"searchTitle"]];
 	[headerView addButton:cancelButton];
@@ -166,7 +165,7 @@
 	[_countryButton addTarget:self action:@selector(_goCountryCodes) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_countryButton];
 	
-	_countryCodeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 256.0, 72.0, 28.0)];
+	_countryCodeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 256.0, 72.0, 28.0)];
 	_countryCodeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:28];
 	_countryCodeLabel.textAlignment = NSTextAlignmentCenter;
 	_countryCodeLabel.textColor = [UIColor blackColor];
@@ -247,19 +246,6 @@
 		_phoneTextField.text = @"2393709811";
 	}
 #endif
-	
-	//_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@", _usernameTextField.text, _usernameTextField.text] : @"joinselfie.club/";
-	
-	
-//	if ([_usernameTextField isFirstResponder]) {
-//		_usernameCheckImageView.alpha = 0.0;
-//		_usernameCheckImageView.image = [UIImage imageNamed:([_usernameTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
-//	}
-//
-//	if ([_phoneTextField isFirstResponder]) {
-//		_phoneCheckImageView.alpha = 0.0;
-//		_phoneCheckImageView.image = [UIImage imageNamed:([_phoneTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
-//	}
 }
 
 
@@ -277,10 +263,6 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-//		_phoneCheckImageView.alpha = 0.0;
-//		[_usernameButton setSelected:NO];
-//		[_phoneButton setSelected:YES];
-	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
 												 name:UITextFieldTextDidChangeNotification
@@ -300,9 +282,6 @@
 	
 	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
 	
-//	_usernameCheckImageView.alpha = (int)([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound || range.location == 25);
-//	_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-	
 	if ([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound)
 		return (NO);
 	
@@ -316,10 +295,6 @@
 	
 	_phone = _phone = [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text];
 		
-//	if (textField.tag == 0) {
-//		_usernameCheckImageView.alpha = 1.0;
-//		_usernameCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
-	
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
@@ -336,18 +311,32 @@
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Found User Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"] withTrivialUser:_searchUserVO];
 		
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:_searchUserVO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:_searchUserVO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
+			
+			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+				}];
+			}];
 		}
 	
 	} else if (alertView.tag == 1) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"] withContactUser:_contactUserVO];
 		
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:_contactUserVO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+				}];
+			}];
+			
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:_contactUserVO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

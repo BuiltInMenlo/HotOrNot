@@ -100,23 +100,10 @@
 	}];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
 		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
-		
-//		__block int cnt = 0;
-//		[[[HONClubAssistant sharedInstance] suggestedClubs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *fisnished) {
-//			HONUserClubVO *vo = (HONUserClubVO *)obj;
-//			[self performSelector:@selector(_generateClub:) withObject:vo afterDelay:0.0];
-//			cnt++;
-//		}];
-		
-//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
-		
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 		
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
@@ -133,20 +120,12 @@
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(-6.0, 2.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusBackButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:backButton];
-	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(226.0, 0.0, 93.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:doneButton];
-	
-	 
+		 
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
@@ -155,7 +134,7 @@
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
 	[self.view addSubview:_pinButton];
 	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 81.0, 77.0, 30.0)];
+	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 77.0, 30.0)];
 	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -163,7 +142,7 @@
 	[_pinTextField setTextColor:[UIColor blackColor]];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
+	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
@@ -212,24 +191,6 @@
 	_pin = @"";
 	_isPopping = YES;
 	[self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)_goDone {
-	_pin = _pinTextField.text;
-	if ([_pin length] < 4) {
-		_pin = @"";
-		_pinTextField.text = @"";
-		[_pinTextField becomeFirstResponder];
-		
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-									message:NSLocalizedString(@"invalid_pin_msg", @"Pin numbers need to be 4 numbers")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	
-	} else {
-		[_pinTextField resignFirstResponder];
-	}
 }
 
 - (void)_goResend {

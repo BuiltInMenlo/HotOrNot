@@ -8,13 +8,13 @@
 
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
+- (id)initUsingAltFontWithTitle:(NSString *)title;
 - (id)initWithTitleImage:(UIImage *)image;
 
 - (void)addButton:(UIView *)buttonView;
 - (void)leftAlignTitle;
 - (void)addTitleImage:(UIImage *)image;
 - (void)removeBackground;
-- (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;

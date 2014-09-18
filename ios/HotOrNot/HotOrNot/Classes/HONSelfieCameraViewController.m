@@ -62,7 +62,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
-		_filename = @"defaultClubCover";
+		_filename = [NSString stringWithFormat:@"defaultClubPhoto-%02d", (arc4random_uniform(3) + 1)];
 	}
 	
 	return (self);
@@ -189,7 +189,6 @@
 		_hasSubmitted = YES;
 		
 		if (_isUploadComplete) {
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
 			}];
@@ -284,7 +283,7 @@
 	self.imagePickerController = imagePickerController;
 	[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
 		if (sourceType == UIImagePickerControllerSourceTypeCamera) {
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 		}
 	}];
 }
@@ -302,7 +301,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 
 }
 
@@ -322,7 +321,7 @@
 	
 	[self _cancelUpload];
 	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	}];
 }
 
@@ -372,6 +371,8 @@
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next"];
 	
+//	NSLog(@"CONTACT:[%@]", _contactUserVO.dictionary);
+	
 	_hasSubmitted = NO;
 	
 	NSError *error;
@@ -385,7 +386,7 @@
 					  @"subject"		: @"",
 					  @"subjects"		: jsonString,
 					  @"challenge_id"	: [@"" stringFromInt:0],
-					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? _contactUserVO.mobileNumber : @"",
+					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
 					  @"api_endpt"		: kAPICreateChallenge};
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
 	[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
@@ -435,7 +436,7 @@
 	
 	_isBlurred = NO;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 		
 		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -449,10 +450,10 @@
 		_cameraOverlayView.delegate = self;
 		
 		self.imagePickerController.cameraOverlayView = _cameraOverlayView;
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 		
 	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}

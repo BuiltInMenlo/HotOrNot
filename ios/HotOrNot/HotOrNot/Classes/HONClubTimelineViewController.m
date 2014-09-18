@@ -214,10 +214,10 @@
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
 	
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)];
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, kNavHeaderHeight)];
 	[self.view addSubview:headerView];
 	
-	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 18.0, 170.0, 30.0)];
+	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 200.0, 30.0)];
 	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
 	_titleLabel.textColor = [UIColor whiteColor];
 	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
@@ -227,18 +227,18 @@
 	[headerView addSubview:_titleLabel];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(12.0, 13.0, 44.0, 44.0);
+	backButton.frame = CGRectMake(12.0, 18.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
 	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(260, 13.0, 44.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
-	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:shareButton];
+	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	replyButton.frame = CGRectMake(265, 18.0, 44.0, 44.0);
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:replyButton];
 	
 	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -274,31 +274,29 @@
 
 
 #pragma mark - Navigation
-- (void)_goShare {
+- (void)_goReply {
 	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Share" withClubPhoto:_clubPhotoVO];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-															 delegate:self
-													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Share", @"Upvote", @"Reply", nil];
-	[actionSheet setTag:0];
-	[actionSheet showInView:self.view];
+	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply" withClubPhoto:_clubPhotoVO];
 	
+	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
+	selfieCameraViewController.delegate = self;
 	
-//	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
-//	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
-//																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-//																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-//																							@"club"				: _clubVO.dictionary,
-//																							@"mp_event"			: @"Club Timeline - Share",
-//																							@"view_controller"	: self}];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
+//	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Share" withClubPhoto:_clubPhotoVO];
+//	
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+//															 delegate:self
+//													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//											   destructiveButtonTitle:nil
+//													otherButtonTitles:@"Share", @"Upvote", @"Reply", nil];
+//	[actionSheet setTag:0];
+//	[actionSheet showInView:self.view];
 }
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back" withUserClub:_clubVO];

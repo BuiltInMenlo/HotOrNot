@@ -63,20 +63,20 @@
 	[_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
 	[self.view addSubview:_webView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:_headerTitle];
-	[_headerView addButton:doneButton];
+	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 }
 
 
 #pragma mark - Navigation
-- (void)_goDone {
+- (void)_goClose {
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

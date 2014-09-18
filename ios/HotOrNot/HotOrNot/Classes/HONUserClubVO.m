@@ -48,13 +48,13 @@
 	
 	NSMutableArray *pending = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"pending"])
-		[pending addObject:[HONTrivialUserVO userWithDictionary:dict]];
+		[pending addObject:([[dict objectForKey:@"extern_name"] length] > 0) ? [HONTrivialUserVO userFromContactVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
 	vo.pendingMembers = pending;
 	vo.totalMembers += [vo.pendingMembers count];
 	
 	NSMutableArray *members = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
-		[members addObject:([[dict objectForKey:@"id"] length] == 0) ? [HONTrivialUserVO userFromContactVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
+		[members addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	vo.activeMembers = members;
 	vo.totalMembers += [vo.activeMembers count];
 	vo.visibleMembers += [vo.activeMembers count];

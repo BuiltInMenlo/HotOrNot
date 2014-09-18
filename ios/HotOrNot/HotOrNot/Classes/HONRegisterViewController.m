@@ -345,9 +345,9 @@
 	[super loadView];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(227.0, -1.0, 93.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed: @"nextButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	_nextButton.frame = CGRectMake(281.0, 2.0, 44.0, 44.0);
+	[_nextButton setBackgroundImage:[UIImage imageNamed: @"cameraNextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"signUpTitle"]];
 	[headerView addButton:_nextButton];
@@ -374,7 +374,7 @@
 //	[_addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:_addAvatarButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 76.0, 294.0, 22.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 294.0, 24.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -382,7 +382,7 @@
 	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
+	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", @"Enter username");
 	_usernameTextField.text = @"";
@@ -395,7 +395,7 @@
 	_clubNameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_clubNameLabel.backgroundColor = [UIColor clearColor];
 	_clubNameLabel.text = @"joinselfie.club/";
-	[self.view addSubview:_clubNameLabel];
+//	[self.view addSubview:_clubNameLabel];
 	
 	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 51.0);
@@ -421,10 +421,10 @@
 	_callCodeButton.frame = CGRectMake(13.0, 127.0, 51.0, 64.0);
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_nonActive"] forState:UIControlStateNormal];
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(3.0, -3.0, 0.0, 0.0)];
-	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(3.0, -2.0, 0.0, 0.0)];
+	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:26];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
 	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
@@ -438,7 +438,7 @@
 	[_phoneTextField setTextColor:[UIColor blackColor]];
 	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_phoneTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
+	_phoneTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
 	_phoneTextField.keyboardType = UIKeyboardTypePhonePad;
 	_phoneTextField.placeholder = NSLocalizedString(@"enter_phone", @"Enter phone");
 	_phoneTextField.text = @"";

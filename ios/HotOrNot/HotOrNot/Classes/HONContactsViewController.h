@@ -37,7 +37,6 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONContactsTableViewDataSource _tableViewDataSource;
 	HONContactsSendType _contactsSendType;
 	
-	NSMutableArray *_cells;
 	NSMutableArray *_headRows;
 	NSMutableArray *_recentClubs;
 	NSMutableArray *_deviceContacts;
@@ -52,6 +51,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 }
 
 - (void)_goDataRefresh:(CKRefreshControl *)sender;
+- (void)_didFinishDataRefresh;
 
 - (void)_promptForAddressBookAccess;
 - (void)_promptForAddressBookPermission;

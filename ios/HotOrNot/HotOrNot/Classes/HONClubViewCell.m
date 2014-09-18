@@ -39,7 +39,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 23.0, 190.0, 26.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(28.0, 23.0, 190.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor blackColor];
@@ -54,12 +54,12 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		_statsHolderView = [[UIView alloc] initWithFrame:CGRectMake(275.0, 30.0, 16.0, 16.0)];
 		[self.contentView addSubview:_statsHolderView];
 		
-		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(274.0, 8.0, 30.0, 14.0)];
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(270.0, 30.0, 34.0, 14.0)];
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textAlignment = NSTextAlignmentRight;
-//		[self.contentView addSubview:_timeLabel];
+		[self.contentView addSubview:_timeLabel];
 	}
 	
 	return (self);
@@ -109,20 +109,22 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_clubVO = clubVO;
 	_statusUpdateVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	
-	NSString *titleCaption = [NSString stringWithFormat:@"%@, ", _clubVO.ownerName];//(_clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me, " : @"";
+	NSString *titleCaption = (_clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"" : [NSString stringWithFormat:@"%@, ", _clubVO.ownerName];
 	
-	for (HONTrivialUserVO *vo in _clubVO.activeMembers)
-		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+	for (HONTrivialUserVO *vo in _clubVO.activeMembers) {
+		if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+			continue;
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];
+	}
 	
 	for (HONTrivialUserVO *vo in _clubVO.pendingMembers) {
-		if ([vo.username length] == 0)
+		if ([vo.username length] == 0 || vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 			continue;
-	
-		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me" : vo.username];
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];
 	}
 	
 	titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
-	_titleLabel.text = titleCaption;
+	_titleLabel.text = ([titleCaption length] == 0) ? @"You" : titleCaption;
 	
 	UILabel *statsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 16.0, 16.0)];
 	statsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
@@ -203,6 +205,10 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_titleLabel.frame = CGRectOffset(_titleLabel.frame, 35.0 + [_statusUpdateVOs count] * 18.0, 0.0);
 	//_subtitleLabel.frame = CGRectOffset(_subtitleLabel.frame, [_statusUpdateVOs count] * 18.0, 0.0);
 	//_subtitleLabel.text = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? NSLocalizedString(@"club_inviteSubText", @"You have been invited. Tap to join!") : subtitle;
+}
+
+- (void)hideTimeStat {
+	_timeLabel.hidden = YES;
 }
 
 - (void)toggleImageLoading:(BOOL)isLoading {

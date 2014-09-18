@@ -41,7 +41,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_cells = [NSMutableArray array];
 	}
 	
 	return (self);
@@ -296,9 +295,10 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-	_cells = [NSMutableArray array];
 	
+	_tableView.hidden = YES;
 	[self _retrieveRecentClubs];
+	
 	[self _submitPhoneNumberForMatching];
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
@@ -331,8 +331,12 @@
 	_emptyImageView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
 	_tableView.alpha = 1.0;
 	
+	_tableView.hidden = NO;
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	if ([_tableView.visibleCells count] > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
 
@@ -348,7 +352,6 @@
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";
-	_cells = [NSMutableArray array];
 	_headRows = [NSMutableArray array];
 	_inAppUsers = [NSMutableArray array];
 	_clubInviteContacts = [NSMutableArray array];
@@ -357,9 +360,9 @@
 
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-	_tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.40 alpha:0.33];
+//	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
+//	_tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.40 alpha:0.33];
 	_tableView.sectionIndexMinimumDisplayRowCount = 1;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -488,7 +491,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return (nil);//[[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"SEARCH RESULTS" : [_segmentedKeys objectAtIndex:section]]);
+	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Clubs" : (section == 2) ? @"Members" : @"Contacts"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -506,6 +509,7 @@
 		if (indexPath.section == 0) {
 			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addContacts"]];
 			[cell toggleUI:NO];
+			[cell hideChevron];
 			
 			for (UIView *view in cell.contentView.subviews)
 				view.hidden = YES;
@@ -527,6 +531,7 @@
 		if (indexPath.section == 0) {
 			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addContacts"]];
 			[cell toggleUI:NO];
+			[cell hideChevron];
 			
 			for (UIView *view in cell.contentView.subviews)
 				view.hidden = YES;
@@ -562,7 +567,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
+	return ((section != 0) ? kOrthodoxTableHeaderHeight : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
