@@ -427,15 +427,22 @@ static NSString * const kCamera = @"camera";
 		
 		
 		if ([cell.clubVO.submissions count] != 0) {
+			NSLog(@"GOES INTO EMOJI DETAILS!");
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+		}
+		else {
+			NSLog(@"^^^SEND EMOJI TO USER WITHOUT UPDATES^^^^");
+			
 		}
 		
 	} else {
+		NSLog(@"^^^USER DOES NOT EXIST!^^^");
 		if (indexPath.section == 0 && indexPath.row == 0) {
 			[self _promptForAddressBookPermission];
 			
 		} else if (indexPath.section == 0 && indexPath.row == 1) {
 			[self _goCreateChallenge];
+			[cell toggleOnWithReset:YES];
 		
 		} else if (indexPath.section == 2) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Main View - Row Tap Non-Member Invite"
@@ -458,7 +465,24 @@ static NSString * const kCamera = @"camera";
 			[cell toggleOnWithReset:YES];
 			
 		} else if ( indexPath.section == 1) {
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Friend"
+											withContactUser:cell.contactUserVO];
+			
+			_selectedContactUserVO = cell.contactUserVO;
+			
+			NSString *emojis = @"";
+			for (NSString *emoji in [[NSUserDefaults standardUserDefaults] objectForKey:@"last_emojis"])
+				emojis = [emojis stringByAppendingString:emoji];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Want to send %@ you status update?", _selectedContactUserVO.fullName]
+																message:emojis
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+			[alertView setTag:3];
+			[alertView show];
+			
+			[cell toggleOnWithReset:YES];
 		}
 	}
 }
