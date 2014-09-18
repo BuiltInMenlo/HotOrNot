@@ -351,14 +351,17 @@
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
-	[UIView animateWithDuration:0.125 delay:3.33 options:UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction animations:^(void) {
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction animations:^(void) {
 		_tableView.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
+			//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ENDED" object:nil];
+			
 		}
 	}];
+
 }
 
 

@@ -436,7 +436,7 @@ static NSString * const kCamera = @"camera";
 			
 		} else if (indexPath.section == 0 && indexPath.row == 1) {
 			[self _goCreateChallenge];
-		
+			
 		} else if (indexPath.section == 2) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Main View - Row Tap Non-Member Invite"
 											withContactUser:cell.contactUserVO];

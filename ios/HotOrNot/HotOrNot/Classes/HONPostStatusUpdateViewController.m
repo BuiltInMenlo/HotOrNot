@@ -201,6 +201,7 @@
 							 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 							 [_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 							 [_closeButton addTarget:self action:@selector(_goCloseModal) forControlEvents:UIControlEventTouchUpInside];
+							 //[_closeButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
 							 [self.view addSubview:_closeButton]; //cancel button for intro modal
 						 }];
 		

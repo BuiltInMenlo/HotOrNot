@@ -34,6 +34,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshStarted:) name:@"REFRESH_STARTED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshEnded:) name:@"REFRESH_ENDED" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_delayText: ) name:@"DELAY_TEXT"] object:nil];
 	}
 	
 	return (self);
@@ -331,8 +332,24 @@
 	[super setSelectedIndex:[notification.object intValue]];
 }
 
+//-(void) fadeOutLabels
+//{
+//	[UIView animateWithDuration:1.0
+//						  delay:0.0
+//						options:UIViewAnimationCurveEaseInOut
+//					 animations:^ {
+//						 _label.alpha = 0.0;
+//					 }
+//					 completion:^(BOOL finished) {
+//						 [_label removeFromSuperview];
+//					 }];
+//}
+
 - (void)_refreshStarted:(NSNotification *)notification {
+	
+//	[NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(fadeOutLabels:) userInfo:nil repeats:NO];
 	_label.text = @"Loading...";
+	
 }
 
 - (void)_refreshEnded:(NSNotification *)notification {
