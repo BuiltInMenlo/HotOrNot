@@ -618,7 +618,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Instagram", @"Twitter", @"SMS", @"Email", NSLocalizedString(@"copy_url", @"Copy Club URL"), nil];
+													otherButtonTitles:@"Instagram", @"Twitter", @"SMS", @"Email", @"Copy to clipboard", nil];
 	[actionSheet setTag:HONAppDelegateAlertTypeExit];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
 }

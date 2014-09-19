@@ -28,6 +28,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "30DB24AE19CBF64700DCFC49"
+               BuildableName = "seflieclub-tests.xctest"
+               BlueprintName = "seflieclub-tests"
+               ReferencedContainer = "container:HotOrNot.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

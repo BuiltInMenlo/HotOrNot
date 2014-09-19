@@ -28,6 +28,11 @@
 @synthesize clubName = _clubName;
 
 
+const CGRect kEmotionStartFrame = {38.0f, 38.0f, 44.0f, 44.0f};
+const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
+
+
+
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
@@ -108,13 +113,14 @@
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	//[self.contentView addSubview:usernameButton];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 138.0, 200.0, 24.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:24];
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@" ago…"];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
 	[self.contentView addSubview:timeLabel];
 					  
 //	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
@@ -130,8 +136,8 @@
 //	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
 //	[self.contentView addSubview:feelingLabel];
 	
-	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 98.0, 320.0, 84.0)];
-	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
+	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5) + 10.0, 320.0, kEmotionLoadedFrame.size.height)];
+	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 6.0), emoticonsScrollView.frame.size.height);
 	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
 	emoticonsScrollView.showsVerticalScrollIndicator = NO;
 	emoticonsScrollView.pagingEnabled = NO;
@@ -139,26 +145,13 @@
 	emoticonsScrollView.contentOffset = CGPointMake(-8.0, 0.0);
 	[self.contentView addSubview:emoticonsScrollView];
 	
-//	NSMutableArray *prev = [NSMutableArray array];
-	
 	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
-//		BOOL isFound = NO;
-//		for (NSString *name in prev) {
-//			if ([name isEqualToString:emotionVO.emotionName]) {
-//				isFound = YES;
-//				break;
-//			}
-//		}
-//		
-//		if (!isFound) {
-			UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
-			emotionView.frame = CGRectOffset(emotionView.frame, cnt * 90.0, 0.0);
-			[emoticonsScrollView addSubview:emotionView];
-			
-//			[prev addObject:emotionVO.emotionName];
-			cnt++;
-//		}
+		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
+		emotionView.frame = CGRectOffset(emotionView.frame, cnt * (kEmotionLoadedFrame.size.width + 6.0), 0.0);
+		[emoticonsScrollView addSubview:emotionView];
+		
+		cnt++;
 	}
 	
 	
@@ -210,9 +203,6 @@
 
 
 #pragma mark - UI Presentation
-const CGRect kEmotionStartFrame = {20.0f, 20.0f, 44.0f, 44.0f};
-const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 84.0f, 84.0f};
-
 - (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {
 	UIView *holderView = [[UIView alloc] initWithFrame:kEmotionLoadedFrame];
 	

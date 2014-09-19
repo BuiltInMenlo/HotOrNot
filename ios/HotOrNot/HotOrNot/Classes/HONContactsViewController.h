@@ -63,8 +63,6 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 - (void)_sendPhoneContacts;
 - (void)_searchUsersWithUsername:(NSString *)username;
 
-- (void)_updateDeviceContactsWithMatchedUsers;
-
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;

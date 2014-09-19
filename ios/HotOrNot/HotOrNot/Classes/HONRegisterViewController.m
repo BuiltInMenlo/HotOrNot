@@ -224,8 +224,6 @@
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imageFilename completion:^(NSObject *result) {}];
-	
-	
 }
 
 - (void)_finalizeUser {
@@ -384,7 +382,7 @@
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", @"Enter username");
+	_usernameTextField.placeholder = @"Enter name";
 	_usernameTextField.text = @"";
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
@@ -398,7 +396,7 @@
 //	[self.view addSubview:_clubNameLabel];
 	
 	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 51.0);
+	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 63.0);
 	_usernameCheckImageView.alpha = 0.0;
 	[self.view addSubview:_usernameCheckImageView];
 	

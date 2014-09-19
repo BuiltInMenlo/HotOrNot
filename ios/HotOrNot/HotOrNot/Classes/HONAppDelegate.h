@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeExit = 0,
 	HONAppDelegateAlertTypeVerifiedNotification,
 	HONAppDelegateAlertTypeReviewApp,
-	HONAppDelegateAlertTypeInviteFriends,
+	HONAppDelegateAlertTypeInviteFriends,		
 	HONAppDelegateAlertTypeShare,
 	HONAppDelegateAlertTypeRefreshTabs,
 	HONAppDelegateAlertTypeRemoteNotification,

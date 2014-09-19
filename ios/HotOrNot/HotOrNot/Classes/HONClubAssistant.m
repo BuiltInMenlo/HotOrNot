@@ -213,8 +213,8 @@ static HONClubAssistant *sharedInstance = nil;
 	pasteboard.string = NSLocalizedString(@"tap_join", @"Join my private club in @Selfieclub");
 	
 	if (showsAlert) {
-		[[[UIAlertView alloc] initWithTitle:@"Copied to your clipboard!"
-									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
+		[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
+									message:@""
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];

@@ -62,7 +62,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
 		[self addSubview:_emptyImageView];
 		
-		UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 67.0, 194.0, 46.0)];
+		UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 70.0, 194.0, 46.0)];
 		emptyLabel.backgroundColor = [UIColor clearColor];
 		emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		emptyLabel.textColor = [UIColor lightGrayColor];

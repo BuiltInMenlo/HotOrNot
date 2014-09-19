@@ -217,7 +217,7 @@
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, kNavHeaderHeight)];
 	[self.view addSubview:headerView];
 	
-	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 200.0, 30.0)];
+	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 23.0, 200.0, 30.0)];
 	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
 	_titleLabel.textColor = [UIColor whiteColor];
 	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
@@ -234,7 +234,7 @@
 	[headerView addSubview:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(265, 18.0, 44.0, 44.0);
+	replyButton.frame = CGRectMake(266, 18.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];

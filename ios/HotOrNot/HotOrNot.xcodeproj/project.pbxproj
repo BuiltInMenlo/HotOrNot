@@ -74,6 +74,11 @@
 		30D5AD8A19C7A700004EDA22 /* accessDefaultFriendsText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30D5AD8819C7A700004EDA22 /* accessDefaultFriendsText@2x.png */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
+		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
+		30DB24B219CBF64700DCFC49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652B15F96C7100AA7FCE /* Foundation.framework */; };
+		30DB24B319CBF64700DCFC49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
+		30DB24B919CBF64700DCFC49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30DB24B719CBF64700DCFC49 /* InfoPlist.strings */; };
+		30DB24BB19CBF64700DCFC49 /* seflieclub_tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */; };
 		30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */; };
 		30E6150A19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150C19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png */; };
 		30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150F19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png */; };
@@ -376,6 +381,16 @@
 		B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		30DB24BD19CBF64700DCFC49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C62651C15F96C7100AA7FCE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C62652415F96C7100AA7FCE;
+			remoteInfo = HotOrNot;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		072F5393199190B700738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/unlockBanner.png; sourceTree = "<group>"; };
 		072F5395199190BC00738827 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/unlockBanner.png"; sourceTree = "<group>"; };
@@ -597,6 +612,12 @@
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
 		30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHThreadThis.m; sourceTree = "<group>"; };
+		30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "seflieclub-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		30DB24B019CBF64700DCFC49 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		30DB24B619CBF64700DCFC49 /* seflieclub-tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "seflieclub-tests-Info.plist"; sourceTree = "<group>"; };
+		30DB24B819CBF64700DCFC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = seflieclub_tests.m; sourceTree = "<group>"; };
+		30DB24BC19CBF64700DCFC49 /* seflieclub-tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "seflieclub-tests-Prefix.pch"; sourceTree = "<group>"; };
 		30E6150819B903930028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Active@2x.png"; sourceTree = "<group>"; };
 		30E6150B19B903990028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_NonActive@2x.png"; sourceTree = "<group>"; };
 		30E6150E19B9039D0028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Tapped@2x.png"; sourceTree = "<group>"; };
@@ -1300,6 +1321,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		30DB24AC19CBF64700DCFC49 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */,
+				30DB24B319CBF64700DCFC49 /* UIKit.framework in Frameworks */,
+				30DB24B219CBF64700DCFC49 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4C62652215F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1473,6 +1504,25 @@
 				30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */,
 			);
 			path = NHThreadThis;
+			sourceTree = "<group>";
+		};
+		30DB24B419CBF64700DCFC49 /* seflieclub-tests */ = {
+			isa = PBXGroup;
+			children = (
+				30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */,
+				30DB24B519CBF64700DCFC49 /* Supporting Files */,
+			);
+			path = "seflieclub-tests";
+			sourceTree = "<group>";
+		};
+		30DB24B519CBF64700DCFC49 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				30DB24B619CBF64700DCFC49 /* seflieclub-tests-Info.plist */,
+				30DB24B719CBF64700DCFC49 /* InfoPlist.strings */,
+				30DB24BC19CBF64700DCFC49 /* seflieclub-tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		30FC08A219B3FD2200085E7C /* Search */ = {
@@ -2270,6 +2320,7 @@
 			isa = PBXGroup;
 			children = (
 				4C62652F15F96C7100AA7FCE /* HotOrNot */,
+				30DB24B419CBF64700DCFC49 /* seflieclub-tests */,
 				4C62652815F96C7100AA7FCE /* Frameworks */,
 				4C62652615F96C7100AA7FCE /* Products */,
 			);
@@ -2279,6 +2330,7 @@
 			isa = PBXGroup;
 			children = (
 				4C62652515F96C7100AA7FCE /* Selfieclub.app */,
+				30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2318,6 +2370,7 @@
 				4C62652915F96C7100AA7FCE /* UIKit.framework */,
 				4C62652B15F96C7100AA7FCE /* Foundation.framework */,
 				4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */,
+				30DB24B019CBF64700DCFC49 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2752,6 +2805,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		30DB24AE19CBF64700DCFC49 /* seflieclub-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 30DB24BF19CBF64800DCFC49 /* Build configuration list for PBXNativeTarget "seflieclub-tests" */;
+			buildPhases = (
+				30DB24AB19CBF64700DCFC49 /* Sources */,
+				30DB24AC19CBF64700DCFC49 /* Frameworks */,
+				30DB24AD19CBF64700DCFC49 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				30DB24BE19CBF64700DCFC49 /* PBXTargetDependency */,
+			);
+			name = "seflieclub-tests";
+			productName = "seflieclub-tests";
+			productReference = 30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		4C62652415F96C7100AA7FCE /* HotOrNot */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4C62655715F96C7100AA7FCE /* Build configuration list for PBXNativeTarget "HotOrNot" */;
@@ -2779,6 +2850,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 				TargetAttributes = {
+					30DB24AE19CBF64700DCFC49 = {
+						TestTargetID = 4C62652415F96C7100AA7FCE;
+					};
 					4C62652415F96C7100AA7FCE = {
 						DevelopmentTeam = 9549ESJ5ZU;
 						SystemCapabilities = {
@@ -2814,11 +2888,20 @@
 			projectRoot = "";
 			targets = (
 				4C62652415F96C7100AA7FCE /* HotOrNot */,
+				30DB24AE19CBF64700DCFC49 /* seflieclub-tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		30DB24AD19CBF64700DCFC49 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30DB24B919CBF64700DCFC49 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4C62652315F96C7100AA7FCE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2978,6 +3061,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		30DB24AB19CBF64700DCFC49 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30DB24BB19CBF64700DCFC49 /* seflieclub_tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4C62652115F96C7100AA7FCE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3178,6 +3269,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		30DB24BE19CBF64700DCFC49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C62652415F96C7100AA7FCE /* HotOrNot */;
+			targetProxy = 30DB24BD19CBF64700DCFC49 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		072F53851991633000738827 /* inviteButton_Active@2x.png */ = {
@@ -3736,6 +3835,14 @@
 			name = "shareFriends@2x.png";
 			sourceTree = "<group>";
 		};
+		30DB24B719CBF64700DCFC49 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30DB24B819CBF64700DCFC49 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4027,6 +4134,66 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		30DB24C019CBF64800DCFC49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Selfieclub.app/Selfieclub";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "seflieclub-tests/seflieclub-tests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "seflieclub-tests/seflieclub-tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		30DB24C119CBF64800DCFC49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Selfieclub.app/Selfieclub";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "seflieclub-tests/seflieclub-tests-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "seflieclub-tests/seflieclub-tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
 		4C62655515F96C7100AA7FCE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4153,7 +4320,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
@@ -4199,8 +4366,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
 				WRAPPER_EXTENSION = app;
@@ -4210,6 +4377,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		30DB24BF19CBF64800DCFC49 /* Build configuration list for PBXNativeTarget "seflieclub-tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30DB24C019CBF64800DCFC49 /* Debug */,
+				30DB24C119CBF64800DCFC49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		4C62651F15F96C7100AA7FCE /* Build configuration list for PBXProject "HotOrNot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

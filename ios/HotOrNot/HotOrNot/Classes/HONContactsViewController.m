@@ -54,11 +54,13 @@
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 		if ([[result objectForKey:@"pending"] count] > 0) {
-			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:@"pending"] count]]
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:@"pending"] count]]
 										message:@""
-									   delegate:nil
+									   delegate:self
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
+							  otherButtonTitles:nil];
+			[alertView setTag:2];
+			[alertView show];
 		}
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
@@ -254,6 +256,8 @@
 - (void)_retrieveDeviceContacts {
 	NSLog(@":/: _retrieveDeviceContacts :/:");
 	
+	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
+	
 	_deviceContacts = [NSMutableArray array];
 	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:YES]) {
 		[_deviceContacts addObject:vo];
@@ -305,9 +309,6 @@
 }
 
 - (void)_didFinishDataRefresh {
-	if (_tableViewDataSource != HONContactsTableViewDataSourceSearchResults)
-		[self _updateDeviceContactsWithMatchedUsers];
-	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
@@ -334,6 +335,8 @@
 	_tableView.hidden = NO;
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 	
 	if ([_tableView.visibleCells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
@@ -491,7 +494,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Clubs" : (section == 2) ? @"Members" : @"Contacts"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Clubs" : (section == 2) ? @"Suggestions" : @"Contacts"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -523,6 +526,8 @@
 			cell.trivialUserVO = vo;
 		
 		} else if (indexPath.section == 3) {
+			NSLog(@"_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers -- section 3");
+			NSLog(@"%@.cellForRowAtIndexPath - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 		}
 		
 		[cell setSelectionStyle:(indexPath.section == 0) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
@@ -661,8 +666,8 @@
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
 				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				[self _goDataRefresh:nil];
 				
-				[self _submitPhoneNumberForMatching];
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
 						_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
@@ -672,6 +677,7 @@
 				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
 						_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
+						[self _goDataRefresh:nil];
 					});
 				
 				} else {
@@ -680,83 +686,11 @@
 		}
 		
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	
+	} else if (alertView.tag == 2) {
+		[self _goDataRefresh:nil];
 	}
 }
 
 #pragma mark - Data Manip
-- (void)_updateDeviceContactsWithMatchedUsers {
-	/*
-	for (HONContactUserVO *deviceContactVO in _deviceContacts) {
-		for (HONTrivialUserVO *inAppContactVO in _inAppUsers) {
-			if ([(deviceContactVO.isSMSAvailable) ? deviceContactVO.mobileNumber : deviceContactVO.email isEqualToString:inAppContactVO.altID]) {
-				
-				__block NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-				for (NSString *sectionKey in _segmentedKeys) {
-					indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + 1];
-					
-					[[_segmentedContacts valueForKey:sectionKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-						if (indexPath != nil) {
-							HONClubViewCell *cell = (HONClubViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
-							if ([cell.contactUserVO.mobileNumber isEqual:[NSNull null]] || [deviceContactVO.mobileNumber isEqual:[NSNull null]])
-								return;
-								
-							NSLog(@"cell.contactUserVO.mobileNumber:[%@] </|/> deviceContactVO.mobileNumber:[%@] inAppContactVO.username:[%@]", cell.contactUserVO.mobileNumber, deviceContactVO.mobileNumber, inAppContactVO.username);
-							
-							if ([cell.contactUserVO.mobileNumber isEqualToString:deviceContactVO.mobileNumber]) {
-								cell.contactUserVO.contactType = HONContactTypeMatched;
-								cell.trivialUserVO = inAppContactVO;
-							}
-						}
-						
-						indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
-					}];
-					
-					indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + 1];
-				}
-			}
-		}
-	}
-	
-//	__block NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-//	for (NSString *sectionKey in _segmentedKeys) {
-//		indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + ((int)HONContactsTableViewDataSourceMatchedUsers)];
-//		
-//		if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//		} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-//			[[_segmentedContacts valueForKey:sectionKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				if (indexPath != nil) {
-			HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
-//					
-//					if ([obj isKindOfClass:[HONContactUserVO class]]) {
-//						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:(HONContactUserVO *)obj]];
-//					}
-//					
-//					if ([obj isKindOfClass:[HONTrivialUserVO class]]) {
-//						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:(HONTrivialUserVO *)obj]];
-//					}
-*/
-//				}
-//				
-//				indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
-//			}];
-//			
-//			for (HONTrivialUserVO *vo in [_segmentedContacts valueForKey:sectionKey]) {
-//				NSLog(@"USER:[%@] INDEXPATH:[%@]", vo.username, indexPath);
-//			}
-//			
-//		} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-//			for (HONContactUserVO *vo in [_segmentedContacts valueForKey:sectionKey]) {
-//				NSLog(@"CONTACT:[%@] INDEXPATH:[%@]", vo.mobileNumber, indexPath);
-//
-//				if (indexPath != nil) {
-//					HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
-//					[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:vo]];
-//				}
-//				
-//				indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
-//			}
-//		}
-//	}
-}
-
 @end

@@ -219,12 +219,6 @@ static NSString * const kCamera = @"camera";
 }
 
 
-#pragma mark - UI Presentation
-- (void)_updateDeviceContactsWithMatchedUsers {
-	[super _updateDeviceContactsWithMatchedUsers];
-}
-
-
 #pragma mark - SelfieCameraViewController Delegates
 - (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
 	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");

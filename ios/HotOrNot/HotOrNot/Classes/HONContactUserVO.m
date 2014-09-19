@@ -19,6 +19,8 @@
 	vo.lastName = ([dictionary objectForKey:@"l_name"] != nil) ? ([[dictionary objectForKey:@"l_name"] length] > 0) ? [dictionary objectForKey:@"l_name"] : @"" : @"";
 	vo.fullName = [NSString stringWithFormat:([vo.lastName length] > 0) ? @"%@ %@" : @"%@%@", vo.firstName, vo.lastName];
 	vo.fullName = ([dictionary objectForKey:@"extern_name"] != nil && [[dictionary objectForKey:@"extern_name"] length] > 0) ? [dictionary objectForKey:@"extern_name"] : vo.fullName;
+	vo.fullName = [vo.fullName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	
 	vo.email = ([dictionary objectForKey:@"email"] != nil) ? [dictionary objectForKey:@"email"] : @"";
 	vo.rawNumber = ([dictionary objectForKey:@"phone"] != nil) ? [dictionary objectForKey:@"phone"] : @"";
 	vo.avatarData = ([dictionary objectForKey:@"image"] != nil) ? [dictionary objectForKey:@"image"] : nil;

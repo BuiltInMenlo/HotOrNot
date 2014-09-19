@@ -62,7 +62,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
-		_filename = [NSString stringWithFormat:@"defaultClubPhoto-%02d", (arc4random_uniform(3) + 1)];
+		_filename = [NSString stringWithFormat:@"defaultClubPhoto-%02d", (arc4random_uniform(5) + 1)];
 	}
 	
 	return (self);

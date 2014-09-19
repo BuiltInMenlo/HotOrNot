@@ -18,6 +18,7 @@
 - (UIFont *)helveticaNeueFontLight;
 - (UIFont *)helveticaNeueFontMedium;
 - (UIFont *)helveticaNeueFontRegular;
+- (UIFont *)helveticaNeueFontRegularItalic;
 
 - (NSShadow *)orthodoxShadowAttribute;
 
