@@ -28,7 +28,7 @@
 @synthesize clubName = _clubName;
 
 
-const CGRect kEmotionStartFrame = {98.0f, 98.0f, 44.0f, 44.0f};
+const CGRect kEmotionStartFrame = {78.0f, 78.0f, 44.0f, 44.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 
 
@@ -115,9 +115,9 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:24];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:24];
 	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
@@ -150,6 +150,11 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
 		emotionView.frame = CGRectOffset(emotionView.frame, cnt * (kEmotionLoadedFrame.size.width + 6.0), 0.0);
 		[emoticonsScrollView addSubview:emotionView];
+		
+		UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		nextPageButton.frame = emotionView.frame;
+		[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
+		[emoticonsScrollView addSubview:nextPageButton];
 		
 		cnt++;
 	}
@@ -261,9 +266,9 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 		[imageLoadingView removeFromSuperview];
 	};
 	
-	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
+//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+													   cachePolicy:NSURLRequestReloadRevalidatingCacheData
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock

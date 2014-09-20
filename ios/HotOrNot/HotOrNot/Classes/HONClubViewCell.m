@@ -39,7 +39,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(28.0, 13.0, 190.0, 26.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(28.0, 13.0, 180.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor blackColor];
@@ -250,8 +250,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 				NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:(HONClubPhotoVO *)[_statusUpdateVOs objectAtIndex:view.tag]];
 				HONEmotionVO *emotionVO = (HONEmotionVO *)[emotions firstObject];
 				
-				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-																   cachePolicy:NSURLRequestReloadIgnoringCacheData
+				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
+																   cachePolicy:NSURLRequestReloadRevalidatingCacheData
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
 								 placeholderImage:nil
 										  success:imageSuccessBlock

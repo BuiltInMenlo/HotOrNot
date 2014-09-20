@@ -165,6 +165,8 @@
 		_progressHUD = nil;
 	}
 	
+	_titleLabel.text = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username;
+	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
@@ -356,6 +358,7 @@
 #pragma mark - ClubPhotoViewCell Delegates
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	[self _advanceTimelineFromCell:cell byAmount:1];
 }
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
