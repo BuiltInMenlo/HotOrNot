@@ -531,11 +531,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				default:
 					notificationName = @"REFRESH_ALL_TABS";
 					break;
+			
 			}
 			
 			NSLog(@"REFRESHING:[%@]", notificationName);
 			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 			_isFromBackground = NO;
+			
+		} else {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
+											 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 		}
 	}];
 }
@@ -551,17 +556,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 			}
 			
-//			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
-			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
-			
-//			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//				[[HONClubAssistant sharedInstance] writeUserClubs:result];
-//			}];
-			
+						
 			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
@@ -942,8 +941,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
-										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
+//										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
 }
 

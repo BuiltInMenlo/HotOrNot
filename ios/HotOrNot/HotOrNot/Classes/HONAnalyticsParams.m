@@ -53,10 +53,12 @@ static HONAnalyticsParams *sharedInstance = nil;
 //					   @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject]};
 //	});
 	
-	NSDictionary *user = @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						   @"name"			: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-						   @"cohort-date"	: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-						   @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONAppDelegate infoForUser] objectForKey:@"added"] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSWeekCalendarUnit fromDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]]] week]]};
+	NSDate *cohortDate = ([HONAppDelegate infoForUser] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
+	
+	NSDictionary *user = @{@"id"			: ([HONAppDelegate infoForUser] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
+						   @"name"			: ([HONAppDelegate infoForUser] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
+						   @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate],
+						   @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSWeekCalendarUnit fromDate:cohortDate] week]]};
 	
 	NSDictionary *device = @{@"os"				: [[HONDeviceIntrinsics sharedInstance] osName],
 							 @"os-version"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
@@ -111,9 +113,12 @@ static HONAnalyticsParams *sharedInstance = nil;
 //		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
 //	});
 	
-	return (@{@"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-			  @"name"			: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-			  @"cohort-date"	: [[HONAppDelegate infoForUser] objectForKey:@"added"]});
+	NSDate *cohortDate = ([HONAppDelegate infoForUser] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
+	
+	return(@{@"id"			: ([HONAppDelegate infoForUser] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
+			 @"name"		: ([HONAppDelegate infoForUser] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
+			 @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate],
+			 @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSWeekCalendarUnit fromDate:cohortDate] week]]});	
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {

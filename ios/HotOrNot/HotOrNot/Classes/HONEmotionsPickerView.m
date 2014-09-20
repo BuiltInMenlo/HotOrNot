@@ -64,12 +64,12 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
 		
-		UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		globalButton.frame = CGRectMake(0, self.frame.size.height - 49.0, 160.0, 49.0);
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
-		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:globalButton];
+//		UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		globalButton.frame = CGRectMake(0, self.frame.size.height - 49.0, 160.0, 49.0);
+//		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
+//		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
+//		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
+//		[self addSubview:globalButton];
 		
 		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
 			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
@@ -82,7 +82,7 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
-		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE)));
+		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
 		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 16.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
@@ -139,12 +139,12 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
 		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 	
-	_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE)));
+	_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 	_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 	
-	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
-	[_paginationView updateToPage:0];
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages + 1 usingDiameter:6.0 andPadding:8.0];
 	[self addSubview:_paginationView];
+	[_paginationView updateToPage:0];
 	
 	[self _buildGrid];
 }
@@ -175,7 +175,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 	int col = 0;
 	int page = 0;
 	
-	for (int i=0; i<_totalPages; i++) {
+	for (int i=0; i<=_totalPages; i++) {
 		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacing2Size.width, ROWS_PER_PAGE * kImageSpacing2Size.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
@@ -186,6 +186,8 @@ static dispatch_queue_t sticker_request_operation_queue;
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
+		
+//		NSLog(@"CNT:[%d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
 		
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.25];
 		

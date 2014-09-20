@@ -78,6 +78,22 @@ static NSString * const kCamera = @"camera";
 	[super _goDataRefresh:sender];
 }
 
+- (void)_didFinishDataRefresh {
+	[super _didFinishDataRefresh];
+	
+	if (_joinedTotalClubs > 0) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d club%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
+															message:@""
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:nil];
+		[alertView setTag:2];
+		[alertView show];
+		
+		_joinedTotalClubs = 0;
+	}
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -450,14 +466,8 @@ static NSString * const kCamera = @"camera";
 			}];
 		}
 	
-	} else if (alertView.tag == 2) {
-		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] addClub:result forKey:@"member"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
-			}];
-		}
+	}  else if (alertView.tag == 2) {
+		[self _goDataRefresh:nil];
 	}
 }
 

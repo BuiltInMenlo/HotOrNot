@@ -34,7 +34,7 @@
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
-@property (nonatomic, strong) HONGlobalEmotionPickerView *globalEmotionsPickerView;
+//@property (nonatomic, strong) HONGlobalEmotionPickerView *globalEmotionsPickerView;
 
 @property (nonatomic, strong) UIButton *overlayToggleButton;
 @property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
@@ -94,10 +94,10 @@
 	_emotionsPickerView.delegate = self;
 	[self addSubview:_emotionsPickerView];
 	
-	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
-	_globalEmotionsPickerView.hidden = YES;
-	_globalEmotionsPickerView.delegate = self;
-	[self addSubview:_globalEmotionsPickerView];
+//	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
+//	_globalEmotionsPickerView.hidden = YES;
+//	_globalEmotionsPickerView.delegate = self;
+//	[self addSubview:_globalEmotionsPickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
@@ -275,15 +275,15 @@
 - (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Toggle Standard Paks"];
 	
-	_globalEmotionsPickerView.hidden = YES;
-	_emotionsPickerView.hidden = NO;
+//	_globalEmotionsPickerView.hidden = YES;
+//	_emotionsPickerView.hidden = NO;
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Toggle Locked Paks"];
 	
 	_emotionsPickerView.hidden = YES;
-	_globalEmotionsPickerView.hidden = NO;
+//	_globalEmotionsPickerView.hidden = NO;
 }
 
 

@@ -48,6 +48,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	UIRefreshControl *_refreshControl;
 	HONHeaderView *_headerView;
 	HONSearchBarView *_searchBarView;
+	int _joinedTotalClubs;
 }
 
 - (void)_goDataRefresh:(CKRefreshControl *)sender;

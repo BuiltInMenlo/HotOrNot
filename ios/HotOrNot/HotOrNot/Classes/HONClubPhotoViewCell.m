@@ -28,8 +28,8 @@
 @synthesize clubName = _clubName;
 
 
-const CGRect kEmotionStartFrame = {38.0f, 38.0f, 44.0f, 44.0f};
-const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
+const CGRect kEmotionStartFrame = {98.0f, 98.0f, 44.0f, 44.0f};
+const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 
 
 
@@ -58,7 +58,7 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
 	[self.contentView addSubview:_imageLoadingView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-	imageView.alpha = 0.0;
+//	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
 	
 //	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
@@ -67,22 +67,22 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			imageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			[_imageLoadingView stopAnimating];
-		}];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			imageView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//			[_imageLoadingView stopAnimating];
+//		}];
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
 		imageView.image = [UIImage imageNamed:@"defaultClubPhoto"];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			imageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			[_imageLoadingView stopAnimating];
-		}];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			imageView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//			[_imageLoadingView stopAnimating];
+//		}];
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
@@ -201,6 +201,11 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
 		[self.delegate clubPhotoViewCell:self replyToPhoto:_clubPhotoVO];
 }
 
+- (void)_goNextPhoto {
+	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
+		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
+}
+
 
 #pragma mark - UI Presentation
 - (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {
@@ -256,7 +261,8 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
 		[imageLoadingView removeFromSuperview];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
+	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
 													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
@@ -311,12 +317,6 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 120.0f, 120.0f};
 					 placeholderImage:nil
 							  success:imageSuccessBlock
 							  failure:imageFailureBlock];
-}
-
-
-- (void)_nextPhoto {
-	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
-		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
 }
 
 

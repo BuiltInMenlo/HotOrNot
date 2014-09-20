@@ -54,6 +54,8 @@
 		_clubPhotoID = 0;
 		_index = index;
 		_clubPhotos = _clubVO.submissions;
+		
+		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", _clubVO.dictionary);
 	}
 	
 	return (self);
@@ -218,10 +220,10 @@
 	[self.view addSubview:headerView];
 	
 	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 23.0, 200.0, 30.0)];
-	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
+	_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:26];
 	_titleLabel.textColor = [UIColor whiteColor];
 	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	_titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	_titleLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
 	_titleLabel.textAlignment = NSTextAlignmentCenter;
 	_titleLabel.text = titleCaption;
 	[headerView addSubview:_titleLabel];
@@ -431,8 +433,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
-	
+	return (indexPath);	
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

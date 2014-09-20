@@ -248,7 +248,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 				};
 				
 				NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:(HONClubPhotoVO *)[_statusUpdateVOs objectAtIndex:view.tag]];
-				HONEmotionVO *emotionVO = (HONEmotionVO *)[emotions lastObject];
+				HONEmotionVO *emotionVO = (HONEmotionVO *)[emotions firstObject];
 				
 				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
 																   cachePolicy:NSURLRequestReloadIgnoringCacheData

@@ -53,15 +53,16 @@
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
-		if ([[result objectForKey:@"pending"] count] > 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:@"pending"] count]]
-										message:@""
-									   delegate:self
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil];
-			[alertView setTag:2];
-			[alertView show];
-		}
+		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
+//		if ([[result objectForKey:@"pending"] count] > 0) {
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:@"pending"] count]]
+//										message:@""
+//									   delegate:self
+//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//							  otherButtonTitles:nil];
+//			[alertView setTag:2];
+//			[alertView show];
+//		}
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
@@ -335,6 +336,11 @@
 	_tableView.hidden = NO;
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 	
 	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 	
@@ -687,8 +693,6 @@
 		
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
-	} else if (alertView.tag == 2) {
-		[self _goDataRefresh:nil];
 	}
 }
 

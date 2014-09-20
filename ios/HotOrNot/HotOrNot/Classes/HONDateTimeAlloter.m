@@ -95,7 +95,7 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	}
 	
 	interval = (suffix != nil && [suffix length] > 0) ? [interval stringByAppendingString:suffix] : interval;
-	return ((secs <= minSeconds) ? @"just now" : interval);
+	return ((secs <= minSeconds) ? @"1s" : interval);
 }
 
 - (BOOL)isPastDate:(NSDate *)date {
