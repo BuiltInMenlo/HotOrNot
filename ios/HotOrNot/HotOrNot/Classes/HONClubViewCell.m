@@ -337,7 +337,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	[imageView setTag:0];
 	[view addSubview:imageView];
 	
-	//[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"statusUpdateStackMask"]];
+	//[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"thumbPhotoMask"]];
 	return (view);
 }
 

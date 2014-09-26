@@ -169,7 +169,7 @@
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 16.0, 44.0, 44.0)];
 		[self.contentView addSubview:imageView];
 		
-		[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"thumbPhotoMask"]];
 		
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;

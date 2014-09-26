@@ -68,9 +68,9 @@
 	[self.view addSubview:dividerImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitBlueButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitBlueButton_Active"] forState:UIControlStateHighlighted];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 48.0, 320.0, 48.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButtonLargeEnabled_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButtonLargeEnabled_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_submitButton];
 	

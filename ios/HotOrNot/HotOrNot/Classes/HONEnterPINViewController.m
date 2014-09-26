@@ -153,7 +153,7 @@
 	_pinCheckImageView.alpha = 0.0;
 	[self.view addSubview:_pinCheckImageView];
 	
-	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"pinText"]]; //@"pinFooterText"]];
+	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"pinText"]];
 	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 129.0);
 	[self.view addSubview:footerTextImageView];
 	

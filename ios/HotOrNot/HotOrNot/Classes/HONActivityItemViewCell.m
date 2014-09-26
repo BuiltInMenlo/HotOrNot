@@ -63,11 +63,11 @@
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
-		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
+		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
 	};
 	
 	if ([_activityItemVO.originAvatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
-		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
+		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
 		[imageLoadingView stopAnimating];
 		[imageLoadingView removeFromSuperview];
 	}
@@ -76,7 +76,7 @@
 		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.originAvatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																  cachePolicy:kURLRequestCachePolicy
 															  timeoutInterval:[HONAppDelegate timeoutInterval]]
-								placeholderImage:[UIImage imageNamed:@"activityAvatarPlaceholder"]
+								placeholderImage:[UIImage imageNamed:@"activityAvatarBG"]
 										 success:successBlock
 										 failure:failureBlock];
 	}

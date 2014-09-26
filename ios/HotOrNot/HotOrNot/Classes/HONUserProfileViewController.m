@@ -306,7 +306,7 @@
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
-	[[HONImageBroker sharedInstance] maskView:avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+	[[HONImageBroker sharedInstance] maskView:avatarImageView withMask:[UIImage imageNamed:@"thumbPhotoMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
