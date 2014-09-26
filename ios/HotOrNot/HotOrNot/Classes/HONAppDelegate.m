@@ -8,7 +8,6 @@
 
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
-#import <AVFoundation/AVFoundation.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
 #import <Social/SLServiceTypes.h>
@@ -24,7 +23,6 @@
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
-#import "Chartboost.h"
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
@@ -143,10 +141,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #if __APPSTORE_BUILD__ == 0
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate, PicoStickerDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
 #else
-//@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate, HONInsetOverlayViewDelegate>
+@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -445,16 +442,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	return (params);
-}
-
-
-+ (void)cafPlaybackWithFilename:(NSString *)filename {
-	NSString *filepath = [[NSBundle mainBundle] pathForResource:filename ofType:@"caf"];
-	NSURL *url = [NSURL fileURLWithPath:filepath];
-	SystemSoundID sound;
-	
-	AudioServicesCreateSystemSoundID((__bridge_retained CFURLRef)url, &sound);
-	AudioServicesPlaySystemSound(sound);
 }
 
 
@@ -1074,7 +1061,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	app.applicationIconBadgeNumber = notification.applicationIconBadgeNumber -1;
 	
 	notification.soundName = UILocalNotificationDefaultSoundName;
-	[HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
+	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	[self _showOKAlert:notification.alertBody withMessage:@"Local Notification"];
 }
@@ -1137,7 +1124,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
-	[HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
+	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	_clubID = [[[userInfo objectForKey:@"aps"] objectForKey:@"club_id"] intValue];
 	_userID = [[[userInfo objectForKey:@"aps"] objectForKey:@"owner_id"] intValue];
@@ -1521,36 +1508,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else
 			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}
-}
-
-
-#pragma mark - Chartboost Delegates
-- (BOOL)shouldRequestInterstitialsInFirstSession {
-	return (NO);
-}
-
-- (BOOL)shouldRequestInterstitial:(NSString *)location {
-	return (YES);
-}
-
-- (BOOL)shouldDisplayInterstitial:(NSString *)location {
-	return (YES);
-}
-
-- (void)didDismissInterstitial:(NSString *)location {
-	
-}
-
-- (void)didCloseInterstitial:(NSString *)location {
-	
-}
-
-- (void)didClickInterstitial:(NSString *)location {
-	
-}
-
-- (void)didFailToLoadInterstitial:(NSString *)location withError:(CBLoadError)error {
-	
 }
 
 

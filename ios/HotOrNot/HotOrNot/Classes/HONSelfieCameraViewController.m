@@ -321,7 +321,6 @@
 	
 	[self _cancelUpload];
 	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	}];
 }
 

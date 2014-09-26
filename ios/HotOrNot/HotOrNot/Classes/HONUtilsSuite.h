@@ -9,6 +9,7 @@
 
 #import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
+#import "HONAudioMaestro.h"
 #import "HONClubAssistant.h"
 #import "HONContactsAssistant.h"
 #import "HONColorAuthority.h"

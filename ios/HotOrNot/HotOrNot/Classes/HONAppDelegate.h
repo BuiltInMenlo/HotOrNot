@@ -186,8 +186,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;
 
-+ (void)cafPlaybackWithFilename:(NSString *)filename;
-
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

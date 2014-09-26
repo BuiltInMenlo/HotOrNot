@@ -27,6 +27,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 @interface HONEmotionsPickerDisplayView () <PicoStickerDelegate>
 @property (nonatomic, strong) NSMutableArray *emotions;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIView *holderView;
 @property (nonatomic, strong) UIView *loaderHolderView;
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
@@ -52,11 +54,26 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_previewImageView.userInteractionEnabled = YES;
 		[self addSubview:_previewImageView];
 		
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 69.0, 320.0, kImageSize.height)];
+		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
+		_scrollView.contentInset = UIEdgeInsetsMake(0.0, (320.0 - (kImageSize.width + kImagePaddingSize.width)) * 0.5, 0.0, (320.0 - (kImageSize.width + kImagePaddingSize.width)) * 0.5);
+		_scrollView.showsHorizontalScrollIndicator = NO;
+		_scrollView.showsVerticalScrollIndicator = NO;
+		_scrollView.alwaysBounceHorizontal = YES;
+		_scrollView.delegate = self;
+		[self addSubview:_scrollView];
+		
+		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectZero];
+		[_scrollView addSubview:_loaderHolderView];
+		
+		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectZero];
+		[_scrollView addSubview:_emotionHolderView];
+		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraButton.frame = self.frame;
 		[cameraButton setTag:0];
 		[cameraButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
-		[_previewImageView addSubview:cameraButton];
+//		[_previewImageView addSubview:cameraButton];
 		
 		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
@@ -71,20 +88,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		emptyLabel.text = @"select a sticker\nor take selfie";
 		[_emptyImageView addSubview:emptyLabel];
 		
-		
-		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 69.0, 0.0, 0.0)];
-		[self addSubview:_loaderHolderView];
-		
-		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 69.0, 0.0, 0.0)];
-		[self addSubview:_emotionHolderView];
-		
-		
 		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(271.0, 239.0, 39.0, 39.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
-//		_previewThumbImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_previewThumbImageView.userInteractionEnabled = YES;
-//		_previewThumbImageView.alpha = 0.0;
-//		_previewThumbImageView.hidden = YES;
 		[self addSubview:_previewThumbImageView];
 		
 		[[HONImageBroker sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
@@ -95,7 +101,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[previewThumbButton addTarget:self action:@selector(_goCamera:) forControlEvents:UIControlEventTouchDown];
 		 [_previewThumbImageView addSubview:previewThumbButton];
 		
-		[self _updateDisplay];
+		[self _updateDisplayWithCompletion:nil];
 	}
 	
 	return (self);
@@ -107,14 +113,28 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	NSLog(@"STICKER:[%@]", emotionVO.pcContent);
 	
 	[_emotions addObject:emotionVO];
-	[self _addImageEmotion:emotionVO];
 	
-	[HONAppDelegate cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
+	if ([_emotions count] == 1) {
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_emptyImageView.alpha = 0.0;
+		}];
+	}
+	
+	
+	[self _addImageEmotion:emotionVO];
+	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), _scrollView.contentSize.height);
+	_loaderHolderView.frame = _emotionHolderView.frame;
+	[self _updateDisplayWithCompletion:^(BOOL finished) {
+	}];
+
+	//	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
-	[_emotions removeLastObject];
-	[self _removeImageEmotion];
+	[self _updateDisplayWithCompletion:^(BOOL finished) {
+		[_emotions removeLastObject];
+		[self _removeImageEmotion];
+	}];
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
@@ -145,30 +165,25 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
-	if ([_emotions count] == 1) {
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			_emptyImageView.alpha = 0.0;
-		}];
-	}
-	
-	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
-	_loaderHolderView.frame = _emotionHolderView.frame;
 	
 	CGSize scaleSize = CGSizeMake(kEmotionIntroFrame.size.width / kEmotionNormalFrame.size.width, kEmotionIntroFrame.size.height / kEmotionNormalFrame.size.height);
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionIntroFrame) - CGRectGetMidX(kEmotionNormalFrame), CGRectGetMidY(kEmotionIntroFrame) - CGRectGetMidY(kEmotionNormalFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, kImageSize.width, kImageSize.height)];
 	imageView.alpha = 0.0;
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
 	imageView.transform = transform;
+	[imageView setTag:[_emotions count]];
 	[_emotionHolderView addSubview:imageView];
 	
 		
 //	if (emotionVO.picoSticker == nil) {
 		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
-		imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, (kImageSize.width - imageLoadingView.frame.size.width) * 0.5, (kImageSize.height - imageLoadingView.frame.size.height) * 0.5);
+		imageLoadingView.frame = imageView.frame;
+		imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, - 22.0, - 22.0);
 		imageLoadingView.alpha = 0.667;
+		[imageLoadingView setTag:[_emotions count]];
 		[imageLoadingView startAnimating];
 		[_loaderHolderView addSubview:imageLoadingView];
 		
@@ -177,7 +192,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 			
 			[UIView animateWithDuration:0.200 delay:0.125
 				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
-								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+								options:(UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 			 
 							 animations:^(void) {
 								 imageView.alpha = 1.0;
@@ -219,8 +234,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //							 picoSticker.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 //						 } completion:^(BOOL finished) {}];
 //	}
-	
-	[self _updateDisplay];
 }
 
 - (void)_removeImageEmotion {
@@ -236,38 +249,43 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	
 	[UIView animateWithDuration:0.125 delay:0.000
 		 usingSpringWithDamping:1.000 initialSpringVelocity:0.250
-						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+						options:(UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
 					 animations:^(void) {
 						 imageView.alpha = 0.0;
 						 imageView.transform = CGAffineTransformMake(1.333, 0.0, 0.0, 1.333, 0.0, 0.0);
 						 
 					 } completion:^(BOOL finished) {
-						[imageView removeFromSuperview];
-											  
-						 _emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, ([_emotions count] * (kImageSize.width + kImagePaddingSize.width)), (kImageSize.height + kImagePaddingSize.height));
-						 [self _updateDisplay];
+						 [imageView removeFromSuperview];
+						 
+						 _emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), _scrollView.contentSize.height);
+						 _loaderHolderView.frame = _emotionHolderView.frame;
+
+						 [self _updateDisplayWithCompletion:nil];
 					 }];
 }
 
 
-- (void)_updateDisplay {
-	int offset = 0.0 - (([_emotions count] >= 1) ? (kImageSize.width + kImagePaddingSize.width) : 0);
-	int orgX = ((320.0 - offset) * 0.5) - (_emotionHolderView.frame.size.width + (([_emotions count] > 0) ? 3.0 : 0.0));
+- (void)_updateDisplayWithCompletion:(void (^)(BOOL finished))completion {
+	int offset = [_emotions count] * (kImageSize.width + kImagePaddingSize.width);
+	int orgX = MAX(_scrollView.frame.size.width, offset);
 	
 	[UIView animateWithDuration:0.333 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
-						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+						options:(UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
 					 animations:^(void) {
-//						 _previewImageView.frame = CGRectMake(orgX, _previewImageView.frame.origin.y, _previewImageView.frame.size.width, _previewImageView.frame.size.height);
-						 _emotionHolderView.frame = CGRectMake(orgX + 3.0, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
-						 _loaderHolderView.frame = _emotionHolderView.frame;
-						 
+						 [_scrollView setContentOffset:CGPointMake((orgX - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right), 0.0) animated:NO];
+
 					 } completion:^(BOOL finished) {
+						 _scrollView.contentSize = CGSizeMake(orgX, _scrollView.contentSize.height);
+						 
 						 [UIView animateWithDuration:0.25 animations:^(void) {
 							 _emptyImageView.alpha = ([_emotions count] == 0);
 						 }];
+						 
+						 if (completion)
+							 completion(YES);
 					 }];
 	
 			 

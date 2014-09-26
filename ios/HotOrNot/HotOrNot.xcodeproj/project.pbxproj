@@ -57,6 +57,7 @@
 		305ED7B619C3EE5100BDCB04 /* HONToggleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3068E4A819A58620008AB0C2 /* HONGlobalEmotionPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */; };
+		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */; };
 		309122AA19C5343A0081B141 /* composeTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A319C5343A0081B141 /* composeTitle@2x.png */; };
 		309122AB19C5343A0081B141 /* enterPinTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A419C5343A0081B141 /* enterPinTitle@2x.png */; };
@@ -583,6 +584,8 @@
 		305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Random.m"; sourceTree = "<group>"; };
 		3068E4A619A58620008AB0C2 /* HONGlobalEmotionPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGlobalEmotionPickerView.h; sourceTree = "<group>"; };
 		3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGlobalEmotionPickerView.m; sourceTree = "<group>"; };
+		308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAudioMaestro.h; sourceTree = "<group>"; };
+		308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAudioMaestro.m; sourceTree = "<group>"; };
 		3091229F19C501F60081B141 /* HONStatusUpdateSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateSubmitViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateSubmitViewController.m; sourceTree = "<group>"; };
 		309122A319C5343A0081B141 /* composeTitle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "composeTitle@2x.png"; sourceTree = "<group>"; };
@@ -2266,6 +2269,8 @@
 			isa = PBXGroup;
 			children = (
 				4CBFC12A1908DF940082FCC4 /* HONUtilsSuite.h */,
+				308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */,
+				308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */,
 				4C386BBA19842FDA0023123A /* HONContactsAssistant.h */,
 				4C386BBB19842FDA0023123A /* HONContactsAssistant.m */,
 				4C1F19B0191623D500E9A9D4 /* HONClubAssistant.h */,
@@ -3163,6 +3168,7 @@
 				4C43280618E3A9FA0035FF06 /* AFHTTPClient.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C616AE81911AF9700D9A6F5 /* HONUserToggleViewCell.m in Sources */,
+				308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */,
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */,
 				4C4328D618E3A9FA0035FF06 /* MPSurveyNavigationController.m in Sources */,
