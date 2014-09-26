@@ -124,14 +124,20 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	[self _updateDisplayWithCompletion:^(BOOL finished) {
 	}];
 
-	//	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
+//	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
-	[self _updateDisplayWithCompletion:^(BOOL finished) {
+	if (_scrollView.contentSize.width - _scrollView.contentInset.left == _scrollView.contentOffset.x) {
 		[_emotions removeLastObject];
 		[self _removeImageEmotion];
-	}];
+	
+	} else {
+		[self _updateDisplayWithCompletion:^(BOOL finished) {
+			[_emotions removeLastObject];
+			[self _removeImageEmotion];
+		}];
+	}
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
@@ -271,7 +277,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	int offset = [_emotions count] * (kImageSize.width + kImagePaddingSize.width);
 	int orgX = MAX(_scrollView.frame.size.width, offset);
 	
-	[UIView animateWithDuration:0.333 delay:0.000
+	[UIView animateWithDuration:0.250 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
 						options:(UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
@@ -301,6 +307,11 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	NSLog(@"[=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=|:|=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=]");
 }
 
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	NSLog(@"[*:*] scrollViewDidScroll:[%@] (%@)", NSStringFromCGSize(scrollView.contentSize), NSStringFromCGPoint(scrollView.contentOffset));
+}
 
 #pragma mark - PicoSticker Delegates
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
