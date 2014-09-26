@@ -26,7 +26,7 @@
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerDisplayViewDelegate, HONEmotionsPickerViewDelegate, HONGlobalEmotionPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerDisplayViewDelegate, HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
@@ -34,9 +34,7 @@
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
-//@property (nonatomic, strong) HONGlobalEmotionPickerView *globalEmotionsPickerView;
 
-@property (nonatomic, strong) UIButton *overlayToggleButton;
 @property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
 @end
 
@@ -77,13 +75,6 @@
 #pragma mark - UI Presentation
 - (void)_adoptUI {
 	
-	// !]~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~[¡]~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~[! //
-	
-	_overlayToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_overlayToggleButton.frame = self.frame;
-	[_overlayToggleButton addTarget:self action:@selector(_goToggleOverlay) forControlEvents:UIControlEventTouchDown];
-	[self addSubview:_overlayToggleButton];
-	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:self.frame withPreviewImage:_previewImage];
@@ -94,14 +85,8 @@
 	_emotionsPickerView.delegate = self;
 	[self addSubview:_emotionsPickerView];
 	
-//	_globalEmotionsPickerView = [[HONGlobalEmotionPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
-//	_globalEmotionsPickerView.hidden = YES;
-//	_globalEmotionsPickerView.delegate = self;
-//	[self addSubview:_globalEmotionsPickerView];
-	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-//	_headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"composeTitle"]];
 	_headerView = [[HONHeaderView alloc] initUsingAltFontWithTitle:@"Compose"];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
@@ -120,20 +105,10 @@
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:nextButton];
-	
-	[self _showOverlay];
 }
 
 
 #pragma mark - Navigation
-- (void)_goToggleOverlay {
-	if (_emotionsPickerView.hidden)
-		[self _showOverlay];
-	
-	else
-		[self _removeOverlayAndRemove:NO];
-}
-
 - (void)_goClose {
 	[self _removeOverlayAndRemove:YES];
 }
@@ -160,17 +135,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_showOverlay {
-	_emotionsDisplayView.hidden = NO;
-	_emotionsPickerView.hidden = NO;
-	
-	[UIView animateWithDuration:0.33 animations:^(void) {
-		_emotionsDisplayView.alpha = 1.0;
-		_emotionsPickerView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-}
-
 - (void)_removeOverlayAndRemove:(BOOL)isRemoved {
 	if (isRemoved) {
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewCancel:)])
@@ -211,7 +175,6 @@
 - (void)purchaseController:(id)controller purchaseStickerPackWithContentGroupFailed:(PCContentGroup *)contentGroup userInfo:(NSDictionary *)userInfo {
 	NSLog(@"[*:*] purchaseController:purchaseStickerPackWithContentGroupFailed:[%@] userInfo:[%@]", contentGroup, userInfo);
 }
-
 
 
 #pragma mark - EmotionsPickerView Delegates
@@ -272,25 +235,11 @@
 	}
 }
 
-- (void)globalEmotionsPickerView:(HONGlobalEmotionPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Toggle Standard Paks"];
-	
-//	_globalEmotionsPickerView.hidden = YES;
-//	_emotionsPickerView.hidden = NO;
-}
-
-- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView globalButton:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Toggle Locked Paks"];
-	
-	_emotionsPickerView.hidden = YES;
-//	_globalEmotionsPickerView.hidden = NO;
-}
-
 
 #pragma mark - EmotionsPickerDisplayView Delegates
-- (void)emotionsPickerDisplayView:(HONEmotionsPickerDisplayView *)pickerDisplayView showCameraFromLargeButton:(BOOL)isLarge {
-	if ([self.delegate respondsToSelector:@selector(cameraPreviewView:showCameraFromLargeButton:)])
-		[self.delegate cameraPreviewView:self showCameraFromLargeButton:isLarge];
+- (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView {
+	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
+		[self.delegate cameraPreviewViewShowCamera:self];
 }
 
 
@@ -311,7 +260,6 @@
 			[self.delegate cameraPreviewViewShowInviteContacts:self];
 	}];
 }
-
 
 
 @end

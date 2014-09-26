@@ -340,10 +340,10 @@
 
 
 #pragma mark - CameraPreviewView Delegates
-- (void)cameraPreviewView:(HONSelfieCameraPreviewView *)previewView showCameraFromLargeButton:(BOOL)isLarge {
+- (void)cameraPreviewViewShowCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"[*:*] cameraPreviewViewShowCamera");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Open Camera" withProperties:@{@"source"	: (isLarge) ? @"main" : @"thumb"}];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Open Camera"];
 	[self _goCamera];
 }
 

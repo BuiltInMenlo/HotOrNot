@@ -27,7 +27,12 @@
 + (HONAnalyticsParams *)sharedInstance;
 
 - (NSDictionary *)orthodoxProperties;
-- (NSDictionary *)userProperty;
+- (NSDictionary *)applicationProperties;
+- (NSDictionary *)deviceProperties;
+- (NSDictionary *)screenStateProperties;
+- (NSDictionary *)sessionProperties;
+- (NSDictionary *)userProperties;
+
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo;
 - (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;
 - (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo;

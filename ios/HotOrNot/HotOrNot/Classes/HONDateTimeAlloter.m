@@ -58,6 +58,10 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	return ([NSString stringWithFormat:@"%02d:%02d:%02d", MAX(0, hours), MAX(0, mins), MAX(0, secs)]);
 }
 
+- (int)elapsedSecondsSinceUnixEpoch {
+	return ((int)[[NSDate date] timeIntervalSince1970]);
+}
+
 - (NSString *)intervalSinceDate:(NSDate *)date {
 	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"s", @""],
 																									   @"minutes"	: @[@"m", @""],

@@ -64,13 +64,6 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
 		
-//		UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		globalButton.frame = CGRectMake(0, self.frame.size.height - 49.0, 160.0, 49.0);
-//		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
-//		[globalButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
-//		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
-//		[self addSubview:globalButton];
-		
 		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
 			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
 				[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
@@ -162,9 +155,6 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 	}
 }
 
--(void)_goGlobal {
-	[self.delegate emotionsPickerView:self globalButton:YES];
-}
 
 #pragma mark - UI Presentation
 static dispatch_queue_t sticker_request_operation_queue;

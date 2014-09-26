@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CommonCrypto/CommonHMAC.h>
+
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
 #import <QuartzCore/QuartzCore.h>
@@ -344,7 +346,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	for (NSString *key in totalKeys) {
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		
 		[[NSUserDefaults standardUserDefaults] setObject:@(-1) forKey:key];
 	}
 	
@@ -466,7 +467,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
-		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];
@@ -489,9 +489,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		
-		
 		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 		
+		[self _initThirdPartySDKs];
+		[[HONStickerAssistant sharedInstance] retrieveAllStickerPakTypesWithDelay:1.5 ignoringCache:YES];
 		
 		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
 			[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
@@ -698,14 +699,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-#import <CommonCrypto/CommonHMAC.h>
-
-
-
-
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
+	NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	[KeenClient disableGeoLocation];
 	
 //	NSLog(@"PAD:%@", [NSString stringWithFormat:@"%0*d", 8, [@"1F604" length]]);
@@ -713,6 +709,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
+	[[NSUserDefaults standardUserDefaults] setValue:@"LAUNCH" forKey:@"entry"];
 	
 //	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
 //	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
@@ -769,9 +769,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
-//		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
-		[self _initThirdPartySDKs];
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -795,7 +793,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-	//NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
+	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
 	
 	[HONAppDelegate incTotalForCounter:@"background"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
@@ -843,7 +841,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
+	[[NSUserDefaults standardUserDefaults] setValue:@"BACKGROUND" forKey:@"entry"];
+	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
 									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString],
 													  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
@@ -852,7 +855,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	//NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
+	NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
 	
 	[FBAppEvents activateApp];
 	
@@ -866,16 +869,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
-	
-	//[[UAPush shared] resetBadge];
-	
-//	Chartboost *chartboost = [Chartboost sharedChartboost];
-//	chartboost.appId = kChartboostAppID;
-//	chartboost.appSignature = kChartboostAppSignature;
-//	chartboost.delegate = self;
-//	
-//	[chartboost startSession];
-//	[chartboost showInterstitial];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@(-1) forKey:@"tracking_total"];
 	
@@ -908,28 +901,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			} else
 				[self _retrieveConfigJSON];
-			
-			[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
-			
-			double delayInSeconds = 2.0;
-			dispatch_time_t popTime1 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-			dispatch_after(popTime1, dispatch_get_main_queue(), ^(void) {
-				[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
-				
-				dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-				dispatch_after(popTime2, dispatch_get_main_queue(), ^(void) {
-					[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
-					
-					dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-					dispatch_after(popTime3, dispatch_get_main_queue(), ^(void) {
-						[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
-						
-						dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-						dispatch_after(popTime4, dispatch_get_main_queue(), ^(void) {
-						});
-					});
-				});
-			});
 		}
 	
 	} else {
@@ -969,6 +940,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([path count] == 2) {
 			NSString *username = [[path firstObject] lowercaseString];
 			NSString *clubName = [[path lastObject] lowercaseString];
+			
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
+				[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
+			[[NSUserDefaults standardUserDefaults] setValue:@"DEEPLINK" forKey:@"entry"];
 			
 			// already a member
 			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
@@ -1131,6 +1106,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
+	[[NSUserDefaults standardUserDefaults] setValue:@"PUSH" forKey:@"entry"];
+	
 	_clubID = [[[userInfo objectForKey:@"aps"] objectForKey:@"club_id"] intValue];
 	_userID = [[[userInfo objectForKey:@"aps"] objectForKey:@"owner_id"] intValue];
 	
@@ -1173,29 +1152,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window.rootViewController = self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor blackColor];
-	
-	
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
-	
-	double delayInSeconds = 2.0;
-	dispatch_time_t popTime1 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime1, dispatch_get_main_queue(), ^(void) {
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
-		
-		dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime2, dispatch_get_main_queue(), ^(void) {
-			[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:YES completion:nil];
-			
-			dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-			dispatch_after(popTime3, dispatch_get_main_queue(), ^(void) {
-				[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
-				
-				dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-				dispatch_after(popTime4, dispatch_get_main_queue(), ^(void) {
-				});
-			});
-		});
-	});
 }
 
 - (void)_establishUserDefaults {
@@ -1215,12 +1171,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 		
 #if __FORCE_REGISTER__ == 1
-//	for (NSString *key in userDefaults) {
-//		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-//		
-//		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-//	}
+	for (NSString *key in userDefaults) {
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+	}
 	
 	[HONAppDelegate resetTotals];
 #endif
@@ -1232,65 +1187,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-//- (void)_initUrbanAirship {
-//	/** This prevents the UA Library from registering with UIApplication by default. This will allow
-//	 ** you to prompt your users at a later time. This gives your app the opportunity to explain the
-//	 ** benefits of push or allows users to turn it on explicitly in a settings screen.
-//	 **
-//	 ** If you just want everyone to immediately be prompted for push, you can leave this line out.
-//	 **/
-////	[UAPush setDefaultPushEnabledValue:NO];
-//	
-//	/** Set log level for debugging config loading (optional) - it will be set to the value in the loaded config upon takeOff **/
-//	[UAirship setLogLevel:UALogLevelNone];
-//	
-//	/** Populate AirshipConfig.plist with your app's info from https://go.urbanairship.com or set runtime properties here. **/
-//	UAConfig *config = [UAConfig defaultConfig];
-//	
-//	/** You can then programatically override the plist values, etc.: **/
-////	config.developmentAppKey = @"YourKey";
-//	
-//	/** Call takeOff (which creates the UAirship singleton) **/
-//	[UAirship takeOff:config];
-//	
-//	/** Print out the application configuration for debugging (optional) **/
-//	UA_LDEBUG(@"Config:\n%@", [config description]);
-//	
-//	/** Set the icon badge to zero on startup (optional) **/
-//	[[UAPush shared] resetBadge];
-//	
-//	/** Set the notification types required for the app (optional).
-//	 ** With the default value of push set to no,
-//	 ** UAPush will record the desired remote notification types, but not register for
-//	 ** push notifications as mentioned above. When push is enabled at a later time, the registration
-//	 ** will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
-//	 ** set it if you want to add or remove types.
-//	 **/
-//	[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
-//	[UAPush shared].pushNotificationDelegate = self;
-//	
-//	NSMutableArray *tags = [NSMutableArray arrayWithArray:[UATagUtils createTags:(UATagTypeTimeZone | UATagTypeLanguage | UATagTypeCountry)]];
-//	[tags addObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-//	[tags addObject:[[HONDeviceIntrinsics sharedInstance] modelName]];
-//	[tags addObject:[[UIDevice currentDevice] systemVersion]];
-//	
-//	[UAPush shared].tags = [NSArray arrayWithArray:tags];
-//	[[UAPush shared] updateRegistration];
-//
-//}
-
 - (void)_initThirdPartySDKs {
 #if __APPSTORE_BUILD__ == 0
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
 	[[BITHockeyManager sharedHockeyManager] startManager];
 #endif
 	
-	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
-	
 	[[HONStickerAssistant sharedInstance] registerStickerStore];
-//	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] objectForKey:kFreeStickerPak]) {
-//		[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:nil];
-//	}
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1314,8 +1217,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_writeShareTemplates {
-//	return;
-	
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
 		for (NSString *key in [dict keyEnumerator])
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
@@ -1323,38 +1224,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-#pragma mark - Data Manip
-- (NSArray *)_colorsFromJSON:(NSArray *)tintJSON {
-//	unsigned int outVal;
-//	NSScanner* scanner = [NSScanner scannerWithString:@"0x01FFFFAB"];
-//	[scanner scanHexInt:&outVal];
-	
-	unsigned int rDec;
-	unsigned int gDec;
-	unsigned int bDec;
-	NSScanner *scanner;
-	NSMutableArray *colors = [NSMutableArray arrayWithCapacity:[tintJSON count]];
-	for (NSDictionary *dict in tintJSON) {
-		scanner = [NSScanner scannerWithString:[@"0x" stringByAppendingString:[[[dict objectForKey:@"rgb"] substringFromIndex:1] substringWithRange:NSMakeRange(0, 2)]]];
-		[scanner scanHexInt:&rDec];
-		
-		scanner = [NSScanner scannerWithString:[@"0x" stringByAppendingString:[[[dict objectForKey:@"rgb"] substringFromIndex:1] substringWithRange:NSMakeRange(2, 2)]]];
-		[scanner scanHexInt:&gDec];
-
-		scanner = [NSScanner scannerWithString:[@"0x" stringByAppendingString:[[[dict objectForKey:@"rgb"] substringFromIndex:1] substringWithRange:NSMakeRange(4, 2)]]];
-		[scanner scanHexInt:&bDec];
-		
-		[colors addObject:@[[NSNumber numberWithFloat:rDec / 255.0],
-							[NSNumber numberWithFloat:gDec / 255.0],
-							[NSNumber numberWithFloat:bDec / 255.0],
-							[NSNumber numberWithFloat:[[dict objectForKey:@"a"] floatValue]]]];
-	}
-	
-	
-	return ([colors copy]);
-}
-
-
+/*
 #pragma mark - UAPushNotification Delegates
 - (void)receivedForegroundNotification:(NSDictionary *)notification {
 	NSLog(@"receivedForegroundNotification:[%@]", notification);
@@ -1516,12 +1386,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}
 }
+*/
 
 
 #pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
-	
 	return (YES);
 }
 

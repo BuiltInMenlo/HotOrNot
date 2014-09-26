@@ -13,6 +13,7 @@
 - (NSDate *)dateFromUnixTimestamp:(CGFloat)timestamp;
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate;
 - (BOOL)didDate:(NSDate *)firstDate occurBerforeDate:(NSDate *)lastDate;
+- (int)elapsedSecondsSinceUnixEpoch;
 - (NSString *)elapsedTimeSinceDate:(NSDate *)date;
 - (NSString *)intervalSinceDate:(NSDate *)date;
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix;
