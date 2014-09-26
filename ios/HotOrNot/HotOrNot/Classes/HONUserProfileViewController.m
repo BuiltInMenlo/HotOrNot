@@ -221,7 +221,7 @@
 #pragma mark - Navigation
 - (void)_goInvite {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Invite User"
-									 withCohortUser:_userVO];
+									withTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
 	[navigationController setNavigationBarHidden:YES];
@@ -258,7 +258,8 @@
 //}
 
 - (void)_goFlag {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Flag User" withCohortUser:_userVO];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Invite User"
+									withTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", @"Are you sure?")
 														message: NSLocalizedString(@"flag_person", @"This person will be flagged for review")

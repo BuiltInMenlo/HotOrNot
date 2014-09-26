@@ -34,7 +34,6 @@
 - (NSDictionary *)propertyForChallengeCreator:(HONChallengeVO *)vo;
 - (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo;
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo;
-- (NSDictionary *)propertyForCohortUser:(HONUserVO *)vo;
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo;
 - (NSDictionary *)propertyForMessage:(HONMessageVO *)vo;
@@ -50,7 +49,6 @@
 - (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO;
 - (void)trackEvent:(NSString *)eventName withChallengeCreator:(HONChallengeVO *)challengeVO;
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (void)trackEvent:(NSString *)eventName withCohortUser:(HONUserVO *)userVO;
 - (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO;
 - (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO;

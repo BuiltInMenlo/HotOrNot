@@ -37,7 +37,10 @@
 
 
 #pragma mark - Data Calls
-- (void)_submitStatusUpdate {
+- (void)_submitStatusUpdate:(HONUserClubVO *)clubVO {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit"
+									   withUserClub:clubVO];
+	
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
@@ -54,6 +57,19 @@
 }
 
 - (void)_sendClubInvites:(HONUserClubVO *)clubVO {
+	NSMutableArray *users = [NSMutableArray array];
+	for (HONTrivialUserVO *vo in _selectedUsers)
+		[users addObject:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:vo]];
+	
+	NSMutableArray *contacts = [NSMutableArray array];
+	for (HONContactUserVO *vo in _selectedContacts)
+		[contacts addObject:[[HONAnalyticsParams sharedInstance] propertyForContactUser:vo]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Send Club Invites"
+									 withProperties:@{@"clubs"		: [[HONAnalyticsParams sharedInstance] propertyForUserClub:clubVO],
+													  @"members"	: users,
+													  @"contacts"	: contacts}];
+	
 	if ([_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
@@ -141,6 +157,27 @@
 //	}];
 }
 
+- (NSDictionary *)_trackingProps {
+	NSMutableArray *clubs = [NSMutableArray array];
+	for (HONUserClubVO *vo in _selectedClubs)
+		[clubs addObject:[[HONAnalyticsParams sharedInstance] propertyForUserClub:vo]];
+	
+	NSMutableArray *users = [NSMutableArray array];
+	for (HONTrivialUserVO *vo in _selectedUsers)
+		[users addObject:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:vo]];
+	
+	NSMutableArray *contacts = [NSMutableArray array];
+	for (HONContactUserVO *vo in _selectedContacts)
+		[contacts addObject:[[HONAnalyticsParams sharedInstance] propertyForContactUser:vo]];
+	
+	NSMutableDictionary *props = [NSMutableDictionary dictionary];
+	[props setValue:clubs forKey:@"clubs"];
+	[props setValue:users forKey:@"members"];
+	[props setValue:contacts forKey:@"contacts"];
+	
+	return ([props copy]);
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -220,7 +257,6 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit"];
 	if ([_selectedClubs count] == 0 && [_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
 		[[[UIAlertView alloc] initWithTitle:@"No one selected!"
 									message:@"You need to select a club or friend."
@@ -244,6 +280,11 @@
 					names = [names stringByAppendingFormat:@"%@, ", name];
 				names = ([names rangeOfString:@", "].location != NSNotFound) ? [names substringToIndex:[names length] - 2] : names;
 				
+				
+				[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Invite Alert"
+												 withProperties:[self _trackingProps]];
+				
+				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
 																	message:[NSString stringWithFormat:@"Are you sure you want to add %@ to the club%@ you have selected?", names, ([_selectedClubs count] != 1) ? @"s" : @""]
 																   delegate:self
@@ -259,7 +300,7 @@
 					[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
 					NSLog(@"SUBMITTING:[%@]", _submitParams);
 					
-					[self _submitStatusUpdate];
+					[self _submitStatusUpdate:submitClubVO];
 					[self _sendClubInvites:submitClubVO];
 				}];
 			}
@@ -267,10 +308,12 @@
 		} else {
 			if ([_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
 				HONUserClubVO *submitClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
+				NSLog(@"CLUB -=- (JOIN:userSignupClub) -=-");
 				[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
+				
 				NSLog(@"SUBMITTING:[%@]", _submitParams);
 				
-				[self _submitStatusUpdate];
+				[self _submitStatusUpdate:submitClubVO];
 				[self _sendClubInvites:submitClubVO];
 			
 			} else {
@@ -285,10 +328,14 @@
 				__block HONUserClubVO *submitClubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:participants];
 				if (submitClubVO != nil) {
 					NSLog(@"CLUB -=- (JOIN) -=-");
+					
 					[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
 					NSLog(@"SUBMITTING:[%@]", _submitParams);
 					
-					[self _submitStatusUpdate];
+					[_selectedUsers removeAllObjects];
+					[_selectedContacts removeAllObjects];
+					
+					[self _submitStatusUpdate:submitClubVO];
 					[self _sendClubInvites:submitClubVO];
 					
 				} else {
@@ -303,7 +350,7 @@
 						[_submitParams setValue:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
 						NSLog(@"SUBMITTING:[%@]", _submitParams);
 						
-						[self _submitStatusUpdate];
+						[self _submitStatusUpdate:submitClubVO];
 						[self _sendClubInvites:submitClubVO];
 					}];
 				}
@@ -345,8 +392,13 @@
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
+	NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+	[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:clubVO] forKey:@"club"];
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-									withUserClub:clubVO];
+									 withProperties:props];
+	
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//									   withUserClub:clubVO];
 	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
 	if ([_selectedClubs containsObject:viewCell.clubVO])
@@ -359,8 +411,10 @@
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectContactUser");
 	
+	NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+	[props setValue:[[HONAnalyticsParams sharedInstance] propertyForContactUser:contactUserVO] forKey:@"contact"];
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Contact"
-									withContactUser:contactUserVO];
+									 withProperties:props];
 	
 	[super clubViewCell:viewCell didSelectContactUser:contactUserVO];
 	if ([_selectedContacts containsObject:viewCell.trivialUserVO])
@@ -373,8 +427,10 @@
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
+	NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+	[props setValue:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:trivialUserVO] forKey:@"member"];
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected In-App User"
-									withTrivialUser:trivialUserVO];
+									 withProperties:props];
 	
 	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	if ([_selectedUsers containsObject:viewCell.trivialUserVO])
@@ -496,8 +552,13 @@
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
+			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-											   withUserClub:cell.clubVO];
+											 withProperties:props];
+			
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//											   withUserClub:cell.clubVO];
 			
 			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])
@@ -509,8 +570,10 @@
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Contact"
-											withTrivialUser:cell.trivialUserVO];
+			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:cell.trivialUserVO] forKey:@"member"];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected In-App User"
+											withProperties:props];
 			[cell invertSelected];
 			if ([_selectedUsers containsObject:cell.trivialUserVO])
 				[_selectedUsers removeObject:cell.trivialUserVO];
@@ -526,8 +589,10 @@
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
+			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-											   withUserClub:cell.clubVO];
+											 withProperties:props];
 			
 			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])
@@ -539,8 +604,11 @@
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 			
+			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:cell.trivialUserVO] forKey:@"member"];
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected In-App User"
-											withTrivialUser:cell.trivialUserVO];
+											 withProperties:props];
+			
 			[cell invertSelected];
 			if ([_selectedUsers containsObject:cell.trivialUserVO])
 				[_selectedUsers removeObject:cell.trivialUserVO];
@@ -550,6 +618,11 @@
 			
 		} else if (indexPath.section == 3) {
 			NSLog(@"DEVICE CONTACT:[%@]", cell.contactUserVO.fullName);
+			
+			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForContactUser:cell.contactUserVO] forKey:@"contact"];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected In-App User"
+											 withProperties:props];
 			
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Contact"
 											withContactUser:cell.contactUserVO];
@@ -567,7 +640,9 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 10) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - Invite Alert %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - Invite Alert %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										 withProperties:[self _trackingProps]];
+		
 		if (buttonIndex == 1) {
 			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONUserClubVO *submitClubVO = (HONUserClubVO *)obj;
@@ -575,7 +650,7 @@
 				[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
 				NSLog(@"SUBMITTING:[%@]", _submitParams);
 				
-				[self _submitStatusUpdate];
+				[self _submitStatusUpdate:submitClubVO];
 				[self _sendClubInvites:submitClubVO];
 			}];
 		}

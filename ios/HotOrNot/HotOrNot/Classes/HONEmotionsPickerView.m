@@ -154,10 +154,12 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 
 #pragma mark - Navigation
 - (void)_goDelete {
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
-		[self.delegate emotionsPickerView:self deselectedEmotion:(HONEmotionVO *)[_selectedEmotions lastObject]];
-	
-	[_selectedEmotions removeLastObject];
+	if ([_selectedEmotions count] > 0) {
+		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
+			[self.delegate emotionsPickerView:self deselectedEmotion:(HONEmotionVO *)[_selectedEmotions lastObject]];
+		
+		[_selectedEmotions removeLastObject];
+	}
 }
 
 -(void)_goGlobal {
@@ -189,7 +191,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
+//		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
 		
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.125];
 		

@@ -11,6 +11,7 @@
 #import "HONDateTimeAlloter.h"
 
 NSString * const kOrthodoxFormatSymbols = @"yyyy-MM-dd HH:mm:ss";
+NSString * const kOrthodoxBlankTime = @"0000-00-00 00:00:00";
 
 @implementation HONDateTimeAlloter
 static HONDateTimeAlloter *sharedInstance = nil;
@@ -100,6 +101,10 @@ static HONDateTimeAlloter *sharedInstance = nil;
 
 - (BOOL)isPastDate:(NSDate *)date {
 	return ([[HONDateTimeAlloter sharedInstance] didDate:[NSDate new] occurBerforeDate:date]);
+}
+
+- (NSString *)orthodoxBlankTimestampFormattedString {
+	return (kOrthodoxBlankTime);
 }
 
 - (NSDateFormatter *)orthodoxBaseFormatter {

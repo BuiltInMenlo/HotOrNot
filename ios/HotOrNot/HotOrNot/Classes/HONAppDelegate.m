@@ -338,7 +338,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"suggested_total",
 						   @"details_total",
 						   @"profile_total",
-						   @"invite_total"];
+						   @"invite_total",
+						   @"tracking_total"];
 	
 	for (NSString *key in totalKeys) {
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
@@ -777,8 +778,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-	
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -801,7 +800,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Entering Background"
 									 withProperties:@{@"total"		: [@"" stringFromInt:[HONAppDelegate incTotalForCounter:@"background"]],
-													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
+													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString]}];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
@@ -844,7 +843,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)applicationWillEnterForeground:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
-									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
+									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString],
 													  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 	
 	_isFromBackground = YES;
@@ -876,6 +875,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	[chartboost startSession];
 //	[chartboost showInterstitial];
 	
+	[[NSUserDefaults standardUserDefaults] setObject:@(-1) forKey:@"tracking_total"];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
@@ -1084,9 +1084,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:pushToken forKey:@"device_token"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[self _enableNotifications:YES];
-		}];
+		if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:pushToken]) {
+			[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+				[self _enableNotifications:YES];
+			}];
+		}
 	});
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
@@ -1200,6 +1202,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								   @"local_challenges"	: @[],
 								   @"upvotes"			: @[],
 								   @"activity_total"	: @0,
+								   @"active_date"		: @"0000-00-00 00:00:00",
+								   @"tracking_interval"	: @"0000-00-00 00:00:00",
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
 	for (NSString *key in userDefaults) {

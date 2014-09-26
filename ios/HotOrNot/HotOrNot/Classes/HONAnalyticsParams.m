@@ -74,9 +74,9 @@ static HONAnalyticsParams *sharedInstance = nil;
 	NSDictionary *session = @{@"id"				: @"",
 							  @"id-last"		: @"",
 							  @"session-gap"	: @"",
-							  @"duration"		: @"",
-							  @"idle"			: @"",
-							  @"count"			: @"",
+							  @"duration"		: [[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"],
+							  @"idle"			: [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"],
+							  @"count"			: [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"],
 							  @"entry-point"	: @""};
 	
 	NSDictionary *application = @{@"version"		: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
@@ -187,17 +187,6 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (@{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }
 
-- (NSDictionary *)propertyForCohortUser:(HONUserVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-//	});
-	
-	return (@{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
-}
-
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
@@ -206,7 +195,12 @@ static HONAnalyticsParams *sharedInstance = nil;
 //		properties = @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]};
 //	});
 	
-	return ( @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]});
+	return (@{@"contact"	: @{@"name"		: vo.fullName,
+								@"is_sms"	: [@"" stringFromBOOL:vo.isSMSAvailable],
+								@"phone"	: vo.mobileNumber,
+								@"email"	: vo.email}});
+	
+	//return ( @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]});
 }
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
@@ -256,7 +250,9 @@ static HONAnalyticsParams *sharedInstance = nil;
 //		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
 //	});
 	
-	return (@{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
+	return (@{@"member"	: @{@"id"		: [@"" stringFromInt:vo.userID],
+							@"username"	: vo.username,
+							@"avatar"	: vo.avatarPrefix}});
 }
 
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo {
@@ -267,7 +263,10 @@ static HONAnalyticsParams *sharedInstance = nil;
 //		properties = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName]};
 //	});
 	
-	return (@{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName]});
+	return (@{@"club"	: @{@"id"		: [@"" stringFromInt:vo.clubID],
+							@"name"		: vo.clubName,
+							@"owner_id"	: [@"" stringFromInt:vo.ownerID],
+							@"created"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:vo.addedDate]}});
 }
 
 
@@ -279,11 +278,16 @@ static HONAnalyticsParams *sharedInstance = nil;
 
 #pragma mark -
 - (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties {
+	
+	[HONAppDelegate incTotalForCounter:@"tracking"];
 	NSMutableDictionary *event = (properties == nil) ? [[NSMutableDictionary alloc] init] : [properties mutableCopy];
 	[event addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] orthodoxProperties]];
 	[event addEntriesFromDictionary:@{@"action"	: [[eventName componentsSeparatedByString:@" - "] lastObject]}];
 	
-//	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
+	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
+	
+	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:@"tracking_interval"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	NSError *error = nil;
 	[[KeenClient sharedClient] addEvent:event
@@ -339,14 +343,6 @@ static HONAnalyticsParams *sharedInstance = nil;
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForClubPhoto:clubPhotoVO]];
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
-									 withProperties:properties];
-}
-
-- (void)trackEvent:(NSString *)eventName withCohortUser:(HONUserVO *)userVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] orthodoxProperties] mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCohortUser:userVO]];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];

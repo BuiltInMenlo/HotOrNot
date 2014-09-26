@@ -82,6 +82,9 @@ static NSString * const kCamera = @"camera";
 	[super _didFinishDataRefresh];
 	
 	if (_joinedTotalClubs > 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
+										 withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
+		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d club%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
 															message:@""
 														   delegate:self
@@ -303,7 +306,7 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
-									withUserClub:clubVO];
+									   withUserClub:clubVO];
 	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
 	
@@ -337,7 +340,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
 									withTrivialUser:trivialUserVO];
 	
 	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
@@ -391,7 +394,8 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
+											   withUserClub:cell.clubVO];
 			
 			if ([cell.clubVO.submissions count] > 0)
 				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
@@ -405,7 +409,7 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
 											withTrivialUser:cell.trivialUserVO];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:cell.trivialUserVO]];
@@ -420,7 +424,8 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
+											   withUserClub:cell.clubVO];
 			
 			if ([cell.clubVO.submissions count] > 0)
 				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
@@ -434,7 +439,7 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
 											withTrivialUser:cell.trivialUserVO];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:cell.trivialUserVO]];
