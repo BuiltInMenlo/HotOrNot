@@ -11,6 +11,8 @@
 @interface HONWebViewController : HONViewController <UIWebViewDelegate>
 - (id)initWithURL:(NSString *)url title:(NSString *)title;
 
+- (void)_goClose;
+
 @property (nonatomic, strong) NSString *headerTitle;
 @property (nonatomic, strong) NSString *url;
 @end

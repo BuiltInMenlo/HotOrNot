@@ -10,29 +10,29 @@
 	<string>HotOrNot</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</key>
+		<key>E058A7C585165167CFF766653EC2932E029E6AA4</key>
 		<string>https://github.com/BuiltInMenlo/HotOrNot.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</key>
+		<key>E058A7C585165167CFF766653EC2932E029E6AA4</key>
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/BuiltInMenlo/HotOrNot.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</string>
+	<string>E058A7C585165167CFF766653EC2932E029E6AA4</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</string>
+			<string>E058A7C585165167CFF766653EC2932E029E6AA4</string>
 			<key>IDESourceControlWCCName</key>
 			<string>HotOrNot</string>
 		</dict>

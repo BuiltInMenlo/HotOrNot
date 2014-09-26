@@ -19,23 +19,18 @@
 
 - (id)init {
 	if ((self = [super initWithURL:@"https://www.twitter.com/selfiec_status"
-							 title:NSLocalizedString(@"network_status", nil)])) { //@"Network Status"])) {
+							 title:NSLocalizedString(@"network_status", @"Network status")])) {
 	}
 	
 	return (self);
 }
 
 
-#pragma mark - Data Calls
-
-
-#pragma mark - View lifecycle
-
-
 #pragma mark - Navigation
-- (void)_goBack {
-	[self.navigationController popViewControllerAnimated:YES];
+- (void)_goClose {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Network Status Close"];
+	
+	[super _goClose];
 }
-
 
 @end

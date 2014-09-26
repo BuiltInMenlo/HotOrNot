@@ -197,6 +197,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 								 imageView.alpha = 1.0;
 								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 							 } completion:^(BOOL finished) {
+								 [self _updateDisplayWithCompletion:nil];
+								 
 								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
 								 [loadingView stopAnimating];
 								 [loadingView removeFromSuperview];
@@ -271,7 +273,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	
 	[UIView animateWithDuration:0.333 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
-						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+						options:(UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
 					 animations:^(void) {
 						 [_scrollView setContentOffset:CGPointMake((orgX - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right), 0.0) animated:NO];

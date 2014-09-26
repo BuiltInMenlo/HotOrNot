@@ -16,10 +16,18 @@
 
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"privacy"]
-							 title:NSLocalizedString(@"privacy_policy", nil)])) { //@"Privacy Policy"])) {
+							 title:NSLocalizedString(@"privacy_policy", @"Privacy policy")])) {
 	}
 	
 	return (self);
+}
+
+
+#pragma mark - Navigation
+- (void)_goClose {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy Close"];
+	
+	[super _goClose];
 }
 
 @end

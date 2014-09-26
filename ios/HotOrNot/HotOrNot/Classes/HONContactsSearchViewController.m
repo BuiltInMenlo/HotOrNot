@@ -128,21 +128,21 @@
 	_isDismissing = NO;
 	_searchUsers = [NSMutableArray array];
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(281.0, 2.0, 44.0, 44.0);
+	submitButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"searchTitle"]];
-	[headerView addButton:cancelButton];
+	[headerView addButton:closeButton];
 	[headerView addButton:submitButton];
 	[self.view addSubview:headerView];
 	
@@ -215,7 +215,7 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goCancel {
+- (void)_goClose {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel"];
 	
 	_isDismissing = YES;
@@ -223,7 +223,8 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Submit"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Submit"
+									 withProperties:@{@"query"	: [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text]}];
 	[_phoneTextField resignFirstResponder];
 }
 
@@ -277,7 +278,7 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	NSMutableCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
+	NSMutableCharacterSet *invalidCharSet = [[NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]] mutableCopy];
 	[invalidCharSet formUnionWithCharacterSet:[NSCharacterSet letterCharacterSet]];
 	
 	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
@@ -293,7 +294,7 @@
 		  
 	[textField resignFirstResponder];
 	
-	_phone = _phone = [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text];
+	_phone = [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text];
 		
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"

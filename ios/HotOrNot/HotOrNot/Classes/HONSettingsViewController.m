@@ -45,7 +45,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_captions = @[@"Search",
+		_captions = @[@"Search phone number",
+					  @"Search name",
 					  NSLocalizedString(@"settings_notification", @"Notifications"),
 					  NSLocalizedString(@"terms_service", @"Terms of use"),
 					  NSLocalizedString(@"privacy_policy", @"Privacy policy"),
@@ -260,12 +261,21 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	if (indexPath.row == HONSettingsCellTypeSearch) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"];
+	if (indexPath.row == HONSettingsCellTypeSearchPhone) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"
+										 withProperties:@{@"type"	: @"phone"}];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
+	
+	} else if (indexPath.row == HONSettingsCellTypeSearchName) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"
+										 withProperties:@{@"type"	: @"username"}];
+		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypeShareClub) {
 		cell.backgroundView.alpha = 0.5;

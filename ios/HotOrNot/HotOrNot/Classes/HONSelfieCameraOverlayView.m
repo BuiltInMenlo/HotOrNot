@@ -24,7 +24,6 @@
 @property (nonatomic, strong) UIButton *skipButton;
 @property (nonatomic, strong) UIButton *cameraRollButton;
 @property (nonatomic, strong) UIButton *flipButton;
-@property (nonatomic, strong) UIButton *changeTintButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIImageView *lastCameraRollImageView;
 @end
@@ -65,15 +64,8 @@
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_nonActive"] forState:UIControlStateNormal];
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_Active"] forState:UIControlStateHighlighted];
 		[_skipButton addTarget:self action:@selector(_goSkipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_skipButton];
+//		[self addSubview:_skipButton];
 		
-		
-//		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
-//		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_nonActive"] forState:UIControlStateNormal];
-//		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_Active"] forState:UIControlStateHighlighted];
-//		[_changeTintButton addTarget:self action:@selector(_goChangeTint) forControlEvents:UIControlEventTouchUpInside];
-//		[self addSubview:_changeTintButton];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_takePhotoButton.frame = CGRectMake(115.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);

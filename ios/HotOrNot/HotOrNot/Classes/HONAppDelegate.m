@@ -778,6 +778,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
+									 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -883,6 +885,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Became Active"];
+
+	
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
@@ -928,8 +933,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else {
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
-//										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
 }
 

@@ -14,7 +14,8 @@
 
 
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
-	HONSettingsCellTypeSearch = 0,
+	HONSettingsCellTypeSearchPhone = 0,
+	HONSettingsCellTypeSearchName,
 	HONSettingsCellTypeNotifications,
 	HONSettingsCellTypeTermsOfService,
 	HONSettingsCellTypePrivacyPolicy,
