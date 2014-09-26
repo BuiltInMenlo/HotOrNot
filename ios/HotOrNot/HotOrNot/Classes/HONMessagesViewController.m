@@ -8,8 +8,6 @@
 
 #import "NSString+DataTypes.h"
 
-#import "EGORefreshTableHeaderView.h"
-
 #import "HONMessagesViewController.h"
 #import "HONHeaderView.h"
 #import "HONMessageVO.h"
@@ -24,9 +22,8 @@
 #import "HONSuggestedFollowViewController.h"
 
 
-@interface HONMessagesViewController () <EGORefreshTableHeaderDelegate>
+@interface HONMessagesViewController ()
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSMutableArray *messages;
 @end
 
@@ -65,7 +62,6 @@
 			NSLog(@"MESSAGE.VIEWED:[%@]", [vo.dictionary objectForKey:@"viewed"]);
 		}
 		
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		[_tableView reloadData];
 	 }];
 }
@@ -85,11 +81,6 @@
 	_tableView.dataSource = self;
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
-	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:NO];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Messages"];
 	[self.view addSubview:headerView];
@@ -189,17 +180,6 @@
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	
 	[self _retreiveMessages];
-}
-
-
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"**_[egoRefreshTableHeaderDidTriggerRefresh]_**");
-	[self _goRefresh];
-}
-
-- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"**_[egoRefreshTableHeaderDidFinishTareAnimation]_**");
 }
 
 
@@ -313,17 +293,6 @@
 	}
 }
 
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"**_[scrollViewDidScroll]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-//	NSLog(@"**_[scrollViewDidEndDragging]_** offset:[%.02f] inset:[%.02f]", scrollView.contentOffset.y, scrollView.contentInset.top);
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
 
 
 

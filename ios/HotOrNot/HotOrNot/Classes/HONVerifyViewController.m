@@ -9,7 +9,6 @@
 #import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 
 #import "HONVerifyViewController.h"
@@ -27,7 +26,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
 
-@interface HONVerifyViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONVerifyViewCellDelegate>
+@interface HONVerifyViewController() <HONSnapPreviewViewControllerDelegate, HONVerifyViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -40,7 +39,6 @@
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int imageQueueLocation;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic) BOOL isScrollingIgnored;
 @end
 

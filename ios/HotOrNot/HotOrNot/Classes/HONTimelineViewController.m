@@ -13,7 +13,6 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 
-#import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
@@ -38,9 +37,8 @@
 
 #import "JLBPopSlideTransition.h"
 
-@interface HONTimelineViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTimelineItemViewCellDelegate>
+@interface HONTimelineViewController() <HONSnapPreviewViewControllerDelegate, HONTimelineItemViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;

@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "EGORefreshTableHeaderView.h"
+//#import "EGORefreshTableHeaderView.h"
 
 #import "HONMessageRecipientsViewController.h"
 #import "HONHeaderView.h"
@@ -18,12 +18,11 @@
 #import "HONTrivialUserVO.h"
 
 
-@interface HONMessageRecipientsViewController () <EGORefreshTableHeaderDelegate, HONMessageRecipientViewCellDelegate>
+@interface HONMessageRecipientsViewController () <HONMessageRecipientViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *followers;
 @property (nonatomic, strong) NSMutableArray *following;
 @property (nonatomic, strong) NSMutableArray *selectedRecipients;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @end
 
 
@@ -65,7 +64,6 @@
 //																	 @"img_url"		: vo.avatarPrefix}]];
 //	}
 	
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	[_tableView reloadData];
 }
 
@@ -83,11 +81,6 @@
 	_tableView.dataSource = self;
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
-	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:NO];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
 	[self.view addSubview:headerView];
@@ -156,16 +149,6 @@
 
 - (void)_goRefresh {
 	[self _buildRecipients];
-}
-
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"**_[egoRefreshTableHeaderDidTriggerRefresh]_**");
-	[self _goRefresh];
-}
-
-- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"**_[egoRefreshTableHeaderDidFinishTareAnimation]_**");
 }
 
 
@@ -250,17 +233,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	[(HONMessageRecipientViewCell *)[tableView cellForRowAtIndexPath:indexPath] toggleSelected];
-}
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"**_[scrollViewDidScroll]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-//	NSLog(@"**_[scrollViewDidEndDragging]_** offset:[%.02f] inset:[%.02f]", scrollView.contentOffset.y, scrollView.contentInset.top);
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 @end

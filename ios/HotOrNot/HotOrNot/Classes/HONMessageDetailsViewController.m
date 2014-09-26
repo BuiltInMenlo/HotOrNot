@@ -8,17 +8,14 @@
 
 #import "NSString+DataTypes.h"
 
-#import "EGORefreshTableHeaderView.h"
-
 #import "HONMessageDetailsViewController.h"
 #import "HONHeaderView.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONMessageReplyViewCell.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONMessageDetailsViewController () <EGORefreshTableHeaderDelegate>
+@interface HONMessageDetailsViewController ()
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @end
 
@@ -44,7 +41,6 @@
 		_messageVO = [HONMessageVO messageWithDictionary:result];
 		
 		[_tableView reloadData];
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -61,11 +57,6 @@
 	_tableView.dataSource = self;
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
-	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:NO];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:((HONOpponentVO *)[_messageVO.participants lastObject]).username];
 	[self.view addSubview:headerView];
@@ -128,17 +119,6 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"**_[egoRefreshTableHeaderDidTriggerRefresh]_**");
-	[self _goRefresh];
-}
-
-- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"**_[egoRefreshTableHeaderDidFinishTareAnimation]_**");
-}
-
-
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return (1);
@@ -190,15 +170,4 @@
 	return (nil);
 }
 
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"**_[scrollViewDidScroll]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-//	NSLog(@"**_[scrollViewDidEndDragging]_** offset:[%.02f] inset:[%.02f]", scrollView.contentOffset.y, scrollView.contentInset.top);
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
 @end

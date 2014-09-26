@@ -387,12 +387,6 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 
-- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties {
-	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-	[mixpanel.people set:properties];
-}
-
 - (void)forceAnalyticsUpload {
 	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
 }

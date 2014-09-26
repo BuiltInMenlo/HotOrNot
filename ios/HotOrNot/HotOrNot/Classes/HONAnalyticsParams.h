@@ -10,7 +10,6 @@
 
 #import "KeenClient.h"
 #import "KeenProperties.h"
-#import "Mixpanel.h"
 
 #import "HONActivityItemVO.h"
 #import "HONChallengeVO.h"
@@ -61,8 +60,6 @@
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 - (void)trackEvent:(NSString *)eventName withUserClub:(HONUserClubVO *)userClubVO;
 - (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties;
-
-- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties;
 
 - (void)forceAnalyticsUpload;
 - (void)refreshLocation;

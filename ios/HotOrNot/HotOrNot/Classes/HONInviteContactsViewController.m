@@ -12,7 +12,6 @@
 #import "NSString+DataTypes.h"
 
 #import "MBProgressHUD.h"
-#import "EGORefreshTableHeaderView.h"
 
 #import "HONInviteContactsViewController.h"
 #import "HONUserProfileViewController.h"
