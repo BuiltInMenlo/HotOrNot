@@ -18,15 +18,14 @@
 #import "HONChangeAvatarViewController.h"
 #import "HONPrivacyPolicyViewController.h"
 #import "HONSettingsViewController.h"
-#import "HONInviteClubsViewController.h"
-#import "HONInviteContactsViewController.h"
+//#import "HONInviteClubsViewController.h"
+//#import "HONInviteContactsViewController.h"
 #import "HONInsetOverlayView.h"
 #import "HONImageLoadingView.h"
 #import "HONActivityItemViewCell.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
-#import "HONInviteClubsViewController.h"
 #import "HONClubTimelineViewController.h"
 
 #import "HONUserVO.h"
@@ -223,9 +222,9 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Invite User"
 									withTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Back"];
@@ -491,9 +490,9 @@
 		
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
 		if (_userProfileType == HONUserProfileTypeOpponent) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO: _userVO]]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO: _userVO]]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 			
 		} else {
 			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];

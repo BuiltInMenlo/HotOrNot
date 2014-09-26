@@ -19,7 +19,7 @@
 
 #import "HONCreateClubViewController.h"
 #import "HONHeaderView.h"
-#import "HONInviteContactsViewController.h"
+//#import "HONInviteContactsViewController.h"
 
 @interface HONCreateClubViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -96,7 +96,7 @@
 
 - (void)_submitClub {
 	[[HONClubAssistant sharedInstance] writePreClubWithTitle:_clubName andBlurb:@"" andCoverPrefixURL:_clubImagePrefix];
-	[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initAsViewControllerPushed:YES] animated:YES];
+//	[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initAsViewControllerPushed:YES] animated:YES];
 }
 
 

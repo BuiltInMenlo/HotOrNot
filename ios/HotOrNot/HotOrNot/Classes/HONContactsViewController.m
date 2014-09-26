@@ -14,7 +14,6 @@
 
 #import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
-#import "HONInviteClubsViewController.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"

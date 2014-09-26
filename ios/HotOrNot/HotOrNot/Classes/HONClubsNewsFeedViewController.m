@@ -15,11 +15,11 @@
 
 #import "HONClubsNewsFeedViewController.h"
 #import "HONClubTimelineViewController.h"
-#import "HONUserProfileViewController.h"
+//#import "HONUserProfileViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
-#import "HONInviteContactsViewController.h"
+//#import "HONInviteContactsViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONTabBannerView.h"
 #import "HONClubNewsFeedViewCell.h"
@@ -222,14 +222,14 @@ static NSString * const kCamera = @"camera";
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
-	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
-	searchBarView.userInteractionEnabled = NO;
-	[self.view addSubview:searchBarView];
-	
-	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = searchBarView.frame;
-	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:searchButton];
+//	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+//	searchBarView.userInteractionEnabled = NO;
+//	[self.view addSubview:searchBarView];
+//	
+//	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	searchButton.frame = searchBarView.frame;
+//	[searchButton addTarget:self action:@selector(_goContactsSearch) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:searchButton];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
@@ -334,9 +334,9 @@ static NSString * const kCamera = @"camera";
 - (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
 	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -387,12 +387,12 @@ static NSString * const kCamera = @"camera";
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
 	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
-}
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	
+//	[self presentViewController:navigationController animated:YES completion:^(void) {
+//	}];
+//}
 
 
 #pragma mark - ClubNewsFeedItemViewCell Delegates
@@ -647,9 +647,9 @@ static NSString * const kCamera = @"camera";
 		
 	} else if (alertView.tag == HONClubsNewsFeedAlertTypeInviteFriends) {
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} else if (alertView.tag == HONClubsNewsFeedAlertTypeCreateClub) {

@@ -14,7 +14,7 @@
 #import "HONClubTimelineViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONUserProfileViewController.h"
-#import "HONInviteContactsViewController.h"
+//#import "HONInviteContactsViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
@@ -349,9 +349,9 @@
 - (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
 	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_clubVO viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_clubVO viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

@@ -15,7 +15,6 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 #import "HONUserProfileViewController.h"
-#import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserVO.h"
 

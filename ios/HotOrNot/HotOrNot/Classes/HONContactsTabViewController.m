@@ -20,8 +20,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
-#import "HONInviteClubsViewController.h"
-#import "HONInviteContactsViewController.h"
+//#import "HONInviteContactsViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONClubTimelineViewController.h"
 
@@ -242,9 +241,9 @@ static NSString * const kCamera = @"camera";
 - (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
 	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -294,10 +293,10 @@ static NSString * const kCamera = @"camera";
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
 	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:^(void) {
+//	}];
 }
 
 

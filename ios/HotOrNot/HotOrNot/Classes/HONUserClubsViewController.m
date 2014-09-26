@@ -24,7 +24,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONClubSettingsViewController.h"
-#import "HONInviteContactsViewController.h"
+//#import "HONInviteContactsViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONHighSchoolSearchViewController.h"
@@ -32,6 +32,7 @@
 #import "HONSearchBarView.h"
 #import "HONUserClubVO.h"
 #import "HONTrivialUserVO.h"
+#import "HONTableView.h"
 
 @interface HONUserClubsViewController () <HONClubViewCellDelegate, HONInsetOverlayViewDelegate, HONSelfieCameraViewControllerDelegate, HONTabBannerViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -446,9 +447,9 @@ static NSString * const kCamera = @"camera";
 - (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
 	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
 	_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -491,11 +492,11 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
 	
 	_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	
+//	[self presentViewController:navigationController animated:YES completion:^(void) {
+//	}];
 }
 
 
@@ -527,9 +528,9 @@ static NSString * const kCamera = @"camera";
 		_insetOverlayView = nil;
 	}];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -756,9 +757,9 @@ static NSString * const kCamera = @"camera";
 										   withUserClub:_selectedClubVO];
 		
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 			
 		} else if (buttonIndex == 1) {
 			[[HONClubAssistant sharedInstance] copyClubToClipBoard:_selectedClubVO withAlert:YES];
@@ -774,9 +775,9 @@ static NSString * const kCamera = @"camera";
 		
 		if (buttonIndex == 0) {
 			_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 			
 		} else if (buttonIndex == 1) {
 			[[HONClubAssistant sharedInstance] copyClubToClipBoard:_selectedClubVO withAlert:YES];
@@ -788,10 +789,10 @@ static NSString * const kCamera = @"camera";
 		
 		if (buttonIndex == 0) {
 			_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-				
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
+			
 		} else if (buttonIndex == 1) {
 			[[HONClubAssistant sharedInstance] copyClubToClipBoard:_selectedClubVO withAlert:YES];
 				
@@ -859,9 +860,9 @@ static NSString * const kCamera = @"camera";
 		
 		if (buttonIndex == 0) {
 			_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} else if (alertView.tag == HONUserClubsAlertTypeSubmitPhoto) {

@@ -46,16 +46,14 @@
 #import "HONTrivialUserVO.h"
 #import "HONInsetOverlayView.h"
 #import "HONTabBarController.h"
-#import "HONInviteContactsViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONVerifyViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
 #import "HONClubsNewsFeedViewController.h"
-#import "HONAddContactsViewController.h"
 #import "HONContactsTabViewController.h"
-#import "HONUserProfileViewController.h"
+//#import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONSuspendedViewController.h"
@@ -1463,9 +1461,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeShare) {
@@ -1490,9 +1488,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	} else if (alertView.tag == HONAppDelegateAlertTypeInviteContacts) {
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 

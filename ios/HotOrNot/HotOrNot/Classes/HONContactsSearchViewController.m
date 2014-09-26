@@ -10,7 +10,6 @@
 
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
-#import "HONInviteClubsViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONHeaderView.h"
 #import "HONTrivialUserVO.h"

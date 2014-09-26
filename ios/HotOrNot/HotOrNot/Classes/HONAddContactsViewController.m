@@ -22,7 +22,7 @@
 #import "HONContactUserVO.h"
 #import "HONFollowContactViewCell.h"
 #import "HONInviteContactViewCell.h"
-#import "HONUserProfileViewController.h"
+//#import "HONUserProfileViewController.h"
 
 
 @interface HONAddContactsViewController ()<HONFollowContactViewCellDelegate, HONInviteContactViewCellDelegate>
@@ -566,7 +566,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
 		
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
+//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
 
 

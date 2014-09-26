@@ -24,7 +24,6 @@
 #import "HONSelfieCameraPreviewView.h"
 #import "HONSelfieCameraSubmitViewController.h"
 #import "HONStatusUpdateSubmitViewController.h"
-#import "HONInviteContactsViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
 

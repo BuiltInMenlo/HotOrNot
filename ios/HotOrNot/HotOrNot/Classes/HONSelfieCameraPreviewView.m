@@ -20,7 +20,6 @@
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONEmotionsPickerDisplayView.h"
-#import "HONInviteContactsViewController.h"
 #import "HONEmotionsPickerView.h"
 #import "HONGlobalEmotionPickerView.h"
 
