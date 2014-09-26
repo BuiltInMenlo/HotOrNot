@@ -54,8 +54,8 @@
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = CGRectMake(257.0, 15.0, 44.0, 44.0);
 		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"modalCloseButton"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"modalCloseButton"] forState:UIControlStateHighlighted];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"insetOverlayCloseButton"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"insetOverlayCloseButton"] forState:UIControlStateHighlighted];
 		[_framingImageView addSubview:closeButton];
 		
 		_acknowledgeButton = [UIButton buttonWithType:UIButtonTypeCustom];

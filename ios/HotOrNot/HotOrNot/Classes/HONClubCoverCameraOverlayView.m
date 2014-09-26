@@ -34,7 +34,7 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
 		[self addSubview:_previewHolderView];
 		
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
+//		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
 		
 		_irisView = [[UIImageView alloc] initWithFrame:self.frame];
 		_irisView.backgroundColor = [UIColor blackColor];

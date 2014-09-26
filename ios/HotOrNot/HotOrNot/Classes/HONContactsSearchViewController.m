@@ -254,6 +254,9 @@
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
 	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Country Selector Choosen"
+									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
+	
 	_countryCodeLabel.text = [@"+" stringByAppendingString:countryVO.callingCode];
 	
 	[_countryButton setTitle:countryVO.countryName forState:UIControlStateNormal];
@@ -309,7 +312,8 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Found User Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"] withTrivialUser:_searchUserVO];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Found User Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]
+										withTrivialUser:_searchUserVO];
 		
 		if (buttonIndex == 0) {
 //			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:_searchUserVO]];
@@ -325,7 +329,8 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"] withContactUser:_contactUserVO];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]
+										withContactUser:_contactUserVO];
 		
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {

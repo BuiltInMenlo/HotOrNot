@@ -779,6 +779,9 @@
 													   @"name"	: countryVO.countryName} forKey:@"country_code"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Country Selector Choosen"
+									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
+	
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateNormal];
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateHighlighted];
 }
