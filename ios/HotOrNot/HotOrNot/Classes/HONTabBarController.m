@@ -73,7 +73,8 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:selectedIndex] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] setObject:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) forKey:@"prev_tab"];
+	[[NSUserDefaults standardUserDefaults] setObject:@(selectedIndex) forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
@@ -170,8 +171,9 @@
 	
 	[super setSelectedIndex:tabBarButtonType];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
-		
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabBarButtonType] forKey:@"current_tab"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) forKey:@"prev_tab"];
+	[[NSUserDefaults standardUserDefaults] setObject:@(tabBarButtonType) forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];

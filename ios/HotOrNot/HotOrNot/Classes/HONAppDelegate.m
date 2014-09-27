@@ -53,7 +53,7 @@
 #import "HONFeedViewController.h"
 #import "HONClubsNewsFeedViewController.h"
 #import "HONContactsTabViewController.h"
-//#import "HONUserProfileViewController.h"
+#import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONSuspendedViewController.h"
@@ -508,17 +508,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					break;
 					
 				case 1:
-					notificationName = @"REFRESH_NEWS_TAB";
-					break;
-					
-				case 2:
-					notificationName = @"REFRESH_CLUBS_TAB";
+					notificationName = @"REFRESH_SETTINGS_TAB";
 					break;
 					
 				default:
 					notificationName = @"REFRESH_ALL_TABS";
 					break;
-			
 			}
 			
 			NSLog(@"REFRESHING:[%@]", notificationName);
@@ -1158,7 +1153,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								   @"votes"				: @[],
 								   @"local_challenges"	: @[],
 								   @"upvotes"			: @[],
-								   @"activity_total"	: @0,
+								   @"activity_total"	: @(0),
+								   @"prev_tab"			: @(-1),
+								   @"current_tab"		: @(0),
 								   @"active_date"		: @"0000-00-00 00:00:00",
 								   @"tracking_interval"	: @"0000-00-00 00:00:00",
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
@@ -1167,7 +1164,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
 			[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
 	}
-		
+	
+	
 #if __FORCE_REGISTER__ == 1
 	for (NSString *key in userDefaults) {
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
@@ -1186,11 +1184,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_initThirdPartySDKs {
-#if __APPSTORE_BUILD__ == 0
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
-#endif
-	
 	[[HONStickerAssistant sharedInstance] registerStickerStore];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
@@ -1208,6 +1201,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[Tapjoy requestTapjoyConnect:kTapjoyAppID
 					   secretKey:kTapjoyAppSecretKey
 						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
+
+	
+#if __APPSTORE_BUILD__ == 0
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
+#endif
+	
 	
 //	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"

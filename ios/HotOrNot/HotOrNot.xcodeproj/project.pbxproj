@@ -2371,6 +2371,7 @@
 				4C148F7E17815CA900EBD245 /* -Settings- */,
 				4CD16D1D199702760035A8D3 /* Banner */,
 				4C32B9A515FAB60A0023A0EE /* Status Update */,
+				4CED977518E46B1800482813 /* Activity */,
 			);
 			name = Tabs;
 			sourceTree = "<group>";
@@ -2378,7 +2379,6 @@
 		4CBDDBA41913349A002F9723 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				4CED977518E46B1800482813 /* Activity */,
 				4CD0D0E418F4F9F800B4ADE9 /* Feed */,
 				4C0B691D179E06C200D3E12A /* HONSnapPreviewViewController.h */,
 				4C0B691E179E06C200D3E12A /* HONSnapPreviewViewController.m */,
@@ -3899,6 +3899,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -3937,7 +3938,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s x86_64";
 			};
 			name = Debug;
 		};
@@ -3945,6 +3946,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -3979,7 +3981,7 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s x86_64";
 			};
 			name = Release;
 		};
@@ -4017,7 +4019,7 @@
 				PROVISIONING_PROFILE = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv6 armv7";
+				VALID_ARCHS = "armv6 armv7 x86_64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -4056,7 +4058,7 @@
 				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv6 armv7";
+				VALID_ARCHS = "armv6 armv7 x86_64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

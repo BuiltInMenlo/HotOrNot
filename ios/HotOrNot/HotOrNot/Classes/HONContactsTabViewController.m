@@ -65,12 +65,6 @@ static NSString * const kSticker = @"sticker";
 static NSString * const kCamera = @"camera";
 
 #pragma mark -
-#pragma mark - Data Calls
-- (void)_generateClub:(HONUserClubVO *)vo {
-	[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSDictionary *result) {}];
-}
-
-
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Refresh"];

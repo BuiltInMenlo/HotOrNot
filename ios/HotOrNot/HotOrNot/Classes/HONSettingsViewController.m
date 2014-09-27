@@ -21,7 +21,7 @@
 #import "HONSettingsViewCell.h"
 #import "HONPrivacyPolicyViewController.h"
 #import "HONTermsViewController.h"
-//#import "HONUserProfileViewController.h"
+#import "HONUserProfileViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONNetworkStatusViewController.h"
 #import "HONSelfieCameraViewController.h"
@@ -117,7 +117,7 @@
 #pragma mark - Navigation
 - (void)_goProfile {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Activity"];
-//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {

@@ -82,14 +82,14 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 - (NSDictionary *)screenStateProperties {
-	return (@{@"current"	: @"",
-			  @"previous"	: @""});
+	return (@{@"current"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] != nil) ? ([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue] == 0) ? @"contacts" : ([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue] == 1) ? @"settings" : @"N/A" : @"N/A",
+			  @"previous"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"prev_tab"] != nil) ? ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev_tab"] intValue] == 0) ? @"contacts" : ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev_tab"] intValue] == 1) ? @"settings" : @"N/A" : @"N/A"});
 }
 
 - (NSDictionary *)sessionProperties {
 	return (@{@"id"				: @"",
 			  @"id-last"		: @"",
-			  @"session-gap"	: @"",
+			  @"session-gap"	: [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString],
 			  @"duration"		: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] : [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
 			  @"idle"			: ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] : [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
 			  @"count"			: ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] : @"0",

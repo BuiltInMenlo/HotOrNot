@@ -71,7 +71,9 @@
 			} else if ([key isEqualToString:@"pending"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
 					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-						[self _retrieveRecentClubs];
+						
+						if ([[result objectForKey:@"pending"] count] == 0)
+							[self _retrieveRecentClubs];
 					}];
 				}
 			
