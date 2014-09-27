@@ -132,6 +132,8 @@
 "invalid_pin" = "PIN inválido!";
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
 
+"register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
+"pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 "club_covers" = "Capas do Selfieclub";
 "sms_error" = "SMS Error";
 "not_now" = "Agora não";
@@ -166,22 +168,18 @@
 "club_notfound" = "Clube não encontrado!";
 "want_invite" = "Quer convidar amigos para %@?";
 "confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
+"select_friends" = "Select Friends";
+"header_search" = "Search";
 
-
-"global_sticker" = "Sticker Store";
-"my_sticker" = "My Stickers";
-
-
-"my_sticker" = "My Stickers";
 "add_photo" = "Adicionar Foto";
 "please_enter_club" = "Please enter a club name!";
 "are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
 "select_cover" = "Select cover";
-
+"empty_timeline" = "No status updates available";
 
 "activity_you" = "Você";
 
-
+"header_signUp" = "Sign Up";
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
 

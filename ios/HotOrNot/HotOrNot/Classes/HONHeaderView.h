@@ -8,7 +8,7 @@
 
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
-- (id)initUsingAltFontWithTitle:(NSString *)title;
+- (id)initWithTitleUsingCartoGothic:(NSString *)title;
 - (id)initWithTitleImage:(UIImage *)image;
 
 - (void)addButton:(UIView *)buttonView;

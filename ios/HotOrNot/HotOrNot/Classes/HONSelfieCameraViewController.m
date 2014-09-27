@@ -44,8 +44,6 @@
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *submitParams;
-@property (nonatomic, strong) UIImageView *submitImageView;
-@property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) BOOL isBlurred;
 @property (nonatomic) int uploadCounter;
@@ -91,7 +89,6 @@
 	if ((self = [self init])) {
 		_userClubVO = clubVO;
 		_selfieSubmitType = HONSelfieCameraSubmitTypeReplyClub;
-//		_selfieSubmitType = (_userClubVO != nil) ? HONSelfieCameraSubmitTypeReplyClub : HONSelfieCameraSubmitTypeCreateClub;
 	}
 	
 	return (self);
@@ -152,20 +149,6 @@
 }
 
 - (void)_submitClubPhoto {
-	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, ([UIScreen mainScreen].bounds.size.height - 14.0) * 0.5, 54.0, 14.0)];
-	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
-										[UIImage imageNamed:@"cameraUpload_002"],
-										[UIImage imageNamed:@"cameraUpload_003"], nil];
-	_submitImageView.animationDuration = 0.5f;
-	_submitImageView.animationRepeatCount = 0;
-	_submitImageView.alpha = 0.0;
-	[_submitImageView startAnimating];
-	[[[UIApplication sharedApplication] delegate].window addSubview:_submitImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitImageView.alpha = 1.0;
-	} completion:nil];
-	
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
 		[self _submitCompleted:result];
 	}];
@@ -182,15 +165,6 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
-		
-	} else {
-		_hasSubmitted = YES;
-		
-		if (_isUploadComplete) {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
-			}];
-		}
 	}
 }
 
@@ -239,14 +213,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
@@ -265,7 +239,7 @@
 	imagePickerController.delegate = self;
 	
 	if (sourceType == UIImagePickerControllerSourceTypeCamera) {
-		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
 		
 		imagePickerController.showsCameraControls = NO;
 		imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
@@ -278,7 +252,7 @@
  	}
 	
 	self.imagePickerController = imagePickerController;
-	[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
+	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
 		if (sourceType == UIImagePickerControllerSourceTypeCamera) {
 			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 		}
@@ -310,6 +284,7 @@
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
+	[_previewView updateProcessedImage:[UIImage imageNamed:@"blank_64"]];
 	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }
@@ -364,8 +339,6 @@
 	
 //	NSLog(@"CONTACT:[%@]", _contactUserVO.dictionary);
 	
-	_hasSubmitted = NO;
-	
 	NSError *error;
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
 												 encoding:NSUTF8StringEncoding];
@@ -415,7 +388,7 @@
 		_progressHUD = nil;
 	}
 	
-	[self dismissViewControllerAnimated:NO completion:^(void) {
+	[self dismissViewControllerAnimated:YES completion:^(void) {
 		[self _uploadPhotos];
 	}];
 }
@@ -429,7 +402,8 @@
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 		
-		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+		
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
 		self.imagePickerController.showsCameraControls = NO;
 		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
@@ -459,40 +433,17 @@
 	_isUploadComplete = (_uploadCounter == 2);
 	
 	if (_isUploadComplete) {
-		if (_submitImageView != nil) {
-			[UIView animateWithDuration:0.5 animations:^(void) {
-				_submitImageView.alpha = 0.0;
-			} completion:^(BOOL finished) {
-				[_submitImageView removeFromSuperview];
-				_submitImageView = nil;
-			}];
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
 		}
-
-		[_previewView uploadComplete];
+		
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront], _filename] forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
-		
-			if (_hasSubmitted) {
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-				}];
-			}
 		}];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-			
-		if (_hasSubmitted) {
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			}];
-		}
 	}
 }
 
@@ -508,17 +459,6 @@
 	[_progressHUD show:NO];
 	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 	_progressHUD = nil;
-	
-	[_previewView uploadComplete];
-	
-	if (_submitImageView != nil) {
-		[UIView animateWithDuration:0.5 animations:^(void) {
-			_submitImageView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_submitImageView removeFromSuperview];
-			_submitImageView = nil;
-		}];
-	}
 }
 
 @end

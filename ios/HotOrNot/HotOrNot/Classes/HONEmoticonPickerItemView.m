@@ -26,69 +26,16 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic) BOOL isSelected;
-@property (nonatomic) BOOL isLarge;
 @end
 
 @implementation HONEmoticonPickerItemView
-- (id)initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
-	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 154.0, 149.0)])) {
-		_emotionVO = emotionVO;
-		_isSelected = NO;
-		_isLarge = YES;
-		
-		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-//		_imageView.image = [UIImage imageNamed:@"emojiLargeButtonBG"];
-		_imageView.contentMode = UIViewContentModeRedraw;
-		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
-		_imageView.layer.borderWidth = 2.5f;
-		_imageView.layer.shouldRasterize = YES;
-		_imageView.layer.rasterizationScale = 3.0f;
-		[self addSubview:_imageView];
-		
-		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageView asLargeLoader:NO];
-		_imageLoadingView.alpha = 0.667;
-		[_imageLoadingView startAnimating];
-		[_imageView addSubview:_imageLoadingView];
-		
-//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
-		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
-		
-		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		selectButton.frame = _imageView.frame;
-		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:selectButton];
-				
-		UILabel *stickerPackLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 160.0, 154.0, 18.0)];
-		stickerPackLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
-		stickerPackLabel.textColor = [UIColor blackColor];
-		stickerPackLabel.textAlignment = NSTextAlignmentCenter;
-		[self addSubview:stickerPackLabel];
-		
-		[[HONStickerAssistant sharedInstance] nameForContentGroupID:_emotionVO.contentGroupID completion:^(NSString *name) {
-			if ([[name lowercaseString] rangeOfString:@" - free"].location != NSNotFound)
-				name = [name substringToIndex:[[name lowercaseString] rangeOfString:@" - free"].location];
-			
-			stickerPackLabel.text = name;
-		}];
-		
-//		if (delay == 0.0) {
-//			UIImageView *badgeImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPaidBadge"]];
-//			badgeImageView.frame = CGRectOffset(badgeImageView.frame, 120.0, 5.0);
-//			[self addSubview:badgeImageView];
-//		}
-	}
-	
-	return (self);
-}
 
 - (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
 	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 75.0, 75.0)])) {
 		_emotionVO = emotionVO;
 		_isSelected = NO;
-		_isLarge = NO;
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 //		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
-		_imageView.contentMode = UIViewContentModeRedraw;
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
 		_imageView.layer.shouldRasterize = YES;
@@ -132,19 +79,13 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 						 
 						 [UIView animateWithDuration:0.125 delay:0.000
 							  usingSpringWithDamping:0.875 initialSpringVelocity:0.333
-											 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+											 options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 						  
 										  animations:^(void) {
 											  _imageView.transform = transform;
 										  } completion:^(BOOL finished) {
-											  if(_isLarge){
-												  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedLargeEmotion:)])
-													  [self.delegate emotionItemView:self selectedLargeEmotion:_emotionVO];
-											  } else{
-												  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
-													  [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
-											  }
-											  
+											  if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
+												  [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
 										  }];
 					 }];
 }

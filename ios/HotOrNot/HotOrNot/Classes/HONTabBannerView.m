@@ -161,7 +161,7 @@
 		}
 	}];
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlockBanner"]];
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blank_64"]];
 	imageView.frame = CGRectOffset(imageView.frame, _scrollView.frame.size.width * [_clubs count], 0.0);
 	[_scrollView addSubview:imageView];
 	

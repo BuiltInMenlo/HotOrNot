@@ -23,7 +23,7 @@
 @interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONSelfieCameraViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-@property (nonatomic, strong) UIImageView *emptySetImageView;
+@property (nonatomic, strong) UIView *emptySetView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
@@ -105,30 +105,29 @@
 		
 		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
 		
-		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
 		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
 		[self _didFinishDataRefresh];
 		
-		_imageQueueLocation = 0;
-		if ([_clubPhotos count] > 0) {
-			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
-			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
-			
-			int cnt = 0;
-			for (int i=queueRange.location; i<queueRange.length; i++) {
-				[imageQueue addObject:[NSURL URLWithString:[((HONClubPhotoVO *)[_clubPhotos objectAtIndex:i]).imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
-				
-				cnt++;
-				_imageQueueLocation++;
-				if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_clubPhotos count])
-					break;
-				
-			}
-			
-			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
-											fromURLs:imageQueue
-											 withTag:@"club"];
-		}
+//		_imageQueueLocation = 0;
+//		if ([_clubPhotos count] > 0) {
+//			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
+//			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
+//			
+//			int cnt = 0;
+//			for (int i=queueRange.location; i<queueRange.length; i++) {
+//				[imageQueue addObject:[NSURL URLWithString:[((HONClubPhotoVO *)[_clubPhotos objectAtIndex:i]).imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+//				
+//				cnt++;
+//				_imageQueueLocation++;
+//				if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_clubPhotos count])
+//					break;
+//				
+//			}
+//			
+//			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
+//											fromURLs:imageQueue
+//											 withTag:@"club"];
+//		}
 	}];
 }
 
@@ -168,6 +167,10 @@
 	
 	_titleLabel.text = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username;
 	
+	[UIView animateWithDuration:0.25 animations:^(void){
+		_emptySetView.alpha = (float)([_clubPhotos count] == 0);
+	}];
+	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
@@ -183,16 +186,26 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[@"emptyTimeline" stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? @"-568h" : @""]]];
-	_emptySetImageView.frame = [UIScreen mainScreen].bounds;
-	_emptySetImageView.hidden = ([_clubPhotos count] > 0);
+	_emptySetView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_emptySetView.alpha = 0.0;
+	
+	UILabel *emptySetLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, ([UIScreen mainScreen].bounds.size.height - 24.0) * 0.5, 280.0, 24.0)];
+	emptySetLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16];
+	emptySetLabel.textColor = [UIColor whiteColor];
+	emptySetLabel.textAlignment = NSTextAlignmentCenter;
+	emptySetLabel.text = NSLocalizedString(@"empty_timeline", @"No status updates available");
+	[_emptySetView addSubview:emptySetLabel];
+	
+	[UIView animateWithDuration:0.25 animations:^(void){
+		_emptySetView.alpha = (float)([_clubPhotos count] == 0);
+	}];
 
 //	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
 	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.backgroundView = _emptySetImageView;
+	_tableView.backgroundView = _emptySetView;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.pagingEnabled = YES;
@@ -245,7 +258,7 @@
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:replyButton];
 	
-	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
+//	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
 	if (_clubVO == nil && _clubID > 0)
 		[self _retrieveClub];
@@ -263,17 +276,16 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
-
 
 
 #pragma mark - Navigation
@@ -380,7 +392,8 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply" withClubPhoto:clubPhotoVO];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply"
+									  withClubPhoto:clubPhotoVO];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	
@@ -394,7 +407,8 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote" withClubPhoto:clubPhotoVO];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote"
+									  withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
@@ -426,10 +440,10 @@
 	if (cell == nil)
 		cell = [[HONClubPhotoViewCell alloc] init];
 	
-	cell.delegate = self;
-	cell.clubName = _clubVO.clubName;
 	cell.indexPath = indexPath;
+	cell.clubName = _clubVO.clubName;
 	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.section];
+	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -456,25 +470,25 @@
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
 //	NSLog(@"tableView:didEndDisplayingCell:[%@]forRowAtIndexPath:[%d]", NSStringFromCGPoint(cell.frame.origin), indexPath.section);
 	
-	if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_clubPhotos count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {
-		NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
+//	if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_clubPhotos count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {
+//		NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
 		//NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
 		
-		int cnt = 0;
-		NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
-		for (int i=queueRange.location; i<queueRange.length; i++) {
-			[imageQueue addObject:[NSURL URLWithString:[((HONClubPhotoVO *)[_clubPhotos objectAtIndex:i]).imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
-			
-			cnt++;
-			_imageQueueLocation++;
-			if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_clubPhotos count])
-				break;
-			
-		}
-		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
-										fromURLs:imageQueue
-										 withTag:@"club"];
-	}
+//		int cnt = 0;
+//		NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
+//		for (int i=queueRange.location; i<queueRange.length; i++) {
+//			[imageQueue addObject:[NSURL URLWithString:[((HONClubPhotoVO *)[_clubPhotos objectAtIndex:i]).imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+//			
+//			cnt++;
+//			_imageQueueLocation++;
+//			if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_clubPhotos count])
+//				break;
+//			
+//		}
+//		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
+//										fromURLs:imageQueue
+//										 withTag:@"club"];
+//	}
 }
 
 
@@ -510,7 +524,8 @@
 		
 		} else if (buttonIndex == 1) {
 			NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote" withClubPhoto:_clubPhotoVO];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote"
+											  withClubPhoto:_clubPhotoVO];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 			[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_clubPhotoVO.challengeID forOpponent:_clubPhotoVO completion:^(NSDictionary *result) {
@@ -523,7 +538,8 @@
 		
 		} else if (buttonIndex == 2) {
 			NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply" withClubPhoto:_clubPhotoVO];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply"
+											  withClubPhoto:_clubPhotoVO];
 			
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 			

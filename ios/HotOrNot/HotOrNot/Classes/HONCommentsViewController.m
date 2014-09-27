@@ -389,8 +389,8 @@
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Comment"
 															message:@"Do you want to remove this comment?"
 														   delegate:self
-												  cancelButtonTitle:@"Yes"
-												  otherButtonTitles:@"No", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
 		[alertView setTag:0];
 		[alertView show];
 		

@@ -18,12 +18,12 @@
 #import "MBProgressHUD.h"
 
 #import "HONChangeAvatarViewController.h"
-#import "HONAvatarCameraOverlayView.h"
+#import "HONCameraOverlayView.h"
 
 
-@interface HONChangeAvatarViewController () <HONAvatarCameraOverlayDelegate>
+@interface HONChangeAvatarViewController () <HONCameraOverlayViewDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
+@property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *imagePrefix;
 @property (nonatomic) int selfieAttempts;
@@ -53,7 +53,7 @@
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imagePrefix completion:^(NSObject *result) {		
-		[_cameraOverlayView uploadComplete];
+//		[_cameraOverlayView uploadComplete];
 		
 		[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:_imagePrefix completion:^(NSDictionary *result) {
 			if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
@@ -94,17 +94,18 @@
 #pragma mark - UI Presentation
 - (void)_presentCamera {
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+		
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
 		_imagePicker.delegate = self;
-		
 		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f);
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, scale, scale);
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
-		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
 		_imagePicker.cameraOverlayView = _cameraOverlayView;
 		
@@ -117,7 +118,6 @@
 		_imagePicker.allowsEditing = NO;
 		_imagePicker.navigationBarHidden = YES;
 		_imagePicker.toolbarHidden = YES;
-//		_imagePicker.wantsFullScreenLayout = NO;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
@@ -127,7 +127,7 @@
 
 
 #pragma mark - CameraOverlayView Delegates
-- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
@@ -138,7 +138,7 @@
 	}];
 }
 
-- (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
@@ -150,12 +150,12 @@
 	}
 }
 
-- (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
+- (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {	
 	_isFiltered = isFiltered;
 	
 	if (_progressHUD == nil)
@@ -193,14 +193,16 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+		
 		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		picker.showsCameraControls = NO;
 		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f);
+		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, scale, scale);
 		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
-		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
 		_imagePicker.cameraOverlayView = _cameraOverlayView;
 	

@@ -531,17 +531,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_registerUser {
 	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
-			if ([[result objectForKey:@"email"] length] == 0) {
-				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
-			
-			} else {
-				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
-			}
-			
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
-			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
+			if ([[result objectForKey:@"email"] length] == 0)
+				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+			
+			else
+				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
+			
+			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 						
 			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {

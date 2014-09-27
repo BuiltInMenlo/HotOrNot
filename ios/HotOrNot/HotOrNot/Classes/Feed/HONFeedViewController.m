@@ -262,8 +262,8 @@
 //		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Find & invite friends to %@?", [HONAppDelegate brandedAppName]]
 //															message:@""
 //														   delegate:self
-//												  cancelButtonTitle:@"Cancel"
-//												  otherButtonTitles:@"OK", nil];
+//												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//												  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 //		[alertView setTag:HONTimelineAlertTypeInvite];
 //		[alertView show];
 //	

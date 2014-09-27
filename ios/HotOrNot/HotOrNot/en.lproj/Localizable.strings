@@ -86,7 +86,6 @@
 "enter_phone" = "Enter phone";
 "Register" = "Register";
 //"firstrun_next" = "Avançar";
-//"Search for friends" = "Procurar amigos";
 "header_friends" = "Friends";
 "alert_member" = "You are already a member of %@!";
 "header_news" = "News";
@@ -96,6 +95,8 @@
 "create_club" = "Add Club";
 "invite_club" = "Invite to Club";
 "select_allclubs" = "Select all clubs";
+"select_friends" = "Select Friends";
+"header_search" = "Search";
 "header_activity" = "Activity";
 "alert_status" = "This club does not have any status updates yet!";
 "alert_create" = "Would you like to create one?";
@@ -128,8 +129,8 @@
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
 "is_feeling2" = "is feeling...";
-"enter_pin" = "Enter Pin";
-"invalid_pin" = "Invalid Pin!";
+"enter_pin" = "Enter PIN";
+"invalid_pin" = "Invalid PIN!";
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";
 
 "club_covers" = "Selfieclub Club Covers";
@@ -168,11 +169,6 @@
 "want_invite" = "Want to invite friends to %@?";
 "confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
 
-"global_sticker" = "Sticker Store";
-"my_sticker" = "My Stickers";
-
-
-
 
 "add_photo" = "Add Photo";
 "please_enter_club" = "Please enter a club name!";
@@ -188,14 +184,16 @@
 "activity_signup" = "You have just joined Selfieclub!";
 "alert_enterClub" = "Want to go there now?";
 "empty_club" = "Tap and hold to invite friends";
-
+"empty_timeline" = "No status updates available";
 "header_findFriends" = "Find friends";
+"header_signUp" = "Sign Up";
 "phone_number" = "phone number";
 "alert_inviteContact_t" = "%@ found!";
 "alert_inviteNewContact_t" = "No user found!";
 "alert_inviteContact_m" = "Would you like to invite them to one of your private clubs?";
 "club_inviteSubText" = "You have been invited. Tap to join!";
-
+"register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
+"pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 
 "areacode_club" = "%@Club";
 "family_club" = "My%@Club";

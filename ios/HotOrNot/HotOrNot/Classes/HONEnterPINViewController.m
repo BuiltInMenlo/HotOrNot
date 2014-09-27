@@ -7,6 +7,7 @@
 //
 
 #import "NSString+DataTypes.h"
+#import "UILabel+FormattedText.h"
 
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
@@ -81,24 +82,6 @@
 - (void)_finishFirstRun {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Pass First Run"];
 	
-//	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
-//		NSMutableArray *schools = [NSMutableArray array];
-//		for (NSDictionary *club in [result objectForKey:@"clubs"]) {
-//			NSMutableDictionary *dict = [club mutableCopy];
-//			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
-//			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
-//			
-//			NSLog(@"vo:[%@]", vo.clubName);
-//			[schools addObject:dict];
-//		}
-//		
-//		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
-//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"high_schools"];
-//		
-//		[[NSUserDefaults standardUserDefaults] setObject:[schools copy] forKey:@"high_schools"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
-//	}];
-	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -116,7 +99,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"enterPinTitle"]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"enter_pin", @"Enter PIN")];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -153,12 +136,30 @@
 	_pinCheckImageView.alpha = 0.0;
 	[self.view addSubview:_pinCheckImageView];
 	
-	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"pinText"]];
-	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 129.0);
-	[self.view addSubview:footerTextImageView];
+	
+	NSMutableString *footer = [NSLocalizedString(@"pin_footer", @"Enter the four digit PIN that was\nsent to your device. ¡Resend") mutableCopy];
+	NSRange buttonRange = [footer rangeOfString:@"¡"];
+	[footer replaceOccurrencesOfString:@"¡"
+							withString:@""
+							   options:NSCaseInsensitiveSearch
+								 range:buttonRange];
+	
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	paragraphStyle.minimumLineHeight = 26.0;
+	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+	paragraphStyle.alignment = NSTextAlignmentCenter;
+	
+	UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 123.0, 280.0, 64.0)];
+	footerLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	footerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	footerLabel.numberOfLines = 2;
+	footerLabel.attributedText = [[NSAttributedString alloc] initWithString:footer attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	[footerLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
+	[footerLabel setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
+	[self.view addSubview:footerLabel];
 	
 	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	resendButton.frame = CGRectMake(200.0, 160.0, 55.0, 24.0);
+	resendButton.frame = CGRectMake(196.0, 164.0, 55.0, 18.0);
 	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:resendButton];
 	
@@ -194,6 +195,16 @@
 }
 
 - (void)_goResend {
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.yOffset = -80.0;
+	_progressHUD.graceTime = kHUDTime;
+	_progressHUD.mode = MBProgressHUDModeCustomView;
+	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_pass"]];
+	[_progressHUD show:NO];
+	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	_progressHUD = nil;
+	
 	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
 		_pinTextField.text = @"";
 		[_pinTextField becomeFirstResponder];
@@ -205,6 +216,7 @@
 	_pin = _pinTextField.text;
 	
 	_isPopping = YES;
+	[_pinTextField resignFirstResponder];
 	[self _finishFirstRun];
 }
 

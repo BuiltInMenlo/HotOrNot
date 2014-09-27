@@ -9,5 +9,4 @@
 #import "HONViewController.h"
 
 @interface HONChangeAvatarViewController : HONViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
-
 @end

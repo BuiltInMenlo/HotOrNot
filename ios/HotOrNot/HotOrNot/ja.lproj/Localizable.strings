@@ -128,9 +128,9 @@
 "take_photo" = "写真を撮る";
 "is_feeling" = "- 感じていること...";
 "is_feeling2" = "感じていること...";
-"enter_pin" = "Pinを入力する";
+"enter_pin" = "PINを入力する";
 "invalid_pin" = "Pinが無効です!";
-"invalid_pin_msg" = "Pin番号は4ケタにしてください";
+"invalid_pin_msg" = "PIN番号は4ケタにしてください";
 
 "club_covers" = "セルフィークラブ・クラブ・カバー";
 "sms_error" = "SMSエラー";
@@ -167,15 +167,12 @@
 "alert_create_it" = "それを作成しますか?";
 "club_notfound" = "クラブが見つかりません!";
 "want_invite" = "%@に友人を招待しますか?";
-
-
-"global_sticker" = "Sticker Store";
-"my_sticker" = "My Stickers";
+"select_friends" = "Select Friends";
+"header_search" = "Search";
 
 "activity_you" = "あなた";
-
-"my_sticker" = "My Stickers";
-
+"header_signUp" = "Sign Up";
+"empty_timeline" = "No status updates available";
 
 
 "confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
@@ -190,6 +187,8 @@
 "alert_inviteContact_m" = "あなたはあなたのプライベートクラブの一つに招待しますか？";
 "club_inviteSubText" = "あなたが招待されている。参加するをタップ！";
 "empty_club" = "タップして、友人を招待したまま";
+"register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
+"pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 
 
 "areacode_club" = "%@クラブ";

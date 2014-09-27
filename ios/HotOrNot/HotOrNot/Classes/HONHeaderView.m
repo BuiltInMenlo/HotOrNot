@@ -22,7 +22,7 @@
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		[self addSubview:_bgImageView];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 32.0, 170.0, 19.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 28.0, 170.0, 23.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 		_titleLabel.textColor = [UIColor blackColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
@@ -42,9 +42,10 @@
 	return (self);
 }
 
-- (id)initUsingAltFontWithTitle:(NSString *)title {
+- (id)initWithTitleUsingCartoGothic:(NSString *)title {
 	if ((self = [self initWithTitle:title])) {
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:19];
+		_titleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 4.0);
 	}
 	
 	return (self);

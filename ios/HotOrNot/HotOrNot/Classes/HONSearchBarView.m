@@ -97,6 +97,13 @@
 	return (self);
 }
 
+- (BOOL)becomeFirstResponder {
+	return ([_searchTextField becomeFirstResponder]);
+}
+
+- (BOOL)resignFirstResponder {
+	return ([_searchTextField resignFirstResponder]);
+}
 
 - (void)backgroundingReset {
 	[_searchTextField resignFirstResponder];

@@ -140,7 +140,7 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"searchTitle"]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_search", @"Search")];
 	[headerView addButton:closeButton];
 	[headerView addButton:submitButton];
 	[self.view addSubview:headerView];
@@ -218,6 +218,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel"];
 	
 	_isDismissing = YES;
+	[_phoneTextField resignFirstResponder];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

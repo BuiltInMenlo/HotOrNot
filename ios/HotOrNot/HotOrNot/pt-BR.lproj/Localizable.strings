@@ -87,6 +87,7 @@
 "firstrun_next" = "Avançar";
 "Search for friends" = "Procurar amigos";
 "header_friends" = "Amigos";
+"header_search" = "Search";
 "alert_member" = "You are already a member of %@!";
 "header_news" = "Novidades";
 "header_clubs" = "Clubes";
@@ -163,18 +164,14 @@
 "tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://sel.club";
 "alert_create_it" = "Gostaria de criá-lo?";
 "confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
+"select_friends" = "Select Friends";
 
-"global_sticker" = "Sticker Store";
-"my_sticker" = "My Stickers";
-
-
-"my_sticker" = "My Stickers";
-
+"empty_timeline" = "No status updates available";
 "add_photo" = "Adicionar Foto";
 "please_enter_club" = "Please enter a club name!";
 "are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
 "select_cover" = "Select cover";
-
+"header_signUp" = "Sign Up";
 "activity_you" = "Você";
 
 
@@ -191,6 +188,8 @@
 "alert_inviteContact_m" = "Gostaria de convidá-los para um de seus clubes privados?";
 "club_inviteSubText" = "Você foi convidado. Toque para participar!";
 "empty_club" = "Toque e segure para convidar amigos";
+"register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
+"pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 
 
 "areacode_club" = "%@Clube";

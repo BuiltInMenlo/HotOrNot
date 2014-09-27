@@ -202,8 +202,8 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Flag this user?"
 														message:@""
 													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"OK", nil];
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 	[alertView setTag:HONVerifyAlertTypeFlag];
 	[alertView show];
 }
@@ -348,7 +348,7 @@
 		
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
-													cancelButtonTitle:@"Cancel"
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Invite user", @"Inappropriate content", nil];
 	[actionSheet setTag:0];

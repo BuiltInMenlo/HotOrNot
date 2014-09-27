@@ -66,6 +66,10 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]);
 }
 
+- (BOOL)isIOS8 {
+	return ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"8"]);
+}
+
 - (BOOL)isPhoneType5s {
 	return ([[[HONDeviceIntrinsics sharedInstance] modelName] rangeOfString:@"iPhone6"].location == 0);
 }

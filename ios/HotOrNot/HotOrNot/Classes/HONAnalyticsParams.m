@@ -104,9 +104,9 @@ static HONAnalyticsParams *sharedInstance = nil;
 //		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
 //	});
 	
-	NSDate *cohortDate = ([HONAppDelegate infoForUser] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
-	return(@{@"id"			: ([HONAppDelegate infoForUser] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
-			 @"name"		: ([HONAppDelegate infoForUser] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
+	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
+	return(@{@"id"			: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
+			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
 			 @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate],
 			 @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:cohortDate] weekOfYear]]});
 }

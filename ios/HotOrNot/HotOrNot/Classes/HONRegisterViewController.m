@@ -13,6 +13,7 @@
 #import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
+#import "UILabel+FormattedText.h"
 
 #import "ImageFilter.h"
 #import "KeychainItemWrapper.h"
@@ -240,100 +241,82 @@
 	NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 	NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
-		NSLog(@"\n\n******** BY-PASS FINALIZE W/ API **********");
-		[[HONAPICaller sharedInstance] updateUsernameForUser:_username completion:^(NSDictionary *result) {
+	NSLog(@"\n\n******** FINALIZE W/ API **********");
+	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																@"username"	: _username,
+																@"phone"	: [_phone stringByAppendingString:@"@selfieclub.com"],
+																@"filename"	: _imageFilename} completion:^(NSDictionary *result) {
+																	
+		int responseCode = [[result objectForKey:@"result"] intValue];
+		if (result != nil && responseCode == 0) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
 			
+			_usernameCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
+			_usernameCheckImageView.alpha = 1.0;
+			
+			_phoneCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
+			_phoneCheckImageView.alpha = 1.0;
+			
+			
 			[HONAppDelegate writeUserInfo:result];
 			[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
 			
-			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeUserClubs:result];
-				
-//				NSString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
-//				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
-//				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
-//					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
-//				
-//				if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
-//					[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
-//					}];
-//				}
-			}];
-			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
-			}];
-		}];
-	
-	} else {
-		NSLog(@"\n\n******** FINALIZE W/ API **********");
-		[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																	@"username"	: _username,
-																	@"phone"	: [_phone stringByAppendingString:@"@selfieclub.com"],
-																	@"filename"	: _imageFilename} completion:^(NSDictionary *result) {
-			if (result != nil) {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-				
-				[HONAppDelegate writeUserInfo:result];
-				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
-				
-//				NSMutableString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
-//				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
-//					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
-				
 				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 					[[HONClubAssistant sharedInstance] writeUserClubs:result];
-					
-//					if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
-//						[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
-//						}];
-//					}
-				}];
-				
-				[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {				
 					[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 				}];
-							
-			} else {
-				int errorCode = [[result objectForKey:@"result"] intValue];
+			}];
+			
+			
+		} else {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			
+			[_progressHUD setYOffset:-80.0];
+			_progressHUD.minShowTime = kHUDErrorTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime + 0.75];
+			_progressHUD = nil;
+			
+			if (responseCode == 1) {
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
 				
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_username = @"";
+				_usernameTextField.text = @"";
+				[_usernameTextField becomeFirstResponder];
+			
+			} else if (responseCode == 2) {
+				_usernameCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
-				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = (errorCode == 1) ? NSLocalizedString(@"hud_usernameTaken", nil) : (errorCode == 2) ? NSLocalizedString(@"phone_taken", nil) : (errorCode == 3) ? NSLocalizedString(@"user_phone", nil) : @"Unknown Error";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-				
-				if (errorCode == 1)
-					_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				
-				else if (errorCode == 2)
-					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				
-				else {
-					_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				}
-				
-				_usernameCheckImageView.alpha = 1.0;
-				_phoneCheckImageView.alpha = 1.0;
+				_phone = @"";
+				_phoneTextField.text = @"";
+				[_phoneTextField becomeFirstResponder];
 			}
-		}];
-	}
+			
+			else {
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				
+				_username = @"";
+				_usernameTextField.text = @"";
+				_phone = @"";
+				_phoneTextField.text = @"";
+				[_usernameTextField becomeFirstResponder];
+			}
+			
+			_usernameCheckImageView.alpha = 1.0;
+			_phoneCheckImageView.alpha = 1.0;
+		}
+	}];
 }
 
 
@@ -347,7 +330,7 @@
 	[_nextButton setBackgroundImage:[UIImage imageNamed: @"cameraNextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleImage:[UIImage imageNamed:@"signUpTitle"]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_signUp", @"Sign Up")];
 	[headerView addButton:_nextButton];
 	[self.view addSubview:headerView];
 	
@@ -458,12 +441,29 @@
 		}];
 	}
 	
-	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"termsText"]];
-	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 204.0);
-	[self.view addSubview:footerTextImageView];
+	NSMutableString *footer = [NSLocalizedString(@"register_footer", @"Enter your phone number for\ndevice verification. ¡Terms") mutableCopy];
+	NSRange buttonRange = [footer rangeOfString:@"¡"];
+	[footer replaceOccurrencesOfString:@"¡"
+							withString:@""
+							   options:NSCaseInsensitiveSearch
+								 range:buttonRange];
+	
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	paragraphStyle.minimumLineHeight = 26.0;
+	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+	paragraphStyle.alignment = NSTextAlignmentCenter;
+	
+	UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 200.0, 280.0, 64.0)];
+	footerLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	footerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	footerLabel.numberOfLines = 2;
+	footerLabel.attributedText = [[NSAttributedString alloc] initWithString:footer attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	[footerLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
+	[footerLabel setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
+	[self.view addSubview:footerLabel];
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	termsButton.frame = CGRectMake(200.0, 238.0, 40.0, 20.0);
+	termsButton.frame = CGRectMake(198.0, 240.0, 44.0, 18.0);
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
 	
@@ -827,7 +827,7 @@
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
 		
 		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		picker.showsCameraControls = NO;

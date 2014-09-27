@@ -68,11 +68,6 @@
 	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 }
 
-- (void)uploadComplete {
-	NSLog(@"uploadComplete");
-}
-
-
 #pragma mark - UI Presentation
 - (void)_adoptUI {
 	
@@ -87,7 +82,6 @@
 		[pickerView setTag:(69 + i)];
 		
 		[_emotionsPickerViews addObject:pickerView];
-//		[self addSubview:pickerView];
 	}
 	
 	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
@@ -96,7 +90,7 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initUsingAltFontWithTitle:@"Compose"];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Compose"];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	[self addSubview:_headerView];

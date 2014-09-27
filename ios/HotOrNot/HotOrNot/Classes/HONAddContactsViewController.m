@@ -416,8 +416,8 @@
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 															message:@"Are you sure you wish to select all of your contacts?"
 														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 		[alertView setTag:1];
 		[alertView show];
 	}

@@ -332,9 +332,9 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 														message: NSLocalizedString(@"flag_person", nil) //@"This person will be flagged for review"
 													   delegate:self
-											  cancelButtonTitle:@"No"//@"Nevermind"
-											  otherButtonTitles: NSLocalizedString(@"yes_flag", nil) , nil];
-//											  otherButtonTitles:@"Yes, kick 'em out", nil];
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+											  otherButtonTitles:NSLocalizedString(@"yes_flag", nil) , nil];
+//											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), kick 'em out", nil];
 	
 	[alertView setTag:HONSnapPreviewAlertTypeFlag];
 	[alertView show];
@@ -357,8 +357,8 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[HONAppDelegate verifyCopyForKey:@"nay_txt"]
 														message:@""
 													   delegate:self
-											  cancelButtonTitle:@"Cancel"
-											  otherButtonTitles:@"Yes", nil];
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 	[alertView setTag:HONSnapPreviewAlertTypeDisprove];
 	[alertView show];
 }
@@ -393,7 +393,7 @@
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
 															 delegate:self
-													cancelButtonTitle:@"Cancel"
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
 	[actionSheet setTag:HONSnapPreviewActionSheetTypeMore];

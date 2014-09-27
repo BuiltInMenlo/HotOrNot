@@ -188,8 +188,7 @@
 	_selectedContacts = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];
 	
-	//[_headerView setTitle:NSLocalizedString(@"select_club", @"Select Club")];
-	[_headerView addTitleImage:[UIImage imageNamed:@"selectFriendsTitle"]];
+	[_headerView setTitle:NSLocalizedString(@"select_friends", @"Select Friends")];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	
@@ -233,7 +232,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
@@ -397,9 +396,6 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
 									 withProperties:props];
 	
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-//									   withUserClub:clubVO];
-	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
 	if ([_selectedClubs containsObject:viewCell.clubVO])
 		[_selectedClubs removeObject:viewCell.clubVO];
@@ -556,9 +552,6 @@
 			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
 											 withProperties:props];
-			
-//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-//											   withUserClub:cell.clubVO];
 			
 			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])

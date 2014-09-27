@@ -14,6 +14,7 @@
 - (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
 
 - (BOOL)isIOS7;
+- (BOOL)isIOS8;
 - (BOOL)isPhoneType5s;
 - (BOOL)isRetina4Inch;
 

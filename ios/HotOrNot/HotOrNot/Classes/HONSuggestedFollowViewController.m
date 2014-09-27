@@ -143,8 +143,8 @@
 //	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
 //														message:@""
 //													   delegate:self
-//											  cancelButtonTitle:@"No"
-//											  otherButtonTitles:@"Yes", nil];
+//											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+//											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 //	[alertView setTag:1];
 //	[alertView show];
 		

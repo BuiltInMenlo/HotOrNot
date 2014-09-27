@@ -87,6 +87,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_previewThumbImageView.userInteractionEnabled = YES;
 		[self addSubview:_previewThumbImageView];
 		
+		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -15.0, 39.0, 69.0)]];
+		
 		[[HONImageBroker sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
 		UIButton *previewThumbButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -121,7 +123,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
-	if (_scrollView.contentSize.width - _scrollView.contentInset.left == _scrollView.contentOffset.x) {
+	if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * (kImageSize.width + kImagePaddingSize.width)) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
 		[_emotions removeLastObject];
 		[self _removeImageEmotion];
 	
@@ -140,14 +142,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	holderImageView.image = previewImage;
 //	[_previewImageView addSubview:holderImageView];
 	
-	for (UIView *view in _previewThumbImageView.subviews) {
-		if (view.tag != 1)
-			[view removeFromSuperview];
-	}
-	
-	UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -15.0, 39.0, 69.0)];
-	thumbImageView.image = previewImage;
-	[_previewThumbImageView addSubview:thumbImageView];
+	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
 }
 
 
@@ -250,7 +245,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		
 	
 	[UIView animateWithDuration:0.125 delay:0.000
-		 usingSpringWithDamping:1.000 initialSpringVelocity:0.250
+		 usingSpringWithDamping:0.950 initialSpringVelocity:0.250
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
 					 animations:^(void) {
@@ -269,18 +264,17 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 
 - (void)_updateDisplayWithCompletion:(void (^)(BOOL finished))completion {
-	int offset = [_emotions count] * (kImageSize.width + kImagePaddingSize.width);
-	int orgX = MAX(_scrollView.frame.size.width, offset);
+	int offset = MAX(_scrollView.frame.size.width, [_emotions count] * (kImageSize.width + kImagePaddingSize.width));
 	
 	[UIView animateWithDuration:0.250 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
-						options:(UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
 					 animations:^(void) {
-						 [_scrollView setContentOffset:CGPointMake((orgX - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right), 0.0) animated:NO];
+						 [_scrollView setContentOffset:CGPointMake((offset - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right), 0.0) animated:NO];
 
 					 } completion:^(BOOL finished) {
-						 _scrollView.contentSize = CGSizeMake(orgX, _scrollView.contentSize.height);
+						 _scrollView.contentSize = CGSizeMake(offset, _scrollView.contentSize.height);
 						 
 						 [UIView animateWithDuration:0.25 animations:^(void) {
 							 _emptyImageView.alpha = ([_emotions count] == 0);

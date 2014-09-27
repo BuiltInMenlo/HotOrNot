@@ -389,7 +389,8 @@
 	_emptyImageView.hidden = YES;
 	[_tableView addSubview:_emptyImageView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
+//	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
 	[self.view addSubview:_headerView];
 	
 //	_searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
@@ -420,7 +421,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 }
 
