@@ -90,7 +90,7 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Compose"];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_compose", @"Compose")];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	[self addSubview:_headerView];
@@ -203,7 +203,7 @@
 //		}
 //	});
 	
-	[_headerView setTitle:emotionVO.emotionName];
+	[_headerView transitionTitle:emotionVO.emotionName];
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
@@ -217,7 +217,7 @@
 	[_subjectNames removeObject:emotionVO.emotionName inRange:NSMakeRange([_subjectNames count] - 1, 1)];
 	[_emotionsDisplayView removeEmotion:emotionVO];
 	
-	[_headerView setTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Compose"];
+	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : NSLocalizedString(@"header_compose", @"Compose")];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView changeGroup:(HONStickerGroupType)groupType {

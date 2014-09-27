@@ -7,7 +7,7 @@
 //
 
 #import "HONTableViewCell.h"
-#import "HONToggleTableViewCell.h"
+#import "HONToggleViewCell.h"
 #import "HONUserClubVO.h"
 
 typedef NS_ENUM(NSInteger, HONClubViewCellType) {
@@ -22,14 +22,14 @@ typedef NS_ENUM(NSInteger, HONClubViewCellType) {
 };
 
 @class HONClubViewCell;
-@protocol HONClubViewCellDelegate <HONToggleTableViewCellDelegate>
+@protocol HONClubViewCellDelegate <HONToggleViewCellDelegate>
 @optional
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 @end
 
-@interface HONClubViewCell : HONToggleTableViewCell
+@interface HONClubViewCell : HONToggleViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsCellType:(HONClubViewCellType)cellType;
 - (void)toggleUI:(BOOL)isEnabled;

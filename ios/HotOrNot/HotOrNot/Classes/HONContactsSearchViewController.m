@@ -304,7 +304,16 @@
 												  object:textField];
 	
 	if (!_isDismissing) {
-		[self _searchUsersByPhoneNumber];
+		if (![_phone isEqualToString:[[HONDeviceIntrinsics sharedInstance] phoneNumber]])
+			[self _searchUsersByPhoneNumber];
+		
+		else {
+			[[[UIAlertView alloc] initWithTitle:@"Cannot Search For Yourself!"
+										message:@"You cannot search w/ this query, try again"
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+		}
 	}
 }
 
@@ -359,9 +368,7 @@
 			if (_clubVO != nil) {
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+					[self dismissViewControllerAnimated:YES completion:^(void) {
 					}];
 				}];
 				
@@ -377,9 +384,7 @@
 					_clubVO = [HONUserClubVO clubWithDictionary:result];
 
 					[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+						[self dismissViewControllerAnimated:YES completion:^(void) {
 						}];
 					}];
 				}];

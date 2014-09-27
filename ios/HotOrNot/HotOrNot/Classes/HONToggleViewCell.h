@@ -9,13 +9,13 @@
 #import "HONTableViewCell.h"
 
 
-@class HONToggleTableViewCell;
-@protocol HONToggleTableViewCellDelegate <NSObject>
+@class HONToggleViewCell;
+@protocol HONToggleViewCellDelegate <NSObject>
 @optional
-- (void)tableToggleViewCell:(HONToggleTableViewCell *)viewCell toggledToState:(BOOL)isSelected;
+- (void)toggleViewCell:(HONToggleViewCell *)viewCell changedToState:(BOOL)isSelected;
 @end
 
-@interface HONToggleTableViewCell : HONTableViewCell {
+@interface HONToggleViewCell : HONTableViewCell {
 	UIImageView *_toggledOffButton;
 	UIImageView *_toggledOnButton;
 }
@@ -31,5 +31,5 @@
 - (void)_goDeselect;
 
 @property (nonatomic) BOOL isSelected;
-@property (nonatomic, assign) id <HONToggleTableViewCellDelegate> delegate;
+@property (nonatomic, assign) id <HONToggleViewCellDelegate> delegate;
 @end

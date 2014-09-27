@@ -8,12 +8,12 @@
 
 #import "NSString+DataTypes.h"
 
-#import "HONToggleTableViewCell.h"
+#import "HONToggleViewCell.h"
 
-@interface HONToggleTableViewCell ()
+@interface HONToggleViewCell ()
 @end
 
-@implementation HONToggleTableViewCell
+@implementation HONToggleViewCell
 @synthesize delegate = _delegate;
 @synthesize isSelected = _isSelected;
 
@@ -111,8 +111,8 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_toggledOnButton.alpha = (int)_isSelected;
 	} completion:^(BOOL finished) {
-		if ([self.delegate respondsToSelector:@selector(tableToggleViewCell:toggledToState:)])
-			[self.delegate tableToggleViewCell:self toggledToState:_isSelected];
+		if ([self.delegate respondsToSelector:@selector(toggleViewCell:changedToState:)])
+			[self.delegate toggleViewCell:self changedToState:_isSelected];
 	}];
 }
 

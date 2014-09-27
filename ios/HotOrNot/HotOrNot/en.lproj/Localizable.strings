@@ -186,6 +186,7 @@
 "empty_club" = "Tap and hold to invite friends";
 "empty_timeline" = "No status updates available";
 "header_findFriends" = "Find friends";
+"header_compose" = "Compose";
 "header_signUp" = "Sign Up";
 "phone_number" = "phone number";
 "alert_inviteContact_t" = "%@ found!";

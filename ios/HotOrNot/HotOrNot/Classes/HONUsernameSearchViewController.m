@@ -235,7 +235,16 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Entered Username"
 									 withProperties:@{@"username"	: searchQuery}];
 	
-	[self _retrieveUsers:searchQuery];
+	if (![searchQuery isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]])
+		  [self _retrieveUsers:searchQuery];
+	
+	else {
+		[[[UIAlertView alloc] initWithTitle:@"Cannot Search For Yourself!"
+									message:@"You cannot search w/ this query, try again"
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+	}
 }
 
 

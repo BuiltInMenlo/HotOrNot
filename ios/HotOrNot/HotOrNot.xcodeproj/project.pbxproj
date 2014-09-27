@@ -49,7 +49,7 @@
 		303BAD1F19D5F0B000CB2501 /* shareButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD2119D5F0B000CB2501 /* shareButton_nonActive@2x.png */; };
 		303BAD2619D5F12F00CB2501 /* submitButtonLargeEnabled_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD2819D5F12F00CB2501 /* submitButtonLargeEnabled_Active@2x.png */; };
 		303BAD2D19D5F13900CB2501 /* submitButtonLargeEnabled_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD2F19D5F13900CB2501 /* submitButtonLargeEnabled_nonActive@2x.png */; };
-		305ED7B619C3EE5100BDCB04 /* HONToggleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */; };
+		305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3075E02E19D66107007B3346 /* HONCameraOverlayView.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
@@ -472,8 +472,8 @@
 		303BAD3119D5F13B00CB2501 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/submitButtonLargeEnabled_nonActive@2x.png"; sourceTree = "<group>"; };
 		303BAD3219D5F13C00CB2501 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/submitButtonLargeEnabled_nonActive@2x.png"; sourceTree = "<group>"; };
 		303BAD3319D5F13D00CB2501 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/submitButtonLargeEnabled_nonActive@2x.png"; sourceTree = "<group>"; };
-		305ED7B419C3EE5100BDCB04 /* HONToggleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleTableViewCell.h; sourceTree = "<group>"; };
-		305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleTableViewCell.m; sourceTree = "<group>"; };
+		305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleViewCell.h; sourceTree = "<group>"; };
+		305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleViewCell.m; sourceTree = "<group>"; };
 		305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Random.h"; sourceTree = "<group>"; };
 		305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Random.m"; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
@@ -1194,8 +1194,6 @@
 			children = (
 				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
 				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
-				300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */,
-				300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */,
 				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
 				4CC606D8198C3E650042A951 /* HONInsetOverlayView.h */,
@@ -2119,14 +2117,16 @@
 			children = (
 				3024AB1B19D71DFA0054C6BF /* Abstracts */,
 				4C9E3B5C18259CC0004878F9 /* Nav */,
+				300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */,
+				300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */,
 				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
 				4C7DBBBD194FF43D00F7A487 /* HONTableView.m */,
 				4CA34C5316F6B6550000751E /* HONTableViewCell.h */,
 				4CA34C5416F6B6550000751E /* HONTableViewCell.m */,
 				4C7DBBC3194FF93900F7A487 /* HONTableViewController.h */,
 				4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */,
-				305ED7B419C3EE5100BDCB04 /* HONToggleTableViewCell.h */,
-				305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */,
+				305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */,
+				305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */,
 				4C386BC4198482130023123A /* HONViewController.h */,
 				4C386BC5198482130023123A /* HONViewController.m */,
 				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
@@ -2655,7 +2655,7 @@
 				4CC94FF21908017900347A34 /* HONSelfieCameraSubmitViewController.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
-				305ED7B619C3EE5100BDCB04 /* HONToggleTableViewCell.m in Sources */,
+				305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */,
 				4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */,
 				4CA246C21908178B00512295 /* HONClubToggleViewCell.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,

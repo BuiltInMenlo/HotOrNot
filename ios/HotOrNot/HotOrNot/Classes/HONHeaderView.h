@@ -12,6 +12,7 @@
 - (id)initWithTitleImage:(UIImage *)image;
 
 - (void)addButton:(UIView *)buttonView;
+- (void)transitionTitle:(NSString *)title;
 - (void)leftAlignTitle;
 - (void)addTitleImage:(UIImage *)image;
 - (void)removeBackground;

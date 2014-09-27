@@ -182,6 +182,7 @@
 "alert_inviteContact_m" = "당신은 당신의 개인 클럽 중 하나에 초대 하시겠습니까?";
 "club_inviteSubText" = "당신은 초대되었습니다. 가입 탭!";
 "empty_club" = "누르고 친구를 초대 길게";
+"header_compose" = "Compose";
 
 "header_signUp" = "Sign Up";
 "areacode_club" = "%@클럽";

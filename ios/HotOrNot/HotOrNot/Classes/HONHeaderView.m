@@ -46,6 +46,8 @@
 	if ((self = [self initWithTitle:title])) {
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:19];
 		_titleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 4.0);
+		_titleLabel.shadowOffset = CGSizeZero;
+		_titleLabel.shadowColor = [UIColor clearColor];
 	}
 	
 	return (self);
@@ -74,6 +76,29 @@
 
 - (void)leftAlignTitle {
 	_titleLabel.textAlignment = NSTextAlignmentLeft;
+}
+
+- (void)transitionTitle:(NSString *)title {
+	if (![_title isEqualToString:title]) {
+		UILabel *outroLabel = [[UILabel alloc] initWithFrame:_titleLabel.frame];
+		outroLabel.font = _titleLabel.font;
+		outroLabel.textColor = _titleLabel.textColor;
+		outroLabel.shadowColor = _titleLabel.shadowColor;
+		outroLabel.shadowOffset = _titleLabel.shadowOffset;
+		outroLabel.textAlignment = _titleLabel.textAlignment;
+		[self addSubview:outroLabel];
+		
+		_titleLabel.alpha = 0.0;
+		_title = title;
+		_titleLabel.text = _title;
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			outroLabel.alpha = 0.0;
+			_titleLabel.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[outroLabel removeFromSuperview];
+		}];
+	}
 }
 
 
