@@ -191,6 +191,8 @@
 "register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 "header_compose" = "Compose";
+"search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
+"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
 
 "areacode_club" = "%@Clube";
 "family_club" = "My%@Clube";

@@ -183,6 +183,8 @@
 "club_inviteSubText" = "당신은 초대되었습니다. 가입 탭!";
 "empty_club" = "누르고 친구를 초대 길게";
 "header_compose" = "Compose";
+"search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
+"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
 
 "header_signUp" = "Sign Up";
 "areacode_club" = "%@클럽";

@@ -145,10 +145,23 @@
 	[headerView addButton:submitButton];
 	[self.view addSubview:headerView];
 	
-	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"findFriendBackgorund"]];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsSearchBG"]];
 	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, kNavHeaderHeight + 49.0);
 	[self.view addSubview:bgImageView];
+	
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	paragraphStyle.minimumLineHeight = 26.0;
+	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+	paragraphStyle.alignment = NSTextAlignmentCenter;
+	
+	UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0, kNavHeaderHeight + 38.0, 310.0, 56.0)];
+	footerLabel.textColor = [UIColor blackColor];
+	footerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:17];
+	footerLabel.numberOfLines = 2;
+	footerLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"search_footer", @"Provide a country code and a phone\nnumber to search for a Selfieclub friend") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	[self.view addSubview:footerLabel];
+	
+	
 	
 	NSDictionary *country = ([[NSUserDefaults standardUserDefaults] objectForKey:@"country_code"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"country_code"] : @{@"code"	: @"1",
 																																													 @"name"	: @"United States"};

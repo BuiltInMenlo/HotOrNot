@@ -29,6 +29,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 @implementation HONClubViewCell
 @synthesize delegate = _delegate;
+@synthesize caption = _caption;
 @synthesize contactUserVO = _contactUserVO;
 @synthesize trivialUserVO = _trivialUserVO;
 @synthesize clubVO = _clubVO;
@@ -76,6 +77,20 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 
 #pragma mark - Public APIs
+- (void)setCaption:(NSString *)caption {
+	_caption = caption;
+	_titleLabel.text = _caption;
+	
+//	CGSize size = [_caption boundingRectWithSize:_titleLabel.frame.size
+//										 options:NSStringDrawingTruncatesLastVisibleLine
+//									  attributes:@{NSFontAttributeName:_titleLabel.font}
+//										 context:nil].size;
+	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, 260.0, _titleLabel.frame.size.height);
+//	CGRect reqFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
+	
+	_titleLabel.frame = maxFrame;
+	
+}
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
@@ -83,7 +98,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_titleLabel.text = nameCaption;
 	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
 	[_titleLabel setFont:_titleLabel.font range:[nameCaption rangeOfString:_contactUserVO.fullName]];
-	
 	
 	CGSize size = [[nameCaption stringByAppendingString:@""] boundingRectWithSize:_titleLabel.frame.size
 																		  options:NSStringDrawingTruncatesLastVisibleLine

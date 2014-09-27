@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, HONClubViewCellType) {
 - (void)toggleImageLoading:(BOOL)isLoading;
 - (void)hideTimeStat;
 
+@property (nonatomic, retain) NSString *caption;
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, retain) HONUserClubVO *clubVO;

@@ -17,11 +17,10 @@
 #import "HONCreateSnapButtonView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
-#import "HONSearchBarView.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONContactsViewController () <HONSearchBarViewDelegate, HONClubViewCellDelegate>
+@interface HONContactsViewController () <HONClubViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
@@ -30,7 +29,7 @@
 @property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
-@property (nonatomic, strong) UIImageView *emptyImageView;
+@property (nonatomic, strong) UILabel *emptyContactsLabel;
 
 @property (nonatomic, strong) UITableViewController *refreshControlTableViewController;
 @end
@@ -333,7 +332,7 @@
 	
 	_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
 	
-	_emptyImageView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
+	_emptyContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
 	_tableView.alpha = 1.0;
 	
 	_tableView.hidden = NO;
@@ -370,32 +369,41 @@
 	_matchedUserIDs = [NSMutableArray array];
 	_recentClubs = [NSMutableArray array];
 
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	paragraphStyle.minimumLineHeight = 26.0;
+	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+	paragraphStyle.alignment = NSTextAlignmentCenter;
+	
+	
+	
+	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 //	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 //	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
 //	_tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.40 alpha:0.33];
 	_tableView.sectionIndexMinimumDisplayRowCount = 1;
+	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
+	
+	
+	_emptyContactsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 56.0)];
+	_emptyContactsLabel.textColor = [UIColor blackColor];
+	_emptyContactsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:17];
+	_emptyContactsLabel.numberOfLines = 2;
+	_emptyContactsLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"empty_contacts", @"Access your contacts to view\nmore friends on Selfieclub.") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	_emptyContactsLabel.hidden = YES;
+	[_tableView.backgroundView addSubview:_emptyContactsLabel];
+
 	
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"accessDefaultFriendsText"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, 111.0);
-	_emptyImageView.hidden = YES;
-	[_tableView addSubview:_emptyImageView];
-	
-//	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
 	[self.view addSubview:_headerView];
-	
-//	_searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
-//	_searchBarView.delegate = self;
-//	[self.view addSubview:_searchBarView];
 }
 
 - (void)viewDidLoad {
@@ -449,28 +457,6 @@
 }
 
 
-#pragma mark - SearchBarHeader Delegates
-- (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
-	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
-	_searchUsers = [NSMutableArray array];
-	[_tableView reloadData];
-}
-
-- (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	_tableViewDataSource = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? HONContactsTableViewDataSourceAddressBook : HONContactsTableViewDataSourceMatchedUsers;
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-
-	[self _submitPhoneNumberForMatching];
-	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook)
-		[self _retrieveDeviceContacts];
-}
-
-- (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-	[self _searchUsersWithUsername:searchQuery];
-}
-
-
 #pragma mark - ClubViewCell Delegates
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[[*:*]] clubViewCell:didSelectClub");
@@ -512,20 +498,16 @@
 	
 	if (cell == nil)
 		cell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
-	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
 		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
-			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addContacts"]];
+			cell.caption = @"Access contacts";
 			[cell toggleUI:NO];
-			[cell hideChevron];
-			
-			for (UIView *view in cell.contentView.subviews)
-				view.hidden = YES;
+			[cell toggleChevron];
 			
 		} else if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
@@ -540,16 +522,11 @@
 			NSLog(@"%@.cellForRowAtIndexPath - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 		}
 		
-		[cell setSelectionStyle:(indexPath.section == 0) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
-		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0) {
-			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addContacts"]];
+			cell.caption = @"Access contacts";
 			[cell toggleUI:NO];
-			[cell hideChevron];
-			
-			for (UIView *view in cell.contentView.subviews)
-				view.hidden = YES;
+			[cell toggleChevron];
 			
 		} else if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
@@ -563,10 +540,9 @@
 			HONContactUserVO *vo = (HONContactUserVO *)[_deviceContacts objectAtIndex:indexPath.row];
 			cell.contactUserVO = vo;
 		}
-		
-		[cell setSelectionStyle:(indexPath.section == 0) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
 	}
 	
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	cell.delegate = self;
 	
 	if (!tableView.decelerating)
@@ -598,16 +574,8 @@
 	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-		
-	
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
-			cell.backgroundView.alpha = 0.5;
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				cell.backgroundView.alpha = 1.0;
-			}];
-			
-		
 			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 				[self _promptForAddressBookPermission];
 			
@@ -628,12 +596,6 @@
 			
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0) {
-			cell.backgroundView.alpha = 0.5;
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				cell.backgroundView.alpha = 1.0;
-			}];
-			
-			
 			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 				[self _promptForAddressBookPermission];
 			

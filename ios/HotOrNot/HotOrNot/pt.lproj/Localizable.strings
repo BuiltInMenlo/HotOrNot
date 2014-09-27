@@ -189,6 +189,8 @@
 "club_inviteSubText" = "Você foi convidado. Toque para participar!";
 "empty_club" = "Toque e segure para convidar amigos";
 "header_compose" = "Compose";
+"search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
+"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
 
 "areacode_club" = "%@Clube";
 "family_club" = "My%@Clube";
