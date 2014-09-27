@@ -326,9 +326,9 @@
 	[super loadView];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed: @"cameraNextButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
+	_nextButton.frame = CGRectMake(282.0, 2.0, 44.0, 44.0);
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_Active"] forState:UIControlStateHighlighted];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_signUp", @"Sign Up")];
 	[headerView addButton:_nextButton];

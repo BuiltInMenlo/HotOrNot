@@ -147,8 +147,6 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
-	//[_activityHeaderView updateActivityBadge];
-	//[self _goDataRefresh:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -179,14 +177,6 @@ static NSString * const kCamera = @"camera";
 	selfieCameraViewController.delegate = self;
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_goContactsSearch {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - User Search"];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }

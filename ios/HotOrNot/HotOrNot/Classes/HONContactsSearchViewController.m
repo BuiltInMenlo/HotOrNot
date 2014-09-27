@@ -129,14 +129,14 @@
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"StatusCloseButtonActive"] forState:UIControlStateHighlighted];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraNextButton_Active"] forState:UIControlStateHighlighted];
+	submitButton.frame = CGRectMake(282.0, 2.0, 44.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	
@@ -304,15 +304,28 @@
 												  object:textField];
 	
 	if (!_isDismissing) {
-		if (![_phone isEqualToString:[[HONDeviceIntrinsics sharedInstance] phoneNumber]])
-			[self _searchUsersByPhoneNumber];
-		
-		else {
-			[[[UIAlertView alloc] initWithTitle:@"Cannot Search For Yourself!"
-										message:@"You cannot search w/ this query, try again"
+		if ([_phoneTextField.text length] == 0) {
+			[[[UIAlertView alloc] initWithTitle:@"Nothing Selected!"
+										message:@"You need to enter a phone number to search for first"
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
+			[_phoneTextField becomeFirstResponder];
+		
+		} else {		
+			if (![_phone isEqualToString:[[HONDeviceIntrinsics sharedInstance] phoneNumber]])
+				[self _searchUsersByPhoneNumber];
+			
+			else {
+				[[[UIAlertView alloc] initWithTitle:@"Cannot Search For Yourself!"
+											message:@"You cannot search w/ this query, try again"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+//				_phone = @"";
+//				_phoneTextField.text = @"";
+//				[_phoneTextField becomeFirstResponder];
+			}
 		}
 	}
 }

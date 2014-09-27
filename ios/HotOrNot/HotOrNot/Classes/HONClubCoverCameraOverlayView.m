@@ -103,8 +103,8 @@
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 64.0);
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"avatarSendButton_nonActive"] forState:UIControlStateNormal];
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"avatarSendButton_Active"] forState:UIControlStateHighlighted];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 		[_submitHolderView addSubview:submitButton];
 		

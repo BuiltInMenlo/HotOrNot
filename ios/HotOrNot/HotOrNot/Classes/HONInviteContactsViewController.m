@@ -112,9 +112,9 @@
 	[_headerView setTitle:NSLocalizedString(@"invite_club", @"Invite to Club")];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(6.0, 1.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusBackButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"StatusBackButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"chevronBackButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"chevronBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	backButton.hidden = !isPushed;
 	[_headerView addButton:backButton];

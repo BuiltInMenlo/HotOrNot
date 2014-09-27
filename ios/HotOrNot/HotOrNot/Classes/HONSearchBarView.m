@@ -98,6 +98,7 @@
 }
 
 - (BOOL)becomeFirstResponder {
+	_searchTextField.text = @"";
 	return ([_searchTextField becomeFirstResponder]);
 }
 
