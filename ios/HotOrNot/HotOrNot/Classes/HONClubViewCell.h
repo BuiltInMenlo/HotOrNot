@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, HONClubViewCellType) {
 
 @class HONClubViewCell;
 @protocol HONClubViewCellDelegate <HONToggleTableViewCellDelegate>
+@optional
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;

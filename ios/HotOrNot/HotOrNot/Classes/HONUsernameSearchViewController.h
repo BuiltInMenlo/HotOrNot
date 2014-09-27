@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONSearchUsersViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+#import "HONViewController.h"
 
+@interface HONUsernameSearchViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

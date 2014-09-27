@@ -168,11 +168,13 @@ static dispatch_queue_t sticker_request_operation_queue;
 	}
 	
 	for (HONEmotionVO *vo in _availableEmotions) {
+//		cnt = (cnt > 0 && (cnt % ((COLS_PER_ROW * ROWS_PER_PAGE) - 1)) == 0) ? cnt++ : cnt;
+		
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-//		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
+		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
 		
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		

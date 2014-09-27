@@ -260,6 +260,8 @@
 	
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
 	
+	_smsRecipients = @"";
+	_emailRecipients = @"";
 	_deviceContacts = [NSMutableArray array];
 	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:YES]) {
 		[_deviceContacts addObject:vo];
@@ -693,7 +695,6 @@
 		}
 		
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-	
 	}
 }
 

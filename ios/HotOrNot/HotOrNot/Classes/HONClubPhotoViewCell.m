@@ -28,8 +28,9 @@
 @synthesize clubName = _clubName;
 
 
-const CGRect kEmotionStartFrame = {78.0f, 78.0f, 44.0f, 44.0f};
+const CGRect kEmotionInitFrame = {78.0f, 78.0f, 44.0f, 44.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
+const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 
 
 
@@ -227,8 +228,8 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 //	PicoSticker *picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
 //	[holderView addSubview:picoSticker];
 	
-	CGSize scaleSize = CGSizeMake(kEmotionStartFrame.size.width / kEmotionLoadedFrame.size.width, kEmotionStartFrame.size.height / kEmotionLoadedFrame.size.height);
-	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionStartFrame) - CGRectGetMidX(kEmotionLoadedFrame), CGRectGetMidY(kEmotionStartFrame) - CGRectGetMidY(kEmotionLoadedFrame));
+	CGSize scaleSize = CGSizeMake(kEmotionInitFrame.size.width / kEmotionLoadedFrame.size.width, kEmotionInitFrame.size.height / kEmotionLoadedFrame.size.height);
+	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionInitFrame) - CGRectGetMidX(kEmotionLoadedFrame), CGRectGetMidY(kEmotionInitFrame) - CGRectGetMidY(kEmotionLoadedFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
@@ -238,8 +239,17 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 	imageView.transform = transform;
 	[holderView addSubview:imageView];
 	
+	UIImageView *fxImageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
+	fxImageView.hidden = YES;
+	[holderView addSubview:fxImageView];
+	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
+		fxImageView.image = image;
+		
+		[imageLoadingView stopAnimating];
+		imageLoadingView.hidden = YES;
+		[imageLoadingView removeFromSuperview];
 		
 		[UIView beginAnimations:@"fade" context:nil];
 		[UIView setAnimationDuration:0.250];
@@ -248,27 +258,43 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 		[imageView setTintColor:[UIColor clearColor]];
 		[UIView commitAnimations];
 		
-		[UIView animateWithDuration:0.250 delay:0.50 + (0.125 * index)
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.250
+		[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
+			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
 							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
 		 
 						 animations:^(void) {
 							 imageView.alpha = 1.0;
 							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 						 } completion:^(BOOL finished) {
-							 [imageLoadingView stopAnimating];
-							 [imageLoadingView removeFromSuperview];
+							 fxImageView.hidden = NO;
 						 }];
+		
+//		CGSize scaleSize = CGSizeMake(kEmotionOutroFrame.size.width / kEmotionLoadedFrame.size.width, kEmotionOutroFrame.size.height / kEmotionLoadedFrame.size.height);
+//		CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionOutroFrame) - CGRectGetMidX(kEmotionLoadedFrame), CGRectGetMidY(kEmotionOutroFrame) - CGRectGetMidY(kEmotionLoadedFrame));
+//		
+//		[UIView animateWithDuration:0.250 delay:(0.250 + (0.125 * index))
+//			 usingSpringWithDamping:0.950 initialSpringVelocity:0.000
+//							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseOut)
+//		 
+//						 animations:^(void) {
+//							 fxImageView.alpha = 0.0;
+//							 fxImageView.transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);;
+//							 
+//						 }completion:^(BOOL finished) {
+//							 [fxImageView removeFromSuperview];
+//						 }];
+		
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[imageLoadingView stopAnimating];
+		imageLoadingView.hidden = YES;
 		[imageLoadingView removeFromSuperview];
 	};
 	
 //	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:NSURLRequestReloadRevalidatingCacheData
+													   cachePolicy:kURLRequestCachePolicy
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
@@ -316,8 +342,8 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 		[imageLoadingView removeFromSuperview];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
-													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+													   cachePolicy:kURLRequestCachePolicy
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock

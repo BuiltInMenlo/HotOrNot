@@ -84,13 +84,15 @@
 	
 	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeOther; i++) {
 		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0) asEmotionGroupType:i];
-		pickerView.delegate = self;
-		pickerView.hidden = (i != HONStickerGroupTypeStickers);
-		pickerView.alpha = (int)(pickerView.stickerGroupType == HONStickerGroupTypeStickers);
+		[pickerView setTag:(69 + i)];
 		
 		[_emotionsPickerViews addObject:pickerView];
-		[self addSubview:pickerView];
+//		[self addSubview:pickerView];
 	}
+	
+	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
+	pickerView.delegate = self;
+	[self addSubview:pickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
@@ -137,7 +139,7 @@
 
 #pragma mark - Notifications
 - (void)_reloadEmotionPicker:(NSNotification *)notification {
-	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
+//	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
 //	[pickerView reload];
 }
 
@@ -230,14 +232,26 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
 	
+	for (UIView *view in self.subviews) {
+		if (view.tag >= 69) {
+			((HONEmotionsPickerView *)view).delegate = nil;
+			[view removeFromSuperview];
+		}
+	}
+	
 	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
 		
-		pickerView.hidden = (pickerView.stickerGroupType != groupType);
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			pickerView.alpha = (int)(pickerView.stickerGroupType == groupType);
-		} completion:^(BOOL finished) {
-		}];
+		if (pickerView.stickerGroupType == groupType) {
+			pickerView.delegate = self;
+			[self addSubview:pickerView];
+		}
+		
+//		pickerView.hidden = (pickerView.stickerGroupType != groupType);
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			pickerView.alpha = (int)(pickerView.stickerGroupType == groupType);
+//		} completion:^(BOOL finished) {
+//		}];
 	}];
 }
 

@@ -38,7 +38,7 @@
 		_phone = @"";
 		_isDismissing = NO;
 		
-		_clubVO = [[HONClubAssistant sharedInstance] userSignupClub];
+		_clubVO = nil;
 	}
 	
 	return (self);
@@ -93,13 +93,13 @@
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Phone number not found"
 										message:@"Would you like to invite them to Selfieclub?"
 									   delegate:self
-							  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-							  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
+							  cancelButtonTitle:NSLocalizedString(@"not_now", nil)
+							  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 			[alertView setTag:1];
 			[alertView show];
 			
-			_contactUserVO = [HONContactUserVO contactWithDictionary:@{@"f_name"	: @" ",
-																	   @"l_name"	: @" ",
+			_contactUserVO = [HONContactUserVO contactWithDictionary:@{@"f_name"	: [_phone substringFromIndex:1],
+																	   @"l_name"	: @"",
 																	   @"phone"		: _phone,
 																	   @"email"		: @"",
 																	   @"image"		: UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}];
@@ -319,25 +319,71 @@
 //			[navigationController setNavigationBarHidden:YES];
 //			[self presentViewController:navigationController animated:YES completion:nil];
 			
-			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[_searchUserVO]] : _clubVO;
+			if (_clubVO != nil) {
+				NSLog(@"CLUB -=- (JOIN) -=-");
+				
+				[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+					[self dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+					}];
 				}];
-			}];
+				
+			} else {
+				NSLog(@"CLUB -=- (CREATE) -=-");
+				
+				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
+				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+				[dict setValue:[[HONClubAssistant sharedInstance] rndCoverImageURL] forKey:@"img"];
+				_clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
+				
+				[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.blurb withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+					_clubVO = [HONUserClubVO clubWithDictionary:result];
+					
+					[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+						[self dismissViewControllerAnimated:YES completion:^(void) {
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+						}];
+					}];
+				}];
+			}
 		}
 	
 	} else if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 										withContactUser:_contactUserVO];
 		
-		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+		if (buttonIndex == 1) {
+			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONTrivialUserVO userFromContactVO:_contactUserVO]]] : _clubVO;
+			if (_clubVO != nil) {
+				NSLog(@"CLUB -=- (JOIN) -=-");
+				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+					}];
 				}];
-			}];
+				
+			} else {
+				NSLog(@"CLUB -=- (CREATE) -=-");
+				
+				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
+				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+				[dict setValue:[[HONClubAssistant sharedInstance] rndCoverImageURL] forKey:@"img"];
+				_clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
+				
+				[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.blurb withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+					_clubVO = [HONUserClubVO clubWithDictionary:result];
+
+					[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+						}];
+					}];
+				}];
+			}
+			
 			
 //			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:_contactUserVO]];
 //			[navigationController setNavigationBarHidden:YES];

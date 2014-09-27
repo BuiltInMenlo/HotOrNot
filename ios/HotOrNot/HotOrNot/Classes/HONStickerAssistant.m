@@ -142,15 +142,15 @@ static HONStickerAssistant *sharedInstance = nil;
 		
 		dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 		dispatch_after(popTime2, dispatch_get_main_queue(), ^(void) {
-			[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:ignoreCache completion:nil];
+			[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:ignoreCache completion:nil];
 			
 			dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 			dispatch_after(popTime3, dispatch_get_main_queue(), ^(void) {
-				[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:ignoreCache completion:nil];
+				[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypePaid ignoringCache:ignoreCache completion:nil];
 				
-				dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-				dispatch_after(popTime4, dispatch_get_main_queue(), ^(void) {
-				});
+//				dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+//				dispatch_after(popTime4, dispatch_get_main_queue(), ^(void) {
+//				});
 			});
 		});
 	});

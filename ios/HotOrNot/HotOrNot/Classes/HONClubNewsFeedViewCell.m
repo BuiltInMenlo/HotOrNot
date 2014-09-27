@@ -295,7 +295,7 @@
 			};
 			
 			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:((HONEmotionVO *)[_emotionVOs objectAtIndex:view.tag]).smallImageURL]
-															   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+															   cachePolicy:kURLRequestCachePolicy
 														   timeoutInterval:[HONAppDelegate timeoutInterval]]
 							 placeholderImage:nil
 									  success:imageSuccessBlock

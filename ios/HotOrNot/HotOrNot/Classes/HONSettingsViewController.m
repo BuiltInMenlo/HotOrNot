@@ -26,6 +26,7 @@
 #import "HONNetworkStatusViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONContactsSearchViewController.h"
+#import "HONUsernameSearchViewController.h"
 
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -154,8 +155,6 @@
 	NSLog(@"::|> _refreshSettingsTab <|::");
 }
 
-
-
 - (void)_inviteSMS:(NSNotification *)notification {
 	if ([MFMessageComposeViewController canSendText]) {
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -273,9 +272,9 @@
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"
 										 withProperties:@{@"type"	: @"username"}];
 		
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:YES completion:nil];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameSearchViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypeShareClub) {
 		cell.backgroundView.alpha = 0.5;
@@ -362,24 +361,24 @@
 
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	NSString *mpAction = @"";
-	switch (result) {
-		case MessageComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-			
-		case MessageComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		case MessageComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
+//	NSString *mpAction = @"";
+//	switch (result) {
+//		case MessageComposeResultCancelled:
+//			mpAction = @"Canceled";
+//			break;
+//			
+//		case MessageComposeResultSent:
+//			mpAction = @"Sent";
+//			break;
+//			
+//		case MessageComposeResultFailed:
+//			mpAction = @"Failed";
+//			break;
+//			
+//		default:
+//			mpAction = @"Not Sent";
+//			break;
+//	}
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -387,37 +386,37 @@
 
 #pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-	
-	NSString *mpEvent = @"";
-	if (controller.view.tag == HONSettingsMailComposerTypeChangeEmail) {
-		mpEvent = @"Change Email";
-		
-	} else if (controller.view.tag == HONSettingsMailComposerTypeReportAbuse) {
-		mpEvent = NSLocalizedString(@"report_abuse", @"Report Abuse / Bug");
-	}
-	
-	NSString *mpAction = @"";
-	switch (result) {
-		case MFMailComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-			
-		case MFMailComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		case MFMailComposeResultSaved:
-			mpAction = @"Saved";
-			break;
-			
-		case MFMailComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
+
+//	NSString *mpEvent = @"";
+//	if (controller.view.tag == HONSettingsMailComposerTypeChangeEmail) {
+//		mpEvent = @"Change Email";
+//		
+//	} else if (controller.view.tag == HONSettingsMailComposerTypeReportAbuse) {
+//		mpEvent = NSLocalizedString(@"report_abuse", @"Report Abuse / Bug");
+//	}
+//	
+//	NSString *mpAction = @"";
+//	switch (result) {
+//		case MFMailComposeResultCancelled:
+//			mpAction = @"Canceled";
+//			break;
+//			
+//		case MFMailComposeResultFailed:
+//			mpAction = @"Failed";
+//			break;
+//			
+//		case MFMailComposeResultSaved:
+//			mpAction = @"Saved";
+//			break;
+//			
+//		case MFMailComposeResultSent:
+//			mpAction = @"Sent";
+//			break;
+//			
+//		default:
+//			mpAction = @"Not Sent";
+//			break;
+//	}
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }

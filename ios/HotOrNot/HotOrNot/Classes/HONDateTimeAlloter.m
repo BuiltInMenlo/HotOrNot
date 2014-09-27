@@ -137,7 +137,7 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	}
 	
 	NSDateFormatter *dateFormatter = [[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter];
-	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:tzAbbreviation]];
+	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:(isValid) ? tzAbbreviation : @"UTC"]];
 	
 	return (dateFormatter);
 }
@@ -168,7 +168,5 @@ static HONDateTimeAlloter *sharedInstance = nil;
 - (int)yearsOldFromDate:(NSDate *)date {
 	return ([date timeIntervalSinceNow] / -31536000);
 }
-
-
 
 @end

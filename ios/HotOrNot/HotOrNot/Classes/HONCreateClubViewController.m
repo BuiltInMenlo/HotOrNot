@@ -548,7 +548,7 @@
 				
 				NSLog(@"Image -- REMOTE LOAD:[%@]", [prefix stringByAppendingString:kSnapMediumSuffix]);
 				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[prefix stringByAppendingString:kSnapMediumSuffix]]
-																   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+																   cachePolicy:kURLRequestCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
 								 placeholderImage:nil
 										  success:imageSuccessBlock

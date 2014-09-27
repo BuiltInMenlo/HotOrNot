@@ -219,7 +219,10 @@ static NSString * const kCamera = @"camera";
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
-		
+	
+	if ([notification.object isEqualToString:@"Y"] && [_tableView.visibleCells count] > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	
 	[super _goDataRefresh:nil];
 }
 

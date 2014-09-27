@@ -1,9 +1,9 @@
 //
-//  HONSelfieCameraOverlayView.m
+//  HONCameraOverlayView.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 09.27.12.
-//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//  Created by BIM  on 9/26/14.
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -12,11 +12,11 @@
 #import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONSelfieCameraOverlayView.h"
+#import "HONCameraOverlayView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
 
-@interface HONSelfieCameraOverlayView()
+@interface HONCameraOverlayView()
 @property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIView *headerBGView;
@@ -28,7 +28,7 @@
 @property (nonatomic, strong) UIImageView *lastCameraRollImageView;
 @end
 
-@implementation HONSelfieCameraOverlayView
+@implementation HONCameraOverlayView
 @synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -92,15 +92,6 @@
 
 
 #pragma mark - Public API
-- (void)submitStep:(HONSelfieCameraPreviewView *)previewView {
-	[self addSubview:previewView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blackMatteView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		_blackMatteView.hidden = YES;
-	}];
-}
 
 
 #pragma mark - Navigation
@@ -163,6 +154,5 @@
 		NSLog(@"error: %@", error);
 	}];
 }
-
 
 @end

@@ -153,7 +153,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	if ([_clubVO.submissions count] == 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubPhotoDictionary] mutableCopy];
 		[dict setValue:_clubVO.coverImagePrefix forKey:@"img"];
-		
 		HONClubPhotoVO *vo = [HONClubPhotoVO clubPhotoWithDictionary:dict];
 		
 		UIView *statusUpdateView = [self _holderViewForStatusUpdate:vo];
@@ -172,7 +171,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_statusUpdateImageLoadingView.alpha = 0.75;
 	[self.contentView addSubview:_statusUpdateImageLoadingView];
 	
-	NSString *subtitle = [NSString stringWithFormat:@"updated by %@", (_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"you" : _statusUpdateVO.username];
+	NSString *subtitle = ([_clubVO.submissions count] > 0) ? [NSString stringWithFormat:@"updated by %@", (_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"you" : _statusUpdateVO.username] : @"no updates yet";
 //	if ([_statusUpdateVOs count] > 0) {
 //		int idx = 0;
 //		for (HONClubPhotoVO *vo in [_statusUpdateVOs reverseObjectEnumerator]) {
@@ -218,20 +217,18 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			UIView *view = (UIView *)obj;
 			view.hidden = NO;
 			
+			NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:(HONClubPhotoVO *)[_statusUpdateVOs objectAtIndex:view.tag]];
 			UIImageView *imageView = (UIImageView *)[[view subviews] firstObject];
 			if (imageView.image == nil) {
-				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-					_statusUpdateImageLoadingView.frame = CGRectMake(kOrgLoaderFrame.origin.x + (18.0 * ++cnt), kOrgLoaderFrame.origin.y, kOrgLoaderFrame.size.width, kOrgLoaderFrame.size.height);
-					
-					if (cnt >= [_statusUpdateViews count] - 1) {
-						_statusUpdateImageLoadingView.hidden = YES;
-						[_statusUpdateImageLoadingView stopAnimating];
-						_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
-					}
-				};
+				if ([_clubVO.submissions count] == 0)
+					[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"defaultThumbPhotoMask"]];
 				
-				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-					imageView.image = image;
+				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+					NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
+					
+					imageView.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+					imageView.image = [UIImage imageNamed:@"placeholderClubPhoto"];
+					[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
 					
 					[UIView animateWithDuration:0.125 delay:(0.10 * ([_statusUpdateViews count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 						view.alpha = 1.0;
@@ -247,16 +244,35 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 					}];
 				};
 				
-				NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:(HONClubPhotoVO *)[_statusUpdateVOs objectAtIndex:view.tag]];
-				HONEmotionVO *emotionVO = (HONEmotionVO *)[emotions firstObject];
+				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+					imageView.image = image;
+					
+					if ([_clubVO.submissions count] == 0) {
+						[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
+					}
+					
+					[UIView animateWithDuration:0.125 delay:(0.10 * ([_statusUpdateViews count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+						view.alpha = 1.0;
+						
+					} completion:^(BOOL finished) {
+						_statusUpdateImageLoadingView.frame = CGRectMake(kOrgLoaderFrame.origin.x + (18.0 * ++cnt), kOrgLoaderFrame.origin.y, kOrgLoaderFrame.size.width, kOrgLoaderFrame.size.height);
+						
+						if (cnt >= [_statusUpdateViews count] - 1) {
+							_statusUpdateImageLoadingView.hidden = YES;
+							[_statusUpdateImageLoadingView stopAnimating];
+							_statusUpdateImageLoadingView.frame = kOrgLoaderFrame;
+						}
+					}];
+				};
 				
-				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
-																   cachePolicy:NSURLRequestReloadRevalidatingCacheData
+				NSString *imgURL = ([emotions count] > 0) ? ((HONEmotionVO *)[emotions firstObject]).smallImageURL : [_clubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix];
+				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]
+																   cachePolicy:kURLRequestCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
 								 placeholderImage:nil
 										  success:imageSuccessBlock
 										  failure:imageFailureBlock];
-			
+				
 			} else {
 				if (++cnt >= [_statusUpdateViews count] - 1) {
 					_statusUpdateImageLoadingView.hidden = YES;
@@ -337,7 +353,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	[imageView setTag:0];
 	[view addSubview:imageView];
 	
-	//[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"thumbPhotoMask"]];
 	return (view);
 }
 

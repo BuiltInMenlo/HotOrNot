@@ -60,8 +60,9 @@ static HONContactsAssistant *sharedInstance = nil;
 		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : [fName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : [lName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		
-		if ([fName length] == 0 && [lName length] == 0)
+		if ([fName length] == 0 && [lName length] == 0) {
 			continue;
+		}
 		
 		
 		NSData *imageData = nil;

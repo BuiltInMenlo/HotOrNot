@@ -65,7 +65,7 @@
 //		};
 //		
 //		[emoticonImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.urlLarge]
-//																   cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+//																   cachePolicy:kURLRequestCachePolicy
 //															   timeoutInterval:[HONAppDelegate timeoutInterval]]
 //								 placeholderImage:nil
 //										  success:successBlock

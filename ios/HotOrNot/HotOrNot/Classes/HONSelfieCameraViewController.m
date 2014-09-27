@@ -20,17 +20,16 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONSelfieCameraViewController.h"
-#import "HONSelfieCameraOverlayView.h"
+#import "HONCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
-#import "HONSelfieCameraSubmitViewController.h"
 #import "HONStatusUpdateSubmitViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
 
 
-@interface HONSelfieCameraViewController () <HONSelfieCameraOverlayViewDelegate, HONSelfieCameraPreviewViewDelegate, AmazonServiceRequestDelegate>
+@interface HONSelfieCameraViewController () <HONCameraOverlayViewDelegate, HONSelfieCameraPreviewViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
-@property (nonatomic, strong) HONSelfieCameraOverlayView *cameraOverlayView;
+@property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONSelfieCameraPreviewView *previewView;
 @property (nonatomic, assign, readonly) HONSelfieCameraSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -61,7 +60,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
-		_filename = [NSString stringWithFormat:@"defaultClubPhoto-%02d", (arc4random_uniform(5) + 1)];
+		_filename = [[HONClubAssistant sharedInstance] rndCoverImageURL];
 	}
 	
 	return (self);
@@ -241,18 +240,17 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
-	[super viewDidAppear:animated];
+	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
-	[super viewDidAppear:animated];
+	[super viewWillDisappear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
-
 
 
 #pragma mark - UI Presentation
@@ -274,7 +272,7 @@
 		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, scale, scale);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		
-		_cameraOverlayView = [[HONSelfieCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
 		imagePickerController.cameraOverlayView = _cameraOverlayView;
  	}
@@ -288,15 +286,8 @@
 }
 
 
-#pragma mark - Navigation
-- (void)_goCamera {
-	_isBlurred = NO;
-	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
-}
-
-
 #pragma mark - CameraOverlay Delegates
-- (void)cameraOverlayViewShowCameraRoll:(HONSelfieCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -304,7 +295,7 @@
 
 }
 
-- (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Flip Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
@@ -314,7 +305,7 @@
 		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 }
 
-- (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Close Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
@@ -323,7 +314,7 @@
 	}];
 }
 
-- (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
+- (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
 	_isBlurred = isFiltered;
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
@@ -343,7 +334,9 @@
 	NSLog(@"[*:*] cameraPreviewViewShowCamera");
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Open Camera"];
-	[self _goCamera];
+	
+	_isBlurred = NO;
+	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)cameraPreviewViewCancel:(HONSelfieCameraPreviewView *)previewView {
@@ -444,7 +437,7 @@
 		self.imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
-		_cameraOverlayView = [[HONSelfieCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
 		
 		self.imagePickerController.cameraOverlayView = _cameraOverlayView;

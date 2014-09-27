@@ -40,7 +40,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubTimeline:) name:@"TARE_CLUB_TIMELINE" object:nil];
 	}
 	
 	return (self);
@@ -263,16 +264,14 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
-	[super viewDidAppear:animated];
+	[super viewWillAppear:animated];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-//	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
-	[super viewDidDisappear:animated];
+	[super viewWillDisappear:animated];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 
@@ -313,10 +312,21 @@
 
 #pragma mark - Notifications
 - (void)_refreshClubTimeline:(NSNotification *)notification {
+	NSLog(@"::|> _refreshClubTimeline <|::");
 	_index = 0;
 	_clubPhotoID = 0;
 	
+	if ([notification.object isEqualToString:@"Y"] && [_tableView.visibleCells count] > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	
 	[self _retrieveClub];
+}
+
+- (void)_tareClubTimeline:(NSNotification *)notification {
+	NSLog(@"::|> _tareClubTimeline <|::");
+	
+	if ([_tableView.visibleCells count] > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 

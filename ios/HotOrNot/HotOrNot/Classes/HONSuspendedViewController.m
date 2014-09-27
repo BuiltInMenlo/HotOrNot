@@ -206,28 +206,28 @@
 #pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
 	
-	NSString *mpAction = @"";
-	switch (result) {
-		case MFMailComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-		
-		case MFMailComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		case MFMailComposeResultSaved:
-			mpAction = @"Saved";
-			break;
-			
-		case MFMailComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
+//	NSString *mpAction = @"";
+//	switch (result) {
+//		case MFMailComposeResultCancelled:
+//			mpAction = @"Canceled";
+//			break;
+//		
+//		case MFMailComposeResultFailed:
+//			mpAction = @"Failed";
+//			break;
+//			
+//		case MFMailComposeResultSaved:
+//			mpAction = @"Saved";
+//			break;
+//			
+//		case MFMailComposeResultSent:
+//			mpAction = @"Sent";
+//			break;
+//			
+//		default:
+//			mpAction = @"Not Sent";
+//			break;
+//	}
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }

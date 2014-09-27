@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "defaultClubCover.png"
+      "filename" : "defaultPhotoMask.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "defaultClubCover@2x.png"
+      "filename" : "defaultPhotoMask@2x.png"
     },
     {
       "idiom" : "universal",

@@ -289,7 +289,7 @@
 																	message:[NSString stringWithFormat:@"Are you sure you want to add %@ to the club%@ you have selected?", names, ([_selectedClubs count] != 1) ? @"s" : @""]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-														  otherButtonTitles:@"Yes", nil];
+														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 				[alertView setTag:10];
 				[alertView show];
 			

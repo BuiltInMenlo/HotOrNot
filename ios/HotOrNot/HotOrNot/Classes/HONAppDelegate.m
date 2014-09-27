@@ -131,7 +131,7 @@ NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
 NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
-const NSURLRequestCachePolicy kURLRequestCachePolicy = NSURLRequestUseProtocolCachePolicy;
+const NSURLRequestCachePolicy kURLRequestCachePolicy = NSURLRequestReturnCacheDataElseLoad;//NSURLRequestUseProtocolCachePolicy;
 NSString * const kTwilioSMS = @"6475577873";
 
 // network error descriptions
@@ -140,7 +140,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-//@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate, PicoStickerDelegate>
+//@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate>
 @interface HONAppDelegate() <BITHockeyManagerDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
 #else
 @interface HONAppDelegate() <HONInsetOverlayViewDelegate>
@@ -1657,24 +1657,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	NSString *mpAction = @"";
-	switch (result) {
-		case MessageComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-			
-		case MessageComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		case MessageComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
+//	NSString *mpAction = @"";
+//	switch (result) {
+//		case MessageComposeResultCancelled:
+//			mpAction = @"Canceled";
+//			break;
+//			
+//		case MessageComposeResultSent:
+//			mpAction = @"Sent";
+//			break;
+//			
+//		case MessageComposeResultFailed:
+//			mpAction = @"Failed";
+//			break;
+//			
+//		default:
+//			mpAction = @"Not Sent";
+//			break;
+//	}
 	
 //	[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share via SMS (%@)", mpAction]]];
 	[controller dismissViewControllerAnimated:YES completion:nil];
@@ -1685,30 +1685,30 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
 		
-	NSString *mpAction = @"";
-	switch (result) {
-		case MFMailComposeResultCancelled:
-			mpAction = @"Canceled";
-			break;
-			
-		case MFMailComposeResultFailed:
-			mpAction = @"Failed";
-			break;
-			
-		case MFMailComposeResultSaved:
-			mpAction = @"Saved";
-			break;
-			
-		case MFMailComposeResultSent:
-			mpAction = @"Sent";
-			break;
-			
-		default:
-			mpAction = @"Not Sent";
-			break;
-	}
-	
+//	NSString *mpAction = @"";
+//	switch (result) {
+//		case MFMailComposeResultCancelled:
+//			mpAction = @"Canceled";
+//			break;
+//			
+//		case MFMailComposeResultFailed:
+//			mpAction = @"Failed";
+//			break;
+//			
+//		case MFMailComposeResultSaved:
+//			mpAction = @"Saved";
+//			break;
+//			
+//		case MFMailComposeResultSent:
+//			mpAction = @"Sent";
+//			break;
+//			
+//		default:
+//			mpAction = @"Not Sent";
+//			break;
+//	}
 //	[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share via Email (%@)", mpAction]]];
+	
 	[controller dismissViewControllerAnimated:YES completion:nil];
 	_shareInfo = nil;
 }

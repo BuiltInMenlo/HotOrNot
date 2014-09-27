@@ -37,8 +37,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 
 - (void)cafPlaybackWithFilename:(NSString *)filename {
-	NSString *filepath = [[NSBundle mainBundle] pathForResource:filename ofType:@"caf"];
-	NSURL *url = [NSURL fileURLWithPath:filepath];
+	NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:filename ofType:@"caf"]];
 	SystemSoundID sound;
 	
 	AudioServicesCreateSystemSoundID((__bridge_retained CFURLRef)url, &sound);

@@ -31,7 +31,7 @@ static void TSLoadStoreKitClasses()
 @synthesize request;
 + (id)requestWrapperWithRequest:(SKProductsRequest *)req
 {
-	return AUTORELEASE([[self alloc] initWithRequest:req]);
+	return AUTORELEASE([[self alloc] initWithRequest:(NSURLRequest *)req]); //>
 }
 - (id)initWithRequest:(SKProductsRequest *)req
 {
@@ -43,7 +43,7 @@ static void TSLoadStoreKitClasses()
 }
 - (id)copyWithZone:(NSZone *)zone
 {
-	return [[[self class] allocWithZone:zone] initWithRequest:self.request];
+	return [[[self class] allocWithZone:zone] initWithRequest:(NSURLRequest *)self.request]; //>
 }
 - (BOOL)isEqual:(id)other
 {
@@ -121,6 +121,9 @@ static void TSLoadStoreKitClasses()
 	{
 		switch(transaction.transactionState)
 		{
+			default:
+				break;
+				
 			case SKPaymentTransactionStatePurchased:
 			{
 				
