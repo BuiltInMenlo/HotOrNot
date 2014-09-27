@@ -23,6 +23,13 @@ NSString * const kSelfieclubStickerPak	= @"selfieclub";
 NSString * const kClubCoverStickerPak	= @"club";
 NSString * const kPaidStickerPak		= @"paid";
 
+NSString * const kStickersGroup		= @"stickers";
+NSString * const kFacesGroup		= @"faces";
+NSString * const kAnimalsGroup		= @"animals";
+NSString * const kObjectsGroup		= @"objects";
+NSString * const kOtherGroup		= @"other";
+
+
 @implementation HONStickerAssistant
 static HONStickerAssistant *sharedInstance = nil;
 
@@ -240,6 +247,61 @@ static HONStickerAssistant *sharedInstance = nil;
 	return (nil);
 }
 
+
+- (NSArray *)fetchStickersForGroupType:(HONStickerGroupType)stickerGroupType {
+	NSMutableDictionary *contentGroups = ([[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] mutableCopy] : [NSMutableDictionary dictionary];
+	NSMutableArray *stickers = [NSMutableArray array];
+	NSString *contentGroupID = @"0";
+	
+	if (stickerGroupType == HONStickerGroupTypeStickers) {
+		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kStickersGroup] objectForKey:@"content_group"];
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
+			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
+				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
+				break;
+			}
+		}
+		
+	} else if (stickerGroupType == HONStickerGroupTypeFaces) {
+		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kFacesGroup] objectForKey:@"content_group"];
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
+				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
+				break;
+			}
+		}
+		
+	} else if (stickerGroupType == HONStickerGroupTypeAnimals) {
+		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kAnimalsGroup] objectForKey:@"content_group"];
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
+				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
+				break;
+			}
+		}
+		
+	} else if (stickerGroupType == HONStickerGroupTypeObjects) {
+		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kObjectsGroup] objectForKey:@"content_group"];
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
+				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
+				break;
+			}
+		}
+		
+	} else if (stickerGroupType == HONStickerGroupTypeOther) {
+		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kOtherGroup] objectForKey:@"content_group"];
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
+				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
+				break;
+			}
+		}
+	}
+	
+	return ([stickers copy]);
+}
 
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType {
 	NSMutableDictionary *contentGroups = ([[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] mutableCopy] : [NSMutableDictionary dictionary];

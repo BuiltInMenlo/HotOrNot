@@ -32,6 +32,14 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 	HONStickerPakTypePaid
 };
 
+typedef NS_ENUM(NSInteger, HONStickerGroupType) {
+	HONStickerGroupTypeStickers = 0,
+	HONStickerGroupTypeFaces,
+	HONStickerGroupTypeAnimals,
+	HONStickerGroupTypeObjects,
+	HONStickerGroupTypeOther
+};
+
 
 @interface HONStickerAssistant : NSObject
 + (HONStickerAssistant *)sharedInstance;
@@ -54,6 +62,7 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 - (PicoSticker *)stickerFromCandyBoxWithContentID:(NSString *)contentID;
 
 - (NSDictionary *)fetchCoverStickerForContentGroup:(NSString *)contentGroupID;
+- (NSArray *)fetchStickersForGroupType:(HONStickerGroupType)stickerGroupType;
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
 - (void)retrieveContentsForContentGroup:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion;
 @end

@@ -21,17 +21,18 @@
 #import "HONTrivialUserVO.h"
 #import "HONEmotionsPickerDisplayView.h"
 #import "HONEmotionsPickerView.h"
-#import "HONGlobalEmotionPickerView.h"
 
 #define PREVIEW_SIZE 176.0f
 
 @interface HONSelfieCameraPreviewView () <HONEmotionsPickerDisplayViewDelegate, HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
+@property (nonatomic, strong) NSMutableArray *emotionsPickerViews;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
-@property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
+//@property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
+
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
 @property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
@@ -48,6 +49,7 @@
 													 name:@"RELOAD_EMOTION_PICKER" object:nil];
 		
 		_subjectNames = [NSMutableArray array];
+		_emotionsPickerViews = [NSMutableArray array];
 		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
@@ -80,9 +82,15 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
-	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0)];
-	_emotionsPickerView.delegate = self;
-	[self addSubview:_emotionsPickerView];
+	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeOther; i++) {
+		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0) asEmotionGroupType:i];
+		pickerView.delegate = self;
+		pickerView.hidden = (i != HONStickerGroupTypeStickers);
+		pickerView.alpha = (int)(pickerView.stickerGroupType == HONStickerGroupTypeStickers);
+		
+		[_emotionsPickerViews addObject:pickerView];
+		[self addSubview:pickerView];
+	}
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
@@ -129,7 +137,8 @@
 
 #pragma mark - Notifications
 - (void)_reloadEmotionPicker:(NSNotification *)notification {
-	[_emotionsPickerView reload];
+	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
+//	[pickerView reload];
 }
 
 
@@ -215,23 +224,40 @@
 	[_headerView setTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Compose"];
 }
 
+- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView changeGroup:(HONStickerGroupType)groupType {
+	NSLog(@"[*:*] emotionItemView:(%@) changeGroup:(%@) [*:*]", self.class, (groupType == HONStickerGroupTypeStickers) ? @"STICKERS" : (groupType == HONStickerGroupTypeFaces) ? @"FACES" : (groupType == HONStickerGroupTypeAnimals) ? @"ANIMALS" : (groupType == HONStickerGroupTypeObjects) ? @"OBJECTS" : @"OTHER");
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
+									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
+	
+	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
+		
+		pickerView.hidden = (pickerView.stickerGroupType != groupType);
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			pickerView.alpha = (int)(pickerView.stickerGroupType == groupType);
+		} completion:^(BOOL finished) {
+		}];
+	}];
+}
+
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
-		if (!_emotionsPickerView.hidden) {
-			[_emotionsPickerView disablePagesStartingAt:2];
-			[_emotionsPickerView scrollToPage:1];
-			
-			if (_insetOverlayView == nil)
-				_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-			_insetOverlayView.delegate = self;
-			
-			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-			[_insetOverlayView introWithCompletion:nil];
-		}
-	}
+//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
+//		if (!_emotionsPickerView.hidden) {
+//			[_emotionsPickerView disablePagesStartingAt:2];
+//			[_emotionsPickerView scrollToPage:1];
+//			
+//			if (_insetOverlayView == nil)
+//				_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+//			_insetOverlayView.delegate = self;
+//			
+//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+//			[_insetOverlayView introWithCompletion:nil];
+//		}
+//	}
 }
 
 

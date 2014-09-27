@@ -63,7 +63,6 @@
 		303BAD2D19D5F13900CB2501 /* submitButtonLargeEnabled_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD2F19D5F13900CB2501 /* submitButtonLargeEnabled_nonActive@2x.png */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
-		3068E4A819A58620008AB0C2 /* HONGlobalEmotionPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */; };
 		309122AA19C5343A0081B141 /* composeTitle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309122A319C5343A0081B141 /* composeTitle@2x.png */; };
@@ -537,8 +536,6 @@
 		305ED7B519C3EE5100BDCB04 /* HONToggleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleTableViewCell.m; sourceTree = "<group>"; };
 		305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Random.h"; sourceTree = "<group>"; };
 		305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Random.m"; sourceTree = "<group>"; };
-		3068E4A619A58620008AB0C2 /* HONGlobalEmotionPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGlobalEmotionPickerView.h; sourceTree = "<group>"; };
-		3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGlobalEmotionPickerView.m; sourceTree = "<group>"; };
 		308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAudioMaestro.h; sourceTree = "<group>"; };
 		308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAudioMaestro.m; sourceTree = "<group>"; };
 		3091229F19C501F60081B141 /* HONStatusUpdateSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateSubmitViewController.h; sourceTree = "<group>"; };
@@ -1291,6 +1288,18 @@
 				4CBE874B16371D22004084DF /* HONTermsViewController.m */,
 			);
 			name = WebViewControllers;
+			sourceTree = "<group>";
+		};
+		3022043F19D63B3E00C3D677 /* Localized Assets */ = {
+			isa = PBXGroup;
+			children = (
+				4C0A4CF7198B419700450680 /* Global Buttons */,
+				309F59BD199DA5F300EC6C1C /* First Run */,
+				303BAD0C19D5E6A500CB2501 /* Nav Buttons */,
+				309F59B8199DA4EC00EC6C1C /* Tabs */,
+				4CC606DB198C58110042A951 /* Inset Overlay */,
+			);
+			name = "Localized Assets";
 			sourceTree = "<group>";
 		};
 		303BAD0C19D5E6A500CB2501 /* Nav Buttons */ = {
@@ -2214,11 +2223,7 @@
 			isa = PBXGroup;
 			children = (
 				4C43224A18E37C960035FF06 /* Asset Catalogs */,
-				4C0A4CF7198B419700450680 /* Global Buttons */,
-				309F59BD199DA5F300EC6C1C /* First Run */,
-				303BAD0C19D5E6A500CB2501 /* Nav Buttons */,
-				309F59B8199DA4EC00EC6C1C /* Tabs */,
-				4CC606DB198C58110042A951 /* Inset Overlay */,
+				3022043F19D63B3E00C3D677 /* Localized Assets */,
 				303BAD0D19D5E71700CB2501 /* Bundles */,
 				4CEF920719719495007D56BE /* Plists */,
 				4C83FD96190F62FB00CAEABB /* Fonts */,
@@ -2415,8 +2420,6 @@
 			children = (
 				4C6ECF3E19061D1E00AC2402 /* HONEmoticonPickerItemView.h */,
 				4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */,
-				3068E4A619A58620008AB0C2 /* HONGlobalEmotionPickerView.h */,
-				3068E4A719A58620008AB0C2 /* HONGlobalEmotionPickerView.m */,
 				4C60AF6917CCFEF800609792 /* HONEmotionsPickerView.h */,
 				4C60AF6A17CCFEF800609792 /* HONEmotionsPickerView.m */,
 				4CC94FEA19079D4900347A34 /* HONEmotionsPickerDisplayView.h */,
@@ -2922,7 +2925,6 @@
 				30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
 				4C41071F18C16300009E9F9E /* HONEnterPINViewController.m in Sources */,
-				3068E4A819A58620008AB0C2 /* HONGlobalEmotionPickerView.m in Sources */,
 				4C6ECF4019061D1E00AC2402 /* HONEmoticonPickerItemView.m in Sources */,
 				4CA34C5516F6B6550000751E /* HONTableViewCell.m in Sources */,
 				4C43280918E3A9FA0035FF06 /* AFJSONRequestOperation.m in Sources */,

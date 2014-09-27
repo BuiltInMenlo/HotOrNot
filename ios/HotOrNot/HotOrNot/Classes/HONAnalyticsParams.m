@@ -78,7 +78,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
 			  @"time"			: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
 			  @"tz"				: [[HONDateTimeAlloter sharedInstance] timezoneFromDeviceLocale],
-			  @"battery-per"		: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100)]});
+			  @"battery-per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100)]});
 }
 
 - (NSDictionary *)screenStateProperties {
@@ -274,7 +274,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	[event addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] orthodoxProperties]];
 	[event addEntriesFromDictionary:@{@"action"	: [[eventName componentsSeparatedByString:@" - "] lastObject]}];
 	
-	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
+//	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:@"tracking_interval"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -283,7 +283,6 @@ static HONAnalyticsParams *sharedInstance = nil;
 	[[KeenClient sharedClient] addEvent:event
 					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
 								  error:&error];
-	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
 }
 #pragma mark -
 

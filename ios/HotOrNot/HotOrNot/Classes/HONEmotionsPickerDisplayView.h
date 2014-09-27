@@ -20,5 +20,6 @@ extern const CGSize kMaxLabelSize;
 - (void)addEmotion:(HONEmotionVO *)emotionVO;
 - (void)removeEmotion:(HONEmotionVO *)emotionVO;
 - (void)updatePreview:(UIImage *)previewImage;
+
 @property (nonatomic, assign) id <HONEmotionsPickerDisplayViewDelegate> delegate;
 @end

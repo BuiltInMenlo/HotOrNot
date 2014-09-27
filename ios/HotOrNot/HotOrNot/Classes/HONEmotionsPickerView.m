@@ -10,14 +10,13 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
-const CGSize kImageSpacing2Size = {75.0f, 68.0f};
+const CGSize kImageSpacingSize = {75.0f, 68.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *bgImageView;
-//@property (nonatomic, strong) UIImageView *deleteButtonImageView;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic, strong) HONPaginationView *paginationView;
@@ -28,14 +27,11 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 
 @implementation HONEmotionsPickerView
 @synthesize delegate = _delegate;
+@synthesize stickerGroupType = _stickerGroupType;
 
-
-- (void)_delayed {
-	NSLog(@"STICKERS:[%@]", _availableEmotions);
-}
-
-- (id)initWithFrame:(CGRect)frame {
+- (id)initWithFrame:(CGRect)frame asEmotionGroupType:(HONStickerGroupType)stickerGroupType {
 	if ((self = [super initWithFrame:frame])) {
+		_stickerGroupType = stickerGroupType;
 		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
 		
@@ -56,6 +52,46 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
+		UIButton *stickersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		stickersButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		[stickersButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
+		[stickersButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
+		[stickersButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[stickersButton setTag:HONStickerGroupTypeStickers];
+		[self addSubview:stickersButton];
+		
+		UIButton *facesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		facesButton.frame = CGRectMake(30.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
+		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
+		[facesButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[facesButton setTag:HONStickerGroupTypeFaces];
+		[self addSubview:facesButton];
+		
+		UIButton *animalsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		animalsButton.frame = CGRectMake(60.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		[animalsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
+		[animalsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
+		[animalsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[animalsButton setTag:HONStickerGroupTypeAnimals];
+		[self addSubview:animalsButton];
+		
+		UIButton *objectsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		objectsButton.frame = CGRectMake(90.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		[objectsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
+		[objectsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
+		[objectsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[objectsButton setTag:HONStickerGroupTypeObjects];
+		[self addSubview:objectsButton];
+		
+		UIButton *otherButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		otherButton.frame = CGRectMake(120.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		[otherButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
+		[otherButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
+		[otherButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[otherButton setTag:HONStickerGroupTypeOther];
+		[self addSubview:otherButton];
+		
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 49.0, 160.0, 49.0);
@@ -64,22 +100,14 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
 		
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
-			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
-				[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-		}
-			
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
-			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//		_totalPages = ([_availableEmotions count] % (COLS_PER_ROW * ROWS_PER_PAGE) == 0) ? _totalPages - 1 : _totalPages;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
 		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 16.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
+		_paginationView.hidden = (_totalPages == 1);
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
 		
@@ -103,49 +131,13 @@ const CGSize kImageSpacing2Size = {75.0f, 68.0f};
 	[_paginationView updateToPage:page];
 }
 
-- (void)reload {
-	[_paginationView removeFromSuperview];
-	_paginationView = nil;
-	
-	for (UIView *view in _pageViews)
-		[view removeFromSuperview];
-	[_pageViews removeAllObjects];
-	
-	for (UIView *view in _scrollView.subviews)
-		[view removeFromSuperview];
-	
-	for (HONEmoticonPickerItemView *view in _itemViews)
-		[view removeFromSuperview];
-	[_itemViews removeAllObjects];
-	
-	_totalPages = 0;
-	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
-	[_availableEmotions removeAllObjects];
-	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"iap_01"] isEqualToString:@"Y"]) {
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid])
-			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	}
-	
-	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
-		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
-		[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//	_totalPages = ([_availableEmotions count] % (COLS_PER_ROW * ROWS_PER_PAGE) == 0) ? _totalPages - 1 : _totalPages;
-	_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-	
-	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
-	[self addSubview:_paginationView];
-	[_paginationView updateToPage:0];
-	
-	[self _buildGrid];
-}
-
 
 #pragma mark - Navigation
+- (void)_goGroup:(id)sender {
+	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:changeGroup:)])
+		[self.delegate emotionsPickerView:self changeGroup:((UIButton *)sender).tag];
+}
+
 - (void)_goDelete {
 	if ([_selectedEmotions count] > 0) {
 		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
@@ -163,14 +155,13 @@ static dispatch_queue_t sticker_request_operation_queue;
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	
-	
 	int cnt = 0;
 	int row = 0;
 	int col = 0;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacing2Size.width, ROWS_PER_PAGE * kImageSpacing2Size.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
@@ -183,7 +174,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		
 //		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.125];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		
 		emotionItemView.delegate = self;
 		[_itemViews addObject:emotionItemView];
