@@ -75,7 +75,7 @@
 	};
 	
 	[heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
-														   cachePolicy:kURLRequestCachePolicy
+														   cachePolicy:kOrthodoxURLCachePolicy
 													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
@@ -179,7 +179,7 @@
 		};
 		
 		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_verify.png"]
-																 cachePolicy:kURLRequestCachePolicy
+																 cachePolicy:kOrthodoxURLCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock

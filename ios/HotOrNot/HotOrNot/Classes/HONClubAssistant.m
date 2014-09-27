@@ -67,7 +67,7 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (NSString *)rndCoverImageURL {
-	return ([NSString stringWithFormat:@"http://hotornot-challenges.s3.amazonaws.com/defaultClubPhoto-%02d", (arc4random_uniform(5) + 1)]);
+	return ([NSString stringWithFormat:@"defaultClubPhoto-%02d", (arc4random_uniform(5) + 1)]);
 //	NSArray *rndCovers = [[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes];
 //	return ([rndCovers objectAtIndex:(arc4random() % ([rndCovers count] - 1))]);
 }

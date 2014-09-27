@@ -142,7 +142,7 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 		};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[avatars objectAtIndex:i] stringByAppendingString:kSnapThumbSuffix]]
-																 cachePolicy:kURLRequestCachePolicy
+																 cachePolicy:kOrthodoxURLCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock

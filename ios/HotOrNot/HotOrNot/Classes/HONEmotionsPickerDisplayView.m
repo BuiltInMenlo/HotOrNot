@@ -202,7 +202,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		};
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-														   cachePolicy:kURLRequestCachePolicy
+														   cachePolicy:kOrthodoxURLCachePolicy
 													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:imageSuccessBlock

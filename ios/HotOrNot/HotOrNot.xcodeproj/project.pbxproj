@@ -147,11 +147,6 @@
 		4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43277818E3A9F90035FF06 /* QuadraticBezierCurve.m */; };
 		4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43277A18E3A9F90035FF06 /* Spline.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43277C18E3A9F90035FF06 /* ImageFilter.m */; };
-		4C4328B718E3A9FA0035FF06 /* JLBAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C43277F18E3A9F90035FF06 /* JLBAnimation.mm */; };
-		4C4328B818E3A9FA0035FF06 /* JLBAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278118E3A9F90035FF06 /* JLBAnimator.m */; };
-		4C4328B918E3A9FA0035FF06 /* JLBPagedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278418E3A9F90035FF06 /* JLBPagedView.m */; };
-		4C4328BA18E3A9FA0035FF06 /* JLBPagedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278618E3A9F90035FF06 /* JLBPagedViewController.m */; };
-		4C4328BB18E3A9FA0035FF06 /* JLBPopSlideTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278818E3A9F90035FF06 /* JLBPopSlideTransition.m */; };
 		4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278A18E3A9F90035FF06 /* UIView+HONSnapshot.m */; };
 		4C4328BD18E3A9FA0035FF06 /* kikapilib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C43278D18E3A9F90035FF06 /* kikapilib.a */; };
 		4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1519,6 +1514,8 @@
 		4C148F7917815B9F00EBD245 /* ¡-obsolete_! */ = {
 			isa = PBXGroup;
 			children = (
+				4C43278218E3A9F90035FF06 /* JLBPaging */,
+				4C43277D18E3A9F90035FF06 /* JLBAnimator */,
 				3075E02C19D660B0007B3346 /* Views */,
 				4C386BCB1984B8E50023123A /* Nav */,
 				4CCA416C181C1BF700FC9863 /* Challenge Grid */,
@@ -1706,8 +1703,6 @@
 				4C4325A618E3A9F80035FF06 /* AFNetworking */,
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
 				4C43276A18E3A9F90035FF06 /* ios-image-filters */,
-				4C43277D18E3A9F90035FF06 /* JLBAnimator */,
-				4C43278218E3A9F90035FF06 /* JLBPaging */,
 				4C69A1FD19410CA300971D3F /* KeenClient */,
 				4C43278B18E3A9F90035FF06 /* KikAPI */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
@@ -1793,7 +1788,8 @@
 				4C43278018E3A9F90035FF06 /* JLBAnimator.h */,
 				4C43278118E3A9F90035FF06 /* JLBAnimator.m */,
 			);
-			path = JLBAnimator;
+			name = JLBAnimator;
+			path = ../Vendor/Classes/JLBAnimator;
 			sourceTree = "<group>";
 		};
 		4C43278218E3A9F90035FF06 /* JLBPaging */ = {
@@ -1808,7 +1804,8 @@
 				4C43278918E3A9F90035FF06 /* UIView+HONSnapshot.h */,
 				4C43278A18E3A9F90035FF06 /* UIView+HONSnapshot.m */,
 			);
-			path = JLBPaging;
+			name = JLBPaging;
+			path = ../Vendor/Classes/JLBPaging;
 			sourceTree = "<group>";
 		};
 		4C43278B18E3A9F90035FF06 /* KikAPI */ = {
@@ -2193,11 +2190,11 @@
 		4CA8DA531613D00900B7B13C /* -Tabs- */ = {
 			isa = PBXGroup;
 			children = (
+				4C32B9A515FAB60A0023A0EE /* Status Update */,
 				4C2DD82F18E3B41900BC8759 /* -Friends- */,
 				4C148F7E17815CA900EBD245 /* -Settings- */,
-				4CD16D1D199702760035A8D3 /* Banner View */,
-				4C32B9A515FAB60A0023A0EE /* Status Update */,
 				4CED977518E46B1800482813 /* Activity */,
+				4CD16D1D199702760035A8D3 /* Banner */,
 			);
 			name = "-Tabs-";
 			sourceTree = "<group>";
@@ -2273,13 +2270,13 @@
 			name = Feed;
 			sourceTree = "<group>";
 		};
-		4CD16D1D199702760035A8D3 /* Banner View */ = {
+		4CD16D1D199702760035A8D3 /* Banner */ = {
 			isa = PBXGroup;
 			children = (
 				4C45A9431996AE0D00A2086E /* HONTabBannerView.h */,
 				4C45A9441996AE0D00A2086E /* HONTabBannerView.m */,
 			);
-			name = "Banner View";
+			name = Banner;
 			sourceTree = "<group>";
 		};
 		4CD22C52195B8E0D00E6AD0B /* PicoCandy */ = {
@@ -2629,7 +2626,6 @@
 				4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */,
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
 				30FC8C5C19A829E900CDB2BC /* TSConfig.m in Sources */,
-				4C4328BA18E3A9FA0035FF06 /* JLBPagedViewController.m in Sources */,
 				4C45A9451996AE0D00A2086E /* HONTabBannerView.m in Sources */,
 				4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */,
 				30FC8C6419A829E900CDB2BC /* TSTapstream.m in Sources */,
@@ -2728,7 +2724,6 @@
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
 				309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */,
-				4C4328BB18E3A9FA0035FF06 /* JLBPopSlideTransition.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
@@ -2744,7 +2739,6 @@
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
 				4CDFB3181889349900E9F33B /* HONFontAllocator.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
-				4C4328B918E3A9FA0035FF06 /* JLBPagedView.m in Sources */,
 				3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */,
 				4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */,
 				300FCF3319B25D1E0009F5B5 /* HONClubViewCell.m in Sources */,
@@ -2764,14 +2758,12 @@
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
 				4CCA416B181C1BF200FC9863 /* HONUserProfileGridView.m in Sources */,
-				4C4328B818E3A9FA0035FF06 /* JLBAnimator.m in Sources */,
 				309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */,
 				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				4C43280C18E3A9FA0035FF06 /* AFURLConnectionOperation.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONScreenManager.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
-				4C4328B718E3A9FA0035FF06 /* JLBAnimation.mm in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineCellHeaderView.m in Sources */,
 				4C71BF40181B25C8005044F8 /* HONSuspendedViewController.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */,

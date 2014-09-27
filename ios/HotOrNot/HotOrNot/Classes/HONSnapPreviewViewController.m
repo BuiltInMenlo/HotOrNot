@@ -124,7 +124,7 @@
 	[_imageHolderView addSubview:_imageView];
 	_imageView.alpha = 0.0;
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
-														cachePolicy:kURLRequestCachePolicy
+														cachePolicy:kOrthodoxURLCachePolicy
 													timeoutInterval:[HONAppDelegate timeoutInterval]]
 					  placeholderImage:nil
 							   success:successBlock

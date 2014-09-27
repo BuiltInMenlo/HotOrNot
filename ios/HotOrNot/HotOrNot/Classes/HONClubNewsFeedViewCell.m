@@ -132,7 +132,7 @@
 		};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[ _clubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]]
-																 cachePolicy:kURLRequestCachePolicy
+																 cachePolicy:kOrthodoxURLCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:avatarImageSuccessBlock
@@ -196,7 +196,7 @@
 		};
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
-														   cachePolicy:kURLRequestCachePolicy
+														   cachePolicy:kOrthodoxURLCachePolicy
 													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:imageSuccessBlock
@@ -295,7 +295,7 @@
 			};
 			
 			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:((HONEmotionVO *)[_emotionVOs objectAtIndex:view.tag]).smallImageURL]
-															   cachePolicy:kURLRequestCachePolicy
+															   cachePolicy:kOrthodoxURLCachePolicy
 														   timeoutInterval:[HONAppDelegate timeoutInterval]]
 							 placeholderImage:nil
 									  success:imageSuccessBlock

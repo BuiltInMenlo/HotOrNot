@@ -77,7 +77,7 @@
 	};
 	
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
-															  cachePolicy:kURLRequestCachePolicy
+															  cachePolicy:kOrthodoxURLCachePolicy
 														  timeoutInterval:[HONAppDelegate timeoutInterval]]
 							placeholderImage:nil
 									 success:successBlock

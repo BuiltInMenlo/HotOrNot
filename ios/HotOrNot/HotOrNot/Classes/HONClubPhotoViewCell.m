@@ -59,35 +59,19 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 	[self.contentView addSubview:_imageLoadingView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-//	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
-	
-//	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-//	gradientImageView.image = [UIImage imageNamed:@"selfieFullSizeGradientOverlay"];
-//	[self.contentView addSubview:gradientImageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			imageView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//			[_imageLoadingView stopAnimating];
-//		}];
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[imageView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
-		
-		imageView.image = [UIImage imageNamed:@"defaultClubPhoto"];
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			imageView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//			[_imageLoadingView stopAnimating];
-//		}];
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
-													   cachePolicy:kURLRequestCachePolicy
+													   cachePolicy:kOrthodoxURLCachePolicy
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
@@ -294,7 +278,7 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 	
 //	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:kURLRequestCachePolicy
+													   cachePolicy:kOrthodoxURLCachePolicy
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
@@ -343,7 +327,7 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:kURLRequestCachePolicy
+													   cachePolicy:kOrthodoxURLCachePolicy
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock

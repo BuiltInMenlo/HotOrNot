@@ -131,7 +131,7 @@ NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
 NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
-const NSURLRequestCachePolicy kURLRequestCachePolicy = NSURLRequestReturnCacheDataElseLoad;//NSURLRequestUseProtocolCachePolicy;
+const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheDataElseLoad;//NSURLRequestUseProtocolCachePolicy;
 NSString * const kTwilioSMS = @"6475577873";
 
 // network error descriptions
@@ -362,7 +362,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
 		[imageView setTag:range.location + i];
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i]
-														   cachePolicy:kURLRequestCachePolicy
+														   cachePolicy:kOrthodoxURLCachePolicy
 													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock

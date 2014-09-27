@@ -96,7 +96,7 @@
 		
 		else {
 			[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
-																	 cachePolicy:kURLRequestCachePolicy
+																	 cachePolicy:kOrthodoxURLCachePolicy
 																 timeoutInterval:[HONAppDelegate timeoutInterval]]
 								   placeholderImage:nil
 											success:imageSuccessBlock

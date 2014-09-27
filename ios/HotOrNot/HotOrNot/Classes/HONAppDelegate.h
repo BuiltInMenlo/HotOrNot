@@ -125,7 +125,7 @@ extern NSString * const kSnapMediumSuffix;
 extern NSString * const kSnapTabSuffix;
 extern NSString * const kSnapLargeSuffix;
 
-extern const NSURLRequestCachePolicy kURLRequestCachePolicy;
+extern const NSURLRequestCachePolicy kOrthodoxURLCachePolicy;
 extern NSString * const kTwilioSMS;
 
 // network error descriptions

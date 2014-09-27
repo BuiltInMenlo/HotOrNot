@@ -97,7 +97,7 @@
 	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
-															cachePolicy:kURLRequestCachePolicy
+															cachePolicy:kOrthodoxURLCachePolicy
 														timeoutInterval:[HONAppDelegate timeoutInterval]]
 								placeholderImage:nil
 								   success:successBlock
@@ -150,7 +150,7 @@
 		};
 		
 		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_timeline.png"]
-																 cachePolicy:kURLRequestCachePolicy
+																 cachePolicy:kOrthodoxURLCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
