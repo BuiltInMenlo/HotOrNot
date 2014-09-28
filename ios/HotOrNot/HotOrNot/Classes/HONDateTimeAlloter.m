@@ -69,6 +69,13 @@ static HONDateTimeAlloter *sharedInstance = nil;
 																									   @"days"		: @[@"d", @""]} includeSuffix:@""]);
 }
 
+- (NSString *)intervalSinceDate:(NSDate *)date includeSuffix:(NSString *)suffix {
+	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"s", @""],
+																									   @"minutes"	: @[@"m", @""],
+																									   @"hours"		: @[@"h", @""],
+																									   @"days"		: @[@"d", @""]} includeSuffix:suffix]);
+}
+
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix {
 	NSString *interval = [[@"0 " stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:1]];
 	

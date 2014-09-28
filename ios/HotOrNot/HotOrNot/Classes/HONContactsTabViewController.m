@@ -386,6 +386,10 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - TableView DataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? 0 : 0);
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
 	
@@ -471,6 +475,11 @@ static NSString * const kCamera = @"camera";
 		}
 	}
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return ((section == 1) ? kOrthodoxTableHeaderHeight : 0.0);
+}
+
 
 
 #pragma mark - AlertView Delegates

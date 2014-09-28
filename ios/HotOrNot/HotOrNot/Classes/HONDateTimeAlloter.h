@@ -16,6 +16,7 @@
 - (int)elapsedSecondsSinceUnixEpoch;
 - (NSString *)elapsedTimeSinceDate:(NSDate *)date;
 - (NSString *)intervalSinceDate:(NSDate *)date;
+- (NSString *)intervalSinceDate:(NSDate *)date includeSuffix:(NSString *)suffix;
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix;
 - (BOOL)isPastDate:(NSDate *)date;
 - (NSString *)orthodoxBlankTimestampFormattedString;

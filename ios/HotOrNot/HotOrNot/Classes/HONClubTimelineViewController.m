@@ -184,10 +184,14 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor blackColor];
+	UIView *refreshHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	[self.view addSubview:_emptySetView];
+	refreshHolderView.frame = CGRectOffset(refreshHolderView.frame, 0.0, -300.0);
 	
 	_emptySetView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_emptySetView.backgroundColor = [UIColor blackColor];
 	_emptySetView.alpha = 0.0;
+	[self.view addSubview:_emptySetView];
 	
 	UILabel *emptySetLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, ([UIScreen mainScreen].bounds.size.height - 24.0) * 0.5, 280.0, 24.0)];
 	emptySetLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16];
@@ -196,7 +200,7 @@
 	emptySetLabel.text = NSLocalizedString(@"empty_timeline", @"No status updates available");
 	[_emptySetView addSubview:emptySetLabel];
 	
-	[UIView animateWithDuration:0.25 animations:^(void){
+	[UIView animateWithDuration:0.25 animations:^(void) {
 		_emptySetView.alpha = (float)([_clubPhotos count] == 0);
 	}];
 
@@ -280,47 +284,50 @@
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	
+	if ([((UINavigationController *)self.presentedViewController).viewControllers firstObject] == nil)
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	
+	
+	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
+	UIViewController *parentVC = (UIViewController *)[self.navigationController.viewControllers firstObject];
+	UIViewController *currentVC = (UIViewController *)[self.navigationController.viewControllers lastObject];
+	
+	UINavigationController *navigationController = (UINavigationController *)self.presentedViewController;
+	UIViewController *presentedVC = (UIViewController *)[navigationController.viewControllers lastObject];
+	NSLog(@"\nself.navigationController.VCs:[%@]\nparentVC:[%@]\ncurrentVC:[%@]", self.navigationController.viewControllers, parentVC, currentVC);
+	NSLog(@"\nnavigationController.VCs:[%@]\npresentedVC:[%@]", navigationController.viewControllers, presentedVC);
+	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
 }
 
 
 #pragma mark - Navigation
 - (void)_goReply {
-	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
+	NSLog(@"[*:*] _goReply:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply"
+									  withClubPhoto:_clubPhotoVO];
 	
-	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply" withClubPhoto:_clubPhotoVO];
-	
-	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
-	selfieCameraViewController.delegate = self;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-	
-//	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Share" withClubPhoto:_clubPhotoVO];
-//	
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-//															 delegate:self
-//													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//											   destructiveButtonTitle:nil
-//													otherButtonTitles:@"Share", @"Upvote", @"Reply", nil];
-//	[actionSheet setTag:0];
-//	[actionSheet showInView:self.view];
+		
+	[self presentViewController:navigationController animated:YES completion:^(void) {
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	}];
 }
+
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back"
 									   withUserClub:_clubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -329,12 +336,19 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back SWIPE"
 										   withUserClub:_clubVO];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 		[self.navigationController popViewControllerAnimated:YES];
+	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
+										  withClubPhoto:_clubPhotoVO];
+		
+		[self _goReply];
 	}
 }
 
@@ -385,16 +399,6 @@
 }
 
 
-#pragma mark - SelfieCameraViewController Delegates
-- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
-	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_clubVO viewControllerPushed:NO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-
 #pragma mark - ClubPhotoViewCell Delegates
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
@@ -403,24 +407,15 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply From Cell"
 									  withClubPhoto:clubPhotoVO];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-	
-	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
-	selfieCameraViewController.delegate = self;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self _goReply];
 }
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
@@ -486,27 +481,6 @@
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-//	NSLog(@"tableView:didEndDisplayingCell:[%@]forRowAtIndexPath:[%d]", NSStringFromCGPoint(cell.frame.origin), indexPath.section);
-	
-//	if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_clubPhotos count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {
-//		NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
-		//NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
-		
-//		int cnt = 0;
-//		NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
-//		for (int i=queueRange.location; i<queueRange.length; i++) {
-//			[imageQueue addObject:[NSURL URLWithString:[((HONClubPhotoVO *)[_clubPhotos objectAtIndex:i]).imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
-//			
-//			cnt++;
-//			_imageQueueLocation++;
-//			if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_clubPhotos count])
-//				break;
-//			
-//		}
-//		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
-//										fromURLs:imageQueue
-//										 withTag:@"club"];
-//	}
 }
 
 
@@ -518,7 +492,9 @@
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	_index = ((NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject]).section;
-	_titleLabel.text = ((HONClubPhotoVO *)[_clubPhotos objectAtIndex:_index]).username;
+	
+	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
+	_titleLabel.text = _clubPhotoVO.username;
 }
 
 
@@ -536,13 +512,13 @@
 																									@"image"			: _clubPhotoVO.imagePrefix, //([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 																									@"club"				: _clubVO.dictionary,
-																									@"mp_event"			: @"Club Timeline - Share",
+																									@"mp_event"			: @"Club Timeline - More Action Sheet _Share",
 																									@"view_controller"	: self}];
 
 		
 		} else if (buttonIndex == 1) {
-			NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote"
+			NSLog(@"[*:*] _clubPhotoVO:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - More Action Sheet _Upvote"
 											  withClubPhoto:_clubPhotoVO];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
@@ -555,18 +531,10 @@
 			}];
 		
 		} else if (buttonIndex == 2) {
-			NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply"
+			NSLog(@"[*:*] _clubPhotoVO:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - More Action Sheet _Reply"
 											  withClubPhoto:_clubPhotoVO];
-			
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-			
-			HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initWithClub:_clubVO];
-			selfieCameraViewController.delegate = self;
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[self _goReply];
 		}
 	}
 }

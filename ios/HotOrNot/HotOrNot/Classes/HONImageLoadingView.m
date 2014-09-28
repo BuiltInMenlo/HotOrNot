@@ -41,7 +41,7 @@ const CGFloat kAnimationTime = 0.5f;
 }
 
 
-#pragma mark - public functions
+#pragma mark - Public APIs
 - (void)startAnimating {
 	if ([_animationImageView isAnimating])
 		[_animationImageView stopAnimating];

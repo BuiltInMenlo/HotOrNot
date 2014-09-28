@@ -16,7 +16,6 @@
 #import "HONUserProfileViewController.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONHeaderView.h"
-#import "HONTableHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
@@ -52,20 +51,15 @@
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
-//		if ([[result objectForKey:@"pending"] count] > 0) {
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d clubs", [[result objectForKey:@"pending"] count]]
-//										message:@""
-//									   delegate:self
-//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//							  otherButtonTitles:nil];
-//			[alertView setTag:2];
-//			[alertView show];
-//		}
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
-				for (NSDictionary *dict in [result objectForKey:key])
+				for (NSDictionary *dict in [result objectForKey:key]) {
+					if ([[dict objectForKey:@"submissions"] count] == 0)
+						continue;
+					
 					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+				}
 			
 			} else if ([key isEqualToString:@"pending"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
@@ -490,7 +484,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Clubs" : (section == 2) ? @"Suggestions" : @"Contacts"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Recent" : (section == 2) ? @"Suggestions" : @"Contacts"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

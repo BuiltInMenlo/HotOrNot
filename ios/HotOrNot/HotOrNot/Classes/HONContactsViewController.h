@@ -18,6 +18,7 @@
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
 #import "HONSearchBarView.h"
+#import "HONTableHeaderView.h"
 
 typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceEmpty			= 0 << 0,

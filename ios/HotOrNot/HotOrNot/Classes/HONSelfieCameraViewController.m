@@ -148,7 +148,7 @@
 	}
 }
 
-- (void)_submitStatusUpdateWithSubjectNames:(NSArray *)subjectNames {
+- (void)_modifySubmitParamsAndSubmit:(NSArray *)subjectNames {
 	if ([subjectNames count] == 0) {
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"No Emotions Selected!")
 									message:NSLocalizedString(@"alert_noemotions_msg", @"You need to choose some emotions to make a status update.")
@@ -171,28 +171,40 @@
 						  @"challenge_id"	: [@"" stringFromInt:0],
 						  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
 						  @"api_endpt"		: kAPICreateChallenge};
-		NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
+		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", _submitParams);
+		
 		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
-	}
-}
 
-- (void)_submitClubPhoto {
-	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-		[self _submitCompleted:result];
-	}];
-}
 
-- (void)_submitCompleted:(NSDictionary *)result {
-	if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-		_progressHUD.labelText = @"Error!";
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
+//		if (_selfieSubmitType != HONSelfieCameraSubmitTypeReplyClub) {
+//			_isPushing = YES;
+//			[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+// 
+//		
+//		} else {
+		/*	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit Reply"
+											   withUserClub:_userClubVO];
+			
+			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+					_progressHUD = nil;
+				}
+				
+				[self dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+					
+				}];
+			}];
+		}*/
 	}
 }
 
@@ -258,13 +270,20 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
+	UIViewController *nextVC = (UIViewController *)[self.navigationController.viewControllers lastObject];
+	NSLog(@"\nnextVC:[%@]\nselfVC:[%@]", nextVC.class, self.class);
+	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
+	
+	if ([nextVC isKindOfClass:self.class]) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+	}
 }
 
 
 #pragma mark - Navigation
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
-	//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
@@ -277,7 +296,7 @@
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
-		[self _submitStatusUpdateWithSubjectNames:[_previewView getSubjectNames]];
+		[self _modifySubmitParamsAndSubmit:[_previewView getSubjectNames]];
 	}
 }
 
@@ -392,22 +411,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next"];
 	
 	_isPushing = YES;
-	[self _submitStatusUpdateWithSubjectNames:subjects];
-	//	NSError *error;
-	//	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
-	//												 encoding:NSUTF8StringEncoding];
-	//
-	//	_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-	//					  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
-	//					  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
-	//					  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.ownerID : 0],
-	//					  @"subject"		: @"",
-	//					  @"subjects"		: jsonString,
-	//					  @"challenge_id"	: [@"" stringFromInt:0],
-	//					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
-	//					  @"api_endpt"		: kAPICreateChallenge};
-	//	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
-	//	[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+	[self _modifySubmitParamsAndSubmit:subjects];
 }
 
 

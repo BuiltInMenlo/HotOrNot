@@ -197,7 +197,7 @@
 "club_inviteSubText" = "You have been invited. Tap to join!";
 "register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
-
+"header_addFriends" = "Add Friends";
 "areacode_club" = "%@Club";
 "family_club" = "My%@Club";
 "bff_club" = "MyBFFs";

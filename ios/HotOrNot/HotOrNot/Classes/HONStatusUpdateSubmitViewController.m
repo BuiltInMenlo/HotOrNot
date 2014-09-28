@@ -20,7 +20,7 @@
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *selectedContacts;
 @property (nonatomic, strong) NSMutableDictionary *submitParams;
-//@property (nonatomic, strong) HONClubViewCell *selectedRecipientViewCell;
+@property (nonatomic, strong) HONClubViewCell *replyClubViewCell;
 @end
 
 @implementation HONStatusUpdateSubmitViewController
@@ -52,6 +52,9 @@
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
+		
+		} else {
+			
 		}
 	}];
 }
@@ -71,8 +74,8 @@
 													  @"contacts"	: contacts}];
 	
 	if ([_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 		}];
@@ -80,8 +83,7 @@
 	
 	if ([_selectedUsers count] > 0 && [_selectedContacts count] > 0) {
 		[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID inviteNonAppContacts:_selectedContacts completion:^(NSDictionary *result) {
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 			}];
@@ -90,8 +92,7 @@
 	} else {
 		if ([_selectedUsers count] > 0) {
 			[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[self dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 				}];
@@ -100,8 +101,7 @@
 		
 		if ([_selectedContacts count] > 0) {
 			[[HONAPICaller sharedInstance] inviteNonAppUsers:_selectedContacts toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[self dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 				}];
@@ -120,41 +120,17 @@
 - (void)_didFinishDataRefresh {
 	[super _didFinishDataRefresh];
 	
-//	[_recentClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONUserClubVO *vo = (HONUserClubVO *)obj;
-//		if ([[_submitParams objectForKey:@"club_id"] intValue] == vo.clubID) {
-//			if (![_selectedClubs containsObject:vo])
-//				[_selectedClubs addObject:vo];
-//			
-//			_selectedRecipientViewCell.clubVO = vo;
-//			[_selectedRecipientViewCell toggleImageLoading:YES];
-//			_selectedRecipientViewCell.hidden = NO;
-//		}
-//	}];
-//	
-//	[_inAppUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-//		if ([[_submitParams objectForKey:@"recipients"] intValue] == vo.userID) {
-//			if (![_selectedUsers containsObject:vo])
-//				[_selectedUsers addObject:vo];
-//			
-//			_selectedRecipientViewCell.trivialUserVO = vo;
-//			[_selectedRecipientViewCell toggleImageLoading:YES];
-//			_selectedRecipientViewCell.hidden = NO;
-//		}
-//	}];
-//	
-//	[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONContactUserVO *vo = (HONContactUserVO *)obj;
-//		if ([[_submitParams objectForKey:@"recipients"] isEqualToString:(vo.isSMSAvailable) ? vo.mobileNumber : vo.email]) {
-//			if (![_selectedContacts containsObject:vo])
-//				[_selectedContacts addObject:vo];
-//			
-//			_selectedRecipientViewCell.contactUserVO = vo;
-//			[_selectedRecipientViewCell toggleImageLoading:YES];
-//			_selectedRecipientViewCell.hidden = NO;
-//		}
-//	}];
+	[_recentClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONUserClubVO *vo = (HONUserClubVO *)obj;
+		if ([[_submitParams objectForKey:@"club_id"] intValue] == vo.clubID) {
+			if (![_selectedClubs containsObject:vo])
+				[_selectedClubs addObject:vo];
+			
+			_replyClubViewCell.clubVO = vo;
+			[_replyClubViewCell toggleImageLoading:YES];
+			_replyClubViewCell.hidden = NO;
+		}
+	}];
 }
 
 - (NSDictionary *)_trackingProps {
@@ -188,7 +164,7 @@
 	_selectedContacts = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];
 	
-	[_headerView setTitle:NSLocalizedString(@"select_friends", @"Select Friends")];
+	[_headerView setTitle:NSLocalizedString(@"add_friends", @"Add Friends")];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	
@@ -210,23 +186,16 @@
 	
 	[self _retrieveRecentClubs];
 	
-//	if ([[_submitParams objectForKey:@"club_id"] intValue] != 0 || [[_submitParams objectForKey:@"recipients"] length] > 0) {
-//		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y + kOrthodoxTableCellHeight, _tableView.frame.size.width, _tableView.frame.size.height - kOrthodoxTableCellHeight);
-//		
-//		_selectedRecipientViewCell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
-//		_selectedRecipientViewCell.frame = CGRectMake(0.0, kNavHeaderHeight - 10.0, 320.0, kOrthodoxTableCellHeight);
-//		[_selectedRecipientViewCell setSize:_selectedRecipientViewCell.frame.size];
-//		[_selectedRecipientViewCell toggleSelected:YES];
-//		[_selectedRecipientViewCell hideTimeStat];
-//		_selectedRecipientViewCell.hidden = YES;
-//		[self.view addSubview:_selectedRecipientViewCell];
-//		
-//		UIButton *selectedButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		selectedButton.frame = CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight);
-//		[selectedButton addTarget:self action:@selector(_goSelectToggle) forControlEvents:UIControlEventTouchUpInside];
-//		[_selectedRecipientViewCell.contentView addSubview:selectedButton];
-//	}
-	
+	if ([[_submitParams objectForKey:@"club_id"] intValue] != 0) {
+		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y + kOrthodoxTableCellHeight, _tableView.frame.size.width, _tableView.frame.size.height - kOrthodoxTableCellHeight);
+
+		_replyClubViewCell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
+		_replyClubViewCell.frame = CGRectMake(0.0, kNavHeaderHeight - 10.0, 320.0, kOrthodoxTableCellHeight);
+		[_replyClubViewCell setSize:_replyClubViewCell.frame.size];
+		[_replyClubViewCell toggleSelected:YES];
+		[_replyClubViewCell hideTimeStat];
+		[self.view addSubview:_replyClubViewCell];
+	}
 	
 	//[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 48.0, _tableView.contentInset.right)];
 }
@@ -235,21 +204,33 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_goPanGesture:)];
-	panGestureRecognizer.minimumNumberOfTouches = 1;
-	panGestureRecognizer.maximumNumberOfTouches = UINT_MAX;
-	panGestureRecognizer.cancelsTouchesInView = YES;
-	panGestureRecognizer.delaysTouchesBegan = YES;
-	panGestureRecognizer.delaysTouchesEnded = NO;
-	panGestureRecognizer.delegate = self;
-	[self.view addGestureRecognizer:panGestureRecognizer];
+	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+//	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewWillDisappear:animated];
+	
+	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
+	UIViewController *parentVC = (UIViewController *)[self.navigationController.viewControllers firstObject];
+	UIViewController *currentVC = (UIViewController *)[self.navigationController.viewControllers lastObject];
+	NSLog(@"\nself.navigationController.VCs:[%@]\nparentVC:[%@]\ncurrentVC:[%@]", self.navigationController.viewControllers, parentVC, currentVC);
+	
+//	UINavigationController *navigationController = (UINavigationController *)self.presentedViewController;
+//	UIViewController *presentedVC = (UIViewController *)[navigationController.viewControllers lastObject];
+//	NSLog(@"\nnavigationController.VCs:[%@]\npresentedVC:[%@]", navigationController.viewControllers, presentedVC);
+	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
+	
+	if ([currentVC isKindOfClass:self.class]) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+	}
 }
 
 
@@ -278,6 +259,11 @@
 	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Back SWIPE"];
 		[self.navigationController popViewControllerAnimated:YES];
+	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit SWIPE"];
+		[self _goSubmit];
 	}
 }
 
@@ -464,6 +450,14 @@
 
 
 #pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? 0 : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 2) ? @"Suggestions" : (section == 3) ? @"Contacts" : @""]);
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
 	[cell hideTimeStat];
@@ -555,6 +549,10 @@
 
 
 #pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return ((section == 1) ? 0.0 : kOrthodoxTableHeaderHeight);
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	

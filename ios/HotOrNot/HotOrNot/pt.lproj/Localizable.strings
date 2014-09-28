@@ -191,6 +191,7 @@
 "header_compose" = "Compose";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
 "empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
+"header_addFriends" = "Add Friends";
 
 "areacode_club" = "%@Clube";
 "family_club" = "My%@Clube";
