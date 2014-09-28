@@ -36,8 +36,8 @@
 	vo.isSMSAvailable = ([vo.mobileNumber length] > 0);
 	
 	vo.userID = ([dictionary objectForKey:@"id"] == nil) ? 0 : [[dictionary objectForKey:@"id"] intValue];
-	vo.username = ([dictionary objectForKey:@"id"] == nil) ? @"" : [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = ([dictionary objectForKey:@"id"] == nil || [[dictionary objectForKey:@"id"] length] == 0) ? @"" : [dictionary objectForKey:@"avatar_url"];
+	vo.username = ([dictionary objectForKey:@"username"] == nil) ? vo.fullName : [dictionary objectForKey:@"username"];
+	vo.avatarPrefix = ([dictionary objectForKey:@"avatar_url"] == nil || [[dictionary objectForKey:@"avatar_url"] length] == 0) ? @"" : [dictionary objectForKey:@"avatar_url"];
 	vo.contactType = HONContactTypeUnmatched;
 	
 	vo.invitedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]];

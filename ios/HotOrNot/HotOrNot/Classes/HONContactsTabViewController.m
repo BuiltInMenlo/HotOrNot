@@ -393,10 +393,10 @@ static NSString * const kCamera = @"camera";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-		if (indexPath.section == 1)
-			[cell toggleUI:NO];
-	}
+//	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+//		if (indexPath.section == 1)
+//			[cell accVisible:NO];
+//	}
 	
 	return (cell);
 }

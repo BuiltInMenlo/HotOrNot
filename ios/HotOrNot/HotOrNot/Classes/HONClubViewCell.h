@@ -32,9 +32,10 @@ typedef NS_ENUM(NSInteger, HONClubViewCellType) {
 @interface HONClubViewCell : HONToggleViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsCellType:(HONClubViewCellType)cellType;
-- (void)toggleUI:(BOOL)isEnabled;
 - (void)toggleImageLoading:(BOOL)isLoading;
 - (void)hideTimeStat;
+- (void)prependTitleCaption:(NSString *)captionPrefix;
+- (void)appendTitleCaption:(NSString *)captionSuffix;
 
 @property (nonatomic, retain) NSString *caption;
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;

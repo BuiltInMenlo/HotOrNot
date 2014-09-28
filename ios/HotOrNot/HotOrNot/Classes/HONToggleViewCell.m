@@ -88,11 +88,12 @@
 	}];
 }
 
-- (void)toggleUI:(BOOL)isEnabled {
-	_toggledOffButton.hidden = !isEnabled;
-	_toggledOnButton.hidden = !isEnabled;
+- (void)accVisible:(BOOL)isVisible {
+	_toggledOffButton.hidden = !isVisible;
+	_toggledOnButton.hidden = !isVisible;
+	
+	[super accVisible:isVisible];
 }
-
 
 #pragma mark - Navigation
 - (void)_goDeselect {

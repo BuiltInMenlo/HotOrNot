@@ -42,7 +42,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(31.0, 13.0, 180.0, 26.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(31.0, 13.0, 185.0, 26.0)];
 //		_titleLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor blackColor];
@@ -126,6 +126,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_statusUpdateVO = (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	_emotionVOs = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_statusUpdateVO];
 	
+	[super accVisible:NO];
+	
 	NSString *creatorName = (_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
 	__block NSString *titleCaption = [creatorName stringByAppendingString:(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"];
 	
@@ -137,19 +139,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		titleCaption = [titleCaption stringByAppendingString:@" "];
 		[emotions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			HONEmotionVO *vo = (HONEmotionVO *)obj;
-			
-			NSString *appended = [titleCaption stringByAppendingFormat:@"%@, ", vo.emotionName];
-//			CGSize size = [appended boundingRectWithSize:_titleLabel.frame.size
-//												 options:NSStringDrawingTruncatesLastVisibleLine
-//											  attributes:@{NSFontAttributeName:_titleLabel.font}
-//												 context:nil].size;
-			titleCaption = appended;
-//			if (size.width <= _titleLabel.frame.size.width) {
-//				titleCaption = appended;
-//				
-//			} else {
-//				*stop = YES;
-//			}
+			titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.emotionName];
 		}];
 		
 		titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
@@ -165,7 +155,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			[uniqueSubmissions addObject:@(vo.userID)];
 	}];
 	
-	NSString *subtitleCaption = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate includeSuffix:@" ago: You +"] stringByAppendingFormat:@" %d other%@%@", [uniqueSubmissions count], ([uniqueSubmissions count] == 1) ? @"" : @"s", ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d more", [_clubVO.pendingMembers count]] : @""];
+	NSString *subtitleCaption = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate includeSuffix:@" ago: You +"] stringByAppendingFormat:@"%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
 	
 	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption];
 	[_titleLabel setFont:[[[HONFontAllocator alloc] helveticaNeueFontBold] fontWithSize:18] range:[titleCaption rangeOfString:creatorName]];
@@ -186,11 +176,44 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	[self.contentView addSubview:_emotionHolderView];
 }
 
+- (void)appendTitleCaption:(NSString *)captionSuffix {
+	_caption = [_titleLabel.text stringByAppendingString:captionSuffix];
+	CGSize size = [_caption boundingRectWithSize:_titleLabel.frame.size
+										 options:NSStringDrawingTruncatesLastVisibleLine
+									  attributes:@{NSFontAttributeName:_titleLabel.font}
+										 context:nil].size;
+
+	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-185.0, -size.width), 0.0);
+	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(185.0, size.width), 0.0);
+	_titleLabel.text = _caption;
+}
+
+- (void)prependTitleCaption:(NSString *)captionPrefix {
+	_caption = [captionPrefix stringByAppendingString:_titleLabel.text];
+	
+	CGSize size = [_caption boundingRectWithSize:_titleLabel.frame.size
+										 options:NSStringDrawingTruncatesLastVisibleLine
+									  attributes:@{NSFontAttributeName:_titleLabel.font}
+										 context:nil].size;
+
+	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-185.0, -size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(185.0, size.width * 0.5), 0.0);
+	_titleLabel.text = _caption;
+}
+
 - (void)hideTimeStat {
 //	_timeLabel.hidden = YES;
 }
 
-
+- (void)accVisible:(BOOL)isVisible {
+	[super accVisible:isVisible];
+	
+	_statsHolderView.hidden = !isVisible;
+	_emotionHolderView.hidden = !isVisible;
+	_imageLoadingView.hidden = !isVisible;
+	_subtitleLabel.hidden = !isVisible;
+	_titleLabel.hidden = !isVisible;
+}
 
 
 - (void)toggleImageLoading:(BOOL)isLoading {
@@ -255,10 +278,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		UIImageView *imageView = (UIImageView *)[[_emotionHolderView subviews] firstObject];
 		[imageView cancelImageRequestOperation];
 	}
-}
-
-- (void)toggleUI:(BOOL)isEnabled {
-	[super toggleUI:isEnabled];
 }
 
 - (void)_goDeselect {

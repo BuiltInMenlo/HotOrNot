@@ -23,7 +23,6 @@
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
-@property (nonatomic, strong) NSMutableArray *matchedUserIDs;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
@@ -101,7 +100,7 @@
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapThumbSuffix]}];
 			
-			[_matchedUserIDs addObject:vo.phoneNumber];
+//			[_matchedUserIDs addObject:vo.phoneNumber];
 			[_inAppUsers addObject:vo];
 		}
 		
@@ -120,7 +119,7 @@
 	
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-//			NSLog(@"PHONE CONTACT:[%@]", dict);
+			NSLog(@"PHONE CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
 			for (HONTrivialUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]] || vo.userID == [[dict objectForKey:@"id"] intValue]) {
@@ -178,9 +177,12 @@
 				if (isDuplicate)
 					continue;
 				
-				[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+				HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																			  @"username"	: [dict objectForKey:@"username"],
-																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapThumbSuffix]}]];
+																			  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]],
+																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
+				[_matchedUserIDs addObject:vo.altID];
+				[_inAppUsers addObject:vo];
 			}
 		}
 		
@@ -500,7 +502,7 @@
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			cell.caption = @"Access contacts";
-			[cell toggleUI:NO];
+			[cell accVisible:NO];
 			[cell toggleChevron];
 			
 		} else if (indexPath.section == 1) {
@@ -519,7 +521,7 @@
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0) {
 			cell.caption = @"Access contacts";
-			[cell toggleUI:NO];
+			[cell accVisible:NO];
 			[cell toggleChevron];
 			
 		} else if (indexPath.section == 1) {

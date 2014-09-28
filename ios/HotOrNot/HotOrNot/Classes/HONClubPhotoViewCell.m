@@ -11,15 +11,18 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
+#import "FishEyeView.h"
 #import "PicoSticker.h"
 
 #import "HONClubPhotoViewCell.h"
 #import "HONEmotionVO.h"
 #import "HONImageLoadingView.h"
 
-@interface HONClubPhotoViewCell ()
+@interface HONClubPhotoViewCell () <FishEyeIndexDelegate>
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
+@property (nonatomic, strong) FishEyeView *fishEyeView;
 @property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) UIScrollView *scrollView;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -31,6 +34,10 @@
 const CGRect kEmotionInitFrame = {78.0f, 78.0f, 44.0f, 44.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
 const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
+
+const CGSize kEmotionMinMagSize = {96.0f, 96.0f};
+const CGFloat kEmotionMaxMagRate = 3.0f;
+
 
 
 
@@ -121,29 +128,35 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 //	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
 //	[self.contentView addSubview:feelingLabel];
 	
-	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5) + 10.0, 320.0, kEmotionLoadedFrame.size.height)];
-	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 6.0), emoticonsScrollView.frame.size.height);
-	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
-	emoticonsScrollView.showsVerticalScrollIndicator = NO;
-	emoticonsScrollView.pagingEnabled = NO;
-	emoticonsScrollView.contentInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
-	emoticonsScrollView.contentOffset = CGPointMake(-8.0, 0.0);
-	[self.contentView addSubview:emoticonsScrollView];
+	
+	
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5) + 10.0, 320.0, kEmotionLoadedFrame.size.height)];
+	_scrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 6.0), _scrollView.frame.size.height);
+	_scrollView.showsHorizontalScrollIndicator = NO;
+	_scrollView.showsVerticalScrollIndicator = NO;
+	_scrollView.pagingEnabled = NO;
+	_scrollView.contentInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
+	_scrollView.contentOffset = CGPointMake(-8.0, 0.0);
+	[self.contentView addSubview:_scrollView];
 	
 	int cnt = 0;
+	NSMutableArray *emotions = [NSMutableArray array];
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
 		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
 		emotionView.frame = CGRectOffset(emotionView.frame, cnt * (kEmotionLoadedFrame.size.width + 6.0), 0.0);
-		[emoticonsScrollView addSubview:emotionView];
+		[_scrollView addSubview:emotionView];
+		[emotions addObject:emotionView];
 		
 		UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		nextPageButton.frame = emotionView.frame;
 		[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
-		[emoticonsScrollView addSubview:nextPageButton];
+		[_scrollView addSubview:nextPageButton];
 		
 		cnt++;
 	}
 	
+	
+//	[self performSelector:@selector(_goSelectorDelay:) withObject:nil afterDelay:5.0];
 	
 //	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
@@ -166,6 +179,25 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
 	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
 //	[self.contentView addSubview:_scoreLabel];
+}
+
+
+- (void)_goSelectorDelay:(id)sender {
+	NSMutableArray *emotions = [NSMutableArray array];
+	[_scrollView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if (idx % 2 == 0)
+			[emotions addObject:[((UIView *)obj).subviews firstObject]];
+	}];
+	
+	
+	_fishEyeView = [[FishEyeView alloc] initializeWithImages:emotions
+												 withMinSize:kEmotionMinMagSize
+												 withMaxRate:kEmotionMaxMagRate
+											 withActionCount:7];
+	_fishEyeView.indexDelegate = self;
+	
+	_fishEyeView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[self.contentView addSubview:_fishEyeView];
 }
 
 - (void)setIndexPath:(NSIndexPath *)indexPath {
@@ -223,13 +255,13 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 	imageView.transform = transform;
 	[holderView addSubview:imageView];
 	
-	UIImageView *fxImageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
-	fxImageView.hidden = YES;
-	[holderView addSubview:fxImageView];
+//	UIImageView *fxImageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
+//	fxImageView.hidden = YES;
+//	[holderView addSubview:fxImageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
-		fxImageView.image = image;
+//		fxImageView.image = image;
 		
 		[imageLoadingView stopAnimating];
 		imageLoadingView.hidden = YES;
@@ -250,7 +282,7 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 							 imageView.alpha = 1.0;
 							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 						 } completion:^(BOOL finished) {
-							 fxImageView.hidden = NO;
+//							 fxImageView.hidden = NO;
 						 }];
 		
 //		CGSize scaleSize = CGSizeMake(kEmotionOutroFrame.size.width / kEmotionLoadedFrame.size.width, kEmotionOutroFrame.size.height / kEmotionLoadedFrame.size.height);
@@ -283,55 +315,12 @@ const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
 					 placeholderImage:nil
 							  success:imageSuccessBlock
 							  failure:imageFailureBlock];
-	
-	
-//	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
-//																	 @"image_view"		: imageView,
-//																	 @"emotion"			: emotionVO} afterDelay:0.1 * index];
-//	
 	return (holderView);
 }
 
-- (void)_delayedImageLoad:(NSDictionary *)dict {
-	HONImageLoadingView *imageLoadingView = (HONImageLoadingView *)[dict objectForKey:@"loading_view"];
-	UIImageView *imageView = (UIImageView *)[dict objectForKey:@"image_view"];
-	HONEmotionVO *emotionVO = (HONEmotionVO *)[dict objectForKey:@"emotion"];
-	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		imageView.image = image;
-		NSLog(@"SIZE:[%@]", NSStringFromCGSize(image.size));
-		
-		[UIView beginAnimations:@"fade" context:nil];
-		[UIView setAnimationDuration:0.250];
-		[UIView setAnimationDelay:0.125];
-		[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-		[imageView setTintColor:[UIColor clearColor]];
-		[UIView commitAnimations];
-		
-		[UIView animateWithDuration:0.250 delay:0.125
-			 usingSpringWithDamping:0.667 initialSpringVelocity:0.125
-							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-		 
-						 animations:^(void) {
-							 imageView.alpha = 1.0;
-							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-						 } completion:^(BOOL finished) {
-							 [imageLoadingView stopAnimating];
-							 [imageLoadingView removeFromSuperview];
-						 }];
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[imageLoadingView stopAnimating];
-		[imageLoadingView removeFromSuperview];
-	};
-	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:kOrthodoxURLCachePolicy
-												   timeoutInterval:[HONAppDelegate timeoutInterval]]
-					 placeholderImage:nil
-							  success:imageSuccessBlock
-							  failure:imageFailureBlock];
+#pragma mark - FishEyeView Delegates
+- (void)fishEyeIndex:(NSUInteger)index {
+	NSLog(@"[:|:] fishEyeIndex:[%d]", index);
 }
 
 

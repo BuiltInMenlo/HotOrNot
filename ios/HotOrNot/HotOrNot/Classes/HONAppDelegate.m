@@ -420,15 +420,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
-//	if ([phoneNumber length] > 0) {
-//		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-//		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-//			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
+	if ([phoneNumber length] > 0) {
+		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
+		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
+			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
 		
-//		return ([@"+" stringByAppendingString:formattedNumber]);
+		if (![[formattedNumber substringToIndex:1] isEqualToString:@"+"])
+			formattedNumber = [@"+" stringByAppendingString:formattedNumber];
 		
-//	} else
-//		return (@"");
+		return (formattedNumber);
+	}
 	
 	return ([[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""]);
 }
@@ -1395,6 +1396,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
 	//NSLog(@"didSelectViewController:[%@]", viewController);
+	
+	if ([UIApplication sharedApplication].statusBarHidden)
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+	
+	if ([UIApplication sharedApplication].statusBarStyle != UIStatusBarStyleDefault)
+		 [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {

@@ -23,7 +23,6 @@
 + (NSString *)cellReuseIdentifier;
 - (id)initAsSelected:(BOOL)isSelected;
 - (void)invertSelected;
-- (void)toggleUI:(BOOL)isEnabled;
 - (void)toggleSelected:(BOOL)isSelected;
 - (void)toggleOnWithReset:(BOOL)isReset;
 

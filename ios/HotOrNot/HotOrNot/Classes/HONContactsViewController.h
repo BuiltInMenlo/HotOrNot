@@ -43,6 +43,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	NSMutableArray *_deviceContacts;
 	NSMutableArray *_inAppUsers;
 	NSMutableArray *_searchUsers;
+	NSMutableArray *_matchedUserIDs;
 	HONUserClubVO *_userClubVO;
 	
 	HONTableView *_tableView;

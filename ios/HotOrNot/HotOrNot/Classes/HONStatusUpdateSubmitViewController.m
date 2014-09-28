@@ -20,6 +20,7 @@
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *selectedContacts;
 @property (nonatomic, strong) NSMutableDictionary *submitParams;
+@property (nonatomic, strong) NSMutableDictionary *userIDContactID;
 @property (nonatomic, strong) HONClubViewCell *replyClubViewCell;
 @end
 
@@ -131,7 +132,30 @@
 			_replyClubViewCell.hidden = NO;
 		}
 	}];
+	
+//	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook)
+//		[self _generateContactTrivialMap];
 }
+
+//- (void) _generateContactTrivialMap {
+//	NSLog(@"[*:*] _generateContactTrivialMap (%d)(%d)", [_inAppUsers count], [_deviceContacts count]);
+//	
+//	_userIDContactID = [NSMutableDictionary dictionary];
+//	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+//		[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			HONContactUserVO *contactUserVO = (HONContactUserVO *)obj;
+//			
+//			[_inAppUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
+////				NSLog(@"trivialUserVO.altID:[%@] contactUserVO.mobileNumber:[%@]", trivialUserVO.altID, contactUserVO.mobileNumber);
+//				NSLog(@"trivialUserVO:[%@] contactUserVO:[%@]", trivialUserVO.dictionary, contactUserVO.dictionary);
+//				if ([trivialUserVO.altID isEqualToString:contactUserVO.mobileNumber]) {
+//					[_userIDContactID setValue:contactUserVO forKey:[@"" stringFromInt:trivialUserVO.userID]];
+//				}
+//			}];
+//		}];
+//	}
+//}
 
 - (NSDictionary *)_trackingProps {
 	NSMutableArray *clubs = [NSMutableArray array];
@@ -192,7 +216,6 @@
 		_replyClubViewCell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
 		_replyClubViewCell.frame = CGRectMake(0.0, kNavHeaderHeight - 10.0, 320.0, kOrthodoxTableCellHeight);
 		[_replyClubViewCell setSize:_replyClubViewCell.frame.size];
-		[_replyClubViewCell toggleSelected:YES];
 		[_replyClubViewCell hideTimeStat];
 		[self.view addSubview:_replyClubViewCell];
 	}
@@ -466,91 +489,144 @@
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 1) {
-			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONUserClubVO *vo = (HONUserClubVO *)obj;
-				NSLog(@"CELL:[%d] -=- [%d]VO", cell.clubVO.clubID, vo.clubID);
-				[cell toggleSelected:(vo.clubID == cell.clubVO.clubID)];
-				*stop = cell.isSelected;
-			}];
-			
-			if ([[_submitParams objectForKey:@"club_id"] intValue] == cell.clubVO.clubID) {
-				if (![_selectedClubs containsObject:cell.clubVO]) {
-					[_selectedClubs addObject:cell.clubVO];
-					[cell toggleSelected:YES];
-				}
-			}
+//			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				HONUserClubVO *vo = (HONUserClubVO *)obj;
+//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.clubVO.clubID, vo.clubID);
+//				[cell toggleSelected:(vo.clubID == cell.clubVO.clubID)];
+//				*stop = cell.isSelected;
+//			}];
+//			
+//			if ([[_submitParams objectForKey:@"club_id"] intValue] == cell.clubVO.clubID) {
+//				if (![_selectedClubs containsObject:cell.clubVO]) {
+//					[_selectedClubs addObject:cell.clubVO];
+//					[cell toggleSelected:YES];
+//				}
+//			}
 		
 		} else if (indexPath.section == 2) {
-			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
-				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
-				*stop = cell.isSelected;
-			}];
+//			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
+//				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
+//				*stop = cell.isSelected;
+//			}];
 			
-			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
-				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
-					[_selectedUsers addObject:cell.trivialUserVO];
-					[cell toggleSelected:YES];
-				}
-			}
+//			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
+//				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
+//					[_selectedUsers addObject:cell.trivialUserVO];
+//					[cell toggleSelected:YES];
+//				}
+//			}
 		}
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 1) {
-			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONUserClubVO *vo = (HONUserClubVO *)obj;
-				NSLog(@"CELL:[%d] -=- [%d]VO", cell.clubVO.clubID, vo.clubID);
-				[cell toggleSelected:(vo.clubID == cell.clubVO.clubID)];
-				*stop = cell.isSelected;
-			}];
-			
-			if ([[_submitParams objectForKey:@"club_id"] intValue] == cell.clubVO.clubID) {
-				if (![_selectedClubs containsObject:cell.clubVO]) {
-					[_selectedClubs addObject:cell.clubVO];
-					[cell toggleSelected:YES];
-				}
-			}
+//			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				HONUserClubVO *vo = (HONUserClubVO *)obj;
+//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.clubVO.clubID, vo.clubID);
+//				[cell toggleSelected:(vo.clubID == cell.clubVO.clubID)];
+//				*stop = cell.isSelected;
+//			}];
+//			
+//			if ([[_submitParams objectForKey:@"club_id"] intValue] == cell.clubVO.clubID) {
+//				if (![_selectedClubs containsObject:cell.clubVO]) {
+//					[_selectedClubs addObject:cell.clubVO];
+//					[cell toggleSelected:YES];
+//				}
+//			}
 			
 		} else if (indexPath.section == 2) {
-			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
-				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
-				*stop = cell.isSelected;
+//			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
+//				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
+//				*stop = cell.isSelected;
+//			}];
+			
+//			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
+//				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
+//					[_selectedUsers addObject:cell.trivialUserVO];
+//					[cell toggleSelected:YES];
+//				}
+//			}
+			
+			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSString *altID = (NSString *)obj;
+				if ([cell.trivialUserVO.altID isEqualToString:altID]) {
+//					NSLog(@"********MERGE ATTEMPT*********\n");
+					[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						HONContactUserVO *vo = (HONContactUserVO *)obj;
+						
+						if ([vo.mobileNumber isEqualToString:altID] && [cell.caption rangeOfString:vo.fullName].location == 0) {
+							NSLog(@"********MERGE FOUND!!! [%d](%@)*********", cell.trivialUserVO.userID, vo.fullName);
+							[cell prependTitleCaption:[NSString stringWithFormat:@"%@ - ", vo.fullName]];
+							*stop = YES;
+						}
+					}];
+				}
 			}];
 			
-			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
-				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
-					[_selectedUsers addObject:cell.trivialUserVO];
-					[cell toggleSelected:YES];
-				}
-			}
 		
 		} else if (indexPath.section == 3) {
-			[_selectedContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONContactUserVO *vo = (HONContactUserVO *)obj;
-				NSLog(@"CELL:[%@] -=- [%@]VO", cell.contactUserVO.mobileNumber, vo.mobileNumber);
-				[cell toggleSelected:([vo.mobileNumber isEqualToString:cell.contactUserVO.mobileNumber])];
-				*stop = cell.isSelected;
-			}];
+//			[_selectedContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				HONContactUserVO *vo = (HONContactUserVO *)obj;
+//				NSLog(@"CELL:[%@] -=- [%@]VO", cell.contactUserVO.mobileNumber, vo.mobileNumber);
+//				[cell toggleSelected:([vo.mobileNumber isEqualToString:cell.contactUserVO.mobileNumber])];
+//				*stop = cell.isSelected;
+//			}];
+//			
+//			if ([[_submitParams objectForKey:@"recipients"] isEqualToString:(cell.contactUserVO.isSMSAvailable) ? cell.contactUserVO.mobileNumber : cell.contactUserVO.email]) {
+//				if (![_selectedContacts containsObject:cell.contactUserVO]) {
+//					[_selectedContacts addObject:cell.contactUserVO];
+//					[cell toggleSelected:YES];
+//				}
+//			}
 			
-			if ([[_submitParams objectForKey:@"recipients"] isEqualToString:(cell.contactUserVO.isSMSAvailable) ? cell.contactUserVO.mobileNumber : cell.contactUserVO.email]) {
-				if (![_selectedContacts containsObject:cell.contactUserVO]) {
-					[_selectedContacts addObject:cell.contactUserVO];
-					[cell toggleSelected:YES];
+			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSString *altID = (NSString *)obj;
+				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, cell.contactUserVO.mobileNumber);
+				if ([cell.contactUserVO.mobileNumber isEqualToString:altID]) {
+					NSLog(@"********DELETE*********\n%@", cell.contactUserVO.fullName);
+					cell.contentView.alpha = 0.875;
+					cell.backgroundView = nil;
+					cell.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugOrangeColor];
+//					[self _removeMatchedContactCell:cell];
+					*stop = YES;
 				}
-			}
+			}];
 		}
 	}
 	
 	return (cell);
 }
 
+- (void)_removeMatchedContactCell:(HONClubViewCell *)viewCell {
+	
+	__block int ind = -1;
+	[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONContactUserVO *vo = (HONContactUserVO *)obj;
+		if ([vo.mobileNumber isEqualToString:viewCell.contactUserVO.mobileNumber]) {
+			ind = idx;
+			*stop = YES;
+		}
+	}];
+	
+	if (ind >= 0) {
+		[_deviceContacts removeObjectAtIndex:ind];
+		
+		[_tableView beginUpdates];
+		[_tableView deleteRowsAtIndexPaths:@[[_tableView indexPathForCell:viewCell]] withRowAnimation:UITableViewRowAnimationAutomatic];
+		[_tableView endUpdates];
+	}
+}
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 1) ? 0.0 : kOrthodoxTableHeaderHeight);
+	return ((section == 2) ? kOrthodoxTableHeaderHeight : 0.0f);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath {
+	return (proposedDestinationIndexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

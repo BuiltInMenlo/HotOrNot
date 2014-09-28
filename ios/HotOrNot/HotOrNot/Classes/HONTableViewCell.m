@@ -32,6 +32,10 @@
 	return (self);
 }
 
+- (BOOL)accessoryViewsVisible {
+	return (_accessoryViewsVisible);
+}
+
 - (void)setSize:(CGSize)size {
 	_size = size;
 	_chevronImageView.frame = CGRectMake(_chevronImageView.frame.origin.x, MAX(0, (size.height - _chevronImageView.frame.size.height) * 0.5), _chevronImageView.frame.size.width, _chevronImageView.frame.size.height);
@@ -39,6 +43,10 @@
 
 - (void)hideChevron {
 	_chevronImageView.hidden = YES;
+}
+
+- (void)accVisible:(BOOL)isVisible {
+	_chevronImageView.hidden = !isVisible;
 }
 
 - (void)toggleChevron {

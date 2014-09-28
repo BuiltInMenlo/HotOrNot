@@ -55,6 +55,7 @@
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
+		30D7A0A619D8688B001C7A57 /* FishEyeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D7A0A519D8688B001C7A57 /* FishEyeView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
 		30DB24B219CBF64700DCFC49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652B15F96C7100AA7FCE /* Foundation.framework */; };
 		30DB24B319CBF64700DCFC49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
@@ -468,6 +469,8 @@
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
 		30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHThreadThis.m; sourceTree = "<group>"; };
+		30D7A0A419D8688B001C7A57 /* FishEyeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FishEyeView.h; sourceTree = "<group>"; };
+		30D7A0A519D8688B001C7A57 /* FishEyeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FishEyeView.m; sourceTree = "<group>"; };
 		30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "seflieclub-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		30DB24B019CBF64700DCFC49 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		30DB24B619CBF64700DCFC49 /* seflieclub-tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "seflieclub-tests-Info.plist"; sourceTree = "<group>"; };
@@ -1302,6 +1305,15 @@
 			path = NHThreadThis;
 			sourceTree = "<group>";
 		};
+		30D7A0A319D8688B001C7A57 /* FishEye */ = {
+			isa = PBXGroup;
+			children = (
+				30D7A0A419D8688B001C7A57 /* FishEyeView.h */,
+				30D7A0A519D8688B001C7A57 /* FishEyeView.m */,
+			);
+			path = FishEye;
+			sourceTree = "<group>";
+		};
 		30DB24B419CBF64700DCFC49 /* seflieclub-tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1670,6 +1682,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30D7A0A319D8688B001C7A57 /* FishEye */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
 				30FC8C3C19A829E900CDB2BC /* Tapstream */,
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
@@ -2587,6 +2600,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30D7A0A619D8688B001C7A57 /* FishEyeView.m in Sources */,
 				30FC8C5D19A829E900CDB2BC /* TSCore.m in Sources */,
 				4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */,
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
