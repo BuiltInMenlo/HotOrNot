@@ -175,6 +175,8 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -219,6 +221,35 @@
 	[_pinTextField resignFirstResponder];
 	[self _finishFirstRun];
 }
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+	[super _goPanGesture:gestureRecognizer];
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
+		if (!_isPopping) {
+			if ([_pin length] < 4) {
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
+											message:NSLocalizedString(@"invalid_pin_msg", @"Pin numbers need to be 4 numbers")
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				_pin = @"";
+				_pinTextField.text = @"";
+				[_pinTextField becomeFirstResponder];
+				
+			} else {
+				_isPushing = YES;
+				[self _validatePinCode];
+			}
+		}
+	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
+		_isPopping = YES;
+		[self.navigationController popViewControllerAnimated:YES];
+	}
+}
+
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {

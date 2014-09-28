@@ -255,6 +255,10 @@
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
+		[_phoneTextField resignFirstResponder];
+	}
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
@@ -325,7 +329,6 @@
 	NSLog(@"[*:*] textFieldDidEndEditing:[%@]", textField.text);
 		  
 	[textField resignFirstResponder];
-	
 	_phone = [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text];
 		
 	[[NSNotificationCenter defaultCenter] removeObserver:self

@@ -475,6 +475,8 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -682,8 +684,16 @@
 	[_phoneTextField becomeFirstResponder];
 }
 
-- (void)_goSubmit {
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+	[super _goPanGesture:gestureRecognizer];
 	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+		[self _goSubmit];
+	}
+}
+
+- (void)_goSubmit {	
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
 	
@@ -698,6 +708,7 @@
 		_username = _usernameTextField.text;
 		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
+		_isPushing = YES;
 		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {

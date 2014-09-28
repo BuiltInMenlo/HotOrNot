@@ -28,7 +28,6 @@
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
-@property (nonatomic) BOOL isPushing;
 @end
 
 
@@ -126,7 +125,6 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
-	_isPushing = NO;
 	_tableView.alpha = 1.0;
 	
 //	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {

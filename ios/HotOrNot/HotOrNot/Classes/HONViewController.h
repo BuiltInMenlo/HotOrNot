@@ -9,6 +9,7 @@
 
 @interface HONViewController : UIViewController <UIGestureRecognizerDelegate> {
 	UIPanGestureRecognizer *_panGestureRecognizer;
+	BOOL _isPushing;
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer;

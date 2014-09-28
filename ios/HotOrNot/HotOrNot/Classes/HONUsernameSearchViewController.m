@@ -221,6 +221,29 @@
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
+		if ([_selectedUsers count] > 0) {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Invite Alert SWIPE"
+											 withProperties:[self _trackingProps]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
+																message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", [_selectedUsers count], ([_selectedUsers count] == 1) ? @"person" : @"people"]
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+			[alertView setTag:0];
+			[alertView show];
+			
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"Nothing Selected!"
+										message:@"You need to enter a username to search for first"
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			[_searchHeaderView becomeFirstResponder];
+		}
+	}
 }
 
 
@@ -364,6 +387,7 @@
 		
 		if (buttonIndex == 1) {
 			__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:_selectedUsers];
+			_isPushing = YES;
 			
 			if (clubVO != nil) {
 				NSLog(@"CLUB -=- (JOIN) -=-");

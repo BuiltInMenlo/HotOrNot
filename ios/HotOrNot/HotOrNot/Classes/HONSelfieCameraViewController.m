@@ -46,7 +46,6 @@
 @property (nonatomic, strong) NSDictionary *submitParams;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) BOOL isBlurred;
-@property (nonatomic) BOOL isPushing;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic, strong) HONStoreTransactionObserver *storeTransactionObserver;
@@ -253,7 +252,6 @@
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-	_isPushing = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

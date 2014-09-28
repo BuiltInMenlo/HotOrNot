@@ -67,6 +67,8 @@
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewWillAppear:animated];
+	
+	_isPushing = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
