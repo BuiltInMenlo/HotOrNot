@@ -145,6 +145,13 @@
 	[_tableView addSubview: _refreshControl];
 }
 
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+	_panGestureRecognizer.enabled = YES;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
@@ -200,6 +207,19 @@
 			if (![_selectedUsers containsObject:vo])
 				[_selectedUsers addObject:vo];
 		}
+	}
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	[super _goPanGesture:gestureRecognizer];
+	
+	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel SWIPE"];
+		
+		[_searchHeaderView resignFirstResponder];
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+		}];
 	}
 }
 

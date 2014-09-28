@@ -1493,7 +1493,6 @@
 				4C0CA3F5175151FA00DD0652 /* Search / Invite */,
 				4C86C43617FFA8D2007DC458 /* Followers / Following */,
 				4CBDDBA41913349A002F9723 /* View Controllers */,
-				4CEC4B0418B9427500F39C92 /* Tabs */,
 				4C45FF4A16DED015002F1080 /* Comments */,
 				4C45FF4B16DED0B6002F1080 /* Voters */,
 				4C45910A18918ABC0014FA7E /* VO */,
@@ -2173,6 +2172,13 @@
 		4CBDDBA41913349A002F9723 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				4CF7504818989DFA009E39E4 /* News */,
+				4C066204194A0D33001941D1 /* -Shared- */,
+				4C32B99815FA6F4C0023A0EE /* Verify */,
+				4CD42F25188B40E500264845 /* Messages */,
+				4C32B9A415FAB5FA0023A0EE /* Alerts */,
+				4C32B9A315FAB5F00023A0EE /* Home Feed */,
+				4C00491819467EE6007FA9F5 /* Clubs */,
 				4CD0D0E418F4F9F800B4ADE9 /* Feed */,
 				4C0B691D179E06C200D3E12A /* HONSnapPreviewViewController.h */,
 				4C0B691E179E06C200D3E12A /* HONSnapPreviewViewController.m */,
@@ -2287,20 +2293,6 @@
 				4C41071E18C16300009E9F9E /* HONEnterPINViewController.m */,
 			);
 			name = Splash;
-			sourceTree = "<group>";
-		};
-		4CEC4B0418B9427500F39C92 /* Tabs */ = {
-			isa = PBXGroup;
-			children = (
-				4C00491819467EE6007FA9F5 /* Clubs */,
-				4CF7504818989DFA009E39E4 /* News */,
-				4C066204194A0D33001941D1 /* -Shared- */,
-				4C32B99815FA6F4C0023A0EE /* Verify */,
-				4CD42F25188B40E500264845 /* Messages */,
-				4C32B9A415FAB5FA0023A0EE /* Alerts */,
-				4C32B9A315FAB5F00023A0EE /* Home Feed */,
-			);
-			name = Tabs;
 			sourceTree = "<group>";
 		};
 		4CED977518E46B1800482813 /* Activity */ = {

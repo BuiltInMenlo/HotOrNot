@@ -77,7 +77,7 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	
-		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+		[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goRefresh {

@@ -82,7 +82,7 @@
 		for (HONTrivialUserVO *vo in _selectedInAppContacts)
 			[[HONContactsAssistant sharedInstance] writeTrivialUser:vo toInvitedClub:_clubVO];
 		
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 		}];
 	}];
@@ -93,7 +93,7 @@
 		for (HONContactUserVO *vo in _selectedNonAppContacts)
 			[[HONContactsAssistant sharedInstance] writeContactUser:vo toInvitedClub:_clubVO];
 		
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 		}];
 	}];
@@ -139,7 +139,7 @@
 }
 
 - (void)_goClose {
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
@@ -159,7 +159,7 @@
 				if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
 					[self _sendClubInvites];
 				
-				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+				[self dismissViewControllerAnimated:YES completion:^(void) {
 				}];
 			}];
 		}
@@ -167,7 +167,7 @@
 	} else {
 		if (_userClubVO == nil || _clubVO == nil) {
 			NSLog(@"******* NO CLUB ******");
-			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+			[self dismissViewControllerAnimated:YES completion:^(void) {}];
 		
 		} else {
 			NSLog(@"******* HAS CLUB ******");
@@ -175,7 +175,7 @@
 				NSLog(@"******* EXISTING (%d, %d) ******", [_selectedInAppContacts count], [_selectedNonAppContacts count]);
 				if (([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0)) {
 					NSLog(@"******* NON SELECTED ******");
-					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+					[self dismissViewControllerAnimated:YES completion:^(void) {}];
 //					[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noclubs_t", nil)
 //												message:[NSString stringWithFormat:NSLocalizedString(@"alert_noclubs_m", nil), _clubVO.clubName]
 //											   delegate:nil
@@ -184,7 +184,7 @@
 				} else {
 					NSLog(@"******* SEND INVITES ******");
 					[self _sendClubInvites];
-					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+					[self dismissViewControllerAnimated:YES completion:^(void) {}];
 				}
 			
 			} else {
@@ -198,7 +198,7 @@
 					
 					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary * result) {
 						[[HONClubAssistant sharedInstance] writeUserClubs:result];	
-						[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+						[self dismissViewControllerAnimated:YES completion:^(void) {}];
 					}];
 				}];
 			}

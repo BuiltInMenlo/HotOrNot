@@ -188,29 +188,31 @@
 
 #pragma mark - Notifications
 - (void)_toggleTabs:(NSNotification *)notification {
+	CGRect tabHolderFrame = CGRectMake(_tabHolderView.frame.origin.x, ([[notification object] isEqualToString:@"SHOW"]) ? ([UIScreen mainScreen].bounds.size.height - kTabSize.height) : ([UIScreen mainScreen].bounds.size.height + kTabSize.height), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	CGRect nativeBarFrame = CGRectMake(_tabHolderView.frame.origin.x, ([[notification object] isEqualToString:@"SHOW"]) ? ([UIScreen mainScreen].bounds.size.height - _nativeTabBar.frame.size.height) : ([UIScreen mainScreen].bounds.size.height + kTabSize.height), _nativeTabBar.frame.size.width, _nativeTabBar.frame.size.height);
+	
 	if ([[notification object] isEqualToString:@"SHOW"]) {
 		[UIView animateWithDuration:0.333 delay:0.125
 			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
-								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
+							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
+								_tabHolderView.frame = tabHolderFrame;
+								_nativeTabBar.frame = nativeBarFrame;
 								
-								_tabHolderView.alpha = 1.0;
-								_nativeTabBar.alpha = 1.0;
+//								_tabHolderView.alpha = 1.0;
+//								_nativeTabBar.alpha = 1.0;
 							} completion:^(BOOL finished) {
 							}];
 		
 	} else {
-		[UIView animateWithDuration:0.333 delay:0.125
-			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
-								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
-								
-								_tabHolderView.alpha = 0.0;
-								_nativeTabBar.alpha = 0.0;
+		[UIView animateWithDuration:0.500 delay:0.125
+			 usingSpringWithDamping:0.875 initialSpringVelocity:0.010
+							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionCurveEaseIn) animations:^(void) {
+								_tabHolderView.frame = tabHolderFrame;
+								_nativeTabBar.frame = nativeBarFrame;
 								
 							} completion:^(BOOL finished) {
+//								_tabHolderView.alpha = 0.0;
+//								_nativeTabBar.alpha = 0.0;
 							}];
 	}
 }

@@ -46,6 +46,7 @@
 @property (nonatomic, strong) NSDictionary *submitParams;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) BOOL isBlurred;
+@property (nonatomic) BOOL isPushing;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic, strong) HONStoreTransactionObserver *storeTransactionObserver;
@@ -148,6 +149,34 @@
 	}
 }
 
+- (void)_submitStatusUpdateWithSubjectNames:(NSArray *)subjectNames {
+	if ([subjectNames count] == 0) {
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"No Emotions Selected!")
+									message:NSLocalizedString(@"alert_noemotions_msg", @"You need to choose some emotions to make a status update.")
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		_isPushing = YES;
+		
+		NSError *error;
+		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjectNames options:0 error:&error]
+													 encoding:NSUTF8StringEncoding];
+		_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+						  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
+						  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
+						  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.ownerID : 0],
+						  @"subject"		: @"",
+						  @"subjects"		: jsonString,
+						  @"challenge_id"	: [@"" stringFromInt:0],
+						  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
+						  @"api_endpt"		: kAPICreateChallenge};
+		NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
+		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+	}
+}
+
 - (void)_submitClubPhoto {
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
 		[self _submitCompleted:result];
@@ -212,11 +241,19 @@
 	[self.view addSubview:_previewView];
 }
 
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+	_panGestureRecognizer.enabled = YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+	_isPushing = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -224,6 +261,26 @@
 	[super viewWillDisappear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+}
+
+
+#pragma mark - Navigation
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+	//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	[super _goPanGesture:gestureRecognizer];
+	
+	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Dismiss SWIPE"];
+		
+		[self _cancelUpload];
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+		}];
+	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+		[self _submitStatusUpdateWithSubjectNames:[_previewView getSubjectNames]];
+	}
 }
 
 
@@ -249,7 +306,7 @@
 		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
 		imagePickerController.cameraOverlayView = _cameraOverlayView;
- 	}
+	}
 	
 	self.imagePickerController = imagePickerController;
 	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
@@ -266,7 +323,7 @@
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-
+	
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
@@ -319,8 +376,7 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Cancel"];
 	[self _cancelUpload];
-	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+	[self dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }
 
@@ -337,23 +393,23 @@
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next"];
 	
-//	NSLog(@"CONTACT:[%@]", _contactUserVO.dictionary);
-	
-	NSError *error;
-	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
-												 encoding:NSUTF8StringEncoding];
-	
-	_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-					  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
-					  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
-					  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.ownerID : 0],
-					  @"subject"		: @"",
-					  @"subjects"		: jsonString,
-					  @"challenge_id"	: [@"" stringFromInt:0],
-					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
-					  @"api_endpt"		: kAPICreateChallenge};
-	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
-	[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+	_isPushing = YES;
+	[self _submitStatusUpdateWithSubjectNames:subjects];
+	//	NSError *error;
+	//	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
+	//												 encoding:NSUTF8StringEncoding];
+	//
+	//	_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+	//					  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
+	//					  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
+	//					  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.ownerID : 0],
+	//					  @"subject"		: @"",
+	//					  @"subjects"		: jsonString,
+	//					  @"challenge_id"	: [@"" stringFromInt:0],
+	//					  @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
+	//					  @"api_endpt"		: kAPICreateChallenge};
+	//	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
+	//	[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 }
 
 

@@ -64,6 +64,10 @@
 
 
 #pragma mark - Puplic APIs
+- (NSArray *)getSubjectNames {
+	return (_subjectNames);
+}
+
 - (void)updateProcessedImage:(UIImage *)image {
 	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 }

@@ -7,5 +7,9 @@
 //
 
 
-@interface HONViewController : UIViewController
+@interface HONViewController : UIViewController <UIGestureRecognizerDelegate> {
+	UIPanGestureRecognizer *_panGestureRecognizer;
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer;
 @end

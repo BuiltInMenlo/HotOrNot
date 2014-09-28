@@ -104,6 +104,13 @@
 	[self _retreiveCountries];
 }
 
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+	_panGestureRecognizer.enabled = YES;
+}
+
 
 #pragma mark - Navigation
 - (void)_goDone {
@@ -112,7 +119,23 @@
 			[self.delegate callingCodesViewController:self didSelectCountry:_countryVO];
 	}
 	
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	[super _goPanGesture:gestureRecognizer];
+	
+	if (_countryVO != nil) {
+		if ([self.delegate respondsToSelector:@selector(callingCodesViewController:didSelectCountry:)])
+			[self.delegate callingCodesViewController:self didSelectCountry:_countryVO];
+	}
+	
+	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Country Codes - Cancel SWIPE"];
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+		}];
+	}
 }
 
 

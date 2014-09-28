@@ -75,6 +75,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 			  @"hardware-model"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringFromIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
 			  @"resolution"		: NSStringFromCGSize([UIScreen mainScreen].bounds.size),
 			  @"adid"			: [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO],
+			  @"push_token"		: [[HONDeviceIntrinsics sharedInstance] pushToken],
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
 			  @"time"			: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
 			  @"tz"				: [[HONDateTimeAlloter sharedInstance] timezoneFromDeviceLocale],

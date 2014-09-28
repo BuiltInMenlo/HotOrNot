@@ -52,6 +52,16 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	_panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_goPanGesture:)];
+	_panGestureRecognizer.minimumNumberOfTouches = 1;
+	_panGestureRecognizer.maximumNumberOfTouches = UINT_MAX;
+	_panGestureRecognizer.cancelsTouchesInView = YES;
+	_panGestureRecognizer.delaysTouchesBegan = YES;
+	_panGestureRecognizer.delaysTouchesEnded = NO;
+	_panGestureRecognizer.delegate = self;
+	_panGestureRecognizer.enabled = NO;
+	[self.view addGestureRecognizer:_panGestureRecognizer];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -81,7 +91,12 @@
 
 
 #pragma mark - Navigation
-
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+	NSLog(@"[:|:] [%@]_goPanGesture:[%@]-=(%@)=-", self.class, NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	
+	if (gestureRecognizer.state != UIGestureRecognizerStateBegan && gestureRecognizer.state != UIGestureRecognizerStateCancelled && gestureRecognizer.state != UIGestureRecognizerStateEnded)
+		return;
+}
 
 
 @end

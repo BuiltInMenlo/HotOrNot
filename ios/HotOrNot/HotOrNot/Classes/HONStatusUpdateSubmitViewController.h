@@ -8,6 +8,6 @@
 
 #import "HONContactsViewController.h"
 
-@interface HONStatusUpdateSubmitViewController : HONContactsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONStatusUpdateSubmitViewController : HONContactsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithSubmitParameters:(NSDictionary *)submitParams;
 @end

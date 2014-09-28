@@ -28,6 +28,7 @@
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
+@property (nonatomic) BOOL isPushing;
 @end
 
 
@@ -116,12 +117,16 @@ static NSString * const kCamera = @"camera";
 		self.view.hidden = NO;
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	}
+	
+	_panGestureRecognizer.delaysTouchesBegan = NO;
+	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
+	_isPushing = NO;
 	_tableView.alpha = 1.0;
 	
 //	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
@@ -179,6 +184,49 @@ static NSString * const kCamera = @"camera";
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	[super _goPanGesture:gestureRecognizer];
+	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]];
+	HONClubViewCell *cell = (HONClubViewCell *)[_tableView cellForRowAtIndexPath:[_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]]];
+	
+	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+		if (indexPath.section == 1) {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
+											   withUserClub:cell.clubVO];
+			
+			if ([gestureRecognizer velocityInView:self.view].x <= -1500) {
+				[self _goSelectClub:cell.clubVO];
+			}
+		}
+		
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+		if (indexPath.section == 1) {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
+											   withUserClub:cell.clubVO];
+			
+			if ([gestureRecognizer velocityInView:self.view].x <= -1500) {
+				[self _goSelectClub:cell.clubVO];
+			}
+		}
+	}
+}
+
+- (void)_goSelectClub:(HONUserClubVO *)clubVO {
+	if (!_isPushing) {
+		_isPushing = YES;
+		if ([clubVO.submissions count] > 0)
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:YES];
+		
+		else {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	}
 }
 
 
@@ -300,15 +348,7 @@ static NSString * const kCamera = @"camera";
 									   withUserClub:clubVO];
 	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
-	
-	if ([clubVO.submissions count] > 0)
-		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:YES];
-	
-	else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	[self _goSelectClub:clubVO];
 }
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
@@ -387,15 +427,7 @@ static NSString * const kCamera = @"camera";
 			
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
 											   withUserClub:cell.clubVO];
-			
-			if ([cell.clubVO.submissions count] > 0)
-				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
-			
-			else {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:cell.clubVO]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-			}
+			[self _goSelectClub:cell.clubVO];
 			
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
@@ -417,15 +449,7 @@ static NSString * const kCamera = @"camera";
 			
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
 											   withUserClub:cell.clubVO];
-			
-			if ([cell.clubVO.submissions count] > 0)
-				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0] animated:YES];
-			
-			else {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:cell.clubVO]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-			}
+			[self _goSelectClub:cell.clubVO];
 			
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);

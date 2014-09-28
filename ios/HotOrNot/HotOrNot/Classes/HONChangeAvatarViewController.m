@@ -59,7 +59,7 @@
 			if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[HONAppDelegate writeUserInfo:result];
 				
-				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+				[self dismissViewControllerAnimated:YES completion:^(void) {}];
 			}
 			
 			if (_progressHUD != nil) {
@@ -109,7 +109,7 @@
 		_cameraOverlayView.delegate = self;
 		_imagePicker.cameraOverlayView = _cameraOverlayView;
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {}];
+		[self presentViewController:_imagePicker animated:NO completion:^(void) {}];
 		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
@@ -120,7 +120,7 @@
 		_imagePicker.toolbarHidden = YES;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+		[self presentViewController:_imagePicker animated:NO completion:^(void) {
 		}];
 	}
 }
@@ -130,7 +130,7 @@
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+		[self dismissViewControllerAnimated:YES completion:^(void) {
 			_cameraOverlayView = nil;
 			_imagePicker.cameraOverlayView = nil;
 			_imagePicker = nil;

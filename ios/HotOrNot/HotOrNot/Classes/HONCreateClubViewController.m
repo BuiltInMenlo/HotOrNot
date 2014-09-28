@@ -304,7 +304,7 @@
 		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
 		
 		self.modalPresentationStyle = UIModalPresentationCurrentContext;
-		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
+		[self presentViewController:_imagePicker animated:YES completion:^(void) {
 		}];
 	}
 }
@@ -359,7 +359,7 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	[_imagePicker dismissViewControllerAnimated:YES completion:^(void){
-//		[self.navigationController dismissViewControllerAnimated:NO completion:^(void){}];
+//		[self dismissViewControllerAnimated:NO completion:^(void){}];
 		
 		if ([_clubName length] == 0)
 			[self _goClubName];

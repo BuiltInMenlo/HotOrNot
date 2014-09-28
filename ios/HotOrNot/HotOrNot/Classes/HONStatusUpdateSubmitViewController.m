@@ -231,6 +231,20 @@
 	//[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 48.0, _tableView.contentInset.right)];
 }
 
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+	UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_goPanGesture:)];
+	panGestureRecognizer.minimumNumberOfTouches = 1;
+	panGestureRecognizer.maximumNumberOfTouches = UINT_MAX;
+	panGestureRecognizer.cancelsTouchesInView = YES;
+	panGestureRecognizer.delaysTouchesBegan = YES;
+	panGestureRecognizer.delaysTouchesEnded = NO;
+	panGestureRecognizer.delegate = self;
+	[self.view addGestureRecognizer:panGestureRecognizer];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
@@ -253,6 +267,18 @@
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	
+	if (gestureRecognizer.state != UIGestureRecognizerStateBegan && gestureRecognizer.state != UIGestureRecognizerStateCancelled && gestureRecognizer.state != UIGestureRecognizerStateEnded)
+		return;
+	
+	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Back SWIPE"];
+		[self.navigationController popViewControllerAnimated:YES];
+	}
 }
 
 - (void)_goSubmit {

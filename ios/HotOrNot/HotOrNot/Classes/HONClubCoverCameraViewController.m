@@ -100,14 +100,14 @@
 		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
 		
 		self.modalPresentationStyle = UIModalPresentationCurrentContext;
-		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {}];
+		[self presentViewController:_imagePicker animated:YES completion:^(void) {}];
 	}
 }
 
 
 #pragma mark - Navigation
 - (void)_goCancel {
-	[self.navigationController dismissViewControllerAnimated:NO completion:^(void){}];
+	[self dismissViewControllerAnimated:NO completion:^(void){}];
 }
 
 

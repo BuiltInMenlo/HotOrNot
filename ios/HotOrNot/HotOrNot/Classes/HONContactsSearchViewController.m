@@ -204,6 +204,8 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -232,13 +234,27 @@
 	
 	_isDismissing = YES;
 	[_phoneTextField resignFirstResponder];
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Submit"
 									 withProperties:@{@"query"	: [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text]}];
 	[_phoneTextField resignFirstResponder];
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	[super _goPanGesture:gestureRecognizer];
+	
+	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel SWIPE"];
+		
+		_isDismissing = YES;
+		[_phoneTextField resignFirstResponder];
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+		}];
+	}
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {

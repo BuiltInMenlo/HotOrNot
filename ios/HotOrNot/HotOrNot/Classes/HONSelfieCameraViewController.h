@@ -31,7 +31,7 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 - (void)selfieCameraViewController:(HONSelfieCameraViewController *)viewController didDismissByCanceling:(BOOL)isCanceled;
 @end
 
-@interface HONSelfieCameraViewController : HONViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface HONSelfieCameraViewController : HONViewController <UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initAsNewChallenge;
 - (id)initWithUser:(HONTrivialUserVO *)trivialUserVO;
 - (id)initWithContact:(HONContactUserVO *)contactUserVO;
