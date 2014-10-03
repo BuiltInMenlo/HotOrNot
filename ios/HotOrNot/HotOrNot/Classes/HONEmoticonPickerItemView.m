@@ -16,8 +16,8 @@
 //const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
 //const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 
-const CGRect kNormalFrame = {0.0f, 0.0f, 72.0f, 72.0f};
-const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
+const CGRect kNormalFrame = {0.0f, 0.0f, 64.0f, 64.0f};
+const CGRect kActiveFrame = {-6.0f, -6.0f, 72.0f, 72.0f};
 
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
@@ -31,11 +31,10 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 @implementation HONEmoticonPickerItemView
 
 - (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
-	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 75.0, 75.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, CGRectGetWidth(kActiveFrame), CGRectGetHeight(kActiveFrame))])) {
 		_emotionVO = emotionVO;
 		_isSelected = NO;
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-//		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
 		_imageView.layer.shouldRasterize = YES;
@@ -124,7 +123,7 @@ const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 		_imageLoadingView.alpha = 0.0;
 	};
 	
-	[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.smallImageURL]
+	[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.largeImageURL]
 															cachePolicy:kOrthodoxURLCachePolicy
 														timeoutInterval:[HONAppDelegate timeoutInterval]]
 						  placeholderImage:nil

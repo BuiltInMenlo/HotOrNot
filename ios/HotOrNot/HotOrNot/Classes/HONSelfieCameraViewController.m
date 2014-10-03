@@ -173,16 +173,16 @@
 						  @"api_endpt"		: kAPICreateChallenge};
 		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", _submitParams);
 		
-		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+//		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 
 
-//		if (_selfieSubmitType != HONSelfieCameraSubmitTypeReplyClub) {
-//			_isPushing = YES;
-//			[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
-// 
-//		
-//		} else {
-		/*	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit Reply"
+		if (_selfieSubmitType != HONSelfieCameraSubmitTypeReplyClub) {
+			_isPushing = YES;
+			[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+ 
+		
+		} else {
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit Reply"
 											   withUserClub:_userClubVO];
 			
 			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
@@ -204,7 +204,7 @@
 					
 				}];
 			}];
-		}*/
+		}
 	}
 }
 

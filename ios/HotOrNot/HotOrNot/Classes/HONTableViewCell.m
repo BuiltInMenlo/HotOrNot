@@ -15,6 +15,7 @@
 
 @implementation HONTableViewCell
 @synthesize size = _size;
+@synthesize indexPath = _indexPath;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -39,6 +40,10 @@
 - (void)setSize:(CGSize)size {
 	_size = size;
 	_chevronImageView.frame = CGRectMake(_chevronImageView.frame.origin.x, MAX(0, (size.height - _chevronImageView.frame.size.height) * 0.5), _chevronImageView.frame.size.width, _chevronImageView.frame.size.height);
+}
+
+- (void)setIndexPath:(NSIndexPath *)indexPath {
+	_indexPath = indexPath;
 }
 
 - (void)hideChevron {

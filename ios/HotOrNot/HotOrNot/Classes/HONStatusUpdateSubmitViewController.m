@@ -478,7 +478,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 2) ? @"Suggestions" : (section == 3) ? @"Contacts" : @""]);
+	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 2) ? @"Suggestions" : (section == 3) ? ([_deviceContacts count] == 0) ? @"No results" : @"Contacts" : @""]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

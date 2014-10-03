@@ -454,7 +454,7 @@
 		cell = [[HONClubPhotoViewCell alloc] init];
 	
 	cell.indexPath = indexPath;
-	cell.clubName = _clubVO.clubName;
+	cell.clubVO = _clubVO;
 	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.section];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];

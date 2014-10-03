@@ -104,6 +104,7 @@
 "select_club" = "クラブを選択する";
 "club_name" = "クラブ名";
 "settings_notification" = "通知";
+"settings_search" = "Search";
 "copy_url" = "自分のクラブURLをコピーする";
 "terms_service" = "サービス規約";
 "privacy_policy" = "プライバシーポリシー";
@@ -191,7 +192,8 @@
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 "header_compose" = "Compose";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
-"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
+"access_contacts" = "Access your contacts.\nFind friends";
+"empty_contacts" = "No results found.\nCompose";
 "header_addFriends" = "Add Friends";
 
 "areacode_club" = "%@クラブ";

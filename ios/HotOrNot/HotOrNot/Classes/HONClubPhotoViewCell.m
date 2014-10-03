@@ -11,35 +11,34 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
-#import "FishEyeView.h"
 #import "PicoSticker.h"
 
 #import "HONClubPhotoViewCell.h"
 #import "HONEmotionVO.h"
 #import "HONImageLoadingView.h"
 
-@interface HONClubPhotoViewCell () <FishEyeIndexDelegate>
+@interface HONClubPhotoViewCell ()
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
-@property (nonatomic, strong) FishEyeView *fishEyeView;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UILabel *emotionLabel;
+
+@property (nonatomic, strong) NSMutableArray *emotionViews;
+@property (nonatomic, strong) NSMutableArray *emotions;
+@property (nonatomic) CGFloat emotionInsetAmt;
+@property (nonatomic) CGSize emotionSpacingSize;
+@property (nonatomic) UIOffset indHistory;
 @end
 
 @implementation HONClubPhotoViewCell
-@synthesize indexPath = _indexPath;
+@synthesize clubVO = _clubVO;
 @synthesize clubPhotoVO = _clubPhotoVO;
-@synthesize clubName = _clubName;
 
 
-const CGRect kEmotionInitFrame = {78.0f, 78.0f, 44.0f, 44.0f};
-const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 200.0f, 200.0f};
-const CGRect kEmotionOutroFrame = {-12.0f, -12.0f, 224.0f, 224.0f};
-
-const CGSize kEmotionMinMagSize = {96.0f, 96.0f};
-const CGFloat kEmotionMaxMagRate = 3.0f;
-
-
-
+const CGRect kEmotionInitFrame = {80.0f, 80.0f, 53.0f, 53.0f};
+const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 212.0f, 212.0f};
+const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
+const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -53,10 +52,6 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 	}
 	
 	return (self);
-}
-
-- (void)setClubName:(NSString *)clubName {
-	_clubName = clubName;
 }
 
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
@@ -104,48 +99,32 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 	usernameButton.frame = usernameLabel.frame;
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	//[self.contentView addSubview:usernameButton];
-	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:24];
-	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
-	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
-	[self.contentView addSubview:timeLabel];
 					  
-//	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
-//	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
-//	
-//	UILabel *feelingLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 208.0, 200.0, 26.0)];
-//	feelingLabel.backgroundColor = [UIColor clearColor];
-//	feelingLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
-//	feelingLabel.textColor = [UIColor whiteColor];
-//	feelingLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-//	feelingLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-//	
-//	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
-//	[self.contentView addSubview:feelingLabel];
+	_emotions = [NSMutableArray array];
+	_emotionViews = [NSMutableArray array];
+	_indHistory = UIOffsetZero;
+	_emotionSpacingSize = CGSizeMake(kEmotionLoadedFrame.size.width + kStickerPaddingSize.width, kEmotionLoadedFrame.size.height + kStickerPaddingSize.height);
+	_emotionInsetAmt = 0.5 * (320.0 - kEmotionLoadedFrame.size.width);
 	
 	
-	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5) + 10.0, 320.0, kEmotionLoadedFrame.size.height)];
-	_scrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 6.0), _scrollView.frame.size.height);
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5) - 50.0, 320.0, kEmotionLoadedFrame.size.height)];
+//	_scrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 16.0), _scrollView.frame.size.height);
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	_scrollView.showsVerticalScrollIndicator = NO;
+	_scrollView.alwaysBounceHorizontal = YES;
+	_scrollView.delegate = self;
 	_scrollView.pagingEnabled = NO;
-	_scrollView.contentInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
-	_scrollView.contentOffset = CGPointMake(-8.0, 0.0);
+	_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 	[self.contentView addSubview:_scrollView];
 	
 	int cnt = 0;
-	NSMutableArray *emotions = [NSMutableArray array];
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
 		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
-		emotionView.frame = CGRectOffset(emotionView.frame, cnt * (kEmotionLoadedFrame.size.width + 6.0), 0.0);
+		emotionView.frame = CGRectOffset(emotionView.frame, cnt * (kEmotionLoadedFrame.size.width + 16.0), 0.0);
 		[_scrollView addSubview:emotionView];
-		[emotions addObject:emotionView];
+		[_emotionViews addObject:emotionView];
+		[_emotions addObject:emotionVO];
 		
 		UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		nextPageButton.frame = emotionView.frame;
@@ -155,8 +134,45 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 		cnt++;
 	}
 	
+	[_scrollView setContentOffset:CGPointMake(-_scrollView.contentInset.left, 0.0) animated:NO];
+	_scrollView.contentSize = CGSizeMake(([_emotions count] == 1) ? _scrollView.frame.size.width : MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width), _scrollView.contentSize.height);
 	
-//	[self performSelector:@selector(_goSelectorDelay:) withObject:nil afterDelay:5.0];
+	if ([_emotions count] == 1)
+		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _scrollView.contentInset.left, 0.0, -_scrollView.contentInset.right);
+	
+	
+	
+	UIView *tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 25.0, 320.0, 47.0)];
+	tintedView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	[self.contentView addSubview:tintedView];
+	
+	_emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 43.0)];
+	_emotionLabel.backgroundColor = [UIColor clearColor];
+	_emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:21];
+	_emotionLabel.textColor = [UIColor whiteColor];
+	_emotionLabel.textAlignment = NSTextAlignmentCenter;
+	_emotionLabel.text = ((HONEmotionVO *)[_emotions firstObject]).emotionName;
+	[tintedView addSubview:_emotionLabel];
+
+	
+	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, [UIScreen mainScreen].bounds.size.height - 33.0, 150.0, 30.0)];
+	participantsLabel.backgroundColor = [UIColor clearColor];
+	participantsLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:24];
+	participantsLabel.textColor = [UIColor whiteColor];
+	participantsLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
+	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	participantsLabel.text = [NSString stringWithFormat:@"%d/%d", 1 + [_clubVO.activeMembers count], [_clubVO.pendingMembers count]];
+	[self.contentView addSubview:participantsLabel];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 33.0, 150.0, 30.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:24];
+	timeLabel.textColor = [UIColor whiteColor];
+	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
+	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
+	[self.contentView addSubview:timeLabel];
 	
 //	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
@@ -190,18 +206,14 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 	}];
 	
 	
-	_fishEyeView = [[FishEyeView alloc] initializeWithImages:emotions
-												 withMinSize:kEmotionMinMagSize
-												 withMaxRate:kEmotionMaxMagRate
-											 withActionCount:7];
-	_fishEyeView.indexDelegate = self;
-	
-	_fishEyeView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-	[self.contentView addSubview:_fishEyeView];
-}
-
-- (void)setIndexPath:(NSIndexPath *)indexPath {
-	_indexPath = indexPath;
+//	_fishEyeView = [[FishEyeView alloc] initializeWithImages:emotions
+//												 withMinSize:kEmotionMinMagSize
+//												 withMaxRate:kEmotionMaxMagRate
+//											 withActionCount:7];
+//	_fishEyeView.indexDelegate = self;
+//	
+//	_fishEyeView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+//	[self.contentView addSubview:_fishEyeView];
 }
 
 
@@ -255,13 +267,8 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 	imageView.transform = transform;
 	[holderView addSubview:imageView];
 	
-//	UIImageView *fxImageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
-//	fxImageView.hidden = YES;
-//	[holderView addSubview:fxImageView];
-	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
-//		fxImageView.image = image;
 		
 		[imageLoadingView stopAnimating];
 		imageLoadingView.hidden = YES;
@@ -282,23 +289,7 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 							 imageView.alpha = 1.0;
 							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 						 } completion:^(BOOL finished) {
-//							 fxImageView.hidden = NO;
 						 }];
-		
-//		CGSize scaleSize = CGSizeMake(kEmotionOutroFrame.size.width / kEmotionLoadedFrame.size.width, kEmotionOutroFrame.size.height / kEmotionLoadedFrame.size.height);
-//		CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionOutroFrame) - CGRectGetMidX(kEmotionLoadedFrame), CGRectGetMidY(kEmotionOutroFrame) - CGRectGetMidY(kEmotionLoadedFrame));
-//		
-//		[UIView animateWithDuration:0.250 delay:(0.250 + (0.125 * index))
-//			 usingSpringWithDamping:0.950 initialSpringVelocity:0.000
-//							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseOut)
-//		 
-//						 animations:^(void) {
-//							 fxImageView.alpha = 0.0;
-//							 fxImageView.transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);;
-//							 
-//						 }completion:^(BOOL finished) {
-//							 [fxImageView removeFromSuperview];
-//						 }];
 		
 	};
 	
@@ -318,10 +309,43 @@ const CGFloat kEmotionMaxMagRate = 3.0f;
 	return (holderView);
 }
 
-#pragma mark - FishEyeView Delegates
-- (void)fishEyeIndex:(NSUInteger)index {
-	NSLog(@"[:|:] fishEyeIndex:[%d]", index);
-}
 
+#pragma mark - ScrollView Delegates
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"[*:*] scrollViewDidScroll:[%@] (%@)", NSStringFromCGSize(scrollView.contentSize), NSStringFromCGPoint(scrollView.contentOffset));
+	
+	int axisInd = (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width;
+	int axisCoord = (axisInd * kEmotionLoadedFrame.size.width) - _emotionInsetAmt;
+	
+	int currInd = _indHistory.horizontal;
+	int updtInd = MAX(0, MIN([_emotions count], axisInd));
+	int changeDir = 0;
+	
+	if (updtInd == currInd) {
+//		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ EQL ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+		changeDir = 0;
+		
+	} else if (updtInd < currInd) {
+//		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ DEC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+//		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? -1 : 0);
+		
+		if (scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt)) {
+			_indHistory = UIOffsetMake(currInd - 1, currInd);
+			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:currInd - 1]).emotionName;
+		} else
+			return;
+		
+	} else if (updtInd > currInd) {
+//		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ INC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+//		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? -1 : 0);
+		
+		if (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) {
+			_indHistory = UIOffsetMake(currInd + 1, currInd);
+			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:currInd + 1]).emotionName;
+			
+		} else
+			return;
+	}
+}
 
 @end

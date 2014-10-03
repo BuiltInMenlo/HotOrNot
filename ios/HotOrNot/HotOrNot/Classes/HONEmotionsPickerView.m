@@ -10,7 +10,9 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
-const CGSize kImageSpacingSize = {75.0f, 68.0f};
+const CGSize kStickerImgSize = {64.0f, 64.0f};
+const CGSize kStickerImgPaddingSize = {12.0f, 12.0f};
+const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
@@ -19,6 +21,7 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
+@property (nonatomic) CGSize gridItemSpacingSize;
 @property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic) int prevPage;
 @property (nonatomic) int totalPages;
@@ -31,6 +34,10 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 
 - (id)initWithFrame:(CGRect)frame asEmotionGroupType:(HONStickerGroupType)stickerGroupType {
 	if ((self = [super initWithFrame:frame])) {
+		
+		_gridItemSpacingSize = CGSizeMake(kStickerImgSize.width + kStickerImgPaddingSize.width, kStickerImgSize.height + kStickerImgPaddingSize.height);
+
+		self.backgroundColor = [[HONColorAuthority sharedInstance] honBGLightGreyColor];
 		_stickerGroupType = stickerGroupType;
 		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
@@ -40,10 +47,11 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
-		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
-		[self addSubview:_bgImageView];
+//		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
+//		_bgImageView.backgroundColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
+//		[self addSubview:_bgImageView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 5.0, 320.0, 272.0)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 5.0, 320.0, _gridItemSpacingSize.height * ROWS_PER_PAGE)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.showsHorizontalScrollIndicator = NO;
 		_scrollView.showsVerticalScrollIndicator = NO;
@@ -53,7 +61,7 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 		[self addSubview:_scrollView];
 		
 		UIButton *stickersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		stickersButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		stickersButton.frame = CGRectMake(0.0, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
 		[stickersButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
 		[stickersButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
 		[stickersButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
@@ -61,7 +69,7 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 		[self addSubview:stickersButton];
 		
 		UIButton *facesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		facesButton.frame = CGRectMake(30.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		facesButton.frame = CGRectMake(1 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
 		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
 		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
 		[facesButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
@@ -69,7 +77,7 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 		[self addSubview:facesButton];
 		
 		UIButton *animalsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		animalsButton.frame = CGRectMake(60.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		animalsButton.frame = CGRectMake(2 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
 		[animalsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
 		[animalsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
 		[animalsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
@@ -77,24 +85,15 @@ const CGSize kImageSpacingSize = {75.0f, 68.0f};
 		[self addSubview:animalsButton];
 		
 		UIButton *objectsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		objectsButton.frame = CGRectMake(90.0, self.frame.size.height - 49.0, 30.0, 49.0);
+		objectsButton.frame = CGRectMake(3 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
 		[objectsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
 		[objectsButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
 		[objectsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
 		[objectsButton setTag:HONStickerGroupTypeObjects];
 		[self addSubview:objectsButton];
 		
-		UIButton *otherButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		otherButton.frame = CGRectMake(120.0, self.frame.size.height - 49.0, 30.0, 49.0);
-		[otherButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_nonActive"] forState:UIControlStateNormal];
-		[otherButton setBackgroundImage:[UIImage imageNamed:@"emojiStoreButton_Active"] forState:UIControlStateHighlighted];
-		[otherButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
-		[otherButton setTag:HONStickerGroupTypeOther];
-		[self addSubview:otherButton];
-		
-		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(160.0, self.frame.size.height - 49.0, 160.0, 49.0);
+		deleteButton.frame = CGRectMake(4 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
@@ -161,8 +160,9 @@ static dispatch_queue_t sticker_request_operation_queue;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * _gridItemSpacingSize.width, ROWS_PER_PAGE * _gridItemSpacingSize.height)];
 		[holderView setTag:i];
+//		holderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
 	}
@@ -176,7 +176,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		
 //		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * _gridItemSpacingSize.width, row * _gridItemSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		emotionItemView.delegate = self;
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];
@@ -204,6 +204,9 @@ static dispatch_queue_t sticker_request_operation_queue;
 
 
 #pragma mark - ScrollView Delegates
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+}
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	int offsetPage = MIN(MAX(round(scrollView.contentOffset.x / scrollView.frame.size.width), 0), _totalPages);
 	

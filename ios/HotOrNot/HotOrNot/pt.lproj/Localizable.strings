@@ -104,6 +104,7 @@
 "select_club" = "Selecionar clube";
 "club_name" = "Nome do clube";
 "settings_notification" = "Notificação";
+"settings_search" = "Search";
 "copy_url" = "Copiar link do meu clube";
 "terms_service" = "Termos de serviço";
 "privacy_policy" = "Privacidade";
@@ -190,7 +191,8 @@
 "empty_club" = "Toque e segure para convidar amigos";
 "header_compose" = "Compose";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
-"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
+"access_contacts" = "Access your contacts.\nFind friends";
+"empty_contacts" = "No results found.\nCompose";
 "header_addFriends" = "Add Friends";
 
 "areacode_club" = "%@Clube";

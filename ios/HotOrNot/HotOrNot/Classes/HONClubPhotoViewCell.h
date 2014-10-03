@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONTableViewCell.h"
+#import "HONUserClubVO.h"
 #import "HONClubPhotoVO.h"
 
 @class HONClubPhotoViewCell;
@@ -16,11 +18,10 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end
 
-@interface HONClubPhotoViewCell : UITableViewCell
+@interface HONClubPhotoViewCell : HONTableViewCell <UIScrollViewDelegate>
 + (NSString *)cellReuseIdentifier;
 
-@property (nonatomic, retain) NSIndexPath *indexPath;
+@property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;
-@property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, assign) id <HONClubPhotoViewCellDelegate> delegate;
 @end

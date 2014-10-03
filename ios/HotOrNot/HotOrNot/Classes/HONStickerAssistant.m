@@ -289,15 +289,6 @@ static HONStickerAssistant *sharedInstance = nil;
 				break;
 			}
 		}
-		
-	} else if (stickerGroupType == HONStickerGroupTypeOther) {
-		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kOtherGroup] objectForKey:@"content_group"];
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
-			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
-				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
-				break;
-			}
-		}
 	}
 	
 	return ([stickers copy]);

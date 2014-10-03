@@ -81,10 +81,9 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
-	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeOther; i++) {
+	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeObjects; i++) {
 		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0) asEmotionGroupType:i];
 		[pickerView setTag:(69 + i)];
-		
 		[_emotionsPickerViews addObject:pickerView];
 	}
 	
@@ -277,6 +276,13 @@
 - (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView {
 	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
 		[self.delegate cameraPreviewViewShowCamera:self];
+}
+
+- (void)emotionsPickerDisplayView:(HONEmotionsPickerDisplayView *)pickerDisplayView scrolledEmotionsToIndex:(int)index fromDirection:(int)dir {
+	NSLog(@"[*:*] emotionsPickerDisplayView:(%@) scrolledEmotionsToIndex:(%d) fromDirection:(%d) [*:*]", self.class, index, dir);
+	
+	int ind = MIN(MAX(0, index), [_subjectNames count] - 1);
+	[_headerView transitionTitle:[_subjectNames objectAtIndex:ind]];
 }
 
 

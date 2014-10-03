@@ -19,4 +19,5 @@
 - (BOOL)accessoryViewsVisible;
 
 @property (nonatomic) CGSize size;
+@property (nonatomic, retain) NSIndexPath *indexPath;
 @end

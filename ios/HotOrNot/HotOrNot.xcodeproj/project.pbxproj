@@ -55,7 +55,6 @@
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
-		30D7A0A619D8688B001C7A57 /* FishEyeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D7A0A519D8688B001C7A57 /* FishEyeView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
 		30DB24B219CBF64700DCFC49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652B15F96C7100AA7FCE /* Foundation.framework */; };
 		30DB24B319CBF64700DCFC49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
@@ -469,8 +468,6 @@
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
 		30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHThreadThis.m; sourceTree = "<group>"; };
-		30D7A0A419D8688B001C7A57 /* FishEyeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FishEyeView.h; sourceTree = "<group>"; };
-		30D7A0A519D8688B001C7A57 /* FishEyeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FishEyeView.m; sourceTree = "<group>"; };
 		30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "seflieclub-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		30DB24B019CBF64700DCFC49 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		30DB24B619CBF64700DCFC49 /* seflieclub-tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "seflieclub-tests-Info.plist"; sourceTree = "<group>"; };
@@ -1175,22 +1172,18 @@
 		3024AB1B19D71DFA0054C6BF /* Abstracts */ = {
 			isa = PBXGroup;
 			children = (
-				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
-				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
-				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
-				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
-				4CC606D8198C3E650042A951 /* HONInsetOverlayView.h */,
-				4CC606D9198C3E650042A951 /* HONInsetOverlayView.m */,
-				4CC94FD8190733C900347A34 /* HONPaginationView.h */,
-				4CC94FD9190733C900347A34 /* HONPaginationView.m */,
-				4C7DBBC6195004C100F7A487 /* HONRefreshControl.h */,
-				4C7DBBC7195004C100F7A487 /* HONRefreshControl.m */,
-				4CF203FC18F33F2D00EB57B0 /* HONTableHeaderView.h */,
-				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
 				4CBDDBAA1913354E002F9723 /* HONContactsViewController.h */,
 				4CBDDBAB1913354E002F9723 /* HONContactsViewController.m */,
 				302A021F19D7E41500302CC4 /* HONNavigationController.h */,
 				302A022019D7E41500302CC4 /* HONNavigationController.m */,
+				4CC94FD8190733C900347A34 /* HONPaginationView.h */,
+				4CC94FD9190733C900347A34 /* HONPaginationView.m */,
+				4C7DBBC6195004C100F7A487 /* HONRefreshControl.h */,
+				4C7DBBC7195004C100F7A487 /* HONRefreshControl.m */,
+				4C386BC4198482130023123A /* HONViewController.h */,
+				4C386BC5198482130023123A /* HONViewController.m */,
+				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
+				4C068AB017028A6B0019428A /* HONWebViewController.m */,
 			);
 			name = Abstracts;
 			sourceTree = "<group>";
@@ -1305,13 +1298,23 @@
 			path = NHThreadThis;
 			sourceTree = "<group>";
 		};
-		30D7A0A319D8688B001C7A57 /* FishEye */ = {
+		30D7A0A719D8CD9D001C7A57 /* Table View */ = {
 			isa = PBXGroup;
 			children = (
-				30D7A0A419D8688B001C7A57 /* FishEyeView.h */,
-				30D7A0A519D8688B001C7A57 /* FishEyeView.m */,
+				300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */,
+				300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */,
+				305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */,
+				305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */,
+				4CA34C5316F6B6550000751E /* HONTableViewCell.h */,
+				4CA34C5416F6B6550000751E /* HONTableViewCell.m */,
+				4CF203FC18F33F2D00EB57B0 /* HONTableHeaderView.h */,
+				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
+				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
+				4C7DBBBD194FF43D00F7A487 /* HONTableView.m */,
+				4C7DBBC3194FF93900F7A487 /* HONTableViewController.h */,
+				4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */,
 			);
-			path = FishEye;
+			name = "Table View";
 			sourceTree = "<group>";
 		};
 		30DB24B419CBF64700DCFC49 /* seflieclub-tests */ = {
@@ -1682,7 +1685,6 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				30D7A0A319D8688B001C7A57 /* FishEye */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
 				30FC8C3C19A829E900CDB2BC /* Tapstream */,
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
@@ -2100,22 +2102,17 @@
 		4C7DBBB5194FEF8E00F7A487 /* Base Classes */ = {
 			isa = PBXGroup;
 			children = (
-				3024AB1B19D71DFA0054C6BF /* Abstracts */,
+				30D7A0A719D8CD9D001C7A57 /* Table View */,
 				4C9E3B5C18259CC0004878F9 /* Nav */,
-				300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */,
-				300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */,
-				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
-				4C7DBBBD194FF43D00F7A487 /* HONTableView.m */,
-				4CA34C5316F6B6550000751E /* HONTableViewCell.h */,
-				4CA34C5416F6B6550000751E /* HONTableViewCell.m */,
-				4C7DBBC3194FF93900F7A487 /* HONTableViewController.h */,
-				4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */,
-				305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */,
-				305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */,
-				4C386BC4198482130023123A /* HONViewController.h */,
-				4C386BC5198482130023123A /* HONViewController.m */,
-				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
-				4C068AB017028A6B0019428A /* HONWebViewController.m */,
+				3024AB1B19D71DFA0054C6BF /* Abstracts */,
+				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
+				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
+				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
+				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
+				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
+				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
+				4CC606D8198C3E650042A951 /* HONInsetOverlayView.h */,
+				4CC606D9198C3E650042A951 /* HONInsetOverlayView.m */,
 			);
 			name = "Base Classes";
 			sourceTree = "<group>";
@@ -2165,8 +2162,6 @@
 		4C9E3B5C18259CC0004878F9 /* Nav */ = {
 			isa = PBXGroup;
 			children = (
-				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
-				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */,
 				4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */,
 				4C1435CB17D3C19A00ACBF41 /* HONActivityHeaderButtonView.h */,
@@ -2600,7 +2595,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30D7A0A619D8688B001C7A57 /* FishEyeView.m in Sources */,
 				30FC8C5D19A829E900CDB2BC /* TSCore.m in Sources */,
 				4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */,
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,

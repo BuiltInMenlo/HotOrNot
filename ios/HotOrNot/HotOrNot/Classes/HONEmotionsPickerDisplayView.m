@@ -19,8 +19,8 @@
 #define SPACING
 
 //NSString * const kBaseCaption = @"- is feeling…";
-const CGSize kImageSize = {188.0f, 188.0f};
-const CGSize kImagePaddingSize = {0.0f, 0.0f};
+const CGSize kEmotionSize = {188.0f, 188.0f};
+const CGSize kEmotionPaddingSize = {0.0f, 0.0f};
 
 const CGRect kEmotionIntroFrame = {88.0f, 88.0f, 12.0f, 12.0f};
 const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
@@ -34,8 +34,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
-@property (nonatomic) CGPoint prevPt;
-@property (nonatomic) BOOL isDragging;
+@property (nonatomic) CGFloat emotionInsetAmt;
+@property (nonatomic) CGSize emotionSpacingSize;
+@property (nonatomic) UIOffset indHistory;
+
 @end
 
 @implementation HONEmotionsPickerDisplayView
@@ -45,29 +47,15 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
-		_emotions = [NSMutableArray array];
-		_isDragging = NO;
+		_indHistory = UIOffsetZero;
+		_emotionSpacingSize = CGSizeMake(kEmotionSize.width + kEmotionPaddingSize.width, kEmotionSize.height + kEmotionPaddingSize.height);
+		_emotionInsetAmt = 0.5 * (320.0 - kEmotionSize.width);
 		
-		[self addSubview:[[UIImageView alloc] initWithImage:image]];
+		_emotions = [NSMutableArray array];
 		
 		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
-		_previewImageView.userInteractionEnabled = YES;
+		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 0.0, -100.0);
 		[self addSubview:_previewImageView];
-		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 69.0, 320.0, kImageSize.height)];
-		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
-		_scrollView.contentInset = UIEdgeInsetsMake(0.0, (320.0 - (kImageSize.width + kImagePaddingSize.width)) * 0.5, 0.0, (320.0 - (kImageSize.width + kImagePaddingSize.width)) * 0.5);
-		_scrollView.showsHorizontalScrollIndicator = NO;
-		_scrollView.showsVerticalScrollIndicator = NO;
-		_scrollView.alwaysBounceHorizontal = YES;
-		_scrollView.delegate = self;
-		[self addSubview:_scrollView];
-		
-		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectZero];
-		[_scrollView addSubview:_loaderHolderView];
-		
-		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectZero];
-		[_scrollView addSubview:_emotionHolderView];
 		
 		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
@@ -82,12 +70,27 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		emptyLabel.text = @"select a sticker\nor take selfie";
 		[_emptyImageView addSubview:emptyLabel];
 		
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 65.0, 320.0, kEmotionNormalFrame.size.height)];
+		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
+		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
+		_scrollView.showsHorizontalScrollIndicator = NO;
+		_scrollView.showsVerticalScrollIndicator = NO;
+		_scrollView.alwaysBounceHorizontal = YES;
+		_scrollView.delegate = self;
+		[self addSubview:_scrollView];
+		
+		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectZero];
+		[_scrollView addSubview:_loaderHolderView];
+		
+		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectZero];
+		[_scrollView addSubview:_emotionHolderView];
+		
 		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(271.0, 239.0, 39.0, 39.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
+		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -15.0, 39.0, 69.0)]];
 		[self addSubview:_previewThumbImageView];
 		
-		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -15.0, 39.0, 69.0)]];
 		
 		[[HONImageBroker sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
@@ -123,7 +126,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
-	if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * (kImageSize.width + kImagePaddingSize.width)) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
+	if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * (kEmotionSize.width + kEmotionPaddingSize.width)) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
 		[_emotions removeLastObject];
 		[self _removeImageEmotion];
 	
@@ -136,12 +139,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
-//	_previewImageView.image = previewImage;
-	
-//	UIImageView *holderImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, 150.0, 200.0)];
-//	holderImageView.image = previewImage;
-//	[_previewImageView addSubview:holderImageView];
-	
+	_previewImageView.image = previewImage;
 	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
 }
 
@@ -155,14 +153,14 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
-	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), _scrollView.contentSize.height);
+	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, 0.0, [_emotions count] * kEmotionSize.width, kEmotionNormalFrame.size.height);
 	_loaderHolderView.frame = _emotionHolderView.frame;
-
+	
 	CGSize scaleSize = CGSizeMake(kEmotionIntroFrame.size.width / kEmotionNormalFrame.size.width, kEmotionIntroFrame.size.height / kEmotionNormalFrame.size.height);
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionIntroFrame) - CGRectGetMidX(kEmotionNormalFrame), CGRectGetMidY(kEmotionIntroFrame) - CGRectGetMidY(kEmotionNormalFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, kImageSize.width, kImageSize.height)];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * _emotionSpacingSize.width, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height)];
 	imageView.alpha = 0.0;
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
 	imageView.transform = transform;
@@ -255,7 +253,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 					 } completion:^(BOOL finished) {
 						 [imageView removeFromSuperview];
 						 
-						 _emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), _scrollView.contentSize.height);
+						 _emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * _emotionSpacingSize.width, kEmotionNormalFrame.size.height);
 						 _loaderHolderView.frame = _emotionHolderView.frame;
 
 						 [self _updateDisplayWithCompletion:nil];
@@ -264,7 +262,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 
 - (void)_updateDisplayWithCompletion:(void (^)(BOOL finished))completion {
-	int offset = MAX(_scrollView.frame.size.width, [_emotions count] * (kImageSize.width + kImagePaddingSize.width));
+	int offset = MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width);
 	
 	[UIView animateWithDuration:0.250 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
@@ -299,7 +297,44 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	NSLog(@"[*:*] scrollViewDidScroll:[%@] (%@)", NSStringFromCGSize(scrollView.contentSize), NSStringFromCGPoint(scrollView.contentOffset));
+//	NSLog(@"[*:*] scrollViewDidScroll:[%@] (%@)", NSStringFromCGSize(scrollView.contentSize), NSStringFromCGPoint(scrollView.contentOffset));
+	
+	int axisInd = (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width;
+	int axisCoord = (axisInd * kEmotionNormalFrame.size.width) - _emotionInsetAmt;
+	
+	int currInd = _indHistory.horizontal;
+	int updtInd = MAX(0, MIN([_emotions count], axisInd));
+	int changeDir = 0;
+	
+	if (updtInd == currInd) {
+//		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ EQL ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+		changeDir = 0;
+		
+	} else if (updtInd < currInd) {
+		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ DEC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? -1 : 0);
+		
+		if (scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt)) {
+			_indHistory = UIOffsetMake(currInd - 1, currInd);
+			if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayView:scrolledEmotionsToIndex:fromDirection:)])
+				[self.delegate emotionsPickerDisplayView:self scrolledEmotionsToIndex:currInd - 1 fromDirection:1];
+		} else
+			return;
+	
+	} else if (updtInd > currInd) {
+		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ INC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? -1 : 0);
+		
+		if (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) {
+			_indHistory = UIOffsetMake(currInd + 1, currInd);
+			if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayView:scrolledEmotionsToIndex:fromDirection:)])
+				[self.delegate emotionsPickerDisplayView:self scrolledEmotionsToIndex:currInd + 1 fromDirection:-1];
+		
+		} else
+			return;
+	}
+
+//	NSLog(@"scrollView.contentOffset:[%.02f]:= range:[%@] OF ind:[%d]", scrollView.contentOffset.x, NSStringFromRange(range), ind);
 }
 
 #pragma mark - PicoSticker Delegates

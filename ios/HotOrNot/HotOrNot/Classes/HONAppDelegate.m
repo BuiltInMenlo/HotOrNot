@@ -549,8 +549,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 				
 			} else {
-				if (self.tabBarController == nil)
+				if (self.tabBarController == nil) {
 					[self _initTabs];
+				}
 			}
 		}
 	}];

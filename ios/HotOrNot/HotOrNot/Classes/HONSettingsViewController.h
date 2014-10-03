@@ -14,8 +14,7 @@
 
 
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
-	HONSettingsCellTypeSearchPhone = 0,
-	HONSettingsCellTypeSearchName,
+	HONSettingsCellTypeSearch = 0,
 	HONSettingsCellTypeNotifications,
 	HONSettingsCellTypeTermsOfService,
 	HONSettingsCellTypePrivacyPolicy,
@@ -40,5 +39,5 @@ typedef NS_ENUM(NSInteger, HONSettingsAlertType) {
 };
 
 
-@interface HONSettingsViewController : HONViewController <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONSettingsViewController : HONViewController <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIActionSheetDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

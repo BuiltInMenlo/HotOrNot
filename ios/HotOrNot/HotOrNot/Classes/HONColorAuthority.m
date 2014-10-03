@@ -43,6 +43,14 @@ static HONColorAuthority *sharedInstance = nil;
 	return ([UIColor colorWithWhite:percent alpha:1.0]);
 }
 
+- (UIColor *)honBGLightGreyColor {
+	return ([UIColor colorWithWhite:0.847 alpha:1.0]);
+}
+
+- (UIColor *)honKhakiColor {
+	return ([UIColor colorWithRed:0.769 green:0.682 blue:0.529 alpha:1.0]);
+}
+
 - (UIColor *)honBlueTextColor {
 	return ([UIColor colorWithRed:0.141 green:0.271 blue:0.925 alpha:1.0]);
 }

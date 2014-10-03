@@ -19,7 +19,7 @@
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *subtitleLabel;
-//@property (nonatomic, strong) UILabel *timeLabel;
+@property (nonatomic, strong) UILabel *timeLabel;
 //@property (nonatomic, strong) NSMutableArray *statusUpdateVOs;
 @property (nonatomic, strong) NSArray *emotionVOs;
 //@property (nonatomic, strong) NSMutableArray *statusUpdateViews;
@@ -48,7 +48,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		_titleLabel.textColor = [UIColor blackColor];
 		[self.contentView addSubview:_titleLabel];
 		
-		_subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 27.0, _titleLabel.frame.size.width, 14.0)];
+		_subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 28.0, _titleLabel.frame.size.width, 14.0)];
 //		_subtitleLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 		_subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegularItalic] fontWithSize:11];
 		_subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -57,12 +57,12 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		_statsHolderView = [[UIView alloc] initWithFrame:CGRectMake(275.0, 30.0, 16.0, 16.0)];
 		[self.contentView addSubview:_statsHolderView];
 		
-//		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(270.0, 30.0, 34.0, 14.0)];
-//		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-//		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-//		_timeLabel.backgroundColor = [UIColor clearColor];
-//		_timeLabel.textAlignment = NSTextAlignmentRight;
-//		[self.contentView addSubview:_timeLabel];
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(270.0, 29.0, 34.0, 14.0)];
+		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_timeLabel.backgroundColor = [UIColor clearColor];
+		_timeLabel.textAlignment = NSTextAlignmentRight;
+		[self.contentView addSubview:_timeLabel];
 	}
 	
 	return (self);
@@ -128,25 +128,26 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	[super accVisible:NO];
 	
-	NSString *creatorName = (_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
-	__block NSString *titleCaption = [creatorName stringByAppendingString:(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"];
-	
+	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
+	__block NSMutableString *titleCaption = [creatorName mutableCopy];;//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];
+	/*
 	NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_statusUpdateVO];
 	if ([emotions count] == 0) {
-		titleCaption = [titleCaption stringByAppendingString:@"…"];
+		[titleCaption appendString:@"…"];
 		
 	} else {
-		titleCaption = [titleCaption stringByAppendingString:@" "];
-		[emotions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONEmotionVO *vo = (HONEmotionVO *)obj;
-			titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.emotionName];
-		}];
-		
-		titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
+		[titleCaption appendFormat:@" %@", [((HONEmotionVO *)[emotions firstObject]).emotionName mutableCopy]];
+//		[emotions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			HONEmotionVO *vo = (HONEmotionVO *)obj;
+//			titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.emotionName];
+//		}];
+//		
+//		titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	}
 	
-	titleCaption = ([titleCaption length] == 0) ? creatorName : titleCaption;
-	
+	[titleCaption replaceOccurrencesOfString:@"_" withString:@" " options:NSCaseInsensitiveSearch range:[titleCaption rangeOfString:titleCaption]];
+	titleCaption = ([titleCaption length] == 0) ? [creatorName mutableCopy] : titleCaption;
+	*/
 	NSMutableArray *uniqueSubmissions = [NSMutableArray array];
 	[_clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
@@ -155,7 +156,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			[uniqueSubmissions addObject:@(vo.userID)];
 	}];
 	
-	NSString *subtitleCaption = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate includeSuffix:@" ago: You +"] stringByAppendingFormat:@"%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
+	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
 	
 	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption];
 	[_titleLabel setFont:[[[HONFontAllocator alloc] helveticaNeueFontBold] fontWithSize:18] range:[titleCaption rangeOfString:creatorName]];
@@ -163,8 +164,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	_titleLabel.frame = CGRectInset(_titleLabel.frame, -18.0, 0.0);
 	_titleLabel.frame = CGRectOffset(_titleLabel.frame, (50.0 + 18.0), 0.0);
-	_subtitleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 20.0);
-	
+	_subtitleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 21.0);
+	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
 	
 	_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointZero asLargeLoader:NO];
 	_imageLoadingView.frame = CGRectMake(17.0, 17.0, 42.0, 44.0);

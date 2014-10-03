@@ -105,6 +105,7 @@
 "select_club" = "클럽 선택하기";
 "club_name" = "클럽 이름";
 "settings_notification" = "알림";
+"settings_search" = "Search";
 "copy_url" = "내 클럽 URL을 복사";
 "terms_service" = "서비스 약관";
 "privacy_policy" = "개인정보 보호정책";
@@ -184,7 +185,8 @@
 "empty_club" = "누르고 친구를 초대 길게";
 "header_compose" = "Compose";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
-"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
+"access_contacts" = "Access your contacts.\nFind friends";
+"empty_contacts" = "No results found.\nCompose";
 "header_addFriends" = "Add Friends";
 
 "header_signUp" = "Sign Up";

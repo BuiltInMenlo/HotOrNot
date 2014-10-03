@@ -24,6 +24,8 @@ typedef enum {
 + (HONColorAuthority *)sharedInstance;
 
 - (UIColor *)honPercentGreyscaleColor:(CGFloat)percent;
+- (UIColor *)honKhakiColor;
+- (UIColor *)honBGLightGreyColor;
 - (UIColor *)honBlueTextColor;
 - (UIColor *)honBlueTextColorHighlighted;
 - (UIColor *)honGreenTextColor;

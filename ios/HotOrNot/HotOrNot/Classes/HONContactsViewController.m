@@ -28,6 +28,7 @@
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
 @property (nonatomic, strong) UILabel *emptyContactsLabel;
+@property (nonatomic, strong) UILabel *accessContactsLabel;
 
 @property (nonatomic, strong) UITableViewController *refreshControlTableViewController;
 @end
@@ -150,12 +151,12 @@
 	
 	[_searchBarView backgroundingReset];
 	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	if (_progressHUD == nil)
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_tableView.alpha = 0.0;
@@ -328,6 +329,7 @@
 	
 	_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
 	
+	_accessContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusAuthorized && [_inAppUsers count] > 0);
 	_emptyContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
 	_tableView.alpha = 1.0;
 	
@@ -371,8 +373,6 @@
 	paragraphStyle.alignment = NSTextAlignmentCenter;
 	
 	
-	
-	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 //	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -384,12 +384,19 @@
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
 	
+	_accessContactsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 56.0)];
+	_accessContactsLabel.textColor = [UIColor blackColor];
+	_accessContactsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:17];
+	_accessContactsLabel.numberOfLines = 2;
+	_accessContactsLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	_accessContactsLabel.hidden = YES;
+	[_tableView.backgroundView addSubview:_accessContactsLabel];
 	
 	_emptyContactsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 56.0)];
 	_emptyContactsLabel.textColor = [UIColor blackColor];
 	_emptyContactsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:17];
 	_emptyContactsLabel.numberOfLines = 2;
-	_emptyContactsLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"empty_contacts", @"Access your contacts to view\nmore friends on Selfieclub.") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	_emptyContactsLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 	_emptyContactsLabel.hidden = YES;
 	[_tableView.backgroundView addSubview:_emptyContactsLabel];
 

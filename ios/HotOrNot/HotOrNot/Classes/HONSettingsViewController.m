@@ -46,8 +46,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_captions = @[@"Search phone number",
-					  @"Search name",
+		_captions = @[NSLocalizedString(@"settings_search", @"Search"),
 					  NSLocalizedString(@"settings_notification", @"Notifications"),
 					  NSLocalizedString(@"terms_service", @"Terms of use"),
 					  NSLocalizedString(@"privacy_policy", @"Privacy policy"),
@@ -260,22 +259,18 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	if (indexPath.row == HONSettingsCellTypeSearchPhone) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"
+	if (indexPath.row == HONSettingsCellTypeSearch) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Search Action Sheet"
 										 withProperties:@{@"type"	: @"phone"}];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												   destructiveButtonTitle:nil
+														otherButtonTitles:@"By Phone Number", @"By Username", nil];
+		[actionSheet setTag:0];
+		[actionSheet showInView:self.view];
 	
-	} else if (indexPath.row == HONSettingsCellTypeSearchName) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"
-										 withProperties:@{@"type"	: @"username"}];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameSearchViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-		
 	} else if (indexPath.row == HONSettingsCellTypeShareClub) {
 		cell.backgroundView.alpha = 0.5;
 		[UIView animateWithDuration:0.33 animations:^(void) {
@@ -483,6 +478,23 @@
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
 //			}];
+		}
+	}
+}
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		
+		} else {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameSearchViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

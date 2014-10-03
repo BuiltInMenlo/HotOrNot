@@ -36,8 +36,7 @@ typedef NS_ENUM(NSInteger, HONStickerGroupType) {
 	HONStickerGroupTypeStickers = 0,
 	HONStickerGroupTypeFaces,
 	HONStickerGroupTypeAnimals,
-	HONStickerGroupTypeObjects,
-	HONStickerGroupTypeOther
+	HONStickerGroupTypeObjects
 };
 
 

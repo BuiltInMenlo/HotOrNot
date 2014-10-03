@@ -216,10 +216,10 @@ static NSString * const kCamera = @"camera";
 - (void)_goSelectClub:(HONUserClubVO *)clubVO {
 	if (!_isPushing) {
 		_isPushing = YES;
-		if ([clubVO.submissions count] > 0)
+		if ([clubVO.submissions count] > 0) {
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:YES];
 		
-		else {
+		} else {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];

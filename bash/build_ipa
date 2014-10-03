@@ -1,44 +1,102 @@
 #!/bin/bash
 
+#-- name to use
 app_name="Selfieclub"
+
+#-- name of distro'ble ipa
+name_ipa="${app_name}.ipa"
+
+#-- Use ‘Ad Hoc’ provisioning profile
 prov_name="${app_name} Ad Hoc"
 
+#-- move into same dir as script
 if [[ `pwd` != `dirname $0` ]]; then 
 	cd `dirname $0`; fi
 
+#-- then up 1-lvl
 cd ../
 
-build_ts=$(date +%Y%m%d_%H%M%S)
-printf "BUILD STARTS @ [%s]\n" "${build_ts}"
 
-src_dir="$(pwd)/ios/HotOrNot"
-info_plist="${src_dir}/HotOrNot/HotOrNot-Info.plist"
-deploy_dir="${src_dir}/../_deploy/${build_ts}"
+#-- dir where the .xcodeproj folder is, cleaverly disguised as a file
+proj_dir="`pwd`/ios/HotOrNot"
 
-name_arc="${app_name}-${build_ver}.xcarchive"
-name_ipa="${app_name}.ipa"
+#-- location of the proj's primary plist
+info_plist="${proj_dir}/HotOrNot/HotOrNot-Info.plist"
+
+#-- error logging file
+error_log="`pwd`/bash/build_err.log"
 
 
-if [ ! -d "$deploy_dir" ]; then
-	mkdir -p "${deploy_dir}"; fi
+#-- where ipa deploys to, create if needed
+deploy_dir="${proj_dir}/../_deploy/DerivedData"
+if [ "$deploy_dir" ]; then mkdir -p "${deploy_dir}" ; fi
 
+
+#-- cleanup prev ipa's from deploy's dir, if any
 find "${deploy_dir}" -type f -name "*.ipa" -exec rm {} \;
 
-#--
 
-cd "${src_dir}"
-xcodebuild -scheme HotOrNot archive -archivePath "${deploy_dir}/${app_name}.xcarchive"
 
+#-- start of build timestamps
+start_ts=`date +%Y\-%m\-%d\ %H\:%M\:%S\%z`
+start_epoch=`date +%s`
+
+#-- output starting stats
+printf "BUILD STARTS @ [%s]\n" "${start_ts}"
+
+#-- new name for xcode archive
+name_xcarc="${app_name}_${start_epoch}.xcarchive"
+
+
+#-- move into the project dir
+cd "${proj_dir}"
+
+
+#-- explictly increment the build number :ƿ -- WELL THAT TAKES CARE OF THAT!
 build_ver=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "${info_plist}")
-name_arc="${app_name}-${build_ver}.xcarchive"
-mv "${deploy_dir}/${app_name}.xcarchive" "${deploy_dir}/${name_arc}"
-
-xcodebuild -exportArchive -exportFormat ipa -archivePath "${deploy_dir}/${name_arc}" -exportPath "${deploy_dir}/${name_ipa}" -exportProvisioningProfile "${prov_name}"
-
-printf "BUILD COMPLETES @ [%s]\n" `date +%Y%m%d_%H%M%S`
-
-#--echo "$(date +%Y%m%d_%H%M%S)"
-open -a HockeyApp "${deploy_dir}/${name_arc}"
+build_ver=$(( $build_ver + 1 ))
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $build_ver" "${info_plist}"
 
 
+#-- attempt to create the xcode archive, send error(s) to log
+xcodebuild clean -scheme "${app_name}" archive -archivePath "${deploy_dir}/${app_name}.xcarchive" 2>"${error_log}"
+
+#-- check log file for any errors, then delete it
+error_txt=$(grep -wc "The following build commands failed" "${error_log}")
+if [ "${error_txt}" != "0" ]; then echo "BUILD FAILED! Error Log:" ; cat "${error_log}" ; exit 1 ; fi
+if [ -f "$error_log" ]; then rm "${error_log}" ; fi
+
+
+#-- move the archive to deploy dir
+mv "${deploy_dir}/${app_name}.xcarchive" "${deploy_dir}/${name_xcarc}"
+
+#-- attempt to create ipa from the xcarchive contents
+xcodebuild -exportArchive -exportFormat ipa -archivePath "${deploy_dir}/${name_xcarc}" -exportPath "${deploy_dir}/${name_ipa}" -exportProvisioningProfile "${prov_name}" 2>"${error_log}"
+
+#-- check log file for any errors, then delete it
+error_txt=$(grep -wc "error" "${error_log}")
+if [ "${error_txt}" != "0" ]; then echo "BUILD FAILED! Error Log:" ; cat "${error_log}" ; exit 1 ; fi
+if [ -f "$error_log" ]; then rm "${error_log}" ; fi
+
+
+
+#-- build finished timestamp
+finish_epoch=`date +%s`
+finish_ts=`date +%Y\-%m\-%d\ %H\:%M\:%S\%z`
+elapsed_sec=$(( finish_epoch-start_epoch ))
+
+
+#-- output build time all purdy like
+printf "BUILD COMPLETES @ [%s]\nTOOK [%s]\n" "${finish_ts}" `echo $elapsed_sec | awk '{printf "%02d:%02d:%02d", int( $1/3600 ), int( ($1/60)%60 ), int( $1%60 )}'`
+
+
+#-- use hockeyapp's util to upload
+/usr/local/bin/puck "${deploy_dir}/${name_xcarc}"
+
+
+#-- we're done here! 
 exit 0;
+
+
+
+#//echo "Duration: $(($DIFF / 3600 )) hours $((($DIFF % 3600) / 60)) minutes $(($DIFF % 60)) seconds"

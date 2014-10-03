@@ -19,7 +19,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]]];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 11.0, 200.0, 20.0)];
-		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 		label.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor] /*#bdbdbd*/;
 		label.backgroundColor = [UIColor clearColor];
 		label.text = title;

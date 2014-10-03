@@ -105,6 +105,7 @@
 "select_club" = "Select Club";
 "club_name" = "Club Name";
 "settings_notification" = "Notifications";
+"settings_search" = "Search";
 "copy_url" = "Copy Club URL";
 "terms_service" = "Terms of service";
 "privacy_policy" = "Privacy policy";
@@ -188,7 +189,8 @@
 "header_findFriends" = "Find friends";
 "header_compose" = "Compose";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
-"empty_contacts" = "Access your contacts to view\nmore friends on Selfieclub.";
+"access_contacts" = "Access your contacts.\nFind friends";
+"empty_contacts" = "No results found.\nCompose";
 "header_signUp" = "Sign Up";
 "phone_number" = "phone number";
 "alert_inviteContact_t" = "%@ found!";
