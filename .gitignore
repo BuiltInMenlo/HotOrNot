@@ -20,7 +20,7 @@ bash/purge.log
 ios/HotOrNot/Obj-C Notes
 #// ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata
 
-build/*
+ios/_deploy/*
 *.pbxuser
 !default.pbxuser
 *.mode1v3
