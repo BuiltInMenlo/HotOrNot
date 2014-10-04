@@ -32,6 +32,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIView *loaderHolderView;
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
+@property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
 @property (nonatomic) CGFloat emotionInsetAmt;
@@ -56,6 +57,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 0.0, -100.0);
 		[self addSubview:_previewImageView];
+		
+		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"previewGradient"]];
+		_previewGradientImageView.hidden = YES;
+		[self addSubview:_previewGradientImageView];
 		
 //		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
 //		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
@@ -140,9 +145,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
-	_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
-	
 	_previewImageView.image = previewImage;
+	_previewGradientImageView.hidden = NO;
+	
+	_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
 //	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
 }
 
