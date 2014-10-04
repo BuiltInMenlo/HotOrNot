@@ -19,6 +19,7 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 #import "HONUserProfileViewController.h"
+#import "HONSelfieCameraViewController.h"
 
 @interface HONUsernameSearchViewController () <HONClubViewCellDelegate, HONSearchBarViewDelegate>
 @property (nonatomic, strong) NSMutableArray *searchUsers;
@@ -386,16 +387,20 @@
 										withProperties:[self _trackingProps]];
 		
 		if (buttonIndex == 1) {
-			__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:_selectedUsers];
 			_isPushing = YES;
+			__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:_selectedUsers];
 			
 			if (clubVO != nil) {
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				
 				[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-					[self dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-					}];
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:YES completion:nil];
+					
+//					[self dismissViewControllerAnimated:YES completion:^(void) {
+//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//					}];
 				}];
 				
 			} else {
@@ -410,9 +415,13 @@
 					clubVO = [HONUserClubVO clubWithDictionary:result];
 					
 					[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-						[self dismissViewControllerAnimated:YES completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-						}];
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+						[navigationController setNavigationBarHidden:YES];
+						[self presentViewController:navigationController animated:YES completion:nil];
+						
+//						[self dismissViewControllerAnimated:YES completion:^(void) {
+//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//						}];
 					}];
 				}];
 			}

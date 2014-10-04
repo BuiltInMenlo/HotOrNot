@@ -115,16 +115,12 @@ static NSString * const kCamera = @"camera";
 	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
 		self.view.hidden = NO;
 		
-		// iOS 8 Notifications
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
 			[[UIApplication sharedApplication] registerForRemoteNotifications];
 		
-		// iOS < 8 Notifications
 		} else
 			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
-		
-//		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	}
 	
 	_panGestureRecognizer.delaysTouchesBegan = NO;
@@ -186,7 +182,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)_goCreateChallenge {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"];
-	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
+	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewStatusUpdate];
 	selfieCameraViewController.delegate = self;
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];

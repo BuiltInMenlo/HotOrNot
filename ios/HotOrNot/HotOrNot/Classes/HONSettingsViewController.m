@@ -120,7 +120,7 @@
 - (void)_goCreateChallenge {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Create Status Update"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

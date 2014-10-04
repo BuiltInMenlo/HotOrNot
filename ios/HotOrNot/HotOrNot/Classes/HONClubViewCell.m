@@ -134,7 +134,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	[super accVisible:NO];
 	
 	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
-	__block NSMutableString *titleCaption = [creatorName mutableCopy];;//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];
+	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];
 	/*
 	NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_statusUpdateVO];
 	if ([emotions count] == 0) {
@@ -170,8 +170,12 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			[uniqueParticipants addObject:vo.username];
 	}];
 	
-	for (NSString *username in uniqueParticipants)
+	for (NSString *username in uniqueParticipants) {
+		if ([username isEqualToString:titleCaption])
+			continue;
+		
 		subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", username];
+	}
 	subtitleCaption = ([subtitleCaption rangeOfString:@", "].location != NSNotFound) ? [subtitleCaption substringToIndex:[subtitleCaption length] - 2] : subtitleCaption;
 	
 //	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];

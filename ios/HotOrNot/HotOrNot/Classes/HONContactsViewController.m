@@ -55,7 +55,7 @@
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
-					if ([[dict objectForKey:@"submissions"] count] == 0)
+					if ([[dict objectForKey:@"submissions"] count] == 0 || [[dict objectForKey:@"pending"] count] == 0)
 						continue;
 					
 					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];

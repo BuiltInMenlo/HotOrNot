@@ -14,14 +14,9 @@
 #import "HONTrivialUserVO.h"
 
 typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
-	HONSelfieSubmitTypeCreateChallenge = 0,
-	HONSelfieSubmitTypeReplyChallenge,
-	
-	HONSelfieSubmitTypeCreateClub,
-	HONSelfieSubmitTypeReplyClub,
-	
-	HONSelfieSubmitTypeCreateMessage,
-	HONSelfieSubmitTypeReplyMessage
+	HONSelfieSubmitTypeCreate = 0,
+	HONSelfieSubmitTypeReply,
+	HONSelfieSubmitTypeSearchUser
 };
 
 @class HONSelfieCameraViewController;
@@ -32,7 +27,7 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 @end
 
 @interface HONSelfieCameraViewController : HONViewController <UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
-- (id)initAsNewChallenge;
+- (id)initAsNewStatusUpdate;
 - (id)initWithUser:(HONTrivialUserVO *)trivialUserVO;
 - (id)initWithContact:(HONContactUserVO *)contactUserVO;
 - (id)initWithClub:(HONUserClubVO *)clubVO;

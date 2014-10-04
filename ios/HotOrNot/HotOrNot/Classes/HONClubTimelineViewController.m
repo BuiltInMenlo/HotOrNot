@@ -268,8 +268,8 @@
 		[self _retrieveClub];
 	
 	if (_index > 0) {
-		_index = MIN(_index, [_clubPhotos count]);
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+		_index = 0;//MIN(MAX(0, _index), [_clubPhotos count]);
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 	}
 }
 

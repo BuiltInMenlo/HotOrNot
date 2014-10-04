@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, clubID, statusID, photoSubmitType, status, subjectNames, recentLikes, challengers, likedByTotal, totalLikes, hasViewed, addedDate, startedDate, updatedDate;
+@synthesize challengeID, clubID, statusID, status, subjectNames, recentLikes, challengers, likedByTotal, totalLikes, hasViewed, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -23,9 +23,7 @@
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
-	vo.photoSubmitType = ([[dictionary objectForKey:@"isVerify"] intValue] == 0) ? HONPhotoSubmitTypeCreateClub : HONPhotoSubmitTypeCreateVerify;
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
-	vo.photoSubmitType = ([[vo.subjectNames firstObject] rangeOfString:@"#shoutout"].location == 0) ? HONPhotoSubmitTypeCreateShoutout : vo.photoSubmitType;
 	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];

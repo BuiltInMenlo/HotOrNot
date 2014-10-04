@@ -310,7 +310,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	NSLog(@"[*:*] scrollViewDidScroll:[%@] (%@)", NSStringFromCGSize(scrollView.contentSize), NSStringFromCGPoint(scrollView.contentOffset));
 	
 	int axisInd = (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width;
-	int axisCoord = (axisInd * kEmotionNormalFrame.size.width) - _emotionInsetAmt;
+	int axisCoord = (axisInd * _emotionSpacingSize.width) - _emotionInsetAmt;
 	
 	int currInd = _indHistory.horizontal;
 	int updtInd = MAX(0, MIN([_emotions count], axisInd));
@@ -321,8 +321,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		changeDir = 0;
 		
 	} else if (updtInd < currInd) {
-		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ DEC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
-		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? -1 : 0);
+//		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ DEC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+//		NSLog(@"LOWER:[%.02f] COORD:[%d] UPPER:[%.02f] contentOffset:[%d] updtInd:[%d]", (axisCoord - _emotionInsetAmt), axisCoord, (axisCoord + _emotionInsetAmt), scrollView.contentOffset.x, updtInd);
 		
 		if (scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(currInd - 1, currInd);
@@ -332,8 +332,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 			return;
 	
 	} else if (updtInd > currInd) {
-		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ INC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
-		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? -1 : 0);
+//		NSLog(@"\n‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ INC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
+//		NSLog(@"LOWER:[%.02f] COORD:[%d] UPPER:[%.02f] contentOffset:[%d] updtInd:[%d]", (axisCoord - _emotionInsetAmt), axisCoord, (axisCoord + _emotionInsetAmt), scrollView.contentOffset.x, updtInd);
 		
 		if (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(currInd + 1, currInd);

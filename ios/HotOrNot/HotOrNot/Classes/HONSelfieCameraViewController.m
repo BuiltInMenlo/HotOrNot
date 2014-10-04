@@ -31,7 +31,7 @@
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONSelfieCameraPreviewView *previewView;
-@property (nonatomic, assign, readonly) HONSelfieCameraSubmitType selfieSubmitType;
+@property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
@@ -68,7 +68,7 @@
 	NSLog(@"%@ - initWithContact", [self description]);
 	if ((self = [self init])) {
 		_contactUserVO = contactUserVO;
-		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateClub;
+		_selfieSubmitType = HONSelfieSubmitTypeCreate;
 	}
 	
 	return (self);
@@ -78,7 +78,7 @@
 	NSLog(@"%@ - initWithUser", [self description]);
 	if ((self = [self init])) {
 		_trivialUserVO = trivialUserVO;
-		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateClub;
+		_selfieSubmitType = HONSelfieSubmitTypeCreate;
 	}
 	
 	return (self);
@@ -88,17 +88,17 @@
 	NSLog(@"%@ - initWithClub:[%d] (%@)", [self description], clubVO.clubID, clubVO.clubName);
 	if ((self = [self init])) {
 		_userClubVO = clubVO;
-		_selfieSubmitType = HONSelfieCameraSubmitTypeReplyClub;
+		_selfieSubmitType = HONSelfieSubmitTypeReply;
 	}
 	
 	return (self);
 }
 
 
-- (id)initAsNewChallenge {
+- (id)initAsNewStatusUpdate {
 	NSLog(@"%@ - initAsNewChallenge", [self description]);
 	if ((self = [self init])) {
-		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateChallenge;
+		_selfieSubmitType = HONSelfieSubmitTypeCreate;
 	}
 	
 	return (self);
@@ -164,8 +164,8 @@
 													 encoding:NSUTF8StringEncoding];
 		_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
-						  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
-						  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.ownerID : 0],
+						  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieSubmitTypeReply) ? _userClubVO.clubID : 0],
+						  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieSubmitTypeReply) ? _userClubVO.ownerID : 0],
 						  @"subject"		: @"",
 						  @"subjects"		: jsonString,
 						  @"challenge_id"	: [@"" stringFromInt:0],
@@ -176,7 +176,7 @@
 //		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 
 
-		if (_selfieSubmitType != HONSelfieCameraSubmitTypeReplyClub) {
+		if (_selfieSubmitType != HONSelfieSubmitTypeReply) {
 			_isPushing = YES;
 			[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
  
@@ -198,7 +198,8 @@
 					_progressHUD = nil;
 				}
 				
-				[self dismissViewControllerAnimated:YES completion:^(void) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				//[self dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 					

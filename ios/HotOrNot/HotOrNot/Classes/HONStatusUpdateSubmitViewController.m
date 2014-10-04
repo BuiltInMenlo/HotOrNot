@@ -75,8 +75,8 @@
 													  @"contacts"	: contacts}];
 	
 	if ([_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
-//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		[self dismissViewControllerAnimated:YES completion:^(void) {
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 		}];
@@ -84,7 +84,8 @@
 	
 	if ([_selectedUsers count] > 0 && [_selectedContacts count] > 0) {
 		[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID inviteNonAppContacts:_selectedContacts completion:^(NSDictionary *result) {
-			[self dismissViewControllerAnimated:YES completion:^(void) {
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 			}];
@@ -93,7 +94,8 @@
 	} else {
 		if ([_selectedUsers count] > 0) {
 			[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-				[self dismissViewControllerAnimated:YES completion:^(void) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//				[self dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 				}];
@@ -102,7 +104,8 @@
 		
 		if ([_selectedContacts count] > 0) {
 			[[HONAPICaller sharedInstance] inviteNonAppUsers:_selectedContacts toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-				[self dismissViewControllerAnimated:YES completion:^(void) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				//[self dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 				}];
@@ -502,12 +505,12 @@
 //			}
 		
 		} else if (indexPath.section == 2) {
-//			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 //				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
-//				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
-//				*stop = cell.isSelected;
-//			}];
+				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
+				*stop = cell.isSelected;
+			}];
 			
 //			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
 //				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
@@ -534,12 +537,12 @@
 //			}
 			
 		} else if (indexPath.section == 2) {
-//			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 //				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
-//				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
-//				*stop = cell.isSelected;
-//			}];
+				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
+				*stop = cell.isSelected;
+			}];
 			
 //			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
 //				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
@@ -567,13 +570,13 @@
 			
 		
 		} else if (indexPath.section == 3) {
-//			[_selectedContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				HONContactUserVO *vo = (HONContactUserVO *)obj;
+			[_selectedContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				HONContactUserVO *vo = (HONContactUserVO *)obj;
 //				NSLog(@"CELL:[%@] -=- [%@]VO", cell.contactUserVO.mobileNumber, vo.mobileNumber);
-//				[cell toggleSelected:([vo.mobileNumber isEqualToString:cell.contactUserVO.mobileNumber])];
-//				*stop = cell.isSelected;
-//			}];
-//			
+				[cell toggleSelected:([vo.mobileNumber isEqualToString:cell.contactUserVO.mobileNumber])];
+				*stop = cell.isSelected;
+			}];
+//
 //			if ([[_submitParams objectForKey:@"recipients"] isEqualToString:(cell.contactUserVO.isSMSAvailable) ? cell.contactUserVO.mobileNumber : cell.contactUserVO.email]) {
 //				if (![_selectedContacts containsObject:cell.contactUserVO]) {
 //					[_selectedContacts addObject:cell.contactUserVO];

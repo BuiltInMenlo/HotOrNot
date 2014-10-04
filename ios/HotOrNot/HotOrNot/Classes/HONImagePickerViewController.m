@@ -15,7 +15,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) NSArray *recipients;
-@property (nonatomic, assign, readonly) HONPhotoSubmitType photoSubmitType;
+@property (nonatomic, assign, readonly) HONSelfieSubmitType photoSubmitType;
 @end
 
 @implementation HONImagePickerViewController
@@ -30,7 +30,7 @@
 
 - (id)initAsNewChallenge {
 	if ((self = [self init])) {
-		_photoSubmitType = HONPhotoSubmitTypeCreateChallenge;
+		_photoSubmitType = HONSelfieSubmitTypeCreate;
 	}
 	
 	return (self);
@@ -38,16 +38,7 @@
 
 - (id)initAsNewChallengeForClub:(int)clubID {
 	if ((self = [self init])) {
-		_photoSubmitType = HONPhotoSubmitTypeCreateClub;
-	}
-	
-	return (self);
-}
-
-- (id)initAsMessageToRecipients:(NSArray *)recipients {
-	if ((self = [self init])) {
-		_photoSubmitType = HONPhotoSubmitTypeCreateMessage;
-		_recipients = recipients;
+		_photoSubmitType = HONSelfieSubmitTypeCreate;
 	}
 	
 	return (self);
@@ -55,22 +46,13 @@
 
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo {
 	if ((self = [self init])) {
-		_photoSubmitType = HONPhotoSubmitTypeReplyChallenge;
+		_photoSubmitType = HONSelfieSubmitTypeReply;
 		_challengeVO = vo;
 	}
 	
 	return (self);
 }
 
-- (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients {
-	if ((self= [self init])) {
-		_photoSubmitType = HONPhotoSubmitTypeReplyMessage;
-		_messageVO = messageVO;
-		_recipients = recipients;
-	}
-	
-	return (self);
-}
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];

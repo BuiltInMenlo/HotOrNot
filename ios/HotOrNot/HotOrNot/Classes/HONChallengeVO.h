@@ -8,41 +8,6 @@
 
 #import "HONOpponentVO.h"
 
-typedef NS_ENUM(NSInteger, HONPhotoSubmitType) {
-	HONPhotoSubmitTypeCreateChallenge = 0,
-	HONPhotoSubmitTypeReplyChallenge,
-	
-	HONPhotoSubmitTypeCreateClub,
-	HONPhotoSubmitTypeReplyClub,
-	
-	HONPhotoSubmitTypeCreateVerify,
-	HONPhotoSubmitTypeReplyVerify,
-	
-	HONPhotoSubmitTypeCreateShoutout,
-	HONPhotoSubmitTypeReplyShoutout,
-	
-	HONPhotoSubmitTypeCreateMessage,
-	HONPhotoSubmitTypeReplyMessage
-};
-
-
-typedef NS_ENUM(NSInteger, HONSelfieCameraSubmitType) {
-	HONSelfieCameraSubmitTypeCreateChallenge = 0,
-	HONSelfieCameraSubmitTypeReplyChallenge,
-	
-	HONSelfieCameraSubmitTypeCreateClub,
-	HONSelfieCameraSubmitTypeReplyClub,
-	
-	HONSelfieCameraSubmitTypeCreateVerify,
-	HONSelfieCameraSubmitTypeReplyVerify,
-	
-	HONSelfieCameraSubmitTypeCreateShoutout,
-	HONSelfieCameraSubmitTypeReplyShoutout,
-	
-	HONSelfieCameraSubmitTypeCreateMessage,
-	HONSelfieCameraSubmitTypeReplyMessage
-};
-
 
 @interface HONChallengeVO : NSObject
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary;
@@ -52,7 +17,6 @@ typedef NS_ENUM(NSInteger, HONSelfieCameraSubmitType) {
 @property (nonatomic) int challengeID;
 @property (nonatomic) int clubID;
 @property (nonatomic) int statusID;
-@property (nonatomic, assign) HONPhotoSubmitType photoSubmitType;
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSArray *subjectNames;
 @property (nonatomic) int likedByTotal;

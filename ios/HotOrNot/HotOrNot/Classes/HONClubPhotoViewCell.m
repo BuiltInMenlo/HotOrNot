@@ -318,7 +318,7 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	
 //	int axisInd = (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width;
 	int updtInd = MAX(0, MIN([_emotions count], (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width));
-	int axisCoord = (updtInd * kEmotionLoadedFrame.size.width) - _emotionInsetAmt;
+	int axisCoord = (updtInd * _emotionSpacingSize.width) - _emotionInsetAmt;
 	
 	
 	
@@ -327,7 +327,7 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 		
 	} else if (updtInd < currInd) {
 //		NSLog(@"‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ DEC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
-//		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x < (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord + _emotionInsetAmt)) ? 1 : 0);
+//		NSLog(@"LOWER:[%.02f] COORD:[%d] UPPER:[%.02f] contentOffset:[%d] updtInd:[%d]", (axisCoord - _emotionInsetAmt), axisCoord, (axisCoord + _emotionInsetAmt), scrollView.contentOffset.x, updtInd);
 		
 		if (scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(updtInd, currInd);
@@ -337,7 +337,7 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 		
 	} else if (updtInd > currInd) {
 //		NSLog(@"‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ INC ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");
-//		NSLog(@"scrollView.contentOffset:[%.02f]:= axisCoord:[%d] axisInd:[%d] || {%d}", scrollView.contentOffset.x, axisCoord, axisInd, (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) ? 1 : 0);
+//		NSLog(@"LOWER:[%.02f] COORD:[%d] UPPER:[%.02f] contentOffset:[%d] updtInd:[%d]", (axisCoord - _emotionInsetAmt), axisCoord, (axisCoord + _emotionInsetAmt), scrollView.contentOffset.x, updtInd);
 		
 		if (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(updtInd, currInd);

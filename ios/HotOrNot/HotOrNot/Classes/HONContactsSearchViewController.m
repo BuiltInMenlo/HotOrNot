@@ -370,18 +370,19 @@
 										withTrivialUser:_searchUserVO];
 		
 		if (buttonIndex == 0) {
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:_searchUserVO]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:YES completion:nil];
-			
 			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[_searchUserVO]] : _clubVO;
 			if (_clubVO != nil) {
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				
 				[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-					[self dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-					}];
+					_isDismissing = YES;
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:YES completion:nil];
+					
+//					[self dismissViewControllerAnimated:YES completion:^(void) {
+//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//					}];
 				}];
 				
 			} else {
@@ -396,9 +397,14 @@
 					_clubVO = [HONUserClubVO clubWithDictionary:result];
 					
 					[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-						[self dismissViewControllerAnimated:YES completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-						}];
+						_isDismissing = YES;
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+						[navigationController setNavigationBarHidden:YES];
+						[self presentViewController:navigationController animated:YES completion:nil];
+						
+//						[self dismissViewControllerAnimated:YES completion:^(void) {
+//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//						}];
 					}];
 				}];
 			}
@@ -413,8 +419,13 @@
 			if (_clubVO != nil) {
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-					[self dismissViewControllerAnimated:YES completion:^(void) {
-					}];
+					_isDismissing = YES;
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:YES completion:nil];
+					
+//					[self dismissViewControllerAnimated:YES completion:^(void) {
+//					}];
 				}];
 				
 			} else {
@@ -429,16 +440,16 @@
 					_clubVO = [HONUserClubVO clubWithDictionary:result];
 
 					[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-						[self dismissViewControllerAnimated:YES completion:^(void) {
-						}];
+						_isDismissing = YES;
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+						[navigationController setNavigationBarHidden:YES];
+						[self presentViewController:navigationController animated:YES completion:nil];
+						
+//						[self dismissViewControllerAnimated:YES completion:^(void) {
+//						}];
 					}];
 				}];
 			}
-			
-			
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:_contactUserVO]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }
