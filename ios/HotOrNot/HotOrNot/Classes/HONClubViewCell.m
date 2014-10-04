@@ -148,18 +148,31 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	[titleCaption replaceOccurrencesOfString:@"_" withString:@" " options:NSCaseInsensitiveSearch range:[titleCaption rangeOfString:titleCaption]];
 	titleCaption = ([titleCaption length] == 0) ? [creatorName mutableCopy] : titleCaption;
 	*/
-	NSMutableArray *uniqueSubmissions = [NSMutableArray array];
+	
+	NSString *subtitleCaption = @"» ";
+	NSMutableArray *uniqueParticipants = [NSMutableArray array];
 	[_clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 		
-		if (![uniqueSubmissions containsObject:@(vo.userID)])
-			[uniqueSubmissions addObject:@(vo.userID)];
+		if (![uniqueParticipants containsObject:vo.username])
+			[uniqueParticipants addObject:vo.username];
 	}];
 	
-	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
+	[_clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		
+		if (![uniqueParticipants containsObject:vo.username])
+			[uniqueParticipants addObject:vo.username];
+	}];
+	
+	for (NSString *username in uniqueParticipants)
+		subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", username];
+	subtitleCaption = ([subtitleCaption rangeOfString:@", "].location != NSNotFound) ? [subtitleCaption substringToIndex:[subtitleCaption length] - 2] : subtitleCaption;
+	
+//	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
 	
 	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption];
-	[_titleLabel setFont:[[[HONFontAllocator alloc] helveticaNeueFontBold] fontWithSize:18] range:[titleCaption rangeOfString:creatorName]];
+	[_titleLabel setFont:[[[HONFontAllocator alloc] helveticaNeueFontMedium] fontWithSize:18] range:[titleCaption rangeOfString:creatorName]];
 	_subtitleLabel.text = subtitleCaption;
 	
 	_titleLabel.frame = CGRectInset(_titleLabel.frame, -18.0, 0.0);

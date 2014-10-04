@@ -42,12 +42,28 @@
 	return (self);
 }
 
+- (id)initWithTitle:(NSString *)title asLightStyle:(BOOL)isLightStyle {
+	if ((self = [self initWithTitle:title])) {
+		_titleLabel.textColor = [UIColor whiteColor];
+	}
+	
+	return (self);
+}
+
 - (id)initWithTitleUsingCartoGothic:(NSString *)title {
 	if ((self = [self initWithTitle:title])) {
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:19];
 		_titleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 5.0);
 		_titleLabel.shadowOffset = CGSizeZero;
 		_titleLabel.shadowColor = [UIColor clearColor];
+	}
+	
+	return (self);
+}
+
+- (id)initWithTitleUsingCartoGothic:(NSString *)title asLightStyle:(BOOL)isLightStyle {
+	if ((self = [self initWithTitleUsingCartoGothic:title])) {
+		_titleLabel.textColor = [UIColor whiteColor];
 	}
 	
 	return (self);
@@ -112,6 +128,15 @@
 
 - (void)removeBackground {
 	_bgImageView.hidden = YES;
+}
+
+- (void)toggleLightStyle:(BOOL)isLightStyle {
+	if (isLightStyle) {
+		_titleLabel.textColor = [UIColor whiteColor];
+	
+	} else {
+		_titleLabel.textColor = [UIColor blackColor];
+	}
 }
 
 @end

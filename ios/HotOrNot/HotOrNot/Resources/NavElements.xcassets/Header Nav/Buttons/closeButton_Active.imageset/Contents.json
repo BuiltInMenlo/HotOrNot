@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "blueCloseButton_Active.png"
+      "filename" : "closeButtonBlack_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "blueCloseButton_Active@2x.png"
+      "filename" : "closeButtonBlack_Active@2x.png"
     },
     {
       "idiom" : "universal",

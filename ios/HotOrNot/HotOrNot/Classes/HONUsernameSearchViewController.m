@@ -122,8 +122,8 @@
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(282.0, 2.0, 44.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_Active"] forState:UIControlStateHighlighted];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_search", @"Search")];

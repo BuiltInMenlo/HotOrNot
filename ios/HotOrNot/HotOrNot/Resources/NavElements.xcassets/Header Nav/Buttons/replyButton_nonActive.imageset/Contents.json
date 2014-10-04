@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "replyButton_nonActive.png"
+      "filename" : "composeButtonWhite_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "replyButton_nonActive@2x.png"
+      "filename" : "composeButtonWhite_nonActive@2x.png"
     },
     {
       "idiom" : "universal",

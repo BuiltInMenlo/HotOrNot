@@ -84,8 +84,8 @@
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"chevronBackButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"chevronBackButton_Active"] forState:UIControlStateHighlighted];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:backButton];
 }

@@ -15,11 +15,11 @@
 
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
 	HONSettingsCellTypeSearch = 0,
+	HONSettingsCellTypeSupport,
 	HONSettingsCellTypeNotifications,
 	HONSettingsCellTypeTermsOfService,
-	HONSettingsCellTypePrivacyPolicy,
+//	HONSettingsCellTypePrivacyPolicy,
 	HONSettingsCellTypeShareClub,
-//	HONSettingsCellTypeSupport,
 //	HONSettingsCellTypeRateThisApp,
 //	HONSettingsCellTypeNetworkStatus,
 	HONSettingsCellTypeVersion

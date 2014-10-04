@@ -748,6 +748,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	
 
+#if __APPSTORE_BUILD__ == 0
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
+#endif
+
+	
 	[self _establishUserDefaults];
 	
 	if ([HONAppDelegate hasNetwork]) {
@@ -1219,12 +1225,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					   secretKey:kTapjoyAppSecretKey
 						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 
-	
-#if __APPSTORE_BUILD__ == 0
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
-#endif
-	
 	
 //	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"
@@ -1776,6 +1776,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
+	return ([[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
 #ifndef CONFIGURATION_AppStore
 //	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
 //		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];

@@ -57,8 +57,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 0.0, -100.0);
 		[self addSubview:_previewImageView];
 		
-		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
-		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
+//		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
+//		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
+		_emptyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(63.0, 63.0, 194.0, 46.0)];
 		[self addSubview:_emptyImageView];
 		
 		UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 70.0, 194.0, 46.0)];
@@ -67,7 +68,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		emptyLabel.textColor = [UIColor lightGrayColor];
 		emptyLabel.textAlignment = NSTextAlignmentCenter;
 		emptyLabel.numberOfLines = 2;
-		emptyLabel.text = @"select a sticker\nor take selfie";
+		emptyLabel.text = NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground");
 		[_emptyImageView addSubview:emptyLabel];
 		
 		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 65.0, 320.0, kEmotionNormalFrame.size.height)];
@@ -85,10 +86,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectZero];
 		[_scrollView addSubview:_emotionHolderView];
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(271.0, 239.0, 39.0, 39.0)];
-		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(258.0, 227.0, 49.0, 37.0)];
+		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButton_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
-		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -15.0, 39.0, 69.0)]];
+		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -19.0, 49.0, 86.0)]];
 		[self addSubview:_previewThumbImageView];
 		
 		
@@ -139,8 +140,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
+	_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
+	
 	_previewImageView.image = previewImage;
-	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
+//	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
 }
 
 

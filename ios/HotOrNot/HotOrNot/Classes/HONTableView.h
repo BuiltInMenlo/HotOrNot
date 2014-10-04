@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-extern const CGFloat kOrthodoxTableHeaderHeight;
 extern const CGFloat kOrthodoxTableCellHeight;
 
 @interface HONTableView : UITableView

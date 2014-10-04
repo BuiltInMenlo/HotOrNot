@@ -9,6 +9,7 @@
 #import "NSString+DataTypes.h"
 
 #import "HONTableViewController.h"
+#import "HONTableHeaderView.h"
 
 
 @interface HONTableViewController ()
@@ -148,7 +149,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
+	return (kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

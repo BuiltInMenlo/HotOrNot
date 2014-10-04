@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "keyboardBackground.png"
+      "filename" : "stickerboardBackground.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "keyboardBackground@2x.png"
+      "filename" : "stickerboardBackground@2x.png"
     },
     {
       "idiom" : "universal",

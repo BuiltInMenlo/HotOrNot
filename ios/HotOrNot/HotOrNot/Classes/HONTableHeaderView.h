@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+extern const CGFloat kOrthodoxTableHeaderHeight;
+
 @interface HONTableHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
 @end

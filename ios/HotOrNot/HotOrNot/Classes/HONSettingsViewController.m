@@ -47,9 +47,9 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		_captions = @[NSLocalizedString(@"settings_search", @"Search"),
+					  NSLocalizedString(@"settings_support", @"Support"),
 					  NSLocalizedString(@"settings_notification", @"Notifications"),
-					  NSLocalizedString(@"terms_service", @"Terms of use"),
-					  NSLocalizedString(@"privacy_policy", @"Privacy policy"),
+					  NSLocalizedString(@"settings_legal", @"Legal"),
 					  @"Share",
 					  @" "];
 		
@@ -61,8 +61,6 @@
 		
 		else
 			_notificationSwitch.on = YES;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 	}
 	
 	
@@ -96,7 +94,6 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_settings", @"Settings")];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
-	
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
@@ -154,24 +151,6 @@
 	NSLog(@"::|> _refreshSettingsTab <|::");
 }
 
-- (void)_inviteSMS:(NSNotification *)notification {
-	if ([MFMessageComposeViewController canSendText]) {
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.messageComposeDelegate = self;
-		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]];
-		
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"sms_error", nil) // @"SMS Error"
-									message: NSLocalizedString(@"cannot_send", nil) //@"Cannot send SMS from this device!"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -191,13 +170,8 @@
 	if (indexPath.row == HONSettingsCellTypeNotifications) {
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
-	}
-	
-	if (indexPath.row == HONSettingsCellTypeShareClub) {
-		[cell hideChevron];
-	}
-	
-	if (indexPath.row == HONSettingsCellTypeVersion) {
+		
+	} else if (indexPath.row == HONSettingsCellTypeVersion) {
 		[cell hideChevron];
 		cell.backgroundView = nil;
 		
@@ -228,27 +202,8 @@
 
 
 #pragma mark - TableView Delegates
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-	return (0.0);
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-	UIImageView *footerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
-	footerImageView.image = [UIImage imageNamed:@"tableHeaderBG"];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.textAlignment = NSTextAlignmentCenter;
-	label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
-	[footerImageView addSubview:label];
-	
-	return (footerImageView);
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row != HONSettingsCellTypeVersion) ? kOrthodoxTableCellHeight : 20.0);
+	return ((indexPath.row == HONSettingsCellTypeVersion) ? 20.0 : kOrthodoxTableCellHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -257,7 +212,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+//	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	if (indexPath.row == HONSettingsCellTypeSearch) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Search Action Sheet"
@@ -271,11 +226,35 @@
 		[actionSheet setTag:0];
 		[actionSheet showInView:self.view];
 	
+	} else if (indexPath.row == HONSettingsCellTypeSupport) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Support"];
+		
+		if ([MFMailComposeViewController canSendMail]) {
+			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+			mailComposeViewController.mailComposeDelegate = self;
+			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
+			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
+			[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
+			[mailComposeViewController setMessageBody:@"" isHTML:NO];
+			
+			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+			
+		} else {
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
+										message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+		}
+		
+	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+		
 	} else if (indexPath.row == HONSettingsCellTypeShareClub) {
-		cell.backgroundView.alpha = 0.5;
-		[UIView animateWithDuration:0.33 animations:^(void) {
-			cell.backgroundView.alpha = 1.0;
-		}];
 		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
 		NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
 //		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
@@ -288,45 +267,14 @@
 																								@"club"				: [[HONClubAssistant sharedInstance] userSignupClub].dictionary,
 																								@"mp_event"			: @"User Profile - Share",
 																								@"view_controller"	: self}];
+	}
 
-//	} else if (indexPath.row == HONSettingsCellTypeCopyClub) {
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Copy Club"];
-//		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
+//	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
 //		
-	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-		
-	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-		
-//	} else if (indexPath.row == HONSettingsCellTypeSupport) {
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Support"];
-//		
-//		if ([MFMailComposeViewController canSendMail]) {
-//			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-//			mailComposeViewController.mailComposeDelegate = self;
-//			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-//			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
-//			[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
-//			[mailComposeViewController setMessageBody:@"" isHTML:NO];
-//			
-//			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-//			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
-										message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-		}
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
 		
 //	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
 //		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
@@ -491,7 +439,7 @@
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 		
-		} else {
+		} else if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameSearchViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];

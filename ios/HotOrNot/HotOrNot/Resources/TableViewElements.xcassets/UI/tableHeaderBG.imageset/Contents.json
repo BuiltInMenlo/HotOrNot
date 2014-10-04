@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "tableViewHeader.png"
+      "filename" : "tableViewHeaderBackground.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "tableViewHeader@2x.png"
+      "filename" : "tableViewHeaderBackground@2x.png"
     },
     {
       "idiom" : "universal",

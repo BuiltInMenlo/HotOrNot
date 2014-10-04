@@ -30,6 +30,8 @@
 @property (nonatomic, strong) NSMutableArray *emotionsPickerViews;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) UIButton *nextButton;
 @property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 //@property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 
@@ -69,6 +71,12 @@
 }
 
 - (void)updateProcessedImage:(UIImage *)image {
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButton_nonActive"] forState:UIControlStateNormal];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButtonActive"] forState:UIControlStateHighlighted];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_Active"] forState:UIControlStateHighlighted];
+	
+	[_headerView toggleLightStyle:YES];
 	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 }
 
@@ -82,7 +90,7 @@
 	[self addSubview:_emotionsDisplayView];
 	
 	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeObjects; i++) {
-		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 280.0, 320.0, 280.0) asEmotionGroupType:i];
+		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 291.0, 320.0, 291.0) asEmotionGroupType:i];
 		[pickerView setTag:(69 + i)];
 		[_emotionsPickerViews addObject:pickerView];
 	}
@@ -98,19 +106,19 @@
 	[_headerView removeBackground];
 	[self addSubview:_headerView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:closeButton];
+	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_closeButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
+	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addButton:_closeButton];
 	
-	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:nextButton];
+	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addButton:_nextButton];
 }
 
 

@@ -195,6 +195,9 @@
 "access_contacts" = "Access your contacts.\nFind friends";
 "empty_contacts" = "No results found.\nCompose";
 "header_selectFriends" = "Select Friends";
+"empty_stickers" = "Select a sticker and\nbackground";
+"settings_legal" = "Legal";
+"settings_support" = "Support";
 
 "areacode_club" = "%@クラブ";
 "family_club" = "私の%@クラブ";

@@ -9,7 +9,6 @@
 
 #import "HONTableView.h"
 
-const CGFloat kOrthodoxTableHeaderHeight = 44.0f;
 const CGFloat kOrthodoxTableCellHeight = 74.0f;
 
 @interface HONTableView ()

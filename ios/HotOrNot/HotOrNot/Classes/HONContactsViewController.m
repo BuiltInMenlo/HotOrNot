@@ -448,12 +448,7 @@
 		}
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-		if (indexPath.section == 0) {
-			cell.caption = @"Access contacts";
-			[cell accVisible:NO];
-			[cell toggleChevron];
-			
-		} else if (indexPath.section == 1) {
+		if (indexPath.section == 1) {
 			HONUserClubVO *vo = (HONUserClubVO *)[_recentClubs objectAtIndex:indexPath.row];
 			cell.clubVO = vo;
 			

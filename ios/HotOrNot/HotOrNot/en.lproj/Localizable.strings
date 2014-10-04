@@ -200,6 +200,10 @@
 "register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 "header_selectFriends" = "Select Friends";
+"empty_stickers" = "Select a sticker and\nbackground";
+"settings_legal" = "Legal";
+"settings_support" = "Support";
+
 "areacode_club" = "%@Club";
 "family_club" = "My%@Club";
 "bff_club" = "MyBFFs";

@@ -87,15 +87,15 @@
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"chevronBackButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"chevronBackButton_Active"] forState:UIControlStateHighlighted];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(282.0, 2.0, 44.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"chevronNextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:nextButton];
 	
