@@ -118,7 +118,7 @@ static NSString * const kCamera = @"camera";
 	}
 	
 	_panGestureRecognizer.delaysTouchesBegan = NO;
-	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

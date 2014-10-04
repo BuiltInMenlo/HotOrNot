@@ -227,7 +227,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -557,7 +557,8 @@
 						
 						if ([vo.mobileNumber isEqualToString:altID] && [cell.caption rangeOfString:vo.fullName].location == 0) {
 							NSLog(@"********MERGE FOUND!!! [%d](%@)*********", cell.trivialUserVO.userID, vo.fullName);
-							[cell prependTitleCaption:[NSString stringWithFormat:@"%@ - ", vo.fullName]];
+//							[cell prependTitleCaption:[NSString stringWithFormat:@"%@ - ", vo.fullName]];
+							[cell appendTitleCaption:[NSString stringWithFormat:@" - %@", vo.fullName]];
 							*stop = YES;
 						}
 					}];

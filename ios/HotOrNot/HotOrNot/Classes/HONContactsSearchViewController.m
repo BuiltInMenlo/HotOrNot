@@ -205,7 +205,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

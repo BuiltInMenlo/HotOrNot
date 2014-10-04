@@ -25,6 +25,7 @@
 //@property (nonatomic, strong) NSMutableArray *statusUpdateViews;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
+@property (nonatomic) CGSize maxTitleLabelSize;
 @end
 
 const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
@@ -42,7 +43,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(31.0, 13.0, 185.0, 26.0)];
+		_maxTitleLabelSize = CGSizeMake(230.0, 26.0);
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(31.0, 13.0, _maxTitleLabelSize.width, _maxTitleLabelSize.height)];
 //		_titleLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor blackColor];
@@ -87,7 +89,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 //										 options:NSStringDrawingTruncatesLastVisibleLine
 //									  attributes:@{NSFontAttributeName:_titleLabel.font}
 //										 context:nil].size;
-	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, 260.0, _titleLabel.frame.size.height);
+	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, _maxTitleLabelSize.width, _titleLabel.frame.size.height);
 //	CGRect reqFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
 	
 	_titleLabel.frame = maxFrame;
@@ -105,7 +107,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 																		  options:NSStringDrawingTruncatesLastVisibleLine
 																	   attributes:@{NSFontAttributeName:_titleLabel.font}
 																		  context:nil].size;
-	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 11.0, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
+	
+	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, _maxTitleLabelSize.width, _titleLabel.frame.size.height);
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 11.0, MIN(maxFrame.size.width, size.width), MIN(maxFrame.size.height, size.height));
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
@@ -118,7 +122,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 												options:NSStringDrawingTruncatesLastVisibleLine
 											 attributes:@{NSFontAttributeName:_titleLabel.font}
 												context:nil].size;
-	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 11.0, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
+	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, _maxTitleLabelSize.width, _titleLabel.frame.size.height);
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 11.0, MIN(maxFrame.size.width, size.width), MIN(maxFrame.size.height, size.height));
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
@@ -177,7 +182,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	_titleLabel.frame = CGRectInset(_titleLabel.frame, -18.0, 0.0);
 	_titleLabel.frame = CGRectOffset(_titleLabel.frame, (50.0 + 18.0), 0.0);
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_maxTitleLabelSize.width - 30.0, _titleLabel.frame.size.width), _titleLabel.frame.size.height);
 	_subtitleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 21.0);
+	
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
 	
 	_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointZero asLargeLoader:NO];
@@ -197,8 +204,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 									  attributes:@{NSFontAttributeName:_titleLabel.font}
 										 context:nil].size;
 
-	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-185.0, -size.width), 0.0);
-	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(185.0, size.width), 0.0);
+	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-_maxTitleLabelSize.width, -size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(_maxTitleLabelSize.width, size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_maxTitleLabelSize.width, _titleLabel.frame.size.width), _titleLabel.frame.size.height);
 	_titleLabel.text = _caption;
 }
 
@@ -210,8 +218,10 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 									  attributes:@{NSFontAttributeName:_titleLabel.font}
 										 context:nil].size;
 
-	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-185.0, -size.width * 0.5), 0.0);
-	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(185.0, size.width * 0.5), 0.0);
+
+	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-_maxTitleLabelSize.width, -size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(_maxTitleLabelSize.width, size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_maxTitleLabelSize.width, _titleLabel.frame.size.width), _titleLabel.frame.size.height);
 	_titleLabel.text = _caption;
 }
 

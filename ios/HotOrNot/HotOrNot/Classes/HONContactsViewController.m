@@ -258,8 +258,8 @@
 	
 	_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
 	
-	_accessContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusAuthorized && [_inAppUsers count] > 0);
-	_emptyContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized || [_inAppUsers count] > 0);
+	_accessContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
+	_emptyContactsLabel.hidden = (!_accessContactsLabel.hidden && ([_inAppUsers count] > 0 || [_recentClubs count] > 0));
 	_tableView.alpha = 1.0;
 	
 	_tableView.hidden = NO;

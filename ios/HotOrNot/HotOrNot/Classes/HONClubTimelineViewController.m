@@ -239,24 +239,24 @@
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, kNavHeaderHeight)];
 	[self.view addSubview:headerView];
 	
-	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 23.0, 200.0, 30.0)];
-	_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:26];
+	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 200.0, 30.0)];
+	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
 	_titleLabel.textColor = [UIColor whiteColor];
 	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	_titleLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
+	_titleLabel.shadowColor = [UIColor colorWithWhite:0.33 alpha:0.25];
 	_titleLabel.textAlignment = NSTextAlignmentCenter;
 	_titleLabel.text = titleCaption;
 	[headerView addSubview:_titleLabel];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(12.0, 18.0, 44.0, 44.0);
+	backButton.frame = CGRectMake(2.0, 13.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(266, 18.0, 44.0, 44.0);
+	replyButton.frame = CGRectMake(272, 13.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
@@ -278,7 +278,7 @@
 	[super viewDidLoad];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
-	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

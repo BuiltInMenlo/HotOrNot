@@ -20,7 +20,7 @@
 
 //NSString * const kBaseCaption = @"- is feeling…";
 const CGSize kEmotionSize = {188.0f, 188.0f};
-const CGSize kEmotionPaddingSize = {0.0f, 0.0f};
+const CGSize kEmotionPaddingSize = {22.0f, 0.0f};
 
 const CGRect kEmotionIntroFrame = {88.0f, 88.0f, 12.0f, 12.0f};
 const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
@@ -132,7 +132,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
-	if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * (kEmotionSize.width + kEmotionPaddingSize.width)) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
+	if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
 		[_emotions removeLastObject];
 		[self _removeImageEmotion];
 	
@@ -162,7 +162,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
-	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, 0.0, [_emotions count] * kEmotionSize.width, kEmotionNormalFrame.size.height);
+	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, 0.0, [_emotions count] * _emotionSpacingSize.width, kEmotionNormalFrame.size.height);
 	_loaderHolderView.frame = _emotionHolderView.frame;
 	
 	CGSize scaleSize = CGSizeMake(kEmotionIntroFrame.size.width / kEmotionNormalFrame.size.width, kEmotionIntroFrame.size.height / kEmotionNormalFrame.size.height);
@@ -272,6 +272,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 - (void)_updateDisplayWithCompletion:(void (^)(BOOL finished))completion {
 	int offset = MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width);
+	offset = ([_emotions count] != 1) ? offset - kEmotionPaddingSize.width : offset;
 	
 	[UIView animateWithDuration:0.250 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125

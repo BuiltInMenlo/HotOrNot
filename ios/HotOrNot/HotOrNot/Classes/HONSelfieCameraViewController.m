@@ -256,7 +256,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -358,7 +358,7 @@
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
-	[_previewView updateProcessedImage:[UIImage imageNamed:@"blank_64"]];
+//	[_previewView updateProcessedImage:[UIImage imageNamed:@"blank_64"]];
 	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }

@@ -131,6 +131,8 @@
 	if ([_subjectNames count] > 0) {
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewSubmit:withSubjects:)])
 			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
+		
+		[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	} else {
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"No Emotions Selected!")
