@@ -101,7 +101,6 @@
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapThumbSuffix]}];
 			
-//			[_matchedUserIDs addObject:vo.phoneNumber];
 			[_inAppUsers addObject:vo];
 		}
 		
@@ -151,13 +150,6 @@
 	
 	[_searchBarView backgroundingReset];
 	
-//	if (_progressHUD == nil)
-//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_tableView.alpha = 0.0;
 	}];
@@ -192,63 +184,6 @@
 	}];
 }
 
-- (void)_searchUsersWithUsername:(NSString *)username {
-	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		_tableView.alpha = 0.0;
-	}];
-	
-	_searchUsers = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		for (NSDictionary *dict in result) {
-			//NSLog(@"SEARCH USER:[%@]", dict);
-			BOOL isDuplicate = NO;
-			for (HONTrivialUserVO *vo in _inAppUsers) {
-				if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
-					isDuplicate = YES;
-					break;
-				}
-			}
-			
-			if (isDuplicate)
-				continue;
-			
-			if([[dict objectForKey:@"id"] intValue] != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]){
-				[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
-																			   @"username"	: [dict objectForKey:@"username"],
-																			   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
-			}
-		}
-		
-		if ([_searchUsers count] == 0) {
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:NSLocalizedString(@"hud_noResults", nil)
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			
-		} else {
-			_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_tableView.separatorInset = UIEdgeInsetsZero;
-			
-			[self _didFinishDataRefresh];
-		}
-	}];
-}
-
 
 #pragma mark - Device Functions
 - (void)_retrieveDeviceContacts {
@@ -274,12 +209,6 @@
 		[self _didFinishDataRefresh];
 	
 	else {
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.taskInProgress = YES;
 	}
 	
 	_currentMatchStateCounter = 0;
@@ -375,10 +304,6 @@
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-//	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-//	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-//	_tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.40 alpha:0.33];
-	_tableView.sectionIndexMinimumDisplayRowCount = 1;
 	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -485,15 +410,18 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? 1 : 4);
+	return (4);
+//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? 1 : 4);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
+	return ((section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
+//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Recent" : (section == 2) ? @"Suggestions" : @"Contacts"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:(section == 1) ? @"Recent" : (section == 2) ? @"Suggestions" : @"Contacts"]);
+//	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Recent" : (section == 2) ? @"Suggestions" : @"Contacts"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -503,10 +431,11 @@
 		cell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
-		
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+//		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
+//		
+//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			cell.caption = @"Access contacts";
 			[cell accVisible:NO];
@@ -557,7 +486,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? kOrthodoxTableCellHeight : ((indexPath.section == 0 && indexPath.row == 0) && (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)) ? 0.0 : kOrthodoxTableCellHeight);
+	return (((indexPath.section == 0 && indexPath.row == 0) && (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)) ? 0.0 : kOrthodoxTableCellHeight);
+//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? kOrthodoxTableCellHeight : ((indexPath.section == 0 && indexPath.row == 0) && (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)) ? 0.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -576,8 +506,9 @@
 	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 				[self _promptForAddressBookPermission];

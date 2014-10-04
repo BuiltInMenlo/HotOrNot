@@ -106,8 +106,6 @@ NSString * const kKeenIOWriteKey = @"7f1b91140d0fcf8aeb5ccde1a22567ea9073838582e
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
 const CGFloat kSearchHeaderHeight = 43.0f;
-const CGFloat kOrthodoxTableHeaderHeight = 44.0f;
-const CGFloat kOrthodoxTableCellHeight = 74.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // ui
@@ -887,6 +885,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						[_insetOverlayView introWithCompletion:nil];
 					}
 				}
+				
+				
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to your contacts?")
+																		message:nil
+																	   delegate:self
+															  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+															  otherButtonTitles:@"Yes", nil];
+					[alertView setTag:HONAppDelegateAlertTypeAllowContactsAccess];
+					[alertView show];
+					
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) {
+					[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
+												message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
+											   delegate:nil
+									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+									  otherButtonTitles:nil] show];
+				}
 			}
 			
 			if (![HONAppDelegate canPingConfigServer]) {
@@ -1499,8 +1515,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //			[navigationController setNavigationBarHidden:YES];
 //			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
+	
+	} else if (alertView.tag == HONAppDelegateAlertTypeAllowContactsAccess) {
+		NSLog(@"CONTACTS:[%d]", buttonIndex);
+		if (buttonIndex == 1) {
+			if (ABAddressBookRequestAccessWithCompletion) {
+				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+					});
+					
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+					});
+					
+				} else {
+				}
+			}
+		}
 	}
-
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {

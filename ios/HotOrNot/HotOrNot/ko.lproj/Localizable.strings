@@ -187,7 +187,7 @@
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
 "access_contacts" = "Access your contacts.\nFind friends";
 "empty_contacts" = "No results found.\nCompose";
-"header_addFriends" = "Add Friends";
+"header_selectFriends" = "Select Friends";
 
 "header_signUp" = "Sign Up";
 "areacode_club" = "%@클럽";

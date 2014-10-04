@@ -11,6 +11,7 @@
 
 #import "HONInsetOverlayView.h"
 #import "HONImageLoadingView.h"
+#import "HONTableView.h"
 
 @interface HONInsetOverlayView ()
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;

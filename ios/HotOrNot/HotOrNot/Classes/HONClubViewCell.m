@@ -207,13 +207,13 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 }
 
 - (void)accVisible:(BOOL)isVisible {
-	[super accVisible:isVisible];
-	
 	_statsHolderView.hidden = !isVisible;
 	_emotionHolderView.hidden = !isVisible;
 	_imageLoadingView.hidden = !isVisible;
 	_subtitleLabel.hidden = !isVisible;
-	_titleLabel.hidden = !isVisible;
+	//_titleLabel.hidden = !isVisible;
+	
+	[super accVisible:isVisible];
 }
 
 

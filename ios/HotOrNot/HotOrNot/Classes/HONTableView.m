@@ -9,6 +9,8 @@
 
 #import "HONTableView.h"
 
+const CGFloat kOrthodoxTableHeaderHeight = 44.0f;
+const CGFloat kOrthodoxTableCellHeight = 74.0f;
 
 @interface HONTableView ()
 @end
@@ -21,6 +23,7 @@
 		[self setSeparatorStyle:UITableViewCellSeparatorStyleNone];
 		[self setShowsHorizontalScrollIndicator:YES];
 		[self setAlwaysBounceVertical:YES];
+		[self setSectionIndexMinimumDisplayRowCount:1];
 	}
 	
 	return (self);

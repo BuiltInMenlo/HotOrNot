@@ -23,8 +23,7 @@
 typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceEmpty			= 0 << 0,
 	HONContactsTableViewDataSourceMatchedUsers	= 1 << 0,
-	HONContactsTableViewDataSourceAddressBook	= 1 << 1,
-	HONContactsTableViewDataSourceSearchResults	= 1 << 2
+	HONContactsTableViewDataSourceAddressBook	= 1 << 1
 };
 
 typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
@@ -64,8 +63,6 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 - (void)_retrieveDeviceContacts;
 - (void)_sendEmailContacts;
 - (void)_sendPhoneContacts;
-- (void)_searchUsersWithUsername:(NSString *)username;
-
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;

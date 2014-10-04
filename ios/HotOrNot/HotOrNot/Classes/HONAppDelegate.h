@@ -99,8 +99,6 @@ extern NSString * const kBlowfishBase64IV;
 // view heights
 extern const CGFloat kNavHeaderHeight;
 extern const CGFloat kSearchHeaderHeight;
-extern const CGFloat kOrthodoxTableHeaderHeight;
-extern const CGFloat kOrthodoxTableCellHeight;
 extern const CGFloat kDetailsHeroImageHeight;
 
 // ui

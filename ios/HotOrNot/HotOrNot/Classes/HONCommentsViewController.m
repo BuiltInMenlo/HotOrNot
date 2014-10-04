@@ -15,6 +15,7 @@
 #import "HONTableViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
+#import "HONTableView.h"
 
 @interface HONCommentsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;

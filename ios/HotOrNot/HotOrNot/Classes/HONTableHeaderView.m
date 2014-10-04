@@ -8,6 +8,7 @@
 
 
 #import "HONTableHeaderView.h"
+#import "HONTableView.h"
 
 @interface HONTableHeaderView ()
 @end
