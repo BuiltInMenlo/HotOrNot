@@ -190,8 +190,6 @@ static NSString * const kCamera = @"camera";
 	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]];
 	HONClubViewCell *cell = (HONClubViewCell *)[_tableView cellForRowAtIndexPath:[_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]]];
 	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 1) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
@@ -389,17 +387,10 @@ static NSString * const kCamera = @"camera";
 #pragma mark - TableView DataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ((section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? 0 : 0);
-//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? 0 : 0);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
-	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-//		if (indexPath.section == 1)
-//			[cell accVisible:NO];
-//	}
-	
 	return (cell);
 }
 
@@ -413,16 +404,6 @@ static NSString * const kCamera = @"camera";
 	
 	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
-	
-	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Search Result"];
-//		
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:YES completion:nil];
-//
-//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];

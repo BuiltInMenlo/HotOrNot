@@ -475,20 +475,16 @@
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ((section == 0) ? 1 : (section == 1) ? 0 : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
-//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? 0 : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? @"Tap one or more" : (section == 3) ? ([_deviceContacts count] == 0) ? @"No results" : @"Contacts" : @""]);
-//	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 2) ? @"Suggestions" : (section == 3) ? ([_deviceContacts count] == 0) ? @"No results" : @"Contacts" : @""]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubViewCell *cell = (HONClubViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
 	[cell hideTimeStat];
 	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 1) {
 //			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -638,11 +634,6 @@
 	
 	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
-	
-	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Search Result"];
-//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];

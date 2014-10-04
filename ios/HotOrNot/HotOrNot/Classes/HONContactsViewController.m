@@ -411,17 +411,14 @@
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return (4);
-//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? 1 : 4);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ((section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
-//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : (section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return ([[HONTableHeaderView alloc] initWithTitle:(section == 1) ? @"Recent" : (section == 2) ? @"Suggestions" : @"Contacts"]);
-//	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"Search Results" : (section == 1) ? @"Recent" : (section == 2) ? @"Suggestions" : @"Contacts"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -431,10 +428,6 @@
 		cell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
-//		
-//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			cell.caption = @"Access contacts";
@@ -487,7 +480,6 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (((indexPath.section == 0 && indexPath.row == 0) && (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)) ? 0.0 : kOrthodoxTableCellHeight);
-//	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? kOrthodoxTableCellHeight : ((indexPath.section == 0 && indexPath.row == 0) && (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)) ? 0.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -506,8 +498,6 @@
 	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
 	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-//	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
 			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
