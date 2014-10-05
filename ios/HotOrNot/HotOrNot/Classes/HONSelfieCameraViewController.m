@@ -352,7 +352,8 @@
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+									 withProperties:@{@"state"	: @"open"}];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
@@ -374,7 +375,6 @@
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
-//	[_previewView updateProcessedImage:[UIImage imageNamed:@"blank_64"]];
 	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
 		self.imagePickerController.delegate = nil;
 	}];
@@ -443,7 +443,8 @@
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll Photo"];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+										 withProperties:@{@"state"	: @"photo"}];
 	
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	_processedImage = (_isBlurred) ? [_processedImage applyBlurWithRadius:32.0
@@ -471,7 +472,8 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	NSLog(@"imagePickerControllerDidCancel:[%@]", (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) ? @"CAMERA" : @"LIBRARY");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Cancel Camera Roll"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {

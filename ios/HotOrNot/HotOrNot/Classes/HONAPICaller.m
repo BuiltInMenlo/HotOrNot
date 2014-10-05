@@ -82,9 +82,6 @@ NSString * const kAPIUsersCheckPhone		= @"users/checkPhone";
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
 
-// hMAC key
-NSString * const kHMACKey = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
-
 
 const CGFloat kNotifiyDelay = (float)(2 / 3);
 
@@ -129,7 +126,7 @@ static HONAPICaller *sharedInstance = nil;
 #pragma mark - Utility
 - (AFHTTPClient *)getHttpClientWithHMACUsingBasePath:(NSString *)basePath {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:basePath]];
-	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken]];
+	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
 	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	
 	return (httpClient);
@@ -155,22 +152,6 @@ static HONAPICaller *sharedInstance = nil;
 		[result appendFormat:@"%02hhx", cHMAC[i]];
 		
 	return ([result copy]);
-}
-
-- (NSString *)hmacToken {
-	NSMutableString *token = [@"unknown" mutableCopy];
-	NSMutableString *data = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] mutableCopy];
-		
-	if( data != nil ){
-		[data appendString:@"+"];
-		[data appendString:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-		
-		token = [[[HONAPICaller sharedInstance] hmacForKey:kHMACKey withData:data] mutableCopy];
-		[token appendString:@"+"];
-		[token appendString:data];
-	}
-	
-	return ([token copy]);
 }
 
 - (NSString *)normalizePrefixForImageURL:(NSString *)imageURL {

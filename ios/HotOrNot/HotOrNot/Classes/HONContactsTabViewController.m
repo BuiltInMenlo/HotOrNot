@@ -179,12 +179,13 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Activity"];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
+									 withProperties:@{@"src"	: @"header"}];
 	[super _goCreateChallenge];
 //	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewStatusUpdate];
 //	selfieCameraViewController.delegate = self;
@@ -287,6 +288,16 @@ static NSString * const kCamera = @"camera";
 #pragma mark - TableViewBGView Delegates
 - (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
 	NSLog(@"[*:*] tableViewBGViewDidSelect [*:*]");
+	
+	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+										 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
+	
+	} else if (bgView.viewType == HONTableViewBGViewTypeCreateStatusUpdate) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
+										 withProperties:@{@"src"	: @"text"}];
+	}
+	
 	[super tableViewBGViewDidSelect:bgView];
 }
 
@@ -358,14 +369,10 @@ static NSString * const kCamera = @"camera";
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectContactUser");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
-									withContactUser:contactUserVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+//									withContactUser:contactUserVO];
 	
 	[super clubViewCell:viewCell didSelectContactUser:contactUserVO];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:contactUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -375,8 +382,8 @@ static NSString * const kCamera = @"camera";
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
-									withTrivialUser:trivialUserVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
+//									withTrivialUser:trivialUserVO];
 	
 	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	
@@ -413,7 +420,7 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
 			
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
@@ -425,8 +432,8 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
-											withTrivialUser:cell.trivialUserVO];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
+//											withTrivialUser:cell.trivialUserVO];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:cell.trivialUserVO]];
 			[navigationController setNavigationBarHidden:YES];
@@ -435,7 +442,7 @@ static NSString * const kCamera = @"camera";
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Friends Tab - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
 		
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
@@ -447,8 +454,8 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
-											withTrivialUser:cell.trivialUserVO];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Member"
+//											withTrivialUser:cell.trivialUserVO];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:cell.trivialUserVO]];
 			[navigationController setNavigationBarHidden:YES];
@@ -457,8 +464,8 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 3) {
 			NSLog(@"DEVICE CONTACT:[%@]", cell.contactUserVO.fullName);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
-											withContactUser:cell.contactUserVO];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Invite Contact"
+//											withContactUser:cell.contactUserVO];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithContact:cell.contactUserVO]];
 			[navigationController setNavigationBarHidden:YES];

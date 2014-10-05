@@ -20,6 +20,10 @@
 
 #import "HONDeviceIntrinsics.h"
 
+// hMAC key
+NSString * const kHMACKey = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
+
+
 @implementation HONDeviceIntrinsics
 static HONDeviceIntrinsics *sharedInstance = nil;
 
@@ -109,6 +113,21 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] : @"");
 }
 
+- (NSString *)hmacToken {
+	NSMutableString *token = [@"unknown" mutableCopy];
+	NSMutableString *data = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] mutableCopy];
+	
+	if( data != nil ){
+		[data appendString:@"+"];
+		[data appendString:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
+		
+		token = [[[HONAPICaller sharedInstance] hmacForKey:kHMACKey withData:data] mutableCopy];
+		[token appendString:@"+"];
+		[token appendString:data];
+	}
+	
+	return ([token copy]);
+}
 
 - (void)writePhoneNumber:(NSString *)phoneNumber {
 	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
@@ -126,7 +145,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 - (NSString *)phoneNumber {
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 //	NSLog(@"DeviceInstrinsics phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
-	return ([keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
+	return (([keychain objectForKey:CFBridgingRelease(kSecAttrService)] != nil) ? [keychain objectForKey:CFBridgingRelease(kSecAttrService)] : @"");
 }
 
 - (NSString *)areaCodeFromPhoneNumber {

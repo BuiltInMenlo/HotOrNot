@@ -27,6 +27,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
+@property (nonatomic, strong) UIView *headerView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
@@ -246,8 +247,8 @@
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
 	
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, kNavHeaderHeight)];
-	[self.view addSubview:headerView];
+	_headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, kNavHeaderHeight)];
+	[self.view addSubview:_headerView];
 	
 	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 200.0, 30.0)];
 	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
@@ -256,21 +257,21 @@
 	_titleLabel.shadowColor = [UIColor colorWithWhite:0.33 alpha:0.25];
 	_titleLabel.textAlignment = NSTextAlignmentCenter;
 	_titleLabel.text = titleCaption;
-	[headerView addSubview:_titleLabel];
+	[_headerView addSubview:_titleLabel];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(2.0, 13.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:backButton];
+	[_headerView addSubview:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	replyButton.frame = CGRectMake(272, 13.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:replyButton];
+	[_headerView addSubview:replyButton];
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -388,6 +389,9 @@
 - (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
 	int rows = MIN(amount, (([_tableView numberOfSections] - 1) - [_tableView indexPathForCell:cell].section));
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Next Update"
+									  withClubPhoto:((HONClubPhotoViewCell *)[_clubPhotos objectAtIndex:_index]).clubPhotoVO];
+	
 	_index = [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows;
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
@@ -422,16 +426,16 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply From Cell"
-									  withClubPhoto:clubPhotoVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply From Cell"
+//									  withClubPhoto:clubPhotoVO];
 	
 	[self _goReply];
 }
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote"
-									  withClubPhoto:clubPhotoVO];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote"
+//									  withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
@@ -504,7 +508,29 @@
 	_index = ((NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject]).section;
 	
 	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
-	_titleLabel.text = _clubPhotoVO.username;
+	
+	if ([_titleLabel.text isEqualToString:_clubPhotoVO.username]) {
+		_titleLabel.text = _clubPhotoVO.username;
+	
+	} else {
+		UILabel *outroLabel = [[UILabel alloc] initWithFrame:_titleLabel.frame];
+		outroLabel.font = _titleLabel.font;
+		outroLabel.textColor = _titleLabel.textColor;
+		outroLabel.shadowOffset = _titleLabel.shadowOffset;
+		outroLabel.shadowColor = _titleLabel.shadowColor;
+		outroLabel.textAlignment = _titleLabel.textAlignment;
+		outroLabel.text = _titleLabel.text;
+		[_headerView addSubview:outroLabel];
+		
+		_titleLabel.alpha = 0.0;
+		_titleLabel.text = _clubPhotoVO.username;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			outroLabel.alpha = 0.0;
+			_titleLabel.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[outroLabel removeFromSuperview];
+		}];
+	}
 }
 
 
@@ -528,8 +554,8 @@
 		
 		} else if (buttonIndex == 1) {
 			NSLog(@"[*:*] _clubPhotoVO:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - More Action Sheet _Upvote"
-											  withClubPhoto:_clubPhotoVO];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - More Action Sheet _Upvote"
+//											  withClubPhoto:_clubPhotoVO];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 			[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_clubPhotoVO.challengeID forOpponent:_clubPhotoVO completion:^(NSDictionary *result) {
@@ -542,8 +568,8 @@
 		
 		} else if (buttonIndex == 2) {
 			NSLog(@"[*:*] _clubPhotoVO:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - More Action Sheet _Reply"
-											  withClubPhoto:_clubPhotoVO];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - More Action Sheet _Reply"
+//											  withClubPhoto:_clubPhotoVO];
 			[self _goReply];
 		}
 	}

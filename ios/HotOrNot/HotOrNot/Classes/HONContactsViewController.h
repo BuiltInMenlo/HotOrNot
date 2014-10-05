@@ -52,6 +52,10 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	UIRefreshControl *_refreshControl;
 	HONHeaderView *_headerView;
 	HONSearchBarView *_searchBarView;
+	
+	HONTableViewBGView *_emptyContactsBGView;
+	HONTableViewBGView *_accessContactsBGView;
+	
 	int _joinedTotalClubs;
 }
 

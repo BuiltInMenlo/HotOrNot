@@ -138,7 +138,7 @@
 						
 					} else {
 						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-						[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Pass Signup"];
+						[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Username & Phone OK"];
 						[self _finalizeUser];
 					}
 				}];

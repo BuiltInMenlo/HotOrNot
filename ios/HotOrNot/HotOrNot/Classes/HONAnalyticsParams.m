@@ -79,7 +79,8 @@ static HONAnalyticsParams *sharedInstance = nil;
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
 			  @"time"			: [[HONDateTimeAlloter sharedInstance] utcNowDateFormattedISO8601],
 			  @"tz"				: [[HONDateTimeAlloter sharedInstance] timezoneFromDeviceLocale],
-			  @"battery-per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)]});
+			  @"battery-per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)],
+			  @"hmac"			: [[HONDeviceIntrinsics sharedInstance] hmacToken]});
 }
 
 - (NSDictionary *)screenStateProperties {
@@ -108,6 +109,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
 	return(@{@"id"			: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
 			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
+			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
 			 @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate],
 			 @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:cohortDate] weekOfYear]]});
 }

@@ -117,7 +117,7 @@
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Activity"];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
@@ -219,8 +219,7 @@
 //	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	if (indexPath.row == HONSettingsCellTypeSearch) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Search Action Sheet"
-										 withProperties:@{@"type"	: @"phone"}];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"];
 		
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
@@ -372,7 +371,8 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSettingsAlertTypeNotifications) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[[NSString stringWithFormat:@"Settings Tab - Toggle Notifications %@ Alert ", (!_notificationSwitch.on) ? @"On" : @"Off"] stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings Tab - Toggle Notifications %@ Alert", (!_notificationSwitch.on) ? @"On" : @"Off"]
+										 withProperties:@{@"btn"	: (buttonIndex == 0) ? @"Cancel" : @"Confirm"}];
 		
 		if (buttonIndex == 0)
 			_notificationSwitch.on = !_notificationSwitch.on;
@@ -385,7 +385,7 @@
 		}
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Deactivate Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+//		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Deactivate Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
@@ -405,7 +405,7 @@
 		}
 	
 	} else if (alertView.tag == HONSettingsAlertTypeDeleteChallenges) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Remove Content Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+//		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Remove Content Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] removeAllChallengesForUserWithCompletion:^(NSObject *result){
@@ -413,7 +413,7 @@
 			}];
 		}
 	} else if (alertView.tag == HONSettingsAlertTypeLogout) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Logout Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+//		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Logout Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -438,6 +438,9 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search Action Sheet"
+										 withProperties:@{@"btn"	: (buttonIndex == 0) ? @"phone" : (buttonIndex == 1) ? @"username" : @"cancel"}];
+		
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONContactsSearchViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];

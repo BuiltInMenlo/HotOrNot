@@ -223,7 +223,7 @@
 
 #pragma mark - Navigation
 - (void)_goCountryCodes {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Country Selector"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Country Selector"];
 	
 	HONCallingCodesViewController *callingCodesViewController = [[HONCallingCodesViewController alloc] init];
 	callingCodesViewController.delegate = self;
@@ -234,7 +234,7 @@
 }
 
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Cancel"];
 	
 	_isDismissing = YES;
 	[_phoneTextField resignFirstResponder];
@@ -242,7 +242,7 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Submit"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Submit"
 									 withProperties:@{@"query"	: [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text]}];
 	[_phoneTextField resignFirstResponder];
 }
@@ -252,7 +252,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel SWIPE"];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Cancel SWIPE"];
 		
 		_isDismissing = YES;
 		[_phoneTextField resignFirstResponder];
@@ -291,7 +291,7 @@
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
 	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Country Selector Choosen"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Country Selector Choosen"
 									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
 	
 	_countryCodeLabel.text = [@"+" stringByAppendingString:countryVO.callingCode];
@@ -370,8 +370,11 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Found User Alert " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]
-										withTrivialUser:_searchUserVO];
+		NSMutableDictionary *props = [[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:_searchUserVO] mutableCopy];
+		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
+		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Results Alert"
+										 withProperties:[props copy]];
 		
 		if (buttonIndex == 0) {
 			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[_searchUserVO]] : _clubVO;
@@ -415,8 +418,11 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - No Result Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-										withContactUser:_contactUserVO];
+		NSMutableDictionary *props = [[[HONAnalyticsParams sharedInstance] propertyForContactUser:_contactUserVO] mutableCopy];
+		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
+		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Results Alert"
+										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {
 			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONTrivialUserVO userFromContactVO:_contactUserVO]]] : _clubVO;
@@ -427,9 +433,6 @@
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:YES completion:nil];
-					
-//					[self dismissViewControllerAnimated:YES completion:^(void) {
-//					}];
 				}];
 				
 			} else {
@@ -448,9 +451,6 @@
 						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
 						[navigationController setNavigationBarHidden:YES];
 						[self presentViewController:navigationController animated:YES completion:nil];
-						
-//						[self dismissViewControllerAnimated:YES completion:^(void) {
-//						}];
 					}];
 				}];
 			}

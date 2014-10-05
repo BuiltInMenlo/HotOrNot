@@ -73,6 +73,11 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
+		UIButton *fs2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+		fs2Button.frame = CGRectMake(-_emotionInsetAmt, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height);
+		[fs2Button addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
+		[_scrollView addSubview:fs2Button];
+		
 		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectZero];
 		[_scrollView addSubview:_loaderHolderView];
 		
@@ -189,12 +194,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	imageView.transform = transform;
 	[imageView setTag:[_emotions count]];
 	[_emotionHolderView addSubview:imageView];
-	
-	UIButton *fullscreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	fullscreenButton.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
-//	fullscreenButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-	[fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
-	[imageView addSubview:fullscreenButton];
 	
 	
 //	if (emotionVO.picoSticker == nil) {

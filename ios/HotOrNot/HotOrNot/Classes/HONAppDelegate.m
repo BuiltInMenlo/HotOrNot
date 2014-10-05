@@ -1684,25 +1684,29 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Presenting DocInteraction Shelf"
-									 withProperties:@{@"controller"		: [controller name]}];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction Shelf"
+									 withProperties:@{@"state"		: @"presenting",
+													  @"controller"	: [controller name]}];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Dismissing DocInteraction Shelf"
-									 withProperties:@{@"controller"		: [controller name]}];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction Shelf"
+									 withProperties:@{@"state"		: @"dismissing",
+													  @"controller"	: [controller name]}];
 	
 	_documentInteractionController.delegate = nil;
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching DocInteraction App"
-									 withProperties:@{@"controller"		: [controller name]}];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction App"
+									 withProperties:@{@"state"		: @"launching",
+													  @"controller"	: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Entering DocInteraction App Foreground"
-									 withProperties:@{@"controller"		: [controller name]}];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction App Foreground"
+									 withProperties:@{@"state"		: @"entering",
+													  @"controller"	: [controller name]}];
 }
 
 

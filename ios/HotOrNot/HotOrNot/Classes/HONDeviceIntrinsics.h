@@ -25,6 +25,7 @@
 - (NSString *)osNameVersion;
 - (NSString *)osVersion;
 - (NSString *)pushToken;
+- (NSMutableString *)hmacToken;
 
 - (void)writePhoneNumber:(NSString *)phoneNumber;
 - (NSString *)phoneNumber;

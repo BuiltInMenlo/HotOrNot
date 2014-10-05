@@ -174,21 +174,18 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Cancel"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Cancel"];
 	
 	[_searchHeaderView resignFirstResponder];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Done"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Done"
 									 withProperties:[self _trackingProps]];
 	
 	
 	if ([_selectedUsers count] > 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Invite Alert"
-										 withProperties:[self _trackingProps]];
-		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
 															message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", [_selectedUsers count], ([_selectedUsers count] == 1) ? @"person" : @"people"]
 														   delegate:self
@@ -208,7 +205,7 @@
 }
 
 - (void)_goSelectAll {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Select All Toggle " stringByAppendingString:([_selectedUsers count] == [_searchUsers count]) ? @"On" : @"Off"]];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Search - Select All Toggle " stringByAppendingString:([_selectedUsers count] == [_searchUsers count]) ? @"On" : @"Off"]];
 	
 	if ([_selectedUsers count] == [_searchUsers count])
 		[_selectedUsers removeAllObjects];
@@ -235,8 +232,8 @@
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
 		if ([_selectedUsers count] > 0) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Invite Alert SWIPE"
-											 withProperties:[self _trackingProps]];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Invite Alert SWIPE"
+//											 withProperties:[self _trackingProps]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
 																message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", [_selectedUsers count], ([_selectedUsers count] == 1) ? @"person" : @"people"]
@@ -262,7 +259,7 @@
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Selected In-App User"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
 									withTrivialUser:trivialUserVO];
 	
 	if ([_selectedUsers containsObject:viewCell.trivialUserVO])
@@ -276,14 +273,16 @@
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	NSLog(@"[*:*] searchBarViewHasFocus:");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Search Bar Focused"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Search Bar"
+									 withProperties:@{@"state"	: @"focus"}];
 	
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	NSLog(@"[*:*] searchBarViewCancel:");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Search Bar Cancel"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Search Bar"
+									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_tableView.separatorStyle = ([_searchUsers count] == 0) ? UITableViewCellSeparatorStyleSingleLineEtched : UITableViewCellSeparatorStyleNone;
 }
@@ -291,7 +290,7 @@
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
 	NSLog(@"[*:*] searchBarView:enteredSearch:");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Entered Username"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Entered Username"
 									 withProperties:@{@"username"	: searchQuery}];
 	
 	if (![searchQuery isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]])
@@ -367,7 +366,7 @@
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search - Selected In-App User"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
 									withTrivialUser:cell.trivialUserVO];
 	
 	NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
@@ -393,8 +392,11 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"User Search - Invite Alert %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-										withProperties:[self _trackingProps]];
+		NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
+		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Username - Results Alert"
+										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {
 			_isPushing = YES;
@@ -407,10 +409,6 @@
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:YES completion:nil];
-					
-//					[self dismissViewControllerAnimated:YES completion:^(void) {
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-//					}];
 				}];
 				
 			} else {
@@ -428,10 +426,6 @@
 						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
 						[navigationController setNavigationBarHidden:YES];
 						[self presentViewController:navigationController animated:YES completion:nil];
-						
-//						[self dismissViewControllerAnimated:YES completion:^(void) {
-//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-//						}];
 					}];
 				}];
 			}

@@ -28,8 +28,7 @@
 @property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
-@property (nonatomic, strong) HONTableViewBGView *emptyContactsBGView;
-@property (nonatomic, strong) HONTableViewBGView *accessContactsBGView;
+
 
 @property (nonatomic, strong) UITableViewController *refreshControlTableViewController;
 @end

@@ -12,9 +12,10 @@
 #import "MBProgressHUD.h"
 
 #import "HONStatusUpdateSubmitViewController.h"
+#import "HONTableViewBGView.h"
 
 
-@interface HONStatusUpdateSubmitViewController () <HONClubViewCellDelegate>
+@interface HONStatusUpdateSubmitViewController () <HONClubViewCellDelegate, HONTableViewBGViewDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSMutableArray *selectedClubs;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
@@ -165,6 +166,8 @@
 			_replyClubViewCell.hidden = NO;
 		}
 	}];
+	
+	_emptyContactsBGView.hidden = YES;
 }
 
 - (NSDictionary *)_trackingProps {
@@ -325,10 +328,6 @@
 				names = ([names rangeOfString:@", "].location != NSNotFound) ? [names substringToIndex:[names length] - 2] : names;
 				
 				
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Invite Alert"
-												 withProperties:[self _trackingProps]];
-				
-				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
 																	message:[NSString stringWithFormat:@"Are you sure you want to add %@ to the club%@ you have selected?", names, ([_selectedClubs count] != 1) ? @"s" : @""]
 																   delegate:self
@@ -432,14 +431,26 @@
 //}
 
 
+#pragma mark - TableViewBGView Delegates
+- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
+	NSLog(@"[*:*] tableViewBGViewDidSelect [*:*]");
+	
+	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+										 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
+	}
+	
+	[super tableViewBGViewDidSelect:bgView];
+}
+
 #pragma mark - ClubViewCell Delegates
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
 	NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
 	[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:clubVO] forKey:@"club"];
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-									 withProperties:props];
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//									 withProperties:props];
 	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
 	if ([_selectedClubs containsObject:viewCell.clubVO])
@@ -565,15 +576,16 @@
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+//											 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 			
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
 			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
 			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-											 withProperties:props];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//											 withProperties:props];
 			
 			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])
@@ -599,15 +611,16 @@
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step - Access Contacts " stringByAppendingString:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"(UNDETERMINED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"(AUTHORIZED)" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"(DENIED)" : @"(OTHER)"]];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+//											 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 			
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
 			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
 			[props setValue:[[HONAnalyticsParams sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-											 withProperties:props];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//											 withProperties:props];
 			
 			[cell invertSelected];
 			if ([_selectedClubs containsObject:cell.clubVO])
@@ -655,9 +668,11 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 10) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - Invite Alert %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-										 withProperties:[self _trackingProps]];
-		
+		NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
+		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Invite Alert"
+										 withProperties:props];
+
 		if (buttonIndex == 1) {
 			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONUserClubVO *submitClubVO = (HONUserClubVO *)obj;

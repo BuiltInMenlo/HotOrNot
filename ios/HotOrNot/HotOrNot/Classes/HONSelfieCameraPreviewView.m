@@ -200,7 +200,7 @@
 	
 	HONStickerGroupType groupType = button.tag;
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
-									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
+									 withProperties:@{@"index"	: [@"" stringFromInt:groupType]}];
 	
 	for (UIView *view in _emotionsPickerHolderView.subviews) {
 		((HONEmotionsPickerView *)view).delegate = nil;
@@ -317,6 +317,8 @@
 #pragma mark - EmotionsPickerView Delegates
 - (void)emotionsPickerDisplayViewGoFullScreen:(HONEmotionsPickerDisplayView *)pickerDisplayView {
 	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
 	
 	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIButton *btn = (UIButton *)obj;
