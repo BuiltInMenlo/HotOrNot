@@ -27,7 +27,10 @@
 @interface HONSelfieCameraPreviewView () <HONEmotionsPickerDisplayViewDelegate, HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
+@property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) NSMutableArray *emotionsPickerViews;
+@property (nonatomic, strong) NSMutableArray *emotionsPickerButtons;
+@property (nonatomic, strong) UIView *emotionsPickerHolderView;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *closeButton;
@@ -50,8 +53,10 @@
 												 selector:@selector(_reloadEmotionPicker:)
 													 name:@"RELOAD_EMOTION_PICKER" object:nil];
 		
+		_selectedEmotions = [NSMutableArray array];
 		_subjectNames = [NSMutableArray array];
 		_emotionsPickerViews = [NSMutableArray array];
+		_emotionsPickerButtons = [NSMutableArray array];
 		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
@@ -89,15 +94,36 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
+	UIView *tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0)];
+	tabButtonsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[self addSubview:tabButtonsHolderView];
+	
+	NSArray *assetNames = @[@"popularTab",
+							@"emojiTab",
+							@"quotesTab",
+							@"stickersTab"];
+
+	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 331.0, 320.0, 291.0)];
+	[self addSubview:_emotionsPickerHolderView];
+	
 	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeObjects; i++) {
-		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 291.0, 320.0, 291.0) asEmotionGroupType:i];
-		[pickerView setTag:(69 + i)];
+		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 291.0) asEmotionGroupType:i];
 		[_emotionsPickerViews addObject:pickerView];
+		
+		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+		button.frame = CGRectMake(i * 64.0, 0.0, 64.0, 49.0);
+		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", [assetNames objectAtIndex:i]]] forState:UIControlStateNormal];
+		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", [assetNames objectAtIndex:i]]] forState:UIControlStateHighlighted];
+		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", [assetNames objectAtIndex:i]]] forState:UIControlStateSelected];
+		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", [assetNames objectAtIndex:i]]] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+		[button addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[button setTag:i];
+		[tabButtonsHolderView addSubview:button];
 	}
 	
 	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
 	pickerView.delegate = self;
-	[self addSubview:pickerView];
+	[_emotionsPickerHolderView addSubview:pickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
@@ -119,6 +145,19 @@
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_nextButton];
+	
+	
+	UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	deleteButton.frame = CGRectMake(4 * 64.0, 0.0, 64.0, 49.0);
+	[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
+	[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
+	[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
+	[tabButtonsHolderView addSubview:deleteButton];
+	
+//	[stickersButton setSelected:_stickerGroupType == HONStickerGroupTypeStickers];
+//	[facesButton setSelected:_stickerGroupType == HONStickerGroupTypeFaces];
+//	[animalsButton setSelected:_stickerGroupType == HONStickerGroupTypeAnimals];
+//	[objectsButton setSelected:_stickerGroupType == HONStickerGroupTypeObjects];
 }
 
 
@@ -135,12 +174,66 @@
 		[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"No Emotions Selected!")
-									message:NSLocalizedString(@"alert_noemotions_msg", @"You need to choose some emotions to make a status update.")
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"You must select a foreground sticker to submit")
+									message:NSLocalizedString(@"alert_noemotions_msg", @"")
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
+}
+
+- (void)_goGroup:(id)sender {
+	UIButton *button = (UIButton *)sender;
+	HONStickerGroupType groupType = button.tag;
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
+									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
+	
+	for (UIView *view in _emotionsPickerHolderView.subviews) {
+		((HONEmotionsPickerView *)view).delegate = nil;
+//		[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
+//						 animations:^(void) {
+//							 view.frame = CGRectOffset(view.frame, 0.0, 49.0);
+//							 view.alpha = 0.0;
+//						 } completion:^(BOOL finished) {
+//							 view.frame = CGRectOffset(view.frame, 0.0, -49.0);
+//							 [view removeFromSuperview];
+//							 view.alpha = 1.0;
+//						 }];
+		
+		[view removeFromSuperview];
+	}
+	
+	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
+		
+		if (pickerView.stickerGroupType == groupType) {
+			pickerView.delegate = self;
+			pickerView.alpha = 0.0;
+			pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 64.0);
+			[_emotionsPickerHolderView addSubview:pickerView];
+			[UIView animateWithDuration:0.333 delay:0.025
+				 usingSpringWithDamping:0.800 initialSpringVelocity:0.025
+								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
+								 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -64.0);
+								 pickerView.alpha = 1.0;
+							 } completion:^(BOOL finished) {
+							 }];
+			
+		}
+	}];
+}
+
+- (void)_goDelete {
+	HONEmotionVO *emotionVO = (HONEmotionVO *)[_selectedEmotions lastObject];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+										withEmotion:emotionVO];
+	
+	[_selectedEmotions removeObject:emotionVO];
+	[_subjectNames removeObject:emotionVO.emotionName inRange:NSMakeRange([_subjectNames count] - 1, 1)];
+	[_emotionsDisplayView removeEmotion:emotionVO];
+	
+	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @""];
 }
 
 
@@ -217,50 +310,51 @@
 //	});
 	
 	[_headerView transitionTitle:emotionVO.emotionName];
+	[_selectedEmotions addObject:emotionVO];
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
 
-- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
-//	NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-										withEmotion:emotionVO];
-	
-	[_subjectNames removeObject:emotionVO.emotionName inRange:NSMakeRange([_subjectNames count] - 1, 1)];
-	[_emotionsDisplayView removeEmotion:emotionVO];
-	
-	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @""];
-}
+//- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
+////	NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
+//	
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+//										withEmotion:emotionVO];
+//	
+//	[_subjectNames removeObject:emotionVO.emotionName inRange:NSMakeRange([_subjectNames count] - 1, 1)];
+//	[_emotionsDisplayView removeEmotion:emotionVO];
+//	
+//	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @""];
+//}
 
-- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView changeGroup:(HONStickerGroupType)groupType {
-	NSLog(@"[*:*] emotionItemView:(%@) changeGroup:(%@) [*:*]", self.class, (groupType == HONStickerGroupTypeStickers) ? @"STICKERS" : (groupType == HONStickerGroupTypeFaces) ? @"FACES" : (groupType == HONStickerGroupTypeAnimals) ? @"ANIMALS" : (groupType == HONStickerGroupTypeObjects) ? @"OBJECTS" : @"OTHER");
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
-									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
-	
-	for (UIView *view in self.subviews) {
-		if (view.tag >= 69) {
-			((HONEmotionsPickerView *)view).delegate = nil;
-			[view removeFromSuperview];
-		}
-	}
-	
-	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
-		
-		if (pickerView.stickerGroupType == groupType) {
-			pickerView.delegate = self;
-			[self addSubview:pickerView];
-		}
-		
-//		pickerView.hidden = (pickerView.stickerGroupType != groupType);
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			pickerView.alpha = (int)(pickerView.stickerGroupType == groupType);
-//		} completion:^(BOOL finished) {
-//		}];
-	}];
-}
+//- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView changeGroup:(HONStickerGroupType)groupType {
+//	NSLog(@"[*:*] emotionItemView:(%@) changeGroup:(%@) [*:*]", self.class, (groupType == HONStickerGroupTypeStickers) ? @"STICKERS" : (groupType == HONStickerGroupTypeFaces) ? @"FACES" : (groupType == HONStickerGroupTypeAnimals) ? @"ANIMALS" : (groupType == HONStickerGroupTypeObjects) ? @"OBJECTS" : @"OTHER");
+//	
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
+//									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
+//	
+//	for (UIView *view in self.subviews) {
+//		if (view.tag >= 69) {
+//			((HONEmotionsPickerView *)view).delegate = nil;
+//			[view removeFromSuperview];
+//		}
+//	}
+//	
+//	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
+//		
+//		if (pickerView.stickerGroupType == groupType) {
+//			pickerView.delegate = self;
+//			[self addSubview:pickerView];
+//		}
+//		
+////		pickerView.hidden = (pickerView.stickerGroupType != groupType);
+////		[UIView animateWithDuration:0.25 animations:^(void) {
+////			pickerView.alpha = (int)(pickerView.stickerGroupType == groupType);
+////		} completion:^(BOOL finished) {
+////		}];
+//	}];
+//}
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 //	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);

@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, HONClubViewCellType) {
 - (void)hideTimeStat;
 - (void)prependTitleCaption:(NSString *)captionPrefix;
 - (void)appendTitleCaption:(NSString *)captionSuffix;
+- (void)addSubtitleCaption:(NSString *)caption;
 
 @property (nonatomic, retain) NSString *caption;
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;

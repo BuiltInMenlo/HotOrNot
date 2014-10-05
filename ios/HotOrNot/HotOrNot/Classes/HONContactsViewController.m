@@ -14,12 +14,13 @@
 
 #import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONContactsViewController () <HONClubViewCellDelegate>
+@interface HONContactsViewController () <HONTableViewBGViewDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
@@ -27,8 +28,8 @@
 @property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
-@property (nonatomic, strong) UILabel *emptyContactsLabel;
-@property (nonatomic, strong) UILabel *accessContactsLabel;
+@property (nonatomic, strong) HONTableViewBGView *emptyContactsBGView;
+@property (nonatomic, strong) HONTableViewBGView *accessContactsBGView;
 
 @property (nonatomic, strong) UITableViewController *refreshControlTableViewController;
 @end
@@ -55,7 +56,7 @@
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
-					if ([[dict objectForKey:@"submissions"] count] == 0 || [[dict objectForKey:@"pending"] count] == 0)
+					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
 						continue;
 					
 					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
@@ -193,9 +194,12 @@
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";
-	_deviceContacts = [NSMutableArray array];
+	_allDeviceContacts = [NSMutableArray array];
+	_omittedDeviceContacts = [NSMutableArray array];
+	_shownDeviceContacts = [NSMutableArray array];
 	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:YES]) {
-		[_deviceContacts addObject:vo];
+		[_allDeviceContacts addObject:vo];
+		[_shownDeviceContacts addObject:vo];
 		
 		if (vo.isSMSAvailable)
 			_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
@@ -255,11 +259,16 @@
 		
 		return ((NSComparisonResult)NSOrderedSame);
 	}] mutableCopy];
-	
 	_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
 	
-	_accessContactsLabel.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
-	_emptyContactsLabel.hidden = (!_accessContactsLabel.hidden && ([_inAppUsers count] > 0 || [_recentClubs count] > 0));
+	[_omittedDeviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONContactUserVO *vo = (HONContactUserVO *)obj;
+		[_shownDeviceContacts removeObject:vo];
+	}];
+	
+	_emptyContactsBGView.hidden = ([_inAppUsers count] > 0 || [_recentClubs count] > 0);
+	_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
+
 	_tableView.alpha = 1.0;
 	
 	_tableView.hidden = NO;
@@ -309,26 +318,18 @@
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
 	
-	_accessContactsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 56.0)];
-	_accessContactsLabel.textColor = [UIColor blackColor];
-	_accessContactsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:17];
-	_accessContactsLabel.numberOfLines = 2;
-	_accessContactsLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
-	_accessContactsLabel.hidden = YES;
-	[_tableView.backgroundView addSubview:_accessContactsLabel];
-	
-	_emptyContactsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 56.0)];
-	_emptyContactsLabel.textColor = [UIColor blackColor];
-	_emptyContactsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:17];
-	_emptyContactsLabel.numberOfLines = 2;
-	_emptyContactsLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
-	_emptyContactsLabel.hidden = YES;
-	[_tableView.backgroundView addSubview:_emptyContactsLabel];
-
-	
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	_accessContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
+	_accessContactsBGView.viewType = HONTableViewBGViewTypeAccessContacts;
+	[self.view addSubview:_accessContactsBGView];
+	
+	_emptyContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
+	_accessContactsBGView.viewType = HONTableViewBGViewTypeCreateStatusUpdate;
+	[self.view addSubview:_emptyContactsBGView];
+
 	
 	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
 	[self.view addSubview:_headerView];
@@ -363,6 +364,37 @@
 
 
 #pragma mark - Navigation
+- (void)_goCreateChallenge {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goTableBGSelected:(id)sender {
+	NSLog(@"[:|:] _goTableBGSelected:");
+	
+	UIButton *button = (UIButton *)sender;
+	
+//	button.alpha = 0.0;
+//	button.backgroundColor = [UIColor whiteColor];
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		button.alpha = 0.5;
+//	} completion:^(BOOL finished) {
+//		button.backgroundColor = [UIColor clearColor];
+//		button.alpha = 1.0;
+//	}];
+	
+	if (button.tag == HONTableViewBGViewTypeAccessContacts) {
+		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+			[self _promptForAddressBookPermission];
+		
+		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+			[self _promptForAddressBookAccess];
+		
+	} else if (button.tag == HONTableViewBGViewTypeCreateStatusUpdate) {
+		[self _goCreateChallenge];
+	}
+}
 
 
 #pragma mark - UI Presentation
@@ -382,6 +414,23 @@
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:0];
 	[alertView show];
+}
+
+
+#pragma mark - TableViewBGView Delegates
+- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
+	NSLog(@"[[*:*]] tableViewBGViewDidSelect [[*:*]]");
+	
+	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
+		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+			[self _promptForAddressBookPermission];
+		
+		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+			[self _promptForAddressBookAccess];
+	
+	} else if (bgView.viewType == HONTableViewBGViewTypeCreateStatusUpdate) {
+		[self _goCreateChallenge];
+	}
 }
 
 
@@ -414,7 +463,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
+	return ((section == 0) ? 1 : (section == 1) ? [_recentClubs count] : (section == 2) ? [_inAppUsers count] : [_shownDeviceContacts count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -457,7 +506,7 @@
 			cell.trivialUserVO = vo;
 			
 		} else if (indexPath.section == 3) {
-			HONContactUserVO *vo = (HONContactUserVO *)[_deviceContacts objectAtIndex:indexPath.row];
+			HONContactUserVO *vo = (HONContactUserVO *)[_shownDeviceContacts objectAtIndex:indexPath.row];
 			cell.contactUserVO = vo;
 		}
 	}

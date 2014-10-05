@@ -114,8 +114,8 @@
 "network_status" = "Network status";
 "settings_logout" = "Logout";
 "header_settings" = "Settings";
-"alert_noemotions_title" = "No Emotions selected!";
-"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"alert_noemotions_title" = "You must select a foreground sticker to submit";
+"alert_noemotions_msg" = "";
 "popup_clubcopied_title" = "%@ has been copied to your clipboard.";
 "popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
 "email_error" = "Email Error";

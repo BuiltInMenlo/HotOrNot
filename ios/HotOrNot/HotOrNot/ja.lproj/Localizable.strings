@@ -113,8 +113,7 @@
 "network_status" = "ネットワークステータス";
 "settings_logout" = "ログアウトする";
 "header_settings" = "設定";
-"alert_noemotions_title" = "気持ちが選択されていません!";
-"alert_noemotions_msg" = "ステータスを更新するには、いずれかの気持ちを選択して下さい。";
+"alert_noemotions_msg" = "";
 "popup_clubcopied_title" = "%@ クラブがコピーされました!";
 "popup_clubcopied_msg" = "URLをどこかにペーストしてシェアしましょう!";
 "email_error" = "メールエラー";
@@ -198,6 +197,7 @@
 "empty_stickers" = "Select a sticker and\nbackground";
 "settings_legal" = "Legal";
 "settings_support" = "Support";
+"alert_noemotions_title" = "You must select a foreground sticker to submit";
 
 "areacode_club" = "%@クラブ";
 "family_club" = "私の%@クラブ";

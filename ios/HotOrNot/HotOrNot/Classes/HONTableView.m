@@ -23,6 +23,7 @@ const CGFloat kOrthodoxTableCellHeight = 74.0f;
 		[self setShowsHorizontalScrollIndicator:YES];
 		[self setAlwaysBounceVertical:YES];
 		[self setSectionIndexMinimumDisplayRowCount:1];
+//		[self.backgroundView setUserInteractionEnabled:YES];
 	}
 	
 	return (self);

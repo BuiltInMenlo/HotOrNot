@@ -58,58 +58,58 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-		UIButton *stickersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		stickersButton.frame = CGRectMake(0.0, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
-		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_nonActive"] forState:UIControlStateNormal];
-		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_Active"] forState:UIControlStateHighlighted];
-		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_Tapped"] forState:UIControlStateSelected];
-		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-		[stickersButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
-		[stickersButton setTag:HONStickerGroupTypeStickers];
-		[self addSubview:stickersButton];
-		
-		
-		UIButton *facesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		facesButton.frame = CGRectMake(1 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
-		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_nonActive"] forState:UIControlStateNormal];
-		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_Active"] forState:UIControlStateHighlighted];
-		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_Tapped"] forState:UIControlStateSelected];
-		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-		[facesButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
-		[facesButton setTag:HONStickerGroupTypeFaces];
-		[self addSubview:facesButton];
-		
-		UIButton *animalsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		animalsButton.frame = CGRectMake(2 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
-		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_nonActive"] forState:UIControlStateNormal];
-		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_Active"] forState:UIControlStateHighlighted];
-		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_Tapped"] forState:UIControlStateSelected];
-		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-		[animalsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
-		[animalsButton setTag:HONStickerGroupTypeAnimals];
-		[self addSubview:animalsButton];
-		
-		UIButton *objectsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		objectsButton.frame = CGRectMake(3 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
-		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_nonActive"] forState:UIControlStateNormal];
-		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_Active"] forState:UIControlStateHighlighted];
-		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_Tapped"] forState:UIControlStateSelected];
-		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-		[objectsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
-		[objectsButton setTag:HONStickerGroupTypeObjects];
-		[self addSubview:objectsButton];
-		
-		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(4 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
-		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
-		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:deleteButton];
-		
-		[stickersButton setSelected:_stickerGroupType == HONStickerGroupTypeStickers];
-		[facesButton setSelected:_stickerGroupType == HONStickerGroupTypeFaces];
-		[animalsButton setSelected:_stickerGroupType == HONStickerGroupTypeAnimals];
-		[objectsButton setSelected:_stickerGroupType == HONStickerGroupTypeObjects];
+//		UIButton *stickersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		stickersButton.frame = CGRectMake(0.0, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
+//		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_nonActive"] forState:UIControlStateNormal];
+//		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_Active"] forState:UIControlStateHighlighted];
+//		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_Tapped"] forState:UIControlStateSelected];
+//		[stickersButton setBackgroundImage:[UIImage imageNamed:@"popularTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+//		[stickersButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+//		[stickersButton setTag:HONStickerGroupTypeStickers];
+//		[self addSubview:stickersButton];
+//		
+//		
+//		UIButton *facesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		facesButton.frame = CGRectMake(1 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
+//		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_nonActive"] forState:UIControlStateNormal];
+//		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_Active"] forState:UIControlStateHighlighted];
+//		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_Tapped"] forState:UIControlStateSelected];
+//		[facesButton setBackgroundImage:[UIImage imageNamed:@"emojiTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+//		[facesButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+//		[facesButton setTag:HONStickerGroupTypeFaces];
+//		[self addSubview:facesButton];
+//		
+//		UIButton *animalsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		animalsButton.frame = CGRectMake(2 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
+//		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_nonActive"] forState:UIControlStateNormal];
+//		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_Active"] forState:UIControlStateHighlighted];
+//		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_Tapped"] forState:UIControlStateSelected];
+//		[animalsButton setBackgroundImage:[UIImage imageNamed:@"quotesTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+//		[animalsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+//		[animalsButton setTag:HONStickerGroupTypeAnimals];
+//		[self addSubview:animalsButton];
+//		
+//		UIButton *objectsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		objectsButton.frame = CGRectMake(3 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
+//		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_nonActive"] forState:UIControlStateNormal];
+//		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_Active"] forState:UIControlStateHighlighted];
+//		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_Tapped"] forState:UIControlStateSelected];
+//		[objectsButton setBackgroundImage:[UIImage imageNamed:@"stickersTab_Tapped"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+//		[objectsButton addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+//		[objectsButton setTag:HONStickerGroupTypeObjects];
+//		[self addSubview:objectsButton];
+//		
+//		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		deleteButton.frame = CGRectMake(4 * kStickerGrpBtnSize.width, self.frame.size.height - kStickerGrpBtnSize.height, kStickerGrpBtnSize.width, kStickerGrpBtnSize.height);
+//		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
+//		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
+//		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
+//		[self addSubview:deleteButton];
+//		
+//		[stickersButton setSelected:_stickerGroupType == HONStickerGroupTypeStickers];
+//		[facesButton setSelected:_stickerGroupType == HONStickerGroupTypeFaces];
+//		[animalsButton setSelected:_stickerGroupType == HONStickerGroupTypeAnimals];
+//		[objectsButton setSelected:_stickerGroupType == HONStickerGroupTypeObjects];
 		
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
@@ -144,19 +144,19 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 
 
 #pragma mark - Navigation
-- (void)_goGroup:(id)sender {
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:changeGroup:)])
-		[self.delegate emotionsPickerView:self changeGroup:((UIButton *)sender).tag];
-}
-
-- (void)_goDelete {
-	if ([_selectedEmotions count] > 0) {
-		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
-			[self.delegate emotionsPickerView:self deselectedEmotion:(HONEmotionVO *)[_selectedEmotions lastObject]];
-		
-		[_selectedEmotions removeLastObject];
-	}
-}
+//- (void)_goGroup:(id)sender {
+//	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:changeGroup:)])
+//		[self.delegate emotionsPickerView:self changeGroup:((UIButton *)sender).tag];
+//}
+//
+//- (void)_goDelete {
+//	if ([_selectedEmotions count] > 0) {
+//		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
+//			[self.delegate emotionsPickerView:self deselectedEmotion:(HONEmotionVO *)[_selectedEmotions lastObject]];
+//		
+//		[_selectedEmotions removeLastObject];
+//	}
+//}
 
 
 #pragma mark - UI Presentation
@@ -208,11 +208,11 @@ static dispatch_queue_t sticker_request_operation_queue;
 	}
 }
 
-- (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView deselectedEmotion:(HONEmotionVO *)emotionVO {
-	[_selectedEmotions removeObject:emotionVO];
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
-		[self.delegate emotionsPickerView:self deselectedEmotion:emotionVO];
-}
+//- (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView deselectedEmotion:(HONEmotionVO *)emotionVO {
+//	[_selectedEmotions removeObject:emotionVO];
+//	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
+//		[self.delegate emotionsPickerView:self deselectedEmotion:emotionVO];
+//}
 
 
 #pragma mark - ScrollView Delegates

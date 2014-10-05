@@ -163,6 +163,13 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			[uniqueParticipants addObject:vo.username];
 	}];
 	
+	[_clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		
+		if (![uniqueParticipants containsObject:vo.username])
+			[uniqueParticipants addObject:vo.username];
+	}];
+	
 	[_clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 		
@@ -177,7 +184,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", username];
 	}
 	subtitleCaption = ([subtitleCaption rangeOfString:@", "].location != NSNotFound) ? [subtitleCaption substringToIndex:[subtitleCaption length] - 2] : subtitleCaption;
-	
+	subtitleCaption = ([subtitleCaption length] == 2) ? [subtitleCaption stringByAppendingString:titleCaption] : subtitleCaption;
 //	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
 	
 	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption];
@@ -227,6 +234,24 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(_maxTitleLabelSize.width, size.width * 0.5), 0.0);
 	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_maxTitleLabelSize.width, _titleLabel.frame.size.width), _titleLabel.frame.size.height);
 	_titleLabel.text = _caption;
+}
+
+- (void)addSubtitleCaption:(NSString *)caption {
+	_subtitleLabel.hidden = NO;
+	_subtitleLabel.alpha = 1.0;
+	_subtitleLabel.text = caption;
+	
+	CGSize size = [caption boundingRectWithSize:_titleLabel.frame.size
+										options:NSStringDrawingTruncatesLastVisibleLine
+									 attributes:@{NSFontAttributeName:_titleLabel.font}
+										context:nil].size;
+	
+	_titleLabel.frame = CGRectInset(_titleLabel.frame, MAX(-_maxTitleLabelSize.width, -size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectOffset(_titleLabel.frame, MIN(_maxTitleLabelSize.width, size.width * 0.5), 0.0);
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y, MIN(_maxTitleLabelSize.width, _titleLabel.frame.size.width), _titleLabel.frame.size.height);
+	
+	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, 18.0, _titleLabel.frame.size.width, _titleLabel.frame.size.height);
+	_subtitleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 21.0);
 }
 
 - (void)hideTimeStat {

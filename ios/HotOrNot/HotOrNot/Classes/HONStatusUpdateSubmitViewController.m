@@ -122,6 +122,36 @@
 }
 
 - (void)_didFinishDataRefresh {
+	
+	if ([_matchedUserIDs count] < [_allDeviceContacts count]) {
+		[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			for (HONContactUserVO *contactUserVO in _allDeviceContacts) {
+				NSString *altID = (NSString *)obj;
+//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
+				
+				if ([contactUserVO.mobileNumber isEqualToString:altID]) {
+//					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
+					[_omittedDeviceContacts addObject:contactUserVO];
+					break;
+				}
+			}
+		}];
+		
+	} else {
+		for (HONContactUserVO *contactUserVO in _allDeviceContacts) {
+			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSString *altID = (NSString *)obj;
+//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
+				
+				if ([contactUserVO.mobileNumber isEqualToString:altID]) {
+//					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
+					[_omittedDeviceContacts addObject:contactUserVO];
+					*stop = YES;//break;
+				}
+			}];
+		}
+	}
+	
 	[super _didFinishDataRefresh];
 	
 	[_recentClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -135,30 +165,7 @@
 			_replyClubViewCell.hidden = NO;
 		}
 	}];
-	
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook)
-//		[self _generateContactTrivialMap];
 }
-
-//- (void) _generateContactTrivialMap {
-//	NSLog(@"[*:*] _generateContactTrivialMap (%d)(%d)", [_inAppUsers count], [_deviceContacts count]);
-//	
-//	_userIDContactID = [NSMutableDictionary dictionary];
-//	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-//		[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//			HONContactUserVO *contactUserVO = (HONContactUserVO *)obj;
-//			
-//			[_inAppUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
-////				NSLog(@"trivialUserVO.altID:[%@] contactUserVO.mobileNumber:[%@]", trivialUserVO.altID, contactUserVO.mobileNumber);
-//				NSLog(@"trivialUserVO:[%@] contactUserVO:[%@]", trivialUserVO.dictionary, contactUserVO.dictionary);
-//				if ([trivialUserVO.altID isEqualToString:contactUserVO.mobileNumber]) {
-//					[_userIDContactID setValue:contactUserVO forKey:[@"" stringFromInt:trivialUserVO.userID]];
-//				}
-//			}];
-//		}];
-//	}
-//}
 
 - (NSDictionary *)_trackingProps {
 	NSMutableArray *clubs = [NSMutableArray array];
@@ -295,8 +302,8 @@
 
 - (void)_goSubmit {
 	if ([_selectedClubs count] == 0 && [_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
-		[[[UIAlertView alloc] initWithTitle:@"No one selected!"
-									message:@"You need to select a club or friend."
+		[[[UIAlertView alloc] initWithTitle:@"You must select at least one friend to submit"
+									message:@""
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -477,11 +484,11 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? 0 : (section == 2) ? [_inAppUsers count] : [_deviceContacts count]);
+	return ((section == 0) ? 1 : (section == 1) ? 0 : (section == 2) ? [_inAppUsers count] : [_shownDeviceContacts count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? @"Tap one or more" : (section == 3) ? ([_deviceContacts count] == 0) ? @"No results" : @"Contacts" : @""]);
+	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? @"Tap one or more" : (section == 3) ? ([_allDeviceContacts count] == 0) ? @"No results" : @"Contacts" : @""]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -555,13 +562,13 @@
 				NSString *altID = (NSString *)obj;
 				if ([cell.trivialUserVO.altID isEqualToString:altID]) {
 //					NSLog(@"********MERGE ATTEMPT*********\n");
-					[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					[_allDeviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 						HONContactUserVO *vo = (HONContactUserVO *)obj;
 						
 						if ([vo.mobileNumber isEqualToString:altID] && [cell.caption rangeOfString:vo.fullName].location == 0) {
 							NSLog(@"********MERGE FOUND!!! [%d](%@)*********", cell.trivialUserVO.userID, vo.fullName);
-//							[cell prependTitleCaption:[NSString stringWithFormat:@"%@ - ", vo.fullName]];
-							[cell appendTitleCaption:[NSString stringWithFormat:@" - %@", vo.fullName]];
+							[cell addSubtitleCaption:[NSString stringWithFormat:@" is “%@”", vo.fullName]];
+//							[cell appendTitleCaption:[NSString stringWithFormat:@" - %@", vo.fullName]];
 							*stop = YES;
 						}
 					}];
@@ -584,18 +591,18 @@
 //				}
 //			}
 			
-			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				NSString *altID = (NSString *)obj;
-				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, cell.contactUserVO.mobileNumber);
-				if ([cell.contactUserVO.mobileNumber isEqualToString:altID]) {
-					NSLog(@"********DELETE*********\n%@", cell.contactUserVO.fullName);
-					cell.contentView.alpha = 0.875;
-					cell.backgroundView = nil;
-					cell.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugOrangeColor];
-//					[self _removeMatchedContactCell:cell];
-					*stop = YES;
-				}
-			}];
+//			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				NSString *altID = (NSString *)obj;
+//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, cell.contactUserVO.mobileNumber);
+//				if ([cell.contactUserVO.mobileNumber isEqualToString:altID]) {
+//					NSLog(@"********DELETE*********\n%@", cell.contactUserVO.fullName);
+//					cell.contentView.alpha = 0.875;
+//					cell.backgroundView = nil;
+//					cell.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugOrangeColor];
+////					[self _removeMatchedContactCell:cell];
+//					*stop = YES;
+//				}
+//			}];
 		}
 	}
 	
@@ -605,7 +612,7 @@
 - (void)_removeMatchedContactCell:(HONClubViewCell *)viewCell {
 	
 	__block int ind = -1;
-	[_deviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	[_allDeviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONContactUserVO *vo = (HONContactUserVO *)obj;
 		if ([vo.mobileNumber isEqualToString:viewCell.contactUserVO.mobileNumber]) {
 			ind = idx;
@@ -614,7 +621,7 @@
 	}];
 	
 	if (ind >= 0) {
-		[_deviceContacts removeObjectAtIndex:ind];
+		[_allDeviceContacts removeObjectAtIndex:ind];
 		
 		[_tableView beginUpdates];
 		[_tableView deleteRowsAtIndexPaths:@[[_tableView indexPathForCell:viewCell]] withRowAnimation:UITableViewRowAnimationAutomatic];

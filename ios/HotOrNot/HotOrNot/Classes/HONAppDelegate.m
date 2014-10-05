@@ -1126,24 +1126,37 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
 	[[NSUserDefaults standardUserDefaults] setValue:@"PUSH" forKey:@"entry"];
 	
+	NSString *typeID = [[userInfo objectForKey:@"aps"] objectForKey:@"type"];
 	_clubID = [[[userInfo objectForKey:@"aps"] objectForKey:@"club_id"] intValue];
 	_userID = [[[userInfo objectForKey:@"aps"] objectForKey:@"owner_id"] intValue];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-														message:@""
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-	[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
-	[alertView show];
+	if ([[typeID uppercaseString] isEqualToString:@"DEV"]) {
+		[self _showOKAlert:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+			   withMessage:[[HONDeviceIntrinsics sharedInstance] pushToken]];
+		
+	} else if ([[typeID uppercaseString] isEqualToString:@"INVITE"]) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//												  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+//		[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
+//		[alertView show];
+	
+	} else {
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:_userID completion:^(NSDictionary *result) {
+			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You have 1 new status update"
+																message:@""
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+			[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
+			[alertView show];
+		}];
+	}
 	
 	application.applicationIconBadgeNumber = 0;
-	
-//	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
-//								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
-//							   delegate:nil
-//					  cancelButtonTitle:@"OK"
-//					  otherButtonTitles:nil] show];
 }
 
 #pragma mark - Startup Operations
@@ -1456,15 +1469,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if (alertView.tag == HONAppDelegateAlertTypeExit)
 		NSLog(@"EXIT APP");//exit(0);
 	
-//	else if (alertView.tag == HONAppDelegateAlertTypeVerifiedNotification) {
-//		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
-//		
-//		if (buttonIndex == 1) {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
-//		}
-//	}
-	
 	else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
 		switch(buttonIndex) {
 			case 0:
@@ -1540,13 +1544,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
-				
+//		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+			[self.tabBarController setSelectedIndex:1];
+			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
-	
+		
 	} else if (alertView.tag == HONAppDelegateAlertTypeJoinCLub) {
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {

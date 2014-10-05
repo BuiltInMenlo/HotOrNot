@@ -15,6 +15,7 @@
 #import "HONActivityHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONTabBannerView.h"
+#import "HONTableViewBGView.h"
 #import "HONRegisterViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
@@ -24,7 +25,7 @@
 #import "HONContactsSearchViewController.h"
 #import "HONClubTimelineViewController.h"
 
-@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONClubViewCellDelegate>
+@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONTableViewBGViewDelegate, HONSelfieCameraViewControllerDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
@@ -78,7 +79,7 @@ static NSString * const kCamera = @"camera";
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
 										 withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You joined %d club%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %d new conversation%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -182,12 +183,13 @@ static NSString * const kCamera = @"camera";
 
 - (void)_goCreateChallenge {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"];
-	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewStatusUpdate];
-	selfieCameraViewController.delegate = self;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[super _goCreateChallenge];
+//	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewStatusUpdate];
+//	selfieCameraViewController.delegate = self;
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -280,13 +282,10 @@ static NSString * const kCamera = @"camera";
 }
 
 
-#pragma mark - SelfieCameraViewController Delegates
-- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
-	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
+#pragma mark - TableViewBGView Delegates
+- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
+	NSLog(@"[*:*] tableViewBGViewDidSelect [*:*]");
+	[super tableViewBGViewDidSelect:bgView];
 }
 
 

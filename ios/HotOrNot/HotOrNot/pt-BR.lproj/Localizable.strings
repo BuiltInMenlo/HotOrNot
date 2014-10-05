@@ -113,8 +113,7 @@
 "network_status" = "Status da rede";
 "settings_logout" = "Sair";
 "header_settings" = "Ajustes";
-"alert_noemotions_title" = "Nenhuma Emoção selecionada!";
-"alert_noemotions_msg" = "Você precisa escolher algumas emoções para fazer uma atualização de status.";
+"alert_noemotions_msg" = "";
 "popup_clubcopied_title" = "O seu clube %@ foi copiado!";
 "popup_clubcopied_msg" = "Cole o link em qualquer lugar para compartilhar!";
 "email_error" = "Erro de E-mail";
@@ -198,6 +197,7 @@
 "empty_stickers" = "Select a sticker and\nbackground";
 "settings_legal" = "Legal";
 "settings_support" = "Support";
+"alert_noemotions_title" = "You must select a foreground sticker to submit";
 
 "areacode_club" = "%@Clube";
 "family_club" = "My%@Clube";

@@ -22,6 +22,7 @@
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UILabel *emotionLabel;
+@property (nonatomic, strong) UIView *tintedView;
 
 @property (nonatomic, strong) NSMutableArray *emotionViews;
 @property (nonatomic, strong) NSMutableArray *emotions;
@@ -142,18 +143,19 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	
 	
 	
-	UIView *tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 25.0, 320.0, 47.0)];
-	tintedView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[self.contentView addSubview:tintedView];
+	_tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 25.0, 320.0, 47.0)];
+	_tintedView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	[self.contentView addSubview:_tintedView];
 	
 	_emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 43.0)];
 	_emotionLabel.backgroundColor = [UIColor clearColor];
 	_emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:21];
 	_emotionLabel.textColor = [UIColor whiteColor];
 	_emotionLabel.textAlignment = NSTextAlignmentCenter;
-	_emotionLabel.text = ((HONEmotionVO *)[_emotions firstObject]).emotionName;
-	[tintedView addSubview:_emotionLabel];
-
+	_emotionLabel.text = @"";//((HONEmotionVO *)[_emotions firstObject]).emotionName;
+	[_tintedView addSubview:_emotionLabel];
+	
+	[self _transitionToCaption:((HONEmotionVO *)[_emotions firstObject]).emotionName withCompletion:nil];
 	
 	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, [UIScreen mainScreen].bounds.size.height - 33.0, 150.0, 30.0)];
 	participantsLabel.backgroundColor = [UIColor clearColor];
@@ -162,7 +164,7 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	participantsLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
 	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	participantsLabel.text = [NSString stringWithFormat:@"%d/%d", 1 + [_clubVO.activeMembers count], [_clubVO.pendingMembers count]];
-	[self.contentView addSubview:participantsLabel];
+//	[self.contentView addSubview:participantsLabel];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 33.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
@@ -242,6 +244,33 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 
 
 #pragma mark - UI Presentation
+- (void)_transitionToCaption:(NSString *)caption withCompletion:(void (^)(BOOL finished))completion {
+	
+	UILabel *outroLabel = [[UILabel alloc] initWithFrame:_emotionLabel.frame];
+	outroLabel.backgroundColor = _emotionLabel.backgroundColor;
+	outroLabel.font = _emotionLabel.font;
+	outroLabel.textColor = _emotionLabel.textColor;
+	outroLabel.textAlignment = _emotionLabel.textAlignment;
+	outroLabel.text = _emotionLabel.text;
+	[_tintedView addSubview:outroLabel];
+	
+	_emotionLabel.alpha = 0.0;
+	_emotionLabel.text = caption;
+	
+	[UIView animateWithDuration:0.125
+					 animations:^(void) {
+						 outroLabel.alpha = 0.0;
+						 _emotionLabel.alpha = 1.0;
+						 
+					 } completion:^(BOOL finished) {
+						 [outroLabel removeFromSuperview];
+						 
+						 if (completion)
+							 completion(finished);
+	}];
+
+}
+
 - (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {
 	UIView *holderView = [[UIView alloc] initWithFrame:kEmotionLoadedFrame];
 	
@@ -331,7 +360,8 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 		
 		if (scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(updtInd, currInd);
-			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName;
+			[self _transitionToCaption:((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName withCompletion:nil];
+//			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName;
 		} else
 			return;
 		
@@ -341,7 +371,8 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 		
 		if (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(updtInd, currInd);
-			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName;
+			[self _transitionToCaption:((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName withCompletion:nil];
+//			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName;
 			
 		} else
 			return;

@@ -19,6 +19,7 @@
 #import "HONUserClubVO.h"
 #import "HONSearchBarView.h"
 #import "HONTableHeaderView.h"
+#import "HONTableViewBGView.h"
 
 typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceEmpty			= 0 << 0,
@@ -39,7 +40,9 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	
 	NSMutableArray *_headRows;
 	NSMutableArray *_recentClubs;
-	NSMutableArray *_deviceContacts;
+	NSMutableArray *_allDeviceContacts;
+	NSMutableArray *_shownDeviceContacts;
+	NSMutableArray *_omittedDeviceContacts;
 	NSMutableArray *_inAppUsers;
 	NSMutableArray *_searchUsers;
 	NSMutableArray *_matchedUserIDs;
@@ -63,6 +66,11 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 - (void)_retrieveDeviceContacts;
 - (void)_sendEmailContacts;
 - (void)_sendPhoneContacts;
+
+- (void)_goCreateChallenge;
+- (void)_goTableBGSelected:(id)sender;
+
+- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView;
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
