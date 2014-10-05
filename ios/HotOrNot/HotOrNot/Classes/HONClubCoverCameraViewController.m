@@ -41,6 +41,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_imagePicker.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {

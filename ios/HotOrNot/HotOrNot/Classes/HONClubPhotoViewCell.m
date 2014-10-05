@@ -55,6 +55,10 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	return (self);
 }
 
+- (void)dealloc {
+	_scrollView.delegate = nil;
+}
+
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
 	

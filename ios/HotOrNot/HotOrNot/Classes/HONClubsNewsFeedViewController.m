@@ -74,6 +74,16 @@
 	return (self);
 }
 
+- (void)dealloc {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubNewsFeedViewCell *cell = (HONClubNewsFeedViewCell *)obj;
+		cell.delegate = nil;
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+}
+
 #pragma mark -
 static NSString * const kSelfie = @"selfie";
 static NSString * const kMMS = @"mms";

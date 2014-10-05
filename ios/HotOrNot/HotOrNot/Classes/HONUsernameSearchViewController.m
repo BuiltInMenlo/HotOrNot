@@ -41,6 +41,16 @@
 	return (self);
 }
 
+- (void)dealloc {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		cell.delegate = nil;
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers:(NSString *)username {

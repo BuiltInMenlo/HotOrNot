@@ -128,6 +128,15 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 	return (self);
 }
 
+- (void)dealloc {
+	_scrollView.delegate = nil;
+	
+	[_itemViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONEmoticonPickerItemView *view = (HONEmoticonPickerItemView *)obj;
+		view.delegate = nil;
+	}];
+}
+
 
 #pragma mark - Public APIs
 - (void)disablePagesStartingAt:(int)page {

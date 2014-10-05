@@ -67,6 +67,11 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_usernameTextField.delegate = nil;
+	_phoneTextField.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_checkUsername {

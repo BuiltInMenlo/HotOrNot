@@ -30,6 +30,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_usernameTextField.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 

@@ -97,6 +97,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_searchTextField.delegate = nil;
+}
+
 - (BOOL)becomeFirstResponder {
 	_searchTextField.text = @"";
 	return ([_searchTextField becomeFirstResponder]);

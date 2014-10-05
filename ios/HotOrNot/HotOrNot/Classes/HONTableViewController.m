@@ -30,7 +30,8 @@
 }
 
 - (void)dealloc {
-	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
 }
 
 - (BOOL)shouldAutorotate {

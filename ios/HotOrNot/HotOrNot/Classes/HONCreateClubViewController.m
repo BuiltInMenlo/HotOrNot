@@ -66,6 +66,11 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_clubNameTextField.delegate = nil;
+	_imagePicker.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {

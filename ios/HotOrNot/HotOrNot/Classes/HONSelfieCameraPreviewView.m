@@ -31,6 +31,7 @@
 @property (nonatomic, strong) NSMutableArray *emotionsPickerViews;
 @property (nonatomic, strong) NSMutableArray *emotionsPickerButtons;
 @property (nonatomic, strong) UIView *emotionsPickerHolderView;
+@property (nonatomic, strong) UIView *tabButtonsHolderView;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *closeButton;
@@ -69,6 +70,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_emotionsDisplayView.delegate = nil;
+}
+
 
 #pragma mark - Puplic APIs
 - (NSArray *)getSubjectNames {
@@ -99,9 +104,9 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
-	UIView *tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0)];
-	tabButtonsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-	[self addSubview:tabButtonsHolderView];
+	_tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0)];
+	_tabButtonsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[self addSubview:_tabButtonsHolderView];
 	
 	NSArray *assetNames = @[@"popularTab",
 							@"emojiTab",
@@ -122,8 +127,9 @@
 		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", [assetNames objectAtIndex:i]]] forState:UIControlStateSelected];
 		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", [assetNames objectAtIndex:i]]] forState:(UIControlStateHighlighted|UIControlStateSelected)];
 		[button addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[button setSelected:(i == HONStickerGroupTypeStickers)];
 		[button setTag:i];
-		[tabButtonsHolderView addSubview:button];
+		[_tabButtonsHolderView addSubview:button];
 	}
 	
 	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
@@ -157,7 +163,7 @@
 	[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
 	[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 	[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
-	[tabButtonsHolderView addSubview:deleteButton];
+	[_tabButtonsHolderView addSubview:deleteButton];
 }
 
 
@@ -184,7 +190,13 @@
 
 - (void)_goGroup:(id)sender {
 	UIButton *button = (UIButton *)sender;
-	[button setSelected:YES];
+	
+	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		UIButton *btn = (UIButton *)obj;
+		[btn setSelected:btn.tag == button.tag];
+	}];
+	
+//	[button setSelected:YES];
 	
 	HONStickerGroupType groupType = button.tag;
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"

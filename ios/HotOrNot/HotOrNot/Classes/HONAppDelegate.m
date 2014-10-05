@@ -1691,6 +1691,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Dismissing DocInteraction Shelf"
 									 withProperties:@{@"controller"		: [controller name]}];
+	
+	_documentInteractionController.delegate = nil;
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {

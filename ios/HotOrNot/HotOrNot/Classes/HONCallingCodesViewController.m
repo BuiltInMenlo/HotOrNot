@@ -42,6 +42,15 @@
 	return (self);
 }
 
+-(void)dealloc {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONCallingCodeViewCell *cell = (HONCallingCodeViewCell *)obj;
+		cell.delegate = nil;
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+}
 
 #pragma mark - Data Calls
 - (void)_retreiveCountries {

@@ -69,6 +69,18 @@
 	return (self);
 }
 
+- (void)dealloc {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONActivityItemViewCell *cell = (HONActivityItemViewCell *)obj;
+		cell.delegate = nil;
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+	
+	_insetOverlayView.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_retrieveUser {

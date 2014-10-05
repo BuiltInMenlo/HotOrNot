@@ -36,6 +36,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_pinTextField.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_generateClub:(HONUserClubVO *)vo {

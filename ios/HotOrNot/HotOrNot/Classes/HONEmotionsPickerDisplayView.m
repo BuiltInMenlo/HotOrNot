@@ -99,6 +99,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	return (self);
 }
 
+- (void)dealloc {
+	_scrollView.delegate = nil;
+}
+
 
 #pragma mark - Public APIs
 - (void)addEmotion:(HONEmotionVO *)emotionVO {

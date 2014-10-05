@@ -44,6 +44,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_phoneTextField.delegate = nil;
+}
+
 - (id)initWithClub:(HONUserClubVO *)clubVO {
 	if ((self = [super init])) {
 		_callingCode = @"+1";

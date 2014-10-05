@@ -44,6 +44,11 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_clubNameTextField.delegate = nil;
+	_blurbTextField.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_updateClub {

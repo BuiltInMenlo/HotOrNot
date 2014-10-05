@@ -64,6 +64,13 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_por1.delegate = nil;
+	_por2.delegate = nil;
+	_previewView.delegate = nil;
+	_cameraOverlayView.delegate = nil;
+}
+
 - (id)initWithContact:(HONContactUserVO *)contactUserVO {
 	NSLog(@"%@ - initWithContact", [self description]);
 	if ((self = [self init])) {
@@ -369,6 +376,7 @@
 	[self _cancelUpload];
 //	[_previewView updateProcessedImage:[UIImage imageNamed:@"blank_64"]];
 	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
+		self.imagePickerController.delegate = nil;
 	}];
 }
 

@@ -30,6 +30,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_webView.delegate = nil;
+}
+
 
 #pragma mark - Public APIs
 - (void)setHeaderTitle:(NSString *)headerTitle {

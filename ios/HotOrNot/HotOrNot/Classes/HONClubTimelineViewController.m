@@ -47,6 +47,16 @@
 	return (self);
 }
 
+- (void)dealloc {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
+		cell.delegate = nil;
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+}
+
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
 	NSLog(@"%@ - initWithClub:[%d] atPhotoIndex:[%d]", [self description], clubVO.clubID, index);
 	if ((self = [self init])) {

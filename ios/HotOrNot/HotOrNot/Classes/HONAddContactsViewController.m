@@ -65,6 +65,15 @@
 
 - (void)dealloc {
 	
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		[cell toggleImageLoading:YES];
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+	
+	[super dealloc];
 }
 
 - (BOOL)shouldAutorotate {

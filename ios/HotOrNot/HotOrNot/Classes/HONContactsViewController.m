@@ -44,6 +44,11 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+}
+
 
 #pragma mark - Data Calls
 - (void)_retrieveRecentClubs {
@@ -477,6 +482,7 @@
 	if (cell == nil)
 		cell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	[cell setIndexPath:indexPath];
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {

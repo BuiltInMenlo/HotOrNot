@@ -30,7 +30,7 @@
 }
 
 - (void)dealloc {
-	
+	_panGestureRecognizer.delegate = nil;
 }
 
 - (BOOL)shouldAutorotate {

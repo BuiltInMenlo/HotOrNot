@@ -67,6 +67,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+}
 
 #pragma mark - Data Calls
 #pragma mark - Data Handling

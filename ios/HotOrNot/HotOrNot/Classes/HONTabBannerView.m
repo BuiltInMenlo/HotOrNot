@@ -52,6 +52,10 @@
 	return (self);
 }
 
+- (void)dealloc {
+	_scrollView.delegate = nil;
+}
+
 
 #pragma mark - Navigation
 - (void)_goAreaCode {
