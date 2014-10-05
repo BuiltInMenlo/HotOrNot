@@ -14,11 +14,8 @@
 
 #import "HONEmotionsPickerDisplayView.h"
 #import "HONImageLoadingView.h"
+#import "HONTableViewBGView.h"
 
-#define COLS_PER_ROW 6
-#define SPACING
-
-//NSString * const kBaseCaption = @"- is feeling…";
 const CGSize kEmotionSize = {188.0f, 188.0f};
 const CGSize kEmotionPaddingSize = {22.0f, 0.0f};
 
@@ -34,7 +31,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
-@property (nonatomic, strong) UIImageView *emptyImageView;
+@property (nonatomic, strong) HONTableViewBGView *bgView;
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
@@ -62,19 +59,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_previewGradientImageView.hidden = YES;
 		[self addSubview:_previewGradientImageView];
 		
-//		_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dottedBackground"]];
-//		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 63.0, 63.0);
-		_emptyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(63.0, 63.0, 194.0, 46.0)];
-		[self addSubview:_emptyImageView];
-		
-		UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 70.0, 194.0, 46.0)];
-		emptyLabel.backgroundColor = [UIColor clearColor];
-		emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		emptyLabel.textColor = [UIColor lightGrayColor];
-		emptyLabel.textAlignment = NSTextAlignmentCenter;
-		emptyLabel.numberOfLines = 2;
-		emptyLabel.text = NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground");
-		[_emptyImageView addSubview:emptyLabel];
+		_bgView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
+		[_bgView setYOffset:-144.0];
+		_bgView.hidden = NO;
+		[self addSubview:_bgView];
 		
 		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 65.0, 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -120,7 +108,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	
 	if ([_emotions count] == 1) {
 		[UIView animateWithDuration:0.125 animations:^(void) {
-			_emptyImageView.alpha = 0.0;
+			_bgView.alpha = 0.0;
 		}];
 	}
 	
@@ -132,16 +120,26 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
-	if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
-		[_emotions removeLastObject];
-		[self _removeImageEmotion];
-	
-	} else {
-		[self _updateDisplayWithCompletion:^(BOOL finished) {
+	if ([_emotions count] > 0) {
+		if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
 			[_emotions removeLastObject];
 			[self _removeImageEmotion];
-		}];
+		
+		} else {
+			[self _updateDisplayWithCompletion:^(BOOL finished) {
+				[_emotions removeLastObject];
+				[self _removeImageEmotion];
+			}];
+		}
 	}
+}
+
+- (void)flushEmotions {
+	while ([_emotionHolderView.subviews count] > 0)
+		[self _removeImageEmotion];
+	
+	[_emotions removeAllObjects];
+	_emotions = [NSMutableArray array];
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
@@ -285,7 +283,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 						 _scrollView.contentSize = CGSizeMake(offset, _scrollView.contentSize.height);
 						 
 						 [UIView animateWithDuration:0.25 animations:^(void) {
-							 _emptyImageView.alpha = ([_emotions count] == 0);
+							 _bgView.alpha = ([_emotions count] == 0);
 						 }];
 						 
 						 if (completion)

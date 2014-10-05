@@ -20,6 +20,7 @@
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image;
 - (void)updateProcessedImage:(UIImage *)image;
 - (NSArray *)getSubjectNames;
+- (void)enableSubmitButton;
 
 @property (nonatomic, assign) id <HONSelfieCameraPreviewViewDelegate> delegate;
 @end

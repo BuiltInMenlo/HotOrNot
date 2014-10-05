@@ -26,5 +26,6 @@
 - (NSString *)timezoneFromDeviceLocale;
 - (NSDate *)utcDateFromDate:(NSDate *)date;
 - (NSDate *)utcNowDate;
+- (NSString *)utcNowDateFormattedISO8601;
 - (int)yearsOldFromDate:(NSDate *)date;
 @end

@@ -267,6 +267,14 @@
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewDidAppear:animated];
+	
+	if (_previewView != nil)
+		[_previewView enableSubmitButton];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];

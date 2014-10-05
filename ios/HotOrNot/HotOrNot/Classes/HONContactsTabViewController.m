@@ -69,6 +69,8 @@ static NSString * const kCamera = @"camera";
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Refresh"];
+	
+	[self _retrieveRecentClubs];
 	[super _goDataRefresh:sender];
 }
 
@@ -262,7 +264,7 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"::|> _selectedContactsTab <|::");
 //	[_activityHeaderView updateActivityBadge];
 	
-	[super _goDataRefresh:nil];
+	[self _goDataRefresh:nil];
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
@@ -271,7 +273,7 @@ static NSString * const kCamera = @"camera";
 	if ([notification.object isEqualToString:@"Y"] && [_tableView.visibleCells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 	
-	[super _goDataRefresh:nil];
+	[self _goDataRefresh:nil];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {

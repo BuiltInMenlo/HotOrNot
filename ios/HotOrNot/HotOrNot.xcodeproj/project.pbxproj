@@ -78,6 +78,8 @@
 		309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */; };
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
+		30C7C62719E106930038B22C /* dsym_upload.sh in Resources */ = {isa = PBXBuildFile; fileRef = 30C7C62519E106930038B22C /* dsym_upload.sh */; };
+		30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
@@ -611,6 +613,11 @@
 		309F59B2199D7FE400EC6C1C /* NSString+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Random.m"; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
 		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
+		30C7C62219E106930038B22C /* CRFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRFilter.h; sourceTree = "<group>"; };
+		30C7C62319E106930038B22C /* Crittercism.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crittercism.h; sourceTree = "<group>"; };
+		30C7C62419E106930038B22C /* CrittercismDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrittercismDelegate.h; sourceTree = "<group>"; };
+		30C7C62519E106930038B22C /* dsym_upload.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = dsym_upload.sh; sourceTree = "<group>"; };
+		30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCrittercism_v4_3_7.a; sourceTree = "<group>"; };
 		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
@@ -1249,6 +1256,7 @@
 				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
+				30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
@@ -1464,6 +1472,18 @@
 				07B6E6B119884AE700DA0805 /* searchInputBG_clubs@2x.png */,
 			);
 			name = Search;
+			sourceTree = "<group>";
+		};
+		30C7C62119E106930038B22C /* CrittercismSDK */ = {
+			isa = PBXGroup;
+			children = (
+				30C7C62219E106930038B22C /* CRFilter.h */,
+				30C7C62319E106930038B22C /* Crittercism.h */,
+				30C7C62419E106930038B22C /* CrittercismDelegate.h */,
+				30C7C62519E106930038B22C /* dsym_upload.sh */,
+				30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */,
+			);
+			path = CrittercismSDK;
 			sourceTree = "<group>";
 		};
 		30D5AD8B19C8C980004EDA22 /* NHThreadThis */ = {
@@ -1866,6 +1886,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30C7C62119E106930038B22C /* CrittercismSDK */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
 				30FC8C3C19A829E900CDB2BC /* Tapstream */,
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
@@ -2715,6 +2736,7 @@
 				575B3967198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png in Resources */,
 				3021627C19DF8284005550B0 /* popularTab_Active@2x.png in Resources */,
 				300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */,
+				30C7C62719E106930038B22C /* dsym_upload.sh in Resources */,
 				3021627F19DF8287005550B0 /* popularTab_nonActive.png in Resources */,
 				07B6E65519884A2400DA0805 /* backButton_nonActive@2x.png in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
@@ -4059,6 +4081,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
@@ -4098,6 +4121,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;

@@ -10,6 +10,7 @@
 
 #import "HONDateTimeAlloter.h"
 
+NSString * const kISO8601FormatSymbols = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
 NSString * const kOrthodoxFormatSymbols = @"yyyy-MM-dd HH:mm:ss";
 NSString * const kOrthodoxBlankTime = @"0000-00-00 00:00:00";
 
@@ -170,6 +171,22 @@ static HONDateTimeAlloter *sharedInstance = nil;
 
 - (NSDate *)utcNowDate {
 	return ([[HONDateTimeAlloter sharedInstance] utcDateFromDate:[NSDate new]]);
+}
+
+- (NSString *)utcNowDateFormattedISO8601 {
+//	NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+//	NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+// 
+//	[rfc3339DateFormatter setLocale:enUSPOSIXLocale];
+//	[rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+//	[rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+// 
+//	NSDate *date = [rfc3339DateFormatter stringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]];
+	
+	NSDateFormatter *dateFormatter =   [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:kISO8601FormatSymbols];
+	
+	return ([dateFormatter stringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]);
 }
 
 - (int)yearsOldFromDate:(NSDate *)date {

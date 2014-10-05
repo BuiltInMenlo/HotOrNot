@@ -234,7 +234,6 @@
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	
 	_tableView.hidden = YES;
-	[self _retrieveRecentClubs];
 	
 	[self _submitPhoneNumberForMatching];
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
@@ -242,10 +241,6 @@
 }
 
 - (void)_didFinishDataRefresh {
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
 	
 	_recentClubs = [[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
 		HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
@@ -268,6 +263,11 @@
 	
 	_emptyContactsBGView.hidden = ([_inAppUsers count] > 0 || [_recentClubs count] > 0);
 	_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 
 	_tableView.alpha = 1.0;
 	
@@ -275,9 +275,10 @@
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
+	if (!_emptyContactsBGView.hidden || !_accessContactsBGView.hidden) {
+		_accessContactsBGView.frame = CGRectMake(_accessContactsBGView.frame.origin.x, _tableView.contentSize.height + 5.0, _accessContactsBGView.frame.size.width, _accessContactsBGView.frame.size.height);
+		_emptyContactsBGView.frame = _accessContactsBGView.frame;
+		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, kOrthodoxTableCellHeight + kTabSize.height, _tableView.contentInset.right)];
 	}
 	
 	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
@@ -324,11 +325,11 @@
 	
 	_accessContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
 	_accessContactsBGView.viewType = HONTableViewBGViewTypeAccessContacts;
-	[self.view addSubview:_accessContactsBGView];
+	[_tableView addSubview:_accessContactsBGView];
 	
 	_emptyContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
 	_accessContactsBGView.viewType = HONTableViewBGViewTypeCreateStatusUpdate;
-	[self.view addSubview:_emptyContactsBGView];
+	[_tableView addSubview:_emptyContactsBGView];
 
 	
 	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
@@ -479,7 +480,7 @@
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
-			cell.caption = @"Access contacts";
+//			cell.caption = @"Access contacts";
 			[cell accVisible:NO];
 			[cell toggleChevron];
 			
@@ -523,7 +524,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (((indexPath.section == 0 && indexPath.row == 0) && (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)) ? 0.0 : kOrthodoxTableCellHeight);
+	return (((indexPath.section == 0 && indexPath.row == 0)) ? 0.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

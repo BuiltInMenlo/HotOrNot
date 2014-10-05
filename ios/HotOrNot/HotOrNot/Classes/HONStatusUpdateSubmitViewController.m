@@ -488,7 +488,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? @"Tap one or more" : (section == 3) ? ([_allDeviceContacts count] == 0) ? @"No results" : @"Contacts" : @""]);
+	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? ([_allDeviceContacts count] == 0 && [_inAppUsers count] == 0) ? @"No results" : @"Tap one or more" : (section == 3) ? ([_allDeviceContacts count] == 0 && [_inAppUsers count] == 0) ? @"No results" : @"Contacts" : @""]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -497,20 +497,6 @@
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 1) {
-//			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				HONUserClubVO *vo = (HONUserClubVO *)obj;
-//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.clubVO.clubID, vo.clubID);
-//				[cell toggleSelected:(vo.clubID == cell.clubVO.clubID)];
-//				*stop = cell.isSelected;
-//			}];
-//			
-//			if ([[_submitParams objectForKey:@"club_id"] intValue] == cell.clubVO.clubID) {
-//				if (![_selectedClubs containsObject:cell.clubVO]) {
-//					[_selectedClubs addObject:cell.clubVO];
-//					[cell toggleSelected:YES];
-//				}
-//			}
-		
 		} else if (indexPath.section == 2) {
 			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
@@ -518,31 +504,10 @@
 				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
 				*stop = cell.isSelected;
 			}];
-			
-//			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
-//				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
-//					[_selectedUsers addObject:cell.trivialUserVO];
-//					[cell toggleSelected:YES];
-//				}
-//			}
 		}
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 1) {
-//			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				HONUserClubVO *vo = (HONUserClubVO *)obj;
-//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.clubVO.clubID, vo.clubID);
-//				[cell toggleSelected:(vo.clubID == cell.clubVO.clubID)];
-//				*stop = cell.isSelected;
-//			}];
-//			
-//			if ([[_submitParams objectForKey:@"club_id"] intValue] == cell.clubVO.clubID) {
-//				if (![_selectedClubs containsObject:cell.clubVO]) {
-//					[_selectedClubs addObject:cell.clubVO];
-//					[cell toggleSelected:YES];
-//				}
-//			}
-			
 		} else if (indexPath.section == 2) {
 			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
@@ -550,13 +515,6 @@
 				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
 				*stop = cell.isSelected;
 			}];
-			
-//			if ([[_submitParams objectForKey:@"recipients"] intValue] == cell.trivialUserVO.userID) {
-//				if (![_selectedUsers containsObject:cell.trivialUserVO]) {
-//					[_selectedUsers addObject:cell.trivialUserVO];
-//					[cell toggleSelected:YES];
-//				}
-//			}
 			
 			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSString *altID = (NSString *)obj;
@@ -568,7 +526,6 @@
 						if ([vo.mobileNumber isEqualToString:altID] && [cell.caption rangeOfString:vo.fullName].location == 0) {
 							NSLog(@"********MERGE FOUND!!! [%d](%@)*********", cell.trivialUserVO.userID, vo.fullName);
 							[cell addSubtitleCaption:[NSString stringWithFormat:@" is “%@”", vo.fullName]];
-//							[cell appendTitleCaption:[NSString stringWithFormat:@" - %@", vo.fullName]];
 							*stop = YES;
 						}
 					}];
@@ -583,51 +540,12 @@
 				[cell toggleSelected:([vo.mobileNumber isEqualToString:cell.contactUserVO.mobileNumber])];
 				*stop = cell.isSelected;
 			}];
-//
-//			if ([[_submitParams objectForKey:@"recipients"] isEqualToString:(cell.contactUserVO.isSMSAvailable) ? cell.contactUserVO.mobileNumber : cell.contactUserVO.email]) {
-//				if (![_selectedContacts containsObject:cell.contactUserVO]) {
-//					[_selectedContacts addObject:cell.contactUserVO];
-//					[cell toggleSelected:YES];
-//				}
-//			}
-			
-//			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				NSString *altID = (NSString *)obj;
-//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, cell.contactUserVO.mobileNumber);
-//				if ([cell.contactUserVO.mobileNumber isEqualToString:altID]) {
-//					NSLog(@"********DELETE*********\n%@", cell.contactUserVO.fullName);
-//					cell.contentView.alpha = 0.875;
-//					cell.backgroundView = nil;
-//					cell.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugOrangeColor];
-////					[self _removeMatchedContactCell:cell];
-//					*stop = YES;
-//				}
-//			}];
 		}
 	}
 	
 	return (cell);
 }
 
-- (void)_removeMatchedContactCell:(HONClubViewCell *)viewCell {
-	
-	__block int ind = -1;
-	[_allDeviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONContactUserVO *vo = (HONContactUserVO *)obj;
-		if ([vo.mobileNumber isEqualToString:viewCell.contactUserVO.mobileNumber]) {
-			ind = idx;
-			*stop = YES;
-		}
-	}];
-	
-	if (ind >= 0) {
-		[_allDeviceContacts removeObjectAtIndex:ind];
-		
-		[_tableView beginUpdates];
-		[_tableView deleteRowsAtIndexPaths:@[[_tableView indexPathForCell:viewCell]] withRowAnimation:UITableViewRowAnimationAutomatic];
-		[_tableView endUpdates];
-	}
-}
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

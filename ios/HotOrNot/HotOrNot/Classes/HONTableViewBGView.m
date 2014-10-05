@@ -20,9 +20,10 @@
 @implementation HONTableViewBGView
 @synthesize delegate = _delegate;
 @synthesize viewType = _viewType;
+@synthesize yOffset = _yOffset;
 
 - (id)initAsType:(HONTableViewBGViewType)type withCaption:(NSString *)caption usingTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 288.0, 320.0, 56.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 59.0) * 0.5, 320.0, 59.0)])) {
 		self.hidden = YES;
 		
 		_viewType = type;
@@ -32,18 +33,18 @@
 		range.length = [[_caption substringFromIndex:range.location] length];
 		
 		NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-		style.minimumLineHeight = 26.0;
+		style.minimumLineHeight = 29.0;
 		style.maximumLineHeight = style.minimumLineHeight;
 		style.alignment = NSTextAlignmentCenter;
 		_paragraphStyle = [style copy];
 		
-		_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 56.0)];
+		_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		_label.backgroundColor = [UIColor clearColor];
-		_label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-		_label.textColor = [UIColor blackColor];
+		_label.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:19];
+		_label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_label.numberOfLines = 2;
 		_label.attributedText = [[NSAttributedString alloc] initWithString:_caption attributes:@{NSParagraphStyleAttributeName	: _paragraphStyle}];
-		[_label setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:_label.font.pointSize] range:range];
+		[_label setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:_label.font.pointSize] range:range];
 		[self addSubview:_label];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -60,6 +61,11 @@
 #pragma mark - Public APIs
 - (void)setViewType:(HONTableViewBGViewType)viewType {
 	_viewType = viewType;
+}
+
+- (void)setYOffset:(CGFloat)yOffset {
+	_yOffset = yOffset;
+	self.frame = CGRectMake(self.frame.origin.x, _yOffset + (([UIScreen mainScreen].bounds.size.height - self.frame.size.height) * 0.5), self.frame.size.width, self.frame.size.height);
 }
 
 

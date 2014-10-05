@@ -25,6 +25,8 @@
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
+#import "Crittercism.h"
+#import "CrittercismDelegate.h"
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
@@ -94,7 +96,7 @@ NSString * const kChartboostAppID = @"";
 NSString * const kChartboostAppSignature = @"";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-
+NSString * const kCritersismAppID = @"5430cc63bb94756634000002";
 
 NSString * const kKeenIOProductID = @"5390d1f705cd660561000003";
 NSString * const kKeenIOMasterKey = @"D498C4D601DD4BEE1D65376E9D3D5248";
@@ -139,9 +141,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #if __APPSTORE_BUILD__ == 0
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, CrittercismDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
 #else
-@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
+@interface HONAppDelegate() <CrittercismDelegate, HONInsetOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -1239,6 +1241,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 
 	
+	[Crittercism enableWithAppID:kCritersismAppID
+					 andDelegate:self];
+	
 //	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"
 //								  addAppButton:YES];
@@ -1775,6 +1780,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+
+#pragma mark - Cristersism Delegates
+- (void)crittercismDidCrashOnLastLoad {
+	NSLog(@"[*:*] crittercismDidCrashOnLastLoad");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Crashed Last Run"];
+}
 
 #if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates

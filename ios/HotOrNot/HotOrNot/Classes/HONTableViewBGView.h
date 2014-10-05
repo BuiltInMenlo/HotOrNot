@@ -7,7 +7,8 @@
 //
 
 typedef NS_ENUM(NSInteger, HONTableViewBGViewType) {
-	HONTableViewBGViewTypeAccessContacts = 0,
+	HONTableViewBGViewTypeUndetermined = 0,
+	HONTableViewBGViewTypeAccessContacts,
 	HONTableViewBGViewTypeCreateStatusUpdate
 };
 
@@ -21,5 +22,6 @@ typedef NS_ENUM(NSInteger, HONTableViewBGViewType) {
 - (id)initAsType:(HONTableViewBGViewType)type withCaption:(NSString *)caption usingTarget:(id)target action:(SEL)action;
 
 @property (nonatomic) HONTableViewBGViewType viewType;
+@property (nonatomic) CGFloat yOffset;
 @property (nonatomic, assign) id <HONTableViewBGViewDelegate> delegate;
 @end

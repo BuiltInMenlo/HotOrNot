@@ -57,7 +57,7 @@ static void *contentOffsetObservingKey = &contentOffsetObservingKey;
 - (void)repositionAboveContent {
 	CGRect scrollBounds = self.superview.bounds;
 	CGFloat height = self.bounds.size.height;
-	CGRect newFrame = (CGRect){
+	CGRect newFrame = (CGRect) {
 		.origin.x = 0,
 		.origin.y = -height,
 		.size.width = scrollBounds.size.width,
