@@ -1,18 +1,18 @@
 //
-//  HONScreenManager.m
+//  HONViewDispensor.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 04/23/2014 @ 22:48 .
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONScreenManager.h"
+#import "HONViewDispensor.h"
 
-@implementation HONScreenManager
-static HONScreenManager *sharedInstance = nil;
+@implementation HONViewDispensor
+static HONViewDispensor *sharedInstance = nil;
 
-+ (HONScreenManager *)sharedInstance {
-	static HONScreenManager *s_sharedInstance = nil;
++ (HONViewDispensor *)sharedInstance {
+	static HONViewDispensor *s_sharedInstance = nil;
 	static dispatch_once_t onceToken;
 	
 	dispatch_once(&onceToken, ^{
@@ -31,6 +31,13 @@ static HONScreenManager *sharedInstance = nil;
 
 - (void)appWindowAdoptsView:(UIView *)view {
 	[[[UIApplication sharedApplication] delegate].window addSubview:view];
+}
+
+- (UIView *)matteViewWithSize:(CGSize)size usingColor:(UIColor *)color {
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
+	view.backgroundColor = color;
+	
+	return (view);
 }
 
 @end

@@ -25,14 +25,14 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy Close"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Privacy Policy Close"];
 	
 	[super _goClose];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy Close SWIPE"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Privacy Policy Close SWIPE"];
 	[super _goPanGesture:gestureRecognizer];
 }
 

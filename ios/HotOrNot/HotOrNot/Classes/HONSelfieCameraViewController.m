@@ -189,7 +189,7 @@
  
 		
 		} else {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Submit Reply"
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit Reply"
 											   withUserClub:_userClubVO];
 			
 			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
@@ -303,7 +303,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Dismiss SWIPE"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Dismiss SWIPE"];
 		
 		[self _cancelUpload];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
@@ -311,7 +311,7 @@
 	}
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
 		[self _modifySubmitParamsAndSubmit:[_previewView getSubjectNames]];
 	}
 }
@@ -352,7 +352,7 @@
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
 									 withProperties:@{@"state"	: @"open"}];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -361,7 +361,7 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Flip Camera"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Flip Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
@@ -371,7 +371,7 @@
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Close Camera"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Close Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
@@ -382,7 +382,7 @@
 
 - (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
 	_isBlurred = isFiltered;
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -399,7 +399,7 @@
 - (void)cameraPreviewViewShowCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"[*:*] cameraPreviewViewShowCamera");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Open Camera"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Open Camera"];
 	
 	_isBlurred = NO;
 	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
@@ -408,7 +408,7 @@
 - (void)cameraPreviewViewCancel:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"[*:*] cameraPreviewViewCancel");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Cancel"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Cancel"];
 	[self _cancelUpload];
 	[self dismissViewControllerAnimated:YES completion:^(void) {
 	}];
@@ -425,7 +425,7 @@
 }
 
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next"];
 	
 	_isPushing = YES;
 	[self _modifySubmitParamsAndSubmit:subjects];
@@ -443,7 +443,7 @@
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
 										 withProperties:@{@"state"	: @"photo"}];
 	
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
@@ -472,7 +472,7 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	NSLog(@"imagePickerControllerDidCancel:[%@]", (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) ? @"CAMERA" : @"LIBRARY");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
 									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;

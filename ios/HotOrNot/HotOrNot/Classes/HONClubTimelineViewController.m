@@ -162,7 +162,7 @@
 }
 
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
 	
 	_index = 0;
 	_clubPhotoID = 0;
@@ -323,7 +323,7 @@
 #pragma mark - Navigation
 - (void)_goReply {
 	NSLog(@"[*:*] _goReply:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply"
 									  withClubPhoto:_clubPhotoVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
@@ -335,7 +335,7 @@
 }
 
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back"
 									   withUserClub:_clubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
@@ -348,7 +348,7 @@
 	
 	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
 		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back SWIPE"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back SWIPE"
 										   withUserClub:_clubVO];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
@@ -356,7 +356,7 @@
 	}
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
 										  withClubPhoto:_clubPhotoVO];
 		
 		[self _goReply];
@@ -389,7 +389,7 @@
 - (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
 	int rows = MIN(amount, (([_tableView numberOfSections] - 1) - [_tableView indexPathForCell:cell].section));
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Next Update"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Next Update"
 									  withClubPhoto:((HONClubPhotoViewCell *)[_clubPhotos objectAtIndex:_index]).clubPhotoVO];
 	
 	_index = [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows;

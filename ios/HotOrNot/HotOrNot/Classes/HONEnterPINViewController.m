@@ -61,7 +61,7 @@
 			_progressHUD = nil;
 		}
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Registration - PIN Validation %@", ([[result objectForKey:@"result"] intValue] == 0) ? @"Failed" : @"Pass"]];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Registration - PIN Validation %@", ([[result objectForKey:@"result"] intValue] == 0) ? @"Failed" : @"Pass"]];
 		
 		if ([[result objectForKey:@"result"] intValue] == 0) {
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
@@ -84,7 +84,7 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Pass First Run"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Pass First Run"];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];

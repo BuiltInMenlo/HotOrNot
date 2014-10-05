@@ -1,5 +1,5 @@
 //
-//  HONScreenManager.h
+//  HONViewDispensor.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 04/23/2014 @ 22:48 .
@@ -7,8 +7,9 @@
 //
 
 
-@interface HONScreenManager : NSObject
-+ (HONScreenManager *)sharedInstance;
+@interface HONViewDispensor : NSObject
++ (HONViewDispensor *)sharedInstance;
 
 - (void)appWindowAdoptsView:(UIView *)view;
+- (UIView *)matteViewWithSize:(CGSize)size usingColor:(UIColor *)color;
 @end

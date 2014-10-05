@@ -223,7 +223,7 @@
 			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeInvite];
 		_insetOverlayView.delegate = self;
 		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+		[[HONViewDispensor sharedInstance] appWindowAdoptsView:_insetOverlayView];
 		[_insetOverlayView introWithCompletion:nil];
 	}
 }
@@ -231,7 +231,7 @@
 
 #pragma mark - Navigation
 - (void)_goInvite {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Invite User"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Invite User"
 									withTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]];
 	
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
@@ -239,12 +239,12 @@
 //	[self presentViewController:navigationController animated:YES completion:nil];
 }
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Back"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goChangeAvatar {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Change Avatar"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Change Avatar"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -252,7 +252,7 @@
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Refresh"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Refresh"];
 	
 	_activityAlerts = [NSMutableArray array];
 	[self _retrieveUser];
@@ -269,7 +269,7 @@
 //}
 
 - (void)_goFlag {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Invite User"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Invite User"
 									withTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", @"Are you sure?")
@@ -428,7 +428,7 @@
 
 #pragma mark - ActivityItemView Delegates
 - (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Show User Activity" withTrivialUser:trivialUserVO];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Show User Activity" withTrivialUser:trivialUserVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
 }
@@ -492,7 +492,7 @@
 	
 	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Activity - Selected Row"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Selected Row"];
 	
 	NSLog(@"vo:[%@]", vo.dictionary);
 	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : @"UNKNOWN");

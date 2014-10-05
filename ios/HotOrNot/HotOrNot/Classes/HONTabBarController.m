@@ -179,7 +179,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEventName]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEventName]];
 	
 	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
 		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];

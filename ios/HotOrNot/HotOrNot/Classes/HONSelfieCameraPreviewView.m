@@ -199,7 +199,7 @@
 //	[button setSelected:YES];
 	
 	HONStickerGroupType groupType = button.tag;
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									 withProperties:@{@"index"	: [@"" stringFromInt:groupType]}];
 	
 	for (UIView *view in _emotionsPickerHolderView.subviews) {
@@ -240,7 +240,7 @@
 - (void)_goDelete {
 	HONEmotionVO *emotionVO = (HONEmotionVO *)[_selectedEmotions lastObject];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
 										withEmotion:emotionVO];
 	
 	if (emotionVO != nil) {
@@ -318,7 +318,7 @@
 - (void)emotionsPickerDisplayViewGoFullScreen:(HONEmotionsPickerDisplayView *)pickerDisplayView {
 	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
 	
 	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIButton *btn = (UIButton *)obj;
@@ -344,7 +344,7 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
 										withEmotion:emotionVO];
 	
 //	dispatch_async(dispatch_get_main_queue(), ^{
@@ -412,7 +412,7 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 //	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 //	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 2 && direction == 1) {
 //		if (!_emotionsPickerView.hidden) {
 //			[_emotionsPickerView disablePagesStartingAt:2];

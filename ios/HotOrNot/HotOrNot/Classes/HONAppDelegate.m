@@ -523,7 +523,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_isFromBackground = NO;
 			
 		} else {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
 											 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 		}
 	}];
@@ -776,7 +776,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Launching"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
 									 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	
 #ifdef FONTS
@@ -798,7 +798,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[HONAppDelegate incTotalForCounter:@"background"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Entering Background"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
 									 withProperties:@{@"total"		: [@"" stringFromInt:[HONAppDelegate incTotalForCounter:@"background"]],
 													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString]}];
 	
@@ -822,7 +822,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
 	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Backgrounding First Run"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Backgrounding First Run"];
 		
 		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
@@ -847,7 +847,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
 	[[NSUserDefaults standardUserDefaults] setValue:@"BACKGROUND" forKey:@"entry"];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Leaving Background"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
 									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString],
 													  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 	
@@ -878,7 +878,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Became Active"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Became Active"];
 
 	
 	if (_isFromBackground) {
@@ -889,7 +889,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
 						_insetOverlayView.delegate = self;
 						
-						[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+						[[HONViewDispensor sharedInstance] appWindowAdoptsView:_insetOverlayView];
 						[_insetOverlayView introWithCompletion:nil];
 					}
 				}
@@ -932,7 +932,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Terminating"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Terminating"
 									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
@@ -1446,7 +1446,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Close"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Close"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1456,7 +1456,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1490,7 +1490,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeInviteFriends) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 //			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1499,7 +1499,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeShare) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
@@ -1684,13 +1684,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction Shelf"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction Shelf"
 									 withProperties:@{@"state"		: @"presenting",
 													  @"controller"	: [controller name]}];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction Shelf"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction Shelf"
 									 withProperties:@{@"state"		: @"dismissing",
 													  @"controller"	: [controller name]}];
 	
@@ -1698,13 +1698,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction App"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction App"
 									 withProperties:@{@"state"		: @"launching",
 													  @"controller"	: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - DocInteraction App Foreground"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction App Foreground"
 									 withProperties:@{@"state"		: @"entering",
 													  @"controller"	: [controller name]}];
 }
@@ -1790,7 +1790,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Cristersism Delegates
 - (void)crittercismDidCrashOnLastLoad {
 	NSLog(@"[*:*] crittercismDidCrashOnLastLoad");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App - Crashed Last Run"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
 }
 
 #if __APPSTORE_BUILD__ == 0

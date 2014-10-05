@@ -91,7 +91,7 @@
 			NSLog(@"RESULT:[%@]", result);
 			
 			if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Username Taken"];
+				[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username Taken"];
 				
 				if (_progressHUD == nil)
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -114,7 +114,7 @@
 			} else {
 				[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
 					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-						[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Phone Taken"];
+						[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Phone Taken"];
 						
 						if (_progressHUD == nil)
 							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -138,7 +138,7 @@
 						
 					} else {
 						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-						[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Username & Phone OK"];
+						[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username & Phone OK"];
 						[self _finalizeUser];
 					}
 				}];
@@ -693,7 +693,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
 		[self _goSubmit];
 	}
 }
@@ -795,7 +795,7 @@
 													   @"name"	: countryVO.countryName} forKey:@"country_code"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Country Selector Choosen"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Country Selector Choosen"
 									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
 	
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateNormal];

@@ -122,7 +122,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Create Status Update"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Create Status Update"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
@@ -130,7 +130,7 @@
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Toggle Notifications " stringByAppendingString:(switchView.on) ? @"On" : @"Off"]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Settings Tab - Toggle Notifications " stringByAppendingString:(switchView.on) ? @"On" : @"Off"]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
@@ -219,7 +219,7 @@
 //	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	if (indexPath.row == HONSettingsCellTypeSearch) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - User Search"];
 		
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
@@ -230,7 +230,7 @@
 		[actionSheet showInView:self.view];
 	
 	} else if (indexPath.row == HONSettingsCellTypeSupport) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Support"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -251,7 +251,7 @@
 		}
 		
 	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
@@ -371,7 +371,7 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSettingsAlertTypeNotifications) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings Tab - Toggle Notifications %@ Alert", (!_notificationSwitch.on) ? @"On" : @"Off"]
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Settings Tab - Toggle Notifications %@ Alert", (!_notificationSwitch.on) ? @"On" : @"Off"]
 										 withProperties:@{@"btn"	: (buttonIndex == 0) ? @"Cancel" : @"Confirm"}];
 		
 		if (buttonIndex == 0)
@@ -438,7 +438,7 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - User Search Action Sheet"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - User Search Action Sheet"
 										 withProperties:@{@"btn"	: (buttonIndex == 0) ? @"phone" : (buttonIndex == 1) ? @"username" : @"cancel"}];
 		
 		if (buttonIndex == 0) {

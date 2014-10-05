@@ -68,7 +68,7 @@ static NSString * const kCamera = @"camera";
 #pragma mark -
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Refresh"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Refresh"];
 	
 	[self _retrieveRecentClubs];
 	[super _goDataRefresh:sender];
@@ -78,7 +78,7 @@ static NSString * const kCamera = @"camera";
 	[super _didFinishDataRefresh];
 	
 	if (_joinedTotalClubs > 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
 										 withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %d new conversation%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
@@ -169,7 +169,7 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Navigation
 - (void)_goRegistration {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Registration - Start First Run"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Start First Run"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -184,7 +184,7 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 									 withProperties:@{@"src"	: @"header"}];
 	[super _goCreateChallenge];
 //	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewStatusUpdate];
@@ -203,7 +203,7 @@ static NSString * const kCamera = @"camera";
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 1) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
 											   withUserClub:cell.clubVO];
 			
 			if ([gestureRecognizer velocityInView:self.view].x <= -1500) {
@@ -213,7 +213,7 @@ static NSString * const kCamera = @"camera";
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 1) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
 											   withUserClub:cell.clubVO];
 			
 			if ([gestureRecognizer velocityInView:self.view].x <= -1500) {
@@ -290,11 +290,11 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[*:*] tableViewBGViewDidSelect [*:*]");
 	
 	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
 										 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 	
 	} else if (bgView.viewType == HONTableViewBGViewTypeCreateStatusUpdate) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 										 withProperties:@{@"src"	: @"text"}];
 	}
 	
@@ -359,7 +359,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
 									   withUserClub:clubVO];
 	
 	[super clubViewCell:viewCell didSelectClub:clubVO];
@@ -425,7 +425,7 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
 											   withUserClub:cell.clubVO];
 			[self _goSelectClub:cell.clubVO];
 			
@@ -447,7 +447,7 @@ static NSString * const kCamera = @"camera";
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
 											   withUserClub:cell.clubVO];
 			[self _goSelectClub:cell.clubVO];
 			

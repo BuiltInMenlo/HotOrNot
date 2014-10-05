@@ -223,7 +223,7 @@
 
 #pragma mark - Navigation
 - (void)_goCountryCodes {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Country Selector"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Country Selector"];
 	
 	HONCallingCodesViewController *callingCodesViewController = [[HONCallingCodesViewController alloc] init];
 	callingCodesViewController.delegate = self;
@@ -234,7 +234,7 @@
 }
 
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Cancel"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Cancel"];
 	
 	_isDismissing = YES;
 	[_phoneTextField resignFirstResponder];
@@ -242,7 +242,7 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Submit"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Submit"
 									 withProperties:@{@"query"	: [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text]}];
 	[_phoneTextField resignFirstResponder];
 }
@@ -252,7 +252,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Cancel SWIPE"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Cancel SWIPE"];
 		
 		_isDismissing = YES;
 		[_phoneTextField resignFirstResponder];
@@ -291,7 +291,7 @@
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
 	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Country Selector Choosen"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Country Selector Choosen"
 									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
 	
 	_countryCodeLabel.text = [@"+" stringByAppendingString:countryVO.callingCode];
@@ -370,10 +370,10 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		NSMutableDictionary *props = [[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:_searchUserVO] mutableCopy];
+		NSMutableDictionary *props = [[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:_searchUserVO] mutableCopy];
 		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Results Alert"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
 										 withProperties:[props copy]];
 		
 		if (buttonIndex == 0) {
@@ -418,10 +418,10 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		NSMutableDictionary *props = [[[HONAnalyticsParams sharedInstance] propertyForContactUser:_contactUserVO] mutableCopy];
+		NSMutableDictionary *props = [[[HONAnalyticsReporter sharedInstance] propertyForContactUser:_contactUserVO] mutableCopy];
 		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Search Phone - Results Alert"
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
 										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {

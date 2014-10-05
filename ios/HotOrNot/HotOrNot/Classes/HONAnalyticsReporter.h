@@ -1,5 +1,5 @@
 //
-//  HONAnalyticsParams.h
+//  HONAnalyticsReporter.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 02/22/2014 @ 13:43 .
@@ -22,8 +22,8 @@
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
 
-@interface HONAnalyticsParams : NSObject
-+ (HONAnalyticsParams *)sharedInstance;
+@interface HONAnalyticsReporter : NSObject
++ (HONAnalyticsReporter *)sharedInstance;
 
 - (NSDictionary *)orthodoxProperties;
 - (NSDictionary *)applicationProperties;
