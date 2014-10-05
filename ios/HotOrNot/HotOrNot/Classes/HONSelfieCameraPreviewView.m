@@ -222,7 +222,7 @@
 		
 		if (pickerView.stickerGroupType == groupType) {
 			pickerView.delegate = self;
-			pickerView.alpha = 0.875;
+			pickerView.alpha = 0.5;
 			pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 32.0);
 			[_emotionsPickerHolderView addSubview:pickerView];
 			[UIView animateWithDuration:0.333 delay:0.025
@@ -315,6 +315,30 @@
 
 
 #pragma mark - EmotionsPickerView Delegates
+- (void)emotionsPickerDisplayViewGoFullScreen:(HONEmotionsPickerDisplayView *)pickerDisplayView {
+	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
+	
+	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		UIButton *btn = (UIButton *)obj;
+		[btn setSelected:NO];
+	}];
+	
+	for (UIView *view in _emotionsPickerHolderView.subviews) {
+		((HONEmotionsPickerView *)view).delegate = nil;
+		[UIView animateWithDuration:0.333 delay:0.000
+			 usingSpringWithDamping:0.800 initialSpringVelocity:0.010
+							options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
+						 animations:^(void) {
+							 view.frame = CGRectOffset(view.frame, 0.0, 64.0);
+							 view.alpha = 0.0;
+						 } completion:^(BOOL finished) {
+							 view.frame = CGRectOffset(view.frame, 0.0, -64.0);
+							 [view removeFromSuperview];
+							 view.alpha = 1.0;
+						 }];
+	}
+}
+
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	

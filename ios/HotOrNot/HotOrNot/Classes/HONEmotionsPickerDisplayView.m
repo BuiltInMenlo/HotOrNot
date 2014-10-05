@@ -79,6 +79,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectZero];
 		[_scrollView addSubview:_emotionHolderView];
 		
+		UIButton *fullscreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		fullscreenButton.frame = self.frame;
+		fullscreenButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		[fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
+//		[self addSubview:fullscreenButton];
+		
 		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(258.0, 227.0, 49.0, 37.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButton_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
@@ -161,6 +167,11 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[self.delegate emotionsPickerDisplayViewShowCamera:self];
 }
 
+- (void)_goFullScreen {
+	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayViewGoFullScreen:)])
+		[self.delegate emotionsPickerDisplayViewGoFullScreen:self];
+}
+
 
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
@@ -173,12 +184,19 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * _emotionSpacingSize.width, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height)];
 	imageView.alpha = 0.0;
+	imageView.userInteractionEnabled = YES;
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
 	imageView.transform = transform;
 	[imageView setTag:[_emotions count]];
 	[_emotionHolderView addSubview:imageView];
 	
-		
+	UIButton *fullscreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	fullscreenButton.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+//	fullscreenButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
+	[imageView addSubview:fullscreenButton];
+	
+	
 //	if (emotionVO.picoSticker == nil) {
 		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
 		imageLoadingView.frame = imageView.frame;
