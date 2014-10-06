@@ -178,7 +178,7 @@ typedef enum {
  *  @param page    <#page description#>
  *  @param perPage <#perPage description#>
  */
-//-(void)fetchMostPurchasedStickersAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
+-(void)fetchMostPurchasedStickersAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
 
 /**
  *  Description

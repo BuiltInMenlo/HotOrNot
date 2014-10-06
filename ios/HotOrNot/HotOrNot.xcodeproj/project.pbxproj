@@ -86,11 +86,11 @@
 		30B308D219E20B510017ACBF /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308C719E20B510017ACBF /* AFURLConnectionOperation.m */; };
 		30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308C919E20B510017ACBF /* AFXMLRequestOperation.m */; };
 		30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308CB19E20B510017ACBF /* UIImageView+AFNetworking.m */; };
-		30B3090B19E22BE60017ACBF /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B308DD19E22BE50017ACBF /* libPicoCandySDKCore.a */; };
-		30B3091119E22D6C0017ACBF /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */; };
 		30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091819E230A70017ACBF /* CouchbaseLite.framework */; };
 		30B3091E19E2319C0017ACBF /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */; };
 		30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091D19E2319C0017ACBF /* Tapjoy.framework */; };
+		30B3092419E28B490017ACBF /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3092319E28B490017ACBF /* libKeenClient-Aggregate.a */; };
+		30B3095419E28C9A0017ACBF /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3092619E28C990017ACBF /* libPicoCandySDKCore.a */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
 		30C7C62719E106930038B22C /* dsym_upload.sh in Resources */ = {isa = PBXBuildFile; fileRef = 30C7C62519E106930038B22C /* dsym_upload.sh */; };
 		30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */; };
@@ -629,57 +629,56 @@
 		30B308C919E20B510017ACBF /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		30B308CA19E20B510017ACBF /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		30B308CB19E20B510017ACBF /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
-		30B308DD19E22BE50017ACBF /* libPicoCandySDKCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPicoCandySDKCore.a; sourceTree = "<group>"; };
-		30B308DF19E22BE60017ACBF /* CandyBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBox.h; sourceTree = "<group>"; };
-		30B308E019E22BE60017ACBF /* CandyBoxClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBoxClient.h; sourceTree = "<group>"; };
-		30B308E119E22BE60017ACBF /* CandyBoxService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBoxService.h; sourceTree = "<group>"; };
-		30B308E219E22BE60017ACBF /* CandyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyStore.h; sourceTree = "<group>"; };
-		30B308E319E22BE60017ACBF /* CandyStoreClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyStoreClient.h; sourceTree = "<group>"; };
-		30B308E419E22BE60017ACBF /* PCCandyStoreCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategory.h; sourceTree = "<group>"; };
-		30B308E519E22BE60017ACBF /* PCCandyStoreCategoryDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategoryDataController.h; sourceTree = "<group>"; };
-		30B308E619E22BE60017ACBF /* PCCandyStoreCategorySearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategorySearchResult.h; sourceTree = "<group>"; };
-		30B308E719E22BE60017ACBF /* PCCandyStoreEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreEvent.h; sourceTree = "<group>"; };
-		30B308E819E22BE60017ACBF /* PCCandyStoreEventDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreEventDataController.h; sourceTree = "<group>"; };
-		30B308E919E22BE60017ACBF /* PCCandyStorePurchaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStorePurchaseController.h; sourceTree = "<group>"; };
-		30B308EA19E22BE60017ACBF /* PCCandyStoreSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreSearchController.h; sourceTree = "<group>"; };
-		30B308EB19E22BE60017ACBF /* PCCandyStoreSearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreSearchResult.h; sourceTree = "<group>"; };
-		30B308EC19E22BE60017ACBF /* PCCandyStoreTagResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreTagResult.h; sourceTree = "<group>"; };
-		30B308ED19E22BE60017ACBF /* PCContentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentManager.h; sourceTree = "<group>"; };
-		30B308EF19E22BE60017ACBF /* NSObject+PCObjectMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+PCObjectMap.h"; sourceTree = "<group>"; };
-		30B308F019E22BE60017ACBF /* NSString+PCStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+PCStringAdditions.h"; sourceTree = "<group>"; };
-		30B308F119E22BE60017ACBF /* PCBrand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCBrand.h; sourceTree = "<group>"; };
-		30B308F219E22BE60017ACBF /* PCContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContent.h; sourceTree = "<group>"; };
-		30B308F319E22BE60017ACBF /* PCContentGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentGroup.h; sourceTree = "<group>"; };
-		30B308F419E22BE60017ACBF /* PCContentPrice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentPrice.h; sourceTree = "<group>"; };
-		30B308F519E22BE60017ACBF /* PCContentTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentTag.h; sourceTree = "<group>"; };
-		30B308F619E22BE60017ACBF /* PCCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCurrency.h; sourceTree = "<group>"; };
-		30B308F719E22BE60017ACBF /* PCEssentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCEssentials.h; sourceTree = "<group>"; };
-		30B308F819E22BE60017ACBF /* PCModelObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCModelObject.h; sourceTree = "<group>"; };
-		30B308F919E22BE60017ACBF /* PCPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCPublisher.h; sourceTree = "<group>"; };
-		30B308FA19E22BE60017ACBF /* PCStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStore.h; sourceTree = "<group>"; };
-		30B308FB19E22BE60017ACBF /* PCStoreCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreCurrency.h; sourceTree = "<group>"; };
-		30B308FC19E22BE60017ACBF /* PCStoreUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreUser.h; sourceTree = "<group>"; };
-		30B308FD19E22BE60017ACBF /* PCUserAccountMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCUserAccountMeta.h; sourceTree = "<group>"; };
-		30B308FE19E22BE60017ACBF /* PCWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCWallet.h; sourceTree = "<group>"; };
-		30B308FF19E22BE60017ACBF /* PCEventBannerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCEventBannerInfo.h; sourceTree = "<group>"; };
-		30B3090019E22BE60017ACBF /* PCStoreKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreKitManager.h; sourceTree = "<group>"; };
-		30B3090119E22BE60017ACBF /* PCStoreKitProductInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreKitProductInfo.h; sourceTree = "<group>"; };
-		30B3090219E22BE60017ACBF /* PCURLSchemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCURLSchemeManager.h; sourceTree = "<group>"; };
-		30B3090319E22BE60017ACBF /* PicoDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoDownloadManager.h; sourceTree = "<group>"; };
-		30B3090419E22BE60017ACBF /* PicoFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoFileManager.h; sourceTree = "<group>"; };
-		30B3090519E22BE60017ACBF /* PicoHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoHTTPClient.h; sourceTree = "<group>"; };
-		30B3090619E22BE60017ACBF /* PicoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoManager.h; sourceTree = "<group>"; };
-		30B3090719E22BE60017ACBF /* PicoSticker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoSticker.h; sourceTree = "<group>"; };
-		30B3090819E22BE60017ACBF /* PicoUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUser.h; sourceTree = "<group>"; };
-		30B3090919E22BE60017ACBF /* PicoUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUserDefaults.h; sourceTree = "<group>"; };
-		30B3090A19E22BE60017ACBF /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
-		30B3090D19E22D6C0017ACBF /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
-		30B3090E19E22D6C0017ACBF /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
-		30B3090F19E22D6C0017ACBF /* KIOEventStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KIOEventStore.h; sourceTree = "<group>"; };
-		30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
 		30B3091819E230A70017ACBF /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CouchbaseLite.framework; sourceTree = "<group>"; };
 		30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapjoyResources.bundle; sourceTree = "<group>"; };
 		30B3091D19E2319C0017ACBF /* Tapjoy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tapjoy.framework; sourceTree = "<group>"; };
+		30B3092119E28B490017ACBF /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
+		30B3092219E28B490017ACBF /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
+		30B3092319E28B490017ACBF /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
+		30B3092619E28C990017ACBF /* libPicoCandySDKCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPicoCandySDKCore.a; sourceTree = "<group>"; };
+		30B3092819E28C990017ACBF /* CandyBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBox.h; sourceTree = "<group>"; };
+		30B3092919E28C990017ACBF /* CandyBoxClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBoxClient.h; sourceTree = "<group>"; };
+		30B3092A19E28C9A0017ACBF /* CandyBoxService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBoxService.h; sourceTree = "<group>"; };
+		30B3092B19E28C9A0017ACBF /* CandyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyStore.h; sourceTree = "<group>"; };
+		30B3092C19E28C9A0017ACBF /* CandyStoreClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyStoreClient.h; sourceTree = "<group>"; };
+		30B3092D19E28C9A0017ACBF /* PCCandyStoreCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategory.h; sourceTree = "<group>"; };
+		30B3092E19E28C9A0017ACBF /* PCCandyStoreCategoryDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategoryDataController.h; sourceTree = "<group>"; };
+		30B3092F19E28C9A0017ACBF /* PCCandyStoreCategorySearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategorySearchResult.h; sourceTree = "<group>"; };
+		30B3093019E28C9A0017ACBF /* PCCandyStoreEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreEvent.h; sourceTree = "<group>"; };
+		30B3093119E28C9A0017ACBF /* PCCandyStoreEventDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreEventDataController.h; sourceTree = "<group>"; };
+		30B3093219E28C9A0017ACBF /* PCCandyStorePurchaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStorePurchaseController.h; sourceTree = "<group>"; };
+		30B3093319E28C9A0017ACBF /* PCCandyStoreSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreSearchController.h; sourceTree = "<group>"; };
+		30B3093419E28C9A0017ACBF /* PCCandyStoreSearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreSearchResult.h; sourceTree = "<group>"; };
+		30B3093519E28C9A0017ACBF /* PCCandyStoreTagResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreTagResult.h; sourceTree = "<group>"; };
+		30B3093619E28C9A0017ACBF /* PCContentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentManager.h; sourceTree = "<group>"; };
+		30B3093819E28C9A0017ACBF /* NSObject+PCObjectMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+PCObjectMap.h"; sourceTree = "<group>"; };
+		30B3093919E28C9A0017ACBF /* NSString+PCStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+PCStringAdditions.h"; sourceTree = "<group>"; };
+		30B3093A19E28C9A0017ACBF /* PCBrand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCBrand.h; sourceTree = "<group>"; };
+		30B3093B19E28C9A0017ACBF /* PCContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContent.h; sourceTree = "<group>"; };
+		30B3093C19E28C9A0017ACBF /* PCContentGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentGroup.h; sourceTree = "<group>"; };
+		30B3093D19E28C9A0017ACBF /* PCContentPrice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentPrice.h; sourceTree = "<group>"; };
+		30B3093E19E28C9A0017ACBF /* PCContentTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentTag.h; sourceTree = "<group>"; };
+		30B3093F19E28C9A0017ACBF /* PCCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCurrency.h; sourceTree = "<group>"; };
+		30B3094019E28C9A0017ACBF /* PCEssentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCEssentials.h; sourceTree = "<group>"; };
+		30B3094119E28C9A0017ACBF /* PCModelObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCModelObject.h; sourceTree = "<group>"; };
+		30B3094219E28C9A0017ACBF /* PCPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCPublisher.h; sourceTree = "<group>"; };
+		30B3094319E28C9A0017ACBF /* PCStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStore.h; sourceTree = "<group>"; };
+		30B3094419E28C9A0017ACBF /* PCStoreCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreCurrency.h; sourceTree = "<group>"; };
+		30B3094519E28C9A0017ACBF /* PCStoreUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreUser.h; sourceTree = "<group>"; };
+		30B3094619E28C9A0017ACBF /* PCUserAccountMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCUserAccountMeta.h; sourceTree = "<group>"; };
+		30B3094719E28C9A0017ACBF /* PCWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCWallet.h; sourceTree = "<group>"; };
+		30B3094819E28C9A0017ACBF /* PCEventBannerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCEventBannerInfo.h; sourceTree = "<group>"; };
+		30B3094919E28C9A0017ACBF /* PCStoreKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreKitManager.h; sourceTree = "<group>"; };
+		30B3094A19E28C9A0017ACBF /* PCStoreKitProductInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreKitProductInfo.h; sourceTree = "<group>"; };
+		30B3094B19E28C9A0017ACBF /* PCURLSchemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCURLSchemeManager.h; sourceTree = "<group>"; };
+		30B3094C19E28C9A0017ACBF /* PicoDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoDownloadManager.h; sourceTree = "<group>"; };
+		30B3094D19E28C9A0017ACBF /* PicoFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoFileManager.h; sourceTree = "<group>"; };
+		30B3094E19E28C9A0017ACBF /* PicoHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoHTTPClient.h; sourceTree = "<group>"; };
+		30B3094F19E28C9A0017ACBF /* PicoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoManager.h; sourceTree = "<group>"; };
+		30B3095019E28C9A0017ACBF /* PicoSticker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoSticker.h; sourceTree = "<group>"; };
+		30B3095119E28C9A0017ACBF /* PicoUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUser.h; sourceTree = "<group>"; };
+		30B3095219E28C9A0017ACBF /* PicoUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUserDefaults.h; sourceTree = "<group>"; };
+		30B3095319E28C9A0017ACBF /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
 		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
 		30C7C62219E106930038B22C /* CRFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRFilter.h; sourceTree = "<group>"; };
@@ -1240,6 +1239,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30B3095419E28C9A0017ACBF /* libPicoCandySDKCore.a in Frameworks */,
 				4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */,
 				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
 				4CA8D9F61613933600B7B13C /* Accounts.framework in Frameworks */,
@@ -1255,7 +1255,6 @@
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
 				30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */,
-				30B3090B19E22BE60017ACBF /* libPicoCandySDKCore.a in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
@@ -1269,7 +1268,7 @@
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
-				30B3091119E22D6C0017ACBF /* libKeenClient-Aggregate.a in Frameworks */,
+				30B3092419E28B490017ACBF /* libKeenClient-Aggregate.a in Frameworks */,
 				30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */,
@@ -1497,84 +1496,6 @@
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
-		30B308D519E22BAC0017ACBF /* PicoCandy */ = {
-			isa = PBXGroup;
-			children = (
-				30B308DD19E22BE50017ACBF /* libPicoCandySDKCore.a */,
-				30B308DE19E22BE50017ACBF /* PicoCandySDK */,
-			);
-			path = PicoCandy;
-			sourceTree = "<group>";
-		};
-		30B308DE19E22BE50017ACBF /* PicoCandySDK */ = {
-			isa = PBXGroup;
-			children = (
-				30B308DF19E22BE60017ACBF /* CandyBox.h */,
-				30B308E019E22BE60017ACBF /* CandyBoxClient.h */,
-				30B308E119E22BE60017ACBF /* CandyBoxService.h */,
-				30B308E219E22BE60017ACBF /* CandyStore.h */,
-				30B308E319E22BE60017ACBF /* CandyStoreClient.h */,
-				30B308E419E22BE60017ACBF /* PCCandyStoreCategory.h */,
-				30B308E519E22BE60017ACBF /* PCCandyStoreCategoryDataController.h */,
-				30B308E619E22BE60017ACBF /* PCCandyStoreCategorySearchResult.h */,
-				30B308E719E22BE60017ACBF /* PCCandyStoreEvent.h */,
-				30B308E819E22BE60017ACBF /* PCCandyStoreEventDataController.h */,
-				30B308E919E22BE60017ACBF /* PCCandyStorePurchaseController.h */,
-				30B308EA19E22BE60017ACBF /* PCCandyStoreSearchController.h */,
-				30B308EB19E22BE60017ACBF /* PCCandyStoreSearchResult.h */,
-				30B308EC19E22BE60017ACBF /* PCCandyStoreTagResult.h */,
-				30B308ED19E22BE60017ACBF /* PCContentManager.h */,
-				30B308EE19E22BE60017ACBF /* PCEssentials */,
-				30B308FF19E22BE60017ACBF /* PCEventBannerInfo.h */,
-				30B3090019E22BE60017ACBF /* PCStoreKitManager.h */,
-				30B3090119E22BE60017ACBF /* PCStoreKitProductInfo.h */,
-				30B3090219E22BE60017ACBF /* PCURLSchemeManager.h */,
-				30B3090319E22BE60017ACBF /* PicoDownloadManager.h */,
-				30B3090419E22BE60017ACBF /* PicoFileManager.h */,
-				30B3090519E22BE60017ACBF /* PicoHTTPClient.h */,
-				30B3090619E22BE60017ACBF /* PicoManager.h */,
-				30B3090719E22BE60017ACBF /* PicoSticker.h */,
-				30B3090819E22BE60017ACBF /* PicoUser.h */,
-				30B3090919E22BE60017ACBF /* PicoUserDefaults.h */,
-				30B3090A19E22BE60017ACBF /* Version.h */,
-			);
-			path = PicoCandySDK;
-			sourceTree = "<group>";
-		};
-		30B308EE19E22BE60017ACBF /* PCEssentials */ = {
-			isa = PBXGroup;
-			children = (
-				30B308EF19E22BE60017ACBF /* NSObject+PCObjectMap.h */,
-				30B308F019E22BE60017ACBF /* NSString+PCStringAdditions.h */,
-				30B308F119E22BE60017ACBF /* PCBrand.h */,
-				30B308F219E22BE60017ACBF /* PCContent.h */,
-				30B308F319E22BE60017ACBF /* PCContentGroup.h */,
-				30B308F419E22BE60017ACBF /* PCContentPrice.h */,
-				30B308F519E22BE60017ACBF /* PCContentTag.h */,
-				30B308F619E22BE60017ACBF /* PCCurrency.h */,
-				30B308F719E22BE60017ACBF /* PCEssentials.h */,
-				30B308F819E22BE60017ACBF /* PCModelObject.h */,
-				30B308F919E22BE60017ACBF /* PCPublisher.h */,
-				30B308FA19E22BE60017ACBF /* PCStore.h */,
-				30B308FB19E22BE60017ACBF /* PCStoreCurrency.h */,
-				30B308FC19E22BE60017ACBF /* PCStoreUser.h */,
-				30B308FD19E22BE60017ACBF /* PCUserAccountMeta.h */,
-				30B308FE19E22BE60017ACBF /* PCWallet.h */,
-			);
-			path = PCEssentials;
-			sourceTree = "<group>";
-		};
-		30B3090C19E22D6C0017ACBF /* KeenClient */ = {
-			isa = PBXGroup;
-			children = (
-				30B3090D19E22D6C0017ACBF /* KeenClient.h */,
-				30B3090E19E22D6C0017ACBF /* KeenProperties.h */,
-				30B3090F19E22D6C0017ACBF /* KIOEventStore.h */,
-				30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */,
-			);
-			path = KeenClient;
-			sourceTree = "<group>";
-		};
 		30B3091A19E2319B0017ACBF /* Tapjoy.embeddedframework */ = {
 			isa = PBXGroup;
 			children = (
@@ -1590,6 +1511,83 @@
 				30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		30B3092019E28B490017ACBF /* KeenClient */ = {
+			isa = PBXGroup;
+			children = (
+				30B3092119E28B490017ACBF /* KeenClient.h */,
+				30B3092219E28B490017ACBF /* KeenProperties.h */,
+				30B3092319E28B490017ACBF /* libKeenClient-Aggregate.a */,
+			);
+			path = KeenClient;
+			sourceTree = "<group>";
+		};
+		30B3092519E28C990017ACBF /* PicoCandy */ = {
+			isa = PBXGroup;
+			children = (
+				30B3092619E28C990017ACBF /* libPicoCandySDKCore.a */,
+				30B3092719E28C990017ACBF /* PicoCandySDK */,
+			);
+			path = PicoCandy;
+			sourceTree = "<group>";
+		};
+		30B3092719E28C990017ACBF /* PicoCandySDK */ = {
+			isa = PBXGroup;
+			children = (
+				30B3092819E28C990017ACBF /* CandyBox.h */,
+				30B3092919E28C990017ACBF /* CandyBoxClient.h */,
+				30B3092A19E28C9A0017ACBF /* CandyBoxService.h */,
+				30B3092B19E28C9A0017ACBF /* CandyStore.h */,
+				30B3092C19E28C9A0017ACBF /* CandyStoreClient.h */,
+				30B3092D19E28C9A0017ACBF /* PCCandyStoreCategory.h */,
+				30B3092E19E28C9A0017ACBF /* PCCandyStoreCategoryDataController.h */,
+				30B3092F19E28C9A0017ACBF /* PCCandyStoreCategorySearchResult.h */,
+				30B3093019E28C9A0017ACBF /* PCCandyStoreEvent.h */,
+				30B3093119E28C9A0017ACBF /* PCCandyStoreEventDataController.h */,
+				30B3093219E28C9A0017ACBF /* PCCandyStorePurchaseController.h */,
+				30B3093319E28C9A0017ACBF /* PCCandyStoreSearchController.h */,
+				30B3093419E28C9A0017ACBF /* PCCandyStoreSearchResult.h */,
+				30B3093519E28C9A0017ACBF /* PCCandyStoreTagResult.h */,
+				30B3093619E28C9A0017ACBF /* PCContentManager.h */,
+				30B3093719E28C9A0017ACBF /* PCEssentials */,
+				30B3094819E28C9A0017ACBF /* PCEventBannerInfo.h */,
+				30B3094919E28C9A0017ACBF /* PCStoreKitManager.h */,
+				30B3094A19E28C9A0017ACBF /* PCStoreKitProductInfo.h */,
+				30B3094B19E28C9A0017ACBF /* PCURLSchemeManager.h */,
+				30B3094C19E28C9A0017ACBF /* PicoDownloadManager.h */,
+				30B3094D19E28C9A0017ACBF /* PicoFileManager.h */,
+				30B3094E19E28C9A0017ACBF /* PicoHTTPClient.h */,
+				30B3094F19E28C9A0017ACBF /* PicoManager.h */,
+				30B3095019E28C9A0017ACBF /* PicoSticker.h */,
+				30B3095119E28C9A0017ACBF /* PicoUser.h */,
+				30B3095219E28C9A0017ACBF /* PicoUserDefaults.h */,
+				30B3095319E28C9A0017ACBF /* Version.h */,
+			);
+			path = PicoCandySDK;
+			sourceTree = "<group>";
+		};
+		30B3093719E28C9A0017ACBF /* PCEssentials */ = {
+			isa = PBXGroup;
+			children = (
+				30B3093819E28C9A0017ACBF /* NSObject+PCObjectMap.h */,
+				30B3093919E28C9A0017ACBF /* NSString+PCStringAdditions.h */,
+				30B3093A19E28C9A0017ACBF /* PCBrand.h */,
+				30B3093B19E28C9A0017ACBF /* PCContent.h */,
+				30B3093C19E28C9A0017ACBF /* PCContentGroup.h */,
+				30B3093D19E28C9A0017ACBF /* PCContentPrice.h */,
+				30B3093E19E28C9A0017ACBF /* PCContentTag.h */,
+				30B3093F19E28C9A0017ACBF /* PCCurrency.h */,
+				30B3094019E28C9A0017ACBF /* PCEssentials.h */,
+				30B3094119E28C9A0017ACBF /* PCModelObject.h */,
+				30B3094219E28C9A0017ACBF /* PCPublisher.h */,
+				30B3094319E28C9A0017ACBF /* PCStore.h */,
+				30B3094419E28C9A0017ACBF /* PCStoreCurrency.h */,
+				30B3094519E28C9A0017ACBF /* PCStoreUser.h */,
+				30B3094619E28C9A0017ACBF /* PCUserAccountMeta.h */,
+				30B3094719E28C9A0017ACBF /* PCWallet.h */,
+			);
+			path = PCEssentials;
 			sourceTree = "<group>";
 		};
 		30C7C62119E106930038B22C /* CrittercismSDK */ = {
@@ -1946,8 +1944,8 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				30B3090C19E22D6C0017ACBF /* KeenClient */,
-				30B308D519E22BAC0017ACBF /* PicoCandy */,
+				30B3092519E28C990017ACBF /* PicoCandy */,
+				30B3092019E28B490017ACBF /* KeenClient */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
 				30C7C62119E106930038B22C /* CrittercismSDK */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
@@ -4032,8 +4030,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -4111,8 +4109,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 x86_64";
 				WRAPPER_EXTENSION = app;
