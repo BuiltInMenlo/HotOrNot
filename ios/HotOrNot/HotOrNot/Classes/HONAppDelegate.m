@@ -30,16 +30,10 @@
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
-#import "KikAPI.h"
 #import "NHThreadThis.h"
 #import "PicoSticker.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
-//#import "UAConfig.h"
-//#import "UAirship.h"
-//#import "UAAnalytics.h"
-//#import "UAPush.h"
-//#import "UATagUtils.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
@@ -570,24 +564,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		[navigationController setNavigationBarHidden:YES];
 //		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}];
-}
-
-- (BOOL)handleKikAPIData:(KikAPIData *)data {
-	if (data == nil)
-		return (NO);
-	
-	if (data.type == KikAPIDataTypeNotKik)
-		return (NO);
-	
-	if (data.type == KikAPIDataTypePick)
-		_currentConversationID = data.conversationID;
-	
-	else {
-//		[self.viewController loadFromURI:data.message.fileUrl];
-		_currentConversationID = data.conversationID;
-	}
-	
-	return (YES);
 }
 
 

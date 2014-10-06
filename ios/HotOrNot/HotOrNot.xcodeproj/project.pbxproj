@@ -87,6 +87,7 @@
 		30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308C919E20B510017ACBF /* AFXMLRequestOperation.m */; };
 		30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308CB19E20B510017ACBF /* UIImageView+AFNetworking.m */; };
 		30B3090B19E22BE60017ACBF /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B308DD19E22BE50017ACBF /* libPicoCandySDKCore.a */; };
+		30B3091119E22D6C0017ACBF /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
 		30C7C62719E106930038B22C /* dsym_upload.sh in Resources */ = {isa = PBXBuildFile; fileRef = 30C7C62519E106930038B22C /* dsym_upload.sh */; };
 		30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */; };
@@ -216,7 +217,6 @@
 		4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C636194F8E590067FEA6 /* UILabel+BoundingRect.m */; };
 		4C65C63A194F904F0067FEA6 /* UILabel+FormattedText.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C639194F904F0067FEA6 /* UILabel+FormattedText.m */; };
 		4C65C63D194F90800067FEA6 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C63C194F90800067FEA6 /* UIImage+ImageEffects.m */; };
-		4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C69A20019410CA300971D3F /* libKeenClient-Aggregate.a */; };
 		4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1A1766AD3500B6CD4D /* HONInviteContactViewCell.m */; };
 		4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */; };
 		4C6ECF4019061D1E00AC2402 /* HONEmoticonPickerItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */; };
@@ -673,6 +673,10 @@
 		30B3090819E22BE60017ACBF /* PicoUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUser.h; sourceTree = "<group>"; };
 		30B3090919E22BE60017ACBF /* PicoUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUserDefaults.h; sourceTree = "<group>"; };
 		30B3090A19E22BE60017ACBF /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
+		30B3090D19E22D6C0017ACBF /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
+		30B3090E19E22D6C0017ACBF /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
+		30B3090F19E22D6C0017ACBF /* KIOEventStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KIOEventStore.h; sourceTree = "<group>"; };
+		30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
 		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
 		30C7C62219E106930038B22C /* CRFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRFilter.h; sourceTree = "<group>"; };
@@ -984,9 +988,6 @@
 		4C65C63C194F90800067FEA6 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		4C663EDB18BFBC1800EDB1A2 /* HONUserClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserClubsViewController.h; sourceTree = "<group>"; };
 		4C663EDC18BFBC1800EDB1A2 /* HONUserClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONUserClubsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		4C69A1FE19410CA300971D3F /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
-		4C69A1FF19410CA300971D3F /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
-		4C69A20019410CA300971D3F /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
 		4C6A3E1617669D7400B6CD4D /* HONFollowContactViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowContactViewCell.h; sourceTree = "<group>"; };
 		4C6A3E1717669D7400B6CD4D /* HONFollowContactViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowContactViewCell.m; sourceTree = "<group>"; };
 		4C6A3E191766AD3500B6CD4D /* HONInviteContactViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteContactViewCell.h; sourceTree = "<group>"; };
@@ -1268,6 +1269,7 @@
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
+				30B3091119E22D6C0017ACBF /* libKeenClient-Aggregate.a in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */,
 				4CD22C90195BD5C800E6AD0B /* CouchbaseLite.framework in Frameworks */,
@@ -1276,7 +1278,6 @@
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4C4328F618E3A9FA0035FF06 /* Tapjoy.framework in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
-				4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 			);
@@ -1561,6 +1562,17 @@
 				30B308FE19E22BE60017ACBF /* PCWallet.h */,
 			);
 			path = PCEssentials;
+			sourceTree = "<group>";
+		};
+		30B3090C19E22D6C0017ACBF /* KeenClient */ = {
+			isa = PBXGroup;
+			children = (
+				30B3090D19E22D6C0017ACBF /* KeenClient.h */,
+				30B3090E19E22D6C0017ACBF /* KeenProperties.h */,
+				30B3090F19E22D6C0017ACBF /* KIOEventStore.h */,
+				30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */,
+			);
+			path = KeenClient;
 			sourceTree = "<group>";
 		};
 		30C7C62119E106930038B22C /* CrittercismSDK */ = {
@@ -1917,6 +1929,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30B3090C19E22D6C0017ACBF /* KeenClient */,
 				30B308D519E22BAC0017ACBF /* PicoCandy */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
 				30C7C62119E106930038B22C /* CrittercismSDK */,
@@ -1926,7 +1939,6 @@
 				4C6F71A519506A28009C4D53 /* CKRefreshControl */,
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
 				4C43276A18E3A9F90035FF06 /* ios-image-filters */,
-				4C69A1FD19410CA300971D3F /* KeenClient */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
 				4C4327D618E3A9F90035FF06 /* Reachability */,
 			);
@@ -2275,16 +2287,6 @@
 				30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */,
 			);
 			name = Root;
-			sourceTree = "<group>";
-		};
-		4C69A1FD19410CA300971D3F /* KeenClient */ = {
-			isa = PBXGroup;
-			children = (
-				4C69A1FE19410CA300971D3F /* KeenClient.h */,
-				4C69A1FF19410CA300971D3F /* KeenProperties.h */,
-				4C69A20019410CA300971D3F /* libKeenClient-Aggregate.a */,
-			);
-			path = KeenClient;
 			sourceTree = "<group>";
 		};
 		4C6F71A519506A28009C4D53 /* CKRefreshControl */ = {
@@ -4066,7 +4068,6 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -4106,7 +4107,6 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KikAPI",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
 				);
 				OTHER_LDFLAGS = "-ObjC";
