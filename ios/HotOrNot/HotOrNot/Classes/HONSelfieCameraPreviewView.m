@@ -104,20 +104,20 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
-	_tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0)];
-	_tabButtonsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-	[self addSubview:_tabButtonsHolderView];
-	
 	NSArray *assetNames = @[@"popularTab",
 							@"emojiTab",
 							@"quotesTab",
 							@"stickersTab"];
 
-	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 331.0, 320.0, 291.0)];
+	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 290.0, 320.0, 241.0)];
 	[self addSubview:_emotionsPickerHolderView];
 	
+	_tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0)];
+	_tabButtonsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[self addSubview:_tabButtonsHolderView];
+
 	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeObjects; i++) {
-		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 291.0) asEmotionGroupType:i];
+		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 241.0) asEmotionGroupType:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];

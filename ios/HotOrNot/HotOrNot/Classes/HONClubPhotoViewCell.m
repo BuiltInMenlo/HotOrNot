@@ -250,29 +250,33 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 #pragma mark - UI Presentation
 - (void)_transitionToCaption:(NSString *)caption withCompletion:(void (^)(BOOL finished))completion {
 	
-	UILabel *outroLabel = [[UILabel alloc] initWithFrame:_emotionLabel.frame];
-	outroLabel.backgroundColor = _emotionLabel.backgroundColor;
-	outroLabel.font = _emotionLabel.font;
-	outroLabel.textColor = _emotionLabel.textColor;
-	outroLabel.textAlignment = _emotionLabel.textAlignment;
-	outroLabel.text = _emotionLabel.text;
-	[_tintedView addSubview:outroLabel];
+	if ([caption isEqualToString:_emotionLabel.text]) {
+		_emotionLabel.text = caption;
 	
-	_emotionLabel.alpha = 0.0;
-	_emotionLabel.text = caption;
-	
-	[UIView animateWithDuration:0.125
-					 animations:^(void) {
-						 outroLabel.alpha = 0.0;
-						 _emotionLabel.alpha = 1.0;
-						 
-					 } completion:^(BOOL finished) {
-						 [outroLabel removeFromSuperview];
-						 
-						 if (completion)
-							 completion(finished);
-	}];
-
+	} else {
+		UILabel *outroLabel = [[UILabel alloc] initWithFrame:_emotionLabel.frame];
+		outroLabel.backgroundColor = _emotionLabel.backgroundColor;
+		outroLabel.font = _emotionLabel.font;
+		outroLabel.textColor = _emotionLabel.textColor;
+		outroLabel.textAlignment = _emotionLabel.textAlignment;
+		outroLabel.text = _emotionLabel.text;
+		[_tintedView addSubview:outroLabel];
+		
+		_emotionLabel.alpha = 0.0;
+		_emotionLabel.text = caption;
+		
+		[UIView animateWithDuration:0.125
+						 animations:^(void) {
+							 outroLabel.alpha = 0.0;
+							 _emotionLabel.alpha = 1.0;
+							 
+						 } completion:^(BOOL finished) {
+							 [outroLabel removeFromSuperview];
+							 
+							 if (completion)
+								 completion(finished);
+		}];
+	}
 }
 
 - (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {

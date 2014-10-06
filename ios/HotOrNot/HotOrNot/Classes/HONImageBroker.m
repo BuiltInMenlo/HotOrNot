@@ -97,7 +97,10 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (UIImage *)createBlurredScreenShot {
-	return ([[[HONImageBroker sharedInstance] createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:1.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
+	return ([[[HONImageBroker sharedInstance] createImageFromScreen] applyBlurWithRadius:16.0
+																			   tintColor:[UIColor colorWithWhite:1.0 alpha:0.75]
+																   saturationDeltaFactor:1.0
+																			   maskImage:nil]);
 }
 
 - (UIImage *)shareTemplateImageForType:(HONImageBrokerShareTemplateType)shareTemplateType {
