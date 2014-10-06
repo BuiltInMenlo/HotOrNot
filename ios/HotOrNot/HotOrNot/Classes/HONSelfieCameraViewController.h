@@ -9,7 +9,6 @@
 #import "HONViewController.h"
 #import "HONChallengeVO.h"
 #import "HONUserClubVO.h"
-#import "HONMessageVO.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 

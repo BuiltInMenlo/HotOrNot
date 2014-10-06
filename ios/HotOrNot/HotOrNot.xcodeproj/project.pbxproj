@@ -991,10 +991,6 @@
 		4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewCell.m; sourceTree = "<group>"; };
 		4C6ECF3E19061D1E00AC2402 /* HONEmoticonPickerItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONEmoticonPickerItemView.h; sourceTree = "<group>"; };
 		4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONEmoticonPickerItemView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		4C70F9D71890825D00ED5C4E /* HONMessageRecipientViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientViewCell.h; sourceTree = "<group>"; };
-		4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageRecipientViewCell.m; sourceTree = "<group>"; };
-		4C70F9DA189082B900ED5C4E /* HONMessageRecipientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientsViewController.h; sourceTree = "<group>"; };
-		4C70F9DB189082B900ED5C4E /* HONMessageRecipientsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONMessageRecipientsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C71BF3E181B25C8005044F8 /* HONSuspendedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSuspendedViewController.h; sourceTree = "<group>"; };
 		4C71BF3F181B25C8005044F8 /* HONSuspendedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSuspendedViewController.m; sourceTree = "<group>"; };
 		4C72F6A91894E2D400CF67BC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -1047,10 +1043,6 @@
 		4C8FB3C81824406800B33FD8 /* HONVerifyCellHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVerifyCellHeaderView.m; sourceTree = "<group>"; };
 		4C93EAE119140896001F43DE /* HONCallingCodesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCallingCodesViewController.h; sourceTree = "<group>"; };
 		4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCallingCodesViewController.m; sourceTree = "<group>"; };
-		4C980584188C9B2800E4FEA4 /* HONMessageDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageDetailsViewController.h; sourceTree = "<group>"; };
-		4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageDetailsViewController.m; sourceTree = "<group>"; };
-		4C980587188CA02900E4FEA4 /* HONMessageReplyViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageReplyViewCell.h; sourceTree = "<group>"; };
-		4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageReplyViewCell.m; sourceTree = "<group>"; };
 		4C99EB55194D581B00283C1A /* HONDateTimeAlloter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDateTimeAlloter.h; sourceTree = "<group>"; };
 		4C99EB56194D581B00283C1A /* HONDateTimeAlloter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDateTimeAlloter.m; sourceTree = "<group>"; };
 		4C99EB58194D5B1700283C1A /* HONClubTimelineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubTimelineViewController.h; sourceTree = "<group>"; };
@@ -1132,12 +1124,6 @@
 		4CD16D1B1996ED3E0035A8D3 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
 		4CD16D1C1996ED3E0035A8D3 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
 		4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PicoCandySDKResources.bundle; sourceTree = "<group>"; };
-		4CD42F26188B410E00264845 /* HONMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessagesViewController.h; sourceTree = "<group>"; };
-		4CD42F27188B410E00264845 /* HONMessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONMessagesViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		4CD42F29188B89CF00264845 /* HONMessageItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageItemViewCell.h; sourceTree = "<group>"; };
-		4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageItemViewCell.m; sourceTree = "<group>"; };
-		4CD42F2C188B8EC900264845 /* HONMessageVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageVO.h; sourceTree = "<group>"; };
-		4CD42F2D188B8EC900264845 /* HONMessageVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONMessageVO.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CD5616519775FCB006F1DB5 /* HONNetworkStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNetworkStatusViewController.h; sourceTree = "<group>"; };
 		4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONNetworkStatusViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Pixels.h"; sourceTree = "<group>"; };
@@ -2062,8 +2048,6 @@
 		4C45910A18918ABC0014FA7E /* VO */ = {
 			isa = PBXGroup;
 			children = (
-				4CD42F2C188B8EC900264845 /* HONMessageVO.h */,
-				4CD42F2D188B8EC900264845 /* HONMessageVO.m */,
 				4C382FF2178B7D2000C7FA7C /* HONCelebVO.h */,
 				4C382FF3178B7D2000C7FA7C /* HONCelebVO.m */,
 				4C75502316D5699200833C18 /* HONCommentVO.h */,
@@ -2365,7 +2349,6 @@
 				4CF7504818989DFA009E39E4 /* News */,
 				4C066204194A0D33001941D1 /* -Shared- */,
 				4C32B99815FA6F4C0023A0EE /* Verify */,
-				4CD42F25188B40E500264845 /* Messages */,
 				4C32B9A415FAB5FA0023A0EE /* Alerts */,
 				4C32B9A315FAB5F00023A0EE /* Home Feed */,
 				4C00491819467EE6007FA9F5 /* Clubs */,
@@ -2444,25 +2427,6 @@
 				4C45A9441996AE0D00A2086E /* HONTabBannerView.m */,
 			);
 			name = Banner;
-			sourceTree = "<group>";
-		};
-		4CD42F25188B40E500264845 /* Messages */ = {
-			isa = PBXGroup;
-			children = (
-				4CD42F29188B89CF00264845 /* HONMessageItemViewCell.h */,
-				4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */,
-				4CD42F26188B410E00264845 /* HONMessagesViewController.h */,
-				4CD42F27188B410E00264845 /* HONMessagesViewController.m */,
-				4C70F9D71890825D00ED5C4E /* HONMessageRecipientViewCell.h */,
-				4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */,
-				4C70F9DA189082B900ED5C4E /* HONMessageRecipientsViewController.h */,
-				4C70F9DB189082B900ED5C4E /* HONMessageRecipientsViewController.m */,
-				4C980587188CA02900E4FEA4 /* HONMessageReplyViewCell.h */,
-				4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */,
-				4C980584188C9B2800E4FEA4 /* HONMessageDetailsViewController.h */,
-				4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */,
-			);
-			name = Messages;
 			sourceTree = "<group>";
 		};
 		4CE8B62E16E2EC4100D29191 /* Splash */ = {

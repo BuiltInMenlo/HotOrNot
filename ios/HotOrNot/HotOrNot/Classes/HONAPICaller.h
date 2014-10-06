@@ -161,10 +161,10 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Messages
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)markMessageAsSeenForMessageID:(int)messageID forParticipant:(int)userID completion:(void (^)(id result))completion;
-- (void)retrieveMessageForMessageID:(int)messageID completion:(void (^)(id result))completion;
-- (void)retrieveMessagesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
-- (void)submitNewMessageWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
+//- (void)markMessageAsSeenForMessageID:(int)messageID forParticipant:(int)userID completion:(void (^)(id result))completion;
+//- (void)retrieveMessageForMessageID:(int)messageID completion:(void (^)(id result))completion;
+//- (void)retrieveMessagesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
+//- (void)submitNewMessageWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

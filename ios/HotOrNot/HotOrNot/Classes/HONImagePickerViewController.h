@@ -7,7 +7,6 @@
 //
 
 #import "HONChallengeVO.h"
-#import "HONMessageVO.h"
 
 @interface HONImagePickerViewController : UIViewController
 - (id)initAsNewChallenge;

@@ -13,7 +13,7 @@
 
 @interface HONImagePickerViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONMessageVO *messageVO;
+//@property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic, assign, readonly) HONSelfieSubmitType photoSubmitType;
 @end

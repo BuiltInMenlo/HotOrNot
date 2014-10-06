@@ -33,7 +33,6 @@
 @property (nonatomic, strong) HONSelfieCameraPreviewView *previewView;
 @property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;

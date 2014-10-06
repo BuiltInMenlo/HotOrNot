@@ -178,41 +178,6 @@ static HONAnalyticsReporter *sharedInstance = nil;
 								@"url"		: vo.urlPrefix}});
 }
 
-- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"message"	: [@"" stringFromInt:vo.messageID]};
-//	});
-	
-	return (@{@"message"	: [@"" stringFromInt:vo.messageID]});
-}
-
-- (NSDictionary *)propertyForMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)participantVO {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"message"		: [@"" stringFromInt:messageVO.messageID],
-//					   @"participant"	: [NSString stringWithFormat:@"%d - %@", participantVO.userID, participantVO.username]};
-//	});
-	
-	return (@{@"message"		: [@"" stringFromInt:messageVO.messageID],
-			  @"participant"	: [NSString stringWithFormat:@"%d - %@", participantVO.userID, participantVO.username]});
-}
-
-- (NSDictionary *)propertyForMessageParticipant:(HONOpponentVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-//	});
-	
-	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
-}
-
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
@@ -303,22 +268,6 @@ static HONAnalyticsReporter *sharedInstance = nil;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForEmotion:emotionVO]];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
-									 withProperties:properties];
-}
-
-- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForMessage:messageVO]];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
-									 withProperties:properties];
-}
-
-- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForMessage:messageVO andParticipant:opponentVO]];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
 									 withProperties:properties];

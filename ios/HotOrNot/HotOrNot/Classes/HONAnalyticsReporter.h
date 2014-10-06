@@ -16,7 +16,6 @@
 #import "HONClubPhotoVO.h"
 #import "HONContactUserVO.h"
 #import "HONEmotionVO.h"
-#import "HONMessageVO.h"
 #import "HONOpponentVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserVO.h"
@@ -37,9 +36,6 @@
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo;
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo;
-- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo;
-- (NSDictionary *)propertyForMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)participantVO;
-- (NSDictionary *)propertyForMessageParticipant:(HONOpponentVO *)vo;
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo;
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo;
 
@@ -49,8 +45,6 @@
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO;
-- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO;
-- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO;
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 - (void)trackEvent:(NSString *)eventName withUserClub:(HONUserClubVO *)userClubVO;
 - (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties;
