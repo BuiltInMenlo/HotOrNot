@@ -173,7 +173,6 @@
 		4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43277A18E3A9F90035FF06 /* Spline.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43277C18E3A9F90035FF06 /* ImageFilter.m */; };
 		4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278A18E3A9F90035FF06 /* UIView+HONSnapshot.m */; };
-		4C4328BD18E3A9FA0035FF06 /* kikapilib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C43278D18E3A9F90035FF06 /* kikapilib.a */; };
 		4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327D818E3A9F90035FF06 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */; };
@@ -913,8 +912,6 @@
 		4C43278818E3A9F90035FF06 /* JLBPopSlideTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JLBPopSlideTransition.m; sourceTree = "<group>"; };
 		4C43278918E3A9F90035FF06 /* UIView+HONSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+HONSnapshot.h"; sourceTree = "<group>"; };
 		4C43278A18E3A9F90035FF06 /* UIView+HONSnapshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+HONSnapshot.m"; sourceTree = "<group>"; };
-		4C43278C18E3A9F90035FF06 /* KikAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KikAPI.h; sourceTree = "<group>"; };
-		4C43278D18E3A9F90035FF06 /* kikapilib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = kikapilib.a; sourceTree = "<group>"; };
 		4C4327A518E3A9F90035FF06 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		4C4327D718E3A9F90035FF06 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -1278,7 +1275,6 @@
 				4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4C4328F618E3A9FA0035FF06 /* Tapjoy.framework in Frameworks */,
-				4C4328BD18E3A9FA0035FF06 /* kikapilib.a in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
@@ -1931,7 +1927,6 @@
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
 				4C43276A18E3A9F90035FF06 /* ios-image-filters */,
 				4C69A1FD19410CA300971D3F /* KeenClient */,
-				4C43278B18E3A9F90035FF06 /* KikAPI */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
 				4C4327D618E3A9F90035FF06 /* Reachability */,
 			);
@@ -2007,15 +2002,6 @@
 			);
 			name = JLBPaging;
 			path = ../Vendor/Classes/JLBPaging;
-			sourceTree = "<group>";
-		};
-		4C43278B18E3A9F90035FF06 /* KikAPI */ = {
-			isa = PBXGroup;
-			children = (
-				4C43278C18E3A9F90035FF06 /* KikAPI.h */,
-				4C43278D18E3A9F90035FF06 /* kikapilib.a */,
-			);
-			path = KikAPI;
 			sourceTree = "<group>";
 		};
 		4C4327A418E3A9F90035FF06 /* MBProgressHUD */ = {
