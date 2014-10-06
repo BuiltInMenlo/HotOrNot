@@ -25,8 +25,8 @@
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
-#import "Crittercism.h"
-#import "CrittercismDelegate.h"
+//#import "Crittercism.h"
+//#import "CrittercismDelegate.h"
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
@@ -134,10 +134,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-//@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, CrittercismDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONInsetOverlayViewDelegate>
+//@interface HONAppDelegate() <HONInsetOverlayViewDelegate, PicoStickerDelegate>
 #else
-@interface HONAppDelegate() <CrittercismDelegate, HONInsetOverlayViewDelegate>
+@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -1209,8 +1209,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 
 	
-	[Crittercism enableWithAppID:kCritersismAppID
-					 andDelegate:self];
+//	[Crittercism enableWithAppID:kCritersismAppID
+//					 andDelegate:self];
 	
 //	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"
@@ -1771,18 +1771,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #pragma mark - Cristersism Delegates
-- (void)crittercismDidCrashOnLastLoad {
-	NSLog(@"[*:*] crittercismDidCrashOnLastLoad");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
-}
+//- (void)crittercismDidCrashOnLastLoad {
+//	NSLog(@"[*:*] crittercismDidCrashOnLastLoad");
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
+//}
 
 #if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 	return ([[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
 #ifndef CONFIGURATION_AppStore
-//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
 #endif
 	return (nil);
 }

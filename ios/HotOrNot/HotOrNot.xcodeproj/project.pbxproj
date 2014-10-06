@@ -91,9 +91,10 @@
 		30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091D19E2319C0017ACBF /* Tapjoy.framework */; };
 		30B3092419E28B490017ACBF /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3092319E28B490017ACBF /* libKeenClient-Aggregate.a */; };
 		30B3095419E28C9A0017ACBF /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3092619E28C990017ACBF /* libPicoCandySDKCore.a */; };
+		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
+		30B3096B19E292D80017ACBF /* HockeySDK.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096819E292D80017ACBF /* HockeySDK.xcconfig */; };
+		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
-		30C7C62719E106930038B22C /* dsym_upload.sh in Resources */ = {isa = PBXBuildFile; fileRef = 30C7C62519E106930038B22C /* dsym_upload.sh */; };
-		30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
@@ -181,8 +182,6 @@
 		4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327D818E3A9F90035FF06 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */; };
 		4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */; };
-		4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */; };
-		4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */; };
 		4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */; };
 		4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C459105189183FF0014FA7E /* HONDeviceIntrinsics.m */; };
 		4C45A9451996AE0D00A2086E /* HONTabBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45A9441996AE0D00A2086E /* HONTabBannerView.m */; };
@@ -679,13 +678,11 @@
 		30B3095119E28C9A0017ACBF /* PicoUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUser.h; sourceTree = "<group>"; };
 		30B3095219E28C9A0017ACBF /* PicoUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUserDefaults.h; sourceTree = "<group>"; };
 		30B3095319E28C9A0017ACBF /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
+		30B3096619E292D80017ACBF /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
+		30B3096819E292D80017ACBF /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
+		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
 		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
-		30C7C62219E106930038B22C /* CRFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRFilter.h; sourceTree = "<group>"; };
-		30C7C62319E106930038B22C /* Crittercism.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crittercism.h; sourceTree = "<group>"; };
-		30C7C62419E106930038B22C /* CrittercismDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrittercismDelegate.h; sourceTree = "<group>"; };
-		30C7C62519E106930038B22C /* dsym_upload.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = dsym_upload.sh; sourceTree = "<group>"; };
-		30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCrittercism_v4_3_7.a; sourceTree = "<group>"; };
 		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
@@ -924,9 +921,6 @@
 		4C4327D818E3A9F90035FF06 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDK.framework; sourceTree = "<group>"; };
 		4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
-		4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
-		4C43280018E3A9FA0035FF06 /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
-		4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
 		4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
 		4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C459104189183FF0014FA7E /* HONDeviceIntrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDeviceIntrinsics.h; sourceTree = "<group>"; };
@@ -1254,7 +1248,6 @@
 				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
-				30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
@@ -1273,12 +1266,12 @@
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */,
 				4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */,
-				4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */,
 				30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
+				30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1590,16 +1583,22 @@
 			path = PCEssentials;
 			sourceTree = "<group>";
 		};
-		30C7C62119E106930038B22C /* CrittercismSDK */ = {
+		30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */ = {
 			isa = PBXGroup;
 			children = (
-				30C7C62219E106930038B22C /* CRFilter.h */,
-				30C7C62319E106930038B22C /* Crittercism.h */,
-				30C7C62419E106930038B22C /* CrittercismDelegate.h */,
-				30C7C62519E106930038B22C /* dsym_upload.sh */,
-				30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */,
+				30B3096619E292D80017ACBF /* HockeySDK.framework */,
+				30B3096719E292D80017ACBF /* Resources */,
 			);
-			path = CrittercismSDK;
+			path = HockeySDK.embeddedframework;
+			sourceTree = "<group>";
+		};
+		30B3096719E292D80017ACBF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				30B3096819E292D80017ACBF /* HockeySDK.xcconfig */,
+				30B3096919E292D80017ACBF /* HockeySDKResources.bundle */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		30D5AD8B19C8C980004EDA22 /* NHThreadThis */ = {
@@ -1947,7 +1946,6 @@
 				30B3092519E28C990017ACBF /* PicoCandy */,
 				30B3092019E28B490017ACBF /* KeenClient */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
-				30C7C62119E106930038B22C /* CrittercismSDK */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
 				30FC8C3C19A829E900CDB2BC /* Tapstream */,
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
@@ -2052,31 +2050,13 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */,
 				30B3091A19E2319B0017ACBF /* Tapjoy.embeddedframework */,
 				30B3091819E230A70017ACBF /* CouchbaseLite.framework */,
 				4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */,
 				4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */,
-				4C4327FD18E3A9FA0035FF06 /* HockeySDK.embeddedframework */,
 			);
 			path = Frameworks;
-			sourceTree = "<group>";
-		};
-		4C4327FD18E3A9FA0035FF06 /* HockeySDK.embeddedframework */ = {
-			isa = PBXGroup;
-			children = (
-				4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */,
-				4C4327FF18E3A9FA0035FF06 /* Resources */,
-			);
-			path = HockeySDK.embeddedframework;
-			sourceTree = "<group>";
-		};
-		4C4327FF18E3A9FA0035FF06 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				4C43280018E3A9FA0035FF06 /* HockeySDK.xcconfig */,
-				4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		4C45910A18918ABC0014FA7E /* VO */ = {
@@ -2671,6 +2651,7 @@
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				07B25328198C177B00F6D8B1 /* tapToReview_Active@2x.png in Resources */,
 				30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */,
+				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
 				3021627019DF8275005550B0 /* emojiTab_nonActive@2x.png in Resources */,
@@ -2710,7 +2691,6 @@
 				303BAD1F19D5F0B000CB2501 /* shareButton_nonActive@2x.png in Resources */,
 				302162A319DF82B1005550B0 /* stickersTab_nonActive.png in Resources */,
 				303BAD0B19D5E40000CB2501 /* InsetOverlayElements.xcassets in Resources */,
-				4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */,
 				4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */,
 				07B2532F198C178400F6D8B1 /* tapToReview_nonActive@2x.png in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
@@ -2722,7 +2702,6 @@
 				575B3967198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png in Resources */,
 				3021627C19DF8284005550B0 /* popularTab_Active@2x.png in Resources */,
 				300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */,
-				30C7C62719E106930038B22C /* dsym_upload.sh in Resources */,
 				3021627F19DF8287005550B0 /* popularTab_nonActive.png in Resources */,
 				07B6E65519884A2400DA0805 /* backButton_nonActive@2x.png in Resources */,
 				30B3091E19E2319C0017ACBF /* TapjoyResources.bundle in Resources */,
@@ -2769,6 +2748,7 @@
 				303BAD1819D5F0A000CB2501 /* shareButton_Active@2x.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				3021626D19DF8271005550B0 /* emojiTab_nonActive.png in Resources */,
+				30B3096B19E292D80017ACBF /* HockeySDK.xcconfig in Resources */,
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
 				07B6E6FE1988515600DA0805 /* inviteFriends_nonActive@2x.png in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
@@ -4030,8 +4010,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -4109,8 +4089,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 x86_64";
 				WRAPPER_EXTENSION = app;
