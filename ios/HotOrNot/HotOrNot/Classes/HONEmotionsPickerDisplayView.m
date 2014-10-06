@@ -134,7 +134,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
 }
 
-- (void)removeEmotion:(HONEmotionVO *)emotionVO {
+- (void)removeLastEmotion {
 	if ([_emotions count] > 0) {
 		if (_scrollView.contentOffset.x == (MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width) - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right)) {
 			[_emotions removeLastObject];

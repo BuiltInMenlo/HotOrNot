@@ -74,7 +74,7 @@ const CGRect kActiveFrame = {-4.0f, -4.0f, 72.0f, 72.0f};
 					 } completion:^(BOOL finished) {
 						 CGAffineTransform transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 						 
-						 NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
+//						 NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
 						 
 						 [UIView animateWithDuration:0.125 delay:0.000
 							  usingSpringWithDamping:0.875 initialSpringVelocity:0.333

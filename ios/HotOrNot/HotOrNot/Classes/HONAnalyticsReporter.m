@@ -89,13 +89,17 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)sessionProperties {
-	return (@{@"id"				: @"",
-			  @"id-last"		: @"",
-			  @"session-gap"	: [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString],
-			  @"duration"		: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] : [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
-			  @"idle"			: ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] : [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]],
+	NSDate *nowDate = [NSDate date];
+	NSDate *durDate = ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]] : nowDate;
+	NSDate *idlDate = ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"]] : nowDate;
+	
+	return (@{@"id"				: @"0",
+			  @"id-last"		: @"0",
+			  @"session-gap"	: @"0",
+			  @"duration"		: [@"" stringFromInt:[nowDate timeIntervalSinceDate:durDate]],
+			  @"idle"			: [@"" stringFromInt:[nowDate timeIntervalSinceDate:idlDate]],
 			  @"count"			: ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] : @"0",
-			  @"entry-point"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] lowercaseString] : @"launch"});
+			  @"entry-point"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] lowercaseString] : @"N/A"});
 }
 
 - (NSDictionary *)userProperties {
@@ -110,7 +114,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	return(@{@"id"			: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
 			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
 			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
-			 @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate],
+			 @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:cohortDate],
 			 @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:cohortDate] weekOfYear]]});
 }
 
@@ -251,7 +255,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	[event addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] orthodoxProperties]];
 	[event addEntriesFromDictionary:@{@"action"	: [[eventName componentsSeparatedByString:@" - "] lastObject]}];
 	
-	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
+//	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:@"tracking_interval"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

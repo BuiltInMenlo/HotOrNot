@@ -152,13 +152,11 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (CGFloat)minSnapLuminosity;
 
-+ (NSString *)smsInviteFormat;
-+ (NSDictionary *)emailInviteFormat;
-+ (NSString *)instagramShareMessageForIndex:(int)index;
-+ (NSString *)twitterShareCommentForIndex:(int)index;
-+ (NSString *)facebookShareCommentForIndex:(int)index;
-+ (NSString *)smsShareCommentForIndex:(int)index;
-+ (NSDictionary *)emailShareCommentForIndex:(int)index;
++ (NSString *)instagramShareMessage;
++ (NSString *)twitterShareComment;
++ (NSString *)facebookShareComment;
++ (NSString *)smsShareComment;
++ (NSDictionary *)emailShareComment;
 + (NSArray *)subjectFormats;
 
 + (NSRange)rangeForImageQueue;

@@ -118,49 +118,11 @@
 		
 		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
 		[self _didFinishDataRefresh];
-		
-//		_imageQueueLocation = 0;
-//		if ([_clubPhotos count] > 0) {
-//			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
-//			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
-//			
-//			int cnt = 0;
-//			for (int i=queueRange.location; i<queueRange.length; i++) {
-//				[imageQueue addObject:[NSURL URLWithString:[((HONClubPhotoVO *)[_clubPhotos objectAtIndex:i]).imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
-//				
-//				cnt++;
-//				_imageQueueLocation++;
-//				if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_clubPhotos count])
-//					break;
-//				
-//			}
-//			
-//			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation)
-//											fromURLs:imageQueue
-//											 withTag:@"club"];
-//		}
 	}];
 }
 
 
 #pragma mark - Data Handling
-- (void)_cacheNextImagesWithRange:(NSRange)range {
-	NSLog(@"RANGE:[%@]", NSStringFromRange(range));
-	
-	NSMutableArray *imagesToFetch = [NSMutableArray array];
-	for (int i=range.location; i<MIN(range.length, [_clubPhotos count]); i++) {
-		HONClubPhotoVO *vo = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:i];
-		NSString *type = [[HONDeviceIntrinsics sharedInstance] isRetina4Inch] ? kSnapLargeSuffix : kSnapTabSuffix;
-		NSString *url = [vo.imagePrefix stringByAppendingString:type];
-		[imagesToFetch addObject:[NSURL URLWithString:url]];
-	}
-	
-	if ([imagesToFetch count] > 0)
-		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(0, [imagesToFetch count])
-										fromURLs:imagesToFetch
-										 withTag:@"club"];
-}
-
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
 	
@@ -194,6 +156,8 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
+	self.view.backgroundColor = [UIColor blackColor];
 	
 	UIView *refreshHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.view addSubview:_emptySetView];
@@ -392,7 +356,7 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Next Update"
 									  withClubPhoto:((HONClubPhotoViewCell *)[_clubPhotos objectAtIndex:_index]).clubPhotoVO];
 	
-	_index = [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows;
+	_index = MIN(MAX(0, [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), [_clubPhotos count] - 1);
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
@@ -469,7 +433,7 @@
 	
 	cell.indexPath = indexPath;
 	cell.clubVO = _clubVO;
-	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.section];
+	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:MIN(MAX(0, indexPath.section), [_clubPhotos count] - 1)];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
@@ -539,12 +503,11 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
 		if (buttonIndex == 0) {
-			NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-			NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-			NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-			NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
-			NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate instagramShareMessage], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate twitterShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], [NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],//  [[[[HONAppDelegate emailShareComment] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],
+																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
 																									@"image"			: _clubPhotoVO.imagePrefix, //([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 																									@"club"				: _clubVO.dictionary,

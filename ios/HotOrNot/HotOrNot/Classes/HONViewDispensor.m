@@ -54,7 +54,6 @@ static HONViewDispensor *sharedInstance = nil;
 	[layer setBounds:CGRectMake(0.0, 0.0, size.width, size.height)];
 	layer.needsDisplayOnBoundsChange = YES;
 	
-	
 	return (layer);
 }
 

@@ -194,32 +194,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_luminosity"] floatValue]);
 }
 
-+ (NSString *)smsInviteFormat {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"]);
++ (NSString *)instagramShareMessage { //[0]:Details //[1]:Profile
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] firstObject]);
 }
 
-+ (NSDictionary *)emailInviteFormat {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"]);
++ (NSString *)twitterShareComment { //[0]:Details //[1]:Profile
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] firstObject]);
 }
 
-+ (NSString *)instagramShareMessageForIndex:(int)index { //[0]:Details //[1]:Profile
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index]);
++ (NSString *)facebookShareComment {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"facebook"] firstObject]);
 }
 
-+ (NSString *)twitterShareCommentForIndex:(int)index { //[0]:Details //[1]:Profile
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:index]);
++ (NSString *)smsShareComment {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"sms"] firstObject]);
 }
 
-+ (NSString *)facebookShareCommentForIndex:(int)index {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"facebook"] objectAtIndex:index]);
-}
-
-+ (NSString *)smsShareCommentForIndex:(int)index {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"sms"] objectAtIndex:index]);
-}
-
-+ (NSDictionary *)emailShareCommentForIndex:(int)index {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
++ (NSDictionary *)emailShareComment {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] firstObject]);
 	
 }
 
@@ -572,7 +564,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	_shareInfo = [notification object];
 	
 	NSLog(@"_showShareShelf:[%@]", _shareInfo);
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[[NSUserDefaults standardUserDefaults] objectForKey:@"share_title"]
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_title"] length] > 0) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"share_title"] : nil
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
@@ -1478,7 +1470,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate instagramShareMessage], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate twitterShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], [NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],//  [[[[HONAppDelegate emailShareComment] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],
+																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
 																									@"image"			: [HONAppDelegate avatarImage],
 																									@"url"				: @"",
 																									@"mp_event"			: @"App Root",
@@ -1583,7 +1579,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = @"com.instagram.exclusivegram";
 				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"caption"] objectAtIndex:0] forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"captions"] objectForKey:@"instagram"] forKey:@"InstagramCaption"];
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {
@@ -1601,7 +1597,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"caption"] objectAtIndex:1]];
+				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"captions"] objectForKey:@"twitter"]];
 				[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
 				twitterComposeViewController.completionHandler = completionBlock;
 				
@@ -1618,7 +1614,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else if (buttonIndex == HONShareSheetActionTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [[_shareInfo objectForKey:@"caption"] objectAtIndex:3];
+				messageComposeViewController.body = [[_shareInfo objectForKey:@"captions"] objectForKey:@"sms"];
 				messageComposeViewController.messageComposeDelegate = self;
 				
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
@@ -1633,13 +1629,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		} else if (buttonIndex == HONShareSheetActionTypeEmail) {
 			if ([MFMailComposeViewController canSendMail]) {
-				NSRange range = [[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] rangeOfString:@"|"];
+				NSLog(@"EMAIL:[%@]", [[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] lastObject]);
+//				
+//				NSRange range = [[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] rangeOfString:@"|"];
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] substringToIndex:range.location]];
-				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] substringFromIndex:range.location + 1] isHTML:NO];
+				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] firstObject]];
+				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] lastObject] isHTML:NO];
+//				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] substringToIndex:range.location]];
+//				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] substringFromIndex:range.location + 1] isHTML:NO];
 				mailComposeViewController.mailComposeDelegate = self;
 				
-				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController
+																		   animated:YES
+																		 completion:^(void) {}];
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
@@ -1650,7 +1652,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			}
 		
 		} else if (buttonIndex == HONShareSheetActionTypeClipboard) {
-			[[HONClubAssistant sharedInstance] copyClubToClipBoard:[HONUserClubVO clubWithDictionary:[_shareInfo objectForKey:@"club"]] withAlert:YES];
+//			[[HONClubAssistant sharedInstance] copyClubToClipBoard:[HONUserClubVO clubWithDictionary:[_shareInfo objectForKey:@"club"]] withAlert:YES];
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:NSLocalizedString(@"tap_join", @"Join Selfieclub! http://sel.club username: %@"), [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+			
+			[self _showOKAlert:@"Paste anywhere to share!" withMessage:nil];
 		}
 		
 		_shareInfo = nil;

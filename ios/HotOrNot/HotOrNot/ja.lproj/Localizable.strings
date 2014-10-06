@@ -163,7 +163,7 @@
 "invalid_user" = "無効なユーザー名";
 "allow_access" = "コンタクト先へのアクセスを許可しますか?";
 "ok_access" = "アドレス帳のアクセスにあなたの許可が必要です。";
-"tap_join" = "セルフィークラブ %@を作成しました! タップして参加: \nhttp://sel.club";
+"tap_join" = "セルフィークラブ %@を作成しました! タップして参加: http://sel.club %@";
 "alert_create_it" = "それを作成しますか?";
 "club_notfound" = "クラブが見つかりません!";
 "want_invite" = "%@に友人を招待しますか?";

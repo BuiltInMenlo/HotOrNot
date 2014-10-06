@@ -163,7 +163,7 @@
 "invalid_user" = "Invalid username";
 "allow_access" = "Allow Access to your contacts?";
 "ok_access" = "We need your OK to access the address book.";
-"tap_join" = "Join my private club in @Selfieclub #selfieclub #appstore #googleplay\nhttp://sel.club";
+"tap_join" = "Join Selfieclub! http://sel.club username: %@";
 //"tap_join" = "Join my private club in @Selfieclub #selfieclub #appstore #googleplay\nhttp://joinselfie.club/%@/%@";
 "alert_create_it" = "Would you like to create it?";
 "club_notfound" = "Club Not Found!";

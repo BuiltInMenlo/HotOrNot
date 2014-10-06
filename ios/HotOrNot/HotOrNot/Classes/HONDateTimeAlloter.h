@@ -22,6 +22,7 @@
 - (NSString *)orthodoxBlankTimestampFormattedString;
 - (NSDateFormatter *)orthodoxBaseFormatter;
 - (NSString *)orthodoxFormattedStringFromDate:(NSDate *)date;
+- (NSString *)ISO8601FormattedStringFromDate:(NSDate *)date;
 - (NSDateFormatter *)orthodoxFormatterWithTimezone:(NSString *)timezone;
 - (NSString *)timezoneFromDeviceLocale;
 - (NSDate *)utcDateFromDate:(NSDate *)date;

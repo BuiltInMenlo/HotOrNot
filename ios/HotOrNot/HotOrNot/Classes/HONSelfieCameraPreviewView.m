@@ -243,24 +243,29 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
 										withEmotion:emotionVO];
 	
-	if (emotionVO != nil) {
+//	if (emotionVO != nil) {
 //		[_selectedEmotions removeObject:emotionVO];
 //		[_subjectNames removeObject:emotionVO.emotionName];//] inRange:NSMakeRange([_subjectNames count] - 1, 1)];
 		
-		if ([_selectedEmotions count] > 0)
-			[_selectedEmotions removeLastObject];
-		
+//		if ([_selectedEmotions count] > 0)
+//			[_selectedEmotions removeLastObject];
+//
 		if ([_subjectNames count] > 0)
 			[_subjectNames removeLastObject];
-		
-		if ([_selectedEmotions count] == 0 || [_subjectNames count] == 0)
-			[_emotionsDisplayView flushEmotions];
-		
-		else
-			[_emotionsDisplayView removeEmotion:emotionVO];
+	
+		if ([_subjectNames count] == 0) {
+//			[_selectedEmotions removeAllObjects];
+			
+			[_subjectNames removeAllObjects];
+			_subjectNames = nil;
+			_subjectNames = [NSMutableArray array];
+//			[_emotionsDisplayView flushEmotions];
+		}
+	
+	[_emotionsDisplayView removeLastEmotion];
 		
 		[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @""];
-	}
+//	}
 }
 
 
@@ -436,11 +441,16 @@
 }
 
 - (void)emotionsPickerDisplayView:(HONEmotionsPickerDisplayView *)pickerDisplayView scrolledEmotionsToIndex:(int)index fromDirection:(int)dir {
-	NSLog(@"[*:*] emotionsPickerDisplayView:(%@) scrolledEmotionsToIndex:(%d) fromDirection:(%d) [*:*]", self.class, index, dir);
+//	NSLog(@"[*:*] emotionsPickerDisplayView:(%@) scrolledEmotionsToIndex:(%d/%d) fromDirection:(%d) [*:*]", self.class, index, MIN(MAX(0, index), [_selectedEmotions count] - 1), dir);
 	
-	if ([_selectedEmotions count] > 0) {
-		int ind = MIN(MAX(0, index), [_selectedEmotions count] - 1);
-		[_headerView transitionTitle:((HONEmotionVO *)[_selectedEmotions objectAtIndex:ind]).emotionName];
+	if ([_subjectNames count] == 0) {
+		[_headerView transitionTitle:@""];
+	} else {
+	int ind = MIN(MAX(0, index), [_subjectNames count] - 1);
+//	HONEmotionVO *vo = (HONEmotionVO *)[_selectedEmotions objectAtIndex:ind];
+	if (![_headerView.title isEqualToString:[_subjectNames objectAtIndex:ind]]) {
+		[_headerView transitionTitle:[_subjectNames objectAtIndex:ind]];
+	}
 	}
 }
 

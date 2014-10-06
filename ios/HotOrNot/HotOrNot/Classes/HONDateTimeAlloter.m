@@ -183,10 +183,15 @@ static HONDateTimeAlloter *sharedInstance = nil;
 // 
 //	NSDate *date = [rfc3339DateFormatter stringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]];
 	
+	
+	return ([[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]);
+}
+
+- (NSString *)ISO8601FormattedStringFromDate:(NSDate *)date {
 	NSDateFormatter *dateFormatter =   [[NSDateFormatter alloc] init];
 	[dateFormatter setDateFormat:kISO8601FormatSymbols];
 	
-	return ([dateFormatter stringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]);
+	return ([dateFormatter stringFromDate:date]);
 }
 
 - (int)yearsOldFromDate:(NSDate *)date {

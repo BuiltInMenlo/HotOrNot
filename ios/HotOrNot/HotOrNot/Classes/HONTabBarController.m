@@ -193,7 +193,7 @@
 	
 	if ([[notification object] isEqualToString:@"SHOW"]) {
 		[UIView animateWithDuration:0.333 delay:0.125
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+			 usingSpringWithDamping:0.800 initialSpringVelocity:0.125
 							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
 								_tabHolderView.frame = tabHolderFrame;
 								_nativeTabBar.frame = nativeBarFrame;
@@ -205,7 +205,7 @@
 		
 	} else {
 		[UIView animateWithDuration:0.500 delay:0.125
-			 usingSpringWithDamping:0.875 initialSpringVelocity:0.010
+			 usingSpringWithDamping:0.900 initialSpringVelocity:0.000
 							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionCurveEaseIn) animations:^(void) {
 								_tabHolderView.frame = tabHolderFrame;
 								_nativeTabBar.frame = nativeBarFrame;
