@@ -277,14 +277,14 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		
 		if (imageView.image == nil) {
 			if ([_clubVO.submissions count] == 0)
-				[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"defaultThumbPhotoMask"]];
+				[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"defaultThumbPhotoMask"]];
 			
 			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 				NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
 				
 				imageView.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 				imageView.image = [UIImage imageNamed:@"placeholderClubPhoto"];
-				[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
+				[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
 				
 				[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 					_emotionHolderView.alpha = 1.0;
@@ -299,7 +299,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 				imageView.image = image;
 				
 				if ([_clubVO.submissions count] == 0) {
-					[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
+					[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
 				}
 				
 				[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {

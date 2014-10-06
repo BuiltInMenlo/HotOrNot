@@ -50,7 +50,7 @@
 	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 	[self.contentView addSubview:_coverImageView];
 	
-	[[HONImageBroker sharedInstance] maskView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+	[[HONViewDispensor sharedInstance] maskView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
 //	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubCoverMask"]];
 //	overlayImageView.frame = _coverOverlayView.frame;
@@ -63,7 +63,7 @@
 	_coverOverlayView.alpha = 0.0;
 	[self.contentView addSubview:_coverOverlayView];
 	
-	[[HONImageBroker sharedInstance] maskView:_coverOverlayView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+	[[HONViewDispensor sharedInstance] maskView:_coverOverlayView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
 	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-4.0, 10.0, 44.0, 44.0)];
 	[self.contentView addSubview:_badgeImageView];

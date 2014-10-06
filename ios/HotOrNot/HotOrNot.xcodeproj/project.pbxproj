@@ -88,6 +88,9 @@
 		30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308CB19E20B510017ACBF /* UIImageView+AFNetworking.m */; };
 		30B3090B19E22BE60017ACBF /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B308DD19E22BE50017ACBF /* libPicoCandySDKCore.a */; };
 		30B3091119E22D6C0017ACBF /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */; };
+		30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091819E230A70017ACBF /* CouchbaseLite.framework */; };
+		30B3091E19E2319C0017ACBF /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */; };
+		30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091D19E2319C0017ACBF /* Tapjoy.framework */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
 		30C7C62719E106930038B22C /* dsym_upload.sh in Resources */ = {isa = PBXBuildFile; fileRef = 30C7C62519E106930038B22C /* dsym_upload.sh */; };
 		30C7C62819E106930038B22C /* libCrittercism_v4_3_7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30C7C62619E106930038B22C /* libCrittercism_v4_3_7.a */; };
@@ -180,8 +183,6 @@
 		4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */; };
 		4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */; };
 		4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */; };
-		4C4328F518E3A9FA0035FF06 /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C43280418E3A9FA0035FF06 /* TapjoyResources.bundle */; };
-		4C4328F618E3A9FA0035FF06 /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C43280518E3A9FA0035FF06 /* Tapjoy.framework */; };
 		4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */; };
 		4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C459105189183FF0014FA7E /* HONDeviceIntrinsics.m */; };
 		4C45A9451996AE0D00A2086E /* HONTabBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45A9441996AE0D00A2086E /* HONTabBannerView.m */; };
@@ -286,7 +287,6 @@
 		4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */; };
 		4CD071A819553039003894F4 /* UIView+ReverseSubviews.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */; };
 		4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD16D181996ED390035A8D3 /* appStoreReview@2x.png */; };
-		4CD22C90195BD5C800E6AD0B /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD22C8F195BD5C700E6AD0B /* CouchbaseLite.framework */; };
 		4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */; };
 		4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */; };
 		4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */; };
@@ -677,6 +677,9 @@
 		30B3090E19E22D6C0017ACBF /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
 		30B3090F19E22D6C0017ACBF /* KIOEventStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KIOEventStore.h; sourceTree = "<group>"; };
 		30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
+		30B3091819E230A70017ACBF /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CouchbaseLite.framework; sourceTree = "<group>"; };
+		30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapjoyResources.bundle; sourceTree = "<group>"; };
+		30B3091D19E2319C0017ACBF /* Tapjoy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tapjoy.framework; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
 		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
 		30C7C62219E106930038B22C /* CRFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRFilter.h; sourceTree = "<group>"; };
@@ -925,8 +928,6 @@
 		4C4327FE18E3A9FA0035FF06 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		4C43280018E3A9FA0035FF06 /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
-		4C43280418E3A9FA0035FF06 /* TapjoyResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapjoyResources.bundle; sourceTree = "<group>"; };
-		4C43280518E3A9FA0035FF06 /* Tapjoy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tapjoy.framework; sourceTree = "<group>"; };
 		4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
 		4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C459104189183FF0014FA7E /* HONDeviceIntrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDeviceIntrinsics.h; sourceTree = "<group>"; };
@@ -1137,7 +1138,6 @@
 		4CD16D1A1996ED3D0035A8D3 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
 		4CD16D1B1996ED3E0035A8D3 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
 		4CD16D1C1996ED3E0035A8D3 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
-		4CD22C8F195BD5C700E6AD0B /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CouchbaseLite.framework; sourceTree = "<group>"; };
 		4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PicoCandySDKResources.bundle; sourceTree = "<group>"; };
 		4CD42F26188B410E00264845 /* HONMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessagesViewController.h; sourceTree = "<group>"; };
 		4CD42F27188B410E00264845 /* HONMessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONMessagesViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1270,13 +1270,13 @@
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				30B3091119E22D6C0017ACBF /* libKeenClient-Aggregate.a in Frameworks */,
+				30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */,
-				4CD22C90195BD5C800E6AD0B /* CouchbaseLite.framework in Frameworks */,
 				4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */,
 				4C4328F218E3A9FA0035FF06 /* HockeySDK.framework in Frameworks */,
+				30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
-				4C4328F618E3A9FA0035FF06 /* Tapjoy.framework in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
@@ -1573,6 +1573,23 @@
 				30B3091019E22D6C0017ACBF /* libKeenClient-Aggregate.a */,
 			);
 			path = KeenClient;
+			sourceTree = "<group>";
+		};
+		30B3091A19E2319B0017ACBF /* Tapjoy.embeddedframework */ = {
+			isa = PBXGroup;
+			children = (
+				30B3091B19E2319C0017ACBF /* Resources */,
+				30B3091D19E2319C0017ACBF /* Tapjoy.framework */,
+			);
+			path = Tapjoy.embeddedframework;
+			sourceTree = "<group>";
+		};
+		30B3091B19E2319C0017ACBF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		30C7C62119E106930038B22C /* CrittercismSDK */ = {
@@ -2037,11 +2054,11 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4CD22C8F195BD5C700E6AD0B /* CouchbaseLite.framework */,
+				30B3091A19E2319B0017ACBF /* Tapjoy.embeddedframework */,
+				30B3091819E230A70017ACBF /* CouchbaseLite.framework */,
 				4C4327FB18E3A9FA0035FF06 /* AWSiOSSDK.framework */,
 				4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */,
 				4C4327FD18E3A9FA0035FF06 /* HockeySDK.embeddedframework */,
-				4C43280218E3A9FA0035FF06 /* Tapjoy.embeddedframework */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -2060,23 +2077,6 @@
 			children = (
 				4C43280018E3A9FA0035FF06 /* HockeySDK.xcconfig */,
 				4C43280118E3A9FA0035FF06 /* HockeySDKResources.bundle */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		4C43280218E3A9FA0035FF06 /* Tapjoy.embeddedframework */ = {
-			isa = PBXGroup;
-			children = (
-				4C43280318E3A9FA0035FF06 /* Resources */,
-				4C43280518E3A9FA0035FF06 /* Tapjoy.framework */,
-			);
-			path = Tapjoy.embeddedframework;
-			sourceTree = "<group>";
-		};
-		4C43280318E3A9FA0035FF06 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				4C43280418E3A9FA0035FF06 /* TapjoyResources.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -2727,6 +2727,7 @@
 				30C7C62719E106930038B22C /* dsym_upload.sh in Resources */,
 				3021627F19DF8287005550B0 /* popularTab_nonActive.png in Resources */,
 				07B6E65519884A2400DA0805 /* backButton_nonActive@2x.png in Resources */,
+				30B3091E19E2319C0017ACBF /* TapjoyResources.bundle in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
 				4C0F3CDB1988E63700703D09 /* tabMenu_newsButton_Tapped@2x.png in Resources */,
 				4C2DD84018E3EEF100BC8759 /* FullScreenAssets.xcassets in Resources */,
@@ -2751,7 +2752,6 @@
 				30E6150A19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png in Resources */,
 				4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */,
 				07B6E64919884A0500DA0805 /* profileButton_nonActive@2x.png in Resources */,
-				4C4328F518E3A9FA0035FF06 /* TapjoyResources.bundle in Resources */,
 				4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */,
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
 				3021627619DF827C005550B0 /* emojiTab_Tapped@2x.png in Resources */,

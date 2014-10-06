@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 typedef NS_ENUM(NSInteger, HONImageBrokerShareTemplateType) {
 	HONImageBrokerShareTemplateTypeDefault = 0,
 	HONImageBrokerShareTemplateTypeInstagram,
@@ -37,12 +39,8 @@ typedef NS_ENUM(NSInteger, HONImageBrokerImageFormat) {
 - (UIImage *)defaultAvatarImageAtSize:(CGSize)size;
 - (NSString *)defaultAvatarImageURL;
 
-- (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor;
-- (void)flipLayer:(CALayer *)layer horizontally:(BOOL)xAxisFlipped;
-
 - (double)totalLuminance:(UIImage *)image;
 
-- (void)maskView:(UIView *)imageView withMask:(UIImage *)maskImage;
 - (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
 - (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
 - (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;

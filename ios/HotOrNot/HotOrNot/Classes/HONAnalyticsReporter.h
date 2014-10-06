@@ -34,9 +34,6 @@
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo;
 - (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;
-- (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo;
-- (NSDictionary *)propertyForChallengeCreator:(HONChallengeVO *)vo;
-- (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo;
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo;
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo;
@@ -49,9 +46,6 @@
 - (void)trackEvent:(NSString *)eventName;
 - (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO;
 - (void)trackEvent:(NSString *)eventName withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;
-- (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO;
-- (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO;
-- (void)trackEvent:(NSString *)eventName withChallengeCreator:(HONChallengeVO *)challengeVO;
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO;

@@ -136,39 +136,6 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	return (@{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"});
 }
 
-- (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectNames]};
-//	});
-	
-	return (@{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectNames]});
-}
-
-- (NSDictionary *)propertyForChallengeCreator:(HONChallengeVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"creator"	: [NSString stringWithFormat:@"%d - %@", vo.creatorVO.userID, vo.creatorVO.username]};
-//	});
-	
-	return (@{@"creator"	: [NSString stringWithFormat:@"%d - %@", vo.creatorVO.userID, vo.creatorVO.username]});
-}
-
-- (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo; {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-//	});
-	
-	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
-}
-
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
@@ -177,7 +144,11 @@ static HONAnalyticsReporter *sharedInstance = nil;
 //		properties = @{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
 //	});
 	
-	return (@{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
+	return (@{@"photo"	: @{@"id"		: [@"" stringFromInt:vo.challengeID],
+							@"club_id"	: [@"" stringFromInt:vo.clubID],
+							@"user_id"	: [@"" stringFromInt:vo.userID],
+							@"username"	: vo.username,
+							@"img"		: vo.imagePrefix}});
 }
 
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo {
@@ -197,7 +168,10 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
-	return (@{@"emotion"	: [NSString stringWithFormat:@"%@ - %@", vo.emotionID, vo.emotionName]});
+	return (@{@"emotion"	: @{@"id"		: vo.emotionID,
+								@"name"		: vo.emotionName,
+								@"cg_id"	: vo.contentGroupID,
+								@"url"		: vo.urlPrefix}});
 }
 
 - (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
@@ -301,32 +275,6 @@ static HONAnalyticsReporter *sharedInstance = nil;
 - (void)trackEvent:(NSString *)eventName withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForCameraDevice:cameraDevice]];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
-									 withProperties:properties];
-}
-
-- (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForChallenge:challengeVO]];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
-									 withProperties:properties];
-}
-
-- (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForChallenge:challengeVO]];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForChallengeParticipant:opponentVO]];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
-									 withProperties:properties];
-}
-
-- (void)trackEvent:(NSString *)eventName withChallengeCreator:(HONChallengeVO *)challengeVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForChallenge:challengeVO]];
-	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForChallengeCreator:challengeVO]];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
 									 withProperties:properties];

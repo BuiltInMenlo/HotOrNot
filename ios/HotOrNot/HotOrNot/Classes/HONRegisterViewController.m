@@ -351,7 +351,7 @@
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0, 65.0, 64.0, 64.0)];
 	[self.view addSubview:_avatarImageView];
 	
-	[[HONImageBroker sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"thumbPhotoMask"]];
+	[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"thumbPhotoMask"]];
 	
 //	_addAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	_addAvatarButton.frame = _avatarImageView.frame;

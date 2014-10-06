@@ -18,6 +18,7 @@
 
 @property (nonatomic, retain) NSString *contentGroupID;
 @property (nonatomic, retain) NSString *emotionName;
+@property (nonatomic, retain) NSString *urlPrefix;
 @property (nonatomic, retain) NSString *largeImageURL;
 @property (nonatomic, retain) NSString *mediumImageURL;
 @property (nonatomic, retain) NSString *smallImageURL;

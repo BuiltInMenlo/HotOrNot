@@ -97,7 +97,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[self addSubview:_previewThumbImageView];
 		
 		
-		[[HONImageBroker sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
+		[[HONViewDispensor sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
 		UIButton *previewThumbButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		previewThumbButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
