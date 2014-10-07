@@ -10,6 +10,9 @@
 #import "NSString+DataTypes.h"
 #import "UILabel+FormattedText.h"
 
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView.h"
+
 #import "HONClubViewCell.h"
 #import "HONClubPhotoVO.h"
 #import "HONImageLoadingView.h"
@@ -20,10 +23,9 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *subtitleLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
-//@property (nonatomic, strong) NSMutableArray *statusUpdateVOs;
 @property (nonatomic, strong) NSArray *emotionVOs;
-//@property (nonatomic, strong) NSMutableArray *statusUpdateViews;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
+@property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
 @property (nonatomic) CGSize maxTitleLabelSize;
 @end
@@ -135,24 +137,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
 	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];
-	/*
-	NSArray *emotions = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_statusUpdateVO];
-	if ([emotions count] == 0) {
-		[titleCaption appendString:@"…"];
-		
-	} else {
-		[titleCaption appendFormat:@" %@", [((HONEmotionVO *)[emotions firstObject]).emotionName mutableCopy]];
-//		[emotions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//			HONEmotionVO *vo = (HONEmotionVO *)obj;
-//			titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.emotionName];
-//		}];
-//		
-//		titleCaption = ([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
-	}
-	
-	[titleCaption replaceOccurrencesOfString:@"_" withString:@" " options:NSCaseInsensitiveSearch range:[titleCaption rangeOfString:titleCaption]];
-	titleCaption = ([titleCaption length] == 0) ? [creatorName mutableCopy] : titleCaption;
-	*/
 	
 	NSString *subtitleCaption = @"» ";
 	NSMutableArray *uniqueParticipants = [NSMutableArray array];
@@ -206,6 +190,40 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_emotionHolderView = [self _holderViewForStatusUpdate];
 	_emotionHolderView.frame = CGRectOffset(_emotionHolderView.frame, 17.0, 11.0);
 	[self.contentView addSubview:_emotionHolderView];
+	
+	HONEmotionVO *emotionVO = (HONEmotionVO *)[_emotionVOs firstObject];
+	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
+		NSLog(@"GIF **** EMOTION STICKER:[%@]", emotionVO.smallImageURL);
+//		if (!_animatedImageView) {
+			_animatedImageView = [[FLAnimatedImageView alloc] init];
+			_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+			_animatedImageView.clipsToBounds = YES;
+//		}
+		
+		_animatedImageView.frame = CGRectOffset(_emotionHolderView.frame, -17.0, -11.0);
+		[_emotionHolderView addSubview:_animatedImageView];
+		_emotionHolderView.hidden = NO;
+		
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			NSURL *url = [NSURL URLWithString:emotionVO.smallImageURL];
+			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				_animatedImageView.animatedImage = animatedImage;
+				
+				[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+					_emotionHolderView.alpha = 1.0;
+					
+				} completion:^(BOOL finished) {
+					_imageLoadingView.hidden = YES;
+					[_imageLoadingView stopAnimating];
+				}];
+			});
+		});
+		
+	} else if (emotionVO.imageType == HONEmotionImageTypePNG) {
+	}
+
 }
 
 - (void)appendTitleCaption:(NSString *)captionSuffix {
@@ -270,66 +288,70 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 
 - (void)toggleImageLoading:(BOOL)isLoading {
-	if (isLoading) {
-		
-		_emotionHolderView.hidden = NO;
-		UIImageView *imageView = (UIImageView *)[[_emotionHolderView subviews] firstObject];
-		
-		if (imageView.image == nil) {
-			if ([_clubVO.submissions count] == 0)
-				[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"defaultThumbPhotoMask"]];
+	HONEmotionVO *emotionVO = (HONEmotionVO *)[_emotionVOs firstObject];
+	
+	if (emotionVO.imageType == HONEmotionImageTypePNG) {
+		if (isLoading) {
 			
-			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-				NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
+			_emotionHolderView.hidden = NO;
+			UIImageView *imageView = (UIImageView *)[[_emotionHolderView subviews] firstObject];
+			
+			if (imageView.image == nil) {
+				if ([_clubVO.submissions count] == 0)
+					[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"defaultThumbPhotoMask"]];
 				
-				imageView.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
-				imageView.image = [UIImage imageNamed:@"placeholderClubPhoto"];
-				[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
-				
-				[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-					_emotionHolderView.alpha = 1.0;
+				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+					NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
 					
-				} completion:^(BOOL finished) {
-					_imageLoadingView.hidden = YES;
-					[_imageLoadingView stopAnimating];
-				}];
-			};
-			
-			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-				imageView.image = image;
-				
-				if ([_clubVO.submissions count] == 0) {
+					imageView.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+					imageView.image = [UIImage imageNamed:@"placeholderClubPhoto"];
 					[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
-				}
-				
-				[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-					_emotionHolderView.alpha = 1.0;
 					
-				} completion:^(BOOL finished) {
-					_imageLoadingView.hidden = YES;
-					[_imageLoadingView stopAnimating];
-				}];
-			};
-			
-			NSString *imgURL = ([_emotionVOs count] > 0) ? ((HONEmotionVO *)[_emotionVOs firstObject]).smallImageURL : [_clubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix];
-			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]
-															   cachePolicy:kOrthodoxURLCachePolicy
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							 placeholderImage:nil
-									  success:imageSuccessBlock
-									  failure:imageFailureBlock];
+					[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+						_emotionHolderView.alpha = 1.0;
+						
+					} completion:^(BOOL finished) {
+						_imageLoadingView.hidden = YES;
+						[_imageLoadingView stopAnimating];
+					}];
+				};
+				
+				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+					imageView.image = image;
+					
+					if ([_clubVO.submissions count] == 0) {
+						[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
+					}
+					
+					[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+						_emotionHolderView.alpha = 1.0;
+						
+					} completion:^(BOOL finished) {
+						_imageLoadingView.hidden = YES;
+						[_imageLoadingView stopAnimating];
+					}];
+				};
+				
+				NSString *imgURL = ([_emotionVOs count] > 0) ? emotionVO.smallImageURL : [_clubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix];
+				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]
+																   cachePolicy:kOrthodoxURLCachePolicy
+															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+								 placeholderImage:nil
+										  success:imageSuccessBlock
+										  failure:imageFailureBlock];
+				
+			} else {
+				_imageLoadingView.hidden = YES;
+				[_imageLoadingView stopAnimating];
+			}
 			
 		} else {
-			_imageLoadingView.hidden = YES;
-			[_imageLoadingView stopAnimating];
+			_imageLoadingView.alpha = 1.0;
+			_imageLoadingView.hidden = NO;
+				
+			UIImageView *imageView = (UIImageView *)[[_emotionHolderView subviews] firstObject];
+			[imageView cancelImageRequestOperation];
 		}
-		
-	} else {
-		_imageLoadingView.alpha = 1.0;
-		_imageLoadingView.hidden = NO;
-			
-		UIImageView *imageView = (UIImageView *)[[_emotionHolderView subviews] firstObject];
-		[imageView cancelImageRequestOperation];
 	}
 }
 

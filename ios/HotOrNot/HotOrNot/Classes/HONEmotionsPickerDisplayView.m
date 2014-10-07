@@ -158,6 +158,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	
 	[_emotions removeAllObjects];
 	_emotions = [NSMutableArray array];
+	[self _updateDisplayWithCompletion:nil];
 }
 
 - (void)updatePreview:(UIImage *)previewImage {
@@ -209,44 +210,46 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //			_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
 //			_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
 	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
-	if (emotionVO.imageType == HONEMotionImageTypeGIF) {
-//			_animatedImageView = [[FLAnimatedImageView alloc] init];
-//			_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
-//			_animatedImageView.clipsToBounds = YES;
-		
-		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-		animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
-		animatedImageView.contentMode = UIViewContentModeScaleAspectFit;
-		animatedImageView.clipsToBounds = YES;
-		[imageView addSubview:animatedImageView];
+	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
+		_animatedImageView = [[FLAnimatedImageView alloc] init];
+		_animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+		_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+		_animatedImageView.clipsToBounds = YES;
+		_animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
+		[imageView addSubview:_animatedImageView];
+//
+//		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+//		animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+//		animatedImageView.contentMode = UIViewContentModeScaleAspectFit;
+//		animatedImageView.clipsToBounds = YES;
+//		[imageView addSubview:animatedImageView];
 		
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//		NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
-//		NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
-//		NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
-		NSURL *url1 = [NSURL URLWithString:emotionVO.largeImageURL];
-			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url1]];
-//			dispatch_async(dispatch_get_main_queue(), ^{
-		animatedImageView.animatedImage = animatedImage;
-		
-		[UIView animateWithDuration:0.250 delay:0.125
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
-							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-		 
-						 animations:^(void) {
-							 imageView.alpha = 1.0;
-							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-						 } completion:^(BOOL finished) {
-							 [self _updateDisplayWithCompletion:nil];
-							 
-							 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
-							 [loadingView stopAnimating];
-							 [loadingView removeFromSuperview];
-						 }];
-//				 });
+//			NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
+//			NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
+//			NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
+
+//			NSURL *url1 = [NSURL URLWithString:emotionVO.largeImageURL];
+//			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url1]];
+//			animatedImageView.animatedImage = animatedImage;
+			
+			[UIView animateWithDuration:0.250 delay:0.125
+				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+			 
+							 animations:^(void) {
+								 imageView.alpha = 1.0;
+								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+							 } completion:^(BOOL finished) {
+								 [self _updateDisplayWithCompletion:nil];
+								 
+//								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
+								 [imageLoadingView stopAnimating];
+								 [imageLoadingView removeFromSuperview];
+							 }];
 		});
 		
-	} else if (emotionVO.imageType == HONEMotionImageTypePNG) {
+	} else if (emotionVO.imageType == HONEmotionImageTypePNG) {
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		};
 		
@@ -263,9 +266,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 							 } completion:^(BOOL finished) {
 								 [self _updateDisplayWithCompletion:nil];
 								 
-								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
-								 [loadingView stopAnimating];
-								 [loadingView removeFromSuperview];
+								 [imageLoadingView stopAnimating];
+								 [imageLoadingView removeFromSuperview];
 							 }];
 		};
 		
@@ -312,9 +314,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	
 	if ([imageView.layer.animationKeys count] > 0) {
 		[imageView.layer removeAllAnimations];
-		[imageView removeFromSuperview];
-		
-		imageView = [_emotionHolderView.subviews lastObject];
 	}
 		
 	

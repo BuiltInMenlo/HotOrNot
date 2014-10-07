@@ -11,8 +11,6 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
-#import "FLAnimatedImage.h"
-#import "FLAnimatedImageView.h"
 #import "PicoSticker.h"
 
 #import "HONClubPhotoViewCell.h"
@@ -31,7 +29,6 @@
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
-@property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -89,24 +86,6 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	
 	
 	
-	if (!_animatedImageView) {
-		_animatedImageView = [[FLAnimatedImageView alloc] init];
-//		_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
-		_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
-//		_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
-		_animatedImageView.clipsToBounds = YES;
-	}
-	
-	_animatedImageView.frame = CGRectOffset(imageView.frame, 0.0, 160);
-	[self.contentView addSubview:_animatedImageView];
-	
-//	NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
-//	NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
-	NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
-	NSData *data1 = [NSData dataWithContentsOfURL:url1];
-	FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data1];
-	_animatedImageView.animatedImage = animatedImage1;
-
 	
 	CGSize maxSize = CGSizeMake(296.0, 24.0);
 	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize
@@ -320,52 +299,83 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionInitFrame) - CGRectGetMidX(kEmotionLoadedFrame), CGRectGetMidY(kEmotionInitFrame) - CGRectGetMidY(kEmotionLoadedFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
-	[imageView setTintColor:[UIColor whiteColor]];
-	[imageView setTag:[emotionVO.emotionID intValue]];
-	imageView.alpha = 0.0;
-	imageView.transform = transform;
-	[holderView addSubview:imageView];
+	if (emotionVO.imageType == HONEmotionImageTypePNG) {
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
+		[imageView setTintColor:[UIColor whiteColor]];
+		[imageView setTag:[emotionVO.emotionID intValue]];
+		imageView.alpha = 0.0;
+		imageView.transform = transform;
+		[holderView addSubview:imageView];
 	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		imageView.image = image;
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			imageView.image = image;
+			
+			[imageLoadingView stopAnimating];
+			imageLoadingView.hidden = YES;
+			[imageLoadingView removeFromSuperview];
+			
+			[UIView beginAnimations:@"fade" context:nil];
+			[UIView setAnimationDuration:0.250];
+			[UIView setAnimationDelay:0.125];
+			[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+			[imageView setTintColor:[UIColor clearColor]];
+			[UIView commitAnimations];
+			
+			[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
+				 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
+			 
+							 animations:^(void) {
+								 imageView.alpha = 1.0;
+								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+							 } completion:^(BOOL finished) {
+							 }];
+			
+		};
 		
-		[imageLoadingView stopAnimating];
-		imageLoadingView.hidden = YES;
-		[imageLoadingView removeFromSuperview];
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			[imageLoadingView stopAnimating];
+			imageLoadingView.hidden = YES;
+			[imageLoadingView removeFromSuperview];
+		};
 		
-		[UIView beginAnimations:@"fade" context:nil];
-		[UIView setAnimationDuration:0.250];
-		[UIView setAnimationDelay:0.125];
-		[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-		[imageView setTintColor:[UIColor clearColor]];
-		[UIView commitAnimations];
+	//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+														   cachePolicy:kOrthodoxURLCachePolicy
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:imageSuccessBlock
+								  failure:imageFailureBlock];
 		
-		[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
-							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
-		 
-						 animations:^(void) {
-							 imageView.alpha = 1.0;
-							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-						 } completion:^(BOOL finished) {
-						 }];
+	} else {
+		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+		animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+		animatedImageView.clipsToBounds = YES;
+		animatedImageView.frame = kEmotionLoadedFrame;
+		animatedImageView.alpha = 0.0;
+		animatedImageView.transform = transform;
+		[holderView addSubview:animatedImageView];
 		
-	};
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			NSURL *url = [NSURL URLWithString:emotionVO.largeImageURL];
+			FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				animatedImageView.animatedImage = animatedImage1;
+				
+				[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
+					 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
+				 
+								 animations:^(void) {
+									 animatedImageView.alpha = 1.0;
+									 animatedImageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+								 } completion:^(BOOL finished) {
+								 }];
+			});
+		});;
+	}
 	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[imageLoadingView stopAnimating];
-		imageLoadingView.hidden = YES;
-		[imageLoadingView removeFromSuperview];
-	};
-	
-//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:kOrthodoxURLCachePolicy
-												   timeoutInterval:[HONAppDelegate timeoutInterval]]
-					 placeholderImage:nil
-							  success:imageSuccessBlock
-							  failure:imageFailureBlock];
 	return (holderView);
 }
 

@@ -51,7 +51,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 		[_imageView addSubview:_imageLoadingView];
 		
 		NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
-		if (_emotionVO.imageType == HONEMotionImageTypeGIF) {
+		if (_emotionVO.imageType == HONEmotionImageTypeGIF) {
 			if (!_animatedImageView) {
 				_animatedImageView = [[FLAnimatedImageView alloc] init];
 //				_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
@@ -64,19 +64,17 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 			[_imageView addSubview:_animatedImageView];
 			
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//			NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
-//			NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
-//			NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
-			NSURL *url1 = [NSURL URLWithString:_emotionVO.largeImageURL];
-			NSData *data1 = [NSData dataWithContentsOfURL:url1];
-			FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data1];
+				NSURL *url = [NSURL URLWithString:_emotionVO.smallImageURL];
+				NSData *data = [NSData dataWithContentsOfURL:url];
+				FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
-				
-			_animatedImageView.animatedImage = animatedImage1;
+					_animatedImageView.animatedImage = animatedImage1;
+					_emotionVO.animatedImageView = _animatedImageView;
 				});
 			});
-		} else if (_emotionVO.imageType == HONEMotionImageTypePNG)
+			
+		} else if (_emotionVO.imageType == HONEmotionImageTypePNG)
 			[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];

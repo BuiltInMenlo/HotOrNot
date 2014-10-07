@@ -6,12 +6,15 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView.h"
+
 #import "PCContent.h"
 #import "PicoSticker.h"
 
 typedef NS_ENUM(NSInteger, HONEmotionImageType) {
-	HONEMotionImageTypePNG = 0,
-	HONEMotionImageTypeGIF = 1
+	HONEmotionImageTypePNG = 0,
+	HONEmotionImageTypeGIF = 1
 };
 
 @interface HONEmotionVO : NSObject
@@ -30,6 +33,7 @@ typedef NS_ENUM(NSInteger, HONEmotionImageType) {
 @property (nonatomic, retain) PCContent *pcContent;
 @property (nonatomic, retain) PicoSticker *picoSticker;
 @property (nonatomic, retain) UIImage *image;
+@property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic) CGFloat price;
 @property (nonatomic) HONEmotionImageType imageType;
 @property (nonatomic) BOOL isFree;

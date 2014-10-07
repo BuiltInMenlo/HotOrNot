@@ -112,10 +112,8 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 //		[objectsButton setSelected:_stickerGroupType == HONStickerGroupTypeObjects];
 		
 		[[[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSDictionary *dict = (NSDictionary *)obj;
-			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-			
-			*stop = (idx >= 2);
+			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
+//			*stop = (idx >= 2);
 		}];
 		
 //		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType])
