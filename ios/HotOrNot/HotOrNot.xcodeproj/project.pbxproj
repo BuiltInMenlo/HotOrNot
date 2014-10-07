@@ -77,6 +77,9 @@
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
 		308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E319E3029E00EE9512 /* libPicoCandySDKCore.a */; };
+		308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361419E337AA00EE9512 /* FLAnimatedImage.m */; };
+		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
+		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
 		309122A119C501F60081B141 /* HONStatusUpdateSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */; };
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BA19E20B510017ACBF /* AFHTTPClient.m */; };
@@ -652,6 +655,11 @@
 		308F360E19E3029F00EE9512 /* PicoUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUser.h; sourceTree = "<group>"; };
 		308F360F19E3029F00EE9512 /* PicoUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUserDefaults.h; sourceTree = "<group>"; };
 		308F361019E3029F00EE9512 /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
+		308F361319E337AA00EE9512 /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
+		308F361419E337AA00EE9512 /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
+		308F361519E337AA00EE9512 /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
+		308F361619E337AA00EE9512 /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
+		308F361A19E3389B00EE9512 /* 1lgZ0.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1lgZ0.gif; sourceTree = "<group>"; };
 		3091229F19C501F60081B141 /* HONStatusUpdateSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateSubmitViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONStatusUpdateSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateSubmitViewController.m; sourceTree = "<group>"; };
 		309F59B1199D7FE400EC6C1C /* NSString+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Random.h"; sourceTree = "<group>"; };
@@ -1476,6 +1484,25 @@
 			path = PCEssentials;
 			sourceTree = "<group>";
 		};
+		308F361219E337AA00EE9512 /* FLAnimatedImage */ = {
+			isa = PBXGroup;
+			children = (
+				308F361319E337AA00EE9512 /* FLAnimatedImage.h */,
+				308F361419E337AA00EE9512 /* FLAnimatedImage.m */,
+				308F361519E337AA00EE9512 /* FLAnimatedImageView.h */,
+				308F361619E337AA00EE9512 /* FLAnimatedImageView.m */,
+			);
+			path = FLAnimatedImage;
+			sourceTree = "<group>";
+		};
+		308F361919E3388E00EE9512 /* FPO */ = {
+			isa = PBXGroup;
+			children = (
+				308F361A19E3389B00EE9512 /* 1lgZ0.gif */,
+			);
+			name = FPO;
+			sourceTree = "<group>";
+		};
 		309F59B6199DA46D00EC6C1C /* Tab Buttons */ = {
 			isa = PBXGroup;
 			children = (
@@ -1929,6 +1956,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				308F361219E337AA00EE9512 /* FLAnimatedImage */,
 				308F35E219E3029E00EE9512 /* PicoCandy */,
 				308F35DD19E301E300EE9512 /* KeenClient */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
@@ -2228,6 +2256,7 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				308F361919E3388E00EE9512 /* FPO */,
 				4C43224A18E37C960035FF06 /* Asset Catalogs */,
 				3022043F19D63B3E00C3D677 /* Localized Assets */,
 				303BAD0D19D5E71700CB2501 /* Bundles */,
@@ -2622,6 +2651,7 @@
 				4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */,
 				302162AC19DF82BD005550B0 /* stickersTab_Tapped@2x.png in Resources */,
 				302162A619DF82B6005550B0 /* stickersTab_nonActive@2x.png in Resources */,
+				308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */,
 				4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */,
 				07B6E7291988548D00DA0805 /* lockedOverlay@2x.png in Resources */,
 				8F4E621D198ACD7800E8A171 /* inviteOverlay@2x.png in Resources */,
@@ -2815,6 +2845,7 @@
 				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */,
+				308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */,
 				4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */,
 				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
@@ -2886,6 +2917,7 @@
 				4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */,
 				4CC94FEC19079D4900347A34 /* HONEmotionsPickerDisplayView.m in Sources */,
 				4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */,
+				308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */,
 				305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */,
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,

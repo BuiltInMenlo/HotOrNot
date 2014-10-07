@@ -111,8 +111,15 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 //		[animalsButton setSelected:_stickerGroupType == HONStickerGroupTypeAnimals];
 //		[objectsButton setSelected:_stickerGroupType == HONStickerGroupTypeObjects];
 		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType])
+		[[[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSDictionary *dict = (NSDictionary *)obj;
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+			
+			*stop = (idx >= 2);
+		}];
+		
+//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType])
+//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);

@@ -33,7 +33,6 @@
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
 @property (nonatomic) int clubPhotoID;
-@property (nonatomic) int imageQueueLocation;
 @end
 
 
@@ -354,7 +353,7 @@
 	int rows = MIN(amount, (([_tableView numberOfSections] - 1) - [_tableView indexPathForCell:cell].section));
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Next Update"
-									  withClubPhoto:((HONClubPhotoViewCell *)[_clubPhotos objectAtIndex:_index]).clubPhotoVO];
+									  withClubPhoto:cell.clubPhotoVO];
 	
 	_index = MIN(MAX(0, [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), [_clubPhotos count] - 1);
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:YES];

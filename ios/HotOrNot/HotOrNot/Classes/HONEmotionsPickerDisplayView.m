@@ -10,6 +10,8 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView.h"
 #import "PicoSticker.h"
 
 #import "HONEmotionsPickerDisplayView.h"
@@ -32,6 +34,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
 @property (nonatomic, strong) HONTableViewBGView *bgView;
+@property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
@@ -195,19 +198,58 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	[imageView setTag:[_emotions count]];
 	[_emotionHolderView addSubview:imageView];
 	
-	
-//	if (emotionVO.picoSticker == nil) {
-		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
-		imageLoadingView.frame = imageView.frame;
-		imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, - 22.0, - 22.0);
-		imageLoadingView.alpha = 0.667;
-		[imageLoadingView setTag:[_emotions count]];
-		[imageLoadingView startAnimating];
-		[_loaderHolderView addSubview:imageLoadingView];
-	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
+	imageLoadingView.frame = imageView.frame;
+	imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, - 22.0, - 22.0);
+	imageLoadingView.alpha = 0.667;
+	[imageLoadingView setTag:[_emotions count]];
+	[imageLoadingView startAnimating];
+	[_loaderHolderView addSubview:imageLoadingView];
+
+//			_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
+//			_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
+	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
+	if (emotionVO.imageType == HONEMotionImageTypeGIF) {
+//			_animatedImageView = [[FLAnimatedImageView alloc] init];
+//			_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+//			_animatedImageView.clipsToBounds = YES;
+		
+		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+		animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+		animatedImageView.contentMode = UIViewContentModeScaleAspectFit;
+		animatedImageView.clipsToBounds = YES;
+		[imageView addSubview:animatedImageView];
+		
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//		NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
+//		NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
+//		NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
+		NSURL *url1 = [NSURL URLWithString:emotionVO.largeImageURL];
+			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url1]];
+//			dispatch_async(dispatch_get_main_queue(), ^{
+		animatedImageView.animatedImage = animatedImage;
+		
+		[UIView animateWithDuration:0.250 delay:0.125
+			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+		 
+						 animations:^(void) {
+							 imageView.alpha = 1.0;
+							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+						 } completion:^(BOOL finished) {
+							 [self _updateDisplayWithCompletion:nil];
+							 
+							 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
+							 [loadingView stopAnimating];
+							 [loadingView removeFromSuperview];
+						 }];
+//				 });
+		});
+		
+	} else if (emotionVO.imageType == HONEMotionImageTypePNG) {
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		};
-	
+		
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			
@@ -233,6 +275,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 						 placeholderImage:nil
 								  success:imageSuccessBlock
 								  failure:imageFailureBlock];
+	}
+	
+	
+//	if (emotionVO.picoSticker == nil) {
+	
+	
 //
 //	} else {
 //	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];

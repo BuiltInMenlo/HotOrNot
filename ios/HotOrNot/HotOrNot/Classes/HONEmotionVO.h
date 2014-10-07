@@ -9,6 +9,11 @@
 #import "PCContent.h"
 #import "PicoSticker.h"
 
+typedef NS_ENUM(NSInteger, HONEmotionImageType) {
+	HONEMotionImageTypePNG = 0,
+	HONEMotionImageTypeGIF = 1
+};
+
 @interface HONEmotionVO : NSObject
 + (HONEmotionVO *)emotionWithDictionary:(NSDictionary *)dictionary;
 
@@ -26,5 +31,6 @@
 @property (nonatomic, retain) PicoSticker *picoSticker;
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic) CGFloat price;
+@property (nonatomic) HONEmotionImageType imageType;
 @property (nonatomic) BOOL isFree;
 @end

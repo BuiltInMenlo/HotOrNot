@@ -11,6 +11,8 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView.h"
 #import "PicoSticker.h"
 
 #import "HONClubPhotoViewCell.h"
@@ -29,6 +31,7 @@
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
+@property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -84,6 +87,26 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 							  success:imageSuccessBlock
 							  failure:imageFailureBlock];
 	
+	
+	
+	if (!_animatedImageView) {
+		_animatedImageView = [[FLAnimatedImageView alloc] init];
+//		_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
+		_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+//		_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
+		_animatedImageView.clipsToBounds = YES;
+	}
+	
+	_animatedImageView.frame = CGRectOffset(imageView.frame, 0.0, 160);
+	[self.contentView addSubview:_animatedImageView];
+	
+//	NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
+//	NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
+	NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
+	NSData *data1 = [NSData dataWithContentsOfURL:url1];
+	FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data1];
+	_animatedImageView.animatedImage = animatedImage1;
+
 	
 	CGSize maxSize = CGSizeMake(296.0, 24.0);
 	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize

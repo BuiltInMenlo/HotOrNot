@@ -10,6 +10,9 @@
 
 #import "UIImageView+AFNetworking.h"
 
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView.h"
+
 #import "HONEmoticonPickerItemView.h"
 #import "HONImageLoadingView.h"
 
@@ -17,13 +20,14 @@
 //const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 
 const CGRect kNormalFrame = {0.0f, 0.0f, 64.0f, 64.0f};
-const CGRect kActiveFrame = {-4.0f, -4.0f, 72.0f, 72.0f};
+const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
 @property (nonatomic, strong) PicoSticker *picoSticker;
 @property (nonatomic, strong) UIImageView *selectedImageView;
 @property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic) BOOL isSelected;
 @end
@@ -46,8 +50,34 @@ const CGRect kActiveFrame = {-4.0f, -4.0f, 72.0f, 72.0f};
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
-//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
-		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
+		NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
+		if (_emotionVO.imageType == HONEMotionImageTypeGIF) {
+			if (!_animatedImageView) {
+				_animatedImageView = [[FLAnimatedImageView alloc] init];
+//				_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
+				_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+//				_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
+				_animatedImageView.clipsToBounds = YES;
+			}
+			
+			_animatedImageView.frame = _imageView.frame;
+			[_imageView addSubview:_animatedImageView];
+			
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//			NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
+//			NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
+//			NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
+			NSURL *url1 = [NSURL URLWithString:_emotionVO.largeImageURL];
+			NSData *data1 = [NSData dataWithContentsOfURL:url1];
+			FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data1];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+				
+			_animatedImageView.animatedImage = animatedImage1;
+				});
+			});
+		} else if (_emotionVO.imageType == HONEMotionImageTypePNG)
+			[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		selectButton.frame = _imageView.frame;
@@ -77,7 +107,7 @@ const CGRect kActiveFrame = {-4.0f, -4.0f, 72.0f, 72.0f};
 //						 NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
 						 
 						 [UIView animateWithDuration:0.125 delay:0.000
-							  usingSpringWithDamping:0.875 initialSpringVelocity:0.333
+							  usingSpringWithDamping:0.805 initialSpringVelocity:0.333
 											 options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 						  
 										  animations:^(void) {

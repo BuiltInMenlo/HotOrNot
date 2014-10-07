@@ -222,13 +222,13 @@
 		
 		if (pickerView.stickerGroupType == groupType) {
 			pickerView.delegate = self;
-			pickerView.alpha = 0.5;
-			pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 32.0);
+			pickerView.alpha = 0.75;
+			pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
 			[_emotionsPickerHolderView addSubview:pickerView];
-			[UIView animateWithDuration:0.333 delay:0.025
-				 usingSpringWithDamping:0.800 initialSpringVelocity:0.010
+			[UIView animateWithDuration:0.333 delay:0.000
+				 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
 								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
-								 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -32.0);
+								 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -12.0);
 								 pickerView.alpha = 1.0;
 							 } completion:^(BOOL finished) {
 							 }];
