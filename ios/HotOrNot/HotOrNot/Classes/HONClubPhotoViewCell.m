@@ -172,12 +172,12 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	participantsLabel.text = [NSString stringWithFormat:@"%d/%d", 1 + [_clubVO.activeMembers count], [_clubVO.pendingMembers count]];
 //	[self.contentView addSubview:participantsLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 33.0, 150.0, 30.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:24];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
-	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+//	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
+//	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
 	[self.contentView addSubview:timeLabel];

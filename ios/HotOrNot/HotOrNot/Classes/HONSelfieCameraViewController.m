@@ -22,6 +22,7 @@
 #import "HONSelfieCameraViewController.h"
 #import "HONCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
+#import "HONStoreProductsViewController.h"
 #import "HONStatusUpdateSubmitViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
@@ -428,6 +429,14 @@
 	
 	_isPushing = YES;
 	[self _modifySubmitParamsAndSubmit:subjects];
+}
+
+- (void)cameraPreviewViewShowStore:(HONSelfieCameraPreviewView *)previewView {
+	NSLog(@"[*:*] cameraPreviewViewShowStore:");
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStoreProductsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

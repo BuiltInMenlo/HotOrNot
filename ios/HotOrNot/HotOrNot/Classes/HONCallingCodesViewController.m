@@ -61,7 +61,7 @@
 
 	
 	_segmentedCountries = [self _populateSegmentedDictionary];
-	[_tableView reloadData];
+	[self _didFinishDataRefresh];
 }
 
 
@@ -228,6 +228,14 @@
 	}
 	
 	_countryVO = (viewCell.isSelected) ? viewCell.countryVO : nil;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
 }
 
 

@@ -55,6 +55,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emotions = [NSMutableArray array];
 		
 		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
+		_previewImageView.backgroundColor = [UIColor colorWithRed:0.922 green:0.596 blue:0.463 alpha:1.0];
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 0.0, -100.0);
 		[self addSubview:_previewImageView];
 		
@@ -65,9 +66,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_bgView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
 		[_bgView setYOffset:-144.0];
 		_bgView.hidden = NO;
-		[self addSubview:_bgView];
+		//[self addSubview:_bgView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 65.0, 320.0, kEmotionNormalFrame.size.height)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0, 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 		_scrollView.showsHorizontalScrollIndicator = NO;
@@ -93,7 +94,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
 //		[self addSubview:fullscreenButton];
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(258.0, 227.0, 49.0, 37.0)];
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(258.0, 296.0, 49.0, 37.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButton_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
 		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -19.0, 49.0, 86.0)]];
@@ -209,7 +210,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
 //			_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
 //			_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
-	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
+//	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 		_animatedImageView = [[FLAnimatedImageView alloc] init];
 		_animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);

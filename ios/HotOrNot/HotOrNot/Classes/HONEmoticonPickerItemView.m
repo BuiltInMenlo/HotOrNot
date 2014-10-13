@@ -50,7 +50,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
-		NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
+//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
 		if (_emotionVO.imageType == HONEmotionImageTypeGIF) {
 			if (!_animatedImageView) {
 				_animatedImageView = [[FLAnimatedImageView alloc] init];

@@ -9,7 +9,7 @@
 #import "HONEmotionVO.h"
 
 #define COLS_PER_ROW	4
-#define ROWS_PER_PAGE	3
+#define ROWS_PER_PAGE	2
 
 @class HONEmotionsPickerView;
 @protocol HONEmotionsPickerViewDelegate <NSObject>

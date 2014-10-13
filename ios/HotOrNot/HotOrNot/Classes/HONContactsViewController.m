@@ -412,11 +412,11 @@
 }
 
 - (void)_promptForAddressBookPermission {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to your contacts?")
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to contacts?")
 														message:nil
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-											  otherButtonTitles:@"Yes", nil];
+											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 	[alertView setTag:0];
 	[alertView show];
 }

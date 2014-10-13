@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
 #import <Social/SLServiceTypes.h>
+#import <StoreKit/StoreKit.h>
 #import <sys/utsname.h>
 
 #import <FacebookSDK/FacebookSDK.h>
@@ -747,11 +748,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
 									 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	
+	[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
+//	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
+
+	
 #ifdef FONTS
 	[self _showFonts];
 #endif
-//	[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
-//	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
+
 	
 	return (YES);
 }

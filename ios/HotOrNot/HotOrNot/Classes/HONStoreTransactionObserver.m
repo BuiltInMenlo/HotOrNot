@@ -10,7 +10,10 @@
 
 @implementation HONStoreTransactionObserver
 -(void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
+	NSLog(@"[*:*] paymentQueue:(%@) [*:*]", queue.description);
+	
 	for (SKPaymentTransaction *transaction in transactions) {
+		NSLog(@"      transaction:(%@) [*:*]", transaction.description);
 		if (transaction.transactionState == SKPaymentTransactionStateFailed) {
 			[self failedTransaction:transaction];
 			
@@ -25,6 +28,8 @@
 }
 
 -(void)failedTransaction:(SKPaymentTransaction *)transaction {
+	NSLog(@"[*:*] failedTransaction:(%@) [*:*]", transaction.description);
+	
 	if (transaction.error.code != SKErrorPaymentCancelled) {
 		[[[UIAlertView alloc] initWithTitle:@"Failed Transaction"
 									message:transaction.error.description
@@ -37,6 +42,8 @@
 }
 
 -(void)restoreTransaction:(SKPaymentTransaction *)transaction {
+	NSLog(@"[*:*] restoreTransaction:(%@) [*:*]", transaction.description);
+	
 	//If you want to save the transaction
 	// [self recordTransaction: transaction];
 	
@@ -51,6 +58,8 @@
 
 	
 -(void)completeTransaction:(SKPaymentTransaction *)transaction {
+	NSLog(@"[*:*] completeTransaction:(%@) [*:*]", transaction.description);
+	
 	//If you want to save the transaction
 	//[self recordTransaction: transaction];
 	

@@ -104,12 +104,12 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
-	NSArray *assetNames = @[@"popularTab",
-							@"emojiTab",
+	NSArray *assetNames = @[@"emojiTab",
+							@"stickersTab",
 							@"quotesTab",
-							@"stickersTab"];
+							@"storeTab"];
 
-	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 290.0, 320.0, 241.0)];
+	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 221.0, 320.0, 221.0)];
 	[self addSubview:_emotionsPickerHolderView];
 	
 	_tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0)];
@@ -117,7 +117,7 @@
 	[self addSubview:_tabButtonsHolderView];
 
 	for (HONStickerGroupType i=HONStickerGroupTypeStickers; i<=HONStickerGroupTypeObjects; i++) {
-		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 241.0) asEmotionGroupType:i];
+		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 221.0) asEmotionGroupType:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -138,22 +138,22 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Compose" asLightStyle:YES];
 	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	[self addSubview:_headerView];
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_closeButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButton_nonActive"] forState:UIControlStateNormal];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButton_Active"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_closeButton];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_Active"] forState:UIControlStateHighlighted];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_nextButton];
 	
@@ -196,8 +196,6 @@
 		[btn setSelected:btn.tag == button.tag];
 	}];
 	
-//	[button setSelected:YES];
-	
 	HONStickerGroupType groupType = button.tag;
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									 withProperties:@{@"index"	: [@"" stringFromInt:groupType]}];
@@ -221,18 +219,23 @@
 		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
 		
 		if (pickerView.stickerGroupType == groupType) {
-			pickerView.delegate = self;
-			pickerView.alpha = 0.75;
-			pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
-			[_emotionsPickerHolderView addSubview:pickerView];
-			[UIView animateWithDuration:0.333 delay:0.000
-				 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
-								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
-								 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -12.0);
-								 pickerView.alpha = 1.0;
-							 } completion:^(BOOL finished) {
-							 }];
+			if (pickerView.stickerGroupType == HONStickerGroupTypeObjects) {
+				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowStore:)])
+					[self.delegate cameraPreviewViewShowStore:self];
 			
+			} else {
+				pickerView.delegate = self;
+				pickerView.alpha = 0.75;
+				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
+				[_emotionsPickerHolderView addSubview:pickerView];
+				[UIView animateWithDuration:0.333 delay:0.000
+					 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
+									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
+									 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -12.0);
+									 pickerView.alpha = 1.0;
+								 } completion:^(BOOL finished) {
+								 }];
+			}
 		}
 	}];
 }
@@ -243,29 +246,17 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
 										withEmotion:emotionVO];
 	
-//	if (emotionVO != nil) {
-//		[_selectedEmotions removeObject:emotionVO];
-//		[_subjectNames removeObject:emotionVO.emotionName];//] inRange:NSMakeRange([_subjectNames count] - 1, 1)];
-		
-//		if ([_selectedEmotions count] > 0)
-//			[_selectedEmotions removeLastObject];
-//
-		if ([_subjectNames count] > 0)
-			[_subjectNames removeLastObject];
-	
-		if ([_subjectNames count] == 0) {
-//			[_selectedEmotions removeAllObjects];
-			
-			[_subjectNames removeAllObjects];
-			_subjectNames = nil;
-			_subjectNames = [NSMutableArray array];
-//			[_emotionsDisplayView flushEmotions];
+	if ([_subjectNames count] > 0)
+		[_subjectNames removeLastObject];
+
+	if ([_subjectNames count] == 0) {
+		[_subjectNames removeAllObjects];
+		_subjectNames = nil;
+		_subjectNames = [NSMutableArray array];
 		}
 	
 	[_emotionsDisplayView removeLastEmotion];
-		
-		[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @""];
-//	}
+	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Compose"];
 }
 
 
@@ -472,6 +463,28 @@
 			[self.delegate cameraPreviewViewShowInviteContacts:self];
 	}];
 }
+
+
+#pragma mark - ProductRequest Delegates
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
+	NSLog(@"[*:*] productsRequest:(%@) didReceiveResponse:(%@) [*:*]", request.description, response.description);
+	
+	NSArray *skProducts = response.products;
+	SKProduct *product = (SKProduct *)[skProducts firstObject];
+	SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:product];
+	[[SKPaymentQueue defaultQueue] addPayment:myPayment];
+}
+
+
+#pragma mark - StoreKitRequest Delegates
+- (void)requestDidFinish:(SKRequest *)request {
+	NSLog(@"[*:*] requestDidFinish:(%@) [*:*]", request.description);
+}
+
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+	NSLog(@"[*:*] productsRequest:(%@) didFailWithError:(%@) [*:*]", request.description, error.description);
+}
+
 
 
 @end

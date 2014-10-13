@@ -138,7 +138,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
 	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];
 	
-	NSString *subtitleCaption = @"» ";
+	NSString *subtitleCaption = @">> ";
 	NSMutableArray *uniqueParticipants = [NSMutableArray array];
 	[_clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
@@ -172,7 +172,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 //	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
 	
 	_titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption];
-	[_titleLabel setFont:[[[HONFontAllocator alloc] helveticaNeueFontMedium] fontWithSize:18] range:[titleCaption rangeOfString:creatorName]];
+	[_titleLabel setFont:[[[HONFontAllocator alloc] helveticaNeueFontRegular] fontWithSize:18] range:[titleCaption rangeOfString:creatorName]];
 	_subtitleLabel.text = subtitleCaption;
 	
 	_titleLabel.frame = CGRectInset(_titleLabel.frame, -18.0, 0.0);
@@ -193,7 +193,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	HONEmotionVO *emotionVO = (HONEmotionVO *)[_emotionVOs firstObject];
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
-		NSLog(@"GIF **** EMOTION STICKER:[%@]", emotionVO.smallImageURL);
+//		NSLog(@"GIF **** EMOTION STICKER:[%@]", emotionVO.smallImageURL);
 //		if (!_animatedImageView) {
 			_animatedImageView = [[FLAnimatedImageView alloc] init];
 			_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame

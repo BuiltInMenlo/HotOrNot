@@ -1,0 +1,22 @@
+//
+//  HONStoreProductViewCell.h
+//  HotOrNot
+//
+//  Created by BIM  on 10/7/14.
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
+//
+
+#import "HONTableViewCell.h"
+#import "HONStoreProductVO.h"
+
+@class HONStoreProductViewCell;
+@protocol HONStoreProductCellDelegate <NSObject>
+- (void)storeProductCell:(HONStoreProductViewCell *)cell purchaseStoreItem:(HONStoreProductVO *)storeItemVO;
+@end
+
+@interface HONStoreProductViewCell : HONTableViewCell
+@property (nonatomic, retain) HONStoreProductVO *storeProductVO;
+@property (nonatomic) BOOL isPurchased;
+@property (nonatomic, assign) id <HONStoreProductCellDelegate> delegate;
+
+@end
