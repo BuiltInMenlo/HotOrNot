@@ -246,6 +246,13 @@
 
 - (void)_didFinishDataRefresh {
 	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	_recentClubs = [[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
 		HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
 		HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
@@ -265,7 +272,7 @@
 		[_shownDeviceContacts removeObject:vo];
 	}];
 	
-	_emptyContactsBGView.hidden = ([_inAppUsers count] > 0 || [_recentClubs count] > 0);
+	_emptyContactsBGView.hidden = ([_recentClubs count] > 0);
 	_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
 	
 	if (_progressHUD != nil) {
@@ -372,7 +379,7 @@
 - (void)_goCreateChallenge {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goTableBGSelected:(id)sender {

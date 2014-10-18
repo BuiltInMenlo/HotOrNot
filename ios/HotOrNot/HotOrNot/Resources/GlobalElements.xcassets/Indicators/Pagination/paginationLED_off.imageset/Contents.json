@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "whitePaginationDot.png"
+      "filename" : "grayDotPagination.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "whitePaginationDot@2x.png"
+      "filename" : "grayDotPagination@2x.png"
     },
     {
       "idiom" : "universal",

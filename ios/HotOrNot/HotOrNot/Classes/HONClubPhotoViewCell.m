@@ -18,6 +18,7 @@
 #import "HONImageLoadingView.h"
 
 @interface HONClubPhotoViewCell ()
+@property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -29,6 +30,7 @@
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
+@property (nonatomic, strong) NSTimer *tintTimer;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -39,7 +41,7 @@
 const CGRect kEmotionInitFrame = {80.0f, 80.0f, 53.0f, 53.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 212.0f, 212.0f};
 const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
-const CGSize kStickerPaddingSize = {16.0f, 16.0f};
+const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -62,30 +64,56 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
 	
-	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
-	[self.contentView addSubview:_imageLoadingView];
+	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location == NSNotFound) {
+		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
+		[self.contentView addSubview:_imageLoadingView];
+	}
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-	[self.contentView addSubview:imageView];
-	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		imageView.image = image;
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[imageView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
-	};
-	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
-													   cachePolicy:kOrthodoxURLCachePolicy
-												   timeoutInterval:[HONAppDelegate timeoutInterval]]
-					 placeholderImage:nil
-							  success:imageSuccessBlock
-							  failure:imageFailureBlock];
+	_imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
+	[self.contentView addSubview:_imgView];
 	
 	
-	
+	//NSLog(@"IMG PREFIX:[%@]", _clubPhotoVO.imagePrefix);
+	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
+		[self _changeTint];
+		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
+		
+	} else {
+		if (_clubPhotoVO.photoType == HONClubPhotoTypeGIF) {
+			FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+			animatedImageView.frame = self.contentView.frame;
+			animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // fills frame w/ proprotions
+			animatedImageView.clipsToBounds = YES;
+			[_imgView addSubview:animatedImageView];
+			
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				NSURL *url = [NSURL URLWithString:@"https://cdn.picocandy.com/1df5644d9e94/t/54330ce5ab4b8b0468000166/small.gif"];//[_clubPhotoVO.imagePrefix stringByAppendingString:[kSnapLargeSuffix stringByReplacingOccurrencesOfString:@".jpg" withString:@"gif"]]];
+				NSLog(@"IMG URL:[%@]", url);
+				FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					animatedImageView.animatedImage = animatedImage1;
+				});
+			});
+			
+		} else {
+			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+				_imgView.image = image;
+			};
+			
+			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+				[_imgView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
+				[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+			};
+			
+			[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
+																cachePolicy:kOrthodoxURLCachePolicy
+															timeoutInterval:[HONAppDelegate timeoutInterval]]
+							  placeholderImage:nil
+									   success:imageSuccessBlock
+									   failure:imageFailureBlock];
+		}
+	}
 	
 	CGSize maxSize = CGSizeMake(296.0, 24.0);
 	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize
@@ -121,14 +149,14 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 	_scrollView.showsVerticalScrollIndicator = NO;
 	_scrollView.alwaysBounceHorizontal = YES;
 	_scrollView.delegate = self;
-	_scrollView.pagingEnabled = NO;
-	_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
+	_scrollView.pagingEnabled = YES;
+//	_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 	[self.contentView addSubview:_scrollView];
 	
 	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
 		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
-		emotionView.frame = CGRectOffset(emotionView.frame, cnt * (kEmotionLoadedFrame.size.width + 16.0), 0.0);
+		emotionView.frame = CGRectOffset(emotionView.frame, _emotionInsetAmt + (cnt * (kEmotionLoadedFrame.size.width + kStickerPaddingSize.width)), 0.0);
 		[_scrollView addSubview:emotionView];
 		[_emotionViews addObject:emotionView];
 		[_emotions addObject:emotionVO];
@@ -141,11 +169,11 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 		cnt++;
 	}
 	
-	[_scrollView setContentOffset:CGPointMake(-_scrollView.contentInset.left, 0.0) animated:NO];
+//	[_scrollView setContentOffset:CGPointMake(-_scrollView.contentInset.left, 0.0) animated:NO];
 	_scrollView.contentSize = CGSizeMake(([_emotions count] == 1) ? _scrollView.frame.size.width : MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width), _scrollView.contentSize.height);
 	
-	if ([_emotions count] == 1)
-		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _scrollView.contentInset.left, 0.0, -_scrollView.contentInset.right);
+//	if ([_emotions count] == 1)
+//		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _scrollView.contentInset.left, 0.0, -_scrollView.contentInset.right);
 	
 	
 	
@@ -250,6 +278,17 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 
 
 #pragma mark - UI Presentation
+- (void)_changeTint {
+	CGFloat hue = (arc4random() % 256 / 256.0);
+	CGFloat saturation = (arc4random() % 128 / 256.0) + 0.5;
+	CGFloat brightness = (arc4random() % 128 / 256.0) + 0.5;
+	UIColor *color = [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
+	
+	[UIView animateWithDuration:2.0 animations:^(void) {
+		_imgView.layer.backgroundColor = color.CGColor;
+	} completion:nil];
+}
+
 - (void)_transitionToCaption:(NSString *)caption withCompletion:(void (^)(BOOL finished))completion {
 	
 	if ([caption isEqualToString:_emotionLabel.text]) {
@@ -373,7 +412,7 @@ const CGSize kStickerPaddingSize = {16.0f, 16.0f};
 								 } completion:^(BOOL finished) {
 								 }];
 			});
-		});;
+		});
 	}
 	
 	return (holderView);

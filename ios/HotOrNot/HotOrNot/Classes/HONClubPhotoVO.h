@@ -6,6 +6,14 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+
+typedef NS_ENUM(NSInteger, HONClubPhotoType) {
+	HONClubPhotoTypePNG = 0,
+	HONClubPhotoTypeJPG,
+	HONClubPhotoTypeGIF
+};
+
+
 @interface HONClubPhotoVO : NSObject
 + (HONClubPhotoVO *)clubPhotoWithDictionary:(NSDictionary *)dictionary;
 @property (nonatomic, retain) NSDictionary *dictionary;
@@ -20,5 +28,6 @@
 @property (nonatomic, retain) NSArray *subjectNames;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic) int score;
+@property (nonatomic) HONClubPhotoType photoType;
 @end
 

@@ -140,6 +140,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		emojiImageView.image = image;
+		_emotionVO.image = image;
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			emojiImageView.alpha = 1.0;

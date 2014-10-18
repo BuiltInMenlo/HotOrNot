@@ -172,7 +172,7 @@ static HONStickerAssistant *sharedInstance = nil;
 			[[NHThreadThis backgroundThis] doThis:^{
 				NSMutableArray *stickers = [NSMutableArray array];
 				for (PCContent *content in contentGroup.contents) {
-//					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
+					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
 					[stickers addObject:@{@"id"		: content.content_id,
 										  @"cg_id"	: contentGroupID,
 										  @"name"	: content.name,

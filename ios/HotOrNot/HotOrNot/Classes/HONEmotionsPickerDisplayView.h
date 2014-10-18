@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView.h"
+
 #import "HONEmotionVO.h"
 
 extern const CGSize kMaxLabelSize;
@@ -24,6 +27,7 @@ extern const CGSize kMaxLabelSize;
 - (void)removeLastEmotion;
 - (void)flushEmotions;
 - (void)updatePreview:(UIImage *)previewImage;
+- (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)imageView;
 
 @property (nonatomic, assign) id <HONEmotionsPickerDisplayViewDelegate> delegate;
 @end

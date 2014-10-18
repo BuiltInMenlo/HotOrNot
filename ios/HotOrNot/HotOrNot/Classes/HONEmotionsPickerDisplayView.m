@@ -10,8 +10,6 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
-#import "FLAnimatedImage.h"
-#import "FLAnimatedImageView.h"
 #import "PicoSticker.h"
 
 #import "HONEmotionsPickerDisplayView.h"
@@ -33,6 +31,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
+@property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) HONTableViewBGView *bgView;
 @property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic) CGFloat emotionInsetAmt;
@@ -55,13 +54,16 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emotions = [NSMutableArray array];
 		
 		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
-		_previewImageView.backgroundColor = [UIColor colorWithRed:0.922 green:0.596 blue:0.463 alpha:1.0];
+//		_previewImageView.backgroundColor = [UIColor colorWithRed:0.922 green:0.596 blue:0.463 alpha:1.0];
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 0.0, -100.0);
 		[self addSubview:_previewImageView];
 		
+		//[self _changeTint];
+		//_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
+		
 		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"previewGradient"]];
 		_previewGradientImageView.hidden = YES;
-		[self addSubview:_previewGradientImageView];
+//		[self addSubview:_previewGradientImageView];
 		
 		_bgView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
 		[_bgView setYOffset:-144.0];
@@ -94,12 +96,11 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
 //		[self addSubview:fullscreenButton];
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(258.0, 296.0, 49.0, 37.0)];
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(262.0, 296.0, 44.0, 44.0)];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButton_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
 		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -19.0, 49.0, 86.0)]];
 		[self addSubview:_previewThumbImageView];
-		
 		
 		[[HONViewDispensor sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
@@ -166,10 +167,18 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	_previewImageView.image = previewImage;
 	_previewGradientImageView.hidden = NO;
 	
-	_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
+//	_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButtonB_nonActive"];
 //	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
 }
 
+- (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)imageView {
+	FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+	animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+	animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+	animatedImageView.clipsToBounds = YES;
+	animatedImageView.animatedImage = imageView.animatedImage;
+	[_previewImageView addSubview:animatedImageView];
+}
 
 #pragma mark - Navigation
 - (void)_goCamera {
@@ -178,12 +187,26 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 }
 
 - (void)_goFullScreen {
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayViewGoFullScreen:)])
+	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayViewGoFullScreen:)]) {
 		[self.delegate emotionsPickerDisplayViewGoFullScreen:self];
+		
+		
+	}
 }
 
 
 #pragma mark - UI Presentation
+- (void)_changeTint {
+	CGFloat hue = (arc4random() % 256 / 256.0);
+	CGFloat saturation = (arc4random() % 128 / 256.0) + 0.5;
+	CGFloat brightness = (arc4random() % 128 / 256.0) + 0.5;
+	UIColor *color = [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
+	
+	[UIView animateWithDuration:2.0 animations:^(void) {
+		_previewImageView.layer.backgroundColor = color.CGColor;
+	} completion:nil];
+}
+
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
 	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, 0.0, [_emotions count] * _emotionSpacingSize.width, kEmotionNormalFrame.size.height);
 	_loaderHolderView.frame = _emotionHolderView.frame;

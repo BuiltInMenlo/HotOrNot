@@ -54,7 +54,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		
 		_subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 28.0, _titleLabel.frame.size.width, 14.0)];
 //		_subtitleLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
-		_subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegularItalic] fontWithSize:11];
+		_subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegularItalic] fontWithSize:12];
 		_subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		[self.contentView addSubview:_subtitleLabel];
 		
@@ -91,7 +91,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 //										 options:NSStringDrawingTruncatesLastVisibleLine
 //									  attributes:@{NSFontAttributeName:_titleLabel.font}
 //										 context:nil].size;
-	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, _maxTitleLabelSize.width, _titleLabel.frame.size.height);
+	CGRect maxFrame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 10.0, _maxTitleLabelSize.width, _titleLabel.frame.size.height);
 //	CGRect reqFrame = CGRectMake(_titleLabel.frame.origin.x - 7.0, _titleLabel.frame.origin.y + 10.0, MIN(_titleLabel.frame.size.width, size.width), MIN(_titleLabel.frame.size.height, size.height));
 	
 	_titleLabel.frame = maxFrame;

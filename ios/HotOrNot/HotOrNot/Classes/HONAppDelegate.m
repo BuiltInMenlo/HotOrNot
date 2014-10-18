@@ -456,6 +456,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"emotion_groups"] forKey:@"emotion_groups"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"store"] forKey:@"store"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
@@ -748,7 +749,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
 									 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	
-	[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
+	//[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
 
 	
@@ -850,7 +851,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Became Active"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Became Active"];
 
 	
 	if (_isFromBackground) {
@@ -1527,7 +1528,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
 //		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		if (buttonIndex == 1) {
-			[self.tabBarController setSelectedIndex:1];
+			[self.tabBarController setSelectedIndex:0];
 			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
 		

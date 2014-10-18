@@ -16,6 +16,7 @@
 - (void)cameraPreviewViewShowCamera:(HONSelfieCameraPreviewView *)previewView;
 - (void)cameraPreviewViewCancel:(HONSelfieCameraPreviewView *)previewView;
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView;
+- (void)cameraPreviewView:(HONSelfieCameraPreviewView *)previewView selectedBackground:(NSString *)url;
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects;
 @optional
 - (void)cameraPreviewViewShowStore:(HONSelfieCameraPreviewView *)previewView;

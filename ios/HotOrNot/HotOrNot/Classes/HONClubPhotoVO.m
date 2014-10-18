@@ -23,6 +23,8 @@
 	
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.challengeID = [[dictionary objectForKey:@"challenge_id"] intValue];
+	vo.photoType = ([[dictionary objectForKey:@"img"] rangeOfString:@".gif"].location != NSNotFound) ? HONClubPhotoTypeGIF : ([[dictionary objectForKey:@"img"] rangeOfString:@".png"].location != NSNotFound) ? HONClubPhotoTypePNG : HONClubPhotoTypeJPG;
+	
 	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];

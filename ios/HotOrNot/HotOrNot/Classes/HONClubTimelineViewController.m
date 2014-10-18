@@ -65,6 +65,7 @@
 		_clubPhotoID = 0;
 		_index = index;
 		_clubPhotos = _clubVO.submissions;
+		_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
 		
 		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", _clubVO.dictionary);
 	}
@@ -137,7 +138,8 @@
 		_progressHUD = nil;
 	}
 	
-	_titleLabel.text = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username;
+	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
+	_titleLabel.text = _clubPhotoVO.username;
 	
 	[UIView animateWithDuration:0.25 animations:^(void){
 		_emptySetView.alpha = (float)([_clubPhotos count] == 0);
@@ -215,7 +217,7 @@
 	
 	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 200.0, 30.0)];
 	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
-	_titleLabel.textColor = [UIColor whiteColor];
+	_titleLabel.textColor = [UIColor blackColor];
 	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 	_titleLabel.shadowColor = [UIColor colorWithWhite:0.33 alpha:0.25];
 	_titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -224,15 +226,15 @@
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(2.0, 13.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"timelineBackButton_Active"] forState:UIControlStateHighlighted];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	replyButton.frame = CGRectMake(272, 13.0, 44.0, 44.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:replyButton];
 	
@@ -292,8 +294,8 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
 		
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	[self presentViewController:navigationController animated:NO completion:^(void) {
+//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	}];
 }
 

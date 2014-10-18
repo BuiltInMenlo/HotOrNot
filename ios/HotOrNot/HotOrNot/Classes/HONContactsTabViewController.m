@@ -134,6 +134,7 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	_tableView.alpha = 1.0;
 	
 //	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {

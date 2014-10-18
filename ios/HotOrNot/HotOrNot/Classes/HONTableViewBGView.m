@@ -41,7 +41,7 @@
 		_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		_label.backgroundColor = [UIColor clearColor];
 		_label.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:19];
-		_label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_label.textColor = [UIColor blackColor];
 		_label.numberOfLines = 2;
 		_label.attributedText = [[NSAttributedString alloc] initWithString:_caption attributes:@{NSParagraphStyleAttributeName	: _paragraphStyle}];
 		[_label setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:_label.font.pointSize] range:range];

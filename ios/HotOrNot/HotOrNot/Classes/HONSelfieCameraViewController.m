@@ -123,19 +123,22 @@
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
+	NSString *largeURL = [_filename stringByAppendingString:kSnapLargeSuffix];
+	NSString *tabURL = [_filename stringByAppendingString:kSnapLargeSuffix];
+	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+		_por1 = [[S3PutObjectRequest alloc] initWithKey:largeURL inBucket:@"hotornot-challenges"];
 		_por1.delegate = self;
-		_por1.contentType = @"image/jpeg";
+		_por1.contentType = @"image/gif";
 		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
 		[s3 putObject:_por1];
 		
-		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+		_por2 = [[S3PutObjectRequest alloc] initWithKey:tabURL inBucket:@"hotornot-challenges"];
 		_por2.delegate = self;
-		_por2.contentType = @"image/jpeg";
+		_por2.contentType = @"image/gif";
 		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
 		[s3 putObject:_por2];
 		
@@ -271,7 +274,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -344,7 +347,7 @@
 	self.imagePickerController = imagePickerController;
 	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
 		if (sourceType == UIImagePickerControllerSourceTypeCamera) {
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+//			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 		}
 	}];
 }
@@ -402,7 +405,14 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Open Camera"];
 	
 	_isBlurred = NO;
-	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Take Photo", @"Camera Roll", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
 }
 
 - (void)cameraPreviewViewCancel:(HONSelfieCameraPreviewView *)previewView {
@@ -410,7 +420,7 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Cancel"];
 	[self _cancelUpload];
-	[self dismissViewControllerAnimated:YES completion:^(void) {
+	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 }
 
@@ -437,6 +447,12 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStoreProductsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)cameraPreviewView:(HONSelfieCameraPreviewView *)previewView selectedBackground:(NSString *)url {
+	NSLog(@"[*:*] cameraPreviewViewShowStore:[%@]", url);
+	
+	_filename = url;
 }
 
 
@@ -484,28 +500,41 @@
 									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-		
-		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
-		
-		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-		self.imagePickerController.showsCameraControls = NO;
-		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-		self.imagePickerController.cameraViewTransform = CGAffineTransformScale(self.imagePickerController.cameraViewTransform, scale, scale);
-		self.imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		
-		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_cameraOverlayView.delegate = self;
-		
-		self.imagePickerController.cameraOverlayView = _cameraOverlayView;
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-		
-	} else {
+//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+//		
+//		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+//		
+//		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+//		self.imagePickerController.showsCameraControls = NO;
+//		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
+//		self.imagePickerController.cameraViewTransform = CGAffineTransformScale(self.imagePickerController.cameraViewTransform, scale, scale);
+//		self.imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+//		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+//		
+//		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_cameraOverlayView.delegate = self;
+//		
+//		self.imagePickerController.cameraOverlayView = _cameraOverlayView;
+//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+//		
+//	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
+//	}
+}
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		if (buttonIndex == 0) {
+			[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
+		
+		} else if (buttonIndex == 1) {
+			[self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+		}
 	}
 }
 

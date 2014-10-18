@@ -52,7 +52,7 @@
 
 - (id)initWithTitleUsingCartoGothic:(NSString *)title {
 	if ((self = [self initWithTitle:title])) {
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:19];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22];
 		_titleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 5.0);
 		_titleLabel.shadowOffset = CGSizeZero;
 		_titleLabel.shadowColor = [UIColor clearColor];

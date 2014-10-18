@@ -375,7 +375,7 @@ static const CGFloat kDetailsLabelFontSize = 16.f; // 12.f
 	label.opaque = NO;
 	label.backgroundColor = [UIColor clearColor];
 //	label.textColor = [UIColor whiteColor];
-	label.textColor = [UIColor grayColor];
+	label.textColor = [UIColor blackColor];
 	label.font = self.labelFont;
 	label.text = self.labelText;
 	[self addSubview:label];
@@ -387,7 +387,7 @@ static const CGFloat kDetailsLabelFontSize = 16.f; // 12.f
 	detailsLabel.opaque = NO;
 	detailsLabel.backgroundColor = [UIColor clearColor];
 //	detailsLabel.textColor = [UIColor whiteColor];
-	detailsLabel.textColor = [UIColor grayColor];
+	detailsLabel.textColor = [UIColor blackColor];
 	detailsLabel.numberOfLines = 0;
 	detailsLabel.font = self.detailsLabelFont;
 	detailsLabel.text = self.detailsLabelText;
@@ -530,6 +530,7 @@ static const CGFloat kDetailsLabelFontSize = 16.f; // 12.f
 #pragma mark BG Drawing
 
 - (void)drawRect:(CGRect)rect {
+	return;
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
@@ -719,6 +720,7 @@ static const CGFloat kDetailsLabelFontSize = 16.f; // 12.f
 #pragma mark - Drawing
 
 - (void)drawRect:(CGRect)rect {
+	return;
 	
 	CGRect allRect = self.bounds;
 	CGRect circleRect = CGRectInset(allRect, 2.0f, 2.0f);

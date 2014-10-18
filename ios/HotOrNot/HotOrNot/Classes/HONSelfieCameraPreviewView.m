@@ -32,6 +32,7 @@
 @property (nonatomic, strong) NSMutableArray *emotionsPickerButtons;
 @property (nonatomic, strong) UIView *emotionsPickerHolderView;
 @property (nonatomic, strong) UIView *tabButtonsHolderView;
+@property (nonatomic, strong) UIImageView *bgSelectImageView;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *closeButton;
@@ -81,12 +82,12 @@
 }
 
 - (void)updateProcessedImage:(UIImage *)image {
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButton_nonActive"] forState:UIControlStateNormal];
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButtonActive"] forState:UIControlStateHighlighted];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_Active"] forState:UIControlStateHighlighted];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	
-	[_headerView toggleLightStyle:YES];
+//	[_headerView toggleLightStyle:YES];
 	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 }
 
@@ -104,10 +105,10 @@
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
-	NSArray *assetNames = @[@"emojiTab",
+	NSArray *assetNames = @[@"topFreeTab",
 							@"stickersTab",
-							@"quotesTab",
-							@"storeTab"];
+							@"emojiTab",
+							@"bgTab"];
 
 	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 221.0, 320.0, 221.0)];
 	[self addSubview:_emotionsPickerHolderView];
@@ -132,28 +133,30 @@
 		[_tabButtonsHolderView addSubview:button];
 	}
 	
+	
+	
 	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
 	pickerView.delegate = self;
 	[_emotionsPickerHolderView addSubview:pickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Compose" asLightStyle:YES];
-	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Compose"];
+	//_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	[self addSubview:_headerView];
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_closeButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButton_nonActive"] forState:UIControlStateNormal];
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeLightButton_Active"] forState:UIControlStateHighlighted];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_closeButton];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextLightButton_Active"] forState:UIControlStateHighlighted];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_nextButton];
 	
@@ -219,11 +222,11 @@
 		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
 		
 		if (pickerView.stickerGroupType == groupType) {
-			if (pickerView.stickerGroupType == HONStickerGroupTypeObjects) {
-				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowStore:)])
-					[self.delegate cameraPreviewViewShowStore:self];
-			
-			} else {
+//			if (pickerView.stickerGroupType == HONStickerGroupTypeObjects) {
+//				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowStore:)])
+//					[self.delegate cameraPreviewViewShowStore:self];
+//			
+//			} else {
 				pickerView.delegate = self;
 				pickerView.alpha = 0.75;
 				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
@@ -235,7 +238,7 @@
 									 pickerView.alpha = 1.0;
 								 } completion:^(BOOL finished) {
 								 }];
-			}
+//			}
 		}
 	}];
 }
@@ -311,32 +314,6 @@
 
 
 #pragma mark - EmotionsPickerView Delegates
-- (void)emotionsPickerDisplayViewGoFullScreen:(HONEmotionsPickerDisplayView *)pickerDisplayView {
-	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
-	
-	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		UIButton *btn = (UIButton *)obj;
-		[btn setSelected:NO];
-	}];
-	
-	for (UIView *view in _emotionsPickerHolderView.subviews) {
-		((HONEmotionsPickerView *)view).delegate = nil;
-		[UIView animateWithDuration:0.333 delay:0.000
-			 usingSpringWithDamping:0.800 initialSpringVelocity:0.010
-							options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
-						 animations:^(void) {
-							 view.frame = CGRectOffset(view.frame, 0.0, 64.0);
-							 view.alpha = 0.0;
-						 } completion:^(BOOL finished) {
-							 view.frame = CGRectOffset(view.frame, 0.0, -64.0);
-							 [view removeFromSuperview];
-							 view.alpha = 1.0;
-						 }];
-	}
-}
-
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
@@ -358,10 +335,27 @@
 //		}
 //	});
 	
-	[_headerView transitionTitle:emotionVO.emotionName];
-	[_selectedEmotions addObject:emotionVO];
-	[_subjectNames addObject:emotionVO.emotionName];
-	[_emotionsDisplayView addEmotion:emotionVO];
+	if (emotionsPickerView.stickerGroupType == HONStickerGroupTypeObjects) {
+		NSString *imgURL = [NSString stringWithFormat:@"https://s3.amazonaws.com/hotornot-challenges/%@Large_640x1136.%@", emotionVO.emotionName, @"gif"];// (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"gif" : @"jpg"];
+		NSLog(@"imgURL:[%@]", imgURL);
+		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+		[_bgSelectImageView setImageWithURL:[NSURL URLWithString:imgURL]];
+		
+		if (emotionVO.imageType == HONEmotionImageTypeGIF)
+			[_emotionsDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
+		
+		else
+			[_emotionsDisplayView updatePreview:_bgSelectImageView.image];
+		
+		if ([self.delegate respondsToSelector:@selector(cameraPreviewView:selectedBackground:)])
+			[self.delegate cameraPreviewView:self selectedBackground:[[imgURL componentsSeparatedByString:@"/"] lastObject]];
+		
+	} else {
+		[_headerView transitionTitle:emotionVO.emotionName];
+		[_selectedEmotions addObject:emotionVO];
+		[_subjectNames addObject:emotionVO.emotionName];
+		[_emotionsDisplayView addEmotion:emotionVO];
+	}
 }
 
 //- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
@@ -426,6 +420,30 @@
 
 
 #pragma mark - EmotionsPickerDisplayView Delegates
+- (void)emotionsPickerDisplayViewGoFullScreen:(HONEmotionsPickerDisplayView *)pickerDisplayView {
+	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
+	
+	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		UIButton *btn = (UIButton *)obj;
+		[btn setSelected:NO];
+	}];
+	
+	for (UIView *view in _emotionsPickerHolderView.subviews) {
+		((HONEmotionsPickerView *)view).delegate = nil;
+		[UIView animateWithDuration:0.333 delay:0.000
+			 usingSpringWithDamping:0.800 initialSpringVelocity:0.010
+							options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
+						 animations:^(void) {
+							 view.frame = CGRectOffset(view.frame, 0.0, 64.0);
+						 } completion:^(BOOL finished) {
+							 view.frame = CGRectOffset(view.frame, 0.0, -64.0);
+							 [view removeFromSuperview];
+						 }];
+	}
+}
+
 - (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView {
 	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
 		[self.delegate cameraPreviewViewShowCamera:self];

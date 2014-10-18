@@ -199,7 +199,7 @@
 	_selectedUsers = [NSMutableArray array];
 	
 	[_headerView setTitle:NSLocalizedString(@"header_selectFriends", @"Select Friends")];
-	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
+	//_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	[_headerView removeBackground];
 	
 	_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 10.0, _tableView.frame.size.width, _tableView.frame.size.height + 10);
@@ -496,7 +496,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? ([_allDeviceContacts count] == 0 && [_inAppUsers count] == 0) ? @"No results" : @"Tap one or more" : (section == 3) ? ([_allDeviceContacts count] == 0 && [_inAppUsers count] == 0) ? @"No results" : @"Contacts" : @""]);
+	return ((section == 1) ? nil : [[HONTableHeaderView alloc] initWithTitle:(section == 2) ? ([_allDeviceContacts count] == 0 && [_inAppUsers count] == 0) ? @"No results" : @"Friends" : (section == 3) ? ([_allDeviceContacts count] == 0 && [_inAppUsers count] == 0) ? @"No results" : @"Contacts" : @""]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -533,7 +533,9 @@
 						
 						if ([vo.mobileNumber isEqualToString:altID] && [cell.caption rangeOfString:vo.fullName].location == 0) {
 							NSLog(@"********MERGE FOUND!!! [%d](%@)*********", cell.trivialUserVO.userID, vo.fullName);
-							[cell addSubtitleCaption:[NSString stringWithFormat:@" is “%@”", vo.fullName]];
+							[cell setCaption:vo.fullName];
+							[cell addSubtitleCaption:[NSString stringWithFormat:@"%@", cell.trivialUserVO.username]];
+							//[cell addSubtitleCaption:[NSString stringWithFormat:@"%@", vo.fullName]];
 							*stop = YES;
 						}
 					}];
@@ -557,7 +559,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 2) ? kOrthodoxTableHeaderHeight : 0.0f);
+	return ((section == 2 || section == 3) ? kOrthodoxTableHeaderHeight : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath {
