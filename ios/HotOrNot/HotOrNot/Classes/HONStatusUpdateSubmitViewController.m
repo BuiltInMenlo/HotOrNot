@@ -200,7 +200,6 @@
 	
 	[_headerView setTitle:NSLocalizedString(@"header_selectFriends", @"Select Friends")];
 	//_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
-	[_headerView removeBackground];
 	
 	_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 10.0, _tableView.frame.size.width, _tableView.frame.size.height + 10);
 	

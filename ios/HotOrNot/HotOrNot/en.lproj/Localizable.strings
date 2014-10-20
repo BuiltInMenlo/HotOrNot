@@ -161,7 +161,7 @@
 "try_again" = "Please try again or press the resend button";
 "invalid_msg" = "You cannot have spaces or / or ' in your username";
 "invalid_user" = "Invalid username";
-"allow_access" = "Allow Access to contacts?";
+"allow_access" = "Allow contact list access?";
 "ok_access" = "We need your OK to access the address book.";
 "tap_join" = "Join Selfieclub! http://sel.club username: %@";
 //"tap_join" = "Join my private club in @Selfieclub #selfieclub #appstore #googleplay\nhttp://joinselfie.club/%@/%@";
@@ -199,7 +199,7 @@
 "club_inviteSubText" = "You have been invited. Tap to join!";
 "register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
-"header_selectFriends" = "Select Friends";
+"header_selectFriends" = "Select";
 "empty_stickers" = "Select a sticker and\nbackground";
 "settings_legal" = "Legal";
 "settings_support" = "Support";

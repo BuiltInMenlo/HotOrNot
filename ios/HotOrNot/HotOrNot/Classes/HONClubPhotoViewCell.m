@@ -37,11 +37,10 @@
 @synthesize clubVO = _clubVO;
 @synthesize clubPhotoVO = _clubPhotoVO;
 
-
 const CGRect kEmotionInitFrame = {80.0f, 80.0f, 53.0f, 53.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 212.0f, 212.0f};
 const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
-const CGSize kStickerPaddingSize = {116.0f, 116.0f};
+const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -51,7 +50,6 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 - (id)init {
 	if ((self = [super init])) {
 		self.contentView.frame = [UIScreen mainScreen].bounds;
-		self.backgroundColor = [UIColor blackColor];
 	}
 	
 	return (self);
@@ -75,8 +73,8 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 	
 	//NSLog(@"IMG PREFIX:[%@]", _clubPhotoVO.imagePrefix);
 	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
-		[self _changeTint];
-		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
+//		[self _changeTint];
+//		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
 		
 	} else {
 		if (_clubPhotoVO.photoType == HONClubPhotoTypeGIF) {
@@ -99,6 +97,7 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 		} else {
 			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 				_imgView.image = image;
+//				[self _loadEmotions];
 			};
 			
 			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -114,6 +113,8 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 									   failure:imageFailureBlock];
 		}
 	}
+	
+	[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]]];
 	
 	CGSize maxSize = CGSizeMake(296.0, 24.0);
 	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize
@@ -142,7 +143,7 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 	_emotionInsetAmt = 0.5 * (320.0 - kEmotionLoadedFrame.size.width);
 	
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5) - 50.0, 320.0, kEmotionLoadedFrame.size.height)];
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5), 320.0, kEmotionLoadedFrame.size.height)];
 //	_scrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 16.0), _scrollView.frame.size.height);
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 	_scrollView.showsHorizontalScrollIndicator = NO;
@@ -169,17 +170,17 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 		cnt++;
 	}
 	
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * [_emotions count], _scrollView.frame.size.height);//([_emotions count] == 1) ? _scrollView.frame.size.width : MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width), _scrollView.contentSize.height);
 //	[_scrollView setContentOffset:CGPointMake(-_scrollView.contentInset.left, 0.0) animated:NO];
-	_scrollView.contentSize = CGSizeMake(([_emotions count] == 1) ? _scrollView.frame.size.width : MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width), _scrollView.contentSize.height);
 	
 //	if ([_emotions count] == 1)
 //		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _scrollView.contentInset.left, 0.0, -_scrollView.contentInset.right);
 	
 	
 	
-	_tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 25.0, 320.0, 47.0)];
+	_tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 50.0, 320.0, 47.0)];
 	_tintedView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[self.contentView addSubview:_tintedView];
+//	[self.contentView addSubview:_tintedView];
 	
 	_emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 43.0)];
 	_emotionLabel.backgroundColor = [UIColor clearColor];
@@ -191,19 +192,24 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 	
 	[self _transitionToCaption:((HONEmotionVO *)[_emotions firstObject]).emotionName withCompletion:nil];
 	
-	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, [UIScreen mainScreen].bounds.size.height - 33.0, 150.0, 30.0)];
+	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	participantsLabel.backgroundColor = [UIColor clearColor];
-	participantsLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:24];
-	participantsLabel.textColor = [UIColor whiteColor];
-	participantsLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
-	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	participantsLabel.text = [NSString stringWithFormat:@"%d/%d", 1 + [_clubVO.activeMembers count], [_clubVO.pendingMembers count]];
-//	[self.contentView addSubview:participantsLabel];
+	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	participantsLabel.textColor = [UIColor blackColor];
+//	participantsLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
+//	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	participantsLabel.text = @"Seen: 1";//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
+	[self.contentView addSubview:participantsLabel];
+	
+	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+		int tot = [[result objectForKey:@"results"] count];
+		participantsLabel.text = [NSString stringWithFormat:@"Seen: %d", tot];
+	}];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	timeLabel.textColor = [UIColor whiteColor];
+	timeLabel.textColor = [UIColor blackColor];
 //	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
 //	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -227,9 +233,9 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 50.0, 50.0, 16.0)];
 	_scoreLabel.backgroundColor = [UIColor clearColor];
 	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
-	_scoreLabel.textColor = [UIColor whiteColor];
+	_scoreLabel.textColor = [UIColor blackColor];
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
-	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+	_scoreLabel.text = @"0";
 //	[self.contentView addSubview:_scoreLabel];
 }
 
@@ -240,16 +246,6 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 		if (idx % 2 == 0)
 			[emotions addObject:[((UIView *)obj).subviews firstObject]];
 	}];
-	
-	
-//	_fishEyeView = [[FishEyeView alloc] initializeWithImages:emotions
-//												 withMinSize:kEmotionMinMagSize
-//												 withMaxRate:kEmotionMaxMagRate
-//											 withActionCount:7];
-//	_fishEyeView.indexDelegate = self;
-//	
-//	_fishEyeView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-//	[self.contentView addSubview:_fishEyeView];
 }
 
 
@@ -278,6 +274,26 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 
 
 #pragma mark - UI Presentation
+- (void)_loadEmotions {
+	int cnt = 0;
+	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
+		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
+		emotionView.frame = CGRectOffset(emotionView.frame, _emotionInsetAmt + (cnt * (kEmotionLoadedFrame.size.width + kStickerPaddingSize.width)), 0.0);
+		[_scrollView addSubview:emotionView];
+		[_emotionViews addObject:emotionView];
+		[_emotions addObject:emotionVO];
+		
+		UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		nextPageButton.frame = emotionView.frame;
+		[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:nextPageButton];
+		
+		cnt++;
+	}
+	
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * [_emotions count], _scrollView.frame.size.height);
+}
+
 - (void)_changeTint {
 	CGFloat hue = (arc4random() % 256 / 256.0);
 	CGFloat saturation = (arc4random() % 128 / 256.0) + 0.5;
@@ -324,7 +340,7 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 	UIView *holderView = [[UIView alloc] initWithFrame:kEmotionLoadedFrame];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:holderView asLargeLoader:NO];
-	imageLoadingView.alpha = 0.667;
+	imageLoadingView.alpha = 0.000667;
 	[imageLoadingView startAnimating];
 	[holderView addSubview:imageLoadingView];
 	
@@ -396,7 +412,7 @@ const CGSize kStickerPaddingSize = {116.0f, 116.0f};
 		[holderView addSubview:animatedImageView];
 		
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			NSURL *url = [NSURL URLWithString:emotionVO.largeImageURL];
+			NSURL *url = [NSURL URLWithString:emotionVO.smallImageURL];
 			FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{

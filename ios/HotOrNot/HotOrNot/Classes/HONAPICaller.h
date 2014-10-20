@@ -77,6 +77,7 @@ extern NSString * const kAPIUsersSetDeviceToken;
 extern NSString * const kAPIUsersGetClubInvites;
 extern NSString * const kAPIUsersCheckUsername;
 extern NSString * const kAPIUsersCheckPhone;
+extern NSString * const kAPIStatusupdate;
 
 
 // network times
@@ -149,10 +150,10 @@ extern const CGFloat kNotifiyDelay;
 - (void)createShoutoutChallengeWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)flagChallengeByChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)markChallengeAsSeenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
-- (void)markChallengeAsUnseenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)removeChallengeForChallengeID:(int)challengeID withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion;
 - (void)retrieveChallengeForChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveChallengeForChallengeID:(int)challengeID igoringNextPushes:(BOOL)isIgnore completion:(void (^)(id result))completion;
+- (void)retrieveSeenTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;

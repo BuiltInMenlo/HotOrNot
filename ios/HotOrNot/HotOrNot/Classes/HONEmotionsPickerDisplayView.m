@@ -54,6 +54,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emotions = [NSMutableArray array];
 		
 		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
+		_previewImageView.image = [UIImage imageNamed:@"bgComposeUnderlay"];
 //		_previewImageView.backgroundColor = [UIColor colorWithRed:0.922 green:0.596 blue:0.463 alpha:1.0];
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 0.0, -100.0);
 		[self addSubview:_previewImageView];
@@ -61,16 +62,16 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		//[self _changeTint];
 		//_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
 		
-		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"previewGradient"]];
-		_previewGradientImageView.hidden = YES;
-//		[self addSubview:_previewGradientImageView];
+		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]];
+//		_previewGradientImageView.hidden = YES;
+		[self addSubview:_previewGradientImageView];
 		
 		_bgView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
 		[_bgView setYOffset:-144.0];
 		_bgView.hidden = NO;
 		//[self addSubview:_bgView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0, 320.0, kEmotionNormalFrame.size.height)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0 + ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch] * 25.0), 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 		_scrollView.showsHorizontalScrollIndicator = NO;
@@ -82,7 +83,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		UIButton *fs2Button = [UIButton buttonWithType:UIButtonTypeCustom];
 		fs2Button.frame = CGRectMake(-_emotionInsetAmt, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height);
 		[fs2Button addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
-		[_scrollView addSubview:fs2Button];
+		//[_scrollView addSubview:fs2Button];
 		
 		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectZero];
 		[_scrollView addSubview:_loaderHolderView];
@@ -100,7 +101,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButton_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
 		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -19.0, 49.0, 86.0)]];
-		[self addSubview:_previewThumbImageView];
+		//[self addSubview:_previewThumbImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
@@ -179,6 +180,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	animatedImageView.animatedImage = imageView.animatedImage;
 	[_previewImageView addSubview:animatedImageView];
 }
+
 
 #pragma mark - Navigation
 - (void)_goCamera {

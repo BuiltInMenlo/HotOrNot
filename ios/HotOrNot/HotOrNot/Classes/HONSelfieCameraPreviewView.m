@@ -141,9 +141,8 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Compose"];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Edit"];
 	//_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
-	[_headerView removeBackground];
 	[self addSubview:_headerView];
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -196,49 +195,37 @@
 	
 	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIButton *btn = (UIButton *)obj;
-		[btn setSelected:btn.tag == button.tag];
+		[btn setSelected:(btn.tag == button.tag && btn.tag != HONStickerGroupTypeObjects)];
 	}];
 	
 	HONStickerGroupType groupType = button.tag;
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									 withProperties:@{@"index"	: [@"" stringFromInt:groupType]}];
 	
-	for (UIView *view in _emotionsPickerHolderView.subviews) {
-		((HONEmotionsPickerView *)view).delegate = nil;
-//		[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
-//						 animations:^(void) {
-//							 view.frame = CGRectOffset(view.frame, 0.0, 49.0);
-//							 view.alpha = 0.0;
-//						 } completion:^(BOOL finished) {
-//							 view.frame = CGRectOffset(view.frame, 0.0, -49.0);
-//							 [view removeFromSuperview];
-//							 view.alpha = 1.0;
-//						 }];
-		
-		[view removeFromSuperview];
-	}
-	
 	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
 		
 		if (pickerView.stickerGroupType == groupType) {
-//			if (pickerView.stickerGroupType == HONStickerGroupTypeObjects) {
-//				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowStore:)])
-//					[self.delegate cameraPreviewViewShowStore:self];
-//			
-//			} else {
+			if (pickerView.stickerGroupType == HONStickerGroupTypeObjects) {
+				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
+					[self.delegate cameraPreviewViewShowCamera:self];
+			
+			} else {
+				for (UIView *view in _emotionsPickerHolderView.subviews) {
+					((HONEmotionsPickerView *)view).delegate = nil;
+					[view removeFromSuperview];
+				}
+				
 				pickerView.delegate = self;
-				pickerView.alpha = 0.75;
-				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
+//				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
 				[_emotionsPickerHolderView addSubview:pickerView];
 				[UIView animateWithDuration:0.333 delay:0.000
 					 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
 									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
-									 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -12.0);
-									 pickerView.alpha = 1.0;
+//									 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, -12.0);
 								 } completion:^(BOOL finished) {
 								 }];
-//			}
+			}
 		}
 	}];
 }

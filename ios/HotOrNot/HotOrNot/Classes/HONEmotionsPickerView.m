@@ -66,7 +66,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
-		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 16.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
+		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 13.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
 		_paginationView.hidden = (_totalPages == 1);
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];

@@ -18,7 +18,7 @@
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
-
+#import "HONHeaderView.h"
 
 @interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONSelfieCameraViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
@@ -27,8 +27,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
-@property (nonatomic, strong) UIView *headerView;
-@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
@@ -139,7 +138,7 @@
 	}
 	
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
-	_titleLabel.text = _clubPhotoVO.username;
+	[_headerView setTitle:_clubPhotoVO.username];
 	
 	[UIView animateWithDuration:0.25 animations:^(void){
 		_emptySetView.alpha = (float)([_clubPhotos count] == 0);
@@ -157,8 +156,6 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	
-	self.view.backgroundColor = [UIColor blackColor];
 	
 	UIView *refreshHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.view addSubview:_emptySetView];
@@ -211,32 +208,22 @@
 	
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
-	
-	_headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, kNavHeaderHeight)];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:titleCaption];
 	[self.view addSubview:_headerView];
 	
-	_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 200.0, 30.0)];
-	_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
-	_titleLabel.textColor = [UIColor blackColor];
-	_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	_titleLabel.shadowColor = [UIColor colorWithWhite:0.33 alpha:0.25];
-	_titleLabel.textAlignment = NSTextAlignmentCenter;
-	_titleLabel.text = titleCaption;
-	[_headerView addSubview:_titleLabel];
-	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(2.0, 13.0, 44.0, 44.0);
+	backButton.frame = CGRectMake(2.0, 2.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:backButton];
+	[_headerView addButton:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(272, 13.0, 44.0, 44.0);
+	replyButton.frame = CGRectMake(272, 2.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:replyButton];
+	[_headerView addButton:replyButton];
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -247,6 +234,10 @@
 		_index = 0;//MIN(MAX(0, _index), [_clubPhotos count]);
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 	}
+	
+	[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+		
+	}];
 }
 
 - (void)viewDidLoad {
@@ -262,7 +253,7 @@
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -474,27 +465,11 @@
 	
 	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
 	
-	if ([_titleLabel.text isEqualToString:_clubPhotoVO.username]) {
-		_titleLabel.text = _clubPhotoVO.username;
+	if ([_headerView.title isEqualToString:_clubPhotoVO.username]) {
+		[_headerView setTitle:_clubPhotoVO.username];
 	
 	} else {
-		UILabel *outroLabel = [[UILabel alloc] initWithFrame:_titleLabel.frame];
-		outroLabel.font = _titleLabel.font;
-		outroLabel.textColor = _titleLabel.textColor;
-		outroLabel.shadowOffset = _titleLabel.shadowOffset;
-		outroLabel.shadowColor = _titleLabel.shadowColor;
-		outroLabel.textAlignment = _titleLabel.textAlignment;
-		outroLabel.text = _titleLabel.text;
-		[_headerView addSubview:outroLabel];
-		
-		_titleLabel.alpha = 0.0;
-		_titleLabel.text = _clubPhotoVO.username;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			outroLabel.alpha = 0.0;
-			_titleLabel.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			[outroLabel removeFromSuperview];
-		}];
+		[_headerView transitionTitle:_clubPhotoVO.username];
 	}
 }
 

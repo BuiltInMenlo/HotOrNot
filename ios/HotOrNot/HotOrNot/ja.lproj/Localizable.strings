@@ -161,7 +161,7 @@
 "try_again" = "もう一度やるか再送ボタンを押してください";
 "invalid_msg" = "クラブ名に「/」や「'」は使えません";
 "invalid_user" = "無効なユーザー名";
-"allow_access" = "コンタクト先へのアクセスを許可しますか?";
+"allow_access" = "Allow contact list access?";
 "ok_access" = "アドレス帳のアクセスにあなたの許可が必要です。";
 "tap_join" = "セルフィークラブ %@を作成しました! タップして参加: http://sel.club %@";
 "alert_create_it" = "それを作成しますか?";

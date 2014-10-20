@@ -78,6 +78,7 @@ NSString * const kAPIUsersUpdatePhone		= @"userPhone/updatePhone";
 NSString * const kAPIUsersValidatePIN		= @"userPhone/validatePhone";
 NSString * const kAPIUsersCheckUsername		= @"users/checkUsername";
 NSString * const kAPIUsersCheckPhone		= @"users/checkPhone";
+NSString * const kAPIStatusupdate			= @"statusupdate/";
 
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
@@ -1038,13 +1039,15 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)markChallengeAsSeenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"action"		: [@"" stringFromInt:6],
-							 @"challengeID"	: [@"" stringFromInt:challengeID],
-							 @"hasSeen"		: @"Y"};
+#if __DEV_BUILD__ == 0
+	NSString *apiEndPt = @"http://api.selfieclubapp.com";
+#else
+	NSString *apiEndPt = @"http://api.devint.selfieclubapp.com";
+#endif
 	
-	SelfieclubJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, params);
-	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], apiEndPt, [NSString stringWithFormat:@"statusupdate/%d/viewers/", challengeID]);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingBasePath:apiEndPt];
+	[httpClient postPath:[NSString stringWithFormat:@"statusupdate/%d/viewers/", challengeID] parameters:@{@"member_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
@@ -1053,38 +1056,14 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			if (completion)
-				completion(result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
-}
-
-- (void)markChallengeAsUnseenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"action"		: [@"" stringFromInt:6],
-							 @"challengeID"	: [@"" stringFromInt:challengeID],
-							 @"hasSeen"		: @"N"};
-	
-	SelfieclubJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, params);
-	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-		} else {
 			if (completion)
 				completion(result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], apiEndPt, [NSString stringWithFormat:@"statusupdate/%d/viewers/", challengeID], [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }
@@ -1167,6 +1146,35 @@ static HONAPICaller *sharedInstance = nil;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)retrieveSeenTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
+#if __DEV_BUILD__ == 0
+	NSString *apiEndPt = @"http://api.selfieclubapp.com";
+#else
+	NSString *apiEndPt = @"http://api.devint.selfieclubapp.com";
+#endif
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], apiEndPt, [NSString stringWithFormat:@"statusupdate/%d/viewers/", challengeID]);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingBasePath:apiEndPt];
+	[httpClient getPath:[NSString stringWithFormat:@"statusupdate/%d/viewers/", challengeID] parameters:@{@"format"	: @"json"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], apiEndPt, [NSString stringWithFormat:@"statusupdate/%d/viewers/", challengeID], [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }
@@ -1698,8 +1706,9 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 
-#pragma mark - Invite / Social
 
+
+#pragma mark - Invite / Social
 - (void)searchUsersByPhoneNumber:(NSString *)phoneNumber completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"	: [@"" stringFromInt:13],
 							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
