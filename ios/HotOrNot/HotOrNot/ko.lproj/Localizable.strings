@@ -114,7 +114,8 @@
 "network_status" = "네트워크 상태";
 "settings_logout" = "로그아웃";
 "header_settings" = "설정";
-"alert_noemotions_msg" = "";
+"alert_noemotions_title" = "";
+"alert_noemotions_msg" = "Please select a sticker to submit.";
 "popup_clubcopied_title" = "당신의 %@ 클럽이 복사되었습니다!";
 "popup_clubcopied_msg" = "다른 사람과 공유하려면, URL을 붙여넣기 하세요!";
 "email_error" = "이메일 오류";

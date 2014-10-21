@@ -201,7 +201,7 @@
 	[_headerView setTitle:NSLocalizedString(@"header_selectFriends", @"Select Friends")];
 	//_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -10.0);
 	
-	_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 10.0, _tableView.frame.size.width, _tableView.frame.size.height + 10);
+	//_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 10.0, _tableView.frame.size.width, _tableView.frame.size.height + 10);
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(4.0, 2.0, 44.0, 44.0);

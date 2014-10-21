@@ -182,8 +182,8 @@
 		[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"You must select a foreground sticker to submit")
-									message:NSLocalizedString(@"alert_noemotions_msg", @"")
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"")
+									message:NSLocalizedString(@"alert_noemotions_msg", @"Please select a sticker to submit.")
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];

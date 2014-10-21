@@ -146,6 +146,7 @@
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 	
 	if (_index != 0 || _clubPhotoID != 0)
 		[self _jumpToPhotoFromID];
@@ -219,7 +220,7 @@
 	[_headerView addButton:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(272, 2.0, 44.0, 44.0);
+	replyButton.frame = CGRectMake(272, 0.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
@@ -235,9 +236,8 @@
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 	}
 	
-	[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-		
-	}];
+	//[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+	//}];
 }
 
 - (void)viewDidLoad {
@@ -326,9 +326,6 @@
 	NSLog(@"::|> _refreshClubTimeline <|::");
 	_index = 0;
 	_clubPhotoID = 0;
-	
-	if ([notification.object isEqualToString:@"Y"] && [_tableView.visibleCells count] > 0)
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 	
 	[self _retrieveClub];
 }
@@ -423,6 +420,9 @@
 	if (cell == nil)
 		cell = [[HONClubPhotoViewCell alloc] init];
 	
+	[cell setSize:[UIScreen mainScreen].bounds.size];
+	[cell hideChevron];
+	cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeUnderlay"]];
 	cell.indexPath = indexPath;
 	cell.clubVO = _clubVO;
 	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:MIN(MAX(0, indexPath.section), [_clubPhotos count] - 1)];

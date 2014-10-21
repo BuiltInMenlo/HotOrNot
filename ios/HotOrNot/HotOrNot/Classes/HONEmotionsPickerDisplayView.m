@@ -71,7 +71,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_bgView.hidden = NO;
 		//[self addSubview:_bgView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0 + ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch] * 25.0), 320.0, kEmotionNormalFrame.size.height)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0 + ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch] * 40.0), 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 		_scrollView.showsHorizontalScrollIndicator = NO;

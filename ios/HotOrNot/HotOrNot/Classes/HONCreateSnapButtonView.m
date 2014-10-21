@@ -14,7 +14,7 @@
 @implementation HONCreateSnapButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(279.0, 2.0, 44.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(272.0, 0.0, 44.0, 44.0)])) {
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 		button.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 		[button setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];

@@ -113,7 +113,8 @@
 "network_status" = "ネットワークステータス";
 "settings_logout" = "ログアウトする";
 "header_settings" = "設定";
-"alert_noemotions_msg" = "";
+"alert_noemotions_title" = "";
+"alert_noemotions_msg" = "Please select a sticker to submit.";
 "popup_clubcopied_title" = "%@ クラブがコピーされました!";
 "popup_clubcopied_msg" = "URLをどこかにペーストしてシェアしましょう!";
 "email_error" = "メールエラー";

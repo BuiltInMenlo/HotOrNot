@@ -85,8 +85,8 @@
 																   @"username"	: [dict objectForKey:@"username"],
 																   @"img_url"	: [dict objectForKey:@"avatar_url"]}];
 			[_searchUsers addObject:_searchUserVO];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Phone number found"
-																message:@"Would you like to send them an update?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:[NSString stringWithFormat:@"%@ has been found, would you like to send them an update?", _phone]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
@@ -94,8 +94,8 @@
 			[alertView show];
 			
 		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Phone number not found"
-										message:@"Would you like to invite them to Selfieclub?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+										message:[NSString stringWithFormat:@"%@ has been not found, would you like to send them an update?", _phone]
 									   delegate:self
 							  cancelButtonTitle:NSLocalizedString(@"not_now", nil)
 							  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];

@@ -67,11 +67,12 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 		[self.contentView addSubview:_imageLoadingView];
 	}
 	
-	_imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
+//	_imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
+	_imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, kSnapTabSize.width, kSnapTabSize.height)];
 	[self.contentView addSubview:_imgView];
 	
 	
-	//NSLog(@"IMG PREFIX:[%@]", _clubPhotoVO.imagePrefix);
+	NSLog(@"IMG SIZE:[%@]", NSStringFromCGSize([UIScreen mainScreen].bounds.size));
 	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
 //		[self _changeTint];
 //		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];

@@ -81,7 +81,7 @@ static NSString * const kCamera = @"camera";
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
 										 withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %d club%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %d post%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
