@@ -202,10 +202,10 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	participantsLabel.text = @"Seen: 1";//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
 	[self.contentView addSubview:participantsLabel];
 	
-	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-		int tot = [[result objectForKey:@"results"] count];
-		participantsLabel.text = [NSString stringWithFormat:@"Seen: %d", tot];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+//		int tot = [[result objectForKey:@"results"] count];
+//		participantsLabel.text = [NSString stringWithFormat:@"Seen: %d", tot];
+//	}];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
