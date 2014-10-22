@@ -23,6 +23,7 @@
 #import "HONCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
 #import "HONStoreProductsViewController.h"
+#import "HONAnimatedStickersViewController.h"
 #import "HONStatusUpdateSubmitViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
@@ -410,7 +411,7 @@
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Take Photo", @"Camera Roll", nil];
+													otherButtonTitles:@"Animations", @"Take Photo", @"Camera Roll", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 }
@@ -500,40 +501,28 @@
 									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;
-//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-//		
-//		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
-//		
-//		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-//		self.imagePickerController.showsCameraControls = NO;
-//		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-//		self.imagePickerController.cameraViewTransform = CGAffineTransformScale(self.imagePickerController.cameraViewTransform, scale, scale);
-//		self.imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-//		
-//		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_cameraOverlayView.delegate = self;
-//		
-//		self.imagePickerController.cameraOverlayView = _cameraOverlayView;
-//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-//		
-//	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-		[self dismissViewControllerAnimated:YES completion:^(void) {
-		}];
-//	}
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+	[self dismissViewControllerAnimated:YES completion:^(void) {
+	}];
 }
 
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - BG Action Sheet"
+										   withProperties:@{@"btn"	: (buttonIndex == 0) ? @"animations" : (buttonIndex == 1) ? @"camera" : (buttonIndex == 2) ? @"camera roll" : @"cancel"}];
+		
 		if (buttonIndex == 0) {
-			[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAnimatedStickersViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		
 		} else if (buttonIndex == 1) {
-			[self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+			[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
+		
+		} else if (buttonIndex == 2) {
+			[self showImagePickerForSourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum];
 		}
 	}
 }

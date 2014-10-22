@@ -12,4 +12,5 @@
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic, retain) NSString *productID;
 @property (nonatomic, retain) NSString *productName;
+@property (nonatomic) CGFloat price;
 @end

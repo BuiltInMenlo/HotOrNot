@@ -178,6 +178,12 @@ static HONAnalyticsReporter *sharedInstance = nil;
 								@"url"		: vo.urlPrefix}});
 }
 
+- (NSDictionary *)propertyForStoreProduct:(HONStoreProductVO *)vo {
+	return (@{@"product"	: @{@"id"		: vo.productID,
+								@"name"		: vo.productName,
+								@"price"	: [@"" stringFromFloat:vo.price]}});
+}
+
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
 //	static NSDictionary *properties = nil;
 //	static dispatch_once_t onceToken;
@@ -271,6 +277,14 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
 									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)eventName withStoreProduct:(HONStoreProductVO *)storeProductVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForStoreProduct:storeProductVO]];
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+									   withProperties:properties];
 }
 
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO {

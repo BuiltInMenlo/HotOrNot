@@ -7,6 +7,7 @@
 //
 
 #import "NSString+DataTypes.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "NHThreadThis.h"
 
@@ -179,62 +180,16 @@ static HONStickerAssistant *sharedInstance = nil;
 										  @"price"	: content.price,
 										  @"img"	: content.large_image}];
 					
+					UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+					[imageView setImageWithURL:[NSURL URLWithString:content.large_image]];
 				}
 				
 				[contentGroups setValue:[stickers copy] forKey:contentGroupID];
 				[[NSUserDefaults standardUserDefaults] setValue:[contentGroups copy] forKey:@"content_groups"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-//				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//					PCContent *content = (PCContent *)obj;
-//					NSLog(@"PCContent:\n%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, [content.large_image stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
-//					[stickers addObject:@{@"id"		: content.content_id,
-//										  @"cg_id"	: contentGroupID,
-//										  @"name"	: content.name,
-//										  @"price"	: content.price,
-//										  @"img"	: [content.large_image stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]}];
-//				}];
 			}];
-			
 		}];
 	}
-	
-	
-	
-	
-	/*
-	NSMutableDictionary *stickerPak = ([[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] mutableCopy] : [NSMutableDictionary dictionary];
-	
-	NSArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:key];
-	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-	for (NSString *contentGroupID in contentGroupIDs) {
-		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
-		NSLog(@"///// fetchStickerPackInfo:[%@]%@}--(%d) /////", contentGroupID, contentGroup, success);
-			
-			[[NHThreadThis backgroundThis] doThis:^{
-				NSMutableArray *stickers = ([stickerPak objectForKey:key] != nil) ? [[stickerPak objectForKey:key] mutableCopy] : [NSMutableArray array];
-//				NSMutableArray *stickers = [NSMutableArray array];
-				
-				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					PCContent *content = (PCContent *)obj;
-					NSLog(@"PCContent:\n%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, [content.large_image stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
-					[stickers addObject:@{@"id"		: content.content_id,
-										  @"cg_id"	: contentGroupID,
-										  @"name"	: content.name,
-										  @"price"	: content.price,
-										  @"img"	: [content.large_image stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]}];
-				}];
-				
-				[stickerPak setObject:[stickers copy] forKey:key];
-				[[NSUserDefaults standardUserDefaults] setValue:[stickerPak copy] forKey:@"sticker_paks"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}];
-			
-//			dispatch_async(dispatch_get_main_queue(), ^{
-//			});
-		}];
-	}
-	 */
 }
 
 

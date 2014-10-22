@@ -39,6 +39,9 @@
 		300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BEB199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png */; };
 		300FCF3319B25D1E0009F5B5 /* HONClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */; };
 		300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */; };
+		30119BD819F81EA700DE9B16 /* HONAnimatedStickersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BD719F81EA700DE9B16 /* HONAnimatedStickersViewController.m */; };
+		30119BDB19F8301B00DE9B16 /* HONAnimatedStickerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BDA19F8301B00DE9B16 /* HONAnimatedStickerViewCell.m */; };
+		30119BDE19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */; };
 		3022043C19D6228A00C3D677 /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
 		3026AAEE19F0AE400094DB20 /* bgTab_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 3026AAD619F0AE400094DB20 /* bgTab_Active.png */; };
 		3026AAEF19F0AE400094DB20 /* bgTab_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3026AAD719F0AE400094DB20 /* bgTab_Active@2x.png */; };
@@ -462,6 +465,12 @@
 		300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubViewCell.h; sourceTree = "<group>"; };
 		300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubViewCell.m; sourceTree = "<group>"; };
 		300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactsSearchViewController.m; sourceTree = "<group>"; };
+		30119BD619F81EA700DE9B16 /* HONAnimatedStickersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAnimatedStickersViewController.h; sourceTree = "<group>"; };
+		30119BD719F81EA700DE9B16 /* HONAnimatedStickersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimatedStickersViewController.m; sourceTree = "<group>"; };
+		30119BD919F8301B00DE9B16 /* HONAnimatedStickerViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAnimatedStickerViewCell.h; sourceTree = "<group>"; };
+		30119BDA19F8301B00DE9B16 /* HONAnimatedStickerViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimatedStickerViewCell.m; sourceTree = "<group>"; };
+		30119BDC19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAnimatedBGViewFlowLayout.h; sourceTree = "<group>"; };
+		30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimatedBGViewFlowLayout.m; sourceTree = "<group>"; };
 		3026AAD619F0AE400094DB20 /* bgTab_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bgTab_Active.png; sourceTree = "<group>"; };
 		3026AAD719F0AE400094DB20 /* bgTab_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bgTab_Active@2x.png"; sourceTree = "<group>"; };
 		3026AAD819F0AE400094DB20 /* bgTab_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bgTab_nonActive.png; sourceTree = "<group>"; };
@@ -1199,6 +1208,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		30119BDF19F84D7D00DE9B16 /* Animated BGs */ = {
+			isa = PBXGroup;
+			children = (
+				30119BDC19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.h */,
+				30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */,
+				30119BD919F8301B00DE9B16 /* HONAnimatedStickerViewCell.h */,
+				30119BDA19F8301B00DE9B16 /* HONAnimatedStickerViewCell.m */,
+				30119BD619F81EA700DE9B16 /* HONAnimatedStickersViewController.h */,
+				30119BD719F81EA700DE9B16 /* HONAnimatedStickersViewController.m */,
+			);
+			name = "Animated BGs";
+			sourceTree = "<group>";
+		};
 		3021623619DF81A1005550B0 /* Sticker Tabs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1819,6 +1841,7 @@
 		4C32B9A515FAB60A0023A0EE /* Status Update */ = {
 			isa = PBXGroup;
 			children = (
+				30119BDF19F84D7D00DE9B16 /* Animated BGs */,
 				4CC94FD419072F3500347A34 /* Emotions */,
 				4C3D7E90176D3B8400AE07B3 /* HONSelfieCameraPreviewView.h */,
 				4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */,
@@ -2811,6 +2834,7 @@
 				4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */,
+				30119BDE19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m in Sources */,
 				4C65C63D194F90800067FEA6 /* UIImage+ImageEffects.m in Sources */,
 				4CC94FF51908025200347A34 /* HONProtoChallengeVO.m in Sources */,
 				302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */,
@@ -2840,6 +2864,7 @@
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONSelfieCameraViewController.m in Sources */,
+				30119BD819F81EA700DE9B16 /* HONAnimatedStickersViewController.m in Sources */,
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
 				4CDFB3181889349900E9F33B /* HONFontAllocator.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
@@ -2854,6 +2879,7 @@
 				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
 				30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */,
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
+				30119BDB19F8301B00DE9B16 /* HONAnimatedStickerViewCell.m in Sources */,
 				4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */,
 				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
 				4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */,
@@ -3642,8 +3668,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "adc08904-9368-42f9-a21f-8426f8c63118";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "adc08904-9368-42f9-a21f-8426f8c63118";
+				PROVISIONING_PROFILE = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s x86_64";
@@ -3684,8 +3710,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "66bc139f-5c58-4a3e-a1d3-827fe3769dfe";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "66bc139f-5c58-4a3e-a1d3-827fe3769dfe";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -3724,8 +3750,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "adc08904-9368-42f9-a21f-8426f8c63118";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "adc08904-9368-42f9-a21f-8426f8c63118";
+				PROVISIONING_PROFILE = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64";
 				WRAPPER_EXTENSION = app;
@@ -3763,8 +3789,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "66bc139f-5c58-4a3e-a1d3-827fe3769dfe";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "66bc139f-5c58-4a3e-a1d3-827fe3769dfe";
+				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64";
 				WRAPPER_EXTENSION = app;

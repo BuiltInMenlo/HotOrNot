@@ -13,7 +13,7 @@
 
 @implementation HONStoreProductVO
 @synthesize dictionary;
-@synthesize productID, productName;
+@synthesize productID, productName, price;
 
 + (HONStoreProductVO *)productWithDictionary:(NSDictionary *)dictionary {
 	HONStoreProductVO *vo = [[HONStoreProductVO alloc] init];

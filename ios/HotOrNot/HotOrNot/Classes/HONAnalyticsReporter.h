@@ -17,6 +17,7 @@
 #import "HONContactUserVO.h"
 #import "HONEmotionVO.h"
 #import "HONOpponentVO.h"
+#import "HONStoreProductVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
@@ -38,6 +39,7 @@
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo;
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo;
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo;
+- (NSDictionary *)propertyForStoreProduct:(HONStoreProductVO *)vo;
 
 - (void)trackEvent:(NSString *)eventName;
 - (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO;
@@ -45,6 +47,7 @@
 - (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO;
 - (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO;
+- (void)trackEvent:(NSString *)eventName withStoreProduct:(HONStoreProductVO *)storeProductVO;
 - (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 - (void)trackEvent:(NSString *)eventName withUserClub:(HONUserClubVO *)userClubVO;
 - (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties;

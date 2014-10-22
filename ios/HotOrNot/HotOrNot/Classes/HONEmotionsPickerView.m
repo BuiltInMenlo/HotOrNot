@@ -62,7 +62,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
 //			*stop = (idx >= 2);
 		}];
-				
+		
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		

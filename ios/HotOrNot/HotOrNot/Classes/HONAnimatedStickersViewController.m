@@ -1,8 +1,8 @@
 //
-//  HONStoreProductsViewController.m
+//  HONAnimatedStickersViewController.m
 //  HotOrNot
 //
-//  Created by BIM  on 10/7/14.
+//  Created by BIM  on 10/22/14.
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
@@ -11,24 +11,22 @@
 #import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
-
-#import "HONStoreProductsViewController.h"
+#import "HONAnimatedStickersViewController.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTableView.h"
-#import "HONStoreProductViewCell.h"
-#import "HONStoreProductVO.h"
+#import "HONAnimatedStickerViewCell.h"
+#import "HONEmotionVO.h"
 
-@interface HONStoreProductsViewController () <HONStoreProductCellDelegate>
+@interface HONAnimatedStickersViewController () <HONAnimatedStickerViewCellDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-@property (nonatomic, strong) NSMutableArray *storeProducts;
-@property (nonatomic, strong) HONStoreProductVO *storeProductVO;
+@property (nonatomic, strong) NSMutableArray *animatedEmotions;
+@property (nonatomic, strong) HONEmotionVO *emotionVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
-
-@implementation HONStoreProductsViewController
+@implementation HONAnimatedStickersViewController
 
 - (id)init {
 	if ((self = [super init])) {
@@ -39,7 +37,7 @@
 
 -(void)dealloc {
 	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONStoreProductViewCell *cell = (HONStoreProductViewCell *)obj;
+		HONAnimatedStickerViewCell *cell = (HONAnimatedStickerViewCell *)obj;
 		cell.delegate = nil;
 	}];
 	
@@ -49,11 +47,10 @@
 
 
 #pragma mark - Data Calls
-- (void)_retreiveStoreProducts {
-	_storeProducts = [NSMutableArray array];
+- (void)_retreiveEmotions {
+	_animatedEmotions = [NSMutableArray array];
 	[[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"CountryCodes" ofType:@"plist"]] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		[_storeProducts addObject:[HONStoreProductVO productWithDictionary:(NSDictionary *)obj]];
-		*stop = idx >= 2;
+		[_animatedEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
 	}];
 	
 	[self _didFinishDataRefresh];
@@ -62,7 +59,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-	[self _retreiveStoreProducts];
+	[self _retreiveEmotions];
 }
 
 - (void)_didFinishDataRefresh {
@@ -81,14 +78,13 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Store"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Animations"];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
 	
@@ -103,7 +99,7 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	[self _retreiveStoreProducts];
+	[self _retreiveEmotions];
 }
 
 - (void)viewDidLoad {
@@ -115,8 +111,8 @@
 
 
 #pragma mark - Navigation
-- (void)_goDone {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Done"];
+- (void)_goClose {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Close"];
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -126,19 +122,19 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Close SWIPE"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Close SWIPE"];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
 }
 
 
-#pragma mark - StoreProductCell Delegates
-- (void)storeProductCell:(HONStoreProductViewCell *)cell purchaseStoreItem:(HONStoreProductVO *)storeItemVO {
-	NSLog(@"[*:*] storeProductCell:purchaseStoreItem:[%@])", storeItemVO.dictionary);
+#pragma mark - AnimatedStickerViewCell Delegates
+- (void)animatedStickerCell:(HONAnimatedStickerViewCell *)cell selectedEmotion:(HONEmotionVO *)emotionVO {
+	NSLog(@"[*:*] animatedStickerCell:selectedEmotion:[%@])", emotionVO.dictionary);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Selected Product"
-									 withStoreProduct:storeItemVO];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Seleted Emotion"
+										  withEmotion:emotionVO];
 }
 
 
@@ -148,21 +144,21 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_storeProducts count]);
+	return ([_animatedEmotions count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:@"Quotes"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:@"Animations"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONStoreProductViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONAnimatedStickerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONStoreProductViewCell alloc] init];
+		cell = [[HONAnimatedStickerViewCell alloc] init];
 	
 	
-	cell.storeProductVO = (HONStoreProductVO *)[_storeProducts objectAtIndex:indexPath.row];
+	cell.emotionVO = (HONEmotionVO *)[_animatedEmotions objectAtIndex:indexPath.row];
 	[cell hideChevron];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -186,17 +182,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONStoreProductViewCell *viewCell = (HONStoreProductViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	viewCell.isPurchased = YES;
+	HONAnimatedStickerViewCell *viewCell = (HONAnimatedStickerViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	_storeProductVO = (viewCell.isPurchased) ? viewCell.storeProductVO : nil;
+	_emotionVO = viewCell.emotionVO;
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Selected Product"
-									 withStoreProduct:_storeProductVO];
-	
-	SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"Sticker_Pack_001", nil]];
-	request.delegate = self;
-	[request start];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Seleted Emotion"
+										  withEmotion:_emotionVO];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -208,29 +199,9 @@
 }
 
 
-#pragma mark - ProductRequest Delegates
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-	NSLog(@"[*:*] productsRequest:(%@) didReceiveResponse:(%@) [*:*]", request.description, response.description);
-	
-	NSArray *skProducts = response.products;
-	SKProduct *product = (SKProduct *)[skProducts firstObject];
-	SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:product];
-	[[SKPaymentQueue defaultQueue] addPayment:myPayment];
-}
-
-
-#pragma mark - StoreKitRequest Delegates
-- (void)requestDidFinish:(SKRequest *)request {
-	NSLog(@"[*:*] requestDidFinish:(%@) [*:*]", request.description);
-}
-
-- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"[*:*] productsRequest:(%@) didFailWithError:(%@) [*:*]", request.description, error.description);
-}
-
-
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 }
+
 
 @end

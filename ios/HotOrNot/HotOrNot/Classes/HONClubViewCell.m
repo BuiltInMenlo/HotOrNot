@@ -167,6 +167,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 		
 		subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", username];
 	}
+	
 	subtitleCaption = ([subtitleCaption rangeOfString:@", "].location != NSNotFound) ? [subtitleCaption substringToIndex:[subtitleCaption length] - 2] : subtitleCaption;
 	subtitleCaption = ([subtitleCaption length] == 2) ? [subtitleCaption stringByAppendingString:titleCaption] : subtitleCaption;
 //	NSString *subtitleCaption = [_statusUpdateVO.username stringByAppendingFormat:@" +%d more%@", [uniqueSubmissions count], ([_clubVO.pendingMembers count] > 0) ? [NSString stringWithFormat:@", waiting on %d other%@", [_clubVO.pendingMembers count], ([_clubVO.pendingMembers count] == 1) ? @"" : @"s"] : @""];
@@ -332,7 +333,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 					}];
 				};
 				
-				NSString *imgURL = ([_emotionVOs count] > 0) ? emotionVO.smallImageURL : [_clubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix];
+				NSString *imgURL = ([_emotionVOs count] > 0) ? emotionVO.smallImageURL : [_clubVO.coverImagePrefix stringByAppendingString:kSnapLargeSuffix];
 				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]
 																   cachePolicy:kOrthodoxURLCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
