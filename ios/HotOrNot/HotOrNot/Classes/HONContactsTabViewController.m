@@ -65,13 +65,43 @@ static NSString * const kEmoji = @"emoji";
 static NSString * const kSticker = @"sticker";
 static NSString * const kCamera = @"camera";
 
+
 #pragma mark - Data Calls
 - (void)_retrieveRecentClubs {
-	[super _retrieveRecentClubs];
+//	[super _retrieveRecentClubs];
 	
-	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:1.667];
-//	[self _didFinishDataRefresh];
+	_recentClubs = [NSMutableArray array];
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+		
+		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
+		
+		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
+			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
+				for (NSDictionary *dict in [result objectForKey:key]) {
+					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
+						continue;
+					
+					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+				}
+				
+			} else if ([key isEqualToString:@"pending"]) {
+				for (NSDictionary *dict in [result objectForKey:key]) {
+					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+						
+						if ([[result objectForKey:@"pending"] count] == 0)
+							[self _retrieveRecentClubs];
+					}];
+				}
+				
+			} else
+				continue;
+		}
+		
+		[self _didFinishDataRefresh];
+	}];
 }
+
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {

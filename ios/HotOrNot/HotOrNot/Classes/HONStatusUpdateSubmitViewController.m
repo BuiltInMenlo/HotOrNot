@@ -217,19 +217,19 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
-	[self _retrieveRecentClubs];
+	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom - kTabSize.height, _tableView.contentInset.right)];
 	
-	if ([[_submitParams objectForKey:@"club_id"] intValue] != 0) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y + kOrthodoxTableCellHeight, _tableView.frame.size.width, _tableView.frame.size.height - kOrthodoxTableCellHeight);
-
-		_replyClubViewCell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
-		_replyClubViewCell.frame = CGRectMake(0.0, kNavHeaderHeight - 10.0, 320.0, kOrthodoxTableCellHeight);
-		[_replyClubViewCell setSize:_replyClubViewCell.frame.size];
-		[_replyClubViewCell hideTimeStat];
-		[self.view addSubview:_replyClubViewCell];
-	}
-	
-	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 50.0, _tableView.contentInset.right)];
+//	if ([[_submitParams objectForKey:@"club_id"] intValue] != 0) {
+//		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y + kOrthodoxTableCellHeight, _tableView.frame.size.width, _tableView.frame.size.height - kOrthodoxTableCellHeight);
+//
+//		_replyClubViewCell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
+//		_replyClubViewCell.frame = CGRectMake(0.0, kNavHeaderHeight - 10.0, 320.0, kOrthodoxTableCellHeight);
+//		[_replyClubViewCell setSize:_replyClubViewCell.frame.size];
+//		[_replyClubViewCell hideTimeStat];
+//		[self.view addSubview:_replyClubViewCell];
+//	}
+//	
+//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom, _tableView.contentInset.right)];
 }
 
 - (void)viewDidLoad {

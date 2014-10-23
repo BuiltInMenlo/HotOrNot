@@ -51,34 +51,34 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveRecentClubs {
-	_recentClubs = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		[[HONClubAssistant sharedInstance] writeUserClubs:result];
-		
-		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
-		
-		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
-				for (NSDictionary *dict in [result objectForKey:key]) {
-					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
-						continue;
-					
-					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-				}
-			
-			} else if ([key isEqualToString:@"pending"]) {
-				for (NSDictionary *dict in [result objectForKey:key]) {
-					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-						
-						if ([[result objectForKey:@"pending"] count] == 0)
-							[self _retrieveRecentClubs];
-					}];
-				}
-			
-			} else
-				continue;
-		}
-	}];
+//	_recentClubs = [NSMutableArray array];
+//	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//		
+//		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
+//		
+//		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
+//			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
+//				for (NSDictionary *dict in [result objectForKey:key]) {
+//					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
+//						continue;
+//					
+//					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//				}
+//			
+//			} else if ([key isEqualToString:@"pending"]) {
+//				for (NSDictionary *dict in [result objectForKey:key]) {
+//					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//						
+//						if ([[result objectForKey:@"pending"] count] == 0)
+//							[self _retrieveRecentClubs];
+//					}];
+//				}
+//			
+//			} else
+//				continue;
+//		}
+//	}];
 }
 
 - (void)_sendEmailContacts {
