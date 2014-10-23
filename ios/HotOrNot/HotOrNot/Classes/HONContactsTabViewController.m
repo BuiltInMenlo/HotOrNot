@@ -65,13 +65,20 @@ static NSString * const kEmoji = @"emoji";
 static NSString * const kSticker = @"sticker";
 static NSString * const kCamera = @"camera";
 
-#pragma mark -
+#pragma mark - Data Calls
+- (void)_retrieveRecentClubs {
+	[super _retrieveRecentClubs];
+	
+	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:1.667];
+//	[self _didFinishDataRefresh];
+}
+
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Refresh"];
 	
 	[self _retrieveRecentClubs];
-	[super _goDataRefresh:sender];
+//	[super _goDataRefresh:sender];
 }
 
 - (void)_didFinishDataRefresh {
@@ -79,7 +86,7 @@ static NSString * const kCamera = @"camera";
 	
 	if (_joinedTotalClubs > 0) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
-										 withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
+										   withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %d post%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
 															message:@""
@@ -90,6 +97,20 @@ static NSString * const kCamera = @"camera";
 		[alertView show];
 		
 		_joinedTotalClubs = 0;
+	
+	} else {
+		_recentClubs = [[[[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
+			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+			
+			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+				return ((NSComparisonResult)NSOrderedAscending);
+			
+			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+				return ((NSComparisonResult)NSOrderedDescending);
+			
+			return ((NSComparisonResult)NSOrderedSame);
+		}] reverseObjectEnumerator] allObjects] mutableCopy];
 	}
 }
 
@@ -126,7 +147,14 @@ static NSString * const kCamera = @"camera";
 			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
 	}
 	
-	_panGestureRecognizer.delaysTouchesBegan = NO;
+	
+//	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)((double)2.333f * NSEC_PER_SEC));
+//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+//		[_tableView reloadData];
+//	});
+	
+	
+//	_panGestureRecognizer.delaysTouchesBegan = NO;
 //	_panGestureRecognizer.enabled = YES;
 }
 
@@ -160,6 +188,7 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
+	[self _didFinishDataRefresh];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

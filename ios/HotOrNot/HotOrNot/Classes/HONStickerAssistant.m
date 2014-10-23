@@ -180,8 +180,13 @@ static HONStickerAssistant *sharedInstance = nil;
 										  @"price"	: content.price,
 										  @"img"	: content.large_image}];
 					
-					UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-					[imageView setImageWithURL:[NSURL URLWithString:content.large_image]];
+//					[[NHThreadThis backgroundThis] doThis:^{
+//					dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)((double)1.875f * NSEC_PER_SEC));
+//					dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+						UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+						[imageView setImageWithURL:[NSURL URLWithString:content.large_image]];
+//					});
+//					}];
 				}
 				
 				[contentGroups setValue:[stickers copy] forKey:contentGroupID];

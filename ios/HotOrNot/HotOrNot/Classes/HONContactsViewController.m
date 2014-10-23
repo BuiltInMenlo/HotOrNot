@@ -253,19 +253,18 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	_recentClubs = [[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-		HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
-		HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
-		
-		if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
-			return ((NSComparisonResult)NSOrderedAscending);
-		
-		if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
-			return ((NSComparisonResult)NSOrderedDescending);
-		
-		return ((NSComparisonResult)NSOrderedSame);
-	}] mutableCopy];
-	_recentClubs = [[[_recentClubs reverseObjectEnumerator] allObjects] mutableCopy];
+//	_recentClubs = [[[[_recentClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//		HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
+//		HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+//		
+//		if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+//			return ((NSComparisonResult)NSOrderedAscending);
+//		
+//		if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+//			return ((NSComparisonResult)NSOrderedDescending);
+//		
+//		return ((NSComparisonResult)NSOrderedSame);
+//	}] reverseObjectEnumerator] allObjects] mutableCopy];
 	
 	[_omittedDeviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONContactUserVO *vo = (HONContactUserVO *)obj;
@@ -294,8 +293,8 @@
 	
 	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 	
-	if ([_tableView.visibleCells count] > 0)
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+//	if ([_tableView.visibleCells count] > 0)
+//		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
 
@@ -619,22 +618,25 @@
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
 				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
-				[self _goDataRefresh:nil];
+//				[self _goDataRefresh:nil];
 				
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
 						_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-						[self _goDataRefresh:nil];
+//						[self _goDataRefresh:nil];
 					});
 				
 				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
 						_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
-						[self _goDataRefresh:nil];
+//						[self _goDataRefresh:nil];
 					});
 				
 				} else {
+//					[self _goDataRefresh:nil];
 				}
+				
+				[self _goDataRefresh:nil];
 			}
 		}
 		
