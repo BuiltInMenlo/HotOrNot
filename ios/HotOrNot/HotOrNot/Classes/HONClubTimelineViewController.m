@@ -66,7 +66,7 @@
 		_clubPhotos = _clubVO.submissions;
 		_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
 		
-		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", _clubVO.dictionary);
+//		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", _clubVO.dictionary);
 	}
 	
 	return (self);
@@ -138,6 +138,18 @@
 	}
 	
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
+	
+	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
+		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+		
+		if (!isSeen) {
+			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID];
+			}];
+		}
+	}];
+	
+	
 	[_headerView setTitle:_clubPhotoVO.username];
 	
 	[UIView animateWithDuration:0.25 animations:^(void){
@@ -235,9 +247,6 @@
 		_index = 0;//MIN(MAX(0, _index), [_clubPhotos count]);
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 	}
-	
-	//[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-	//}];
 }
 
 - (void)viewDidLoad {
@@ -468,9 +477,19 @@
 	if ([_headerView.title isEqualToString:_clubPhotoVO.username]) {
 		[_headerView setTitle:_clubPhotoVO.username];
 	
-	} else {
+	} else
 		[_headerView transitionTitle:_clubPhotoVO.username];
-	}
+	
+	
+	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
+		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+		
+		if (!isSeen) {
+			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID];
+			}];
+		}
+	}];
 }
 
 

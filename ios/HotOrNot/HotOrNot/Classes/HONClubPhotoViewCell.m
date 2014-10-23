@@ -86,7 +86,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 			[_imgView addSubview:animatedImageView];
 			
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				NSURL *url = [NSURL URLWithString:@"https://cdn.picocandy.com/1df5644d9e94/t/54330ce5ab4b8b0468000166/small.gif"];//[_clubPhotoVO.imagePrefix stringByAppendingString:[kSnapLargeSuffix stringByReplacingOccurrencesOfString:@".jpg" withString:@"gif"]]];
+				NSURL *url = [NSURL URLWithString:_clubPhotoVO.imagePrefix]; //[NSURL URLWithString:@"https://cdn.picocandy.com/1df5644d9e94/t/54330ce5ab4b8b0468000166/small.gif"];//[_clubPhotoVO.imagePrefix stringByAppendingString:[kSnapLargeSuffix stringByReplacingOccurrencesOfString:@".jpg" withString:@"gif"]]];
 				NSLog(@"IMG URL:[%@]", url);
 				FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
 				
@@ -202,10 +202,10 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	participantsLabel.text = @"Seen: 1";//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
 	[self.contentView addSubview:participantsLabel];
 	
-//	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-//		int tot = [[result objectForKey:@"results"] count];
-//		participantsLabel.text = [NSString stringWithFormat:@"Seen: %d", tot];
-//	}];
+	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"results"] count] > 0)
+			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d", [[result objectForKey:@"results"] count]];
+	}];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];

@@ -26,6 +26,7 @@
 - (int)labelIDForAreaCode:(NSString *)areaCode;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
+- (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
@@ -48,6 +49,7 @@
 - (NSDictionary *)fetchUserClubs;
 - (void)addClub:(NSDictionary *)club forKey:(NSString *)key;
 - (void)writeUserClubs:(NSDictionary *)clubs;
+- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID;
 
 - (NSArray *)excludedClubDomains;
 

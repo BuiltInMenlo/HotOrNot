@@ -23,13 +23,13 @@
 #import "HONCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
 #import "HONStoreProductsViewController.h"
-#import "HONAnimatedStickersViewController.h"
+#import "HONAnimatedBGsViewController.h"
 #import "HONStatusUpdateSubmitViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
 
 
-@interface HONSelfieCameraViewController () <HONCameraOverlayViewDelegate, HONSelfieCameraPreviewViewDelegate, AmazonServiceRequestDelegate>
+@interface HONSelfieCameraViewController () <HONAnimatedBGViewControllerDelegate, HONCameraOverlayViewDelegate, HONSelfieCameraPreviewViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONSelfieCameraPreviewView *previewView;
@@ -399,6 +399,14 @@
 }
 
 
+#pragma mark - AnimatedBGsViewController Delegates
+- (void)animatedBGViewController:(HONAnimatedBGsViewController *)viewController didSelectEmotion:(HONEmotionVO *)emotionVO {
+	NSLog(@"[*:*] animatedBGViewController:didSelectEmotion:[%@][%@]", NSStringFromCGSize(emotionVO.animatedImageView.frame.size), NSStringFromCGSize(emotionVO.animatedImageView.animatedImage.size));
+	
+	_filename = [[emotionVO.smallImageURL componentsSeparatedByString:@"/"] lastObject];
+	[_previewView updateProcessedAnimatedImageView:emotionVO.animatedImageView];
+}
+
 #pragma mark - CameraPreviewView Delegates
 - (void)cameraPreviewViewShowCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"[*:*] cameraPreviewViewShowCamera");
@@ -411,7 +419,7 @@
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Animations", @"Take Photo", @"Camera Roll", nil];
+													otherButtonTitles:@"Take Photo", @"Camera Roll", @"Animations", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 }
@@ -511,18 +519,21 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - BG Action Sheet"
-										   withProperties:@{@"btn"	: (buttonIndex == 0) ? @"animations" : (buttonIndex == 1) ? @"camera" : (buttonIndex == 2) ? @"camera roll" : @"cancel"}];
+										   withProperties:@{@"btn"	: (buttonIndex == 0) ? @"camera" : (buttonIndex == 1) ? @"camera roll" : (buttonIndex == 2) ? @"animations" : @"cancel"}];
 		
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAnimatedStickersViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		
-		} else if (buttonIndex == 1) {
 			[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 		
-		} else if (buttonIndex == 2) {
+		} else if (buttonIndex == 1) {
 			[self showImagePickerForSourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum];
+		
+		} else if (buttonIndex == 2) {
+			HONAnimatedBGsViewController *animatedBGsViewController = [[HONAnimatedBGsViewController alloc] init];
+			animatedBGsViewController.delegate = self;
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:animatedBGsViewController];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

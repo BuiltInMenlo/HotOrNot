@@ -8,17 +8,18 @@
 
 #import "HONAnimatedBGViewFlowLayout.h"
 
-const CGSize kClubCollectionViewSize = {120.0, 150.0};
+const CGSize kAnimatedBGCollectionViewSize = {159.0, 158.0};
+const CGSize kAnimatedBGCollectionViewSpacing = {1.0, 2.0};
 
 @implementation HONAnimatedBGViewFlowLayout
 
 - (id)init {
 	if ((self = [super init])) {
-		self.itemSize = kClubCollectionViewSize;
+		self.itemSize = kAnimatedBGCollectionViewSize;
 		self.scrollDirection = UICollectionViewScrollDirectionVertical;
-		self.minimumInteritemSpacing = 40.0;
-		self.minimumLineSpacing = 10.0;
-		self.sectionInset = UIEdgeInsetsMake(0.0, 20.0, 60.0, 20.0);
+		self.minimumInteritemSpacing = kAnimatedBGCollectionViewSpacing.width;
+		self.minimumLineSpacing = kAnimatedBGCollectionViewSpacing.height;
+		self.sectionInset = UIEdgeInsetsZero;
 	}
 	
 	return (self);

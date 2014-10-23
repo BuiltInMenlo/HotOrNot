@@ -81,11 +81,16 @@
 	return (_subjectNames);
 }
 
+- (void)updateProcessedAnimatedImageView:(FLAnimatedImageView *)animatedImageView {
+	[_emotionsDisplayView updatePreviewWithAnimatedImageView:animatedImageView];
+//	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
+}
+
 - (void)updateProcessedImage:(UIImage *)image {
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+//	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+//	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
+//	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+//	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	
 //	[_headerView toggleLightStyle:YES];
 	[_emotionsDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
@@ -193,12 +198,14 @@
 - (void)_goGroup:(id)sender {
 	UIButton *button = (UIButton *)sender;
 	
-	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		UIButton *btn = (UIButton *)obj;
-		[btn setSelected:(btn.tag == button.tag && btn.tag != HONStickerGroupTypeObjects)];
-	}];
-	
 	HONStickerGroupType groupType = button.tag;
+	if (groupType != HONStickerGroupTypeObjects) {
+		[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			UIButton *btn = (UIButton *)obj;
+			[btn setSelected:(btn.tag == groupType)];
+		}];
+	}
+	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									 withProperties:@{@"index"	: [@"" stringFromInt:groupType]}];
 	
@@ -468,28 +475,6 @@
 			[self.delegate cameraPreviewViewShowInviteContacts:self];
 	}];
 }
-
-
-#pragma mark - ProductRequest Delegates
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-	NSLog(@"[*:*] productsRequest:(%@) didReceiveResponse:(%@) [*:*]", request.description, response.description);
-	
-	NSArray *skProducts = response.products;
-	SKProduct *product = (SKProduct *)[skProducts firstObject];
-	SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:product];
-	[[SKPaymentQueue defaultQueue] addPayment:myPayment];
-}
-
-
-#pragma mark - StoreKitRequest Delegates
-- (void)requestDidFinish:(SKRequest *)request {
-	NSLog(@"[*:*] requestDidFinish:(%@) [*:*]", request.description);
-}
-
-- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"[*:*] productsRequest:(%@) didFailWithError:(%@) [*:*]", request.description, error.description);
-}
-
 
 
 @end

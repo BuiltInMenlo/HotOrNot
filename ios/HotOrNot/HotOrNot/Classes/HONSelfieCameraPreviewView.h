@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <StoreKit/StoreKit.h>
+#import "FLAnimatedImageView.h"
 
 #import "HONStoreProductVO.h"
 #import "HONUserVO.h"
@@ -22,9 +22,10 @@
 - (void)cameraPreviewViewShowStore:(HONSelfieCameraPreviewView *)previewView;
 @end
 
-@interface HONSelfieCameraPreviewView : UIView <SKProductsRequestDelegate>
+@interface HONSelfieCameraPreviewView : UIView
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image;
 - (void)updateProcessedImage:(UIImage *)image;
+- (void)updateProcessedAnimatedImageView:(FLAnimatedImageView *)animatedImageView;
 - (NSArray *)getSubjectNames;
 - (void)enableSubmitButton;
 

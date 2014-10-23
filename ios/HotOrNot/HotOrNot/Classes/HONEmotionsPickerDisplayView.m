@@ -172,12 +172,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	((UIImageView *)[_previewThumbImageView.subviews firstObject]).image = previewImage;
 }
 
-- (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)imageView {
-	FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-	animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
-	animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
-	animatedImageView.clipsToBounds = YES;
-	animatedImageView.animatedImage = imageView.animatedImage;
+- (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)animatedImageView {
+//	FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+//	animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+//	animatedImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFill; // stretches w/ ratio -- UIViewContentModeScaleAspectFit; // centers in frame
+//	animatedImageView.clipsToBounds = YES;
+//	animatedImageView.animatedImage = imageView.animatedImage;
 	[_previewImageView addSubview:animatedImageView];
 }
 

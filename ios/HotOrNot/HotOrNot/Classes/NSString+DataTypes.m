@@ -42,6 +42,10 @@ unsigned long long unistrlen(unichar *chars) {
 	return ([NSString stringWithFormat:@"%f", floatVal]);
 }
 
+- (NSString *)stringFromIndexPath:(NSIndexPath *)indexPath {
+	return ([NSString stringWithFormat:@"(%d × %d)", indexPath.section, indexPath.row]);
+}
+
 - (NSString *)stringFromInt:(int)intVal {
 	return ([NSString stringWithFormat:@"%d", intVal]);
 }

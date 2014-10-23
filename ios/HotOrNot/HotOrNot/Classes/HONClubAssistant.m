@@ -183,6 +183,30 @@ static HONClubAssistant *sharedInstance = nil;
 	return ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:[clubName stringByReplacingOccurrencesOfString:@" " withString:@""]]);
 }
 
+- (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] == nil) {
+		[[NSUserDefaults standardUserDefaults] setValue:@{} forKey:@"seen_updates"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	__block BOOL isFound = NO;
+//	if (![[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:@"id"] intValue] == statusUpdateID) {
+		[[HONAPICaller sharedInstance] retrieveSeenMembersChallengeWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
+			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSDictionary *dict = (NSDictionary *)obj;
+				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+				
+//				NSLog(@"--- dict:[%@]", dict);
+//				NSLog(@"--- isFound:[%@]", [@"" stringFromBOOL:isFound]);
+				*stop = isFound;
+			}];
+			
+			if (completion)
+				completion(isFound);
+		}];
+//	}
+}
+
 
 - (int)labelIDForAreaCode:(NSString *)areaCode {
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {
@@ -533,6 +557,19 @@ static HONClubAssistant *sharedInstance = nil;
 		
 		[[HONClubAssistant sharedInstance] writeUserClubs:[allclubs copy]];
 	}
+}
+
+- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] == nil) {
+		[[NSUserDefaults standardUserDefaults] setValue:@{} forKey:@"seen_updates"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
+	[seenClubs setValue:[@"" stringFromInt:statusUpdateID] forKey:[@"" stringFromInt:statusUpdateID]];
+	
+	[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)writeUserClubs:(NSDictionary *)clubs {

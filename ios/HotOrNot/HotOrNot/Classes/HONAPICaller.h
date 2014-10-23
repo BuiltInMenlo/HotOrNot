@@ -154,6 +154,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveChallengeForChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveChallengeForChallengeID:(int)challengeID igoringNextPushes:(BOOL)isIgnore completion:(void (^)(id result))completion;
 - (void)retrieveSeenTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
+- (void)retrieveSeenMembersChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;

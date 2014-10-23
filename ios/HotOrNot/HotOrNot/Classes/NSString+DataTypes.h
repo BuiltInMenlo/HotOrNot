@@ -16,6 +16,7 @@ unsigned long long unistrlen(unichar *chars);
 - (NSString *)stringFromDictionary:(NSDictionary *)dictionary;
 - (NSString *)stringFromDouble:(double)doubleVal;
 - (NSString *)stringFromFloat:(float)floatVal;
+- (NSString *)stringFromIndexPath:(NSIndexPath *)indexPath;
 - (NSString *)stringFromInt:(int)intVal;
 - (NSString *)stringFromHex:(unichar *)hexVal;
 @end

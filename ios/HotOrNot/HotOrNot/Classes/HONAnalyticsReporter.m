@@ -58,28 +58,28 @@ static HONAnalyticsReporter *sharedInstance = nil;
 			  @"device"			: [[HONAnalyticsReporter sharedInstance] deviceProperties],
 			  @"session"		: [[HONAnalyticsReporter sharedInstance] sessionProperties],
 			  @"application"	: [[HONAnalyticsReporter sharedInstance] applicationProperties],
-			  @"screen-state"	: [[HONAnalyticsReporter sharedInstance] screenStateProperties]});
+			  @"screen_state"	: [[HONAnalyticsReporter sharedInstance] screenStateProperties]});
 }
 
 - (NSDictionary *)applicationProperties {
 	return (@{@"version"		: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
 			  @"build"			: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
-			  @"service-env"	: ([HONAppDelegate apiServerPath] != nil) ? ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod" : @"N/A",
-			  @"api-release"	: ([HONAppDelegate apiServerPath] != nil) ? [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject] : @"N/A"});
+			  @"service_env"	: ([HONAppDelegate apiServerPath] != nil) ? ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod" : @"N/A",
+			  @"api_release"	: ([HONAppDelegate apiServerPath] != nil) ? [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject] : @"N/A"});
 }
 
 - (NSDictionary *)deviceProperties {
 	return (@{@"os"				: [[HONDeviceIntrinsics sharedInstance] osName],
-			  @"os-version"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
-			  @"hardware-make"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringToIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
-			  @"hardware-model"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringFromIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
+			  @"os_version"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
+			  @"hardware_make"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringToIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
+			  @"hardware_model"	: [[[HONDeviceIntrinsics sharedInstance] modelName] substringFromIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
 			  @"resolution"		: NSStringFromCGSize([UIScreen mainScreen].bounds.size),
 			  @"adid"			: [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO],
 			  @"push_token"		: [[HONDeviceIntrinsics sharedInstance] pushToken],
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
 			  @"time"			: [[HONDateTimeAlloter sharedInstance] utcNowDateFormattedISO8601],
 			  @"tz"				: [[HONDateTimeAlloter sharedInstance] timezoneFromDeviceLocale],
-			  @"battery-per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)],
+			  @"battery_per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)],
 			  @"hmac"			: [[HONDeviceIntrinsics sharedInstance] hmacToken]});
 }
 
@@ -94,12 +94,12 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	NSDate *idlDate = ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"]] : nowDate;
 	
 	return (@{@"id"				: @"0",
-			  @"id-last"		: @"0",
-			  @"session-gap"	: @"0",
+			  @"id_last"		: @"0",
+			  @"session_gap"	: @"0",
 			  @"duration"		: [@"" stringFromInt:[nowDate timeIntervalSinceDate:durDate]],
 			  @"idle"			: [@"" stringFromInt:[nowDate timeIntervalSinceDate:idlDate]],
 			  @"count"			: ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] : @"0",
-			  @"entry-point"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] lowercaseString] : @"N/A"});
+			  @"entry_point"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] lowercaseString] : @"N/A"});
 }
 
 - (NSDictionary *)userProperties {
@@ -114,8 +114,8 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	return(@{@"id"			: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
 			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
 			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
-			 @"cohort-date"	: [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:cohortDate],
-			 @"cohort-week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:cohortDate] weekOfYear]]});
+			 @"cohort_date"	: [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:cohortDate],
+			 @"cohort_week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:cohortDate] weekOfYear]]});
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
