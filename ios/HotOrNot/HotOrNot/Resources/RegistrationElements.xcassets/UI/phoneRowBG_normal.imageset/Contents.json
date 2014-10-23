@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "firstRunRowBackround_nonActive.png"
+      "filename" : "phoneNumberRowBG.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "firstRunInputNumberBackground@2x.png"
+      "filename" : "phoneNumberRowBG@2x.png"
     },
     {
       "idiom" : "universal",

@@ -211,7 +211,7 @@
 	[_headerView addButton:backButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
+	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButtonLargeEnabled_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButtonLargeEnabled_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -229,7 +229,7 @@
 		[self.view addSubview:_replyClubViewCell];
 	}
 	
-	//[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 48.0, _tableView.contentInset.right)];
+	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 50.0, _tableView.contentInset.right)];
 }
 
 - (void)viewDidLoad {

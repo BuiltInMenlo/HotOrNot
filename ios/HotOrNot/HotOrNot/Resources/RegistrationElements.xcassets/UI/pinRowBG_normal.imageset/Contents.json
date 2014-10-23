@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "firstRunRowBackround_nonActive.png"
+      "filename" : "inputFieldRowBG.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "firstRunRowBackround_nonActive@2x.png"
+      "filename" : "inputFieldRowBG@2x.png"
     },
     {
       "idiom" : "universal",
