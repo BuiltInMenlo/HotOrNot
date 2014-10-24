@@ -31,6 +31,7 @@
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
 @property (nonatomic, strong) NSTimer *tintTimer;
+@property (nonatomic, strong) NSTimer *stickerTimer;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -57,6 +58,16 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 
 - (void)dealloc {
 	_scrollView.delegate = nil;
+	
+	if (_tintTimer != nil) {
+		[_tintTimer invalidate];
+		_tintTimer = nil;
+	}
+	
+	if (_stickerTimer != nil) {
+		[_stickerTimer invalidate];
+		_stickerTimer = nil;
+	}
 }
 
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
@@ -68,7 +79,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	}
 	
 //	_imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-	_imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, kSnapTabSize.width, kSnapTabSize.height)];
+	_imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-33.0, 0.0, 386.0, 588.0)];
 	[self.contentView addSubview:_imgView];
 	
 	
@@ -115,7 +126,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 		}
 	}
 	
-	[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]]];
+	//[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]]];
 	
 	CGSize maxSize = CGSizeMake(296.0, 24.0);
 	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize
@@ -200,7 +211,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 //	participantsLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
 //	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	participantsLabel.text = @"Seen: 1";//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
-	[self.contentView addSubview:participantsLabel];
+	//[self.contentView addSubview:participantsLabel];
 	
 	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"results"] count] > 0)
@@ -215,7 +226,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 //	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
-	[self.contentView addSubview:timeLabel];
+	//[self.contentView addSubview:timeLabel];
 	
 //	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
@@ -271,6 +282,20 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 - (void)_goNextPhoto {
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
 		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
+}
+
+- (void)_goNextSticker {
+	int offset = (_scrollView.contentOffset.x + self.frame.size.width == _scrollView.contentSize.width) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
+	
+	[UIView animateWithDuration:0.250 delay:0.000
+		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
+						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+	 
+					 animations:^(void) {
+						 [_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:NO];
+						 
+					 } completion:^(BOOL finished) {
+					 }];
 }
 
 
@@ -385,6 +410,9 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 								 imageView.alpha = 1.0;
 								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 							 } completion:^(BOOL finished) {
+								 if (index == 0) {
+									 _stickerTimer = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+								 }
 							 }];
 			
 		};

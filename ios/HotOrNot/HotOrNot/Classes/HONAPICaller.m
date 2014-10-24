@@ -187,7 +187,7 @@ static HONAPICaller *sharedInstance = nil;
 
 			
 		} else {
-//			SelfieclubJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+			SelfieclubJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				[[HONAPICaller sharedInstance] showDataErrorHUD];

@@ -142,6 +142,7 @@
 	
 	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
 	pickerView.delegate = self;
+	[pickerView preloadImages];
 	[_emotionsPickerHolderView addSubview:pickerView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
@@ -223,8 +224,9 @@
 					[view removeFromSuperview];
 				}
 				
-				pickerView.delegate = self;
 //				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 12.0);
+				pickerView.delegate = self;
+				[pickerView preloadImages];
 				[_emotionsPickerHolderView addSubview:pickerView];
 				[UIView animateWithDuration:0.333 delay:0.000
 					 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
@@ -351,47 +353,6 @@
 		[_emotionsDisplayView addEmotion:emotionVO];
 	}
 }
-
-//- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
-////	NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
-//	
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-//										withEmotion:emotionVO];
-//	
-//	[_subjectNames removeObject:emotionVO.emotionName inRange:NSMakeRange([_subjectNames count] - 1, 1)];
-//	[_emotionsDisplayView removeEmotion:emotionVO];
-//	
-//	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @""];
-//}
-
-//- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView changeGroup:(HONStickerGroupType)groupType {
-//	NSLog(@"[*:*] emotionItemView:(%@) changeGroup:(%@) [*:*]", self.class, (groupType == HONStickerGroupTypeStickers) ? @"STICKERS" : (groupType == HONStickerGroupTypeFaces) ? @"FACES" : (groupType == HONStickerGroupTypeAnimals) ? @"ANIMALS" : (groupType == HONStickerGroupTypeObjects) ? @"OBJECTS" : @"OTHER");
-//	
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
-//									 withProperties:@{@"type"	: (groupType == HONStickerGroupTypeStickers) ? @"stickers" : (groupType == HONStickerGroupTypeFaces) ? @"faces" : (groupType == HONStickerGroupTypeAnimals) ? @"animals" : (groupType == HONStickerGroupTypeObjects) ? @"objects" : @"other"}];
-//	
-//	for (UIView *view in self.subviews) {
-//		if (view.tag >= 69) {
-//			((HONEmotionsPickerView *)view).delegate = nil;
-//			[view removeFromSuperview];
-//		}
-//	}
-//	
-//	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
-//		
-//		if (pickerView.stickerGroupType == groupType) {
-//			pickerView.delegate = self;
-//			[self addSubview:pickerView];
-//		}
-//		
-////		pickerView.hidden = (pickerView.stickerGroupType != groupType);
-////		[UIView animateWithDuration:0.25 animations:^(void) {
-////			pickerView.alpha = (int)(pickerView.stickerGroupType == groupType);
-////		} completion:^(BOOL finished) {
-////		}];
-//	}];
-//}
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 //	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);

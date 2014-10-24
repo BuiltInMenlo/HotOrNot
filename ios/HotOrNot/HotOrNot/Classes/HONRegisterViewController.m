@@ -254,11 +254,6 @@
 																	
 		int responseCode = [[result objectForKey:@"result"] intValue];
 		if (result != nil && responseCode == 0) {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
 			_usernameCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
 			_usernameCheckImageView.alpha = 1.0;
 			
@@ -272,12 +267,19 @@
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
 				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 					[[HONClubAssistant sharedInstance] writeUserClubs:result];
+					if (_progressHUD != nil) {
+						[_progressHUD hide:YES];
+						_progressHUD = nil;
+					}
+					
 					[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 				}];
 			}];
 			
 			
 		} else {
+			[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			

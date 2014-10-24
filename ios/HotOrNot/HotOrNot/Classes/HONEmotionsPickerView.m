@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "MBProgressHUD.h"
+
 #import "HONEmotionsPickerView.h"
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
@@ -23,6 +25,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic) CGSize gridItemSpacingSize;
 @property (nonatomic, strong) HONPaginationView *paginationView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int prevPage;
 @property (nonatomic) int totalPages;
 @property (nonatomic) BOOL isGlobal;
@@ -70,8 +73,6 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		_paginationView.hidden = (_totalPages == 1);
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
-		
-		[self _buildGrid];
 	}
 	
 	return (self);
@@ -100,21 +101,52 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 	[_paginationView updateToPage:page];
 }
 
+- (void)preloadImages {
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	[_progressHUD setYOffset:-77.0];
+	
+	__block int cnt = 0;
+	for (HONEmotionVO *vo in _availableEmotions) {
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			imageView.image = image;
+			if (++cnt == [_availableEmotions count]) {
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+				
+				[self _buildGrid];
+			}
+		};
+		
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			if (++cnt == [_availableEmotions count]) {
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+				
+				[self _buildGrid];
+			}
+		};
+		
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:vo.largeImageURL]
+														   cachePolicy:kOrthodoxURLCachePolicy
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:imageSuccessBlock
+								  failure:imageFailureBlock];
+	}
+}
+
 
 #pragma mark - Navigation
-//- (void)_goGroup:(id)sender {
-//	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:changeGroup:)])
-//		[self.delegate emotionsPickerView:self changeGroup:((UIButton *)sender).tag];
-//}
-//
-//- (void)_goDelete {
-//	if ([_selectedEmotions count] > 0) {
-//		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
-//			[self.delegate emotionsPickerView:self deselectedEmotion:(HONEmotionVO *)[_selectedEmotions lastObject]];
-//		
-//		[_selectedEmotions removeLastObject];
-//	}
-//}
 
 
 #pragma mark - UI Presentation
@@ -146,7 +178,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		
 //		NSLog(@"CNT:[%02d] PAGE:[%d] COL:[%d] ROW:[%d]", cnt, page, col, row);
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * _gridItemSpacingSize.width, row * _gridItemSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * _gridItemSpacingSize.width, row * _gridItemSpacingSize.height) withEmotion:vo withDelay:cnt * 0.05125];
 		emotionItemView.delegate = self;
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];

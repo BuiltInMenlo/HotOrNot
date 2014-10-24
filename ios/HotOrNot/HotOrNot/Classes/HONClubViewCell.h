@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, HONClubViewCellType) {
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, retain) HONUserClubVO *clubVO;
+@property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
 @property (nonatomic, assign) HONClubViewCellType cellType;
 @property (nonatomic, assign) id <HONClubViewCellDelegate> delegate;
 @end

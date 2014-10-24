@@ -71,7 +71,7 @@
 	[HONAppDelegate incTotalForCounter:totalKey];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) forKey:@"prev_tab"];
 	[[NSUserDefaults standardUserDefaults] setObject:@(selectedIndex) forKey:@"current_tab"];
@@ -176,7 +176,7 @@
 	[[NSUserDefaults standardUserDefaults] setObject:@(tabBarButtonType) forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEventName]];

@@ -228,7 +228,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
 	imageLoadingView.frame = imageView.frame;
 	imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, - 22.0, - 22.0);
-	imageLoadingView.alpha = 0.667;
+	imageLoadingView.alpha = 0.00667;
 	[imageLoadingView setTag:[_emotions count]];
 	[imageLoadingView startAnimating];
 	[_loaderHolderView addSubview:imageLoadingView];

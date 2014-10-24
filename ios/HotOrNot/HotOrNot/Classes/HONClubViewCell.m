@@ -26,7 +26,6 @@
 @property (nonatomic, strong) NSArray *emotionVOs;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
-@property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
 @property (nonatomic) CGSize maxTitleLabelSize;
 @end
 
@@ -38,6 +37,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 @synthesize contactUserVO = _contactUserVO;
 @synthesize trivialUserVO = _trivialUserVO;
 @synthesize clubVO = _clubVO;
+@synthesize statusUpdateVO = _statusUpdateVO;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -134,6 +134,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_emotionVOs = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_statusUpdateVO];
 	
 	[super accVisible:NO];
+	
+	[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_statusUpdateVO.challengeID];
 	
 	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
 	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];

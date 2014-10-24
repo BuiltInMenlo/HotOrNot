@@ -22,7 +22,7 @@
 
 @interface HONEmotionsPickerView : UIView <UIScrollViewDelegate>
 - (id)initWithFrame:(CGRect)frame asEmotionGroupType:(HONStickerGroupType)stickerGroupType;
-
+- (void)preloadImages;
 - (void)disablePagesStartingAt:(int)page;
 - (void)scrollToPage:(int)page;
 

@@ -190,7 +190,7 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 	
 	__block BOOL isFound = NO;
-//	if (![[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:@"id"] intValue] == statusUpdateID) {
+	if (![[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:statusUpdateID]] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		[[HONAPICaller sharedInstance] retrieveSeenMembersChallengeWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
 			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSDictionary *dict = (NSDictionary *)obj;
@@ -204,7 +204,7 @@ static HONClubAssistant *sharedInstance = nil;
 			if (completion)
 				completion(isFound);
 		}];
-//	}
+	}
 }
 
 
@@ -566,7 +566,7 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 	
 	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
-	[seenClubs setValue:[@"" stringFromInt:statusUpdateID] forKey:[@"" stringFromInt:statusUpdateID]];
+	[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:[@"" stringFromInt:statusUpdateID]];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

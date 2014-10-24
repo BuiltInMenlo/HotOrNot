@@ -23,7 +23,6 @@
 @interface HONContactsViewController () <HONTableViewBGViewDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
-@property (nonatomic, strong) NSMutableArray *clubInviteContacts;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
@@ -312,7 +311,6 @@
 	_emailRecipients = @"";
 	_headRows = [NSMutableArray array];
 	_inAppUsers = [NSMutableArray array];
-	_clubInviteContacts = [NSMutableArray array];
 	_matchedUserIDs = [NSMutableArray array];
 	_recentClubs = [NSMutableArray array];
 

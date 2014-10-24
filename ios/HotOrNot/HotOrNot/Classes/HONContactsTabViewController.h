@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONContactsViewController.h"
+#import "HONViewController.h"
+#import "HONUserClubVO.h"
 
-
-@interface HONContactsTabViewController : HONContactsViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONContactsTabViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
 @end

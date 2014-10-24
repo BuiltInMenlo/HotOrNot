@@ -98,6 +98,15 @@
 	return (self);
 }
 
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	[super touchesBegan:touches withEvent:event];
+	NSLog(@"touchesBegan");
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	[super touchesEnded:touches withEvent:event];
+	NSLog(@"touchesEnded");
+}
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
@@ -203,6 +212,11 @@
 	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	lpGestureRecognizer.minimumPressDuration = 1.0;
+//	lpGestureRecognizer.delegate = self;
+//	[self.tableView addGestureRecognizer:lpGestureRecognizer];
+	
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
@@ -222,7 +236,7 @@
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
 	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:titleCaption];
-	[self.view addSubview:_headerView];
+	//[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(2.0, 2.0, 44.0, 44.0);
@@ -254,7 +268,7 @@
 	[super viewDidLoad];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
-//	_panGestureRecognizer.enabled = YES;
+	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -320,12 +334,12 @@
 		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
-	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
-										  withClubPhoto:_clubPhotoVO];
-		
-		[self _goReply];
-	}
+//	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
+//										  withClubPhoto:_clubPhotoVO];
+//		
+//		[self _goReply];
+//	}
 }
 
 
@@ -491,7 +505,6 @@
 		}
 	}];
 }
-
 
 
 #pragma mark - ActionSheet Delegates

@@ -46,7 +46,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 		[self addSubview:_imageView];
 		
 		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageView asLargeLoader:NO];
-		_imageLoadingView.alpha = 0.667;
+		_imageLoadingView.alpha = 0.00667;
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
