@@ -104,7 +104,6 @@
 		30B3091E19E2319C0017ACBF /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3091C19E2319C0017ACBF /* TapjoyResources.bundle */; };
 		30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091D19E2319C0017ACBF /* Tapjoy.framework */; };
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
-		30B3096B19E292D80017ACBF /* HockeySDK.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096819E292D80017ACBF /* HockeySDK.xcconfig */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
@@ -2548,7 +2547,7 @@
 		4C62651C15F96C7100AA7FCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 				TargetAttributes = {
 					30DB24AE19CBF64700DCFC49 = {
@@ -2713,7 +2712,6 @@
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				303BAD1819D5F0A000CB2501 /* shareButton_Active@2x.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
-				30B3096B19E292D80017ACBF /* HockeySDK.xcconfig in Resources */,
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
 				07B6E6FE1988515600DA0805 /* inviteFriends_nonActive@2x.png in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
@@ -3643,7 +3641,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -3676,7 +3673,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PROVISIONING_PROFILE = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
@@ -3690,7 +3687,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;

@@ -102,13 +102,13 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 }
 
 - (void)preloadImages {
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	[_progressHUD setYOffset:-77.0];
+//	if (_progressHUD == nil)
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
+//	[_progressHUD setYOffset:-77.0];
 	
 	__block int cnt = 0;
 	for (HONEmotionVO *vo in _availableEmotions) {
