@@ -13,8 +13,8 @@
 
 #import "HONAnimatedBGsViewController.h"
 #import "HONAnimatedBGViewFlowLayout.h"
-#import "HONCollectionView.h"
 #import "HONAnimatedBGCollectionViewCell.h"
+#import "HONCollectionView.h"
 #import "HONHeaderView.h"
 #import "HONEmotionVO.h"
 

@@ -54,7 +54,7 @@
 #import "HONSettingsViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONSuspendedViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 
 typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 	HONAppDelegateBitTesting0	= 0 << 0,

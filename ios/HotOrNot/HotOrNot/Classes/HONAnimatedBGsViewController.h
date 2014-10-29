@@ -10,10 +10,10 @@
 #import "HONEmotionVO.h"
 
 @class HONAnimatedBGsViewController;
-@protocol HONAnimatedBGViewControllerDelegate <NSObject>
+@protocol HONAnimatedBGsViewControllerDelegate <NSObject>
 - (void)animatedBGViewController:(HONAnimatedBGsViewController *)viewController didSelectEmotion:(HONEmotionVO *)emotionVO;
 @end
 
 @interface HONAnimatedBGsViewController : HONViewController <UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
-@property (nonatomic, assign) id <HONAnimatedBGViewControllerDelegate> delegate;
+@property (nonatomic, assign) id <HONAnimatedBGsViewControllerDelegate> delegate;
 @end

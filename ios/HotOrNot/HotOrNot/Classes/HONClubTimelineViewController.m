@@ -12,7 +12,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONClubTimelineViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 #import "HONUserProfileViewController.h"
 //#import "HONInviteContactsViewController.h"
 #import "HONClubPhotoViewCell.h"
@@ -20,7 +20,7 @@
 #import "HONClubPhotoVO.h"
 #import "HONHeaderView.h"
 
-@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONSelfieCameraViewControllerDelegate>
+@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIView *emptySetView;
@@ -302,7 +302,7 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply"
 									  withClubPhoto:_clubPhotoVO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
 		
 	[self presentViewController:navigationController animated:NO completion:^(void) {

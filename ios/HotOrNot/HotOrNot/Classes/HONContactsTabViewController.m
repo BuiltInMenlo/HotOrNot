@@ -24,14 +24,14 @@
 #import "HONTableViewBGView.h"
 #import "HONClubViewCell.h"
 #import "HONRegisterViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONClubTimelineViewController.h"
 
-@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONTableViewBGViewDelegate, HONSelfieCameraViewControllerDelegate, HONClubViewCellDelegate>
+@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONTableViewBGViewDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
@@ -363,7 +363,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 									 withProperties:@{@"src"	: @"header"}];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -405,7 +405,7 @@ static NSString * const kCamera = @"camera";
 //			[self.view addSubview:clubTimelineViewController.view];
 		
 		} else {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}

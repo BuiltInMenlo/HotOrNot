@@ -8,7 +8,7 @@
 
 
 #import "HONImagePickerViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 #import "HONTrivialUserVO.h"
 
 @interface HONImagePickerViewController ()

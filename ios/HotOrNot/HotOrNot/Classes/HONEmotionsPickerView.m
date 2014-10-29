@@ -25,7 +25,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic) CGSize gridItemSpacingSize;
 @property (nonatomic, strong) HONPaginationView *paginationView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) int prevPage;
 @property (nonatomic) int totalPages;
 @property (nonatomic) BOOL isGlobal;
@@ -33,14 +33,14 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 
 @implementation HONEmotionsPickerView
 @synthesize delegate = _delegate;
-@synthesize stickerGroupType = _stickerGroupType;
+@synthesize stickerGroupIndex = _stickerGroupIndex;
 
-- (id)initWithFrame:(CGRect)frame asEmotionGroupType:(HONStickerGroupType)stickerGroupType {
+- (id)initWithFrame:(CGRect)frame asGroupIndex:(int)stickerGroupIndex {
 	if ((self = [super initWithFrame:frame])) {
 		
 		_gridItemSpacingSize = CGSizeMake(kStickerImgSize.width + kStickerImgPaddingSize.width, kStickerImgSize.height + kStickerImgPaddingSize.height);
 		
-		_stickerGroupType = stickerGroupType;
+		_stickerGroupIndex = stickerGroupIndex;
 		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
 		
@@ -61,9 +61,8 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-		[[[HONStickerAssistant sharedInstance] fetchStickersForGroupType:_stickerGroupType] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		[[[HONStickerAssistant sharedInstance] fetchStickersForGroupIndex:_stickerGroupIndex] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
-//			*stop = (idx >= 2);
 		}];
 		
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
@@ -102,13 +101,16 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 }
 
 - (void)preloadImages {
-//	if (_progressHUD == nil)
-//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-//	[_progressHUD setYOffset:-77.0];
+	if (_activityIndicatorView == nil)
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+	_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 30.0);
+	[self addSubview:_activityIndicatorView];
+	
+	if (![_activityIndicatorView isAnimating])
+		[_activityIndicatorView startAnimating];
+	
+	NSLog(@"FRAME:[%@]", NSStringFromCGRect(_activityIndicatorView.frame));
+	//NSLocalizedString(@"hud_loading", @"Loading…");
 	
 	__block int cnt = 0;
 	for (HONEmotionVO *vo in _availableEmotions) {
@@ -116,9 +118,11 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			if (++cnt == [_availableEmotions count]) {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
+				if (_activityIndicatorView != nil) {
+					[_activityIndicatorView removeFromSuperview];
+					if ([_activityIndicatorView isAnimating])
+						[_activityIndicatorView stopAnimating];
+					_activityIndicatorView = nil;
 				}
 				
 				[self _buildGrid];
@@ -127,9 +131,11 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			if (++cnt == [_availableEmotions count]) {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
+				if (_activityIndicatorView != nil) {
+					[_activityIndicatorView removeFromSuperview];
+					if ([_activityIndicatorView isAnimating])
+						[_activityIndicatorView stopAnimating];
+					_activityIndicatorView = nil;
 				}
 				
 				[self _buildGrid];
@@ -156,6 +162,12 @@ static dispatch_queue_t sticker_request_operation_queue;
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	
+	[_pageViews removeAllObjects];
+	[_scrollView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		UIView *view = (UIView *)obj;
+		[view removeFromSuperview];
+	}];
+	
 	int cnt = 0;
 	int row = 0;
 	int col = 0;
@@ -164,14 +176,11 @@ static dispatch_queue_t sticker_request_operation_queue;
 	for (int i=0; i<_totalPages; i++) {
 		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 3.0, COLS_PER_ROW * _gridItemSpacingSize.width, ROWS_PER_PAGE * _gridItemSpacingSize.height)];
 		[holderView setTag:i];
-//		holderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
 	}
 	
 	for (HONEmotionVO *vo in _availableEmotions) {
-//		cnt = (cnt > 0 && (cnt % ((COLS_PER_ROW * ROWS_PER_PAGE) - 1)) == 0) ? cnt++ : cnt;
-		
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
@@ -221,18 +230,5 @@ static dispatch_queue_t sticker_request_operation_queue;
 		_prevPage = offsetPage;
 	}
 }
-//- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	int offsetPage = MIN(MAX(round(scrollView.contentOffset.x / scrollView.frame.size.width), 0), _totalPages);
-//	
-//	if (offsetPage != _prevPage) {
-//		[_paginationView updateToPage:offsetPage];
-//		
-//		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:didChangeToPage:withDirection:)])
-//			[self.delegate emotionsPickerView:self didChangeToPage:offsetPage withDirection:(_prevPage < offsetPage) ? 1 : -1];
-//		
-//		_prevPage = offsetPage;
-//	}
-//}
-
 
 @end

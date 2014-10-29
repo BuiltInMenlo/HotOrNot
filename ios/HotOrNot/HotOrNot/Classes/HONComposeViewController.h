@@ -1,5 +1,5 @@
 //
-//  HONChallengeCameraViewController.h
+//  HONComposeViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 9/6/13 @ 12:01 PM.
@@ -18,18 +18,9 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 	HONSelfieSubmitTypeSearchUser
 };
 
-@class HONSelfieCameraViewController;
-@protocol HONSelfieCameraViewControllerDelegate <NSObject>
-@optional
-- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController;
-- (void)selfieCameraViewController:(HONSelfieCameraViewController *)viewController didDismissByCanceling:(BOOL)isCanceled;
-@end
-
-@interface HONSelfieCameraViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface HONComposeViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initAsNewStatusUpdate;
 - (id)initWithUser:(HONTrivialUserVO *)trivialUserVO;
 - (id)initWithContact:(HONContactUserVO *)contactUserVO;
 - (id)initWithClub:(HONUserClubVO *)clubVO;
-
-@property (nonatomic, assign) id <HONSelfieCameraViewControllerDelegate> delegate;
 @end

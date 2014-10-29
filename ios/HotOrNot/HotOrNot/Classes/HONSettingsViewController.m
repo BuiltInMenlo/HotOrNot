@@ -24,7 +24,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONNetworkStatusViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONUsernameSearchViewController.h"
 
@@ -124,7 +124,7 @@
 - (void)_goCreateChallenge {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Create Status Update"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

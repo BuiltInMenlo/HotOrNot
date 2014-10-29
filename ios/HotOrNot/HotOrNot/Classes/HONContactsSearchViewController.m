@@ -10,7 +10,7 @@
 
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 #import "HONHeaderView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
@@ -383,7 +383,7 @@
 				
 				[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 					_isDismissing = YES;
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:YES completion:nil];
 					
@@ -405,7 +405,7 @@
 					
 					[[HONAPICaller sharedInstance] inviteInAppUsers:@[_searchUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 						_isDismissing = YES;
-						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 						[navigationController setNavigationBarHidden:YES];
 						[self presentViewController:navigationController animated:YES completion:nil];
 						
@@ -430,7 +430,7 @@
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 					_isDismissing = YES;
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:YES completion:nil];
 				}];
@@ -448,7 +448,7 @@
 
 					[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 						_isDismissing = YES;
-						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 						[navigationController setNavigationBarHidden:YES];
 						[self presentViewController:navigationController animated:YES completion:nil];
 					}];

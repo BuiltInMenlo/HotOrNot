@@ -19,7 +19,7 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 #import "HONUserProfileViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 
 @interface HONUsernameSearchViewController () <HONClubViewCellDelegate, HONSearchBarViewDelegate>
 @property (nonatomic, strong) NSMutableArray *searchUsers;
@@ -405,7 +405,7 @@
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				
 				[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:YES completion:nil];
 				}];
@@ -422,7 +422,7 @@
 					clubVO = [HONUserClubVO clubWithDictionary:result];
 					
 					[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
 						[navigationController setNavigationBarHidden:YES];
 						[self presentViewController:navigationController animated:YES completion:nil];
 					}];

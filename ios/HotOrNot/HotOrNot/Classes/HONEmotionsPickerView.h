@@ -16,16 +16,15 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO;
 //- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO;
 @optional
-//- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView changeGroup:(HONStickerGroupType)groupType;
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction;
 @end
 
 @interface HONEmotionsPickerView : UIView <UIScrollViewDelegate>
-- (id)initWithFrame:(CGRect)frame asEmotionGroupType:(HONStickerGroupType)stickerGroupType;
+- (id)initWithFrame:(CGRect)frame asGroupIndex:(int)stickerGroupIndex;
 - (void)preloadImages;
 - (void)disablePagesStartingAt:(int)page;
 - (void)scrollToPage:(int)page;
 
-@property (nonatomic, assign) HONStickerGroupType stickerGroupType;
+@property (nonatomic, assign) int stickerGroupIndex;
 @property (nonatomic, assign) id <HONEmotionsPickerViewDelegate> delegate;
 @end

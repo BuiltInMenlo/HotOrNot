@@ -14,7 +14,7 @@
 
 #import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
-#import "HONSelfieCameraViewController.h"
+#import "HONComposeViewController.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
@@ -374,7 +374,7 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewStatusUpdate]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
