@@ -215,8 +215,8 @@
 		
 		if (pickerView.stickerGroupType == groupType) {
 			if (pickerView.stickerGroupType == HONStickerGroupTypeObjects) {
-				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
-					[self.delegate cameraPreviewViewShowCamera:self];
+//				if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
+//					[self.delegate cameraPreviewViewShowCamera:self];
 			
 			} else {
 				for (UIView *view in _emotionsPickerHolderView.subviews) {

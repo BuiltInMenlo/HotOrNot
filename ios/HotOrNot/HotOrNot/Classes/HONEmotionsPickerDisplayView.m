@@ -28,6 +28,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIView *holderView;
 @property (nonatomic, strong) UIView *loaderHolderView;
 @property (nonatomic, strong) UIView *emotionHolderView;
+@property (nonatomic, strong) UIScrollView *emotionThumbsHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) UIImageView *previewThumbImageView;
@@ -71,12 +72,14 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_bgView.hidden = NO;
 		//[self addSubview:_bgView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0 + ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch] * 40.0), 320.0, kEmotionNormalFrame.size.height)];
+//		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 75.0 + ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch] * 40.0), 320.0, kEmotionNormalFrame.size.height)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 		_scrollView.showsHorizontalScrollIndicator = NO;
 		_scrollView.showsVerticalScrollIndicator = NO;
 		_scrollView.alwaysBounceHorizontal = YES;
+		_scrollView.userInteractionEnabled = NO;
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
@@ -97,11 +100,20 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		[fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
 //		[self addSubview:fullscreenButton];
 		
-		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(262.0, 296.0, 44.0, 44.0)];
+		_emotionThumbsHolderView = [[UIScrollView alloc] initWithFrame:CGRectMake(50.0, 296.0, 320.0, 50.0)];
+		_emotionThumbsHolderView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.00];
+		_emotionThumbsHolderView.contentSize = CGSizeMake(_emotionThumbsHolderView.frame.size.width, _emotionThumbsHolderView.frame.size.height);
+		_emotionThumbsHolderView.showsHorizontalScrollIndicator = NO;
+		_emotionThumbsHolderView.showsVerticalScrollIndicator = NO;
+		_emotionThumbsHolderView.alwaysBounceHorizontal = YES;
+		[self addSubview:_emotionThumbsHolderView];
+		
+		_previewThumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 296.0, 50.0, 50.0)];
+		_previewThumbImageView.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 		_previewThumbImageView.image = [UIImage imageNamed:@"addSelfieButton_nonActive"];
 		_previewThumbImageView.userInteractionEnabled = YES;
 		[_previewThumbImageView addSubview:[[UIImageView alloc] initWithFrame:CGRectMake(0.0, -19.0, 49.0, 86.0)]];
-		//[self addSubview:_previewThumbImageView];
+		[self addSubview:_previewThumbImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_previewThumbImageView withMask:[UIImage imageNamed:@"selfiePreviewMask"]];
 		
@@ -191,8 +203,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 - (void)_goFullScreen {
 	if ([self.delegate respondsToSelector:@selector(emotionsPickerDisplayViewGoFullScreen:)]) {
 		[self.delegate emotionsPickerDisplayViewGoFullScreen:self];
-		
-		
 	}
 }
 
@@ -233,8 +243,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	[imageLoadingView startAnimating];
 	[_loaderHolderView addSubview:imageLoadingView];
 
-//			_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
-//			_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
+//	_animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // scales proportionally
+//	_animatedImageView.contentMode = UIViewContentModeScaleToFill; // scales w/o proportion
 //	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 		_animatedImageView = [[FLAnimatedImageView alloc] init];
@@ -243,6 +253,16 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_animatedImageView.clipsToBounds = YES;
 		_animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
 		[imageView addSubview:_animatedImageView];
+		
+		
+		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+		animatedImageView.frame = CGRectMake(([_emotions count] - 1) * 50.0, 0.0, 50.0, 50.0);
+		animatedImageView.contentMode = UIViewContentModeScaleAspectFit;
+		animatedImageView.clipsToBounds = YES;
+		animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
+		[_emotionThumbsHolderView addSubview:animatedImageView];
+		
+		
 //
 //		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
 //		animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
@@ -259,7 +279,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url1]];
 //			animatedImageView.animatedImage = animatedImage;
 			
-			[UIView animateWithDuration:0.250 delay:0.125
+			
+
+			
+			[UIView animateWithDuration:0.00250 delay:0.125
 				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
 								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 			 
@@ -282,7 +305,16 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			
-			[UIView animateWithDuration:0.250 delay:0.125
+			UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * 50.0, 0.0, 50.0, 50.0)];
+			thumbImageView.image = image;
+			[_emotionThumbsHolderView addSubview:thumbImageView];
+			
+			if ([_emotions count] > 6) {
+				_emotionThumbsHolderView.contentSize = CGSizeMake(_emotionThumbsHolderView.contentSize.width + 50.0, _emotionThumbsHolderView.contentSize.height);
+				_emotionThumbsHolderView.contentOffset = CGPointMake(_emotionThumbsHolderView.contentOffset.x + 50.0, _emotionThumbsHolderView.contentOffset.y);
+			}
+			
+			[UIView animateWithDuration:0.00250 delay:0.125
 				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
 								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 			 
@@ -343,7 +375,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	}
 		
 	
-	[UIView animateWithDuration:0.125 delay:0.000
+	[UIView animateWithDuration:0.00125 delay:0.000
 		 usingSpringWithDamping:0.950 initialSpringVelocity:0.250
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
@@ -366,7 +398,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	int offset = MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width);
 	offset = ([_emotions count] != 1) ? offset - kEmotionPaddingSize.width : offset;
 	
-	[UIView animateWithDuration:0.250 delay:0.000
+	[UIView animateWithDuration:0.00250 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 

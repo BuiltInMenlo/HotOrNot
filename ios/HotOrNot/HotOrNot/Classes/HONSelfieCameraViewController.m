@@ -189,7 +189,7 @@
 
 		if (_selfieSubmitType != HONSelfieSubmitTypeReply) {
 			_isPushing = YES;
-			[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
+			[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
  
 		
 		} else {

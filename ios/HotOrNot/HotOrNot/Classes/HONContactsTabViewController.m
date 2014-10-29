@@ -232,10 +232,10 @@ static NSString * const kCamera = @"camera";
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.5;
-	lpGestureRecognizer.delegate = self;
-	[_tableView addGestureRecognizer:lpGestureRecognizer];
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	lpGestureRecognizer.minimumPressDuration = 0.5;
+//	lpGestureRecognizer.delegate = self;
+//	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
 	_accessContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
 	_accessContactsBGView.viewType = HONTableViewBGViewTypeAccessContacts;
@@ -400,12 +400,14 @@ static NSString * const kCamera = @"camera";
 	if (!_isPushing) {
 		_isPushing = YES;
 		if ([clubVO.submissions count] > 0) {
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:YES];
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:NO];
+//			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0];
+//			[self.view addSubview:clubTimelineViewController.view];
 		
 		} else {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:clubVO]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	}
 }
@@ -424,10 +426,6 @@ static NSString * const kCamera = @"camera";
 	} else if (button.tag == HONTableViewBGViewTypeCreateStatusUpdate) {
 		[self _goCreateChallenge];
 	}
-}
-
-- (void)_goFinishLongPress {
-	exit(0);
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {

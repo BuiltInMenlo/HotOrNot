@@ -212,11 +212,6 @@
 	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
-//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-//	lpGestureRecognizer.minimumPressDuration = 1.0;
-//	lpGestureRecognizer.delegate = self;
-//	[self.tableView addGestureRecognizer:lpGestureRecognizer];
-	
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
@@ -235,8 +230,10 @@
 	
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:titleCaption];
-	//[self.view addSubview:_headerView];
+//	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:titleCaption];
+	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
+	[_headerView removeBackground];
+	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(2.0, 2.0, 44.0, 44.0);
@@ -250,7 +247,7 @@
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:replyButton];
+//	[_headerView addButton:replyButton];
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -318,7 +315,8 @@
 									   withUserClub:_clubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
-	[self.navigationController popViewControllerAnimated:YES];
+	[self.navigationController popViewControllerAnimated:NO];
+//	[self.view removeFromSuperview];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {

@@ -14,7 +14,7 @@
 		<string>https://github.com/BuiltInMenlo/HotOrNot.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace</string>
+	<string>ios/HotOrNot/HotOrNot.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>E058A7C585165167CFF766653EC2932E029E6AA4</key>

@@ -24,9 +24,11 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UILabel *emotionLabel;
 @property (nonatomic, strong) UIView *tintedView;
+@property (nonatomic, strong) UIScrollView *emotionThumbsHolderView;
 
 @property (nonatomic, strong) NSMutableArray *emotionViews;
 @property (nonatomic, strong) NSMutableArray *emotions;
+
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
 @property (nonatomic) UIOffset indHistory;
@@ -39,9 +41,9 @@
 @synthesize clubPhotoVO = _clubPhotoVO;
 
 const CGRect kEmotionInitFrame = {80.0f, 80.0f, 53.0f, 53.0f};
-const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 212.0f, 212.0f};
+const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 320.0f, 320.0f};
 const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
-const CGSize kStickerPaddingSize = {108.0f, 108.0f};
+const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -79,11 +81,11 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	}
 	
 //	_imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
-	_imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-33.0, 0.0, 386.0, 588.0)];
+	_imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 320.0)];
 	[self.contentView addSubview:_imgView];
 	
 	
-	NSLog(@"IMG SIZE:[%@]", NSStringFromCGSize([UIScreen mainScreen].bounds.size));
+	NSLog(@"IMG SIZE:[%@]", NSStringFromCGSize(_imgView.frame.size));
 	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
 //		[self _changeTint];
 //		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
@@ -91,8 +93,8 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	} else {
 		if (_clubPhotoVO.photoType == HONClubPhotoTypeGIF) {
 			FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-			animatedImageView.frame = self.contentView.frame;
-			animatedImageView.contentMode = UIViewContentModeScaleAspectFill; // fills frame w/ proprotions
+			animatedImageView.frame = CGRectMake(0.0, 0.0, 320.0, 320.0);
+			animatedImageView.contentMode = UIViewContentModeScaleToFill; // fills frame w/o proprotions
 			animatedImageView.clipsToBounds = YES;
 			[_imgView addSubview:animatedImageView];
 			
@@ -128,26 +130,6 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	
 	//[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]]];
 	
-	CGSize maxSize = CGSizeMake(296.0, 24.0);
-	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize
-													  options:(NSStringDrawingTruncatesLastVisibleLine)
-												   attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19]}
-													  context:nil].size;
-	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 80.0, MIN(maxSize.width, size.width), 24.0)];
-	usernameLabel.backgroundColor = [UIColor clearColor];
-	usernameLabel.textColor = [UIColor whiteColor];
-	usernameLabel.shadowColor = [UIColor blackColor];
-	usernameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
-	usernameLabel.text = _clubPhotoVO.username;
-	//[self.contentView addSubview:usernameLabel];
-	
-	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	usernameButton.frame = usernameLabel.frame;
-	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-	//[self.contentView addSubview:usernameButton];
-					  
 	_emotions = [NSMutableArray array];
 	_emotionViews = [NSMutableArray array];
 	_indHistory = UIOffsetZero;
@@ -155,15 +137,13 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	_emotionInsetAmt = 0.5 * (320.0 - kEmotionLoadedFrame.size.width);
 	
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, (([UIScreen mainScreen].bounds.size.height - kEmotionLoadedFrame.size.height) * 0.5), 320.0, kEmotionLoadedFrame.size.height)];
-//	_scrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * (kEmotionLoadedFrame.size.width + 16.0), _scrollView.frame.size.height);
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kEmotionLoadedFrame.size.height)];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	_scrollView.showsVerticalScrollIndicator = NO;
 	_scrollView.alwaysBounceHorizontal = YES;
 	_scrollView.delegate = self;
 	_scrollView.pagingEnabled = YES;
-//	_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 	[self.contentView addSubview:_scrollView];
 	
 	int cnt = 0;
@@ -183,13 +163,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	}
 	
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * [_emotions count], _scrollView.frame.size.height);//([_emotions count] == 1) ? _scrollView.frame.size.width : MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width), _scrollView.contentSize.height);
-//	[_scrollView setContentOffset:CGPointMake(-_scrollView.contentInset.left, 0.0) animated:NO];
-	
-//	if ([_emotions count] == 1)
-//		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _scrollView.contentInset.left, 0.0, -_scrollView.contentInset.right);
-	
-	
-	
+
 	_tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 50.0, 320.0, 47.0)];
 	_tintedView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 //	[self.contentView addSubview:_tintedView];
@@ -204,29 +178,6 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	
 	[self _transitionToCaption:((HONEmotionVO *)[_emotions firstObject]).emotionName withCompletion:nil];
 	
-	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
-	participantsLabel.backgroundColor = [UIColor clearColor];
-	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	participantsLabel.textColor = [UIColor blackColor];
-//	participantsLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
-//	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	participantsLabel.text = @"Seen: 1";//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
-	//[self.contentView addSubview:participantsLabel];
-	
-	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-		if ([[result objectForKey:@"results"] count] > 0)
-			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d", [[result objectForKey:@"results"] count]];
-	}];
-	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 34.0, 150.0, 30.0)];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	timeLabel.textColor = [UIColor blackColor];
-//	timeLabel.shadowColor = [UIColor colorWithWhite:0.5 alpha:0.75];
-//	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
-	//[self.contentView addSubview:timeLabel];
 	
 //	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
@@ -234,13 +185,44 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 //	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
 //	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 //	[self.contentView addSubview:likeButton];
-//	
-//	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	replyButton.frame = CGRectMake(174, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
-//	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
-//	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
-//	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-//	[self.contentView addSubview:replyButton];
+	
+	_emotionThumbsHolderView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 320.0, 320.0, 50.0)];
+	_emotionThumbsHolderView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.00];
+	_emotionThumbsHolderView.contentSize = CGSizeMake(_emotionThumbsHolderView.frame.size.width, _emotionThumbsHolderView.frame.size.height);
+	_emotionThumbsHolderView.showsHorizontalScrollIndicator = NO;
+	_emotionThumbsHolderView.showsVerticalScrollIndicator = NO;
+	_emotionThumbsHolderView.alwaysBounceHorizontal = YES;
+	[self addSubview:_emotionThumbsHolderView];
+//
+	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	replyButton.frame = CGRectMake(0.0, 370.0, 320.0, 248.0);
+	replyButton.backgroundColor = [UIColor whiteColor];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:replyButton];
+	
+	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 370.0, 150.0, 30.0)];
+	participantsLabel.backgroundColor = [UIColor clearColor];
+	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	participantsLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
+	[self.contentView addSubview:participantsLabel];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 370.0, 150.0, 30.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
+	[self.contentView addSubview:timeLabel];
+
+
+	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"results"] count] > 0)
+			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d/%d", [[result objectForKey:@"results"] count], _clubVO.totalMembers];
+	}];
+	
 	
 	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 50.0, 50.0, 16.0)];
 	_scoreLabel.backgroundColor = [UIColor clearColor];
@@ -249,15 +231,6 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
 	_scoreLabel.text = @"0";
 //	[self.contentView addSubview:_scoreLabel];
-}
-
-
-- (void)_goSelectorDelay:(id)sender {
-	NSMutableArray *emotions = [NSMutableArray array];
-	[_scrollView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if (idx % 2 == 0)
-			[emotions addObject:[((UIView *)obj).subviews firstObject]];
-	}];
 }
 
 
@@ -287,7 +260,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 - (void)_goNextSticker {
 	int offset = (_scrollView.contentOffset.x + self.frame.size.width == _scrollView.contentSize.width) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
 	
-	[UIView animateWithDuration:0.250 delay:0.000
+	[UIView animateWithDuration:0.000250 delay:0.000
 		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
@@ -395,6 +368,10 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 			imageLoadingView.hidden = YES;
 			[imageLoadingView removeFromSuperview];
 			
+			UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(index * 50.0, 0.0, 50.0, 50.0)];
+			thumbImageView.image = image;
+			[_emotionThumbsHolderView addSubview:thumbImageView];
+			
 			[UIView beginAnimations:@"fade" context:nil];
 			[UIView setAnimationDuration:0.250];
 			[UIView setAnimationDelay:0.125];
@@ -411,7 +388,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 							 } completion:^(BOOL finished) {
 								 if (index == 0) {
-									 _stickerTimer = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+									 _stickerTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
 								 }
 							 }];
 			
@@ -433,7 +410,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 		
 	} else {
 		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-		animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+		animatedImageView.contentMode = UIViewContentModeScaleToFill;//UIViewContentModeScaleAspectFit; // centers in frame
 		animatedImageView.clipsToBounds = YES;
 		animatedImageView.frame = kEmotionLoadedFrame;
 		animatedImageView.alpha = 0.0;
@@ -447,6 +424,13 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 			dispatch_async(dispatch_get_main_queue(), ^{
 				animatedImageView.animatedImage = animatedImage1;
 				
+				FLAnimatedImageView *animatedThumbImageView = [[FLAnimatedImageView alloc] init];
+				animatedThumbImageView.frame = CGRectMake(index * 50.0, 0.0, 50.0, 50.0);
+				animatedThumbImageView.contentMode = UIViewContentModeScaleAspectFit;
+				animatedThumbImageView.clipsToBounds = YES;
+				animatedThumbImageView.animatedImage = animatedImage1;
+				[_emotionThumbsHolderView addSubview:animatedThumbImageView];
+				
 				[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
 					 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
 									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
@@ -455,6 +439,7 @@ const CGSize kStickerPaddingSize = {108.0f, 108.0f};
 									 animatedImageView.alpha = 1.0;
 									 animatedImageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 								 } completion:^(BOOL finished) {
+									 _stickerTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
 								 }];
 			});
 		});

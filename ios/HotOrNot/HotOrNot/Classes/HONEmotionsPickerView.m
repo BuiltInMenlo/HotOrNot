@@ -69,7 +69,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
-		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 13.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
+		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 160.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
 		_paginationView.hidden = (_totalPages == 1);
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
@@ -162,7 +162,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * _gridItemSpacingSize.width, ROWS_PER_PAGE * _gridItemSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 3.0, COLS_PER_ROW * _gridItemSpacingSize.width, ROWS_PER_PAGE * _gridItemSpacingSize.height)];
 		[holderView setTag:i];
 //		holderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[_pageViews addObject:holderView];
