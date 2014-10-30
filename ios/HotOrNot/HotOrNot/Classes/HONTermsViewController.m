@@ -17,12 +17,16 @@
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"terms"]
 							 title:NSLocalizedString(@"terms_service", @"Terms of service")])) {
+		
+		_viewStateType = HONStateMitigatorViewStateTypeLegal;
+		_totalType = HONStateMitigatorTotalTypeLegal;
 	}
 	
 	return (self);
 }
 
 
+#pragma mark - View Lifecycle
 #pragma mark - Navigation
 - (void)_goClose {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Terms of Service Close"];

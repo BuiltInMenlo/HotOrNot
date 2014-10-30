@@ -41,7 +41,6 @@
 const CGRect kEmotionInitFrame = {80.0f, 80.0f, 53.0f, 53.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 320.0f, 320.0f};
 const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
-const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -56,7 +55,7 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		_emotions = [NSMutableArray array];
 		_emotionViews = [NSMutableArray array];
 		_indHistory = UIOffsetZero;
-		_emotionSpacingSize = CGSizeMake(kEmotionLoadedFrame.size.width + kStickerPaddingSize.width, kEmotionLoadedFrame.size.height + kStickerPaddingSize.height);
+		_emotionSpacingSize = CGSizeMake(kEmotionLoadedFrame.size.width + 0.0, kEmotionLoadedFrame.size.height + 0.0);
 		_emotionInsetAmt = 0.5 * (320.0 - kEmotionLoadedFrame.size.width);
 	}
 	
@@ -148,7 +147,7 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	[self.contentView addSubview:bgView];
 	
 	_emotionThumbsHolderView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 320.0, 320.0, 50.0)];
-	_emotionThumbsHolderView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.00];
+	_emotionThumbsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.965];
 	_emotionThumbsHolderView.contentSize = CGSizeMake(_emotionThumbsHolderView.frame.size.width, _emotionThumbsHolderView.frame.size.height);
 	_emotionThumbsHolderView.showsHorizontalScrollIndicator = NO;
 	_emotionThumbsHolderView.showsVerticalScrollIndicator = NO;
@@ -237,7 +236,7 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
 		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
-		emotionView.frame = CGRectOffset(emotionView.frame, _emotionInsetAmt + (cnt * (kEmotionLoadedFrame.size.width + kStickerPaddingSize.width)), 0.0);
+		emotionView.frame = CGRectOffset(emotionView.frame, _emotionInsetAmt + (cnt * _emotionSpacingSize.width), 0.0);
 		[_scrollView addSubview:emotionView];
 		[_emotionViews addObject:emotionView];
 		[_emotions addObject:emotionVO];

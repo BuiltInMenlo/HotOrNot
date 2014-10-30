@@ -6,11 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-//#import "HONTableViewCell.h"
 #import "HONToggleViewCell.h"
 #import "HONUserClubVO.h"
 
-typedef NS_ENUM(NSInteger, HONClubViewCellType) {
+typedef NS_ENUM(NSUInteger, HONClubViewCellType) {
 	HONClubViewCellTypeBlank = 0,
 	HONClubViewCellTypeDeviceContact,
 	HONClubViewCellTypeInAppUser,

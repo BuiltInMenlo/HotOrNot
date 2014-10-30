@@ -27,15 +27,26 @@
 
 @implementation HONComposeSubmitViewController
 
+- (id)init {
+	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeComposeSubmit;
+		_viewStateType = HONStateMitigatorViewStateTypeComposeSubmit;
+	}
+	
+	return (self);
+}
 
 - (id)initWithSubmitParameters:(NSDictionary *)submitParams {
-	if ((self = [super init])) {
+	if ((self = [self init])) {
 		_submitParams = [submitParams mutableCopy];
 	}
 	
 	return (self);
 }
 
+- (void)dealloc {
+	[super destroy];
+}
 
 
 #pragma mark - Data Calls
@@ -214,7 +225,7 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
-	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom - kTabSize.height, _tableView.contentInset.right)];
+	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom - submitButton.frame.size.height, _tableView.contentInset.right)];
 }
 
 - (void)viewDidLoad {
@@ -224,38 +235,11 @@
 //	_panGestureRecognizer.enabled = YES;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
-	
-//	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-	
-	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
-	UIViewController *parentVC = (UIViewController *)[self.navigationController.viewControllers firstObject];
-	UIViewController *currentVC = (UIViewController *)[self.navigationController.viewControllers lastObject];
-	NSLog(@"\nself.navigationController.VCs:[%@]\nparentVC:[%@]\ncurrentVC:[%@]", self.navigationController.viewControllers, parentVC, currentVC);
-	
-//	UINavigationController *navigationController = (UINavigationController *)self.presentedViewController;
-//	UIViewController *presentedVC = (UIViewController *)[navigationController.viewControllers lastObject];
-//	NSLog(@"\nnavigationController.VCs:[%@]\npresentedVC:[%@]", navigationController.viewControllers, presentedVC);
-	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
-	
-	if ([currentVC isKindOfClass:self.class]) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-	}
-}
-
 
 #pragma mark - UI Presentation
 - (void)_finishSubmit {
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 	}];
 }

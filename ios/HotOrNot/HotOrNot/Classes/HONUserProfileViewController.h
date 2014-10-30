@@ -8,18 +8,18 @@
 
 #import "HONViewController.h"
 
-typedef NS_ENUM(NSInteger, HONUserProfileType) {
+typedef NS_ENUM(NSUInteger, HONUserProfileType) {
 	HONUserProfileTypeUser,
 	HONUserProfileTypeOpponent
 };
 
-typedef NS_ENUM(NSInteger, HONUserProfileActionSheetType) {
+typedef NS_ENUM(NSUInteger, HONUserProfileActionSheetType) {
 	HONUserProfileActionSheetTypeVerify,
 	HONUserProfileActionSheetTypeSocial
 };
 
 
-typedef NS_ENUM(NSInteger, HONUserProfileAlertType) {
+typedef NS_ENUM(NSUInteger, HONUserProfileAlertType) {
 	HONUserProfileAlertTypeInvite,
 	HONUserProfileAlertTypeDeleteChallenge,
 	HONUserProfileAlertTypeFollow,

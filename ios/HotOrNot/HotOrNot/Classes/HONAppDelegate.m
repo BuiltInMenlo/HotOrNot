@@ -23,6 +23,7 @@
 #import "NSData+Base64.h"
 #import "NSString+Base64.h"
 #import "NSString+DataTypes.h"
+#import "NSUserDefaults+Replacements.h"
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
@@ -33,7 +34,7 @@
 #import "KeychainItemWrapper.h"
 #import "NHThreadThis.h"
 #import "PicoSticker.h"
-#import "Reachability.h"
+//#import "Reachability.h"
 #import "TSTapstream.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -56,13 +57,6 @@
 #import "HONSuspendedViewController.h"
 #import "HONComposeViewController.h"
 
-typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
-	HONAppDelegateBitTesting0	= 0 << 0,
-	HONAppDelegateBitTesting1	= 1 << 0,
-	HONAppDelegateBitTesting2	= 1 << 0,
-	HONAppDelegateBitTesting3	= 1 << 0,
-	HONAppDelegateBitTesting4	= 1 << 0,
-};
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
@@ -239,19 +233,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"switches"] objectForKey:key] uppercaseString] isEqualToString:@"YES"]);
 }
 
-+ (int)incTotalForCounter:(NSString *)key {
-	key = [key stringByAppendingString:@"_total"];
-	int tot = ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) ? 0 : [[[NSUserDefaults standardUserDefaults] objectForKey:key] intValue] + 1;
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@(tot) forKey:key];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	return (tot);
-}
-
-+ (int)totalForCounter:(NSString *)key {
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:[key stringByAppendingString:@"_total"]] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:[key stringByAppendingString:@"_total"]] intValue] : -1);
-}
 
 + (NSString *)kikCardURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
@@ -299,44 +280,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
 }
 
-+ (void)resetTotals {
-	NSArray *totalKeys = @[@"boot_total",
-						   @"background_total",
-						   @"friendsTab_total",
-						   @"friendsTabRefresh_total",
-						   @"newsTab_total",
-						   @"newsTabRefresh_total",
-						   @"clubsTab_total",
-						   @"clubsTabRefresh_total",
-						   @"verifyAction_total",
-						   @"timeline_total",
-						   @"timelineRefresh_total",
-						   @"feedItem_total",
-						   @"feedItemRefresh_total",
-						   @"activity_total",
-						   @"activityRefresh_total",
-						   @"preview_total",
-						   @"camera_total",
-						   @"join_total",
-						   @"like_total",
-						   @"messages_total",
-						   @"messagesRefresh_total",
-						   @"search_total",
-						   @"suggested_total",
-						   @"details_total",
-						   @"profile_total",
-						   @"invite_total",
-						   @"tracking_total"];
-	
-	for (NSString *key in totalKeys) {
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		[[NSUserDefaults standardUserDefaults] setObject:@(-1) forKey:key];
-	}
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag {
 //	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
 	
@@ -369,67 +312,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)changeTabToIndex:(NSNumber *)selectedIndex {
 	self.tabBarController.selectedIndex = [selectedIndex intValue];
-}
-
-+ (BOOL)hasNetwork {
-	[[Reachability reachabilityForInternetConnection] startNotifier];
-	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
-	
-	return !(networkStatus == NotReachable);
-}
-
-+ (BOOL)canPingAPIServer {
-	return (!([[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
-}
-
-
-+ (BOOL)canPingConfigServer {
-//	struct sockaddr_in address;
-//	address.sin_len = sizeof(address);
-//	address.sin_family = AF_INET;
-//	address.sin_port = htons(80);
-//	address.sin_addr.s_addr = inet_addr(kConfigURL);
-	//
-//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
-	
-	//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
-	return (YES);
-}
-
-+ (BOOL)isValidEmail:(NSString *)checkString {
-	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
-	
-	NSString *stricterFilterString = @"^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z‌​]{2,4})$";
-	NSString *laxString = @".+@([A-Za-z0-9]+\\.)+[A-Za-z]{2}[A-Za-z]*";
-	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", (stricterFilter) ? stricterFilterString : laxString];
-	
-	return ([emailTest evaluateWithObject:checkString]);
-}
-
-+ (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
-	if ([phoneNumber length] > 0) {
-		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
-		
-		if (![[formattedNumber substringToIndex:1] isEqualToString:@"+"])
-			formattedNumber = [@"+" stringByAppendingString:formattedNumber];
-		
-		return (formattedNumber);
-	}
-	
-	return ([[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""]);
-}
-
-+ (NSDictionary *)parseQueryString:(NSString *)queryString {
-	NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-	for (NSString *pair in [queryString componentsSeparatedByString:@"&"]) {
-		NSArray *kv = [pair componentsSeparatedByString:@"="];
-		NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-		params[kv[0]] = val;
-	}
-	
-	return (params);
 }
 
 
@@ -492,12 +374,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		if (_isFromBackground) {
 			NSString *notificationName = @"";
-			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
-				case 0:
+//			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
+			switch ([[HONStateMitigator sharedInstance] currentViewStateType]) {
+				case HONStateMitigatorViewStateTypeFriends:
 					notificationName = @"REFRESH_CONTACTS_TAB";
 					break;
 					
-				case 1:
+				case HONStateMitigatorViewStateTypeSettings:
 					notificationName = @"REFRESH_SETTINGS_TAB";
 					break;
 					
@@ -512,7 +395,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
-											 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
+											 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
 		}
 	}];
 }
@@ -521,6 +404,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			
+			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
+				
+			}
 			
 			if ([[result objectForKey:@"email"] length] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -666,23 +554,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
+	
 	[KeenClient disableGeoLocation];
+	
+	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
+	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
+	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
 //	NSLog(@"PAD:%@", [NSString stringWithFormat:@"%0*d", 8, [@"1F604" length]]);
 	
+	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeBoot];
+	[[HONStateMitigator sharedInstance] updateCurrentViewState:HONStateMitigatorViewStateTypeNotAvailable];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
-	[[NSUserDefaults standardUserDefaults] setValue:@"LAUNCH" forKey:@"entry"];
 	
 //	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
 //	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
 //	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
 //	CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
-//	
+//
 //	NSMutableString *result = [NSMutableString string];
 //	for (int i=0; i<sizeof cHMAC; i++) {
 //		NSLog(@"MD5-UTF16:[%@]", result);
@@ -707,7 +599,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
 	[keychain setObject:@"" forKey:CFBridgingRelease(kSecValueData)]; // device id
 	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrService)]; // phone #
-	[HONAppDelegate resetTotals];
+//	[HONAppDelegate resetTotals];
+	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 #endif
 	
 #if __FORCE_REGISTER__ == 1
@@ -728,13 +621,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[self _establishUserDefaults];
 	
-	if ([HONAppDelegate hasNetwork]) {
-		if (![HONAppDelegate canPingConfigServer]) {
+	if ([[HONAPICaller sharedInstance] hasNetwork]) {
+		if (![[HONAPICaller sharedInstance] canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
 		
-		[HONAppDelegate incTotalForCounter:@"boot"];
+		[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBoot];
 		
 		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
@@ -746,8 +639,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
+	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);//[[HONStateMitigator sharedInstance] appExitTimestamp]);
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
-									 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
+									 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
 	
 	//[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
@@ -768,19 +662,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
 	
-	[HONAppDelegate incTotalForCounter:@"background"];
+//	[HONAppDelegate incTotalForCounter:@"background"];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
-									 withProperties:@{@"total"		: [@"" stringFromInt:[HONAppDelegate incTotalForCounter:@"background"]],
-													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString]}];
+									 withProperties:@{@"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]],
+													  @"duration"	: [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]}];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
+	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	
 	UIBackgroundTaskIdentifier taskId = [application beginBackgroundTaskWithExpirationHandler:^(void) {
 		NSLog(@"Background task is being expired.");
@@ -816,13 +706,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)applicationWillEnterForeground:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
-	[[NSUserDefaults standardUserDefaults] setValue:@"BACKGROUND" forKey:@"entry"];
+	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeSpringboard];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
-									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : [[HONDateTimeAlloter sharedInstance] orthodoxBlankTimestampFormattedString],
-													  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
+									 withProperties:@{@"duration"	: [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]],
+													  @"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground]]}];
 	
 	_isFromBackground = YES;
 }
@@ -843,21 +731,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:@(-1) forKey:@"tracking_total"];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[HONStateMitigator sharedInstance] resetTotalCounterForType:HONStateMitigatorTotalTypeTrackingCalls withValue:0];
+	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
+	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Became Active"];
 
 	
 	if (_isFromBackground) {
-		if ([HONAppDelegate hasNetwork]) {
+		if ([[HONAPICaller sharedInstance] hasNetwork]) {
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
-				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
+				if ([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground] == 3) {
 					if (_insetOverlayView == nil) {
 						_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
 						_insetOverlayView.delegate = self;
@@ -886,7 +770,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				}
 			}
 			
-			if (![HONAppDelegate canPingConfigServer]) {
+			if (![[HONAPICaller sharedInstance] canPingConfigServer]) {
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
@@ -905,14 +789,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
+	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Terminating"
-									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+									 withProperties:@{@"duration"	: [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]}];
 	
 }
 
@@ -932,9 +811,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			NSString *username = [[path firstObject] lowercaseString];
 			NSString *clubName = [[path lastObject] lowercaseString];
 			
-			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
-				[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
-			[[NSUserDefaults standardUserDefaults] setValue:@"DEEPLINK" forKey:@"entry"];
+			[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeDeepLink];
 			
 			// already a member
 			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
@@ -1097,9 +974,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"entry"];
-	[[NSUserDefaults standardUserDefaults] setValue:@"PUSH" forKey:@"entry"];
+	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeRemoteNotification];
 	
 	NSString *typeID = [[userInfo objectForKey:@"aps"] objectForKey:@"type"];
 	_clubID = [[[userInfo objectForKey:@"aps"] objectForKey:@"club_id"] intValue];
@@ -1159,36 +1034,37 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_establishUserDefaults {
-	NSDictionary *userDefaults = @{@"install_date"		: [NSDate new],
-								   @"is_deactivated"	: [@"" stringFromBOOL:NO],
+	NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
 								   @"votes"				: @[],
 								   @"local_challenges"	: @[],
 								   @"upvotes"			: @[],
-								   @"activity_total"	: @(0),
-								   @"prev_tab"			: @(-1),
-								   @"current_tab"		: @(0),
-								   @"active_date"		: @"0000-00-00 00:00:00",
-								   @"tracking_interval"	: @"0000-00-00 00:00:00",
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
-	for (NSString *key in userDefaults) {
+	for (NSString *key in [userDefaults allKeys]) {
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
 			[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
 	}
 	
+	for (NSString *key in [[[HONStateMitigator sharedInstance] _totalKeyPrefixesForTypes] allKeys]) {
+		NSString *keyName = [key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix];
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:keyName] == nil)
+			[[HONStateMitigator sharedInstance] resetTotalCounterForType:(HONStateMitigatorTotalType)[[[HONStateMitigator sharedInstance] _totalKeyPrefixesForTypes] objectForKey:keyName] withValue:-1];
+	}
 	
 #if __FORCE_REGISTER__ == 1
-	for (NSString *key in userDefaults) {
+	for (NSString *key in [userDefaults allKeys]) {
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
 		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
 	}
 	
-	[HONAppDelegate resetTotals];
+//	[HONAppDelegate resetTotals];
+	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 #endif
 	
 #if __RESET_TOTALS__ == 1
-	[HONAppDelegate resetTotals];
+//	[HONAppDelegate resetTotals];
+	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 #endif
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1453,8 +1329,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				break;
 				
 			case 1:
-				[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
+				[[HONStateMitigator sharedInstance] writeAppInstallTimestamp];
 				break;
 				
 			case 2:

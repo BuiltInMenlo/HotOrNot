@@ -8,7 +8,7 @@
 
 #import "HONViewController.h"
 
-typedef NS_OPTIONS(NSInteger, HONFeedContentType) {
+typedef NS_OPTIONS(NSUInteger, HONFeedContentType) {
 	HONFeedContentTypeEmpty				= 0 << 0,	// 000000 - 0  */*
 	HONFeedContentTypeAutoGenClubs		= 1 << 0,	// 000001 - 1  */*
 	HONFeedContentTypeOwnedClubs		= 1 << 1,	// 000010 - 2  */*
@@ -18,7 +18,7 @@ typedef NS_OPTIONS(NSInteger, HONFeedContentType) {
 	HONFeedContentTypeMatchedClubs		= 1 << 5	// 100000 - 32 */*
 };
 
-typedef NS_ENUM(NSInteger, HONClubsNewsFeedAlertType) {
+typedef NS_ENUM(NSUInteger, HONClubsNewsFeedAlertType) {
 	HONClubsNewsFeedAlertTypeJoinClub = 0,
 	HONClubsNewsFeedAlertTypeInviteFriends,
 	HONClubsNewsFeedAlertTypeCreateClub

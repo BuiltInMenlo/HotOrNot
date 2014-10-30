@@ -330,7 +330,7 @@
 		}
 	}
 	
-//	for (NSString *key in dict) {
+//	for (NSString *key in [dict keyEnumerator]) {
 //		for (HONUserClubVO *vo in [dict objectForKey:key])
 //			NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.clubName);
 //	}

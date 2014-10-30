@@ -11,7 +11,7 @@
 @class JLBAnimator;
 @class JLBAnimationKeyFrame;
 
-typedef NS_ENUM(NSInteger, JLBAnimationCurve)
+typedef NS_ENUM(NSUInteger, JLBAnimationCurve)
 {
 	kJLBAnimationCurveLinear = 0,
 	kJLBAnimationCurveEaseInOut,

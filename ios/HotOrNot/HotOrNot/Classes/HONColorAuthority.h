@@ -23,7 +23,7 @@ typedef enum {
 @interface HONColorAuthority : NSObject
 + (HONColorAuthority *)sharedInstance;
 
-- (UIColor *)honPercentGreyscaleColor:(CGFloat)percent;
+- (UIColor *)percentGreyscaleColor:(CGFloat)percent;
 - (UIColor *)honKhakiColor;
 - (UIColor *)honBGLightGreyColor;
 - (UIColor *)honBlueTextColor;
@@ -33,6 +33,10 @@ typedef enum {
 - (UIColor *)honDarkGreyTextColor;
 - (UIColor *)honLightGreyTextColor;
 - (UIColor *)honPlaceholderTextColor;
+- (UIColor *)honRandomColor;
+- (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)offset;
+- (UIColor *)honRandomColorWithStartingSaturation:(CGFloat)offset;
+- (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)brightness andSaturation:(CGFloat)saturation;
 
 - (NSShadow *)orthodoxUIShadowAttribute;
 

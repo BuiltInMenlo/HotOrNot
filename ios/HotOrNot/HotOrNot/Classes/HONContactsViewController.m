@@ -7,6 +7,7 @@
 //
 
 #import "NSString+DataTypes.h"
+#import "NSString+Formatting.h"
 
 #import "MBProgressHUD.h"
 #import "KeychainItemWrapper.h"
@@ -45,6 +46,8 @@
 - (void)dealloc {
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
+	
+	[super destroy];
 }
 
 
@@ -106,7 +109,7 @@
 			
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]],
+																		  @"alt_id"		: [[dict objectForKey:@"phone"] normalizedPhoneNumber],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
 				[_matchedUserIDs addObject:vo.altID];
 				[_inAppUsers addObject:vo];
@@ -145,7 +148,7 @@
 				
 				HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																			  @"username"	: [dict objectForKey:@"username"],
-																			  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]],
+																			  @"alt_id"		: [[dict objectForKey:@"phone"] normalizedPhoneNumber],
 																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
 				[_matchedUserIDs addObject:vo.altID];
 				[_inAppUsers addObject:vo];

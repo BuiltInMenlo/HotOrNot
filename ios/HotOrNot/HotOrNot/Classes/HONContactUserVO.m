@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+Formatting.h"
+
 #import "HONContactUserVO.h"
 
 @implementation HONContactUserVO
@@ -28,7 +30,7 @@
 	
 	if ([vo.rawNumber length] > 0) {
 		vo.email = @"";
-		vo.mobileNumber = [HONAppDelegate normalizedPhoneNumber:vo.rawNumber];
+		vo.mobileNumber = [vo.rawNumber normalizedPhoneNumber];
 		
 	} else
 		vo.mobileNumber = @"";

@@ -6,8 +6,10 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
+#import "NSString+Validate.h"
+
+#import "MBProgressHUD.h"
 
 #import "HONMatchContactsViewController.h"
 #import "HONHeaderView.h"
@@ -146,7 +148,6 @@
 		[_textField becomeFirstResponder];
 	
 	} else if (alertView.tag == 1) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:nil];
 	}
 }
@@ -182,7 +183,7 @@
 		
 		
 		if (_isEmail) {
-			if ([HONAppDelegate isValidEmail:textField.text])
+			if ([textField.text isValidEmailAddress])
 				[self _submitContact];
 			
 			else {

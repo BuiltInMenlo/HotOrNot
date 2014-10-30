@@ -19,7 +19,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeUnknown;
+		_viewStateType = HONStateMitigatorViewStateTypeUnknown;
 		
+		_className = (NSString *)self.class;
 	}
 	
 	return (self);
@@ -38,9 +41,19 @@
 }
 
 
+#pragma mark - Static APIs
++ (NSString *)className {
+	return ((NSString *)self.class);
+}
+
+
+#pragma mark - Public APIs
+- (void)destroy {
+	_panGestureRecognizer.delegate = nil;
+}
+
+
 #pragma mark - Data Calls
-
-
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
@@ -62,6 +75,9 @@
 	_panGestureRecognizer.delegate = self;
 	_panGestureRecognizer.enabled = NO;
 	[self.view addGestureRecognizer:_panGestureRecognizer];
+	
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:_totalType];
+	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -69,26 +85,38 @@
 	[super viewWillAppear:animated];
 	
 	_isPushing = NO;
+	
+	_sireViewController = (UIViewController *)[self.navigationController.viewControllers firstObject];
+	_currentViewController = (UIViewController *)[self.navigationController.viewControllers lastObject];
+	_presentedNavigationController = (UINavigationController *)self.presentedViewController;
+	_presentedViewController = (UIViewController *)[_presentedNavigationController.viewControllers lastObject];
+	
+//	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
+//	NSLog(@"\nself.navigationController.VCs:[%@]\n_sireVC:[%@]\ncurrentVC:[%@]", self.navigationController.viewControllers, _sireViewController, _currentViewController);
+//	NSLog(@"\nnavigationController.VCs:[%@]\npresentedVC:[%@]", _presentedNavigationController.viewControllers, _presentedViewController);
+//	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
+	
+	[[HONStateMitigator sharedInstance] updateCurrentViewState:_viewStateType];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewWillDisappear:animated];
+	
+	_nextViewController = (UIViewController *)[self.navigationController.viewControllers lastObject];
+//	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
+//	NSLog(@"\n_nextViewController:[%@]\nselfVC:[%@]", _nextViewController.class, self.class);
+//	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidDisappear:animated];
-}
-
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
 }
 
 

@@ -74,5 +74,18 @@ static HONViewDispensor *sharedInstance = nil;
 	view.layer.masksToBounds = YES;
 }
 
+- (void)tintView:(UIView *)view withColor:(UIColor *)color {
+	color = (color == nil) ? [[HONColorAuthority sharedInstance] honRandomColor] : color;
+	view.layer.backgroundColor = color.CGColor;
+}
+
+- (CGFloat)screenHeight {
+	return (CGRectGetHeight([UIScreen mainScreen].bounds));
+}
+
+- (CGFloat)screenWidth {
+	return (CGRectGetWidth([UIScreen mainScreen].bounds));
+}
+
 
 @end

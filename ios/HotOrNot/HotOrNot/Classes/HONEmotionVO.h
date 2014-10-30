@@ -12,7 +12,7 @@
 #import "PCContent.h"
 #import "PicoSticker.h"
 
-typedef NS_ENUM(NSInteger, HONEmotionImageType) {
+typedef NS_ENUM(NSUInteger, HONEmotionImageType) {
 	HONEmotionImageTypePNG = 0,
 	HONEmotionImageTypeGIF = 1
 };

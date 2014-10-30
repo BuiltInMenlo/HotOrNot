@@ -11,11 +11,11 @@
 #import "HONOpponentVO.h"
 
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, HONParticipantGridViewType) {
 	HONParticipantGridViewTypeDetails = 0,
 	HONParticipantGridViewTypeProfile,
 	HONParticipantGridViewTypeUsersProfile
-} HONParticipantGridViewType;
+};
 
 
 @class HONBasicParticipantGridView;

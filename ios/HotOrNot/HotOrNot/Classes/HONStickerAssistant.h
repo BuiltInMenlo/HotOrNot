@@ -22,7 +22,7 @@ extern NSString * const kSelfieclubStickerPak;
 extern NSString * const kClubCoverStickerPak;
 extern NSString * const kPaidStickerPak;
 
-typedef NS_ENUM(NSInteger, HONStickerPakType) {
+typedef NS_ENUM(NSUInteger, HONStickerPakType) {
 	HONStickerPakTypeAll = 0,
 	HONStickerPakTypeSelfieclub,
 	HONStickerPakTypeAvatars,

@@ -38,8 +38,16 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubTimeline:) name:@"TARE_CLUB_TIMELINE" object:nil];
+		_totalType = HONStateMitigatorTotalTypeTimeline;
+		_viewStateType = HONStateMitigatorViewStateTypeTimeline;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_refreshClubTimeline:)
+													 name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_tareClubTimeline:)
+													 name:@"TARE_CLUB_TIMELINE" object:nil];
 	}
 	
 	return (self);
@@ -53,6 +61,8 @@
 	
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
+	
+	[super destroy];
 }
 
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
@@ -132,6 +142,7 @@
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeTimelineRefresh];
 	
 	_index = 0;
 	_clubPhotoID = 0;
@@ -262,17 +273,9 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
 	_panGestureRecognizer.enabled = YES;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -305,7 +308,6 @@
 	[navigationController setNavigationBarHidden:YES];
 		
 	[self presentViewController:navigationController animated:NO completion:^(void) {
-//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	}];
 }
 
@@ -313,9 +315,8 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back"
 									   withUserClub:_clubVO];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[self.navigationController popViewControllerAnimated:NO];
-//	[self.view removeFromSuperview];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {

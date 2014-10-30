@@ -30,9 +30,10 @@
 #import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
 #import "HONComposeDisplayView.h"
+#import "HONStickerSummaryView.h"
 #import "HONStickerButtonsPickerView.h"
 
-@interface HONComposeViewController () <HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONStickerButtonsPickerViewDelegate, HONComposeDisplayViewDelegate, AmazonServiceRequestDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONComposeViewController () <HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, AmazonServiceRequestDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -43,6 +44,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONComposeDisplayView *composeDisplayView;
+@property (nonatomic, strong) HONStickerSummaryView *stickerSummaryView;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSDictionary *submitParams;
@@ -71,6 +73,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeCompose;
+		_viewStateType = HONStateMitigatorViewStateTypeCompose;
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_reloadEmotionPicker:)
 													 name:@"RELOAD_EMOTION_PICKER" object:nil];
@@ -92,6 +97,8 @@
 	_por2.delegate = nil;
 	_cameraOverlayView.delegate = nil;
 	_composeDisplayView.delegate = nil;
+	
+	[super destroy];
 }
 
 - (id)initWithContact:(HONContactUserVO *)contactUserVO {
@@ -286,14 +293,14 @@
 	_composeDisplayView.delegate = self;
 	[self.view addSubview:_composeDisplayView];
 	
-	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 221.0, 320.0, 271.0)];
+	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 221.0, 320.0, 221.0)];
 	[self.view addSubview:_emotionsPickerHolderView];
 	
 	_tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
 	[self.view addSubview:_tabButtonsHolderView];
 	
 	for (int i=0; i<5; i++) {
-		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 271.0) asGroupIndex:i];
+		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _emotionsPickerHolderView.frame.size.height) asGroupIndex:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -308,27 +315,29 @@
 		[_tabButtonsHolderView addSubview:button];
 	}
 	
-	
+	_stickerSummaryView = [[HONStickerSummaryView alloc] initAtPosition:CGPointMake(50.0, 297.0)];
+	[_stickerSummaryView setScrollThreshold:6];
+	_stickerSummaryView.delegate = self;
+	[self.view addSubview:_stickerSummaryView];
 	
 	HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
 	pickerView.delegate = self;
 	[pickerView preloadImages];
 	[_emotionsPickerHolderView addSubview:pickerView];
 	
-	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Edit"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Create"];
 	[self.view addSubview:_headerView];
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	_closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_closeButton];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
+	_nextButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -347,26 +356,8 @@
 	[super viewWillAppear:animated];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
-	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-	
-	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
-	UIViewController *nextVC = (UIViewController *)[self.navigationController.viewControllers lastObject];
-	NSLog(@"\nnextVC:[%@]\nselfVC:[%@]", nextVC.class, self.class);
-	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
-	
-	if ([nextVC isKindOfClass:self.class]) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-	}
+//	if ([_nextViewController isKindOfClass:self.class])
+//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 
@@ -508,9 +499,8 @@
 	
 	self.imagePickerController = imagePickerController;
 	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
-		if (sourceType == UIImagePickerControllerSourceTypeCamera) {
+//		if (sourceType == UIImagePickerControllerSourceTypeCamera)
 //			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-		}
 	}];
 }
 
@@ -527,7 +517,6 @@
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-	
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
@@ -567,7 +556,7 @@
 
 #pragma mark - AnimatedBGsViewController Delegates
 - (void)animatedBGViewController:(HONAnimatedBGsViewController *)viewController didSelectEmotion:(HONEmotionVO *)emotionVO {
-	NSLog(@"[*:*] animatedBGViewController:didSelectEmotion:[%@][%@]", NSStringFromCGSize(emotionVO.animatedImageView.frame.size), NSStringFromCGSize(emotionVO.animatedImageView.animatedImage.size));
+	NSLog(@"[*:*] animatedBGViewController:didSelectEmotion:[%@][%@]", NSStringFromCGSize(emotionVO.animatedImageView.frame.size), emotionVO.smallImageURL);
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Animated BG Selected"
 										  withEmotion:emotionVO];
@@ -673,13 +662,28 @@
 		[_selectedEmotions addObject:emotionVO];
 		[_subjectNames addObject:emotionVO.emotionName];
 		[_composeDisplayView addEmotion:emotionVO];
+		[_stickerSummaryView appendSticker:emotionVO];
 	}
+	
+	//[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
 }
 
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 }
 
+
+#pragma mark - StickerSummaryView Delegates
+- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumb:(HONEmotionVO *)emotionVO {
+	NSLog(@"[*:*] stickerSummaryView:(%@) didSelectThumbAtIndex:(%@) [*:*]", self.class, emotionVO.emotionName);
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Selected Sticker Thumb"
+										  withEmotion:emotionVO];
+	
+}
+- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumbAtIndex:(int)index {
+	NSLog(@"[*:*] stickerSummaryView:(%@) didSelectThumbAtIndex:(%d) [*:*]", self.class, index);
+}
 
 #pragma mark - CandyStorePurchaseController
 - (void)purchaseController:(id)controller downloadedStickerWithId:(NSString *)contentId {
@@ -759,7 +763,6 @@
 									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[self dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }

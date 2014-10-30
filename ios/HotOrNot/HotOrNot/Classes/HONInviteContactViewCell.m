@@ -58,7 +58,7 @@
 	
 	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 30.0, 180.0, 18.0)];
 	contactLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
-	contactLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
+	contactLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.455];
 	contactLabel.backgroundColor = [UIColor clearColor];
 	contactLabel.text = (_userVO.isSMSAvailable) ? _userVO.rawNumber : _userVO.email;
 	[self.contentView addSubview:contactLabel];

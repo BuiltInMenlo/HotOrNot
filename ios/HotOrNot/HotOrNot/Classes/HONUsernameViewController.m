@@ -32,6 +32,7 @@
 
 - (void)dealloc {
 	_usernameTextField.delegate = nil;
+	[super destroy];
 }
 
 
@@ -58,7 +59,7 @@
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
-	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.518]];
+	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.518]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];

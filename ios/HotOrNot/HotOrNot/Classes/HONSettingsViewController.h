@@ -13,7 +13,7 @@
 #import "HONViewController.h"
 
 
-typedef NS_ENUM(NSInteger, HONSettingsCellType) {
+typedef NS_ENUM(NSUInteger, HONSettingsCellType) {
 	HONSettingsCellTypeSearch = 0,
 	HONSettingsCellTypeSupport,
 	HONSettingsCellTypeNotifications,
@@ -26,12 +26,12 @@ typedef NS_ENUM(NSInteger, HONSettingsCellType) {
 //	HONSettingsCellTypeLogout
 };
 
-typedef NS_ENUM(NSInteger, HONSettingsMailComposerType) {
+typedef NS_ENUM(NSUInteger, HONSettingsMailComposerType) {
 	HONSettingsMailComposerTypeChangeEmail = 0,
 	HONSettingsMailComposerTypeReportAbuse
 };
 
-typedef NS_ENUM(NSInteger, HONSettingsAlertType) {
+typedef NS_ENUM(NSUInteger, HONSettingsAlertType) {
 	HONSettingsAlertTypeNotifications = 0,
 	HONSettingsAlertTypeDeleteChallenges,
 	HONSettingsAlertTypeDeactivate,

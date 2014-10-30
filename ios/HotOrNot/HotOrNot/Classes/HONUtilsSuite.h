@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-
 #import "HONAnalyticsReporter.h"
 #import "HONAPICaller.h"
 #import "HONAudioMaestro.h"
@@ -17,10 +16,14 @@
 #import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImageBroker.h"
+#import "HONStateMitigator.h"
 #import "HONStickerAssistant.h"
 #import "HONStoreAssistant.h"
 #import "HONViewDispensor.h"
 
+//#ifndef HONUtilsSuite_h
+//#define HONUtilsSuite_h
+//#endif
 
 @interface HONUtilsSuite : NSObject
 @end

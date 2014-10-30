@@ -7,7 +7,7 @@
 //
 
 
-typedef NS_ENUM(NSInteger, HONClubPhotoType) {
+typedef NS_ENUM(NSUInteger, HONClubPhotoType) {
 	HONClubPhotoTypePNG = 0,
 	HONClubPhotoTypeJPG,
 	HONClubPhotoTypeGIF

@@ -13,6 +13,7 @@
 #import "NSString+DataTypes.h"
 
 #import "MBProgressHUD.h"
+#import "Reachability.h"
 
 #import "HONAPICaller.h"
 
@@ -168,6 +169,30 @@ static HONAPICaller *sharedInstance = nil;
 	return ([imagePrefix copy]);
 }
 
+- (BOOL)hasNetwork {
+	[[Reachability reachabilityForInternetConnection] startNotifier];
+	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
+	
+	return !(networkStatus == NotReachable);
+}
+
+- (BOOL)canPingAPIServer {
+	return (!([[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
+}
+
+
+- (BOOL)canPingConfigServer {
+//	struct sockaddr_in address;
+//	address.sin_len = sizeof(address);
+//	address.sin_family = AF_INET;
+//	address.sin_port = htons(80);
+//	address.sin_addr.s_addr = inet_addr(kConfigURL);
+//
+//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
+
+//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
+	return (YES);
+}
 
 
 

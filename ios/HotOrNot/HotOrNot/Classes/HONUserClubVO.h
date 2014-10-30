@@ -7,7 +7,7 @@
 //
 
 
-typedef NS_ENUM(NSInteger, HONClubEnrollmentType) {
+typedef NS_ENUM(NSUInteger, HONClubEnrollmentType) {
 	HONClubEnrollmentTypeUndetermined = 0,
 	HONClubEnrollmentTypeOwner,
 	HONClubEnrollmentTypeMember,

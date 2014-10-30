@@ -71,7 +71,12 @@
 		30BFAC671A01BE81000CE4FC /* replyButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC691A01BE81000CE4FC /* replyButton_nonActive@2x.png */; };
 		30BFAC761A01BED0000CE4FC /* submitButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC781A01BED0000CE4FC /* submitButton_Active@2x.png */; };
 		30BFAC791A01BED4000CE4FC /* submitButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC7B1A01BED4000CE4FC /* submitButton_nonActive@2x.png */; };
+		30BFAC861A01ECC9000CE4FC /* HONStickerSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
+		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
+		30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */; };
+		30CA9CA51A026AEB00A0A703 /* NSString+Validate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */; };
+		30CA9CA81A026CB100A0A703 /* NSString+Formatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
@@ -524,8 +529,19 @@
 		30BFAC811A01BEDE000CE4FC /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30BFAC821A01BEDF000CE4FC /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30BFAC831A01BEE0000CE4FC /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
+		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
 		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
+		30CA9C971A02182800A0A703 /* HONStateMitigator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStateMitigator.h; sourceTree = "<group>"; };
+		30CA9C981A02182800A0A703 /* HONStateMitigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStateMitigator.m; sourceTree = "<group>"; };
+		30CA9C9D1A02332E00A0A703 /* NSUserDefaults+Replacements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSUserDefaults+Replacements.h"; sourceTree = "<group>"; };
+		30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSUserDefaults+Replacements.m"; sourceTree = "<group>"; };
+		30CA9CA01A0258DA00A0A703 /* HONStateMitigatorEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStateMitigatorEnums.h; sourceTree = "<group>"; };
+		30CA9CA31A026AEB00A0A703 /* NSString+Validate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Validate.h"; sourceTree = "<group>"; };
+		30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Validate.m"; sourceTree = "<group>"; };
+		30CA9CA61A026CB100A0A703 /* NSString+Formatting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Formatting.h"; sourceTree = "<group>"; };
+		30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Formatting.m"; sourceTree = "<group>"; };
 		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
@@ -1153,6 +1169,12 @@
 				4CC94FD9190733C900347A34 /* HONPaginationView.m */,
 				4C7DBBC6195004C100F7A487 /* HONRefreshControl.h */,
 				4C7DBBC7195004C100F7A487 /* HONRefreshControl.m */,
+				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
+				4C7DBBBD194FF43D00F7A487 /* HONTableView.m */,
+				4CA34C5316F6B6550000751E /* HONTableViewCell.h */,
+				4CA34C5416F6B6550000751E /* HONTableViewCell.m */,
+				4C7DBBC3194FF93900F7A487 /* HONTableViewController.h */,
+				4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */,
 				4C386BC4198482130023123A /* HONViewController.h */,
 				4C386BC5198482130023123A /* HONViewController.m */,
 				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
@@ -1398,6 +1420,24 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		30CA9CA11A0264DB00A0A703 /* Global Views */ = {
+			isa = PBXGroup;
+			children = (
+				4C9E3B5C18259CC0004878F9 /* Nav */,
+				30CA9CA21A0264ED00A0A703 /* TableView */,
+			);
+			name = "Global Views";
+			sourceTree = "<group>";
+		};
+		30CA9CA21A0264ED00A0A703 /* TableView */ = {
+			isa = PBXGroup;
+			children = (
+				300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */,
+				300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */,
+			);
+			name = TableView;
+			sourceTree = "<group>";
+		};
 		30D5AD8B19C8C980004EDA22 /* NHThreadThis */ = {
 			isa = PBXGroup;
 			children = (
@@ -1407,27 +1447,6 @@
 				30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */,
 			);
 			path = NHThreadThis;
-			sourceTree = "<group>";
-		};
-		30D7A0A719D8CD9D001C7A57 /* Table View */ = {
-			isa = PBXGroup;
-			children = (
-				300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */,
-				300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */,
-				305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */,
-				305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */,
-				30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */,
-				30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */,
-				4CA34C5316F6B6550000751E /* HONTableViewCell.h */,
-				4CA34C5416F6B6550000751E /* HONTableViewCell.m */,
-				4CF203FC18F33F2D00EB57B0 /* HONTableHeaderView.h */,
-				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
-				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
-				4C7DBBBD194FF43D00F7A487 /* HONTableView.m */,
-				4C7DBBC3194FF93900F7A487 /* HONTableViewController.h */,
-				4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */,
-			);
-			name = "Table View";
 			sourceTree = "<group>";
 		};
 		30DB24B419CBF64700DCFC49 /* seflieclub-tests */ = {
@@ -1893,20 +1912,16 @@
 			isa = PBXGroup;
 			children = (
 				4CBFC12A1908DF940082FCC4 /* HONUtilsSuite.h */,
+				4CEC4B0518B9517F00F39C92 /* HONAnalyticsReporter.h */,
+				4CEC4B0618B9517F00F39C92 /* HONAnalyticsReporter.m */,
+				4CE0399C185727150005256F /* HONAPICaller.h */,
+				4CE0399D185727150005256F /* HONAPICaller.m */,
 				308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */,
 				308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */,
 				4C386BBA19842FDA0023123A /* HONContactsAssistant.h */,
 				4C386BBB19842FDA0023123A /* HONContactsAssistant.m */,
 				4C1F19B0191623D500E9A9D4 /* HONClubAssistant.h */,
 				4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */,
-				4C386BC119844C090023123A /* HONStickerAssistant.h */,
-				4C386BC219844C090023123A /* HONStickerAssistant.m */,
-				4C386BBD19844AA80023123A /* HONStoreAssistant.h */,
-				4C386BBE19844AA80023123A /* HONStoreAssistant.m */,
-				4CEC4B0518B9517F00F39C92 /* HONAnalyticsReporter.h */,
-				4CEC4B0618B9517F00F39C92 /* HONAnalyticsReporter.m */,
-				4CE0399C185727150005256F /* HONAPICaller.h */,
-				4CE0399D185727150005256F /* HONAPICaller.m */,
 				4C5F250F1888C496000411A7 /* HONColorAuthority.h */,
 				4C5F25101888C496000411A7 /* HONColorAuthority.m */,
 				4C99EB55194D581B00283C1A /* HONDateTimeAlloter.h */,
@@ -1917,6 +1932,13 @@
 				4CDFB3171889349900E9F33B /* HONFontAllocator.m */,
 				4CC13E6F198543F5000B41C2 /* HONImageBroker.h */,
 				4CC13E70198543F5000B41C2 /* HONImageBroker.m */,
+				30CA9CA01A0258DA00A0A703 /* HONStateMitigatorEnums.h */,
+				30CA9C971A02182800A0A703 /* HONStateMitigator.h */,
+				30CA9C981A02182800A0A703 /* HONStateMitigator.m */,
+				4C386BC119844C090023123A /* HONStickerAssistant.h */,
+				4C386BC219844C090023123A /* HONStickerAssistant.m */,
+				4C386BBD19844AA80023123A /* HONStoreAssistant.h */,
+				4C386BBE19844AA80023123A /* HONStoreAssistant.m */,
 				4C1F19AA1915CBA200E9A9D4 /* HONViewDispensor.h */,
 				4C1F19AB1915CBA200E9A9D4 /* HONViewDispensor.m */,
 			);
@@ -2036,6 +2058,7 @@
 				4C148F7917815B9F00EBD245 /* ¡-obsolete_! */,
 				4CF84495166503AC00C0CC5B /* Categories */,
 				4C7DBBB5194FEF8E00F7A487 /* Base Classes */,
+				30CA9CA11A0264DB00A0A703 /* Global Views */,
 				4C62676A15F9776900AA7FCE /* Root */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4CA8DA531613D00900B7B13C /* -Tabs- */,
@@ -2084,8 +2107,6 @@
 		4C7DBBB5194FEF8E00F7A487 /* Base Classes */ = {
 			isa = PBXGroup;
 			children = (
-				30D7A0A719D8CD9D001C7A57 /* Table View */,
-				4C9E3B5C18259CC0004878F9 /* Nav */,
 				3024AB1B19D71DFA0054C6BF /* Abstracts */,
 				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
 				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
@@ -2095,6 +2116,14 @@
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
 				4CC606D8198C3E650042A951 /* HONInsetOverlayView.h */,
 				4CC606D9198C3E650042A951 /* HONInsetOverlayView.m */,
+				30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */,
+				30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */,
+				305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */,
+				305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */,
+				30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */,
+				30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */,
+				4CF203FC18F33F2D00EB57B0 /* HONTableHeaderView.h */,
+				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
 			);
 			name = "Base Classes";
 			sourceTree = "<group>";
@@ -2310,8 +2339,14 @@
 				4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */,
 				4CA246C319083C8B00512295 /* NSString+DataTypes.h */,
 				4CA246C419083C8B00512295 /* NSString+DataTypes.m */,
+				30CA9CA61A026CB100A0A703 /* NSString+Formatting.h */,
+				30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */,
 				309F59B1199D7FE400EC6C1C /* NSString+Random.h */,
 				309F59B2199D7FE400EC6C1C /* NSString+Random.m */,
+				30CA9CA31A026AEB00A0A703 /* NSString+Validate.h */,
+				30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */,
+				30CA9C9D1A02332E00A0A703 /* NSUserDefaults+Replacements.h */,
+				30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */,
 				4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */,
 				4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */,
 				4C81A013163337C100AB188B /* UIImage+fixOrientation.h */,
@@ -2581,6 +2616,7 @@
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				4CB77BB018BC03200074C625 /* HONUserClubVO.m in Sources */,
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
+				30CA9CA51A026AEB00A0A703 /* NSString+Validate.m in Sources */,
 				4C99EB5A194D5B1700283C1A /* HONClubTimelineViewController.m in Sources */,
 				4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */,
 				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
@@ -2606,6 +2642,7 @@
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4C382FF4178B7D2000C7FA7C /* HONCelebVO.m in Sources */,
 				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
+				30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */,
 				3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */,
@@ -2619,6 +2656,7 @@
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
 				4C386BC6198482130023123A /* HONViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
+				30CA9CA81A026CB100A0A703 /* NSString+Formatting.m in Sources */,
 				4C386BBC19842FDA0023123A /* HONContactsAssistant.m in Sources */,
 				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
@@ -2660,6 +2698,7 @@
 				30FC8C6019A829E900CDB2BC /* TSHit.m in Sources */,
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
 				4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */,
+				30BFAC861A01ECC9000CE4FC /* HONStickerSummaryView.m in Sources */,
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONComposeViewController.m in Sources */,
@@ -2693,6 +2732,7 @@
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONViewDispensor.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
+				30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineCellHeaderView.m in Sources */,
 				4C71BF40181B25C8005044F8 /* HONSuspendedViewController.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */,

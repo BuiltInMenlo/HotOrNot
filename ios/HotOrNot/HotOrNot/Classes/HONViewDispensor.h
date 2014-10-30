@@ -16,4 +16,7 @@
 - (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor;
 - (void)flipLayer:(CALayer *)layer horizontally:(BOOL)xAxisFlipped;
 - (void)maskView:(UIView *)imageView withMask:(UIImage *)maskImage;
+- (CGFloat)screenHeight;
+- (CGFloat)screenWidth;
+- (void)tintView:(UIView *)view withColor:(UIColor *)color;
 @end

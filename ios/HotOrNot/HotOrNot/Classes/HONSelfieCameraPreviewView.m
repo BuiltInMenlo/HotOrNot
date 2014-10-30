@@ -123,14 +123,14 @@
 	[self addSubview:_headerView];
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	_closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:_closeButton];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(276.0, 2.0, 44.0, 44.0);
+	_nextButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

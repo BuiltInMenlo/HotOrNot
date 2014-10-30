@@ -46,7 +46,7 @@
 	
 	UILabel *voterLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 23.0, 220.0, 16.0)];
 	voterLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
-	voterLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
+	voterLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.455];
 	voterLabel.backgroundColor = [UIColor clearColor];
 	voterLabel.text = [NSString stringWithFormat:NSLocalizedString(@"voters_caption", nil), _voterVO.username];
 	[self addSubview:voterLabel];

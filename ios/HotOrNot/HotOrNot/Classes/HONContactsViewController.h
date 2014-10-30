@@ -22,16 +22,16 @@
 #import "HONTableViewBGView.h"
 
 typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
-	HONContactsTableViewDataSourceEmpty			= 0 << 0,
-	HONContactsTableViewDataSourceMatchedUsers	= 1 << 0,
-	HONContactsTableViewDataSourceAddressBook	= 1 << 1
+	HONContactsTableViewDataSourceEmpty			= (0UL << 0),
+	HONContactsTableViewDataSourceMatchedUsers	= (1UL << 0),
+	HONContactsTableViewDataSourceAddressBook	= (1UL << 1)
 };
 
 typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
-	HONContactsSendTypeNone		= 0 << 0,
-	HONContactsSendTypePhone	= 1 << 0,
-	HONContactsSendTypeEmail	= 1 << 1,
-	HONContactsSendTypeSMS		= 1 << 2
+	HONContactsSendTypeNone		= (0UL << 0),
+	HONContactsSendTypePhone	= (1UL << 0),
+	HONContactsSendTypeEmail	= (1UL << 1),
+	HONContactsSendTypeSMS		= (1UL << 2)
 };
 
 @interface HONContactsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {

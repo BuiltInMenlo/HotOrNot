@@ -10,16 +10,16 @@
 
 #import "HONViewController.h"
 
-typedef NS_ENUM(NSInteger, HONRegisterCheckErrorType) {
-	HONRegisterCheckErrorTypeNone		= 0,
-	HONRegisterCheckErrorTypeUsername	= 1 << 0,
-	HONRegisterCheckErrorTypePhone		= 1 << 1
+typedef NS_ENUM(NSUInteger, HONRegisterCheckErrorType) {
+	HONRegisterCheckErrorTypeNone		= (0UL << 0),
+	HONRegisterCheckErrorTypeUsername	= (1UL << 0),
+	HONRegisterCheckErrorTypePhone		= (1UL << 1)
 };
 
-typedef NS_ENUM(NSInteger, HONRegisterErrorType) {
-	HONRegisterErrorTypeNone		= 0,
-	HONRegisterErrorTypeUsername	= 1 << 0,
-	HONRegisterErrorTypePhone		= 1 << 1
+typedef NS_ENUM(NSUInteger, HONRegisterErrorType) {
+	HONRegisterErrorTypeNone		= (0UL << 0),
+	HONRegisterErrorTypeUsername	= (1UL << 0),
+	HONRegisterErrorTypePhone		= (1UL << 1)
 };
 
 @interface HONRegisterViewController : HONViewController <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>

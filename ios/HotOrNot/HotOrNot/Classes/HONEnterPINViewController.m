@@ -30,6 +30,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypePINEntry;
+		_viewStateType = HONStateMitigatorViewStateTypePINEntry;
+		
 		_validateCounter = 0;
 	}
 	

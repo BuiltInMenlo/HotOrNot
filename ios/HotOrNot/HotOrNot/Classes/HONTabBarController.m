@@ -47,18 +47,27 @@
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:selectedIndex];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
+	NSString *analyticsEvent = @"";
 	NSString *notificationName = @"";
-	NSString *totalKey = @"";
+//	NSString *totalKey = @"";
+//	HONStateMitigatorTotalType totalType = HONStateMitigatorTotalTypeUnknown;
+//	HONStateMitigatorViewStateType viewStateType = HONStateMitigatorViewStateTypeUnknown;
 	
 	switch ((HONTabBarButtonType)selectedIndex) {
 		case HONTabBarButtonTypeFriends:
+			analyticsEvent = @"Friends";
 			notificationName = @"CONTACTS_TAB";
-			totalKey = @"friendsTab";
+//			totalKey = @"friendsTab";
+//			totalType = HONStateMitigatorTotalTypeFriendsTab;
+//			viewStateType = HONStateMitigatorViewStateTypeFriends;
 			break;
 			
 		case HONTabBarButtonTypeSettings:
+			analyticsEvent = @"Settings";
 			notificationName = @"SETTINGS_TAB";
-			totalKey = @"settingsTab";
+//			totalKey = @"settingsTab";
+//			totalType = HONStateMitigatorTotalTypeSettingsTab;
+//			viewStateType = HONStateMitigatorViewStateTypeSettings;
 			break;
 			
 		default:
@@ -68,17 +77,10 @@
 	[_contactsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeFriends)];
 	[_settingsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeSettings)];
 	
-	[HONAppDelegate incTotalForCounter:totalKey];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEvent]];
+	
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
-	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) forKey:@"prev_tab"];
-	[[NSUserDefaults standardUserDefaults] setObject:@(selectedIndex) forKey:@"current_tab"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
 }
 
 
@@ -89,8 +91,10 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[HONStateMitigator sharedInstance] updateCurrentViewState:HONStateMitigatorViewStateTypeFriends];
+	
+//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	for (UIView *view in self.view.subviews) {
 		if([view isKindOfClass:[UITabBar class]])
@@ -138,9 +142,11 @@
 	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];
 	
-	NSString *analyticsEventName = @"";
+	NSString *analyticsEvent = @"";
 	NSString *notificationName = @"";
-	NSString *totalKey = @"";
+//	NSString *totalKey = @"";
+//	HONStateMitigatorTotalType totalType = HONStateMitigatorTotalTypeUnknown;
+//	HONStateMitigatorViewStateType viewStateType = HONStateMitigatorViewStateTypeUnknown;
 	
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabBarButtonType];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
@@ -148,41 +154,34 @@
 	
 	switch (tabBarButtonType) {
 		case HONTabBarButtonTypeFriends:
-			analyticsEventName = @"Friends";
+			analyticsEvent = @"Friends";
 			notificationName = @"CONTACTS_TAB";
-			totalKey = @"friendsTab";
+//			totalKey = @"friendsTab";
+//			totalType = HONStateMitigatorTotalTypeFriendsTab;
+//			viewStateType = HONStateMitigatorViewStateTypeFriends;
 			break;
 			
 		case HONTabBarButtonTypeSettings:
-			analyticsEventName = @"Settings";
+			analyticsEvent = @"Settings";
 			notificationName = @"SETTINGS_TAB";
-			totalKey = @"settingsTab";
+//			totalKey = @"settingsTab";
+//			totalType = HONStateMitigatorTotalTypeSettingsTab;
+//			viewStateType = HONStateMitigatorViewStateTypeSettings;
 			break;
 			
 		default:
 			break;
 	}
 	
+	
 	[_contactsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeFriends)];
 	[_settingsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeSettings)];
 	
-	
-	[HONAppDelegate incTotalForCounter:totalKey];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEvent]];
 	
 	[super setSelectedIndex:tabBarButtonType];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) forKey:@"prev_tab"];
-	[[NSUserDefaults standardUserDefaults] setObject:@(tabBarButtonType) forKey:@"current_tab"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEventName]];
-	
-	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 }
 
 
@@ -244,9 +243,9 @@
 
 #pragma mark - Data Tally
 - (void)_updateBadges {
-	_badgeTotals = @{@"status"		: [NSNumber numberWithInt:0],
-					 @"score"		: [NSNumber numberWithInt:0],
-					 @"comments"	: [NSNumber numberWithInt:0]};
+	_badgeTotals = @{@"status"		: @(0),
+					 @"score"		: @(0),
+					 @"comments"	: @(0)};
 	
 	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
 		int statusChanges = 0;
@@ -263,10 +262,10 @@
 		
 		NSMutableArray *updateChallenges = [NSMutableArray array];
 		for (HONChallengeVO *vo in challenges) {
-			[updateChallenges addObject: @{@"id"		: [NSNumber numberWithInt:vo.challengeID],
+			[updateChallenges addObject: @{@"id"		: @(vo.challengeID),
 										   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
-										   @"score"		: [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score],
-										   @"comments"	: [NSNumber numberWithInt:0]}];
+										   @"score"		: @((vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score),
+										   @"comments"	: @(0)}];
 		}
 		
 		NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
@@ -274,24 +273,24 @@
 			for (NSDictionary *uDict in updateChallenges) {
 				if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
 					if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
-						[_badgeTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
+						[_badgeTotals setValue:@(++statusChanges) forKey:@"status"];
 					}
 					
 					if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
 						voteChanges += [[uDict objectForKey:@"score"] intValue] - [[lDict objectForKey:@"score"] intValue];
-						[_badgeTotals setValue:[NSNumber numberWithInt:voteChanges] forKey:@"score"];
+						[_badgeTotals setValue:@(voteChanges) forKey:@"score"];
 					}
 					
 					if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
 						commentChanges += [[uDict objectForKey:@"comments"] intValue] - [[lDict objectForKey:@"comments"] intValue];
-						[_badgeTotals setValue:[NSNumber numberWithInt:commentChanges] forKey:@"comments"];
+						[_badgeTotals setValue:@(commentChanges) forKey:@"comments"];
 					}
 				}
 			}
 		}
 		
 		if ([localChallenges count] < [updateChallenges count])
-			[_badgeTotals setValue:[NSNumber numberWithInt:[[_badgeTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
+			[_badgeTotals setValue:@([[_badgeTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])) forKey:@"status"];
 		
 		[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
 		[[NSUserDefaults standardUserDefaults] synchronize];

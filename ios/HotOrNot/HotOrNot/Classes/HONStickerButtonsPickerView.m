@@ -13,8 +13,7 @@
 #import "HONPaginationView.h"
 
 const CGSize kStickerImgSize = {64.0f, 64.0f};
-const CGSize kStickerImgPaddingSize = {12.0f, 12.0f};
-const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
+const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 
 @interface HONStickerButtonsPickerView () <HONStickerButtonViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
@@ -68,7 +67,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
-		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 160.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
+		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 165.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
 		_paginationView.hidden = (_totalPages == 1);
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
@@ -103,7 +102,7 @@ const CGSize kStickerGrpBtnSize = {64.0f, 49.0f};
 - (void)preloadImages {
 	if (_activityIndicatorView == nil)
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-	_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 30.0);
+	_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 23.0);
 	[self addSubview:_activityIndicatorView];
 	
 	if (![_activityIndicatorView isAnimating])
@@ -173,7 +172,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 3.0, COLS_PER_ROW * _gridItemSpacingSize.width, ROWS_PER_PAGE * _gridItemSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(15.0 + (i * _scrollView.frame.size.width), 10.0, COLS_PER_ROW * _gridItemSpacingSize.width, ROWS_PER_PAGE * _gridItemSpacingSize.height)];
 		[holderView setTag:i];
 		[_buttonPageViews addObject:holderView];
 		[_scrollView addSubview:holderView];

@@ -214,11 +214,11 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
 	
-	NSLog(@"%@ -TOT- (%d)", self.class, [HONAppDelegate totalForCounter:@"activity"]);
-	NSLog(@"%@ -INC- (%d)", self.class, [HONAppDelegate incTotalForCounter:@"activity"]);
-	NSLog(@"%@ -TOT- (%d)", self.class, [HONAppDelegate totalForCounter:@"activity"]);
+	NSLog(@"%@ -TOT- (%d)", self.class, [[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeUnknown]);
+	NSLog(@"%@ -INC- (%d)", self.class, [[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeUnknown]);
+	NSLog(@"%@ -TOT- (%d)", self.class, [[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeUnknown]);
 	
-	if ([HONAppDelegate totalForCounter:@"activity"] == 1) {
+	if ([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeUnknown] == 1) {
 		if (_insetOverlayView == nil)
 			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeInvite];
 		_insetOverlayView.delegate = self;

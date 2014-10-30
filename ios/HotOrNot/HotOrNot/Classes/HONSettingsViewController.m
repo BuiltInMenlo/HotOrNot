@@ -41,6 +41,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeSettingsTab;
+		_viewStateType = HONStateMitigatorViewStateTypeSettings;
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedSettingsTab:) name:@"SELECTED_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareSettingsTab:) name:@"TARE_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
@@ -70,6 +73,8 @@
 - (void)dealloc {
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
+	
+	[super destroy];
 }
 
 #pragma mark - Data Calls
@@ -114,6 +119,14 @@
 	[_tableView addSubview: _refreshControl];
 }
 
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];
+	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
+}
+
 
 #pragma mark - Navigation
 - (void)_goProfile {
@@ -145,6 +158,9 @@
 #pragma mark - Notifications
 - (void)_selectedSettingsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedSettingsTab <|::");
+	
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:_totalType];
+	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
 }
 
 - (void)_tareSettingsTab:(NSNotification *)notification {
@@ -390,7 +406,8 @@
 		
 		if (buttonIndex == 1) {			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
-				[HONAppDelegate resetTotals];
+//				[HONAppDelegate resetTotals];
+				[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"is_deactivated"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
@@ -422,13 +439,13 @@
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
 				[[[UIApplication sharedApplication] delegate].window.rootViewController.navigationController popToRootViewControllerAnimated:NO];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:@(0)];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
-				[HONAppDelegate resetTotals];
+//				[HONAppDelegate resetTotals];
 			}];
 			
 //			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:@(0)];
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
 //			}];
 		}

@@ -25,12 +25,12 @@
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
-typedef NS_ENUM(NSInteger, HONTimelineScrollDirection) {
+typedef NS_ENUM(NSUInteger, HONTimelineScrollDirection) {
 	HONTimelineScrollDirectionDown = 0,	/** Challenges using same hashtag */
 	HONTimelineScrollDirectionUp,			/** Challenges of a single user */
 };
 
-typedef NS_ENUM(NSInteger, HONPushType) {
+typedef NS_ENUM(NSUInteger, HONPushType) {
 	HONPushTypeShowChallengeDetails	= 1,			/** Brings up the challenge details modal **/
 	HONPushTypeUserVerified,						/** Shows alert **/
 	HONPushTypeShowUserProfile,						/** Brings up a user's profile **/
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, HONPushType) {
 };
 
 // share sheet actions
-typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
+typedef NS_ENUM(NSUInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeInstagram = 0,
 	HONShareSheetActionTypeTwitter,
 //	HONShareSheetActionTypeFacebook,
@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeClipboard
 };
 
-typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
+typedef NS_ENUM(NSUInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeExit = 0,
 	HONAppDelegateAlertTypeVerifiedNotification,
 	HONAppDelegateAlertTypeReviewApp,
@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
 };
 
 
-typedef NS_ENUM(NSInteger, HONAmazonS3BucketType) {
+typedef NS_ENUM(NSUInteger, HONAmazonS3BucketType) {
 	HONAmazonS3BucketTypeAvatarsSource = 0,
 	HONAmazonS3BucketTypeAvatarsCloudFront,
 	
@@ -84,6 +84,14 @@ typedef NS_ENUM(NSUInteger, HONInsetOverlayViewType) {
 	HONInsetOverlayViewTypeSuggestions,
 	HONInsetOverlayViewTypeAppReview,
 	HONInsetOverlayViewTypeInvite
+};
+
+typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
+	HONAppDelegateBitTesting0	= (0UL << 0),
+	HONAppDelegateBitTesting1	= (1UL << 0),
+	HONAppDelegateBitTesting2	= (1UL << 1),
+	HONAppDelegateBitTesting3	= (1UL << 2),
+	HONAppDelegateBitTesting4	= (1UL << 3)
 };
 
 
@@ -147,8 +155,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
-+ (int)incTotalForCounter:(NSString *)key;
-+ (int)totalForCounter:(NSString *)key;
 
 + (CGFloat)minSnapLuminosity;
 
@@ -167,20 +173,10 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 
-+ (void)resetTotals;
-
 - (void)changeTabToIndex:(NSNumber *)selectedIndex;
 + (UIViewController *)appTabBarController;
 
-+ (BOOL)hasNetwork;
-+ (BOOL)canPingAPIServer;
-+ (BOOL)canPingConfigServer;
-
 + (CGFloat)compressJPEGPercentage;
-
-+ (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber;
-+ (NSDictionary *)parseQueryString:(NSString *)queryString;
 
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;

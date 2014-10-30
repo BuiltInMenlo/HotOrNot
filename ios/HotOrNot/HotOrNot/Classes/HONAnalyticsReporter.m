@@ -43,17 +43,6 @@ static HONAnalyticsReporter *sharedInstance = nil;
 
 
 - (NSDictionary *)orthodoxProperties {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"user"		: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]],
-//					   @"device"	: [[HONDeviceIntrinsics sharedInstance] modelName],
-//					   @"os"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
-//					   @"api_ver"	: [[[HONAppDelegate apiServerPath] componentsSeparatedByString:@"/"] lastObject]};
-//	});
-	
-	
 	return (@{@"user"			: [[HONAnalyticsReporter sharedInstance] userProperties],
 			  @"device"			: [[HONAnalyticsReporter sharedInstance] deviceProperties],
 			  @"session"		: [[HONAnalyticsReporter sharedInstance] sessionProperties],
@@ -78,76 +67,47 @@ static HONAnalyticsReporter *sharedInstance = nil;
 			  @"push_token"		: [[HONDeviceIntrinsics sharedInstance] pushToken],
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
 			  @"time"			: [[HONDateTimeAlloter sharedInstance] utcNowDateFormattedISO8601],
-			  @"tz"				: [[HONDateTimeAlloter sharedInstance] timezoneFromDeviceLocale],
+			  @"tz"				: [[HONDateTimeAlloter sharedInstance] utcHourOffsetFromDeviceLocale],
 			  @"battery_per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)],
 			  @"hmac"			: [[HONDeviceIntrinsics sharedInstance] hmacToken]});
 }
 
 - (NSDictionary *)screenStateProperties {
-	return (@{@"current"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] != nil) ? ([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue] == 0) ? @"contacts" : ([[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue] == 1) ? @"settings" : @"N/A" : @"N/A",
-			  @"previous"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"prev_tab"] != nil) ? ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev_tab"] intValue] == 0) ? @"contacts" : ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev_tab"] intValue] == 1) ? @"settings" : @"N/A" : @"N/A"});
+	return (@{@"current"	: [[HONStateMitigator sharedInstance] currentViewStateTypeName],
+			  @"previous"	: [[HONStateMitigator sharedInstance] previousViewStateTypeName]});
 }
 
 - (NSDictionary *)sessionProperties {
 	NSDate *nowDate = [NSDate date];
-	NSDate *durDate = ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]] : nowDate;
-	NSDate *idlDate = ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_interval"]] : nowDate;
 	
 	return (@{@"id"				: @"0",
 			  @"id_last"		: @"0",
-			  @"session_gap"	: @"0",
-			  @"duration"		: [@"" stringFromInt:[nowDate timeIntervalSinceDate:durDate]],
-			  @"idle"			: [@"" stringFromInt:[nowDate timeIntervalSinceDate:idlDate]],
-			  @"count"			: ([[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"tracking_total"] : @"0",
-			  @"entry_point"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"entry"] lowercaseString] : @"N/A"});
+			  @"session_gap"	: [@"" stringFromInt:[[[HONStateMitigator sharedInstance] appEntryTimestamp] timeIntervalSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]],
+			  @"duration"		: [@"" stringFromInt:[nowDate timeIntervalSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]],
+			  @"idle"			: [@"" stringFromInt:[nowDate timeIntervalSinceDate:[[HONStateMitigator sharedInstance] lastTrackingCallTimestamp]]],
+			  @"count"			: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeTrackingCalls]],
+			  @"entry_point"	: [[HONStateMitigator sharedInstance] appEntryTypeName]});
 }
 
 - (NSDictionary *)userProperties {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
-//	});
-	
 	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
+	
 	return(@{@"id"			: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
 			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
 			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
-			 @"cohort_date"	: [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:cohortDate],
-			 @"cohort_week"	: [NSString stringWithFormat:@"%@-%02d", [[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:cohortDate] substringToIndex:4], [[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:cohortDate] weekOfYear]]});
+			 @"cohort_date"	: [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromUTCDate:cohortDate],
+			 @"cohort_week"	: [NSString stringWithFormat:@"%04d-%02d", [[HONDateTimeAlloter sharedInstance] yearFromDate:cohortDate], [[HONDateTimeAlloter sharedInstance] weekOfYearFromDate:cohortDate]]});
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]};
-//	});
-	
 	return (@{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]});
 }
 
 - (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"};
-//	});
-	
 	return (@{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"});
 }
 
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-//	});
-	
 	return (@{@"photo"	: @{@"id"		: [@"" stringFromInt:vo.challengeID],
 							@"club_id"	: [@"" stringFromInt:vo.clubID],
 							@"user_id"	: [@"" stringFromInt:vo.userID],
@@ -156,26 +116,17 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]};
-//	});
-	
 	return (@{@"contact"	: @{@"name"		: vo.fullName,
 								@"is_sms"	: [@"" stringFromBOOL:vo.isSMSAvailable],
 								@"phone"	: vo.mobileNumber,
 								@"email"	: vo.email}});
-	
-	//return ( @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]});
 }
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
-	return (@{@"emotion"	: @{@"id"		: vo.emotionID,
-								@"name"		: vo.emotionName,
-								@"cg_id"	: vo.contentGroupID,
-								@"url"		: vo.urlPrefix}});
+	return (@{@"emotion"	: @{@"id"		: (vo.emotionID != nil) ? vo.emotionID : @"",
+								@"name"		: (vo.emotionName != nil) ? vo.emotionName : @"",
+								@"cg_id"	: (vo.contentGroupID != nil) ? vo.contentGroupID : @"",
+								@"url"		: (vo.urlPrefix != nil) ? vo.urlPrefix : @""}});
 }
 
 - (NSDictionary *)propertyForStoreProduct:(HONStoreProductVO *)vo {
@@ -185,26 +136,12 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-//	});
-	
 	return (@{@"member"	: @{@"id"		: [@"" stringFromInt:vo.userID],
 							@"username"	: vo.username,
 							@"avatar"	: vo.avatarPrefix}});
 }
 
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo {
-//	static NSDictionary *properties = nil;
-//	static dispatch_once_t onceToken;
-//	
-//	dispatch_once(&onceToken, ^{
-//		properties = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName]};
-//	});
-	
 	return (@{@"club"	: @{@"id"		: [@"" stringFromInt:vo.clubID],
 							@"name"		: vo.clubName,
 							@"owner_id"	: [@"" stringFromInt:vo.ownerID],
@@ -212,94 +149,97 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 
-- (void)trackEvent:(NSString *)eventName {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+- (void)trackEvent:(NSString *)event {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:[[HONAnalyticsReporter sharedInstance] orthodoxProperties]];
 }
 
 
 #pragma mark -
-- (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties {
+- (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties {
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeTrackingCalls];
 	
-	[HONAppDelegate incTotalForCounter:@"tracking"];
-	NSMutableDictionary *event = (properties == nil) ? [[NSMutableDictionary alloc] init] : [properties mutableCopy];
-	[event addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] orthodoxProperties]];
-	[event addEntriesFromDictionary:@{@"action"	: [[eventName componentsSeparatedByString:@" - "] lastObject]}];
+	NSString *eventCollection = [[event componentsSeparatedByString:@" - "] firstObject];
+	NSMutableDictionary *eventName = (properties == nil) ? [[NSMutableDictionary alloc] init] : [properties mutableCopy];
+	[eventName addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] orthodoxProperties]];
+	[eventName addEntriesFromDictionary:@{@"action"	: [[event componentsSeparatedByString:@" - "] lastObject]}];
 	
-//	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]], event);
 	
-	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:@"tracking_interval"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", eventCollection], eventName);
+	
 	
 	NSError *error = nil;
-	[[KeenClient sharedClient] addEvent:event
-					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", [[eventName componentsSeparatedByString:@" - "] firstObject]]
+	[[KeenClient sharedClient] addEvent:eventName
+					  toEventCollection:[kKeenIOEventCollection stringByAppendingFormat:@" : %@", eventCollection]
 								  error:&error];
+	
+	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 }
+
 #pragma mark -
 
 
-- (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {
+- (void)trackEvent:(NSString *)event withActivityItem:(HONActivityItemVO *)activityItemVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForActivityItem:activityItemVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
+- (void)trackEvent:(NSString *)event withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForCameraDevice:cameraDevice]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+- (void)trackEvent:(NSString *)event withClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForClubPhoto:clubPhotoVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO {
+- (void)trackEvent:(NSString *)event withContactUser:(HONContactUserVO *)contactUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:contactUserVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO {
+- (void)trackEvent:(NSString *)event withEmotion:(HONEmotionVO *)emotionVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForEmotion:emotionVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withStoreProduct:(HONStoreProductVO *)storeProductVO {
+- (void)trackEvent:(NSString *)event withStoreProduct:(HONStoreProductVO *)storeProductVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForStoreProduct:storeProductVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									   withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+- (void)trackEvent:(NSString *)event withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:trivialUserVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)eventName withUserClub:(HONUserClubVO *)userClubVO {
+- (void)trackEvent:(NSString *)event withUserClub:(HONUserClubVO *)userClubVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForUserClub:userClubVO]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:eventName
+	[[HONAnalyticsReporter sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 

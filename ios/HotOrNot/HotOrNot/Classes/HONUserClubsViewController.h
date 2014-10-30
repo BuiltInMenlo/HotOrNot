@@ -14,7 +14,7 @@
 //	HONUserClubsDataSetTypeSearchResults	= 1 << 1
 //};
 
-typedef NS_ENUM(NSInteger, HONUserClubsViewControllerAppearedType) {
+typedef NS_ENUM(NSUInteger, HONUserClubsViewControllerAppearedType) {
 	HONUserClubsViewControllerAppearedTypeClear	= 0,
 	HONUserClubsViewControllerAppearedTypeCreateClubCanceled,
 	HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled,
@@ -23,14 +23,14 @@ typedef NS_ENUM(NSInteger, HONUserClubsViewControllerAppearedType) {
 	HONUserClubsViewControllerAppearedTypeInviteFriends
 };
 
-typedef NS_ENUM(NSInteger, HONUserClubsActionSheetType) {
+typedef NS_ENUM(NSUInteger, HONUserClubsActionSheetType) {
 	HONUserClubsActionSheetTypeSuggested = 0,
 	HONUserClubsActionSheetTypeOwner,
 	HONUserClubsActionSheetTypeMember,
 	HONUserClubsActionSheetTypePending
 };
 
-typedef NS_ENUM(NSInteger, HONUserClubsAlertType) {
+typedef NS_ENUM(NSUInteger, HONUserClubsAlertType) {
 	HONUserClubsAlertTypeCreateNew = 0,
 	HONUserClubsAlertTypeGenerateSuggested,
 	HONUserClubsAlertTypeJoin,

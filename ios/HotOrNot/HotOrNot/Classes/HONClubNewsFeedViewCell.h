@@ -11,7 +11,7 @@
 #import "HONUserClubVO.h"
 
 
-typedef NS_ENUM(NSInteger, HONClubNewsFeedCellType) {
+typedef NS_ENUM(NSUInteger, HONClubNewsFeedCellType) {
 	HONClubNewsFeedCellTypePhotoSubmission = 0,
 	HONClubNewsFeedCellTypeNonMember
 };

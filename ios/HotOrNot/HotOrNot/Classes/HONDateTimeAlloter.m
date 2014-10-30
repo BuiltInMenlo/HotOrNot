@@ -10,8 +10,10 @@
 
 #import "HONDateTimeAlloter.h"
 
-NSString * const kISO8601FormatSymbols = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
+NSString * const kISO8601LocaleFormatSymbols = @"yyyy'-'MM'-'dd'T'HH':'mm':'ssZ";
+NSString * const kISO8601UTCFormatSymbols = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'-0000'";
 NSString * const kOrthodoxFormatSymbols = @"yyyy-MM-dd HH:mm:ss";
+NSString * const kISO8601BlankTime = @"0000-00-00 00:00:00-0000";
 NSString * const kOrthodoxBlankTime = @"0000-00-00 00:00:00";
 
 @implementation HONDateTimeAlloter
@@ -48,8 +50,12 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	return ([lastDate timeIntervalSinceDate:firstDate] > 0);
 }
 
+- (NSString *)timezoneHourOffsetFromDate:(NSDate *)date {
+	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:@"Z"] stringFromDate:date]);
+}
+
 - (NSString *)elapsedTimeSinceDate:(NSDate *)date {
-	int secs = [[[NSDate new] dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
+	int secs = [[[NSDate date] dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	
@@ -81,13 +87,13 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	NSString *interval = [[@"0 " stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:1]];
 	
 	NSDateFormatter *utcFormatter = [[HONDateTimeAlloter sharedInstance] orthodoxUTCDateFormatter];
-	NSDateFormatter *dateFormatter = [[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter];
 	
-	int secs = MAX(0, [[[dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]] dateByAddingTimeInterval:0] timeIntervalSinceDate:date]);
+	int secs = MAX(0, [[[[[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter] dateFromString:[utcFormatter stringFromDate:[NSDate date]]] dateByAddingTimeInterval:0] timeIntervalSinceDate:date]);
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
 	
+//	NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:(NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear) fromDate:date];
 	//NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:date];
 	//NSLog(@"[%d][%d][%d][%d]", days, hours, mins, secs);
 	
@@ -112,18 +118,22 @@ static HONDateTimeAlloter *sharedInstance = nil;
 }
 
 - (BOOL)isPastDate:(NSDate *)date {
-	return ([[HONDateTimeAlloter sharedInstance] didDate:[NSDate new] occurBerforeDate:date]);
+	return ([[HONDateTimeAlloter sharedInstance] didDate:[NSDate date] occurBerforeDate:date]);
 }
 
 - (NSString *)orthodoxBlankTimestampFormattedString {
 	return (kOrthodoxBlankTime);
 }
 
-- (NSDateFormatter *)orthodoxBaseFormatter {
+- (NSDateFormatter *)dateFormatterWithSymbols:(NSString *)symbols {
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:kOrthodoxFormatSymbols];
+	[dateFormatter setDateFormat:symbols];
 	
 	return (dateFormatter);
+}
+
+- (NSDateFormatter *)orthodoxBaseFormatter {
+	return ([[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kOrthodoxFormatSymbols]);
 }
 
 - (NSDateFormatter *)orthodoxFormatterWithTimezone:(NSString *)timezone {
@@ -146,7 +156,6 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	
 	NSDateFormatter *dateFormatter = [[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter];
 	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:(isValid) ? tzAbbreviation : @"UTC"]];
-	
 	return (dateFormatter);
 }
 
@@ -165,33 +174,44 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	return ([[NSTimeZone systemTimeZone] abbreviation]);
 }
 
+- (NSString *)ISO8601FormattedStringFromNowDate {
+	return ([[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:[NSDate date]]);
+}
+
+- (NSString *)ISO8601FormattedStringFromUTCDate:(NSDate *)date {
+	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kISO8601UTCFormatSymbols] stringFromDate:date]);
+}
+
 - (NSDate *)utcDateFromDate:(NSDate *)date {
 	return ([[[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter] dateFromString:[[[HONDateTimeAlloter sharedInstance] orthodoxUTCDateFormatter] stringFromDate:date]]);
 }
 
 - (NSDate *)utcNowDate {
-	return ([[HONDateTimeAlloter sharedInstance] utcDateFromDate:[NSDate new]]);
+	return ([[HONDateTimeAlloter sharedInstance] utcDateFromDate:[NSDate date]]);
 }
 
 - (NSString *)utcNowDateFormattedISO8601 {
-//	NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
-//	NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-// 
-//	[rfc3339DateFormatter setLocale:enUSPOSIXLocale];
-//	[rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-//	[rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-// 
-//	NSDate *date = [rfc3339DateFormatter stringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]];
-	
-	
-	return ([[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]);
+	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kISO8601UTCFormatSymbols] stringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]);
 }
 
 - (NSString *)ISO8601FormattedStringFromDate:(NSDate *)date {
-	NSDateFormatter *dateFormatter =   [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:kISO8601FormatSymbols];
-	
-	return ([dateFormatter stringFromDate:date]);
+	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kISO8601LocaleFormatSymbols] stringFromDate:date]);
+}
+
+- (NSString *)utcHourOffsetFromDeviceLocale {
+	return ([[HONDateTimeAlloter sharedInstance] timezoneHourOffsetFromDate:[NSDate date]]);
+}
+
+- (int)dayOfYearFromDate:(NSDate *)date {
+	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:date] day]);
+}
+
+- (int)yearFromDate:(NSDate *)date {
+	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:date] year]);
+}
+
+- (int)weekOfYearFromDate:(NSDate *)date {
+	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:date] weekOfYear]);
 }
 
 - (int)yearsOldFromDate:(NSDate *)date {

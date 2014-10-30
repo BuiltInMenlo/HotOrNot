@@ -31,6 +31,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeAnimatedBGs;
+		_viewStateType = HONStateMitigatorViewStateTypeAnimatedBGs;
 	}
 	
 	return (self);
@@ -44,6 +46,8 @@
 	
 	_collectionView.dataSource = nil;
 	_collectionView.delegate = nil;
+	
+	[super destroy];
 }
 
 
@@ -85,7 +89,7 @@
 	[super loadView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];

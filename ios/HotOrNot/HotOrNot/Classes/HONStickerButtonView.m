@@ -59,14 +59,14 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 }
 
 - (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
-	if ((self = [self initWithFrame:CGRectMake(position.x, position.y, CGRectGetWidth(kActiveFrame), CGRectGetHeight(kActiveFrame))]))  {
+	if ((self = [self initWithFrame:CGRectMake(position.x, position.y, CGRectGetWidth(kNormalFrame), CGRectGetHeight(kNormalFrame))]))  {
 		_emotionVO = emotionVO;
 		
 //		NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
 		if (_emotionVO.imageType == HONEmotionImageTypeGIF) {
 			if (!_animatedImageView) {
 				_animatedImageView = [[FLAnimatedImageView alloc] init];
-				_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
+				_animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
 				_animatedImageView.clipsToBounds = YES;
 			}
 			

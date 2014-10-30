@@ -39,7 +39,7 @@ static HONColorAuthority *sharedInstance = nil;
 }
 
 
-- (UIColor *)honPercentGreyscaleColor:(CGFloat)percent {
+- (UIColor *)percentGreyscaleColor:(CGFloat)percent {
 	return ([UIColor colorWithWhite:percent alpha:1.0]);
 }
 
@@ -77,6 +77,25 @@ static HONColorAuthority *sharedInstance = nil;
 
 - (UIColor *)honPlaceholderTextColor {
 	return ([UIColor colorWithWhite:0.790 alpha:1.0]);
+}
+
+- (UIColor *)honRandomColor {
+	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.5 andSaturation:0.5]);
+}
+
+- (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)offset {
+	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:MIN(MAX(offset, 0.00), 1.00) andSaturation:0.5]);
+}
+
+- (UIColor *)honRandomColorWithStartingSaturation:(CGFloat)offset {
+	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.50 andSaturation:MIN(MAX(offset, 0.00), 1.00)]);
+}
+
+- (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)brightness andSaturation:(CGFloat)saturation {
+	brightness = MIN(MAX(brightness, 0.00), 1.00);
+	saturation = MIN(MAX(saturation, 0.00), 1.00);
+	
+	return ([UIColor colorWithHue:(arc4random() % 256 / 256.0) saturation:((arc4random() % ((int)(256.0 * saturation)) / 256.0) + saturation) brightness:((arc4random() % ((int)(256.0 * brightness)) / 256.0) + brightness) alpha:1.00]);
 }
 
 - (UIColor *)honDebugDefaultColor {

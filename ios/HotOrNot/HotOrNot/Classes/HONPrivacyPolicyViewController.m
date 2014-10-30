@@ -17,12 +17,16 @@
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"privacy"]
 							 title:NSLocalizedString(@"privacy_policy", @"Privacy policy")])) {
+		
+		_viewStateType = HONStateMitigatorViewStateTypeLegal;
+		_totalType = HONStateMitigatorTotalTypeLegal;
 	}
 	
 	return (self);
 }
 
 
+#pragma mark - View Lifecycle
 #pragma mark - Navigation
 - (void)_goClose {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Privacy Policy Close"];

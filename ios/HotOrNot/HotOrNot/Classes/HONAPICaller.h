@@ -15,7 +15,7 @@
 #import "HONClubPhotoVO.h"
 
 
-typedef NS_ENUM(NSInteger, HONS3BucketType) {
+typedef NS_ENUM(NSUInteger, HONS3BucketType) {
 	HONS3BucketTypeAvatars = 0,
 	HONS3BucketTypeSelfies,
 	HONS3BucketTypeClubs
@@ -96,6 +96,10 @@ extern const CGFloat kNotifiyDelay;
 - (AFHTTPClient *)getHttpClientWithHMACUsingBasePath:(NSString *)basePath;
 - (NSMutableString *)hmacForKey:(NSString *)key withData:(NSString *)data;
 - (NSString *)normalizePrefixForImageURL:(NSString *)imageURL;
+
+- (BOOL)hasNetwork;
+- (BOOL)canPingAPIServer;
+- (BOOL)canPingConfigServer;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

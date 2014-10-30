@@ -12,7 +12,7 @@
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
-typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
+typedef NS_ENUM(NSUInteger, HONSelfieSubmitType) {
 	HONSelfieSubmitTypeCreate = 0,
 	HONSelfieSubmitTypeReply,
 	HONSelfieSubmitTypeSearchUser

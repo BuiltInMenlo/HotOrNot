@@ -34,7 +34,7 @@
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 13.0, 180.0, 18.0)];
 	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
-	usernameLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
+	usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.455];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];

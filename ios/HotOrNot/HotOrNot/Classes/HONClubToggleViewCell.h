@@ -9,7 +9,7 @@
 #import "HONTableViewCell.h"
 #import "HONUserClubVO.h"
 
-typedef NS_ENUM(NSInteger, HONClubToggleViewCellType) {
+typedef NS_ENUM(NSUInteger, HONClubToggleViewCellType) {
 	HONClubToggleViewCellTypeClub = 0,
 	HONClubToggleViewCellTypeSelectAll,
 	HONClubToggleViewCellTypeCreateClub

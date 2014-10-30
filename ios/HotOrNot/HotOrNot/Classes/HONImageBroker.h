@@ -8,7 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-typedef NS_ENUM(NSInteger, HONImageBrokerShareTemplateType) {
+typedef NS_ENUM(NSUInteger, HONImageBrokerShareTemplateType) {
 	HONImageBrokerShareTemplateTypeDefault = 0,
 	HONImageBrokerShareTemplateTypeInstagram,
 	HONImageBrokerShareTemplateTypeTwitter,
@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, HONImageBrokerShareTemplateType) {
 	HONImageBrokerShareTemplateTypeEmail
 };
 
-typedef NS_ENUM(NSInteger, HONImageBrokerImageFormat) {
+typedef NS_ENUM(NSUInteger, HONImageBrokerImageFormat) {
 	HONImageBrokerImageFormatJPEG = 0,
 	HONImageBrokerImageFormatPNG
 };

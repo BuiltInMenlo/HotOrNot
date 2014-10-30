@@ -7,7 +7,7 @@
 //
 
 
-typedef NS_ENUM(NSInteger, HONContactType) {
+typedef NS_ENUM(NSUInteger, HONContactType) {
 	HONContactTypeUnmatched = 0,
 	HONContactTypeMatched
 };

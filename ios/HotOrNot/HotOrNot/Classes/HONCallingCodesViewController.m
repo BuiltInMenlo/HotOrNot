@@ -12,6 +12,8 @@
 #import "MBProgressHUD.h"
 
 #import "HONCallingCodesViewController.h"
+#import "HONRegisterViewController.h"
+#import "HONContactsSearchViewController.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTableView.h"
@@ -36,7 +38,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
 	}
 	
 	return (self);
@@ -50,6 +51,8 @@
 	
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
+	
+	[super destroy];
 }
 
 #pragma mark - Data Calls
@@ -118,6 +121,15 @@
 	[super viewDidLoad];
 	
 //	_panGestureRecognizer.enabled = YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	
+	_totalType = ([NSStringFromClass(_sireViewController.class) isEqualToString:[HONRegisterViewController className]]) ? HONStateMitigatorTotalTypeRegistrationCountryCodes : HONStateMitigatorTotalTypeSearchContactsCountryCodes;
+	_viewStateType = ([NSStringFromClass(_sireViewController.class) isEqualToString:[HONRegisterViewController className]]) ? HONStateMitigatorViewStateTypeRegistrationCountryCodes : HONStateMitigatorViewStateTypeSearchContactCountryCodes;
+	
+	[super viewWillAppear:animated];
 }
 
 

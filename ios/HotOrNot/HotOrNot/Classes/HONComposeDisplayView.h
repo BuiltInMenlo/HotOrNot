@@ -15,8 +15,8 @@ extern const CGSize kMaxLabelSize;
 
 @class HONComposeDisplayView;
 @protocol HONComposeDisplayViewDelegate <NSObject>
-@optional
 - (void)composeDisplayViewShowCamera:(HONComposeDisplayView *)composeDisplayView;
+@optional
 - (void)composeDisplayViewGoFullScreen:(HONComposeDisplayView *)composeDisplayView;
 - (void)composeDisplayView:(HONComposeDisplayView *)composeDisplayView scrolledEmotionsToIndex:(int)index fromDirection:(int)dir;
 @end

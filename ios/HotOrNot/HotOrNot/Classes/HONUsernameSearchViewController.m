@@ -36,6 +36,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeSearchUsername;
+		_viewStateType = HONStateMitigatorViewStateTypeSearchUsername;
 	}
 	
 	return (self);
@@ -49,6 +51,8 @@
 	
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
+	
+	[super destroy];
 }
 
 
@@ -126,13 +130,13 @@
 	_selectedUsers = [NSMutableArray array];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
+	closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(282.0, 2.0, 44.0, 44.0);
+	submitButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
@@ -167,7 +171,6 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
-	[HONAppDelegate incTotalForCounter:@"search"];
 	[_searchHeaderView becomeFirstResponder];
 }
 

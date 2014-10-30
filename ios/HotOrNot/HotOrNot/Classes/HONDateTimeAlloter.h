@@ -14,19 +14,27 @@
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate;
 - (BOOL)didDate:(NSDate *)firstDate occurBerforeDate:(NSDate *)lastDate;
 - (int)elapsedSecondsSinceUnixEpoch;
+- (NSString *)timezoneHourOffsetFromDate:(NSDate *)date;
 - (NSString *)elapsedTimeSinceDate:(NSDate *)date;
 - (NSString *)intervalSinceDate:(NSDate *)date;
 - (NSString *)intervalSinceDate:(NSDate *)date includeSuffix:(NSString *)suffix;
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix;
 - (BOOL)isPastDate:(NSDate *)date;
 - (NSString *)orthodoxBlankTimestampFormattedString;
+- (NSDateFormatter *)dateFormatterWithSymbols:(NSString *)symbols;
 - (NSDateFormatter *)orthodoxBaseFormatter;
 - (NSString *)orthodoxFormattedStringFromDate:(NSDate *)date;
 - (NSString *)ISO8601FormattedStringFromDate:(NSDate *)date;
 - (NSDateFormatter *)orthodoxFormatterWithTimezone:(NSString *)timezone;
 - (NSString *)timezoneFromDeviceLocale;
+- (NSString *)ISO8601FormattedStringFromNowDate;
+- (NSString *)ISO8601FormattedStringFromUTCDate:(NSDate *)date;
 - (NSDate *)utcDateFromDate:(NSDate *)date;
 - (NSDate *)utcNowDate;
 - (NSString *)utcNowDateFormattedISO8601;
+- (NSString *)utcHourOffsetFromDeviceLocale;
+- (int)dayOfYearFromDate:(NSDate *)date;
+- (int)weekOfYearFromDate:(NSDate *)date;
+- (int)yearFromDate:(NSDate *)date;
 - (int)yearsOldFromDate:(NSDate *)date;
 @end

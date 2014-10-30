@@ -57,6 +57,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_totalType = HONStateMitigatorTotalTypeRegistration;
+		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
+		
 		_username = @"";
 		_phone = @"";
 		_imageFilename = @"";
@@ -333,7 +336,7 @@
 	[super loadView];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(282.0, 2.0, 44.0, 44.0);
+	_nextButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef NS_ENUM(NSInteger, HONTableViewBGViewType) {
+typedef NS_ENUM(NSUInteger, HONTableViewBGViewType) {
 	HONTableViewBGViewTypeUndetermined = 0,
 	HONTableViewBGViewTypeAccessContacts,
 	HONTableViewBGViewTypeCreateStatusUpdate

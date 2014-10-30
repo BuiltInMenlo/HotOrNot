@@ -31,7 +31,6 @@
 - (id)initWithSubmitParameters:(NSDictionary *)submitParams {
 	NSLog(@"[:|:] [%@ initWithSubmitParameters] (%@)", self.class, submitParams);
 	if ((self = [super init])) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		_submitParams = [submitParams mutableCopy];
 		_clubID = [[_submitParams objectForKey:@"club_id"] intValue];
 		
@@ -90,10 +89,7 @@
 	
 	} else {
 //		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
-	
-	
-		[HONAppDelegate incTotalForCounter:@"camera"];
-		
+			
 		for (HONUserClubVO *vo in _selectedClubs) {
 			[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
 			NSLog(@"SUBMITTING:[%@]", _submitParams);

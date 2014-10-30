@@ -20,12 +20,16 @@
 - (id)init {
 	if ((self = [super initWithURL:@"https://www.twitter.com/selfiec_status"
 							 title:NSLocalizedString(@"network_status", @"Network status")])) {
+		
+		_viewStateType = HONStateMitigatorViewStateTypeNetworkStatus;
+		_totalType = HONStateMitigatorTotalTypeNetworkStatus;
 	}
 	
 	return (self);
 }
 
 
+#pragma mark - View Lifecycle
 #pragma mark - Navigation
 - (void)_goClose {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Network Status Close"];
