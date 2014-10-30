@@ -39,6 +39,9 @@
 
 - (void)setSize:(CGSize)size {
 	_size = size;
+	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, _size.width, _size.height);
+	self.contentView.frame = CGRectMake(self.contentView.frame.origin.x, self.contentView.frame.origin.y, _size.width, _size.height);
+	
 	_chevronImageView.frame = CGRectMake(_chevronImageView.frame.origin.x, MAX(0, (size.height - _chevronImageView.frame.size.height) * 0.5), _chevronImageView.frame.size.width, _chevronImageView.frame.size.height);
 }
 

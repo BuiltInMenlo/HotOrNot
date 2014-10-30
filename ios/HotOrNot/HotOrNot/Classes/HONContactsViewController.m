@@ -49,37 +49,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveRecentClubs {
-//	_recentClubs = [NSMutableArray array];
-//	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//		[[HONClubAssistant sharedInstance] writeUserClubs:result];
-//		
-//		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
-//		
-//		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-//			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
-//				for (NSDictionary *dict in [result objectForKey:key]) {
-//					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
-//						continue;
-//					
-//					[_recentClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-//				}
-//			
-//			} else if ([key isEqualToString:@"pending"]) {
-//				for (NSDictionary *dict in [result objectForKey:key]) {
-//					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//						
-//						if ([[result objectForKey:@"pending"] count] == 0)
-//							[self _retrieveRecentClubs];
-//					}];
-//				}
-//			
-//			} else
-//				continue;
-//		}
-//	}];
-}
-
 - (void)_sendEmailContacts {
 	NSLog(@":/: _sendEmailContacts :/:");
 	
@@ -599,13 +568,13 @@
 	}
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-}
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
+//}
 
 
 #pragma mark - AlertView Delegates

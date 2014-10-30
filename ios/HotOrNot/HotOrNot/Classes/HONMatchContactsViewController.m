@@ -106,8 +106,8 @@
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, _submitButtonOriginY, 320.0, 48.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButtonLargeEnabled_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButtonLargeEnabled_Active"] forState:UIControlStateHighlighted];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];

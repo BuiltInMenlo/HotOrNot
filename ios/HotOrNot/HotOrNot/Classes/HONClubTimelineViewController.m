@@ -14,7 +14,6 @@
 #import "HONClubTimelineViewController.h"
 #import "HONComposeViewController.h"
 #import "HONUserProfileViewController.h"
-//#import "HONInviteContactsViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
@@ -441,13 +440,12 @@
 	if (cell == nil)
 		cell = [[HONClubPhotoViewCell alloc] init];
 	
-	[cell setSize:[UIScreen mainScreen].bounds.size];
+	cell.delegate = self;
 	[cell hideChevron];
-	cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeUnderlay"]];
+	[cell setSize:[UIScreen mainScreen].bounds.size];
 	cell.indexPath = indexPath;
 	cell.clubVO = _clubVO;
 	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:MIN(MAX(0, indexPath.section), [_clubPhotos count] - 1)];
-	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);

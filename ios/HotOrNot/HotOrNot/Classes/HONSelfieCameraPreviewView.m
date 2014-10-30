@@ -14,10 +14,10 @@
 
 #import "HONSelfieCameraPreviewView.h"
 #import "HONHeaderView.h"
-#import "HONEmotionsPickerDisplayView.h"
-#import "HONEmotionsPickerView.h"
+#import "HONComposeDisplayView.h"
+#import "HONStickerButtonsPickerView.h"
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerDisplayViewDelegate, HONEmotionsPickerViewDelegate>
+@interface HONSelfieCameraPreviewView () <HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
@@ -30,7 +30,7 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UIButton *nextButton;
-@property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
+@property (nonatomic, strong) HONComposeDisplayView *emotionsDisplayView;
 
 @property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
 @end
@@ -84,7 +84,7 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:self.frame withPreviewImage:_previewImage];
+	_emotionsDisplayView = [[HONComposeDisplayView alloc] initWithFrame:self.frame];
 	_emotionsDisplayView.delegate = self;
 	[self addSubview:_emotionsDisplayView];
 	
@@ -95,7 +95,7 @@
 	[self addSubview:_tabButtonsHolderView];
 
 	for (int i=0; i<5; i++) {
-		HONEmotionsPickerView *pickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 221.0) asGroupIndex:i];
+		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 221.0) asGroupIndex:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -112,7 +112,7 @@
 	
 	
 	
-	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
+	HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
 	pickerView.delegate = self;
 	[pickerView preloadImages];
 	[_emotionsPickerHolderView addSubview:pickerView];
@@ -174,7 +174,7 @@
 									 withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
 	
 	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)obj;
+		HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)obj;
 		
 		if (pickerView.stickerGroupIndex == groupIndex) {
 			if (pickerView.stickerGroupIndex == 4) {
@@ -183,7 +183,7 @@
 			
 			} else {
 				for (UIView *view in _emotionsPickerHolderView.subviews) {
-					((HONEmotionsPickerView *)view).delegate = nil;
+					((HONStickerButtonsPickerView *)view).delegate = nil;
 					[view removeFromSuperview];
 				}
 				
@@ -232,7 +232,7 @@
 
 
 #pragma mark - EmotionsPickerView Delegates
-- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
+- (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
@@ -276,14 +276,14 @@
 	}
 }
 
-- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
+- (void)emotionsPickerView:(HONStickerButtonsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 //	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 }
 
 
 #pragma mark - EmotionsPickerDisplayView Delegates
-- (void)emotionsPickerDisplayViewGoFullScreen:(HONEmotionsPickerDisplayView *)pickerDisplayView {
+- (void)emotionsPickerDisplayViewGoFullScreen:(HONComposeDisplayView *)pickerDisplayView {
 	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
@@ -294,7 +294,7 @@
 	}];
 	
 	for (UIView *view in _emotionsPickerHolderView.subviews) {
-		((HONEmotionsPickerView *)view).delegate = nil;
+		((HONStickerButtonsPickerView *)view).delegate = nil;
 		[UIView animateWithDuration:0.333 delay:0.000
 			 usingSpringWithDamping:0.800 initialSpringVelocity:0.010
 							options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
@@ -307,12 +307,12 @@
 	}
 }
 
-- (void)emotionsPickerDisplayViewShowCamera:(HONEmotionsPickerDisplayView *)pickerDisplayView {
+- (void)emotionsPickerDisplayViewShowCamera:(HONComposeDisplayView *)pickerDisplayView {
 	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowCamera:)])
 		[self.delegate cameraPreviewViewShowCamera:self];
 }
 
-- (void)emotionsPickerDisplayView:(HONEmotionsPickerDisplayView *)pickerDisplayView scrolledEmotionsToIndex:(int)index fromDirection:(int)dir {
+- (void)emotionsPickerDisplayView:(HONComposeDisplayView *)pickerDisplayView scrolledEmotionsToIndex:(int)index fromDirection:(int)dir {
 //	NSLog(@"[*:*] emotionsPickerDisplayView:(%@) scrolledEmotionsToIndex:(%d/%d) fromDirection:(%d) [*:*]", self.class, index, MIN(MAX(0, index), [_selectedEmotions count] - 1), dir);
 	
 	if ([_subjectNames count] == 0) {

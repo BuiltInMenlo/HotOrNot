@@ -66,7 +66,6 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 - (void)_promptForAddressBookPermission;
 
 - (void)_submitPhoneNumberForMatching;
-- (void)_retrieveRecentClubs;
 - (void)_retrieveDeviceContacts;
 - (void)_sendEmailContacts;
 - (void)_sendPhoneContacts;

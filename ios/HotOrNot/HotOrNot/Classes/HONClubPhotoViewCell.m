@@ -22,8 +22,6 @@
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UILabel *emotionLabel;
-@property (nonatomic, strong) UIView *tintedView;
 @property (nonatomic, strong) UIScrollView *emotionThumbsHolderView;
 
 @property (nonatomic, strong) NSMutableArray *emotionViews;
@@ -52,7 +50,14 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		self.contentView.frame = [UIScreen mainScreen].bounds;
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeUnderlay"]];
+		self.backgroundColor = [UIColor whiteColor];
+		
+		_emotions = [NSMutableArray array];
+		_emotionViews = [NSMutableArray array];
+		_indHistory = UIOffsetZero;
+		_emotionSpacingSize = CGSizeMake(kEmotionLoadedFrame.size.width + kStickerPaddingSize.width, kEmotionLoadedFrame.size.height + kStickerPaddingSize.height);
+		_emotionInsetAmt = 0.5 * (320.0 - kEmotionLoadedFrame.size.width);
 	}
 	
 	return (self);
@@ -80,15 +85,12 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		[self.contentView addSubview:_imageLoadingView];
 	}
 	
-//	_imgView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
 	_imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 320.0)];
 	[self.contentView addSubview:_imgView];
 	
 	
 	NSLog(@"IMG SIZE:[%@]", NSStringFromCGSize(_imgView.frame.size));
 	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
-//		[self _changeTint];
-//		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_changeTint) userInfo:nil repeats:YES];
 		
 	} else {
 		if (_clubPhotoVO.photoType == HONClubPhotoTypeGIF) {
@@ -99,7 +101,7 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 			[_imgView addSubview:animatedImageView];
 			
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				NSURL *url = [NSURL URLWithString:_clubPhotoVO.imagePrefix]; //[NSURL URLWithString:@"https://cdn.picocandy.com/1df5644d9e94/t/54330ce5ab4b8b0468000166/small.gif"];//[_clubPhotoVO.imagePrefix stringByAppendingString:[kSnapLargeSuffix stringByReplacingOccurrencesOfString:@".jpg" withString:@"gif"]]];
+				NSURL *url = [NSURL URLWithString:_clubPhotoVO.imagePrefix];
 				NSLog(@"IMG URL:[%@]", url);
 				FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
 				
@@ -111,7 +113,6 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		} else {
 			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 				_imgView.image = image;
-//				[self _loadEmotions];
 			};
 			
 			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -128,14 +129,8 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		}
 	}
 	
-	//[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]]];
 	
-	_emotions = [NSMutableArray array];
-	_emotionViews = [NSMutableArray array];
-	_indHistory = UIOffsetZero;
-	_emotionSpacingSize = CGSizeMake(kEmotionLoadedFrame.size.width + kStickerPaddingSize.width, kEmotionLoadedFrame.size.height + kStickerPaddingSize.height);
-	_emotionInsetAmt = 0.5 * (320.0 - kEmotionLoadedFrame.size.width);
-	
+	NSLog(@"FRAME:[%@][%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.contentView.frame));
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kEmotionLoadedFrame.size.height)];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -146,45 +141,11 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	_scrollView.pagingEnabled = YES;
 	[self.contentView addSubview:_scrollView];
 	
-	int cnt = 0;
-	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
-		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
-		emotionView.frame = CGRectOffset(emotionView.frame, _emotionInsetAmt + (cnt * (kEmotionLoadedFrame.size.width + kStickerPaddingSize.width)), 0.0);
-		[_scrollView addSubview:emotionView];
-		[_emotionViews addObject:emotionView];
-		[_emotions addObject:emotionVO];
-		
-		UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nextPageButton.frame = emotionView.frame;
-		[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
-		[_scrollView addSubview:nextPageButton];
-		
-		cnt++;
-	}
+	[self _loadEmotions];
 	
-	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * [_emotions count], _scrollView.frame.size.height);//([_emotions count] == 1) ? _scrollView.frame.size.width : MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width), _scrollView.contentSize.height);
-
-	_tintedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (_scrollView.frame.origin.y + _scrollView.frame.size.height) + 50.0, 320.0, 47.0)];
-	_tintedView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-//	[self.contentView addSubview:_tintedView];
-	
-	_emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 43.0)];
-	_emotionLabel.backgroundColor = [UIColor clearColor];
-	_emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:21];
-	_emotionLabel.textColor = [UIColor whiteColor];
-	_emotionLabel.textAlignment = NSTextAlignmentCenter;
-	_emotionLabel.text = @"";//((HONEmotionVO *)[_emotions firstObject]).emotionName;
-	[_tintedView addSubview:_emotionLabel];
-	
-	[self _transitionToCaption:((HONEmotionVO *)[_emotions firstObject]).emotionName withCompletion:nil];
-	
-	
-//	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	likeButton.frame = CGRectMake(-3.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
-//	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
-//	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
-//	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-//	[self.contentView addSubview:likeButton];
+	UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 320.0, 320.0, self.frame.size.height - 320.0)];
+	bgView.backgroundColor = [UIColor whiteColor];
+	[self.contentView addSubview:bgView];
 	
 	_emotionThumbsHolderView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 320.0, 320.0, 50.0)];
 	_emotionThumbsHolderView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.00];
@@ -193,12 +154,11 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	_emotionThumbsHolderView.showsVerticalScrollIndicator = NO;
 	_emotionThumbsHolderView.alwaysBounceHorizontal = YES;
 	[self addSubview:_emotionThumbsHolderView];
-//
+	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(0.0, 370.0, 320.0, 248.0);
-	replyButton.backgroundColor = [UIColor whiteColor];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
+	replyButton.frame = CGRectMake(0.0, self.frame.size.height - 50.0, 320.0, 50.0);
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:replyButton];
 	
@@ -302,37 +262,6 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	[UIView animateWithDuration:2.0 animations:^(void) {
 		_imgView.layer.backgroundColor = color.CGColor;
 	} completion:nil];
-}
-
-- (void)_transitionToCaption:(NSString *)caption withCompletion:(void (^)(BOOL finished))completion {
-	
-	if ([caption isEqualToString:_emotionLabel.text]) {
-		_emotionLabel.text = caption;
-	
-	} else {
-		UILabel *outroLabel = [[UILabel alloc] initWithFrame:_emotionLabel.frame];
-		outroLabel.backgroundColor = _emotionLabel.backgroundColor;
-		outroLabel.font = _emotionLabel.font;
-		outroLabel.textColor = _emotionLabel.textColor;
-		outroLabel.textAlignment = _emotionLabel.textAlignment;
-		outroLabel.text = _emotionLabel.text;
-		[_tintedView addSubview:outroLabel];
-		
-		_emotionLabel.alpha = 0.0;
-		_emotionLabel.text = caption;
-		
-		[UIView animateWithDuration:0.125
-						 animations:^(void) {
-							 outroLabel.alpha = 0.0;
-							 _emotionLabel.alpha = 1.0;
-							 
-						 } completion:^(BOOL finished) {
-							 [outroLabel removeFromSuperview];
-							 
-							 if (completion)
-								 completion(finished);
-		}];
-	}
 }
 
 - (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {
@@ -470,7 +399,6 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		
 		if (scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt) && scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(updtInd, currInd);
-			[self _transitionToCaption:((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName withCompletion:nil];
 //			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName;
 		} else
 			return;
@@ -481,7 +409,6 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		
 		if (scrollView.contentOffset.x > (axisCoord - _emotionInsetAmt) && scrollView.contentOffset.x < (axisCoord + _emotionInsetAmt)) {
 			_indHistory = UIOffsetMake(updtInd, currInd);
-			[self _transitionToCaption:((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName withCompletion:nil];
 //			_emotionLabel.text = ((HONEmotionVO *)[_emotions objectAtIndex:updtInd]).emotionName;
 			
 		} else
