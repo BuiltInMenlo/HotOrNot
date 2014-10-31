@@ -12,6 +12,8 @@
 
 - (NSDate *)dateFromUnixTimestamp:(CGFloat)timestamp;
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate;
+- (NSDate *)dateFromISO9601FormattedString:(NSString *)stringDate;
+- (NSDate *)dateFromISO9601UTCFormattedString:(NSString *)stringDate;
 - (BOOL)didDate:(NSDate *)firstDate occurBerforeDate:(NSDate *)lastDate;
 - (int)elapsedSecondsSinceUnixEpoch;
 - (NSString *)timezoneHourOffsetFromDate:(NSDate *)date;

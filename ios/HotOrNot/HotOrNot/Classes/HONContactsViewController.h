@@ -8,9 +8,13 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "CKRefreshControl.h"
+#import "NSMutableDictionary+Replacements.h"
+#import "NSString+DataTypes.h"
+
+#import "MBProgressHUD.h"
 
 #import "HONViewController.h"
+#import "HONRefreshControl.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONClubViewCell.h"
@@ -39,7 +43,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONContactsSendType _contactsSendType;
 	
 	NSMutableArray *_headRows;
-	NSMutableArray *_recentClubs;
+	NSMutableArray *_clubs;
 	NSMutableArray *_allDeviceContacts;
 	NSMutableArray *_shownDeviceContacts;
 	NSMutableArray *_omittedDeviceContacts;
@@ -53,13 +57,17 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONHeaderView *_headerView;
 	HONSearchBarView *_searchBarView;
 	
+	MBProgressHUD *_progressHUD;
+	
 	HONTableViewBGView *_emptyContactsBGView;
 	HONTableViewBGView *_accessContactsBGView;
 	
 	int _joinedTotalClubs;
 }
 
-- (void)_goDataRefresh:(CKRefreshControl *)sender;
+- (void)_retrieveClubs;
+- (void)_goDataRefresh:(HONRefreshControl *)sender;
+- (void)_goReloadTableViewContents;
 - (void)_didFinishDataRefresh;
 
 - (void)_promptForAddressBookAccess;

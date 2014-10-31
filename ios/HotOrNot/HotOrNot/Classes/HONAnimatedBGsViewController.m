@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONAnimatedBGsViewController.h"
@@ -65,7 +65,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Refresh"];
 	[self _retrieveEmotions];
 }

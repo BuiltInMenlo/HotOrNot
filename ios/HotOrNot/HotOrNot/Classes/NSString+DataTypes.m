@@ -26,6 +26,10 @@ unsigned long long unistrlen(unichar *chars) {
 	return ((boolVal) ? @"YES" : @"NO");
 }
 
+- (NSString *)stringFromClass:(NSObject *)object {
+	return ([NSString stringWithFormat:@"%@", object.class]);
+}
+
 - (NSString *)stringFromCGFloat:(CGFloat)floatVal {
 	return ([[[NSString alloc] init] stringFromFloat:(float)floatVal]);
 }

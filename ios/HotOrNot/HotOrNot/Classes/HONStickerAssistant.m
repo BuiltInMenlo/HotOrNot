@@ -173,7 +173,7 @@ static HONStickerAssistant *sharedInstance = nil;
 			[[NHThreadThis backgroundThis] doThis:^{
 				NSMutableArray *stickers = [NSMutableArray array];
 				for (PCContent *content in contentGroup.contents) {
-//					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
+					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
 					[stickers addObject:@{@"id"		: content.content_id,
 										  @"cg_id"	: contentGroupID,
 										  @"name"	: content.name,
@@ -207,7 +207,6 @@ static HONStickerAssistant *sharedInstance = nil;
 	return (nil);
 }
 
-
 - (NSArray *)fetchStickersForGroupIndex:(int)stickerGroupIndex {
 	NSMutableDictionary *contentGroups = ([[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] mutableCopy] : [NSMutableDictionary dictionary];
 	NSMutableArray *stickers = [NSMutableArray array];
@@ -226,6 +225,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	} else if (stickerGroupIndex == 1) {
 		contentGroupID = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"] objectForKey:kFacesGroup] objectForKey:@"content_group"];
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
+			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
 			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
 				break;

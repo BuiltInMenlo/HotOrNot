@@ -68,7 +68,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[_dictClubs removeAllObjects];
 	[_allClubs removeAllObjects];
 	[_clubIDs removeAllObjects];

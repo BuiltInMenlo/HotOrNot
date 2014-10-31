@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONHighSchoolSearchViewController.h"
@@ -40,7 +40,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 }
 
 - (void)_didFinishDataRefresh {

@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONCallingCodesViewController.h"
@@ -69,7 +69,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[self _retreiveCountries];
 }
 

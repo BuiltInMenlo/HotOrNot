@@ -9,6 +9,7 @@
 #import <AddressBook/AddressBook.h>
 
 #import "NSString+DataTypes.h"
+#import "NSString+Formatting.h"
 
 #import "HONClubAssistant.h"
 
@@ -36,8 +37,7 @@ static HONClubAssistant *sharedInstance = nil;
 - (NSArray *)clubTypeKeys {
 	return (@[@"pending",
 			  @"owned",
-			  @"member",
-			  @"other"]);
+			  @"member"]);
 }
 
 - (NSString *)userSignupClubCoverImageURL {
@@ -455,11 +455,6 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 	
 	return (vo);
-	
-//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] != nil)
-//		vo = [HONUserClubVO clubWithDictionary:[[[NSUserDefaults standardUserDefaults] objectForKey:@"high_schools"] firstObject]];
-//	
-//	return (vo);
 }
 
 - (HONUserClubVO *)suggestedWorkplaceClubVO {
@@ -590,6 +585,143 @@ static HONClubAssistant *sharedInstance = nil;
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"]);
 }
 
+
+- (HONUserClubVO *)fetchClubWithClubID:(int)clubID {
+	HONUserClubVO *clubVO = nil;
+	
+	for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"]) {
+		HONUserClubVO *ownedClubVO = [HONUserClubVO clubWithDictionary:dict];
+		if (ownedClubVO.clubID == clubID) {
+			clubVO = ownedClubVO;
+			break;
+		}
+	}
+	
+	for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"member"]) {
+		HONUserClubVO *memberClubVO = [HONUserClubVO clubWithDictionary:dict];
+		if (memberClubVO.clubID == clubID) {
+			clubVO = memberClubVO;
+			break;
+		}
+	}
+	
+	for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"pending"]) {
+		HONUserClubVO *pendingClubVO = [HONUserClubVO clubWithDictionary:dict];
+		if (pendingClubVO.clubID == clubID) {
+			clubVO = pendingClubVO;
+			break;
+		}
+	}
+	
+	return (clubVO);
+}
+
+- (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID {
+	
+	__block HONClubPhotoVO *clubPhotoVO = nil;
+	[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:(NSString *)obj]) {
+			[[HONUserClubVO clubWithDictionary:dict].submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
+				if (vo.challengeID == challengeID) {
+					clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:vo.dictionary];
+					*stop = YES;
+				}
+			}];
+		}
+	}];
+	
+	return (clubPhotoVO);
+		
+}
+
+- (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants {
+	__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:participants];
+	
+	if (clubVO != nil) {
+		[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+			clubVO = [HONUserClubVO clubWithDictionary:result];
+			
+		}];
+	
+	} else {
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubPhotoDictionary] mutableCopy];
+		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		clubVO = [HONUserClubVO clubWithDictionary:dict];
+		
+		[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+			clubVO = [HONUserClubVO clubWithDictionary:result];
+			
+			__block NSString *names = @"";
+			__block HONClubPhotoVO *clubPhotoVO = nil;
+			
+			NSMutableArray *selectedUsers = [NSMutableArray array];
+			NSMutableArray *selectedContacts = [NSMutableArray array];
+			
+			NSMutableArray *participants = [NSMutableArray array];
+			[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+				[selectedUsers addObject:vo];
+				[participants addObject:vo.username];
+				names = [names stringByAppendingFormat:@"%@, ", vo.username];
+			}];
+			
+			[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				(participantVO.userID != 0 && vo.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [vo.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])
+				HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
+				if ([trivialUserVO.altID length] > 0) {
+					HONContactUserVO *contactUserVO = [HONContactUserVO contactFromTrivialUserVO:trivialUserVO];
+					[selectedContacts addObject:contactUserVO];
+					
+					[participants addObject:trivialUserVO.username];
+					names = [names stringByAppendingFormat:@"%@, ", trivialUserVO.username];
+				}
+			}];
+
+			names = [names stringByTrimmingFinalSubstring:@", "];
+		}];
+	}
+	
+	return (clubVO);
+}
+
+- (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO {
+	
+	
+	__block HONClubPhotoVO *clubPhotoVO = nil;
+	return (clubPhotoVO);
+}
+
+
+- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion {
+	if ([inAppUsers count] == 0 && [nonAppContacts count] == 0) {
+		if (completion)
+			completion(YES);
+	}
+	
+	if ([inAppUsers count] > 0 && [nonAppContacts count] > 0) {
+		[[HONAPICaller sharedInstance] inviteInAppUsers:inAppUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID inviteNonAppContacts:nonAppContacts completion:^(NSDictionary *result) {
+			if (completion)
+				completion(YES);
+		}];
+		
+	} else {
+		if ([inAppUsers count] > 0) {
+			[[HONAPICaller sharedInstance] inviteInAppUsers:inAppUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
+				if (completion)
+					completion(YES);
+			}];
+		}
+		
+		if ([nonAppContacts count] > 0) {
+			[[HONAPICaller sharedInstance] inviteNonAppUsers:nonAppContacts toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
+				if (completion)
+					completion(YES);
+			}];
+		}
+	}
+}
 
 - (NSArray *)excludedClubDomains {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"excluded_domains"]);

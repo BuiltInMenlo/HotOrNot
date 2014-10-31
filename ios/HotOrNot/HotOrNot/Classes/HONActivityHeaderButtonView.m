@@ -14,7 +14,6 @@ const CGPoint kOrthodoxActivityCenterPt = {87.0, 22.0};
 const CGFloat kMaxActivityWidth = 44.0;
 
 @interface HONActivityHeaderButtonView ()
-@property (nonatomic, strong) UIButton *button;
 @property (nonatomic, strong) UIImageView *activityBGImageView;
 @property (nonatomic, strong) UILabel *activityTotalLabel;
 @property (nonatomic) BOOL isFirstRun;

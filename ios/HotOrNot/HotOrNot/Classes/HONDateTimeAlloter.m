@@ -42,6 +42,15 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	return ([NSDate dateWithTimeIntervalSince1970:timestamp]);
 }
 
+- (NSDate *)dateFromISO9601FormattedString:(NSString *)stringDate {
+	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kISO8601LocaleFormatSymbols] dateFromString:stringDate]);
+}
+
+- (NSDate *)dateFromISO9601UTCFormattedString:(NSString *)stringDate {
+	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kISO8601UTCFormatSymbols] dateFromString:stringDate]);
+	
+}
+
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate {
 	return ([[[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter] dateFromString:stringDate]);
 }

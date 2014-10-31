@@ -142,7 +142,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
+	submitButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -428,7 +428,7 @@
 										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {
-			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONTrivialUserVO userFromContactVO:_contactUserVO]]] : _clubVO;
+			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONTrivialUserVO userFromContactUserVO:_contactUserVO]]] : _clubVO;
 			if (_clubVO != nil) {
 				NSLog(@"CLUB -=- (JOIN) -=-");
 				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {

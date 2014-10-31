@@ -22,6 +22,22 @@ const CGSize kEmotionPaddingSize = {64.0f, 0.0f};
 const CGRect kEmotionIntroFrame = {88.0f, 88.0f, 12.0f, 12.0f};
 const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 
+const CGFloat kEmotionTransposeDuration = 0.00125;
+const CGFloat kEmotionTransposeDelay = 0.000;
+const CGFloat kEmotionTransposeDamping = 0.875;
+const CGFloat kEmotionTransposeForce = 0.125;
+
+const CGFloat kEmotionIntroDuration = 0.00250;
+const CGFloat kEmotionIntroDelay = 0.125;
+const CGFloat kEmotionIntroDamping = 0.750;
+const CGFloat kEmotionIntroForce = 0.000;
+
+const CGFloat kEmotionOutroDuration = 0.00250;
+const CGFloat kEmotionOutroDelay = 0.000;
+const CGFloat kEmotionOutroDamping = 0.950;
+const CGFloat kEmotionOutroForce = 0.250;
+
+
 @interface HONComposeDisplayView () <PicoStickerDelegate>
 @property (nonatomic, strong) NSMutableArray *emotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -29,7 +45,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 @property (nonatomic, strong) UIView *loaderHolderView;
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UIButton *fullscreenButton;
-//@property (nonatomic, strong) UIScrollView *thumbsScrollView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) NSTimer *tintTimer;
@@ -65,13 +80,13 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_bgView.hidden = YES;
 		[self addSubview:_bgView];
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kEmotionNormalFrame.size.height)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 22.0, 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsMake(0.0, _emotionInsetAmt, 0.0, _emotionInsetAmt);
 		_scrollView.showsHorizontalScrollIndicator = NO;
 		_scrollView.showsVerticalScrollIndicator = NO;
 		_scrollView.alwaysBounceHorizontal = YES;
-		_scrollView.userInteractionEnabled = NO;
+		_scrollView.userInteractionEnabled = YES;
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
@@ -81,25 +96,16 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectZero];
 		[_scrollView addSubview:_emotionHolderView];
 		
-		_fullscreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_fullscreenButton.frame = self.frame;
-		[_fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:_fullscreenButton];
-		
-//		_thumbsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(50.0, 297.0, 270.0, 50.0)];
-//		_thumbsScrollView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.965];
-//		_thumbsScrollView.contentSize = CGSizeMake(_thumbsScrollView.frame.size.width, _thumbsScrollView.frame.size.height);
-//		_thumbsScrollView.contentOffset = CGPointZero;
-//		_thumbsScrollView.showsHorizontalScrollIndicator = NO;
-//		_thumbsScrollView.showsVerticalScrollIndicator = NO;
-//		_thumbsScrollView.alwaysBounceHorizontal = YES;
-//		[self addSubview:_thumbsScrollView];
+//		_fullscreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_fullscreenButton.frame = self.frame;
+//		[_fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:_fullscreenButton];
 		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraButton.frame = CGRectMake(0.0, 297.0, 50.0, 50.0);
 		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addPhotoButton_nonActive"] forState:UIControlStateNormal];
 		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addPhotoButton_Active"] forState:UIControlStateHighlighted];
-		[cameraButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+		[cameraButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cameraButton];
 		
 		[self _updateDisplayWithCompletion:nil];
@@ -131,16 +137,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	[self _addImageEmotion:emotionVO];
 	[self _updateDisplayWithCompletion:^(BOOL finished) {
 	}];
-	
-//	if ([_emotions count] == 6) {
-//		_thumbsScrollView.contentSize = CGSizeMake(_thumbsScrollView.contentSize.width + 30.0, _thumbsScrollView.contentSize.height);
-//		_thumbsScrollView.contentOffset = CGPointMake(_thumbsScrollView.contentOffset.x + 30.0, _thumbsScrollView.contentOffset.y);
-//	}
-//	
-//	if ([_emotions count] > 6) {
-//		_thumbsScrollView.contentSize = CGSizeMake(_thumbsScrollView.contentSize.width + 50.0, _thumbsScrollView.contentSize.height);
-//		_thumbsScrollView.contentOffset = CGPointMake(_thumbsScrollView.contentOffset.x + 50.0, _thumbsScrollView.contentOffset.y);
-//	}
 }
 
 - (void)removeLastEmotion {
@@ -181,6 +177,49 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	[_previewImageView addSubview:animImageView];
 }
 
+- (void)scrollToEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {
+	[self scrollToEmotionIndex:index + 1];
+	
+//	__block int ind = 0;
+//	[_emotions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONEmotionVO *vo = (HONEmotionVO *)obj;
+//		NSLog(@"scrollToEmotionPosition:[%@][%@]", vo.emotionID, emotionVO.emotionID);
+//		if ([vo.emotionID isEqualToString:emotionVO.emotionID]) {
+//			ind = (int)idx;
+//			*stop = YES;
+//		}
+//	}];
+}
+
+
+- (void)scrollToEmotionIndex:(int)index {
+//	int offset = _emotionSpacingSize.width + (index * _emotionSpacingSize.width);
+//	offset = ([_emotions count] != 1) ? offset - kEmotionPaddingSize.width : offset;
+	
+	NSLog(@"scrollToEmotionIndex:[%d]", index);
+	//int offset = (MAX(_scrollView.frame.size.width, (index * _emotionSpacingSize.width)) + ((index != 0) ? -kEmotionPaddingSize.width : 0.0));
+	int offset = (MAX(_scrollView.frame.size.width, (index * _emotionSpacingSize.width)) + ((index != 0) ? -kEmotionPaddingSize.width : 0.0)) - _scrollView.frame.size.width;// - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right);
+	offset -= ((index == 0) ? _scrollView.contentInset.left : -_scrollView.contentInset.right);
+//	offset -= ((index == 0) ? _scrollView.contentInset.left * 2 : -_scrollView.contentInset.right);
+	
+//	[UIView animateWithDuration:0.00250 delay:0.000
+//		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
+//						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+//	 
+//					 animations:^(void) {
+						 [_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:[[HONAnimationOverseer sharedInstance] isScrollingAnimationEnabledForScrollView:self]];
+						 
+//					 } completion:^(BOOL finished) {
+//						 _scrollView.contentSize = CGSizeMake(offset, _scrollView.contentSize.height);
+	
+						 [UIView animateWithDuration:0.25 animations:^(void) {
+							 _bgView.alpha = ([_emotions count] == 0);
+						 }];
+//					 }];
+	
+	NSLog(@"scrollView.contentOffset:[%.02f]:= scrollView.contentInset:[%@]", _scrollView.contentOffset.x, NSStringFromUIEdgeInsets(_scrollView.contentInset));
+}
+
 
 #pragma mark - Navigation
 - (void)_goCamera {
@@ -199,11 +238,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, 0.0, [_emotions count] * _emotionSpacingSize.width, kEmotionNormalFrame.size.height);
 	_loaderHolderView.frame = _emotionHolderView.frame;
 	
-	CGSize scaleSize = CGSizeMake(kEmotionIntroFrame.size.width / kEmotionNormalFrame.size.width, kEmotionIntroFrame.size.height / kEmotionNormalFrame.size.height);
-	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionIntroFrame) - CGRectGetMidX(kEmotionNormalFrame), CGRectGetMidY(kEmotionIntroFrame) - CGRectGetMidY(kEmotionNormalFrame));
-	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
-	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * _emotionSpacingSize.width, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height)];
+	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationToSize:CGSizeMake(kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height) forView:imageView];
+	
 	imageView.alpha = 0.0;
 	imageView.userInteractionEnabled = YES;
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -228,21 +265,9 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		_animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
 		[imageView addSubview:_animatedImageView];
 		
-		
-//		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-//		animatedImageView.frame = CGRectMake(([_emotions count] - 1) * 50.0, 0.0, 50.0, 50.0);
-//		animatedImageView.contentMode = UIViewContentModeScaleAspectFit;
-//		animatedImageView.clipsToBounds = YES;
-//		animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
-//		[_thumbsScrollView addSubview:animatedImageView];
-		
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//			NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
-//			NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
-//			NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
-
-			[UIView animateWithDuration:0.00250 delay:0.125
-				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+			[UIView animateWithDuration:kEmotionIntroDuration delay:kEmotionIntroDelay
+				 usingSpringWithDamping:kEmotionIntroDamping initialSpringVelocity:kEmotionIntroForce
 								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 			 
 							 animations:^(void) {
@@ -251,7 +276,6 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 							 } completion:^(BOOL finished) {
 								 [self _updateDisplayWithCompletion:nil];
 								 
-//								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
 								 [imageLoadingView stopAnimating];
 								 [imageLoadingView removeFromSuperview];
 							 }];
@@ -264,13 +288,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			
-//			UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * 50.0, 0.0, 50.0, 50.0)];
-//			emotionVO.image = image;
-//			thumbImageView.image = image;
-//			[_thumbsScrollView addSubview:thumbImageView];
-			
-			[UIView animateWithDuration:0.00250 delay:0.125
-				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+			[UIView animateWithDuration:kEmotionIntroDuration delay:kEmotionIntroDelay
+				 usingSpringWithDamping:kEmotionIntroDamping initialSpringVelocity:kEmotionIntroForce
 								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 			 
 							 animations:^(void) {
@@ -313,8 +332,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 //	[_emotionHolderView addSubview:picoSticker];
 
 		
-//		[UIView animateWithDuration:0.200 delay:0.125
-//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+//	[UIView animateWithDuration:kEmotionOutroDuration delay:kEmotionOutroDelay
+//		 usingSpringWithDamping:kEmotionOutroDamping initialSpringVelocity:kEmotionOutroForce
 //							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 //		 
 //						 animations:^(void) {
@@ -332,8 +351,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	}
 		
 	
-	[UIView animateWithDuration:0.00125 delay:0.000
-		 usingSpringWithDamping:0.950 initialSpringVelocity:0.250
+	[UIView animateWithDuration:kEmotionOutroDuration delay:kEmotionOutroDelay
+		 usingSpringWithDamping:kEmotionOutroDamping initialSpringVelocity:kEmotionOutroForce
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	 
 					 animations:^(void) {
@@ -355,14 +374,14 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 	int offset = MAX(_scrollView.frame.size.width, [_emotions count] * _emotionSpacingSize.width);
 	offset = ([_emotions count] != 1) ? offset - kEmotionPaddingSize.width : offset;
 	
-	[UIView animateWithDuration:0.00250 delay:0.000
-		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
-						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-	 
-					 animations:^(void) {
-						 [_scrollView setContentOffset:CGPointMake((offset - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right), 0.0) animated:NO];
+//	[UIView animateWithDuration:kEmotionTransposeDuration delay:kEmotionTransposeDelay
+//		 usingSpringWithDamping:kEmotionTransposeDamping initialSpringVelocity:kEmotionTransposeForce
+//						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+//	 
+//					 animations:^(void) {
+						 [_scrollView setContentOffset:CGPointMake((offset - _scrollView.frame.size.width) - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right), 0.0) animated:[[HONAnimationOverseer sharedInstance] isScrollingAnimationEnabledForScrollView:self]];
 
-					 } completion:^(BOOL finished) {
+//					 } completion:^(BOOL finished) {
 						 _scrollView.contentSize = CGSizeMake(offset, _scrollView.contentSize.height);
 						 
 						 [UIView animateWithDuration:0.25 animations:^(void) {
@@ -371,7 +390,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 188.0f, 188.0f};
 						 
 						 if (completion)
 							 completion(YES);
-					 }];
+//					 }];
 	
 			 
 //	NSLog(@"\n\t\t|--|--|--|--|--|--|:|--|--|--|--|--|--|");

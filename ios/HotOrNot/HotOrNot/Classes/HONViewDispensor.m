@@ -79,6 +79,19 @@ static HONViewDispensor *sharedInstance = nil;
 	view.layer.backgroundColor = color.CGColor;
 }
 
+- (CGAffineTransform)affineFrameTransformationByPercentage:(CGFloat)percent forView:(UIView *)view {
+	CGSize perSize = CGSizeMake(view.frame.size.width * percent, view.frame.size.height * percent);
+	CGSize scaleSize = CGSizeMake(perSize.width / view.frame.size.width, perSize.width / view.frame.size.height);
+	CGPoint offsetPt = CGPointMake(CGRectGetMidX(view.frame) - CGRectGetMidX(CGRectInset(view.frame, perSize.width, perSize.height)), CGRectGetMidY(view.frame) - CGRectGetMidY(CGRectInset(view.frame, perSize.width, perSize.height)));
+	
+	return (CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y));
+}
+
+- (CGAffineTransform)affineFrameTransformationToSize:(CGSize)size forView:(UIView *)view {
+	CGFloat percent = MIN(MAX(0.00, view.frame.size.width / size.width), view.frame.size.height / size.height);
+	return ([[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:percent forView:view]);
+}
+
 - (CGFloat)screenHeight {
 	return (CGRectGetHeight([UIScreen mainScreen].bounds));
 }

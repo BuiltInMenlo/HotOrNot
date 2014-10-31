@@ -1,5 +1,5 @@
 //
-//  NSUserDefaults+NullReplacement.h
+//  NSMutableDictionary+Replacements.h
 //  HotOrNot
 //
 //  Created by BIM  on 10/30/14.
@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "NSMutableDictionary+Replacements.h"
-
-@interface NSUserDefaults (Replacements)
+@interface NSMutableDictionary (Replacements)
 - (void)defineObject:(id)object UnknownKey:(NSString *)key;
 - (void)removeObjectForExistingKey:(NSString *)key;
 - (void)replaceObject:(id)object forExistingKey:(NSString *)key;

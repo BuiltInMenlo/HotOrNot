@@ -8,13 +8,13 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
 #import "HONActivityHeaderButtonView.h"
-#import "HONCreateSnapButtonView.h"
+#import "HONComposeButtonView.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
@@ -79,7 +79,7 @@
 
 #pragma mark - Data Calls
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.33];
 }
 
@@ -101,7 +101,7 @@
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_settings", @"Settings")];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[headerView addButton:[[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
@@ -139,7 +139,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:navigationController.presentingViewController] completion:nil];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {

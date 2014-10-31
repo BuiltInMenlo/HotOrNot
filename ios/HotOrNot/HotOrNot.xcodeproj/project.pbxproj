@@ -69,14 +69,18 @@
 		30BFAC591A01BD0D000CE4FC /* doneButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC5B1A01BD0D000CE4FC /* doneButton_nonActive@2x.png */; };
 		30BFAC641A01BE7D000CE4FC /* replyButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC661A01BE7D000CE4FC /* replyButton_Active@2x.png */; };
 		30BFAC671A01BE81000CE4FC /* replyButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC691A01BE81000CE4FC /* replyButton_nonActive@2x.png */; };
-		30BFAC761A01BED0000CE4FC /* submitButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC781A01BED0000CE4FC /* submitButton_Active@2x.png */; };
-		30BFAC791A01BED4000CE4FC /* submitButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC7B1A01BED4000CE4FC /* submitButton_nonActive@2x.png */; };
 		30BFAC861A01ECC9000CE4FC /* HONStickerSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */; };
 		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */; };
 		30CA9CA51A026AEB00A0A703 /* NSString+Validate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */; };
 		30CA9CA81A026CB100A0A703 /* NSString+Formatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */; };
+		30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */; };
+		30CA9CAE1A02FD4400A0A703 /* NSDictionary+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAD1A02FD4400A0A703 /* NSDictionary+Replacements.m */; };
+		30CA9CB31A02FE4400A0A703 /* NSMutableDictionary+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */; };
+		30CA9CB91A031FC500A0A703 /* submit1Button_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30CA9CBB1A031FC500A0A703 /* submit1Button_Active@2x.png */; };
+		30CA9CC01A031FD200A0A703 /* submit1Button_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30CA9CC21A031FD200A0A703 /* submit1Button_nonActive@2x.png */; };
+		30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
@@ -126,7 +130,7 @@
 		4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E9D99198AD8D900021156 /* InfoPlist.strings */; };
 		4C1F19AC1915CBA200E9A9D4 /* HONViewDispensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19AB1915CBA200E9A9D4 /* HONViewDispensor.m */; };
 		4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */; };
-		4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */; };
+		4C225CC417B8593B00330EB3 /* HONComposeButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONComposeButtonView.m */; };
 		4C2400ED18C2916C00C9AE53 /* HONClubSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400EC18C2916C00C9AE53 /* HONClubSettingsViewController.m */; };
 		4C250E941938031B007CA4E2 /* ComposeElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C250E931938031B007CA4E2 /* ComposeElements.xcassets */; };
 		4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */; };
@@ -519,16 +523,6 @@
 		30BFAC6F1A01BE93000CE4FC /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/replyButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30BFAC701A01BE94000CE4FC /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/replyButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30BFAC711A01BE95000CE4FC /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/replyButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		30BFAC771A01BED0000CE4FC /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
-		30BFAC7A1A01BED4000CE4FC /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		30BFAC7C1A01BED7000CE4FC /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
-		30BFAC7D1A01BED8000CE4FC /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
-		30BFAC7E1A01BED9000CE4FC /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
-		30BFAC7F1A01BEDA000CE4FC /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
-		30BFAC801A01BEDE000CE4FC /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		30BFAC811A01BEDE000CE4FC /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		30BFAC821A01BEDF000CE4FC /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		30BFAC831A01BEE0000CE4FC /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/submitButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
 		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
 		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
@@ -542,6 +536,24 @@
 		30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Validate.m"; sourceTree = "<group>"; };
 		30CA9CA61A026CB100A0A703 /* NSString+Formatting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Formatting.h"; sourceTree = "<group>"; };
 		30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Formatting.m"; sourceTree = "<group>"; };
+		30CA9CA91A02F62900A0A703 /* HONAnimationOverseer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAnimationOverseer.h; sourceTree = "<group>"; };
+		30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimationOverseer.m; sourceTree = "<group>"; };
+		30CA9CAC1A02FD4400A0A703 /* NSDictionary+Replacements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Replacements.h"; sourceTree = "<group>"; };
+		30CA9CAD1A02FD4400A0A703 /* NSDictionary+Replacements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Replacements.m"; sourceTree = "<group>"; };
+		30CA9CB01A02FE0800A0A703 /* NSMutableDictionary+Replacements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+Replacements.h"; sourceTree = "<group>"; };
+		30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+Replacements.m"; sourceTree = "<group>"; };
+		30CA9CBA1A031FC500A0A703 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/submit1Button_Active@2x.png"; sourceTree = "<group>"; };
+		30CA9CBC1A031FC700A0A703 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/submit1Button_Active@2x.png"; sourceTree = "<group>"; };
+		30CA9CBD1A031FC800A0A703 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/submit1Button_Active@2x.png"; sourceTree = "<group>"; };
+		30CA9CBE1A031FCB00A0A703 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/submit1Button_Active@2x.png"; sourceTree = "<group>"; };
+		30CA9CBF1A031FCC00A0A703 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/submit1Button_Active@2x.png"; sourceTree = "<group>"; };
+		30CA9CC11A031FD200A0A703 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/submit1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		30CA9CC31A031FD300A0A703 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/submit1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		30CA9CC41A031FD400A0A703 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/submit1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		30CA9CC51A031FD600A0A703 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/submit1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		30CA9CC61A031FD700A0A703 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/submit1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		30CA9CC71A033C1800A0A703 /* HONNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavButtonView.h; sourceTree = "<group>"; };
+		30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavButtonView.m; sourceTree = "<group>"; };
 		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
@@ -690,8 +702,8 @@
 		4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubAssistant.m; sourceTree = "<group>"; };
 		4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewController.h; sourceTree = "<group>"; };
 		4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewController.m; sourceTree = "<group>"; };
-		4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateSnapButtonView.h; sourceTree = "<group>"; };
-		4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateSnapButtonView.m; sourceTree = "<group>"; };
+		4C225CC217B8593B00330EB3 /* HONComposeButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeButtonView.h; sourceTree = "<group>"; };
+		4C225CC317B8593B00330EB3 /* HONComposeButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeButtonView.m; sourceTree = "<group>"; };
 		4C2400E818C2910F00C9AE53 /* HONInviteContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteContactsViewController.h; sourceTree = "<group>"; };
 		4C2400EB18C2916C00C9AE53 /* HONClubSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubSettingsViewController.h; sourceTree = "<group>"; };
 		4C2400EC18C2916C00C9AE53 /* HONClubSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONClubSettingsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1163,6 +1175,8 @@
 				30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */,
 				4CBDDBAA1913354E002F9723 /* HONContactsViewController.h */,
 				4CBDDBAB1913354E002F9723 /* HONContactsViewController.m */,
+				30CA9CC71A033C1800A0A703 /* HONNavButtonView.h */,
+				30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */,
 				302A021F19D7E41500302CC4 /* HONNavigationController.h */,
 				302A022019D7E41500302CC4 /* HONNavigationController.m */,
 				4CC94FD8190733C900347A34 /* HONPaginationView.h */,
@@ -1553,14 +1567,14 @@
 		4C0A4CF7198B419700450680 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
+				30CA9CBB1A031FC500A0A703 /* submit1Button_Active@2x.png */,
+				30CA9CC21A031FD200A0A703 /* submit1Button_nonActive@2x.png */,
 				30BFAC661A01BE7D000CE4FC /* replyButton_Active@2x.png */,
 				30BFAC691A01BE81000CE4FC /* replyButton_nonActive@2x.png */,
 				30BFAC541A01BD01000CE4FC /* doneButton_Active@2x.png */,
 				30BFAC5B1A01BD0D000CE4FC /* doneButton_nonActive@2x.png */,
 				30840BE019EB4D870067E46B /* buyButton_Active@2x.png */,
 				30840BE319EB4D8C0067E46B /* buyButton_nonActive@2x.png */,
-				30BFAC781A01BED0000CE4FC /* submitButton_Active@2x.png */,
-				30BFAC7B1A01BED4000CE4FC /* submitButton_nonActive@2x.png */,
 			);
 			name = Buttons;
 			sourceTree = "<group>";
@@ -1914,6 +1928,8 @@
 				4CBFC12A1908DF940082FCC4 /* HONUtilsSuite.h */,
 				4CEC4B0518B9517F00F39C92 /* HONAnalyticsReporter.h */,
 				4CEC4B0618B9517F00F39C92 /* HONAnalyticsReporter.m */,
+				30CA9CA91A02F62900A0A703 /* HONAnimationOverseer.h */,
+				30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */,
 				4CE0399C185727150005256F /* HONAPICaller.h */,
 				4CE0399D185727150005256F /* HONAPICaller.m */,
 				308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */,
@@ -2173,8 +2189,8 @@
 		4C9E3B5C18259CC0004878F9 /* Nav */ = {
 			isa = PBXGroup;
 			children = (
-				4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */,
-				4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */,
+				4C225CC217B8593B00330EB3 /* HONComposeButtonView.h */,
+				4C225CC317B8593B00330EB3 /* HONComposeButtonView.m */,
 				4C1435CB17D3C19A00ACBF41 /* HONActivityHeaderButtonView.h */,
 				4C1435CC17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m */,
 			);
@@ -2335,6 +2351,8 @@
 				4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */,
 				4CCED5D5181F7A8000D1D673 /* NSDictionary+NullReplacement.h */,
 				4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */,
+				30CA9CB01A02FE0800A0A703 /* NSMutableDictionary+Replacements.h */,
+				30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */,
 				4C3A1D0919920BA1007A85B8 /* NSString+Base64.h */,
 				4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */,
 				4CA246C319083C8B00512295 /* NSString+DataTypes.h */,
@@ -2359,6 +2377,8 @@
 				4C65C639194F904F0067FEA6 /* UILabel+FormattedText.m */,
 				4CD071A619553039003894F4 /* UIView+ReverseSubviews.h */,
 				4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */,
+				30CA9CAC1A02FD4400A0A703 /* NSDictionary+Replacements.h */,
+				30CA9CAD1A02FD4400A0A703 /* NSDictionary+Replacements.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -2491,7 +2511,6 @@
 				4C0F3CE11988E64400703D09 /* tabMenu_newsButton_Active@2x.png in Resources */,
 				300B1BD9199C0E4C006BB048 /* modalInviteBackground@2x.png in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
-				30BFAC761A01BED0000CE4FC /* submitButton_Active@2x.png in Resources */,
 				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
 				4C0F3CEA1988E65000703D09 /* tabMenu_friendsButton_Active@2x.png in Resources */,
 				303BAD0B19D5E40000CB2501 /* InsetOverlayElements.xcassets in Resources */,
@@ -2499,7 +2518,6 @@
 				07B2532F198C178400F6D8B1 /* tapToReview_nonActive@2x.png in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
-				30BFAC791A01BED4000CE4FC /* submitButton_nonActive@2x.png in Resources */,
 				30BFAC671A01BE81000CE4FC /* replyButton_nonActive@2x.png in Resources */,
 				30840BDE19EB4D870067E46B /* buyButton_Active@2x.png in Resources */,
 				4C0F3CDE1988E64000703D09 /* tabMenu_newsButton_nonActive@2x.png in Resources */,
@@ -2507,6 +2525,7 @@
 				4C0F3CE71988E64C00703D09 /* tabMenu_friendsButton_nonActive@2x.png in Resources */,
 				575B3967198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png in Resources */,
 				300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */,
+				30CA9CC01A031FD200A0A703 /* submit1Button_nonActive@2x.png in Resources */,
 				30840BE119EB4D8C0067E46B /* buyButton_nonActive@2x.png in Resources */,
 				30B3091E19E2319C0017ACBF /* TapjoyResources.bundle in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
@@ -2538,6 +2557,7 @@
 				07B2533B198C1FEE00F6D8B1 /* modalReviewBackground@2x.png in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
+				30CA9CB91A031FC500A0A703 /* submit1Button_Active@2x.png in Resources */,
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
 				07B6E6FE1988515600DA0805 /* inviteFriends_nonActive@2x.png in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
@@ -2653,9 +2673,11 @@
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
 				3022043C19D6228A00C3D677 /* HONUserProfileViewController.m in Sources */,
 				3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */,
+				30CA9CB31A02FE4400A0A703 /* NSMutableDictionary+Replacements.m in Sources */,
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
 				4C386BC6198482130023123A /* HONViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
+				30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */,
 				30CA9CA81A026CB100A0A703 /* NSString+Formatting.m in Sources */,
 				4C386BBC19842FDA0023123A /* HONContactsAssistant.m in Sources */,
 				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
@@ -2668,6 +2690,7 @@
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
 				30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */,
+				30CA9CAE1A02FD4400A0A703 /* NSDictionary+Replacements.m in Sources */,
 				4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
@@ -2715,6 +2738,7 @@
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,
 				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
+				30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */,
 				30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */,
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
 				30119BDB19F8301B00DE9B16 /* HONAnimatedBGCollectionViewCell.m in Sources */,
@@ -2735,7 +2759,7 @@
 				30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineCellHeaderView.m in Sources */,
 				4C71BF40181B25C8005044F8 /* HONSuspendedViewController.m in Sources */,
-				4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */,
+				4C225CC417B8593B00330EB3 /* HONComposeButtonView.m in Sources */,
 				4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */,
 				4C60AF6B17CCFEF800609792 /* HONStickerButtonsPickerView.m in Sources */,
 				30B308D019E20B510017ACBF /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -3035,28 +3059,28 @@
 			name = "replyButton_nonActive@2x.png";
 			sourceTree = "<group>";
 		};
-		30BFAC781A01BED0000CE4FC /* submitButton_Active@2x.png */ = {
+		30CA9CBB1A031FC500A0A703 /* submit1Button_Active@2x.png */ = {
 			isa = PBXVariantGroup;
 			children = (
-				30BFAC771A01BED0000CE4FC /* en */,
-				30BFAC7C1A01BED7000CE4FC /* ja */,
-				30BFAC7D1A01BED8000CE4FC /* ko */,
-				30BFAC7E1A01BED9000CE4FC /* pt */,
-				30BFAC7F1A01BEDA000CE4FC /* pt-BR */,
+				30CA9CBA1A031FC500A0A703 /* en */,
+				30CA9CBC1A031FC700A0A703 /* ja */,
+				30CA9CBD1A031FC800A0A703 /* ko */,
+				30CA9CBE1A031FCB00A0A703 /* pt */,
+				30CA9CBF1A031FCC00A0A703 /* pt-BR */,
 			);
-			name = "submitButton_Active@2x.png";
+			name = "submit1Button_Active@2x.png";
 			sourceTree = "<group>";
 		};
-		30BFAC7B1A01BED4000CE4FC /* submitButton_nonActive@2x.png */ = {
+		30CA9CC21A031FD200A0A703 /* submit1Button_nonActive@2x.png */ = {
 			isa = PBXVariantGroup;
 			children = (
-				30BFAC7A1A01BED4000CE4FC /* en */,
-				30BFAC801A01BEDE000CE4FC /* ja */,
-				30BFAC811A01BEDE000CE4FC /* ko */,
-				30BFAC821A01BEDF000CE4FC /* pt */,
-				30BFAC831A01BEE0000CE4FC /* pt-BR */,
+				30CA9CC11A031FD200A0A703 /* en */,
+				30CA9CC31A031FD300A0A703 /* ja */,
+				30CA9CC41A031FD400A0A703 /* ko */,
+				30CA9CC51A031FD600A0A703 /* pt */,
+				30CA9CC61A031FD700A0A703 /* pt-BR */,
 			);
-			name = "submitButton_nonActive@2x.png";
+			name = "submit1Button_nonActive@2x.png";
 			sourceTree = "<group>";
 		};
 		30DB24B719CBF64700DCFC49 /* InfoPlist.strings */ = {

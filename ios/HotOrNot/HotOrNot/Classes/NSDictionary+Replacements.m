@@ -1,27 +1,25 @@
 //
-//  NSUserDefaults+NullReplacement.m
+//  NSDictionary+Replacements.m
 //  HotOrNot
 //
 //  Created by BIM  on 10/30/14.
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSUserDefaults+Replacements.h"
+#import "NSDictionary+Replacements.h"
 
-@implementation NSUserDefaults (Replacements)
-
+@implementation NSMutableDictionary (Replacements)
 - (void)defineObject:(id)object UnknownKey:(NSString *)key {
 	if ([self objectForKey:key] == nil)
 		[self setObject:object forNonExistingKey:key];
-
+	
 	else
 		[self replaceObject:object forExistingKey:key];
 }
 
 - (void)removeObjectForExistingKey:(NSString *)key {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil) {
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+	if ([self objectForKey:key] != nil) {
+		[self removeObjectForKey:key];
 	}
 }
 
@@ -31,9 +29,8 @@
 }
 
 - (void)setObject:(id)object forNonExistingKey:(NSString *)key {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) {
-		[[NSUserDefaults standardUserDefaults] setValue:object forKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+	if ([self objectForKey:key] == nil) {
+		[self setValue:object forKey:key];
 	}
 }
 

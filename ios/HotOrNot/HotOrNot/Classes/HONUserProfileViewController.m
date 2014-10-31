@@ -11,7 +11,7 @@
 #import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONUserProfileViewController.h"
@@ -149,7 +149,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[self _retrieveActivityItems];
 }
 

@@ -10,6 +10,23 @@
 
 @implementation NSString (Formatting)
 
+- (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring {
+//	NSRange range = NSMakeRange([string length] - [substring length], [substring length]);
+	return (([self rangeOfString:substring].location != NSNotFound) ? [self substringToIndex:[self length] - [substring length]] : self);
+}
+
+- (void)trimFinalSubstring:(NSString *)substring; {
+//	NSMutableString *string = [[self stringByTrimmingFinalSubstring:substring] mutableCopy];
+//	
+//	
+//	if (range.location != NSNotFound)
+//		[string deleteCharactersInRange:range];
+//	
+//	NSString *news = [super init];
+//	
+//	self = [self init];//[@"" stringByTrimmingFinalSubstring:@", "];
+}
+
 - (NSString *)normalizedPhoneNumber {
 	if ([self length] > 0) {
 		NSString *phoneNumber = [[self componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];

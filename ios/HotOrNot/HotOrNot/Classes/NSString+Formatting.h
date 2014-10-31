@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 
 @interface NSString (Formatting)
+//- (instancetype)newStringByTrimmingFinalSubstring:(NSString *)substring;
+
+- (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring;
+- (void)trimFinalSubstring:(NSString *)substring;
 - (NSString *)normalizedPhoneNumber;
 - (NSDictionary *)parseAsQueryString;
 @end

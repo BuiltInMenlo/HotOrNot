@@ -32,11 +32,12 @@
 		NSRange range = [_caption rangeOfString:@"\n"];
 		range.length = [[_caption substringFromIndex:range.location] length];
 		
-		NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-		style.minimumLineHeight = 29.0;
-		style.maximumLineHeight = style.minimumLineHeight;
-		style.alignment = NSTextAlignmentCenter;
-		_paragraphStyle = [style copy];
+		
+		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+		paragraphStyle.minimumLineHeight = 29.0;
+		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+		paragraphStyle.alignment = NSTextAlignmentCenter;
+		_paragraphStyle = [paragraphStyle copy];
 		
 		_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		_label.backgroundColor = [UIColor clearColor];

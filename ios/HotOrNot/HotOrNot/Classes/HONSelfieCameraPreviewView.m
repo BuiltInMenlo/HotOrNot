@@ -104,7 +104,7 @@
 		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"stickerTab-%02d_Active", (i+1)]] forState:UIControlStateHighlighted];
 		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"stickerTab-%02d_Selected", (i+1)]] forState:UIControlStateSelected];
 		[button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"stickerTab-%02d_Selected", (i+1)]] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-		[button addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchDown];
+		[button addTarget:self action:@selector(_goGroup:) forControlEvents:UIControlEventTouchUpInside];
 		[button setSelected:(i == 0)];
 		[button setTag:i];
 		[_tabButtonsHolderView addSubview:button];
@@ -130,7 +130,7 @@
 	[_headerView addButton:_closeButton];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
+	_nextButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

@@ -19,4 +19,6 @@
 - (CGFloat)screenHeight;
 - (CGFloat)screenWidth;
 - (void)tintView:(UIView *)view withColor:(UIColor *)color;
+- (CGAffineTransform)affineFrameTransformationByPercentage:(CGFloat)percent forView:(UIView *)view;
+- (CGAffineTransform)affineFrameTransformationToSize:(CGSize)size forView:(UIView *)view;
 @end

@@ -10,7 +10,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONClubsNewsFeedViewController.h"
@@ -31,7 +31,7 @@
 
 
 @interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONTabBannerViewDelegate>
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
@@ -199,7 +199,7 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[self _retrieveTimeline];
 }
 

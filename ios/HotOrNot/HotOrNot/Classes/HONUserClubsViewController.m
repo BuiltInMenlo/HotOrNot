@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONUserClubsViewController.h"
@@ -35,7 +35,7 @@
 #import "HONTableView.h"
 
 @interface HONUserClubsViewController () <HONClubViewCellDelegate, HONInsetOverlayViewDelegate, HONSelfieCameraViewControllerDelegate, HONTabBannerViewDelegate>
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -176,7 +176,7 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Refresh"];
 	[self _retrieveClubs];
 }

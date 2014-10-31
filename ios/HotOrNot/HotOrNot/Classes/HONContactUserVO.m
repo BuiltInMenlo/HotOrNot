@@ -7,6 +7,7 @@
 //
 
 #import "NSString+Formatting.h"
+#import "NSString+Validate.h"
 
 #import "HONContactUserVO.h"
 
@@ -45,6 +46,22 @@
 	vo.invitedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]];
 	
 	return (vo);
+}
+
+
++ (HONContactUserVO *)contactFromTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
+	NSDictionary *dict = @{@"id"			: @(trivialUserVO.userID),
+						   @"f_name"		: [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject],
+						   @"l_name"		: [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject],
+						   @"username"		: trivialUserVO.username,
+						   @"avatar_url"	: trivialUserVO.avatarPrefix,
+						   @"extern_name"	: [NSString stringWithFormat:@"%@%@", [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject], [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject]],
+						   @"email"			: ([trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
+						   @"phone"			: (![trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
+						   @"image"			: UIImageJPEGRepresentation([[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapLargeSize], [HONAppDelegate compressJPEGPercentage]),
+						   @"invited"		: ([trivialUserVO.dictionary objectForKey:@"invited"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromISO9601UTCFormattedString:[trivialUserVO.dictionary objectForKey:@"invited"]] : [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:[NSDate date]]};
+	
+	return ([HONContactUserVO contactWithDictionary:dict]);
 }
 
 

@@ -114,7 +114,7 @@ static HONStateMitigator *sharedInstance = nil;
 
 - (void)resetTotalCounterForType:(HONStateMitigatorTotalType)totalType withValue:(int)value {
 //	if ([[NSUserDefaults standardUserDefaults] objectForKey:[self _keyForTotalType:totalType]] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForNonNullKey:[self _keyForTotalType:totalType]];
+		[[NSUserDefaults standardUserDefaults] removeObjectForExistingKey:[self _keyForTotalType:totalType]];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:@(value) forKey:[self _keyForTotalType:totalType]];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -123,7 +123,7 @@ static HONStateMitigator *sharedInstance = nil;
 - (void)resetAllTotalCounters {
 	[[self _totalKeyPrefixesForTypes] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 //		if ([[NSUserDefaults standardUserDefaults] objectForKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]] != nil) {
-			[[NSUserDefaults standardUserDefaults] removeObjectForNonNullKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]];
+			[[NSUserDefaults standardUserDefaults] removeObjectForExistingKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]];
 //			[[NSUserDefaults standardUserDefaults] synchronize];
 //		}
 		
@@ -134,8 +134,9 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (void)writeAppInstallTimestamp {
-	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:kStateMitigatorInstallTimestampKey];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:kStateMitigatorInstallTimestampKey];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[NSUserDefaults standardUserDefaults] replaceObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forExistingKey:kStateMitigatorInstallTimestampKey];
 }
 
 - (void)updateLastTrackingCallTimestamp:(NSDate *)date {
@@ -159,31 +160,36 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (void)updateCurrentViewState:(HONStateMitigatorViewStateType)viewStateType {
-	[[NSUserDefaults standardUserDefaults] setValue:@((int)[[HONStateMitigator sharedInstance] currentViewStateType]) forKey:kStateMitigatorPreviousViewKey];
+	HONStateMitigatorViewStateType currentViewStateType = [[HONStateMitigator sharedInstance] currentViewStateType];
+	
+	[[NSUserDefaults standardUserDefaults] setValue:@((int)currentViewStateType) forKey:kStateMitigatorPreviousViewKey];
 	[[NSUserDefaults standardUserDefaults] setValue:@((int)viewStateType) forKey:kStateMitigatorCurrentViewKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
 - (HONStateMitigatorAppEntryType)appEntryType {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorAppEntryKey] == nil)
-		[[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kStateMitigatorAppEntryKey];
+	[[NSUserDefaults standardUserDefaults] setObject:@((int)HONStateMitigatorAppEntryTypeUnknown) forNonExistingKey:kStateMitigatorAppEntryKey];
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorAppEntryKey] == nil)
+//		[[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:kStateMitigatorAppEntryKey];
 	
 	return ((HONStateMitigatorAppEntryType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorAppEntryKey]);
 //	return ((HONStateMitigatorAppEntryType)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorAppEntryKey withObject:@((int)HONStateMitigatorAppEntryTypeUnknown)]);
 }
 
 - (HONStateMitigatorViewStateType)currentViewStateType {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorCurrentViewKey] == nil)
-		[[NSUserDefaults standardUserDefaults] setValue:@((int)HONStateMitigatorViewStateTypeUnknown) forKey:kStateMitigatorCurrentViewKey];
+	[[NSUserDefaults standardUserDefaults] setObject:@((int)HONStateMitigatorViewStateTypeUnknown) forNonExistingKey:kStateMitigatorCurrentViewKey];
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorCurrentViewKey] == nil)
+//		[[NSUserDefaults standardUserDefaults] setValue:@((int)HONStateMitigatorViewStateTypeUnknown) forKey:kStateMitigatorCurrentViewKey];
 	
 	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorCurrentViewKey]);
 //	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorCurrentViewKey withObject:@((int)HONStateMitigatorViewStateTypeUnknown)]);
 }
 
 - (HONStateMitigatorViewStateType)previousViewStateType {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorPreviousViewKey] == nil)
-		[[NSUserDefaults standardUserDefaults] setValue:@((int)HONStateMitigatorViewStateTypeUnknown) forKey:kStateMitigatorPreviousViewKey];
+	[[NSUserDefaults standardUserDefaults] setObject:@((int)HONStateMitigatorViewStateTypeUnknown) forNonExistingKey:kStateMitigatorPreviousViewKey];
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorPreviousViewKey] == nil)
+//		[[NSUserDefaults standardUserDefaults] setValue:@((int)HONStateMitigatorViewStateTypeUnknown) forKey:kStateMitigatorPreviousViewKey];
 	
 	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorPreviousViewKey]);
 //	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorPreviousViewKey withObject:@((int)HONStateMitigatorViewStateTypeUnknown)]);

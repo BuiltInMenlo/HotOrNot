@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONViewController.h"
@@ -32,7 +32,7 @@
 }
 
 - (void)_retrieveClubs;
-- (void)_goDataRefresh:(CKRefreshControl *)sender;
+- (void)_goDataRefresh:(HONRefreshControl *)sender;
 - (void)_didFinishDataRefresh;
 
 - (void)_goRefresh;

@@ -10,17 +10,17 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
 
 #import "HONContactsTabViewController.h"
 #import "HONHeaderView.h"
 #import "HONActivityHeaderButtonView.h"
-#import "HONCreateSnapButtonView.h"
+#import "HONComposeButtonView.h"
 #import "HONTableView.h"
 #import "HONTableHeaderView.h"
 #import "HONTableViewBGView.h"
+#import "HONRefreshControl.h"
 #import "HONClubViewCell.h"
 #import "HONRegisterViewController.h"
 #import "HONComposeViewController.h"
@@ -36,12 +36,12 @@
 @property (nonatomic, strong) NSMutableArray *seenClubs;
 @property (nonatomic, strong) NSMutableArray *unseenClubs;
 @property (nonatomic, strong) HONTableView *tableView;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic) int joinedTotalClubs;
 @property (nonatomic, strong) HONTableViewBGView *emptyClubsBGView;
 @property (nonatomic, strong) HONTableViewBGView *accessContactsBGView;
+@property (nonatomic) int joinedTotalClubs;
 @end
 
 
@@ -113,8 +113,14 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
-	_seenClubs = [NSMutableArray array];
-	_unseenClubs = [NSMutableArray array];
+	[_tableView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			cell.alpha = 0.0;
+		} completion:^(BOOL finished) {
+		}];
+	}];
+	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
@@ -127,6 +133,9 @@ static NSString * const kCamera = @"camera";
 						continue;
 					
 					HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
+					if ([clubVO.submissions count] == 0)
+						continue;
+					
 					HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[clubVO.submissions firstObject];
 					
 //					NSLog(@"SEEN UPDATES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
@@ -158,22 +167,24 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Refresh"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeFriendsTabRefresh];
+	
+	[self _goReloadTableViewContents];
+}
+
+- (void)_goReloadTableViewContents {
+	[_refreshControl beginRefreshing];
+	
+	_seenClubs = [NSMutableArray array];
+	_unseenClubs = [NSMutableArray array];
+	[_tableView reloadData];
 	
 	[self _retrieveClubs];
 }
 
 - (void)_didFinishDataRefresh {
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
-	[_tableView reloadData];
-	[_refreshControl endRefreshing];
-	
 	if (_joinedTotalClubs > 0) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
 										   withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
@@ -226,6 +237,22 @@ static NSString * const kCamera = @"camera";
 		}
 	}
 	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+	
+	[_tableView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			cell.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
+	}];
+	
+//	if (_progressHUD != nil) {
+//		[_progressHUD hide:YES];
+//		_progressHUD = nil;
+//	}
+	
 	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 }
 
@@ -239,13 +266,7 @@ static NSString * const kCamera = @"camera";
 	
 	_seenClubs = [NSMutableArray array];
 	_unseenClubs = [NSMutableArray array];
-	
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.minimumLineHeight = 26.0;
-	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
-	paragraphStyle.alignment = NSTextAlignmentCenter;
-	
-	
+		
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height)];
@@ -253,7 +274,7 @@ static NSString * const kCamera = @"camera";
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
 	
-	_refreshControl = [[UIRefreshControl alloc] init];
+	_refreshControl = [[HONRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
@@ -274,12 +295,14 @@ static NSString * const kCamera = @"camera";
 	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
 	[self.view addSubview:_headerView];
 	
-	
 	self.view.hidden = YES;
+	
+	HONComposeButtonView *composeButtonView = [[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)];
+	[composeButtonView setFrame:CGRectOffset(composeButtonView.frame, 272.0, 0.0)];
 	
 	[_headerView setTitle:NSLocalizedString(@"header_friends", @"Friends")];
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[_headerView addButton:composeButtonView];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
@@ -291,21 +314,8 @@ static NSString * const kCamera = @"camera";
 	[super viewDidLoad];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-//	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
-	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
 		self.view.hidden = NO;
-		
-//		if (_progressHUD == nil)
-//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-//		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//		_progressHUD.minShowTime = kHUDTime;
-//		_progressHUD.taskInProgress = YES;
-//		
-//		[_seenClubs removeAllObjects];
-//		[_unseenClubs removeAllObjects];
-//		[self _retrieveRecentClubs];
 		
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
@@ -317,13 +327,7 @@ static NSString * const kCamera = @"camera";
 	
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];
 	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
-	
-	
-//	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)((double)2.333f * NSEC_PER_SEC));
-//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-//		[_tableView reloadData];
-//	});
-	
+
 	
 //	_panGestureRecognizer.delaysTouchesBegan = NO;
 //	_panGestureRecognizer.enabled = YES;
@@ -332,8 +336,6 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Navigation
 - (void)_goRegistration {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Start First Run"];
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:^(void) {
@@ -342,7 +344,7 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goProfile {
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Activity"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
@@ -386,15 +388,18 @@ static NSString * const kCamera = @"camera";
 - (void)_goSelectClub:(HONUserClubVO *)clubVO {
 	if (!_isPushing) {
 		_isPushing = YES;
+		
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Friends Tab - %@", ([clubVO.submissions count] > 0) ? @"Club Timeline" : @"Create Status Update"]
+											 withUserClub:clubVO];
+		
 		if ([clubVO.submissions count] > 0) {
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:NO];
-//			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0];
-//			[self.view addSubview:clubTimelineViewController.view];
+			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0];
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerPushSegue:clubTimelineViewController]];
 		
 		} else {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
+			[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:navigationController.presentingViewController] completion:nil];
 		}
 	}
 }
@@ -456,16 +461,19 @@ static NSString * const kCamera = @"camera";
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:_totalType];
 	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
 	
-	[self _goDataRefresh:nil];
+	[self _goReloadTableViewContents];
+	
+	if ([notification.object isEqualToString:@"Y"] && [_tableView.visibleCells count] > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
 	
+	[self _goReloadTableViewContents];
+	
 	if ([notification.object isEqualToString:@"Y"] && [_tableView.visibleCells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-	
-	[self _goDataRefresh:nil];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {
@@ -522,9 +530,6 @@ static NSString * const kCamera = @"camera";
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
-									   withUserClub:clubVO];
-	
 	[self _goSelectClub:clubVO];
 }
 
@@ -565,7 +570,7 @@ static NSString * const kCamera = @"camera";
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"Unseen" : @"Seen"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"Recent" : @"Seen"]);
 }
 
 
@@ -587,9 +592,6 @@ static NSString * const kCamera = @"camera";
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Timeline"
-										 withUserClub:cell.clubVO];
 	
 	if (indexPath.section == 0) {
 		HONUserClubVO *vo = (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row];
@@ -643,7 +645,7 @@ static NSString * const kCamera = @"camera";
 				} else {
 				}
 				
-				[self _goDataRefresh:nil];
+				[self _goReloadTableViewContents];
 			}
 		}
 		
@@ -657,7 +659,7 @@ static NSString * const kCamera = @"camera";
 		}
 	
 	}  else if (alertView.tag == 2) {
-		[self _goDataRefresh:nil];
+		[self _goReloadTableViewContents];
 	}
 }
 

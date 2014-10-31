@@ -14,6 +14,7 @@
 @class HONStickerButtonsPickerView;
 @protocol HONStickerButtonsPickerViewDelegate <NSObject>
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView selectedEmotion:(HONEmotionVO *)emotionVO;
+- (void)stickerButtonsPickerViewDidStartDownload:(HONStickerButtonsPickerView *)stickerButtonsPickerView;
 @optional
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didChangeToPage:(int)page withDirection:(int)direction;
@@ -21,7 +22,8 @@
 
 @interface HONStickerButtonsPickerView : UIView <UIScrollViewDelegate>
 - (id)initWithFrame:(CGRect)frame asGroupIndex:(int)stickerGroupIndex;
-- (void)preloadImages;
+- (void)cacheAllStickerContent;
+- (void)cacheStickerContentInRange:(NSRange)range;
 - (void)disablePagesStartingAt:(int)page;
 - (void)scrollToPage:(int)page;
 

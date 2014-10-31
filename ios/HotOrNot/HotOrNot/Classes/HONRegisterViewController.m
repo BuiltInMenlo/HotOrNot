@@ -65,6 +65,8 @@
 		_imageFilename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
+		
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Start First Run"];
 	}
 	
 	return (self);
@@ -336,7 +338,7 @@
 	[super loadView];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(288.0, 1.0, 44.0, 44.0);
+	_nextButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	

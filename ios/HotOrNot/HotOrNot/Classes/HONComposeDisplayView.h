@@ -27,6 +27,15 @@ extern const CGSize kMaxLabelSize;
 - (void)flushEmotions;
 - (void)updatePreview:(UIImage *)previewImage;
 - (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)animatedImageView;
+- (void)scrollToEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index;
+- (void)scrollToEmotionIndex:(int)index;
 
 @property (nonatomic, assign) id <HONComposeDisplayViewDelegate> delegate;
 @end
+
+
+
+//			NSURL *url1 = [NSURL URLWithString:@"http://i.imgur.com/1lgZ0.gif"];
+//			NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
+//			NSURL *url1 = [NSURL URLWithString:@"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"];
+

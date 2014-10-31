@@ -19,7 +19,6 @@ NSString * const kKeenIOEventCollection = @"iOS - DEV";
 
 
 @implementation HONAnalyticsReporter
-
 static HONAnalyticsReporter *sharedInstance = nil;
 
 + (HONAnalyticsReporter *)sharedInstance {

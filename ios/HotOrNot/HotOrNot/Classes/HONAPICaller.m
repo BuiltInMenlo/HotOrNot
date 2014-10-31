@@ -1517,7 +1517,7 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(id result))completion {
-	[[HONAPICaller sharedInstance] inviteInAppUsers:inAppUsers toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:[NSArray array] completion:completion];
+	[[HONAPICaller sharedInstance] inviteInAppUsers:inAppUsers toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:@[] completion:completion];
 }
 
 - (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(id result))completion {
@@ -1559,7 +1559,7 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)inviteNonAppUsers:(NSArray *)contacts toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(id result))completion {
-	[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray array] toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:contacts completion:completion];
+	[[HONAPICaller sharedInstance] inviteInAppUsers:@[] toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:contacts completion:completion];
 }
 
 - (void)joinClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(id result))completion {

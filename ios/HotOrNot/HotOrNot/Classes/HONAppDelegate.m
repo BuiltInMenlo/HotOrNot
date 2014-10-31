@@ -639,7 +639,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
-	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);//[[HONStateMitigator sharedInstance] appExitTimestamp]);
+//	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
 									 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
 	

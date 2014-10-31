@@ -7,6 +7,7 @@
 //
 
 #import "HONAnalyticsReporter.h"
+#import "HONAnimationOverseer.h"
 #import "HONAPICaller.h"
 #import "HONAudioMaestro.h"
 #import "HONClubAssistant.h"

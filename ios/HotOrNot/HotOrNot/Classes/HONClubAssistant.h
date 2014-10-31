@@ -33,11 +33,11 @@
 - (void)copyUserSignupClubToClipboardWithAlert:(BOOL)showsAlert;
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;
 
-- (NSArray *)suggestedClubs;//WithCompletion:(void (^)(NSArray *clubs))completion;
+- (NSArray *)suggestedClubs;
 - (HONUserClubVO *)suggestedAreaCodeClubVO;
 - (HONUserClubVO *)suggestedEmailClubVO:(NSArray *)domains;
 - (HONUserClubVO *)suggestedFamilyClubVO;
-- (HONUserClubVO *)suggestedSchoolClubVO;//WithCompletion:(void (^)(HONUserClubVO *schoolClubVO))completion;
+- (HONUserClubVO *)suggestedSchoolClubVO;
 - (HONUserClubVO *)suggestedBAEClubVO;
 - (HONUserClubVO *)suggestedBFFsClubVO;
 - (HONUserClubVO *)suggestedWorkplaceClubVO;
@@ -47,12 +47,18 @@
 
 - (void)wipeUserClubs;
 - (NSDictionary *)fetchUserClubs;
+- (HONUserClubVO *)fetchClubWithClubID:(int)clubID;
+- (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID;
 - (void)addClub:(NSDictionary *)club forKey:(NSString *)key;
 - (void)writeUserClubs:(NSDictionary *)clubs;
 - (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID;
+- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion;
 
 - (NSArray *)excludedClubDomains;
 
 - (HONUserClubVO *)clubWithParticipants:(NSArray *)participants;
+//- (void)generateClubWithClubMembers:(NSArray *)
+- (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants;
+- (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO;
 
 @end

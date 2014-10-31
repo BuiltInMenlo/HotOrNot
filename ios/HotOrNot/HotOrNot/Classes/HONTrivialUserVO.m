@@ -36,7 +36,7 @@
 												   @"alt_id"	: [activityItemVO.dictionary objectForKey:@"id"]}]);
 }
 
-+ (HONTrivialUserVO *)userFromContactVO:(HONContactUserVO *)contactVO {
++ (HONTrivialUserVO *)userFromContactUserVO:(HONContactUserVO *)contactVO {
 	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: @"0",//(contactVO.isSMSAvailable) ? contactVO.mobileNumber : contactVO.email,
 												   @"username"	: contactVO.fullName,
 												   @"img_url"	: contactVO.avatarPrefix,

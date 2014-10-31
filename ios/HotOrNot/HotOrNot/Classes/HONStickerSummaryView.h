@@ -11,17 +11,16 @@
 @class HONStickerSummaryView;
 @protocol HONStickerSummaryViewDelegate <NSObject>
 @optional
-- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumb:(HONEmotionVO *)emotionVO;
-- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumbAtIndex:(int)index;
+- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumb:(HONEmotionVO *)emotionVO atIndex:(int)index;
+- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView deleteLastSticker:(HONEmotionVO *)emotionVO;
 @end
 
-@interface HONStickerSummaryView : UIView <UIScrollViewDelegate>
+@interface HONStickerSummaryView : UIView <UIGestureRecognizerDelegate, UIScrollViewDelegate>
 - (id)initAtPosition:(CGPoint)position;
 - (void)appendSticker:(HONEmotionVO *)emotionVO;
 - (void)removeStickerAtIndex:(int)index;
 - (void)removeLastSticker;
 - (void)scrollToStickerAtIndex:(int)index;
 
-@property (nonatomic, assign) int scrollThreshold;
 @property (nonatomic, assign) id <HONStickerSummaryViewDelegate> delegate;
 @end

@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 
@@ -65,7 +65,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[self _retreiveStoreProducts];
 }
 
@@ -121,8 +121,7 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Done"];
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:self] completion:nil];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {

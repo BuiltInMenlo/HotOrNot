@@ -8,7 +8,7 @@
 
 #import "NSString+DataTypes.h"
 
-#import "CKRefreshControl.h"
+#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONClubTimelineViewController.h"
@@ -17,6 +17,7 @@
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
+#import "HONHeaderView.h"
 #import "HONHeaderView.h"
 
 @interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate>
@@ -119,6 +120,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
+	_tableView.hidden = YES;
+	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
@@ -127,6 +130,8 @@
 	_progressHUD.taskInProgress = YES;
 	
 	_clubPhotos = [NSArray array];
+	[_tableView reloadData];
+	
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:(_clubVO == nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : _clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
@@ -140,7 +145,7 @@
 
 
 #pragma mark - Data Handling
-- (void)_goDataRefresh:(CKRefreshControl *)sender {
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeTimelineRefresh];
 	
@@ -151,11 +156,6 @@
 }
 
 - (void)_didFinishDataRefresh {
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
 	
 	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
@@ -178,6 +178,12 @@
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	_tableView.hidden = NO;
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 	
 	if (_index != 0 || _clubPhotoID != 0)
 		[self _jumpToPhotoFromID];
@@ -240,24 +246,23 @@
 	
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
-//	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:titleCaption];
 	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
 	[_headerView removeBackground];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(2.0, 2.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(272, 0.0, 44.0, 44.0);
+	replyButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-//	[_headerView addButton:replyButton];
+	[_headerView addButton:replyButton];
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
@@ -265,7 +270,7 @@
 		[self _retrieveClub];
 	
 	if (_index > 0) {
-		_index = 0;//MIN(MAX(0, _index), [_clubPhotos count]);
+		_index = MIN(MAX(0, _index), [_clubPhotos count] - 1);
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 	}
 }
@@ -275,7 +280,7 @@
 	[super viewDidLoad];
 //	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
-	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -301,13 +306,13 @@
 #pragma mark - Navigation
 - (void)_goReply {
 	NSLog(@"[*:*] _goReply:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
+	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply"
-									  withClubPhoto:_clubPhotoVO];
+										 withClubPhoto:_clubPhotoVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
-		
-	[self presentViewController:navigationController animated:NO completion:^(void) {
+	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:navigationController.presentingViewController] completion:^(void) {
 	}];
 }
 

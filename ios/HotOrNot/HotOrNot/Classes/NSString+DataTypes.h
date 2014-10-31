@@ -12,6 +12,7 @@
 unsigned long long unistrlen(unichar *chars);
 
 - (NSString *)stringFromBOOL:(BOOL)boolVal;
+- (NSString *)stringFromClass:(NSObject *)object;
 - (NSString *)stringFromCGFloat:(CGFloat)floatVal;
 - (NSString *)stringFromDictionary:(NSDictionary *)dictionary;
 - (NSString *)stringFromDouble:(double)doubleVal;

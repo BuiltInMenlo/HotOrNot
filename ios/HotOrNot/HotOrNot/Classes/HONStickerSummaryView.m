@@ -16,10 +16,17 @@
 const CGSize kStickerSize = {50.0f, 50.0f};
 const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 
+const CGFloat kStickerOutroDuration = 0.333;
+const CGFloat kStickerOutroDelay = 0.125;
+const CGFloat kStickerOutroDamping = 0.950;
+const CGFloat kStickerOutroForce = 0.0625;
+
 @interface HONStickerSummaryView ()
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSMutableArray *stickers;
 @property (nonatomic, strong) NSMutableArray *stickerViews;
+@property (nonatomic, strong) HONEmotionVO *selectedEmotionVO;
+@property (nonatomic) int scrollThreshold;
 @property (nonatomic) int stickerSpacing;
 @property (nonatomic) int currentIndex;
 @end
@@ -33,6 +40,10 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		_stickerSpacing = kStickerSize.width + kStickerPaddingSize.width;
 		_stickers = [NSMutableArray array];
 		_stickerViews = [NSMutableArray array];
+		_selectedEmotionVO = nil;
+		
+		_scrollThreshold = ceil(self.frame.size.width / _stickerSpacing);
+		NSLog(@"THRESHOLD:[%d]", _scrollThreshold);
 		
 		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.965];
@@ -43,6 +54,12 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 		_scrollView.alwaysBounceHorizontal = YES;
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
+		
+		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+		lpGestureRecognizer.minimumPressDuration = 0.5;
+		lpGestureRecognizer.delegate = self;
+		lpGestureRecognizer.delaysTouchesBegan = YES;
+		[self addGestureRecognizer:lpGestureRecognizer];
 	}
 	
 	return (self);
@@ -80,12 +97,12 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	}
 	
 	UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-	button.frame = CGRectMake(0.0, 297.0, 50.0, 50.0);
-	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte-128_000"] forState:UIControlStateNormal];
-	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte-128_020"] forState:UIControlStateHighlighted];
-	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte-128_033"] forState:UIControlStateSelected];
-	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte-128_033"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-	[button addTarget:self action:@selector(_goSelectSticker:) forControlEvents:UIControlEventTouchDown];
+	button.frame = CGRectMake(0.0, 0.0, 50.0, 50.0);
+	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:UIControlStateNormal];
+	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:UIControlStateHighlighted];
+	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:UIControlStateSelected];
+	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+	[button addTarget:self action:@selector(_goSelectSticker:) forControlEvents:UIControlEventTouchUpInside];
 	[button setTag:[_stickers count]];
 	[stickerView addSubview:button];
 	
@@ -93,9 +110,11 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	[_stickerViews addObject:stickerView];
 	[_stickers addObject:emotionVO];
 	
-	int offset = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
-	_scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width + offset, _scrollView.contentSize.height);
-	_scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x + offset, _scrollView.contentOffset.y);
+	_currentIndex = [_stickers count] - 1;
+	
+	int size = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
+	_scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width + size, _scrollView.contentSize.height);
+	[self scrollToStickerAtIndex:_currentIndex];
 }
 
 - (void)removeLastSticker {
@@ -107,33 +126,91 @@ const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 	
 	UIView *stickerView = [_stickerViews objectAtIndex:index];
 	[stickerView removeFromSuperview];
-	[_stickers removeObjectAtIndex:index];
+	[_stickers removeObjectAtIndex:_currentIndex];
 }
 
 - (void)scrollToStickerAtIndex:(int)index {
-	[_scrollView setContentOffset:CGPointMake(_stickerSpacing * (MIN(MAX(0, index), [_stickers count] - 1)), 0.0) animated:NO];
-}
-
-- (void)setScrollThreshold:(int)scrollThreshold {
-	_scrollThreshold = scrollThreshold;
+	_currentIndex = index;
+	
+	CGFloat multInc = 1.36;
+	int offset = 0;
+	if (index < _scrollThreshold * 0.5) {
+		offset = 0;
+	
+	} else if (index >= (_scrollThreshold * 0.5) && index < ([_stickers count] - (_scrollThreshold * 0.5))) {
+		offset = (_stickerSpacing * multInc) + (_stickerSpacing * (MAX(0, (index - (_scrollThreshold * 0.5)))));
+	
+	} else if (index >= ([_stickers count] - (_scrollThreshold * 0.5))) {
+		offset = _scrollView.contentSize.width - _scrollView.frame.size.width;
+	
+	} else {
+		offset = _scrollView.contentOffset.x;
+	}
+	
+	NSLog(@"[*:*] scrollToStickerAtIndex:[%d]", offset);
+	[_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:[[HONAnimationOverseer sharedInstance] isScrollingAnimationEnabledForScrollView:self]];
 }
 
 
 #pragma mark - Navigation
 - (void)_goSelectSticker:(id)sender {
 	UIButton *button = (UIButton *)sender;
+	int ind = button.tag;
 	
+	_selectedEmotionVO = (HONEmotionVO *)[_stickers objectAtIndex:ind];
 	[_stickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIView *view = (UIView *)obj;
 		UIButton *btn = [view.subviews lastObject];
-		[btn setSelected:btn.tag == button.tag];
-		*stop = btn.tag = button.tag;
+		[btn setSelected:NO];
 	}];
 	
-	[self scrollToStickerAtIndex:button.tag];
+	[button setSelected:YES];
 	
-	if ([self.delegate respondsToSelector:@selector(stickerSummaryView:didSelectThumb:)])
-		[self.delegate stickerSummaryView:self didSelectThumb:(HONEmotionVO *)[_stickers objectAtIndex:button.tag]];
+	if ([self.delegate respondsToSelector:@selector(stickerSummaryView:didSelectThumb:atIndex:)])
+		[self.delegate stickerSummaryView:self didSelectThumb:_selectedEmotionVO atIndex:ind];
+	
+	_currentIndex = ind;
+	[self scrollToStickerAtIndex:ind];
+}
+
+- (void)_goLongPress:(UIGestureRecognizer *)gestureRecognizer {
+	if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
+		return;
+	
+	NSLog(@"gestureRecognizer.state:[%@]", (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"Began" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"Canceled" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"Ended" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"Failed" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"Possible" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN");
+	HONEmotionVO *emotionVO = (HONEmotionVO *)[_stickers lastObject];
+	
+	if (_currentIndex == [_stickers count] - 1) {
+		UIView *stickerView = (UIView *)[_stickerViews lastObject];
+		UIButton *button = (UIButton *)[stickerView.subviews lastObject];
+		[button setSelected:NO];
+		
+		CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:0.10 forView:stickerView];
+		[UIView animateWithDuration:kStickerOutroDuration delay:kStickerOutroDelay
+			 usingSpringWithDamping:kStickerOutroDamping initialSpringVelocity:kStickerOutroForce options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+						 animations:^(void) {
+							 stickerView.alpha = 0.0;
+							 stickerView.transform = transform;
+							 
+						 } completion:^(BOOL finished) {
+							 [_stickerViews removeLastObject];
+							 [_stickers removeLastObject];
+							 
+							 [stickerView removeFromSuperview];
+							 
+							 _currentIndex = [_stickers count] - 1;
+							 int size = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
+							 
+							 _scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width - size, _scrollView.contentSize.height);
+							 [self scrollToStickerAtIndex:_currentIndex];
+						 }];
+	}
+	
+	[_stickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	}];
+	
+	if ([self.delegate respondsToSelector:@selector(stickerSummaryView:deleteLastSticker:)])
+		[self.delegate stickerSummaryView:self deleteLastSticker:emotionVO];
 }
 
 

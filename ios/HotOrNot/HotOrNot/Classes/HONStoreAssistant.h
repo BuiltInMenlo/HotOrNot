@@ -10,4 +10,6 @@
 
 @interface HONStoreAssistant : NSObject
 + (HONStoreAssistant *)sharedInstance;
+
+//- (BOOL)isStickerGroupTypePurchased:()
 @end
