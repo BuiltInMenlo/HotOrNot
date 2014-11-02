@@ -148,7 +148,7 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_search", @"Search")];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_search", @"Search")];
 	[headerView addButton:closeButton];
 	[headerView addButton:submitButton];
 	[self.view addSubview:headerView];

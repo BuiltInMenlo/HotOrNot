@@ -84,9 +84,8 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 		}
 		
 		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 165.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
-		_paginationView.hidden = (_totalPages == 1);
+		_paginationView.hidden = YES;
 		[_paginationView updateToPage:0];
-		_paginationView.hidden = _hasCachedAllStickers;
 		[self addSubview:_paginationView];
 	}
 	
@@ -222,7 +221,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 	
 	_paginationView.hidden = NO;
 	
-	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
+//	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	
 	[_buttonPageViews removeAllObjects];
 	[_scrollView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

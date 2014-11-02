@@ -193,15 +193,10 @@ const CGFloat kEmotionOutroForce = 0.250;
 
 
 - (void)scrollToEmotionIndex:(int)index {
-//	int offset = _emotionSpacingSize.width + (index * _emotionSpacingSize.width);
-//	offset = ([_emotions count] != 1) ? offset - kEmotionPaddingSize.width : offset;
-	
 	NSLog(@"scrollToEmotionIndex:[%d]", index);
-	//int offset = (MAX(_scrollView.frame.size.width, (index * _emotionSpacingSize.width)) + ((index != 0) ? -kEmotionPaddingSize.width : 0.0));
 	int offset = (MAX(_scrollView.frame.size.width, (index * _emotionSpacingSize.width)) + ((index != 0) ? -kEmotionPaddingSize.width : 0.0)) - _scrollView.frame.size.width;// - (([_emotions count] <= 1) ? _scrollView.contentInset.left : -_scrollView.contentInset.right);
 	offset -= ((index == 0) ? _scrollView.contentInset.left : -_scrollView.contentInset.right);
-//	offset -= ((index == 0) ? _scrollView.contentInset.left * 2 : -_scrollView.contentInset.right);
-	
+
 //	[UIView animateWithDuration:0.00250 delay:0.000
 //		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
 //						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)

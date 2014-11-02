@@ -26,4 +26,6 @@
 + (NSString *)className;
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer;
 - (void)destroy;
+
+@property (nonatomic, assign) BOOL isPresentedAsModal;
 @end

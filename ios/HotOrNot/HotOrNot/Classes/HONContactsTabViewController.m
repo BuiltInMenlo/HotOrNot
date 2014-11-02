@@ -292,7 +292,7 @@ static NSString * const kCamera = @"camera";
 	[_tableView addSubview:_emptyClubsBGView];
 	
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 	
 	self.view.hidden = YES;
@@ -608,11 +608,12 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
+	cell.alpha = 1.0;
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 

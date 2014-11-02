@@ -100,7 +100,8 @@
 	[super loadView];
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:NSLocalizedString(@"header_settings", @"Settings")];
+//	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
 	[headerView addButton:[[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
@@ -211,12 +212,6 @@
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setSelectionStyle:(indexPath.row == HONSettingsCellTypeShareClub || indexPath.row == HONSettingsCellTypeNotifications || indexPath.row == HONSettingsCellTypeVersion) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
 	
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:indexPath.row * 0.05 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
 	return (cell);
 }
 
@@ -320,6 +315,16 @@
 //		[alertView show];
 //	}
 }
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	cell.alpha = 1.0;
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
+}
+
 
 
 #pragma mark - MessageCompose Delegates

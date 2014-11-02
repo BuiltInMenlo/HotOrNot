@@ -316,7 +316,7 @@
 	[_tableView addSubview:_emptyContactsBGView];
 
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 }
 
@@ -330,15 +330,11 @@
 	if ([passedRegistration length] != 0) {
 		[self _retrieveClubs];
 		
-//		[self _submitPhoneNumberForMatching];
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 			_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-//			[self _retrieveDeviceContacts];
 			
 		} else
 			_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
-		
-//		[self _goReloadTableViewContents];
 		
 	} else
 		_tableViewDataSource = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? HONContactsTableViewDataSourceAddressBook : HONContactsTableViewDataSourceMatchedUsers;
@@ -446,7 +442,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? [_clubs count] : (section == 2) ? [_inAppUsers count] : [_shownDeviceContacts count]);
+	return ((section == 0) ? 0 : (section == 1) ? [_clubs count] : (section == 2) ? [_inAppUsers count] : [_shownDeviceContacts count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -573,11 +569,12 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
+	cell.alpha = 1.0;
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 

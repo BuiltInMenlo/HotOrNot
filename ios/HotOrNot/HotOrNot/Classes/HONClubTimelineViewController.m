@@ -246,7 +246,8 @@
 	
 	titleCaption = ((HONClubPhotoVO *)[_clubVO.submissions firstObject]).username; //([titleCaption rangeOfString:@", "].location != NSNotFound) ? [titleCaption substringToIndex:[titleCaption length] - 2] : titleCaption;
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
+//	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView removeBackground];
 	[self.view addSubview:_headerView];
 	
@@ -278,7 +279,7 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
 //	_panGestureRecognizer.enabled = YES;
 }
@@ -320,7 +321,7 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back"
 									   withUserClub:_clubVO];
 	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[self.navigationController popViewControllerAnimated:NO];
 }
 

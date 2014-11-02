@@ -16,10 +16,10 @@
 const CGSize kStickerSize = {50.0f, 50.0f};
 const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 
-const CGFloat kStickerOutroDuration = 0.333;
+const CGFloat kStickerOutroDuration = 0.125;
 const CGFloat kStickerOutroDelay = 0.125;
 const CGFloat kStickerOutroDamping = 0.950;
-const CGFloat kStickerOutroForce = 0.0625;
+const CGFloat kStickerOutroForce = 0.125;
 
 @interface HONStickerSummaryView ()
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -147,7 +147,7 @@ const CGFloat kStickerOutroForce = 0.0625;
 		offset = _scrollView.contentOffset.x;
 	}
 	
-	NSLog(@"[*:*] scrollToStickerAtIndex:[%d]", offset);
+	NSLog(@"[*:*] scrollToStickerAtIndex:[%d]:[%d]:", index, offset);
 	[_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:[[HONAnimationOverseer sharedInstance] isScrollingAnimationEnabledForScrollView:self]];
 }
 

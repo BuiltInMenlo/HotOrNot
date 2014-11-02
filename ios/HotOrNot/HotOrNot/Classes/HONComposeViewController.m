@@ -160,8 +160,6 @@
 	}
 	
 	
-	
-	
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:ownerID completion:^(NSDictionary *result) {
 		_userClubVO = [HONUserClubVO clubWithDictionary:result];
 		
@@ -481,35 +479,40 @@
 	UIButton *button = (UIButton *)sender;
 	
 	int groupIndex = button.tag;
-	if (groupIndex != 4) {
-		[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			UIButton *btn = (UIButton *)obj;
-			[btn setSelected:(btn.tag == groupIndex)];
-		}];
-	}
+//	if (groupIndex != 4) {
+//		[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			UIButton *btn = (UIButton *)obj;
+//			[btn setSelected:(btn.tag == groupIndex)];
+//		}];
+//	}
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
+	
+	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		UIButton *btn = (UIButton *)obj;
+		[btn setSelected:(btn.tag == groupIndex)];
+	}];
 	
 	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)obj;
 		
 		if (pickerView.stickerGroupIndex == groupIndex) {
-			if (pickerView.stickerGroupIndex == 3) {
-				HONAnimatedBGsViewController *animatedBGsViewController = [[HONAnimatedBGsViewController alloc] init];
-				animatedBGsViewController.delegate = self;
-				
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:animatedBGsViewController];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-				
-			} else if (pickerView.stickerGroupIndex == 4) {
-				HONStoreProductsViewController *storeProductsViewController = [[HONStoreProductsViewController alloc] init];
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:storeProductsViewController];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:storeProductsViewController] completion:nil];
-				
-			} else {
+//			if (pickerView.stickerGroupIndex == 3) {
+//				HONAnimatedBGsViewController *animatedBGsViewController = [[HONAnimatedBGsViewController alloc] init];
+//				animatedBGsViewController.delegate = self;
+//				
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:animatedBGsViewController];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:YES completion:nil];
+//				
+//			} else if (pickerView.stickerGroupIndex == 4) {
+//				HONStoreProductsViewController *storeProductsViewController = [[HONStoreProductsViewController alloc] init];
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:storeProductsViewController];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:storeProductsViewController] completion:nil];
+//				
+//			} else {
 				for (UIView *view in _emotionsPickerHolderView.subviews) {
 					((HONStickerButtonsPickerView *)view).delegate = nil;
 					[view removeFromSuperview];
@@ -525,7 +528,7 @@
 								 } completion:^(BOOL finished) {
 								 }];
 			}
-		}
+//		}
 	}];
 }
 

@@ -102,10 +102,10 @@
 		[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			for (HONContactUserVO *contactUserVO in _allDeviceContacts) {
 				NSString *altID = (NSString *)obj;
-				//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
+				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
 				
 				if ([contactUserVO.mobileNumber isEqualToString:altID]) {
-					//					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
+					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
 					[_omittedDeviceContacts addObject:contactUserVO];
 					break;
 				}
@@ -116,10 +116,10 @@
 		for (HONContactUserVO *contactUserVO in _allDeviceContacts) {
 			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSString *altID = (NSString *)obj;
-				//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
+				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
 				
 				if ([contactUserVO.mobileNumber isEqualToString:altID]) {
-					//					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
+					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
 					[_omittedDeviceContacts addObject:contactUserVO];
 					*stop = YES;//break;
 				}
@@ -143,7 +143,6 @@
 	}];
 	
 	[_clubs removeAllObjects];
-	
 	[super _didFinishDataRefresh];
 	
 	_emptyContactsBGView.hidden = YES;
@@ -198,14 +197,15 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
-	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom - submitButton.frame.size.height, _tableView.contentInset.right)];
+	[_refreshControl beginRefreshing];
+	
+//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom - submitButton.frame.size.height, _tableView.contentInset.right)];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	
-	//	_panGestureRecognizer.enabled = YES;
+	[self _goReloadTableViewContents];
 }
 
 
@@ -316,10 +316,7 @@
 //				}];
 //				
 //				names = ([names rangeOfString:@", "].location != NSNotFound) ? [names substringToIndex:[names length] - 2] : names;
-//				
-//				
-//				
-//				
+//
 //				NSLog(@"CLUB -=- (CREATE) -=-");
 //				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
 //				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
@@ -642,6 +639,11 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	cell.alpha = 1.0;
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 

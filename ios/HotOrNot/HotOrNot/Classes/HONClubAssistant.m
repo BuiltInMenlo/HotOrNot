@@ -654,7 +654,7 @@ static HONClubAssistant *sharedInstance = nil;
 			clubVO = [HONUserClubVO clubWithDictionary:result];
 			
 			__block NSString *names = @"";
-			__block HONClubPhotoVO *clubPhotoVO = nil;
+//			__block HONClubPhotoVO *clubPhotoVO = nil;
 			
 			NSMutableArray *selectedUsers = [NSMutableArray array];
 			NSMutableArray *selectedContacts = [NSMutableArray array];
@@ -668,7 +668,6 @@ static HONClubAssistant *sharedInstance = nil;
 			}];
 			
 			[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//				(participantVO.userID != 0 && vo.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [vo.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])
 				HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
 				if ([trivialUserVO.altID length] > 0) {
 					HONContactUserVO *contactUserVO = [HONContactUserVO contactFromTrivialUserVO:trivialUserVO];
@@ -687,8 +686,6 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO {
-	
-	
 	__block HONClubPhotoVO *clubPhotoVO = nil;
 	return (clubPhotoVO);
 }

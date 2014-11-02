@@ -94,7 +94,7 @@
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Animations"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Animations"];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
 	

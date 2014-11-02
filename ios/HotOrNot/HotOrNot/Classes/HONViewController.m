@@ -16,6 +16,7 @@
 
 
 @implementation HONViewController
+@synthesize isPresentedAsModal = _isPresentedAsModal;
 
 - (id)init {
 	if ((self = [super init])) {

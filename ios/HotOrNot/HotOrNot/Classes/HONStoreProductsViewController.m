@@ -92,7 +92,7 @@
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Store"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Store"];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
 	
@@ -203,11 +203,12 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
+	cell.alpha = 1.0;
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 

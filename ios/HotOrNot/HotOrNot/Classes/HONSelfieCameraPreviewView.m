@@ -119,7 +119,7 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_headerView = [[HONHeaderView alloc] initWithTitleUsingCartoGothic:@"Edit"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Edit"];
 	[self addSubview:_headerView];
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
