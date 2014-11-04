@@ -49,6 +49,7 @@
 		3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */; };
 		3051F8B21A08B2C500CD85F2 /* reply1Button_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8B41A08B2C500CD85F2 /* reply1Button_Active@2x.png */; };
 		3051F8B51A08B2C900CD85F2 /* reply1Button_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8B71A08B2C900CD85F2 /* reply1Button_nonActive@2x.png */; };
+		3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3075E02E19D66107007B3346 /* HONCameraOverlayView.m */; };
@@ -436,6 +437,8 @@
 		3051F8BE1A08B2D800CD85F2 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
 		3051F8BF1A08B2D800CD85F2 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
 		3051F8C11A08DD9600CD85F2 /* HONStaticInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStaticInlines.h; sourceTree = "<group>"; };
+		3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDoneNavButtonView.h; sourceTree = "<group>"; };
+		3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDoneNavButtonView.m; sourceTree = "<group>"; };
 		305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleViewCell.h; sourceTree = "<group>"; };
 		305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleViewCell.m; sourceTree = "<group>"; };
 		305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Random.h"; sourceTree = "<group>"; };
@@ -2193,12 +2196,14 @@
 			children = (
 				3051F8A51A08AC0000CD85F2 /* HONBackNavButtonView.h */,
 				3051F8A61A08AC0000CD85F2 /* HONBackNavButtonView.m */,
-				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
-				3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */,
-				4C225CC217B8593B00330EB3 /* HONComposeNavButtonView.h */,
-				4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */,
+				3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */,
+				3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */,
 				3051F8AB1A08AF7900CD85F2 /* HONCloseNavButtonView.h */,
 				3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */,
+				4C225CC217B8593B00330EB3 /* HONComposeNavButtonView.h */,
+				4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */,
+				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
+				3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */,
 				4C1435CB17D3C19A00ACBF41 /* HONActivityHeaderButtonView.h */,
 				4C1435CC17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m */,
 			);
@@ -2757,6 +2762,7 @@
 				30119BDB19F8301B00DE9B16 /* HONAnimatedBGCollectionViewCell.m in Sources */,
 				4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */,
 				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
+				3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */,
 				4CC94FEC19079D4900347A34 /* HONComposeDisplayView.m in Sources */,
 				4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */,
 				308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */,

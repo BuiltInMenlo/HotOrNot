@@ -17,6 +17,7 @@
 - (void)addBackButtonWithTarget:(id)target usingAction:(SEL)action;
 - (void)addCloseButtonWithTarget:(id)target usingAction:(SEL)action;
 - (void)addComposeButtonWithTarget:(id)target usingAction:(SEL)action;
+- (void)addDoneButtonWithTarget:(id)target usingAction:(SEL)action;
 - (void)addNextButtonWithTarget:(id)target usingAction:(SEL)action;
 - (void)transitionTitle:(NSString *)title;
 - (void)leftAlignTitle;

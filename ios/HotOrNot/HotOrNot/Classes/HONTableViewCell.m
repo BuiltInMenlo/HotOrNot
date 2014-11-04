@@ -42,7 +42,8 @@
 	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, _size.width, _size.height);
 	self.contentView.frame = CGRectMake(self.contentView.frame.origin.x, self.contentView.frame.origin.y, _size.width, _size.height);
 	
-	_chevronImageView.frame = CGRectMake(_chevronImageView.frame.origin.x, MAX(0, (size.height - _chevronImageView.frame.size.height) * 0.5), _chevronImageView.frame.size.width, _chevronImageView.frame.size.height);
+	CGFloat yPos = MAX(0.0, (self.frame.size.height - _chevronImageView.frame.size.height) * 0.5);
+	_chevronImageView.frame = CGRectTranslate(_chevronImageView.frame, CGPointMake(self.frame.size.width - (0 + _chevronImageView.frame.size.width), yPos));
 }
 
 - (void)setIndexPath:(NSIndexPath *)indexPath {

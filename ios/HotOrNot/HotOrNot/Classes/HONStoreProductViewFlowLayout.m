@@ -18,7 +18,7 @@ const CGSize kStoreProductImageViewSpacing = {10.0, 10.0};
 		self.scrollDirection = UICollectionViewScrollDirectionVertical;
 		self.minimumInteritemSpacing = kStoreProductImageViewSpacing.width;
 		self.minimumLineSpacing = kStoreProductImageViewSpacing.height;
-		self.sectionInset = UIEdgeInsetsMake(0.0, kStoreProductImageViewSpacing.width, 0.0, kStoreProductImageViewSpacing.height); //UIEdgeInsetsZero;
+		self.sectionInset = UIEdgeInsetsMake(0.0, 15.0, 0.0, 15.0);
 	}
 	
 	return (self);

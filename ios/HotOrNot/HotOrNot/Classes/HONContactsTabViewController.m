@@ -290,9 +290,8 @@ static NSString * const kCamera = @"camera";
 	[_tableView addSubview:_emptyClubsBGView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_home", @"Home")];
-	[self.view addSubview:_headerView];
-	
 	[_headerView addComposeButtonWithTarget:self usingAction:@selector(_goCreateChallenge)];
+	[self.view addSubview:_headerView];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)

@@ -100,14 +100,8 @@
 	
 	_productImages = [NSMutableArray array];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(4.0, 2.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_storeProductVO.productName];
-	[headerView addButton:backButton];
+	[headerView addBackButtonWithTarget:self usingAction:@selector(_goBack)];
 	[self.view addSubview:headerView];
 	
 	UIView *summaryHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 74.0)];
@@ -117,14 +111,14 @@
 	bgImageView.image = [UIImage imageNamed:@"stickerItemBG"];
 	[summaryHolderView addSubview:bgImageView];
 	
-	_productNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(81.0, 15.0, 260.0, 21.0)];
+	_productNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(79.0, 20.0, 260.0, 21.0)];
 	_productNameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 	_productNameLabel.textColor =  [UIColor blackColor];
 	_productNameLabel.backgroundColor = [UIColor clearColor];
 	_productNameLabel.text = [NSString stringWithFormat:@"%d. %@", _storeProductVO.displayIndex, _storeProductVO.productName];
 	[summaryHolderView addSubview:_productNameLabel];
 	
-	_productPriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(81.0, 38.0, 260.0, 18.0)];
+	_productPriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(79.0, 44.0, 260.0, 18.0)];
 	_productPriceLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	_productPriceLabel.textColor =  [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	_productPriceLabel.backgroundColor = [UIColor clearColor];
@@ -169,7 +163,7 @@
 									   failure:imageFailureBlock];
 	}
 	
-	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, 138.0, 320.0, self.view.frame.size.height - 188.0) collectionViewLayout:[[HONStoreProductViewFlowLayout alloc] init]];
+	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, 145.0, 320.0, self.view.frame.size.height - 195.0) collectionViewLayout:[[HONStoreProductViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONStoreProductImageViewCell class] forCellWithReuseIdentifier:[HONStoreProductImageViewCell cellReuseIdentifier]];
 	_collectionView.backgroundColor = [UIColor whiteColor];
 	[_collectionView setContentInset:UIEdgeInsetsZero];
@@ -187,12 +181,6 @@
 	_purchaseButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 50.0, 320.0, 50.0);
 	[_purchaseButton setBackgroundImage:[UIImage imageNamed:(_storeProductVO.isPurchased) ? @"downloadButton_nonActive" : @"purchaseButton_nonActive"] forState:UIControlStateNormal];
 	[_purchaseButton setBackgroundImage:[UIImage imageNamed:(_storeProductVO.isPurchased) ? @"downloadButton_Active" : @"purchaseButton_Active"] forState:UIControlStateHighlighted];
-//	_purchaseButton.backgroundColor = (_storeProductVO.isPurchased) ? [UIColor greenColor] : [UIColor blueColor];
-//	[_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//	[_purchaseButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.85] forState:UIControlStateHighlighted];
-//	_purchaseButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-//	[_purchaseButton setTitle:(_storeProductVO.isPurchased) ? @"Download" : @"Purchase" forState:UIControlStateNormal];
-//	[_purchaseButton setTitle:(_storeProductVO.isPurchased) ? @"Download" : @"Purchase" forState:UIControlStateHighlighted];
 	[_purchaseButton addTarget:self action:(_storeProductVO.isPurchased) ? @selector(_goDownload) : @selector(_goPurchase) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_purchaseButton];
 	

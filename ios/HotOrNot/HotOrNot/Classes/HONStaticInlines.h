@@ -22,6 +22,18 @@ CGRectMakeFromSize(CGSize size)
 	return rect;
 }
 
+CG_INLINE CGRect
+CGRectTranslate(CGRect rect, CGPoint point)
+{
+	CGRect transRect;
+	transRect.origin.x = point.x;
+	transRect.origin.y = point.y;
+	transRect.size.width = rect.size.width;
+	transRect.size.height = rect.size.height;
+	
+	return (transRect);
+}
+
 CG_INLINE CGSize
 CGSizeMult(CGSize size, CGFloat mult)
 {

@@ -22,7 +22,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 @implementation HONActivityHeaderButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 1.0, 93.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 93.0, 44.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_completedFirstRun:) name:@"COMPLETED_FIRST_RUN" object:nil];
 		
 		
