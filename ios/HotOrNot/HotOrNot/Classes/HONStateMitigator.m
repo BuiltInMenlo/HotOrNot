@@ -43,8 +43,8 @@ NSString * const kStateMitigatorViewStateNameSettings					= @"settings";
 NSString * const kStateMitigatorViewStateNameTimeline					= @"timeline";
 NSString * const kStateMitigatorViewStateNameCompose					= @"compose";
 NSString * const kStateMitigatorViewStateNameAnimatedBGs				= @"animated_bgs";
-NSString * const kStateMitigatorViewStateNameStickerStore				= @"sticker_store";
-NSString * const kStateMitigatorViewStateNameStickerStoreDetails		= @"sticker_store_details";
+NSString * const kStateMitigatorViewStateNameStoreProducts				= @"sticker_store";
+NSString * const kStateMitigatorViewStateNameStoreProductDetails		= @"sticker_store_details";
 NSString * const kStateMitigatorViewStateNameComposeSubmit				= @"compose_submit";
 NSString * const kStateMitigatorViewStateNameSearchUsername				= @"search_username";
 NSString * const kStateMitigatorViewStateNameSearchContact				= @"search_contact";
@@ -53,39 +53,39 @@ NSString * const kStateMitigatorViewStateNameSupport					= @"support";
 NSString * const kStateMitigatorViewStateNameLegal						= @"legal";
 NSString * const kStateMitigatorViewStateNameNetworkStatus				= @"network_status";
 
-NSString * const kStateMitigatorTotalCounterName							= @"";
-NSString * const kStateMitigatorTotalCounterNameUnknown						= @"UNKNOWN";
-NSString * const kStateMitigatorTotalCounterNameTrackingCalls				= @"tracking";
-NSString * const kStateMitigatorTotalCounterNameBoot						= @"boot";
-NSString * const kStateMitigatorTotalCounterNameExit						= @"exit";
-NSString * const kStateMitigatorTotalCounterNameResume						= @"resume";
-NSString * const kStateMitigatorTotalCounterNameBackground					= @"background";
-NSString * const kStateMitigatorTotalCounterNameRegistration				= @"registration";
-NSString * const kStateMitigatorTotalCounterNameRegistrationCountryCodes	= @"registrationCountryCodes";
-NSString * const kStateMitigatorTotalCounterNamePINEntry					= @"pinEntry";
-NSString * const kStateMitigatorTotalCounterNameFriendsTab					= @"friendsTab";
-NSString * const kStateMitigatorTotalCounterNameFriendsTabRefresh			= @"friendsTabRefresh";
-NSString * const kStateMitigatorTotalCounterNameSettingsTab					= @"settingsTab";
-NSString * const kStateMitigatorTotalCounterNameTimeline					= @"timeline";
-NSString * const kStateMitigatorTotalCounterNameTimelineRefresh				= @"timelineRefresh";
-NSString * const kStateMitigatorTotalCounterNameReply						= @"reply";
-NSString * const kStateMitigatorTotalCounterNameCompose						= @"compose";
-NSString * const kStateMitigatorTotalCounterNameAnimatedBGs					= @"animatedBGs";
-NSString * const kStateMitigatorTotalCounterNameAnimatedBGsRefresh			= @"animatedBGsRefresh";
-NSString * const kStateMitigatorTotalCounterNameStickerStore				= @"stickerStore";
-NSString * const kStateMitigatorTotalCounterNameStickerStoreRefresh			= @"stickerStoreRefresh";
-NSString * const kStateMitigatorTotalCounterNameStickerStoreDetails			= @"stickerStoreDetails";
-NSString * const kStateMitigatorTotalCounterNameStickerStoreDetailsRefresh	= @"stickerStoreDetailsRefresh";
-NSString * const kStateMitigatorTotalCounterNameComposeSubmit				= @"composeSubmit";
-NSString * const kStateMitigatorTotalCounterNameComposeSubmitRefresh		= @"composeSubmitRefresh";
-NSString * const kStateMitigatorTotalCounterNameSearchUsername				= @"searchUsername";
-NSString * const kStateMitigatorTotalCounterNameSearchContacts				= @"searchContacts";
-NSString * const kStateMitigatorTotalCounterNameSearchContactsCountryCodes	= @"searchContactsCountryCodes";
-NSString * const kStateMitigatorTotalCounterNameSupport						= @"support";
-NSString * const kStateMitigatorTotalCounterNameLegal						= @"legal";
-NSString * const kStateMitigatorTotalCounterNameNetworkStatus				= @"networkStatus";
-NSString * const kStateMitigatorTotalCounterNameNetworkStatusRefresh		= @"networkStatusRefresh";
-NSString * const kStateMitigatorTotalCounterNameShare						= @"share";
+NSString * const kStateMitigatorTotalCounter							= @"";
+NSString * const kStateMitigatorTotalCounterUnknown						= @"UNKNOWN";
+NSString * const kStateMitigatorTotalCounterTrackingCalls				= @"tracking";
+NSString * const kStateMitigatorTotalCounterBoot						= @"boot";
+NSString * const kStateMitigatorTotalCounterExit						= @"exit";
+NSString * const kStateMitigatorTotalCounterResume						= @"resume";
+NSString * const kStateMitigatorTotalCounterBackground					= @"background";
+NSString * const kStateMitigatorTotalCounterRegistration				= @"registration";
+NSString * const kStateMitigatorTotalCounterRegistrationCountryCodes	= @"registrationCountryCodes";
+NSString * const kStateMitigatorTotalCounterPINEntry					= @"pinEntry";
+NSString * const kStateMitigatorTotalCounterFriendsTab					= @"friendsTab";
+NSString * const kStateMitigatorTotalCounterFriendsTabRefresh			= @"friendsTabRefresh";
+NSString * const kStateMitigatorTotalCounterSettingsTab					= @"settingsTab";
+NSString * const kStateMitigatorTotalCounterTimeline					= @"timeline";
+NSString * const kStateMitigatorTotalCounterTimelineRefresh				= @"timelineRefresh";
+NSString * const kStateMitigatorTotalCounterReply						= @"reply";
+NSString * const kStateMitigatorTotalCounterCompose						= @"compose";
+NSString * const kStateMitigatorTotalCounterAnimatedBGs					= @"animatedBGs";
+NSString * const kStateMitigatorTotalCounterAnimatedBGsRefresh			= @"animatedBGsRefresh";
+NSString * const kStateMitigatorTotalCounterStoreProducts				= @"storeProducts";
+NSString * const kStateMitigatorTotalCounterStoreProductsRefresh		= @"storeProductsRefresh";
+NSString * const kStateMitigatorTotalCounterStoreProductDetails			= @"storeProductDetails";
+NSString * const kStateMitigatorTotalCounterStoreProductDetailsRefresh	= @"storeProductDetailsRefresh";
+NSString * const kStateMitigatorTotalCounterComposeSubmit				= @"composeSubmit";
+NSString * const kStateMitigatorTotalCounterComposeSubmitRefresh		= @"composeSubmitRefresh";
+NSString * const kStateMitigatorTotalCounterSearchUsername				= @"searchUsername";
+NSString * const kStateMitigatorTotalCounterSearchContacts				= @"searchContacts";
+NSString * const kStateMitigatorTotalCounterSearchContactsCountryCodes	= @"searchContactsCountryCodes";
+NSString * const kStateMitigatorTotalCounterSupport						= @"support";
+NSString * const kStateMitigatorTotalCounterLegal						= @"legal";
+NSString * const kStateMitigatorTotalCounterNetworkStatus				= @"networkStatus";
+NSString * const kStateMitigatorTotalCounterNetworkStatusRefresh		= @"networkStatusRefresh";
+NSString * const kStateMitigatorTotalCounterShare						= @"share";
 
 
 @interface HONStateMitigator ()
@@ -107,7 +107,6 @@ static HONStateMitigator *sharedInstance = nil;
 
 
 - (int)incrementTotalCounterForType:(HONStateMitigatorTotalType)totalType {
-	//int tot = (int)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:[self _keyForTotalType:totalType] withObject:@(0)];
 	int tot = [[[NSUserDefaults standardUserDefaults] objectForKey:[self _keyForTotalType:totalType]] intValue];
 	[[NSUserDefaults standardUserDefaults] setValue:@(++tot) forKey:[self _keyForTotalType:totalType]];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -116,8 +115,7 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (void)resetTotalCounterForType:(HONStateMitigatorTotalType)totalType withValue:(int)value {
-//	if ([[NSUserDefaults standardUserDefaults] objectForKey:[self _keyForTotalType:totalType]] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForExistingKey:[self _keyForTotalType:totalType]];
+	[[NSUserDefaults standardUserDefaults] removeObjectForExistingKey:[self _keyForTotalType:totalType]];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:@(value) forKey:[self _keyForTotalType:totalType]];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -125,11 +123,7 @@ static HONStateMitigator *sharedInstance = nil;
 
 - (void)resetAllTotalCounters {
 	[[self _totalKeyPrefixesForTypes] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-//		if ([[NSUserDefaults standardUserDefaults] objectForKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]] != nil) {
-			[[NSUserDefaults standardUserDefaults] removeObjectForExistingKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]];
-//			[[NSUserDefaults standardUserDefaults] synchronize];
-//		}
-		
+		[[NSUserDefaults standardUserDefaults] removeObjectForExistingKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]];
 		[[NSUserDefaults standardUserDefaults] setValue:@(-1) forKey:[key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix]];
 	}];
 	
@@ -137,8 +131,6 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (void)writeAppInstallTimestamp {
-//	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forKey:kStateMitigatorInstallTimestampKey];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
 	[[NSUserDefaults standardUserDefaults] replaceObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forExistingKey:kStateMitigatorInstallTimestampKey];
 }
 
@@ -185,7 +177,7 @@ static HONStateMitigator *sharedInstance = nil;
 //	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorCurrentViewKey] == nil)
 //		[[NSUserDefaults standardUserDefaults] setValue:@((int)HONStateMitigatorViewStateTypeUnknown) forKey:kStateMitigatorCurrentViewKey];
 	
-	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorCurrentViewKey]);
+	return ((HONStateMitigatorViewStateType)[[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorCurrentViewKey] intValue]);
 //	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorCurrentViewKey withObject:@((int)HONStateMitigatorViewStateTypeUnknown)]);
 }
 
@@ -194,14 +186,13 @@ static HONStateMitigator *sharedInstance = nil;
 //	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorPreviousViewKey] == nil)
 //		[[NSUserDefaults standardUserDefaults] setValue:@((int)HONStateMitigatorViewStateTypeUnknown) forKey:kStateMitigatorPreviousViewKey];
 	
-	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorPreviousViewKey]);
+	return ((HONStateMitigatorViewStateType)[[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorPreviousViewKey] intValue]);
 //	return ((HONStateMitigatorViewStateType)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorPreviousViewKey withObject:@((int)HONStateMitigatorViewStateTypeUnknown)]);
 }
 
 
 - (NSString *)appEntryTypeName {
 	for (NSString *key in [[self _appEntryKeyNamesForTypes] keyEnumerator]) {
-//		if ((HONStateMitigatorAppEntryType)[[self _appEntryKeyNamesForTypes] objectForKey:key] == (HONStateMitigatorAppEntryType)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorAppEntryKey withObject:@((int)HONStateMitigatorAppEntryTypeUnknown)]) {
 		if ((HONStateMitigatorAppEntryType)[[self _appEntryKeyNamesForTypes] objectForKey:key] == (HONStateMitigatorAppEntryType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorAppEntryKey]) {
 			return (key);
 			break;
@@ -238,7 +229,6 @@ static HONStateMitigator *sharedInstance = nil;
 		[[HONStateMitigator sharedInstance] writeAppInstallTimestamp];
 	
 	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorInstallTimestampKey]]);
-//	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorInstallTimestampKey withObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]]]]);
 }
 
 - (NSDate *)appEntryTimestamp {
@@ -246,14 +236,12 @@ static HONStateMitigator *sharedInstance = nil;
 		[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	
 	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorEntryTimestampKey]]);
-//	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorEntryTimestampKey withObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]]]]);
 }
 
 - (NSDate *)appExitTimestamp {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorExitTimestampKey] == nil)
 		[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	
-//	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorExitTimestampKey withObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]]]]);
 	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorExitTimestampKey]]);
 }
 
@@ -261,12 +249,10 @@ static HONStateMitigator *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorTrackingTimestampKey] == nil)
 		[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
-//	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:kStateMitigatorTrackingTimestampKey withObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]]]]);
 	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorTrackingTimestampKey]]);
 }
 
 - (int)totalCounterForType:(HONStateMitigatorTotalType)totalType {
-//	return ((int)[[NSUserDefaults standardUserDefaults] objectByReplacingNullKey:[self _keyForTotalType:totalType] withObject:@(0)]);
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:[self _keyForTotalType:totalType]] intValue]);
 }
 
@@ -291,8 +277,8 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorViewStateNameSettings					: @(HONStateMitigatorViewStateTypeSettings),
 			  kStateMitigatorViewStateNameCompose					: @(HONStateMitigatorViewStateTypeCompose),
 			  kStateMitigatorViewStateNameAnimatedBGs				: @(HONStateMitigatorViewStateTypeAnimatedBGs),
-			  kStateMitigatorViewStateNameStickerStore				: @(HONStateMitigatorViewStateTypeStickerStore),
-			  kStateMitigatorViewStateNameStickerStoreDetails		: @(HONStateMitigatorViewStateTypeStickerStoreDetails),
+			  kStateMitigatorViewStateNameStoreProducts				: @(HONStateMitigatorViewStateTypeStoreProducts),
+			  kStateMitigatorViewStateNameStoreProductDetails		: @(HONStateMitigatorViewStateTypeStoreProductDetails),
 			  kStateMitigatorViewStateNameComposeSubmit				: @(HONStateMitigatorViewStateTypeComposeSubmit),
 			  kStateMitigatorViewStateNameSearchUsername			: @(HONStateMitigatorViewStateTypeSearchUsername),
 			  kStateMitigatorViewStateNameSearchContact				: @(HONStateMitigatorViewStateTypeSearchContact),
@@ -303,36 +289,36 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (NSDictionary *)_totalKeyPrefixesForTypes {
-	return (@{kStateMitigatorTotalCounterNameUnknown				: @(HONStateMitigatorTotalTypeUnknown),
-			  kStateMitigatorTotalCounterNameBoot					: @(HONStateMitigatorTotalTypeBoot),
-			  kStateMitigatorTotalCounterNameExit					: @(HONStateMitigatorTotalTypeExit),
-			  kStateMitigatorTotalCounterNameResume					: @(HONStateMitigatorTotalTypeResume),
-			  kStateMitigatorTotalCounterNameBackground				: @(HONStateMitigatorTotalTypeBackground),
-			  kStateMitigatorTotalCounterNameRegistration			: @(HONStateMitigatorTotalTypeRegistration),
-			  kStateMitigatorTotalCounterNamePINEntry				: @(HONStateMitigatorTotalTypePINEntry),
-			  kStateMitigatorTotalCounterNameFriendsTab				: @(HONStateMitigatorTotalTypeFriendsTab),
-			  kStateMitigatorTotalCounterNameFriendsTabRefresh		: @(HONStateMitigatorTotalTypeFriendsTabRefresh),
-			  kStateMitigatorTotalCounterNameSettingsTab			: @(HONStateMitigatorTotalTypeSettingsTab),
-			  kStateMitigatorTotalCounterNameTimeline				: @(HONStateMitigatorTotalTypeTimeline),
-			  kStateMitigatorTotalCounterNameTimelineRefresh		: @(HONStateMitigatorTotalTypeTimelineRefresh),
-			  kStateMitigatorTotalCounterNameReply					: @(HONStateMitigatorTotalTypeReply),
-			  kStateMitigatorTotalCounterNameCompose				: @(HONStateMitigatorTotalTypeCompose),
-			  kStateMitigatorTotalCounterNameAnimatedBGs			: @(HONStateMitigatorTotalTypeAnimatedBGs),
-			  kStateMitigatorTotalCounterNameAnimatedBGsRefresh		: @(HONStateMitigatorTotalTypeAnimatedBGsRefresh),
-			  kStateMitigatorTotalCounterNameStickerStore			: @(HONStateMitigatorTotalTypeStickerStore),
-			  kStateMitigatorTotalCounterNameStickerStoreRefresh	: @(HONStateMitigatorTotalTypeStickerStoreRefresh),
-			  kStateMitigatorTotalCounterNameStickerStoreDetails	: @(HONStateMitigatorTotalTypeStickerStoreDetails),
-			  kStateMitigatorTotalCounterNameStickerStoreDetailsRefresh	: @(HONStateMitigatorTotalTypeStickerStoreDetailsRefresh),
-			  kStateMitigatorTotalCounterNameComposeSubmit			: @(HONStateMitigatorTotalTypeComposeSubmit),
-			  kStateMitigatorTotalCounterNameComposeSubmitRefresh	: @(HONStateMitigatorTotalTypeComposeSubmitRefresh),
-			  kStateMitigatorTotalCounterNameSearchUsername			: @(HONStateMitigatorTotalTypeSearchUsername),
-			  kStateMitigatorTotalCounterNameSearchContacts			: @(HONStateMitigatorTotalTypeSearchContacts),
-			  kStateMitigatorTotalCounterNameSupport				: @(HONStateMitigatorTotalTypeSupport),
-			  kStateMitigatorTotalCounterNameLegal					: @(HONStateMitigatorTotalTypeLegal),
-			  kStateMitigatorTotalCounterNameNetworkStatus			: @(HONStateMitigatorTotalTypeNetworkStatus),
-			  kStateMitigatorTotalCounterNameNetworkStatusRefresh	: @(HONStateMitigatorTotalTypeNetworkStatusRefresh),
-			  kStateMitigatorTotalCounterNameShare					: @(HONStateMitigatorTotalTypeShare),
-			  kStateMitigatorTotalCounterNameTrackingCalls			: @(HONStateMitigatorTotalTypeTrackingCalls)});
+	return (@{kStateMitigatorTotalCounterUnknown					: @(HONStateMitigatorTotalTypeUnknown),
+			  kStateMitigatorTotalCounterBoot						: @(HONStateMitigatorTotalTypeBoot),
+			  kStateMitigatorTotalCounterExit						: @(HONStateMitigatorTotalTypeExit),
+			  kStateMitigatorTotalCounterResume						: @(HONStateMitigatorTotalTypeResume),
+			  kStateMitigatorTotalCounterBackground					: @(HONStateMitigatorTotalTypeBackground),
+			  kStateMitigatorTotalCounterRegistration				: @(HONStateMitigatorTotalTypeRegistration),
+			  kStateMitigatorTotalCounterPINEntry					: @(HONStateMitigatorTotalTypePINEntry),
+			  kStateMitigatorTotalCounterFriendsTab					: @(HONStateMitigatorTotalTypeFriendsTab),
+			  kStateMitigatorTotalCounterFriendsTabRefresh			: @(HONStateMitigatorTotalTypeFriendsTabRefresh),
+			  kStateMitigatorTotalCounterSettingsTab				: @(HONStateMitigatorTotalTypeSettingsTab),
+			  kStateMitigatorTotalCounterTimeline					: @(HONStateMitigatorTotalTypeTimeline),
+			  kStateMitigatorTotalCounterTimelineRefresh			: @(HONStateMitigatorTotalTypeTimelineRefresh),
+			  kStateMitigatorTotalCounterReply						: @(HONStateMitigatorTotalTypeReply),
+			  kStateMitigatorTotalCounterCompose					: @(HONStateMitigatorTotalTypeCompose),
+			  kStateMitigatorTotalCounterAnimatedBGs				: @(HONStateMitigatorTotalTypeAnimatedBGs),
+			  kStateMitigatorTotalCounterAnimatedBGsRefresh			: @(HONStateMitigatorTotalTypeAnimatedBGsRefresh),
+			  kStateMitigatorTotalCounterStoreProducts				: @(HONStateMitigatorTotalTypeStoreProducts),
+			  kStateMitigatorTotalCounterStoreProductsRefresh		: @(HONStateMitigatorTotalTypeStoreProductsRefresh),
+			  kStateMitigatorTotalCounterStoreProductDetails		: @(HONStateMitigatorTotalTypeStoreProductDetails),
+			  kStateMitigatorTotalCounterStoreProductDetailsRefresh	: @(HONStateMitigatorTotalTypeStoreProductDetailsRefresh),
+			  kStateMitigatorTotalCounterComposeSubmit				: @(HONStateMitigatorTotalTypeComposeSubmit),
+			  kStateMitigatorTotalCounterComposeSubmitRefresh		: @(HONStateMitigatorTotalTypeComposeSubmitRefresh),
+			  kStateMitigatorTotalCounterSearchUsername				: @(HONStateMitigatorTotalTypeSearchUsername),
+			  kStateMitigatorTotalCounterSearchContacts				: @(HONStateMitigatorTotalTypeSearchContacts),
+			  kStateMitigatorTotalCounterSupport					: @(HONStateMitigatorTotalTypeSupport),
+			  kStateMitigatorTotalCounterLegal						: @(HONStateMitigatorTotalTypeLegal),
+			  kStateMitigatorTotalCounterNetworkStatus				: @(HONStateMitigatorTotalTypeNetworkStatus),
+			  kStateMitigatorTotalCounterNetworkStatusRefresh		: @(HONStateMitigatorTotalTypeNetworkStatusRefresh),
+			  kStateMitigatorTotalCounterShare						: @(HONStateMitigatorTotalTypeShare),
+			  kStateMitigatorTotalCounterTrackingCalls				: @(HONStateMitigatorTotalTypeTrackingCalls)});
 }
 
 
@@ -350,7 +336,7 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (NSString *)_keyForTotalType:(HONStateMitigatorTotalType)totalType {
-	__block NSString *keyName = kStateMitigatorTotalCounterNameUnknown;
+	__block NSString *keyName = kStateMitigatorTotalCounterUnknown;
 	[[self _totalKeyPrefixesForTypes] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		if ((HONStateMitigatorTotalType)key == totalType) {
 			keyName = [(NSString *)key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix];

@@ -35,8 +35,8 @@
 
 - (id)initWithStoreProduct:(HONStoreProductVO *)storeProductVO {
 	if ((self = [super init])) {
-		_totalType = HONStateMitigatorTotalTypeStickerStoreDetails;
-		_viewStateType = HONStateMitigatorViewStateTypeStickerStoreDetails;
+		_totalType = HONStateMitigatorTotalTypeStoreProductDetails;
+		_viewStateType = HONStateMitigatorViewStateTypeStoreProductDetails;
 		
 		_storeProductVO = storeProductVO;
 	}
@@ -72,7 +72,7 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Refresh"
 									 withStoreProduct:_storeProductVO];
 	
-	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStickerStoreDetailsRefresh];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStoreProductDetailsRefresh];
 	[self _reloadCollectionViewContents];
 }
 

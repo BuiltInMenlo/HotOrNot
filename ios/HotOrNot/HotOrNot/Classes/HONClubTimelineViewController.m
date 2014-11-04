@@ -253,13 +253,18 @@
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
+	if (_clubVO != nil) {
+		_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
+		[_headerView setTitle:_clubPhotoVO.username];
+		
+		if (_index > 0) {
+			_index = MIN(MAX(0, _index), [_clubPhotos count] - 1);
+			[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+		}
+	}
+	
 	if (_clubVO == nil && _clubID > 0)
 		[self _retrieveClub];
-	
-	if (_index > 0) {
-		_index = MIN(MAX(0, _index), [_clubPhotos count] - 1);
-		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-	}
 }
 
 - (void)viewDidLoad {

@@ -30,8 +30,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_totalType = HONStateMitigatorTotalTypeStickerStore;
-		_viewStateType = HONStateMitigatorViewStateTypeStickerStore;
+		_totalType = HONStateMitigatorTotalTypeStoreProducts;
+		_viewStateType = HONStateMitigatorViewStateTypeStoreProducts;
 	}
 	
 	return (self);
@@ -80,7 +80,7 @@
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Refresh"];
-	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStickerStoreRefresh];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStoreProductsRefresh];
 	
 	[self _reloadTableViewContents];
 }

@@ -67,8 +67,8 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
 		}];
 		
-		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+//		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+//		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
 		if (!_hasCachedAllStickers) {
 			_downloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -81,12 +81,10 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 			[_downloadButton setTitle:@"Download stickers" forState:(UIControlStateNormal&UIControlStateHighlighted)];
 			[_downloadButton addTarget:self action:@selector(_goDownloadStickers) forControlEvents:UIControlEventTouchUpInside];
 			[self addSubview:_downloadButton];
-		}
 		
-		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 165.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
-		_paginationView.hidden = YES;
-		[_paginationView updateToPage:0];
-		[self addSubview:_paginationView];
+		} else {
+			
+		}
 	}
 	
 	return (self);
@@ -115,6 +113,17 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 			[_downloadButton removeFromSuperview];
 			_downloadButton = nil;
 		}
+		
+		if (_activityIndicatorView == nil) {
+			_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+			_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 23.0);
+			[self addSubview:_activityIndicatorView];
+		}
+		
+		if (![_activityIndicatorView isAnimating])
+			[_activityIndicatorView startAnimating];
+		
+		[self _finishedCachingStickers];
 	}
 }
 
@@ -153,7 +162,6 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 }
 
 - (void)cacheStickerContentInRange:(NSRange)range {
-//	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:0.10 forView:_downloadButton];
 	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineTransformView:_downloadButton byPercentage:0.10];
 	[UIView animateWithDuration:0.250 delay:0.000
 		 usingSpringWithDamping:0.925 initialSpringVelocity:0.0625
@@ -191,13 +199,13 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 			
 			_hasCachedAllStickers = (++cnt == range.length);
 			if (_hasCachedAllStickers)
-				[self _finishCachingStickers];
+				[self _finishedCachingStickers];
 		};
 		
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			_hasCachedAllStickers = (++cnt == range.length);
 			if (_hasCachedAllStickers)
-				[self _finishCachingStickers];
+				[self _finishedCachingStickers];
 		};
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:vo.largeImageURL]
@@ -214,13 +222,26 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 
 
 #pragma mark - Data Handling
-- (void)_finishCachingStickers {
+- (void)_finishedCachingStickers {
 	if (_activityIndicatorView != nil) {
 		[_activityIndicatorView removeFromSuperview];
 		if ([_activityIndicatorView isAnimating])
 			[_activityIndicatorView stopAnimating];
 		_activityIndicatorView = nil;
 	}
+	
+	_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+	_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+	
+	if (_paginationView != nil) {
+		[_paginationView removeFromSuperview];
+		_paginationView = nil;
+	}
+	
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 165.0) withTotalPages:_totalPages usingDiameter:4.0 andPadding:6.0];
+	[_paginationView updateToPage:0];
+	[self addSubview:_paginationView];
+	
 	
 	[self _buildGrid];
 }
@@ -236,7 +257,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 - (void)_buildGrid {
 	NSLog(@"\t—//]> [%@ _buildGrid] (%d)/(%d)", self.class, _totalPages, [_availableEmotions count]);
 	
-	_paginationView.hidden = NO;
 	
 //	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
 	
