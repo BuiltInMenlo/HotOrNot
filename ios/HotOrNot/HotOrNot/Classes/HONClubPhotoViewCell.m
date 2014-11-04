@@ -164,14 +164,14 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 370.0, 150.0, 30.0)];
 	participantsLabel.backgroundColor = [UIColor clearColor];
 	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	participantsLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	participantsLabel.textColor = [UIColor blackColor];
 	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
 	[self.contentView addSubview:participantsLabel];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 370.0, 150.0, 30.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	timeLabel.textColor = [UIColor blackColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
 	[self.contentView addSubview:timeLabel];

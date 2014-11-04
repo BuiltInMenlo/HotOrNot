@@ -9,7 +9,7 @@
 #import "NSDictionary+Replacements.h"
 
 @implementation NSMutableDictionary (Replacements)
-- (void)defineObject:(id)object UnknownKey:(NSString *)key {
+- (void)defineObject:(id)object forUnknownKey:(NSString *)key {
 	if ([self objectForKey:key] == nil)
 		[self setObject:object forNonExistingKey:key];
 	

@@ -87,6 +87,7 @@
 "Register" = "Register";
 //"firstrun_next" = "Avançar";
 "header_friends" = "Friends";
+"header_home" = "Home";
 "alert_member" = "You are already a member of %@!";
 "header_news" = "News";
 "header_clubs" = "Clubs";

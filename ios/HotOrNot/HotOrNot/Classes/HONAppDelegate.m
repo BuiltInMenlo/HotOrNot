@@ -1038,6 +1038,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								   @"votes"				: @[],
 								   @"local_challenges"	: @[],
 								   @"upvotes"			: @[],
+								   @"purchases"			: @[],
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
 	for (NSString *key in [userDefaults allKeys]) {

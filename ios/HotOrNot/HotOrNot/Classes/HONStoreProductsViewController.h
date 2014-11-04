@@ -10,6 +10,12 @@
 
 #import "HONViewController.h"
 
-@interface HONStoreProductsViewController : HONViewController <SKProductsRequestDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@class HONStoreProductsViewController;
+@protocol HONStoreProductsViewControllerDelegate <NSObject>
+- (void)storeProductsViewController:(HONStoreProductsViewController *)storeProductsViewController didDownloadProduct:(HONStoreProductVO *)storeProductVO;
+- (void)storeProductsViewController:(HONStoreProductsViewController *)storeProductsViewController didPurchaseProduct:(HONStoreProductVO *)storeProductVO;
+@end
 
+@interface HONStoreProductsViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
+@property (nonatomic, assign) id <HONStoreProductsViewControllerDelegate> delegate;
 @end

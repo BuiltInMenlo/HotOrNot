@@ -88,6 +88,7 @@
 "firstrun_next" = "Avançar";
 "Search for friends" = "Procurar amigos";
 "header_friends" = "Amigos";
+"header_home" = "Home";
 "alert_member" = "You are already a member of %@!";
 "header_news" = "Novidades";
 "header_clubs" = "Clubes";

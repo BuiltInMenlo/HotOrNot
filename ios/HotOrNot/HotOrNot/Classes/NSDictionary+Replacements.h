@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface NSMutableDictionary (Replacements)
-- (void)defineObject:(id)object UnknownKey:(NSString *)key;
+- (void)defineObject:(id)object forUnknownKey:(NSString *)key;
 - (void)removeObjectForExistingKey:(NSString *)key;
 - (void)replaceObject:(id)object forExistingKey:(NSString *)key;
 - (void)setObject:(id)object forNonExistingKey:(NSString *)key;

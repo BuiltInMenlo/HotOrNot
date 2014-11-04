@@ -22,10 +22,13 @@
 
 @interface HONStickerButtonsPickerView : UIView <UIScrollViewDelegate>
 - (id)initWithFrame:(CGRect)frame asGroupIndex:(int)stickerGroupIndex;
+- (void)appendPurchasedStickersWithContentGroupID:(NSString *)contentGroupID;
 - (void)cacheAllStickerContent;
 - (void)cacheStickerContentInRange:(NSRange)range;
 - (void)disablePagesStartingAt:(int)page;
 - (void)scrollToPage:(int)page;
+- (void)scrollToFirstPage;
+- (void)scrollToLastPage;
 
 @property (nonatomic, assign) int stickerGroupIndex;
 @property (nonatomic, assign) id <HONStickerButtonsPickerViewDelegate> delegate;

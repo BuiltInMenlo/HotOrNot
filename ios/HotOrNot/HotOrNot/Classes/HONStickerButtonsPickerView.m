@@ -102,12 +102,11 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
-	NSLog(@"willMoveToSuperview:newSuperview:[%@]", newSuperview);
+//	NSLog(@"willMoveToSuperview:newSuperview:[%@]", newSuperview);
 	[super willMoveToSuperview:newSuperview];
 }
 
 - (void)didMoveToSuperview {
-	NSLog(@"didMoveToSuperview");
 	[super didMoveToSuperview];
 	
 	if (_hasCachedAllStickers) {
@@ -128,9 +127,29 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 	}
 }
 
+- (void)scrollToFirstPage {
+	[self scrollToPage:0];
+}
+
+- (void)scrollToLastPage {
+	[self scrollToPage:_totalPages - 1];
+}
+
 - (void)scrollToPage:(int)page {
 	[_scrollView scrollRectToVisible:CGRectMake(page * _scrollView.frame.size.width, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height) animated:[[HONAnimationOverseer sharedInstance] isScrollingAnimationEnabledForScrollView:self]];
 	[_paginationView updateToPage:page];
+}
+
+- (void)appendPurchasedStickersWithContentGroupID:(NSString *)contentGroupID {
+	int loc = [_availableEmotions count] - 1;
+	[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:(NSDictionary *)obj];
+		if ([vo.contentGroupID isEqualToString:contentGroupID]) {
+			[_availableEmotions addObject:vo];
+		}
+	}];
+	
+	[self cacheStickerContentInRange:NSMakeRange(loc, [_availableEmotions count] - loc)];
 }
 
 - (void)cacheStickerContentInRange:(NSRange)range {
@@ -150,10 +169,11 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 						 }
 					 }];
 	
-	if (_activityIndicatorView == nil)
+	if (_activityIndicatorView == nil) {
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-	_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 23.0);
-	[self addSubview:_activityIndicatorView];
+		_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 23.0);
+		[self addSubview:_activityIndicatorView];
+	}
 	
 	if (![_activityIndicatorView isAnimating])
 		[_activityIndicatorView startAnimating];
@@ -161,35 +181,31 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 	//NSLocalizedString(@"hud_loading", @"Loading…");
 	
 	__block int cnt = 0;
-	__block int ind = 0;
-	for (HONEmotionVO *vo in _availableEmotions) {
-		if (ind >= range.location) {
-			UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-				imageView.image = image;
-				
-				_hasCachedAllStickers = (++cnt == range.length);
-				if (_hasCachedAllStickers)
-					[self _finishCachingStickers];
-			};
-			
-			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-				_hasCachedAllStickers = (++cnt == range.length);
-				if (_hasCachedAllStickers)
-					[self _finishCachingStickers];
-			};
-			
-			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:vo.largeImageURL]
-															   cachePolicy:kOrthodoxURLCachePolicy
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							 placeholderImage:nil
-									  success:imageSuccessBlock
-									  failure:imageFailureBlock];
-		}
+	[_availableEmotions enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:range] options:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONEmotionVO *vo = (HONEmotionVO *)obj;
 		
-		if (++ind >= range.location + range.length)
-			break;
-	}
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			imageView.image = image;
+			
+			_hasCachedAllStickers = (++cnt == range.length);
+			if (_hasCachedAllStickers)
+				[self _finishCachingStickers];
+		};
+		
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			_hasCachedAllStickers = (++cnt == range.length);
+			if (_hasCachedAllStickers)
+				[self _finishCachingStickers];
+		};
+		
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:vo.largeImageURL]
+														   cachePolicy:kOrthodoxURLCachePolicy
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:imageSuccessBlock
+								  failure:imageFailureBlock];
+	}];
 }
 - (void)cacheAllStickerContent {
 	[self cacheStickerContentInRange:NSMakeRange(0, [_availableEmotions count])];

@@ -9,6 +9,7 @@
 #import "HONCollectionViewCell.h"
 
 @implementation HONCollectionViewCell
+@synthesize indexPath = _indexPath;
 @synthesize delegate = _delegate;
 
 + (NSString *)cellReuseIdentifier {
@@ -21,6 +22,12 @@
 	}
 	
 	return (self);
+}
+
+
+#pragma mark - Public APIs
+- (void)setIndexPath:(NSIndexPath *)indexPath {
+	_indexPath = indexPath;
 }
 
 

@@ -8,13 +8,13 @@
 
 #import "NSString+DataTypes.h"
 
-#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONAnimatedBGsViewController.h"
 #import "HONAnimatedBGViewFlowLayout.h"
 #import "HONAnimatedBGCollectionViewCell.h"
 #import "HONCollectionView.h"
+#import "HONRefreshControl.h"
 #import "HONHeaderView.h"
 #import "HONEmotionVO.h"
 

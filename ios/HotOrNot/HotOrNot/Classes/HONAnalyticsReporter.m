@@ -129,9 +129,10 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForStoreProduct:(HONStoreProductVO *)vo {
-	return (@{@"product"	: @{@"id"		: vo.productID,
-								@"name"		: vo.productName,
-								@"price"	: [@"" stringFromFloat:vo.price]}});
+	return (@{@"product"	: @{@"id"			: vo.productID,
+								@"name"			: vo.productName,
+								@"price"		: [@"" stringFromFloat:vo.price],
+								@"purchased"	: [@"" stringFromBOOL:vo.isPurchased]}});
 }
 
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
@@ -164,7 +165,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	[eventName addEntriesFromDictionary:@{@"action"	: [[event componentsSeparatedByString:@" - "] lastObject]}];
 	
 	
-	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", eventCollection], eventName);
+//	NSLog(@"TRACK EVENT:[%@] (%@)", [kKeenIOEventCollection stringByAppendingFormat:@" : %@", eventCollection], eventName);
 	
 	
 	NSError *error = nil;

@@ -262,6 +262,7 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	self.view.hidden = YES;
 	self.edgesForExtendedLayout = UIRectEdgeNone;
 	
 	_seenClubs = [NSMutableArray array];
@@ -291,18 +292,11 @@ static NSString * const kCamera = @"camera";
 	_accessContactsBGView.viewType = HONTableViewBGViewTypeCreateStatusUpdate;
 	[_tableView addSubview:_emptyClubsBGView];
 	
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_friends", @"Friends")];
 	[self.view addSubview:_headerView];
 	
-	self.view.hidden = YES;
-	
-	HONComposeButtonView *composeButtonView = [[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)];
-	[composeButtonView setFrame:CGRectOffset(composeButtonView.frame, 272.0, 0.0)];
-	
-	[_headerView setTitle:NSLocalizedString(@"header_friends", @"Friends")];
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	[_headerView addButton:composeButtonView];
+	[_headerView addButton:[[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
@@ -394,12 +388,12 @@ static NSString * const kCamera = @"camera";
 		
 		if ([clubVO.submissions count] > 0) {
 			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0];
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerPushSegue:clubTimelineViewController]];
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForPushViewController:clubTimelineViewController]];
 		
 		} else {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:navigationController.presentingViewController] completion:nil];
+			[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:nil];
 		}
 	}
 }

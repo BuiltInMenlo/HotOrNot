@@ -15,5 +15,7 @@
 
 @interface HONCollectionViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
+
+@property (nonatomic, retain) NSIndexPath *indexPath;
 @property (nonatomic, assign) id <HONCollectionViewCellDelegate> delegate;
 @end

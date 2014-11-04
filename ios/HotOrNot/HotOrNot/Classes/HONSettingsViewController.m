@@ -100,7 +100,6 @@
 	[super loadView];
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-//	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
 	[headerView addButton:[[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
@@ -140,7 +139,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:navigationController.presentingViewController] completion:nil];
+	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:nil];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
@@ -151,6 +150,7 @@
 																  delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+	
 	[alertView setTag:HONSettingsAlertTypeNotifications];
 	[alertView show];
 }
@@ -324,7 +324,6 @@
 //	} completion:^(BOOL finished) {
 //	}];
 }
-
 
 
 #pragma mark - MessageCompose Delegates

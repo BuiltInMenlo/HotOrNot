@@ -38,10 +38,10 @@ typedef NS_ENUM(NSUInteger, HONStickerPakType) {
 
 - (void)registerStickerStore;
 - (NSDictionary *)fetchStickerStoreInfo;
-- (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(id result))completion;
+- (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(NSString *result))completion;
 - (NSArray *)retrieveStickerStoreProducts;
 - (void)retrieveAllStickerPakTypesWithDelay:(CGFloat)delay ignoringCache:(BOOL)ignoreCache;
-- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(id result))completion;
+- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(BOOL success))completion;
 - (void)purchaseStickerWithContentID:(NSString *)contentID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate;
 - (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate;
 
@@ -53,8 +53,11 @@ typedef NS_ENUM(NSUInteger, HONStickerPakType) {
 - (BOOL)candyBoxContainsContentGroupForContentGroupID:(NSString *)contentGroupID;
 - (PicoSticker *)stickerFromCandyBoxWithContentID:(NSString *)contentID;
 
-- (NSDictionary *)fetchCoverStickerForContentGroup:(NSString *)contentGroupID;
+- (NSDictionary *)fetchCoverStickerForContentGroupID:(NSString *)contentGroupID;
 - (NSArray *)fetchStickersForGroupIndex:(int)stickerGroupIndex;
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
-- (void)retrieveContentsForContentGroup:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion;
+- (void)retrieveContentsForContentGroupID:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion;
+
+- (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID;
+- (BOOL)isStickerPakPurchasedWithContentGroupID:(NSString *)contentGroupID;
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "NSString+DataTypes.h"
+#import "NSUserDefaults+Replacements.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "NHThreadThis.h"
@@ -123,7 +124,7 @@ static HONStickerAssistant *sharedInstance = nil;
 }
 
 
-- (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(id result))completion {
+- (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(NSString *result))completion {
 //	NSLog(@"--- nameForContentGroupID:[%@] ---", contentGroupID);
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
 	[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
@@ -157,7 +158,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	});
 }
 
-- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(id result))completion {
+- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(BOOL success))completion {
 	NSString *key = (stickerPakType == HONStickerPakTypeSelfieclub) ? kSelfieclubStickerPak : (stickerPakType == HONStickerPakTypeAvatars) ? kAvatarStickerPak : (stickerPakType == HONStickerPakTypeClubCovers) ? kClubCoverStickerPak : (stickerPakType == HONStickerPakTypeFree) ? kFreeStickerPak : (stickerPakType == HONStickerPakTypeInviteBonus) ? kInviteStickerPak : (stickerPakType == HONStickerPakTypePaid) ? kPaidStickerPak : @"all";
 	NSLog(@"retrieveStickersWithPakType:[%@] ignoringCache:[%@]", key, [@"" stringFromBOOL:ignoreCache]);
 	
@@ -173,7 +174,7 @@ static HONStickerAssistant *sharedInstance = nil;
 			[[NHThreadThis backgroundThis] doThis:^{
 				NSMutableArray *stickers = [NSMutableArray array];
 				for (PCContent *content in contentGroup.contents) {
-					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
+//					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
 					[stickers addObject:@{@"id"		: content.content_id,
 										  @"cg_id"	: contentGroupID,
 										  @"name"	: content.name,
@@ -195,10 +196,13 @@ static HONStickerAssistant *sharedInstance = nil;
 			}];
 		}];
 	}
+	
+	if (completion)
+		completion(YES);
 }
 
 
-- (NSDictionary *)fetchCoverStickerForContentGroup:(NSString *)contentGroupID {
+- (NSDictionary *)fetchCoverStickerForContentGroupID:(NSString *)contentGroupID {
 	for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
 		if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 			return (dict);
@@ -219,7 +223,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	if (stickerGroupIndex == 0) {
 		contentGroupID = [[pakTypeStickers objectForKey:kStickersGroup] objectForKey:@"content_group"];
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
-			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
+//			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
 			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
 				break;
@@ -229,7 +233,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	} else if (stickerGroupIndex == 1) {
 		contentGroupID = [[pakTypeStickers objectForKey:kFacesGroup] objectForKey:@"content_group"];
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
-			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
+//			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
 			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
 				break;
@@ -239,7 +243,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	} else if (stickerGroupIndex == 2) {
 		contentGroupID = [[pakTypeStickers objectForKey:kAnimalsGroup] objectForKey:@"content_group"];
 		for (NSDictionary *dict in allPakTypeStickers) {
-			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
+//			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
 			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
 				break;
@@ -249,7 +253,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	} else if (stickerGroupIndex == 3) {
 		contentGroupID = [[pakTypeStickers objectForKey:kObjectsGroup] objectForKey:@"content_group"];
 		for (NSDictionary *dict in allPakTypeStickers) {
-			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
+//			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
 			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
 				break;
@@ -259,7 +263,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	} else if (stickerGroupIndex == 4) {
 		contentGroupID = [[pakTypeStickers objectForKey:kOtherGroup] objectForKey:@"content_group"];
 		for (NSDictionary *dict in allPakTypeStickers) {
-			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
+//			NSLog(@"CONTENT GROUP:[%@]-=-[%@]", contentGroupID, [dict objectForKey:@"cg_id"]);
 			if ([[dict objectForKey:@"cg_id"] isEqualToString:contentGroupID]) {
 				[stickers addObjectsFromArray:[contentGroups objectForKey:contentGroupID]];
 				break;
@@ -322,17 +326,23 @@ static HONStickerAssistant *sharedInstance = nil;
 	return ([stickers copy]);
 }
 
-- (void)retrieveContentsForContentGroup:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion {
+- (void)retrieveContentsForContentGroupID:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion {
 	[[[NHThreadThis backgroundThis] groupThese] doThisAndWait:^{
 		PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
 		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
 			NSMutableArray *stickers = [NSMutableArray array];
 			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
 			[contentGroup.contents enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				NSLog(@"PCContent(%d):[%@]", idx, obj);
+				PCContent *content = (PCContent *)obj;
+//				NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
 				
-				if (![(PCContent *)obj isEqual:[NSNull null]])
-					[stickers addObject:(PCContent *)obj];
+				if (![(PCContent *)obj isEqual:[NSNull null]]) {
+					[stickers addObject:@{@"id"		: content.content_id,
+										  @"cg_id"	: contentGroupID,
+										  @"name"	: content.name,
+										  @"price"	: content.price,
+										  @"img"	: content.large_image}];
+				}
 			}];
 			
 			if (completion)
@@ -368,10 +378,30 @@ static HONStickerAssistant *sharedInstance = nil;
 	}
 }
 
+
 - (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate {
 	PCCandyStorePurchaseController *candyStorePurchaseController = [[PCCandyStorePurchaseController alloc] init];
 	candyStorePurchaseController.delegate = delegate;
 	[candyStorePurchaseController purchaseStickerPackWithId:contentGroupID];
+}
+
+- (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID {
+	NSMutableArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"purchases"] mutableCopy];
+	if (![contentGroupIDs containsObject:contentGroupID])
+		[contentGroupIDs addObject:contentGroupID];
+	
+	[[NSUserDefaults standardUserDefaults] replaceObject:[contentGroupIDs copy] forExistingKey:@"purchases"];
+}
+
+- (BOOL)isStickerPakPurchasedWithContentGroupID:(NSString *)contentGroupID {
+	__block BOOL isPurchased = NO;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"purchases"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSString *cgID = (NSString *)obj;
+		isPurchased = ([cgID isEqualToString:contentGroupID]);
+		*stop = isPurchased;
+	}];
+	
+	return (isPurchased);
 }
 
 - (NSDictionary *)fetchAllCandyBoxContents {

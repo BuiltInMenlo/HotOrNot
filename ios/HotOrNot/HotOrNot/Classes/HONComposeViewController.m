@@ -34,7 +34,7 @@
 #import "HONStickerSummaryView.h"
 #import "HONStickerButtonsPickerView.h"
 
-@interface HONComposeViewController () <HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, AmazonServiceRequestDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONComposeViewController () <AmazonServiceRequestDelegate, HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, HONStoreProductsViewControllerDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -46,6 +46,7 @@
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONComposeDisplayView *composeDisplayView;
 @property (nonatomic, strong) HONStickerSummaryView *stickerSummaryView;
+@property (nonatomic, strong) HONStickerButtonsPickerView *stickerButtonsPickerView;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSMutableDictionary *submitParams;
@@ -419,11 +420,22 @@
 	_stickerSummaryView.delegate = self;
 	[self.view addSubview:_stickerSummaryView];
 	
-	HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
-	pickerView.delegate = self;
-	[pickerView cacheAllStickerContent];
-	[_emotionsPickerHolderView addSubview:pickerView];
+	_stickerButtonsPickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
+	_stickerButtonsPickerView.delegate = self;
+	[_stickerButtonsPickerView cacheAllStickerContent];
+	[_emotionsPickerHolderView addSubview:_stickerButtonsPickerView];
 	
+	__block NSMutableArray *cgIDs = [NSMutableArray array];
+	[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		NSString *contentGroupID = [dict objectForKey:@"cg_id"];
+		
+		if (![cgIDs containsObject:contentGroupID]) {
+			[cgIDs addObject:contentGroupID];
+			if ([[HONStickerAssistant sharedInstance] isStickerPakPurchasedWithContentGroupID:contentGroupID])
+				[_stickerButtonsPickerView appendPurchasedStickersWithContentGroupID:contentGroupID];
+		}
+	}];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Create"];
 	[self.view addSubview:_headerView];
@@ -454,9 +466,6 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	
-//	if ([_nextViewController isKindOfClass:self.class])
-//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 
@@ -479,57 +488,10 @@
 	UIButton *button = (UIButton *)sender;
 	
 	int groupIndex = button.tag;
-//	if (groupIndex != 4) {
-//		[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//			UIButton *btn = (UIButton *)obj;
-//			[btn setSelected:(btn.tag == groupIndex)];
-//		}];
-//	}
-	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
-									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
+ 									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
 	
-	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		UIButton *btn = (UIButton *)obj;
-		[btn setSelected:(btn.tag == groupIndex)];
-	}];
-	
-	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)obj;
-		
-		if (pickerView.stickerGroupIndex == groupIndex) {
-//			if (pickerView.stickerGroupIndex == 3) {
-//				HONAnimatedBGsViewController *animatedBGsViewController = [[HONAnimatedBGsViewController alloc] init];
-//				animatedBGsViewController.delegate = self;
-//				
-//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:animatedBGsViewController];
-//				[navigationController setNavigationBarHidden:YES];
-//				[self presentViewController:navigationController animated:YES completion:nil];
-//				
-//			} else if (pickerView.stickerGroupIndex == 4) {
-//				HONStoreProductsViewController *storeProductsViewController = [[HONStoreProductsViewController alloc] init];
-//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:storeProductsViewController];
-//				[navigationController setNavigationBarHidden:YES];
-//				[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:storeProductsViewController] completion:nil];
-//				
-//			} else {
-				for (UIView *view in _emotionsPickerHolderView.subviews) {
-					((HONStickerButtonsPickerView *)view).delegate = nil;
-					[view removeFromSuperview];
-				}
-				
-				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 0.0);
-				pickerView.delegate = self;
-				[_emotionsPickerHolderView addSubview:pickerView];
-				[UIView animateWithDuration:0.333 delay:0.000
-					 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
-									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
-									 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 0.0);
-								 } completion:^(BOOL finished) {
-								 }];
-			}
-//		}
-	}];
+	[self _changeToStickerGroupIndex:groupIndex];
 }
 
 - (void)_goDelete {
@@ -603,8 +565,58 @@
 	
 	self.imagePickerController = imagePickerController;
 	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
-//		if (sourceType == UIImagePickerControllerSourceTypeCamera)
-//			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+	}];
+}
+
+- (void)_changeToStickerGroupIndex:(int)groupIndex {
+	if (groupIndex != 4) {
+		if (_stickerButtonsPickerView != nil)
+			_stickerButtonsPickerView = nil;
+		
+		[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			UIButton *btn = (UIButton *)obj;
+			[btn setSelected:(btn.tag == groupIndex)];
+		}];
+	}
+	
+	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)obj;
+		
+		if (pickerView.stickerGroupIndex == groupIndex) {
+//			if (pickerView.stickerGroupIndex == 3) {
+//				HONAnimatedBGsViewController *animatedBGsViewController = [[HONAnimatedBGsViewController alloc] init];
+//				animatedBGsViewController.delegate = self;
+//
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:animatedBGsViewController];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:YES completion:nil];
+//
+			if (pickerView.stickerGroupIndex == 4) {
+				HONStoreProductsViewController *storeProductsViewController = [[HONStoreProductsViewController alloc] init];
+				storeProductsViewController.delegate = self;
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:storeProductsViewController];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:storeProductsViewController] completion:nil];
+				
+			} else {
+				for (UIView *view in _emotionsPickerHolderView.subviews) {
+					((HONStickerButtonsPickerView *)view).delegate = nil;
+					[view removeFromSuperview];
+				}
+				
+				pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 0.0);
+				pickerView.delegate = self;
+				[_emotionsPickerHolderView addSubview:pickerView];
+				
+				_stickerButtonsPickerView = pickerView;
+				[UIView animateWithDuration:0.333 delay:0.000
+					 usingSpringWithDamping:0.750 initialSpringVelocity:0.010
+									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent) animations:^(void) {
+									 pickerView.frame = CGRectOffset(pickerView.frame, 0.0, 0.0);
+								 } completion:^(BOOL finished) {
+								 }];
+			}
+		}
 	}];
 }
 
@@ -656,6 +668,27 @@
 	[self.imagePickerController takePicture];
 }
 
+
+#pragma mark - StoreProductsViewController Delegates
+- (void)storeProductsViewController:(HONStoreProductsViewController *)storeProductsViewController didDownloadProduct:(HONStoreProductVO *)storeProductVO {
+	NSLog(@"[*:*] storeProductsViewController:didDownloadProduct:[%@ - %@]", storeProductVO.productID, storeProductVO.productName);
+	
+	[self _changeToStickerGroupIndex:0];
+	
+	HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
+	[pickerView scrollToLastPage];
+	[pickerView appendPurchasedStickersWithContentGroupID:storeProductVO.contentGroupID];
+}
+
+- (void)storeProductsViewController:(HONStoreProductsViewController *)storeProductsViewController didPurchaseProduct:(HONStoreProductVO *)storeProductVO {
+	NSLog(@"[*:*] storeProductsViewController:didPurchaseProduct:[%@ - %@]", storeProductVO.productID, storeProductVO.productName);
+	
+	[self _changeToStickerGroupIndex:0];
+	
+	HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
+	[pickerView scrollToLastPage];
+	[pickerView appendPurchasedStickersWithContentGroupID:storeProductVO.contentGroupID];
+}
 
 #pragma mark - AnimatedBGsViewController Delegates
 - (void)animatedBGViewController:(HONAnimatedBGsViewController *)viewController didSelectEmotion:(HONEmotionVO *)emotionVO {

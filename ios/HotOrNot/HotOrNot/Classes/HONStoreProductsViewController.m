@@ -8,27 +8,25 @@
 
 #import "NSString+DataTypes.h"
 
-#import "HONRefreshControl.h"
-#import "MBProgressHUD.h"
-
 
 #import "HONStoreProductsViewController.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
+#import "HONRefreshControl.h"
 #import "HONTableView.h"
 #import "HONStoreProductViewCell.h"
 #import "HONStoreProductVO.h"
+#import "HONStoreProductViewController.h"
 
-@interface HONStoreProductsViewController () <HONStoreProductCellDelegate>
+@interface HONStoreProductsViewController () <HONStoreProductViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSMutableArray *storeProducts;
 @property (nonatomic, strong) HONStoreProductVO *storeProductVO;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
-
 @implementation HONStoreProductsViewController
+@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -40,11 +38,6 @@
 }
 
 -(void)dealloc {
-	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONStoreProductViewCell *cell = (HONStoreProductViewCell *)obj;
-		cell.delegate = nil;
-	}];
-	
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
 	
@@ -55,26 +48,50 @@
 #pragma mark - Data Calls
 - (void)_retreiveStoreProducts {
 	_storeProducts = [NSMutableArray array];
-	[[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"CountryCodes" ofType:@"plist"]] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		[_storeProducts addObject:[HONStoreProductVO productWithDictionary:(NSDictionary *)obj]];
-		*stop = idx >= 2;
-	}];
 	
-	[self _didFinishDataRefresh];
+	__block NSMutableArray *names = [NSMutableArray array];
+	[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		[[HONStickerAssistant sharedInstance] nameForContentGroupID:[dict objectForKey:@"cg_id"] completion:^(NSString *result) {
+			
+			__block BOOL isFound = NO;
+			[names enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				isFound = ([(NSString *)obj isEqualToString:result]);
+				*stop = isFound;
+			}];
+			
+			if (!isFound) {
+				[names addObject:result];
+				HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:[[HONStickerAssistant sharedInstance] fetchCoverStickerForContentGroupID:[dict objectForKey:@"cg_id"]]];
+				[_storeProducts addObject:[HONStoreProductVO productWithDictionary:@{@"product_id"	: [dict objectForKey:@"cg_id"],
+																					 @"cg_id"		: [dict objectForKey:@"cg_id"],
+																					 @"name"		: result,
+																					 @"img_url"		: vo.smallImageURL,
+																					 @"price"		: @"0.00",
+																					 @"index"		: @([names count])}]];
+			}
+			
+			[self _didFinishDataRefresh];
+		}];
+	}];
 }
 
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Refresh"];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStickerStoreRefresh];
+	
+	[self _reloadTableViewContents];
+}
+
+- (void)_reloadTableViewContents {
+	_storeProducts = [NSMutableArray array];
+	[_tableView reloadData];
 	[self _retreiveStoreProducts];
 }
 
 - (void)_didFinishDataRefresh {
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 }
@@ -85,12 +102,11 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Store"];
 	[headerView addButton:closeButton];
@@ -106,8 +122,6 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-	
-	[self _retreiveStoreProducts];
 }
 
 - (void)viewDidLoad {
@@ -117,11 +131,18 @@
 //	_panGestureRecognizer.enabled = YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewWillAppear:animated];
+	
+	[self _reloadTableViewContents];
+}
+
 
 #pragma mark - Navigation
-- (void)_goDone {
+- (void)_goClose {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Done"];
-	[self dismissViewControllerAnimated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:self] completion:nil];
+	[self dismissViewControllerAnimated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:self] completion:nil];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -136,12 +157,19 @@
 }
 
 
-#pragma mark - StoreProductCell Delegates
-- (void)storeProductCell:(HONStoreProductViewCell *)cell purchaseStoreItem:(HONStoreProductVO *)storeItemVO {
-	NSLog(@"[*:*] storeProductCell:purchaseStoreItem:[%@])", storeItemVO.dictionary);
+#pragma mark - StoreProductViewController Delegates
+- (void)storeProductViewController:(HONStoreProductViewController *)storeProductViewController didDownloadProduct:(HONStoreProductVO *)storeProductVO {
+	NSLog(@"[*:*] storeProductViewController:didDownloadProduct:[%@ - %@]", storeProductVO.productID, storeProductVO.productName);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Selected Product"
-									 withStoreProduct:storeItemVO];
+	if ([self.delegate respondsToSelector:@selector(storeProductsViewController:didDownloadProduct:)])
+		[self.delegate storeProductsViewController:self didDownloadProduct:storeProductVO];
+}
+
+- (void)storeProductViewController:(HONStoreProductViewController *)storeProductViewController didPurchaseProduct:(HONStoreProductVO *)storeProductVO {
+	NSLog(@"[*:*] storeProductViewController:didPurchaseProduct:[%@ - %@]", storeProductVO.productID, storeProductVO.productName);
+	
+	if ([self.delegate respondsToSelector:@selector(storeProductsViewController:didPurchaseProduct:)])
+		[self.delegate storeProductsViewController:self didPurchaseProduct:storeProductVO];
 }
 
 
@@ -155,7 +183,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:@"Quotes"]);
+	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 101.0)];
+	headerImageView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.90];
+	
+	return (headerImageView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -164,10 +195,9 @@
 	if (cell == nil)
 		cell = [[HONStoreProductViewCell alloc] init];
 	
-	
+	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	[cell setIndexPath:indexPath];
 	cell.storeProductVO = (HONStoreProductVO *)[_storeProducts objectAtIndex:indexPath.row];
-	[cell hideChevron];
-	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
@@ -176,11 +206,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return (74.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);
+	return (101.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -197,9 +227,9 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Selected Product"
 									 withStoreProduct:_storeProductVO];
 	
-	SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"Sticker_Pack_001", nil]];
-	request.delegate = self;
-	[request start];
+	HONStoreProductViewController *storeProductViewController = [[HONStoreProductViewController alloc] initWithStoreProduct:_storeProductVO];
+	storeProductViewController.delegate = self;
+	[self.navigationController pushViewController:storeProductViewController animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -211,30 +241,5 @@
 //	}];
 }
 
-
-#pragma mark - ProductRequest Delegates
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-	NSLog(@"[*:*] productsRequest:(%@) didReceiveResponse:(%@) [*:*]", request.description, response.description);
-	
-	NSArray *skProducts = response.products;
-	SKProduct *product = (SKProduct *)[skProducts firstObject];
-	SKMutablePayment *myPayment = [SKMutablePayment paymentWithProduct:product];
-	[[SKPaymentQueue defaultQueue] addPayment:myPayment];
-}
-
-
-#pragma mark - StoreKitRequest Delegates
-- (void)requestDidFinish:(SKRequest *)request {
-	NSLog(@"[*:*] requestDidFinish:(%@) [*:*]", request.description);
-}
-
-- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"[*:*] productsRequest:(%@) didFailWithError:(%@) [*:*]", request.description, error.description);
-}
-
-
-#pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-}
 
 @end

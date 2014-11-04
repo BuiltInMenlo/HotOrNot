@@ -134,9 +134,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_statusUpdateVO = ([_clubVO.submissions count] == 0) ? [HONClubPhotoVO clubPhotoWithDictionary:[[HONClubAssistant sharedInstance] emptyClubPhotoDictionary]] : (HONClubPhotoVO *)[_clubVO.submissions firstObject];
 	_emotionVOs = [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_statusUpdateVO];
 	
-	NSLog(@"cell.clubVO:[%@]", _clubVO.dictionary);
-	NSLog(@"cell.clubPhotoVO:[%@]", _statusUpdateVO.dictionary);
-	NSLog(@"cell.emotionVOs:[%@]", _emotionVOs);
+//	NSLog(@"cell.clubVO:[%@]", _clubVO.dictionary);
+//	NSLog(@"cell.clubPhotoVO:[%@]", _statusUpdateVO.dictionary);
+//	NSLog(@"cell.emotionVOs:[%@]", _emotionVOs);
 	
 	[super accVisible:NO];
 	

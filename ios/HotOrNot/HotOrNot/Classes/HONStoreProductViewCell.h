@@ -9,14 +9,7 @@
 #import "HONTableViewCell.h"
 #import "HONStoreProductVO.h"
 
-@class HONStoreProductViewCell;
-@protocol HONStoreProductCellDelegate <NSObject>
-- (void)storeProductCell:(HONStoreProductViewCell *)cell purchaseStoreItem:(HONStoreProductVO *)storeItemVO;
-@end
-
 @interface HONStoreProductViewCell : HONTableViewCell
 @property (nonatomic, retain) HONStoreProductVO *storeProductVO;
 @property (nonatomic) BOOL isPurchased;
-@property (nonatomic, assign) id <HONStoreProductCellDelegate> delegate;
-
 @end

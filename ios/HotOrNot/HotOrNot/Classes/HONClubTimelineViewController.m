@@ -313,7 +313,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isAnimationEnabledForViewControllerModalSegue:navigationController.presentingViewController] completion:^(void) {
+	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:^(void) {
 	}];
 }
 

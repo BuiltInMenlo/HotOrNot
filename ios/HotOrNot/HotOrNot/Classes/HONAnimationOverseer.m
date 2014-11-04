@@ -45,19 +45,19 @@ static HONAnimationOverseer *sharedInstance = nil;
 	}
 }
 
-- (BOOL)isAnimationEnabledForViewControllerModalSegue:(UIViewController *)viewController {
+- (BOOL)isSegueAnimationEnabledForModalViewController:(UIViewController *)viewController {
 	if ([viewController isKindOfClass:[HONComposeViewController class]]) {
 		return (NO);
 		
 	} else if ([viewController isKindOfClass:[HONStoreProductsViewController class]]) {
-		return (NO);
+		return (YES);
 		
 	} else {
 		return (YES);
 	}
 }
 
-- (BOOL)isAnimationEnabledForViewControllerPushSegue:(UIViewController *)viewController {
+- (BOOL)isSegueAnimationEnabledForPushViewController:(UIViewController *)viewController {
 	if ([viewController isKindOfClass:[HONClubTimelineViewController class]]) {
 		return (NO);
 		

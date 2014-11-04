@@ -44,6 +44,7 @@ NSString * const kStateMitigatorViewStateNameTimeline					= @"timeline";
 NSString * const kStateMitigatorViewStateNameCompose					= @"compose";
 NSString * const kStateMitigatorViewStateNameAnimatedBGs				= @"animated_bgs";
 NSString * const kStateMitigatorViewStateNameStickerStore				= @"sticker_store";
+NSString * const kStateMitigatorViewStateNameStickerStoreDetails		= @"sticker_store_details";
 NSString * const kStateMitigatorViewStateNameComposeSubmit				= @"compose_submit";
 NSString * const kStateMitigatorViewStateNameSearchUsername				= @"search_username";
 NSString * const kStateMitigatorViewStateNameSearchContact				= @"search_contact";
@@ -73,6 +74,8 @@ NSString * const kStateMitigatorTotalCounterNameAnimatedBGs					= @"animatedBGs"
 NSString * const kStateMitigatorTotalCounterNameAnimatedBGsRefresh			= @"animatedBGsRefresh";
 NSString * const kStateMitigatorTotalCounterNameStickerStore				= @"stickerStore";
 NSString * const kStateMitigatorTotalCounterNameStickerStoreRefresh			= @"stickerStoreRefresh";
+NSString * const kStateMitigatorTotalCounterNameStickerStoreDetails			= @"stickerStoreDetails";
+NSString * const kStateMitigatorTotalCounterNameStickerStoreDetailsRefresh	= @"stickerStoreDetailsRefresh";
 NSString * const kStateMitigatorTotalCounterNameComposeSubmit				= @"composeSubmit";
 NSString * const kStateMitigatorTotalCounterNameComposeSubmitRefresh		= @"composeSubmitRefresh";
 NSString * const kStateMitigatorTotalCounterNameSearchUsername				= @"searchUsername";
@@ -289,6 +292,7 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorViewStateNameCompose					: @(HONStateMitigatorViewStateTypeCompose),
 			  kStateMitigatorViewStateNameAnimatedBGs				: @(HONStateMitigatorViewStateTypeAnimatedBGs),
 			  kStateMitigatorViewStateNameStickerStore				: @(HONStateMitigatorViewStateTypeStickerStore),
+			  kStateMitigatorViewStateNameStickerStoreDetails		: @(HONStateMitigatorViewStateTypeStickerStoreDetails),
 			  kStateMitigatorViewStateNameComposeSubmit				: @(HONStateMitigatorViewStateTypeComposeSubmit),
 			  kStateMitigatorViewStateNameSearchUsername			: @(HONStateMitigatorViewStateTypeSearchUsername),
 			  kStateMitigatorViewStateNameSearchContact				: @(HONStateMitigatorViewStateTypeSearchContact),
@@ -317,6 +321,8 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorTotalCounterNameAnimatedBGsRefresh		: @(HONStateMitigatorTotalTypeAnimatedBGsRefresh),
 			  kStateMitigatorTotalCounterNameStickerStore			: @(HONStateMitigatorTotalTypeStickerStore),
 			  kStateMitigatorTotalCounterNameStickerStoreRefresh	: @(HONStateMitigatorTotalTypeStickerStoreRefresh),
+			  kStateMitigatorTotalCounterNameStickerStoreDetails	: @(HONStateMitigatorTotalTypeStickerStoreDetails),
+			  kStateMitigatorTotalCounterNameStickerStoreDetailsRefresh	: @(HONStateMitigatorTotalTypeStickerStoreDetailsRefresh),
 			  kStateMitigatorTotalCounterNameComposeSubmit			: @(HONStateMitigatorTotalTypeComposeSubmit),
 			  kStateMitigatorTotalCounterNameComposeSubmitRefresh	: @(HONStateMitigatorTotalTypeComposeSubmitRefresh),
 			  kStateMitigatorTotalCounterNameSearchUsername			: @(HONStateMitigatorTotalTypeSearchUsername),

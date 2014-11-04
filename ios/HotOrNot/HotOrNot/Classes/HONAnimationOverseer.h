@@ -14,7 +14,7 @@
 + (HONAnimationOverseer *)sharedInstance;
 
 - (BOOL)isScrollingAnimationEnabledForScrollView:(id)scrollView;
-- (BOOL)isAnimationEnabledForViewControllerModalSegue:(UIViewController *)viewController;
-- (BOOL)isAnimationEnabledForViewControllerPushSegue:(UIViewController *)viewController;
+- (BOOL)isSegueAnimationEnabledForModalViewController:(UIViewController *)viewController;
+- (BOOL)isSegueAnimationEnabledForPushViewController:(UIViewController *)viewController;
 
 @end
