@@ -14,7 +14,7 @@
 
 #import "HONComposeDisplayView.h"
 #import "HONImageLoadingView.h"
-#import "HONTableViewBGView.h"
+#import "HONLineButtonView.h"
 
 const CGSize kEmotionSize = {188.0f, 188.0f};
 const CGSize kEmotionPaddingSize = {64.0f, 0.0f};
@@ -48,7 +48,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) NSTimer *tintTimer;
-@property (nonatomic, strong) HONTableViewBGView *bgView;
+@property (nonatomic, strong) HONLineButtonView *bgView;
 @property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
@@ -75,7 +75,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]];
 		[self addSubview:_previewGradientImageView];
 		
-		_bgView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
+		_bgView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
 		[_bgView setYOffset:-144.0];
 		_bgView.hidden = YES;
 		[self addSubview:_bgView];
@@ -170,7 +170,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 
 - (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)animatedImageView {
 	FLAnimatedImageView *animImageView = [[FLAnimatedImageView alloc] init];
-	animImageView.frame = CGRectMake(0.0, 0.0, 320.0, 320.0);
+	animImageView.frame = CGRectMakeFromSize(CGSizeMake(50.0, 50.0));
 	animImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFill; // stretches w/ ratio -- UIViewContentModeScaleAspectFit; // centers in frame
 	animImageView.clipsToBounds = YES;
 	animImageView.animatedImage = animatedImageView.animatedImage;
@@ -234,12 +234,10 @@ const CGFloat kEmotionOutroForce = 0.250;
 	_loaderHolderView.frame = _emotionHolderView.frame;
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * _emotionSpacingSize.width, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height)];
-	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationToSize:CGSizeMake(kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height) forView:imageView];
-	
 	imageView.alpha = 0.0;
 	imageView.userInteractionEnabled = YES;
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
-	imageView.transform = transform;
+	imageView.transform = [[HONViewDispensor sharedInstance] affineTransformView:imageView toSize:kEmotionIntroFrame.size];
 	[imageView setTag:[_emotions count]];
 	[_emotionHolderView addSubview:imageView];
 	
@@ -254,7 +252,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 //	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 		_animatedImageView = [[FLAnimatedImageView alloc] init];
-		_animatedImageView.frame = CGRectMake(0.0, 0.0, kEmotionNormalFrame.size.width, kEmotionNormalFrame.size.height);
+		_animatedImageView.frame =CGRectMakeFromSize(kEmotionNormalFrame.size);
 		_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
 		_animatedImageView.clipsToBounds = YES;
 		_animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
@@ -267,7 +265,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 			 
 							 animations:^(void) {
 								 imageView.alpha = 1.0;
-								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+								 imageView.transform = CGAffineTransformMakeNormal();//(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 							 } completion:^(BOOL finished) {
 								 [self _updateDisplayWithCompletion:nil];
 								 
@@ -289,7 +287,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 			 
 							 animations:^(void) {
 								 imageView.alpha = 1.0;
-								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+								 imageView.transform = CGAffineTransformMakeNormal();//(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 							 } completion:^(BOOL finished) {
 								 [self _updateDisplayWithCompletion:nil];
 								 
@@ -333,7 +331,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 //		 
 //						 animations:^(void) {
 //							 picoSticker.alpha = 1.0;
-//							 picoSticker.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+//							 picoSticker.transform = CGAffineTransformMakeNormal;//(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 //						 } completion:^(BOOL finished) {}];
 //	}
 }

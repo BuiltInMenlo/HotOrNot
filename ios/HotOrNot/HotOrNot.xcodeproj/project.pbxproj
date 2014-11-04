@@ -44,6 +44,11 @@
 		3051F8A01A08748600CD85F2 /* purchaseButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F89E1A08748600CD85F2 /* purchaseButton_nonActive@2x.png */; };
 		3051F8A31A08750B00CD85F2 /* downloadButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8A11A08750B00CD85F2 /* downloadButton_Active@2x.png */; };
 		3051F8A41A08750B00CD85F2 /* downloadButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8A21A08750B00CD85F2 /* downloadButton_nonActive@2x.png */; };
+		3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8A61A08AC0000CD85F2 /* HONBackNavButtonView.m */; };
+		3051F8AA1A08AE8D00CD85F2 /* HONNextNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */; };
+		3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */; };
+		3051F8B21A08B2C500CD85F2 /* reply1Button_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8B41A08B2C500CD85F2 /* reply1Button_Active@2x.png */; };
+		3051F8B51A08B2C900CD85F2 /* reply1Button_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8B71A08B2C900CD85F2 /* reply1Button_nonActive@2x.png */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3075E02E19D66107007B3346 /* HONCameraOverlayView.m */; };
@@ -77,7 +82,7 @@
 		30BFAC641A01BE7D000CE4FC /* replyButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC661A01BE7D000CE4FC /* replyButton_Active@2x.png */; };
 		30BFAC671A01BE81000CE4FC /* replyButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC691A01BE81000CE4FC /* replyButton_nonActive@2x.png */; };
 		30BFAC861A01ECC9000CE4FC /* HONStickerSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */; };
-		30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */; };
+		30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */; };
 		30CA9CA51A026AEB00A0A703 /* NSString+Validate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */; };
@@ -131,7 +136,7 @@
 		4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E9D99198AD8D900021156 /* InfoPlist.strings */; };
 		4C1F19AC1915CBA200E9A9D4 /* HONViewDispensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19AB1915CBA200E9A9D4 /* HONViewDispensor.m */; };
 		4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */; };
-		4C225CC417B8593B00330EB3 /* HONComposeButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONComposeButtonView.m */; };
+		4C225CC417B8593B00330EB3 /* HONComposeNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */; };
 		4C2400ED18C2916C00C9AE53 /* HONClubSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400EC18C2916C00C9AE53 /* HONClubSettingsViewController.m */; };
 		4C250E941938031B007CA4E2 /* ComposeElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C250E931938031B007CA4E2 /* ComposeElements.xcassets */; };
 		4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */; };
@@ -414,6 +419,23 @@
 		3051F89E1A08748600CD85F2 /* purchaseButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "purchaseButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		3051F8A11A08750B00CD85F2 /* downloadButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "downloadButton_Active@2x.png"; sourceTree = "<group>"; };
 		3051F8A21A08750B00CD85F2 /* downloadButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "downloadButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		3051F8A51A08AC0000CD85F2 /* HONBackNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBackNavButtonView.h; sourceTree = "<group>"; };
+		3051F8A61A08AC0000CD85F2 /* HONBackNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBackNavButtonView.m; sourceTree = "<group>"; };
+		3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNextNavButtonView.h; sourceTree = "<group>"; };
+		3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNextNavButtonView.m; sourceTree = "<group>"; };
+		3051F8AB1A08AF7900CD85F2 /* HONCloseNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCloseNavButtonView.h; sourceTree = "<group>"; };
+		3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCloseNavButtonView.m; sourceTree = "<group>"; };
+		3051F8B31A08B2C500CD85F2 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/reply1Button_Active@2x.png"; sourceTree = "<group>"; };
+		3051F8B61A08B2C900CD85F2 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		3051F8B81A08B2CE00CD85F2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/reply1Button_Active@2x.png"; sourceTree = "<group>"; };
+		3051F8B91A08B2D000CD85F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/reply1Button_Active@2x.png"; sourceTree = "<group>"; };
+		3051F8BA1A08B2D100CD85F2 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/reply1Button_Active@2x.png"; sourceTree = "<group>"; };
+		3051F8BB1A08B2D200CD85F2 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/reply1Button_Active@2x.png"; sourceTree = "<group>"; };
+		3051F8BC1A08B2D500CD85F2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		3051F8BD1A08B2D600CD85F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		3051F8BE1A08B2D800CD85F2 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		3051F8BF1A08B2D800CD85F2 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/reply1Button_nonActive@2x.png"; sourceTree = "<group>"; };
+		3051F8C11A08DD9600CD85F2 /* HONStaticInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStaticInlines.h; sourceTree = "<group>"; };
 		305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleViewCell.h; sourceTree = "<group>"; };
 		305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleViewCell.m; sourceTree = "<group>"; };
 		305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Random.h"; sourceTree = "<group>"; };
@@ -536,8 +558,8 @@
 		30BFAC711A01BE95000CE4FC /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/replyButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
 		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
-		30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewBGView.h; sourceTree = "<group>"; };
-		30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewBGView.m; sourceTree = "<group>"; };
+		30C7C61E19E0DBE70038B22C /* HONLineButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONLineButtonView.h; sourceTree = "<group>"; };
+		30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLineButtonView.m; sourceTree = "<group>"; };
 		30CA9C971A02182800A0A703 /* HONStateMitigator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStateMitigator.h; sourceTree = "<group>"; };
 		30CA9C981A02182800A0A703 /* HONStateMitigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStateMitigator.m; sourceTree = "<group>"; };
 		30CA9C9D1A02332E00A0A703 /* NSUserDefaults+Replacements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSUserDefaults+Replacements.h"; sourceTree = "<group>"; };
@@ -683,8 +705,8 @@
 		4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubAssistant.m; sourceTree = "<group>"; };
 		4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewController.h; sourceTree = "<group>"; };
 		4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewController.m; sourceTree = "<group>"; };
-		4C225CC217B8593B00330EB3 /* HONComposeButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeButtonView.h; sourceTree = "<group>"; };
-		4C225CC317B8593B00330EB3 /* HONComposeButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeButtonView.m; sourceTree = "<group>"; };
+		4C225CC217B8593B00330EB3 /* HONComposeNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeNavButtonView.h; sourceTree = "<group>"; };
+		4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeNavButtonView.m; sourceTree = "<group>"; };
 		4C2400E818C2910F00C9AE53 /* HONInviteContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteContactsViewController.h; sourceTree = "<group>"; };
 		4C2400EB18C2916C00C9AE53 /* HONClubSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubSettingsViewController.h; sourceTree = "<group>"; };
 		4C2400EC18C2916C00C9AE53 /* HONClubSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONClubSettingsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1540,6 +1562,8 @@
 		4C0A4CF7198B419700450680 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
+				3051F8B41A08B2C500CD85F2 /* reply1Button_Active@2x.png */,
+				3051F8B71A08B2C900CD85F2 /* reply1Button_nonActive@2x.png */,
 				3051F8A11A08750B00CD85F2 /* downloadButton_Active@2x.png */,
 				3051F8A21A08750B00CD85F2 /* downloadButton_nonActive@2x.png */,
 				3051F89D1A08748600CD85F2 /* purchaseButton_Active@2x.png */,
@@ -1903,6 +1927,7 @@
 			isa = PBXGroup;
 			children = (
 				4CBFC12A1908DF940082FCC4 /* HONUtilsSuite.h */,
+				3051F8C11A08DD9600CD85F2 /* HONStaticInlines.h */,
 				4CEC4B0518B9517F00F39C92 /* HONAnalyticsReporter.h */,
 				4CEC4B0618B9517F00F39C92 /* HONAnalyticsReporter.m */,
 				30CA9CA91A02F62900A0A703 /* HONAnimationOverseer.h */,
@@ -2109,12 +2134,12 @@
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
 				4CC606D8198C3E650042A951 /* HONInsetOverlayView.h */,
 				4CC606D9198C3E650042A951 /* HONInsetOverlayView.m */,
+				30C7C61E19E0DBE70038B22C /* HONLineButtonView.h */,
+				30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */,
 				30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */,
 				30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */,
 				305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */,
 				305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */,
-				30C7C61E19E0DBE70038B22C /* HONTableViewBGView.h */,
-				30C7C61F19E0DBE70038B22C /* HONTableViewBGView.m */,
 				4CF203FC18F33F2D00EB57B0 /* HONTableHeaderView.h */,
 				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
 			);
@@ -2166,8 +2191,14 @@
 		4C9E3B5C18259CC0004878F9 /* Nav */ = {
 			isa = PBXGroup;
 			children = (
-				4C225CC217B8593B00330EB3 /* HONComposeButtonView.h */,
-				4C225CC317B8593B00330EB3 /* HONComposeButtonView.m */,
+				3051F8A51A08AC0000CD85F2 /* HONBackNavButtonView.h */,
+				3051F8A61A08AC0000CD85F2 /* HONBackNavButtonView.m */,
+				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
+				3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */,
+				4C225CC217B8593B00330EB3 /* HONComposeNavButtonView.h */,
+				4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */,
+				3051F8AB1A08AF7900CD85F2 /* HONCloseNavButtonView.h */,
+				3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */,
 				4C1435CB17D3C19A00ACBF41 /* HONActivityHeaderButtonView.h */,
 				4C1435CC17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m */,
 			);
@@ -2471,6 +2502,7 @@
 				30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */,
 				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
 				3051F89F1A08748600CD85F2 /* purchaseButton_Active@2x.png in Resources */,
+				3051F8B21A08B2C500CD85F2 /* reply1Button_Active@2x.png in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
 				4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */,
@@ -2532,6 +2564,7 @@
 				07B2533B198C1FEE00F6D8B1 /* modalReviewBackground@2x.png in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
+				3051F8B51A08B2C900CD85F2 /* reply1Button_nonActive@2x.png in Resources */,
 				30CA9CB91A031FC500A0A703 /* submit1Button_Active@2x.png in Resources */,
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
 				07B6E6FE1988515600DA0805 /* inviteFriends_nonActive@2x.png in Resources */,
@@ -2634,6 +2667,7 @@
 				4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */,
 				4C7341921616C078001F9F11 /* HONPrivacyPolicyViewController.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
+				3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */,
 				4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4C382FF4178B7D2000C7FA7C /* HONCelebVO.m in Sources */,
@@ -2692,7 +2726,7 @@
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
-				30C7C62019E0DBE70038B22C /* HONTableViewBGView.m in Sources */,
+				30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */,
 				30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */,
 				4CA246C519083C8B00512295 /* NSString+DataTypes.m in Sources */,
 				4CBDDBAC1913354E002F9723 /* HONContactsViewController.m in Sources */,
@@ -2715,6 +2749,7 @@
 				30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,
+				3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */,
 				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
 				30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */,
 				30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */,
@@ -2736,8 +2771,9 @@
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
 				30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineCellHeaderView.m in Sources */,
+				3051F8AA1A08AE8D00CD85F2 /* HONNextNavButtonView.m in Sources */,
 				4C71BF40181B25C8005044F8 /* HONSuspendedViewController.m in Sources */,
-				4C225CC417B8593B00330EB3 /* HONComposeButtonView.m in Sources */,
+				4C225CC417B8593B00330EB3 /* HONComposeNavButtonView.m in Sources */,
 				4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */,
 				4C60AF6B17CCFEF800609792 /* HONStickerButtonsPickerView.m in Sources */,
 				30B308D019E20B510017ACBF /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -2963,6 +2999,30 @@
 				300B1BEF199C0EC4006BB048 /* ko */,
 			);
 			name = "modalInviteButton_nonActive@2x.png";
+			sourceTree = "<group>";
+		};
+		3051F8B41A08B2C500CD85F2 /* reply1Button_Active@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3051F8B31A08B2C500CD85F2 /* en */,
+				3051F8B81A08B2CE00CD85F2 /* ja */,
+				3051F8B91A08B2D000CD85F2 /* ko */,
+				3051F8BA1A08B2D100CD85F2 /* pt */,
+				3051F8BB1A08B2D200CD85F2 /* pt-BR */,
+			);
+			name = "reply1Button_Active@2x.png";
+			sourceTree = "<group>";
+		};
+		3051F8B71A08B2C900CD85F2 /* reply1Button_nonActive@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3051F8B61A08B2C900CD85F2 /* en */,
+				3051F8BC1A08B2D500CD85F2 /* ja */,
+				3051F8BD1A08B2D600CD85F2 /* ko */,
+				3051F8BE1A08B2D800CD85F2 /* pt */,
+				3051F8BF1A08B2D800CD85F2 /* pt-BR */,
+			);
+			name = "reply1Button_nonActive@2x.png";
 			sourceTree = "<group>";
 		};
 		30840BE019EB4D870067E46B /* buyButton_Active@2x.png */ = {

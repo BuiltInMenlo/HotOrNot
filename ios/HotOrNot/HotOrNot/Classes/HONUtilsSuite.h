@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONStaticInlines.h"
+
 #import "HONAnalyticsReporter.h"
 #import "HONAnimationOverseer.h"
 #import "HONAPICaller.h"

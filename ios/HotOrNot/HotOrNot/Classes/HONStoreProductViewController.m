@@ -229,6 +229,12 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Purchase"
 									 withStoreProduct:_storeProductVO];
 	
+	[[[UIAlertView alloc] initWithTitle:@"Congrats!"
+								message:@"All store content is currently FREE. The items you have selected have been unlocked"
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", @"OK")
+					  otherButtonTitles:nil] show];
+	
 	[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:_storeProductVO.contentGroupID];
 	
 	if ([self.delegate respondsToSelector:@selector(storeProductViewController:didPurchaseProduct:)])

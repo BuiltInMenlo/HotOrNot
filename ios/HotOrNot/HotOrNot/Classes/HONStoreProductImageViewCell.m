@@ -40,7 +40,7 @@
 //	NSLog(@"setImageDict:[%@]", imageDict);
 	_imageDict = imageDict;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.width)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
 	bgImageView.image = [UIImage imageNamed:@"stickerItemBG"];
 	[self.contentView addSubview:bgImageView];
 	
@@ -48,7 +48,7 @@
 		
 		if (_animatedImageView == nil) {
 			_animatedImageView = [[FLAnimatedImageView alloc] init];
-			_animatedImageView.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+			_animatedImageView.frame = bgImageView.frame;
 			_animatedImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFit; // centers in frame
 			_animatedImageView.clipsToBounds = YES;
 			[self.contentView addSubview:_animatedImageView];

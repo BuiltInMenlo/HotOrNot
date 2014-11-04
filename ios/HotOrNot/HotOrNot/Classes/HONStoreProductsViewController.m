@@ -183,7 +183,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 101.0)];
+	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 101.0))];
 	headerImageView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.90];
 	
 	return (headerImageView);

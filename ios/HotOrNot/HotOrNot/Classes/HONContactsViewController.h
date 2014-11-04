@@ -23,7 +23,7 @@
 #import "HONUserClubVO.h"
 #import "HONSearchBarView.h"
 #import "HONTableHeaderView.h"
-#import "HONTableViewBGView.h"
+#import "HONLineButtonView.h"
 
 typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceEmpty			= (0UL << 0),
@@ -59,8 +59,8 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	
 	MBProgressHUD *_progressHUD;
 	
-	HONTableViewBGView *_emptyContactsBGView;
-	HONTableViewBGView *_accessContactsBGView;
+	HONLineButtonView *_emptyContactsBGView;
+	HONLineButtonView *_accessContactsBGView;
 	
 	int _joinedTotalClubs;
 }
@@ -81,7 +81,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 - (void)_goCreateChallenge;
 - (void)_goTableBGSelected:(id)sender;
 
-- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView;
+- (void)lineButtonViewDidSelect:(HONLineButtonView *)lineButtonView;
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;

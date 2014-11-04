@@ -153,7 +153,8 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 }
 
 - (void)cacheStickerContentInRange:(NSRange)range {
-	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:0.10 forView:_downloadButton];
+//	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:0.10 forView:_downloadButton];
+	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineTransformView:_downloadButton byPercentage:0.10];
 	[UIView animateWithDuration:0.250 delay:0.000
 		 usingSpringWithDamping:0.925 initialSpringVelocity:0.0625
 						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)

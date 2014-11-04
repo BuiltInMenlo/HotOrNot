@@ -7,6 +7,10 @@
 //
 
 #import "HONHeaderView.h"
+#import "HONComposeNavButtonView.h"
+#import "HONCloseNavButtonView.h"
+#import "HONBackNavButtonView.h"
+#import "HONNextNavButtonView.h"
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -18,11 +22,11 @@
 
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
+	if ((self = [super initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		[self addSubview:_bgImageView];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 28.0, 170.0, 26.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 27.0, 170.0, 26.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 		_titleLabel.textColor = [UIColor blackColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
@@ -83,6 +87,22 @@
 - (void)addButton:(UIView *)buttonView {
 	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 19.0);
 	[self addSubview:buttonView];
+}
+
+- (void)addBackButtonWithTarget:(id)target usingAction:(SEL)action {
+	[self addButton:[[HONBackNavButtonView alloc] initWithTarget:target action:action]];
+}
+
+- (void)addCloseButtonWithTarget:(id)target usingAction:(SEL)action {
+	[self addButton:[[HONCloseNavButtonView alloc] initWithTarget:target action:action]];
+}
+
+- (void)addComposeButtonWithTarget:(id)target usingAction:(SEL)action {
+	[self addButton:[[HONComposeNavButtonView alloc] initWithTarget:target action:action]];
+}
+
+- (void)addNextButtonWithTarget:(id)target usingAction:(SEL)action {
+	[self addButton:[[HONNextNavButtonView alloc] initWithTarget:target action:action]];
 }
 
 - (void)setTitle:(NSString *)title {

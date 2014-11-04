@@ -14,7 +14,7 @@
 
 #import "HONSettingsViewController.h"
 #import "HONActivityHeaderButtonView.h"
-#import "HONComposeButtonView.h"
+#import "HONComposeNavButtonView.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
@@ -101,7 +101,7 @@
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
-	[headerView addButton:[[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[headerView addButton:[[HONComposeNavButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];

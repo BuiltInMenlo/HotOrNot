@@ -15,7 +15,7 @@
 @implementation HONNavButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMakeFromSize(CGSizeMake(44.0, 44.0))])) {
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
 		[_button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_button];

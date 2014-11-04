@@ -24,9 +24,11 @@
 #import "HONEnterPINViewController.h"
 #import "HONTermsViewController.h"
 #import "HONHeaderView.h"
+#import "HONNextNavButtonView.h"
+#import "HONLineButtonView.h"
 
 
-@interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
+@interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate, HONLineButtonViewDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
 @property (nonatomic, strong) UIImagePickerController *profileImagePickerController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -47,7 +49,7 @@
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIButton *changeTintButton;
-@property (nonatomic, strong) UIButton *nextButton;
+@property (nonatomic, strong) HONNextNavButtonView *nextButton;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
@@ -84,112 +86,46 @@
 	NSLog(@"_checkUsername -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 	NSLog(@"_checkUsername -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
-//	if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
-//		NSLog(@"\n\n******** USER/PHONE BY-PASS **********\n");
-//		[self _finalizeUser];
-//	}
-//	
-//	else {
-		NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
+	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
+	
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username completion:^(NSDictionary *result) {
+		NSLog(@"RESULT:[%@]", result);
 		
-		[[HONAPICaller sharedInstance] checkForAvailableUsername:_username completion:^(NSDictionary *result) {
-			NSLog(@"RESULT:[%@]", result);
+		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username Taken"];
 			
-			if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-				[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username Taken"];
-				
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kProgressHUDMinDuration;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-				_progressHUD = nil;
-				
-				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				_usernameCheckImageView.alpha = 1.0;
-				
-				_clubNameLabel.text = @"joinselfie.club/";
-				_usernameTextField.text = @"";
-				[_usernameTextField becomeFirstResponder];
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			[_progressHUD setYOffset:-80.0];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
 			
-			} else {
-				[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
-					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-						[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Phone Taken"];
-						
-						if (_progressHUD == nil)
-							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-						[_progressHUD setYOffset:-80.0];
-						_progressHUD.minShowTime = kProgressHUDMinDuration;
-						_progressHUD.mode = MBProgressHUDModeCustomView;
-						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-						_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
-						[_progressHUD show:NO];
-						[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-						_progressHUD = nil;
-						
-						_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-						_phoneCheckImageView.alpha = 1.0;
-						
-						_phone = @"";
-						_phoneTextField.text = @"";
-						_phoneTextField.text = @"";
-						_phoneTextField.text = @"";
-						[_phoneTextField becomeFirstResponder];
-						
-					} else {
-						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-						[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username & Phone OK"];
-						[self _finalizeUser];
-					}
-				}];
-			}
-		}];
+			_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+			_usernameCheckImageView.alpha = 1.0;
+			
+			_clubNameLabel.text = @"joinselfie.club/";
+			_usernameTextField.text = @"";
+			[_usernameTextField becomeFirstResponder];
 		
-		
-		/*
-		[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSDictionary *result) {
-			HONRegisterCheckErrorType checkErrorType = (HONRegisterCheckErrorType)[[result objectForKey:@"result"] intValue];
-			
-			if (checkErrorType == HONRegisterErrorTypeNone) {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-				NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-				[self _finalizeUser];
-				
-			} else {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				
-				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kProgressHUDDisplayTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				
-				if (checkErrorType == HONRegisterErrorTypeUsername) {
-					_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
-					_progressHUD = nil;
+		} else {
+			[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
+				if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Phone Taken"];
 					
-					_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-					_usernameCheckImageView.alpha = 1.0;
-					
-					_clubNameLabel.text = @"joinselfie.club/";
-					_usernameTextField.text = @"";
-					[_usernameTextField becomeFirstResponder];
-					
-				} else if (checkErrorType == HONRegisterCheckErrorTypePhone) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					[_progressHUD setYOffset:-80.0];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 					_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 					_progressHUD = nil;
 					
 					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -201,30 +137,14 @@
 					_phoneTextField.text = @"";
 					[_phoneTextField becomeFirstResponder];
 					
-				} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
-					_progressHUD.labelText = NSLocalizedString(@"user_phone", @"Username & phone # taken!");
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
-					_progressHUD = nil;
-					
-					_clubNameLabel.text = @"joinselfie.club/";
-					_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-					_usernameCheckImageView.alpha = 1.0;
-					
-					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-					_phoneCheckImageView.alpha = 1.0;
-					
-					_usernameTextField.text = @"";
-					[_usernameTextField becomeFirstResponder];
-					
-					_phone = @"";
-					_phoneTextField.text = @"";
-					_phoneTextField.text = @"";
-					_phoneTextField.text = @"";
+				} else {
+					NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username & Phone OK"];
+					[self _finalizeUser];
 				}
-			}
-		}];*/
-//	}
+			}];
+		}
+	}];
 }
 
 - (void)_uploadPhotos:(UIImage *)image {
@@ -232,7 +152,7 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], _imageFilename);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMakeFromSize(CGSizeMult(kSnapTabSize, 2.0))];
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imageFilename completion:^(NSObject *result) {}];
 }
@@ -245,7 +165,7 @@
 	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
-	[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	_nextButton.userInteractionEnabled = NO;
 	
 	NSLog(@"_finalizeUser -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
@@ -283,7 +203,7 @@
 			
 			
 		} else {
-			[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+			_nextButton.userInteractionEnabled = YES;
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -337,12 +257,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	_nextButton = [[HONNextNavButtonView alloc] initWithTarget:self action:@selector(_goSubmit)];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_signUp", @"Sign Up")];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_signUp", @"Sign up")];
 	[headerView addButton:_nextButton];
 	[self.view addSubview:headerView];
 	
@@ -351,7 +268,7 @@
 	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateNormal];
 	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateHighlighted];
 	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateSelected];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateSelected | UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:(UIControlStateSelected|UIControlStateHighlighted)];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
@@ -375,9 +292,9 @@
 	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.placeholder = @"Enter name";
+	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", @"Enter username");
 	_usernameTextField.text = @"";
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
@@ -411,12 +328,12 @@
 	
 	NSLog(@"SIZE:[%@]", NSStringFromCGSize(size));
 	_callCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_callCodeButton.frame = CGRectMake(13.0, 127.0, 51.0, 64.0);
-	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_nonActive"] forState:UIControlStateNormal];
+	_callCodeButton.frame = CGRectMake(13.0, 127.0, 60.0, 64.0);
+//	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_nonActive"] forState:UIControlStateNormal];
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
-	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(3.0, -2.0, 0.0, 0.0)];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor] forState:UIControlStateNormal];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
+	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(3.0, -6.0, 0.0, 0.0)];
 	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:26];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
@@ -453,31 +370,10 @@
 		}];
 	}
 	
-	NSMutableString *footer = [NSLocalizedString(@"register_footer", @"Enter your phone number for\ndevice verification. ¡Terms") mutableCopy];
-	NSRange buttonRange = [footer rangeOfString:@"¡"];
-	[footer replaceOccurrencesOfString:@"¡"
-							withString:@""
-							   options:NSCaseInsensitiveSearch
-								 range:buttonRange];
-	
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.minimumLineHeight = 26.0;
-	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
-	paragraphStyle.alignment = NSTextAlignmentCenter;
-	
-	UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 200.0, 280.0, 64.0)];
-	footerLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
-	footerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	footerLabel.numberOfLines = 2;
-	footerLabel.attributedText = [[NSAttributedString alloc] initWithString:footer attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
-	[footerLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
-	[footerLabel setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
-	[self.view addSubview:footerLabel];
-	
-	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	termsButton.frame = CGRectMake(198.0, 240.0, 44.0, 18.0);
-	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:termsButton];
+	HONLineButtonView *bgView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeRegister withCaption:@"Enter your phone number.\nTerms" usingTarget:self action:@selector(_goTerms)];
+	bgView.hidden = NO;
+	[bgView setYOffset:-34.0];
+	[self.view addSubview:bgView];
 	
 	NSLog(@"loadView -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
@@ -498,7 +394,7 @@
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
 	
-	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	_nextButton.userInteractionEnabled = YES;
 }
 
 
@@ -545,7 +441,7 @@
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
-		_profileCameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+		_profileCameraOverlayView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, [UIScreen mainScreen].bounds.size.height))];
 		_profileCameraOverlayView.alpha = 0.0;
 		
 		imagePickerController.cameraOverlayView = _profileCameraOverlayView;
@@ -554,12 +450,12 @@
 			_profileCameraOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {}];
 		
-		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 50.0))];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_profileCameraOverlayView addSubview:headerBGView];
 		
 //		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		flipButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+//		flipButton.frame = CGRectMakeFromSize(CGSizeMake(64.0, 64.0));
 //		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 //		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 //		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -823,7 +719,7 @@
 	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(processedImage.size)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
 	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
@@ -859,7 +755,7 @@
 		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
-		_profileCameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+		_profileCameraOverlayView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, [UIScreen mainScreen].bounds.size.height))];
 		_profileCameraOverlayView.alpha = 0.0;
 		
 	} else

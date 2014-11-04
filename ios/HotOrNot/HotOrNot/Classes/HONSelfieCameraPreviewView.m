@@ -95,7 +95,7 @@
 	[self addSubview:_tabButtonsHolderView];
 
 	for (int i=0; i<5; i++) {
-		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 221.0) asGroupIndex:i];
+		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 221.0)) asGroupIndex:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -256,7 +256,7 @@
 	if (emotionsPickerView.stickerGroupIndex == 3) {
 		NSString *imgURL = [NSString stringWithFormat:@"https://s3.amazonaws.com/hotornot-challenges/%@Large_640x1136.%@", emotionVO.emotionName, @"gif"];// (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"gif" : @"jpg"];
 		NSLog(@"imgURL:[%@]", imgURL);
-		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapLargeSize)];
 		[_bgSelectImageView setImageWithURL:[NSURL URLWithString:imgURL]];
 		
 		if (emotionVO.imageType == HONEmotionImageTypeGIF)

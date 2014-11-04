@@ -1,5 +1,5 @@
 //
-//  HONTableViewBGView.m
+//  HONLineButtonView.m
 //  HotOrNot
 //
 //  Created by BIM  on 10/4/14.
@@ -9,20 +9,20 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
-#import "HONTableViewBGView.h"
+#import "HONLineButtonView.h"
 
-@interface HONTableViewBGView ()
+@interface HONLineButtonView ()
 @property (nonatomic, strong) NSParagraphStyle *paragraphStyle;
 @property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) UILabel *label;
 @end
 
-@implementation HONTableViewBGView
+@implementation HONLineButtonView
 @synthesize delegate = _delegate;
 @synthesize viewType = _viewType;
 @synthesize yOffset = _yOffset;
 
-- (id)initAsType:(HONTableViewBGViewType)type withCaption:(NSString *)caption usingTarget:(id)target action:(SEL)action {
+- (id)initAsType:(HONLineButtonViewType)type withCaption:(NSString *)caption usingTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 59.0) * 0.5, 320.0, 59.0)])) {
 		self.hidden = YES;
 		
@@ -32,20 +32,20 @@
 		NSRange range = [_caption rangeOfString:@"\n"];
 		range.length = [[_caption substringFromIndex:range.location] length];
 		
-		
 		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 		paragraphStyle.minimumLineHeight = 29.0;
 		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
 		paragraphStyle.alignment = NSTextAlignmentCenter;
 		_paragraphStyle = [paragraphStyle copy];
 		
-		_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		_label = [[UILabel alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
 		_label.backgroundColor = [UIColor clearColor];
 		_label.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:19];
 		_label.textColor = [UIColor blackColor];
 		_label.numberOfLines = 2;
 		_label.attributedText = [[NSAttributedString alloc] initWithString:_caption attributes:@{NSParagraphStyleAttributeName	: _paragraphStyle}];
 		[_label setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:_label.font.pointSize] range:range];
+		[_label setTextColor:(_viewType == HONLineButtonViewTypePINEntry) ? [[HONColorAuthority sharedInstance] honBlueTextColor] : _label.textColor range:range];
 		[self addSubview:_label];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -60,7 +60,7 @@
 
 
 #pragma mark - Public APIs
-- (void)setViewType:(HONTableViewBGViewType)viewType {
+- (void)setViewType:(HONLineButtonViewType)viewType {
 	_viewType = viewType;
 }
 

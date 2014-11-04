@@ -15,10 +15,11 @@
 - (UIView *)matteViewWithSize:(CGSize)size usingColor:(UIColor *)color;
 - (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor;
 - (void)flipLayer:(CALayer *)layer horizontally:(BOOL)xAxisFlipped;
+- (CGRect)frameAtViewOriginAndSize:(UIView *)view;
 - (void)maskView:(UIView *)imageView withMask:(UIImage *)maskImage;
 - (CGFloat)screenHeight;
 - (CGFloat)screenWidth;
 - (void)tintView:(UIView *)view withColor:(UIColor *)color;
-- (CGAffineTransform)affineFrameTransformationByPercentage:(CGFloat)percent forView:(UIView *)view;
-- (CGAffineTransform)affineFrameTransformationToSize:(CGSize)size forView:(UIView *)view;
+- (CGAffineTransform)affineTransformView:(UIView *)view byPercentage:(CGFloat)percent;
+- (CGAffineTransform)affineTransformView:(UIView *)view toSize:(CGSize)size;
 @end

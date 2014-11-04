@@ -8,7 +8,7 @@
 
 #import "HONComposeSubmitViewController.h"
 
-@interface HONComposeSubmitViewController () <HONClubViewCellDelegate, HONTableViewBGViewDelegate>
+@interface HONComposeSubmitViewController () <HONClubViewCellDelegate, HONLineButtonViewDelegate>
 @property (nonatomic, strong) NSMutableArray *selectedClubs;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *selectedContacts;
@@ -418,16 +418,16 @@
 }
 
 
-#pragma mark - TableViewBGView Delegates
-- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
-	NSLog(@"[*:*] tableViewBGViewDidSelect [*:*]");
+#pragma mark - LineButtonView Delegates
+- (void)lineButtonViewDidSelect:(HONLineButtonView *)lineButtonView {
+	NSLog(@"[*:*] lineButtonViewDidSelect [*:*]");
 	
-	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
+	if (lineButtonView.viewType == HONLineButtonViewTypeAccessContacts) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
 										   withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 	}
 	
-	[super tableViewBGViewDidSelect:bgView];
+	[super lineButtonViewDidSelect:lineButtonView];
 }
 
 #pragma mark - ClubViewCell Delegates

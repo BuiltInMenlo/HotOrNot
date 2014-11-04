@@ -83,8 +83,7 @@
 
 
 "enter_username" = "Enter username";
-"enter_phone" = "Enter phone";
-"Register" = "Register";
+"enter_phone" = "Enter number";
 //"firstrun_next" = "Avançar";
 "header_friends" = "Friends";
 "header_home" = "Home";
@@ -131,7 +130,7 @@
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
 "is_feeling2" = "is feeling...";
-"enter_pin" = "Enter PIN";
+"enter_pin" = "Enter pin";
 "invalid_pin" = "Invalid PIN!";
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";
 
@@ -192,7 +191,7 @@
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
 "access_contacts" = "Access your contacts.\nFind friends";
 "empty_contacts" = "No results found.\nCompose";
-"header_signUp" = "Sign Up";
+"header_signUp" = "Sign up";
 "phone_number" = "phone number";
 "alert_inviteContact_t" = "%@ found!";
 "alert_inviteNewContact_t" = "No user found!";

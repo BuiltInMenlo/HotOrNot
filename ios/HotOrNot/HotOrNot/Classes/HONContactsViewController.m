@@ -16,12 +16,12 @@
 #import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONComposeViewController.h"
-#import "HONComposeButtonView.h"
+#import "HONComposeNavButtonView.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONContactsViewController () <HONTableViewBGViewDelegate, HONClubViewCellDelegate>
+@interface HONContactsViewController () <HONLineButtonViewDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 //@property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -298,7 +298,7 @@
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height)];
+	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_tableView.frame.size)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
@@ -307,12 +307,12 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	_accessContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
-	_accessContactsBGView.viewType = HONTableViewBGViewTypeAccessContacts;
+	_accessContactsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
+	_accessContactsBGView.viewType = HONLineButtonViewTypeAccessContacts;
 	[_tableView addSubview:_accessContactsBGView];
 	
-	_emptyContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
-	_accessContactsBGView.viewType = HONTableViewBGViewTypeCreateStatusUpdate;
+	_emptyContactsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
+	_accessContactsBGView.viewType = HONLineButtonViewTypeCreateStatusUpdate;
 	[_tableView addSubview:_emptyContactsBGView];
 
 	
@@ -363,14 +363,14 @@
 //		button.alpha = 1.0;
 //	}];
 	
-	if (button.tag == HONTableViewBGViewTypeAccessContacts) {
+	if (button.tag == HONLineButtonViewTypeAccessContacts) {
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 			[self _promptForAddressBookPermission];
 		
 		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
 			[self _promptForAddressBookAccess];
 		
-	} else if (button.tag == HONTableViewBGViewTypeCreateStatusUpdate) {
+	} else if (button.tag == HONLineButtonViewTypeCreateStatusUpdate) {
 		[self _goCreateChallenge];
 	}
 }
@@ -396,18 +396,18 @@
 }
 
 
-#pragma mark - TableViewBGView Delegates
-- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
-	NSLog(@"[[*:*]] tableViewBGViewDidSelect [[*:*]]");
+#pragma mark - LineButtonView Delegates
+- (void)lineButtonViewDidSelect:(HONLineButtonView *)lineButtonView {
+	NSLog(@"[[*:*]] lineButtonViewDidSelect [[*:*]]");
 	
-	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
+	if (lineButtonView.viewType == HONLineButtonViewTypeAccessContacts) {
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 			[self _promptForAddressBookPermission];
 		
 		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
 			[self _promptForAddressBookAccess];
 	
-	} else if (bgView.viewType == HONTableViewBGViewTypeCreateStatusUpdate) {
+	} else if (lineButtonView.viewType == HONLineButtonViewTypeCreateStatusUpdate) {
 		[self _goCreateChallenge];
 	}
 }

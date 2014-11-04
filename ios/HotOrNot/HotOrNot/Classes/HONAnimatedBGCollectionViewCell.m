@@ -37,13 +37,13 @@
 		[self.contentView addSubview:_imageLoadingView];
 		
 		_animatedImageView = [[FLAnimatedImageView alloc] init];
-		_animatedImageView.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+		_animatedImageView.frame = CGRectMakeFromSize(self.frame.size);
 		_animatedImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFit; // centers in frame
 		_animatedImageView.clipsToBounds = YES;
 		_animatedImageView.alpha = 0.5;
 		[self.contentView addSubview:_animatedImageView];
 		
-//		_label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 26.0)];
+//		_label = [[UILabel alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(100.0, 26.0))];
 //		_label.backgroundColor = [UIColor clearColor];
 //		_label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 //		_label.textColor = [UIColor blackColor];

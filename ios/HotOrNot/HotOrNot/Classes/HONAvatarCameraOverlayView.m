@@ -44,7 +44,7 @@
 		_blackMatteView.alpha = 0.0;
 		[self addSubview:_blackMatteView];
 		
-		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 50.0))];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 		[self addSubview:headerBGView];
 		
@@ -103,7 +103,7 @@
 //		[self addSubview:_submitHolderView];
 //		
 //		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
+//		retakeButton.frame = CGRectMakeFromSize(CGSizeMake(106.0, 64.0));
 //		retakeButton.backgroundColor = [UIColor redColor];
 //		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
 //		[_submitHolderView addSubview:retakeButton];

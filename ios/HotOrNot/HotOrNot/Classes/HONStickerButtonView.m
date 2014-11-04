@@ -37,7 +37,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"stickerItemBG"]]];
 		
-		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		_imageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
 		_imageView.layer.shouldRasterize = YES;
@@ -104,7 +104,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 					 animations:^(void) {
 						 _imageView.transform = transform;
 					 } completion:^(BOOL finished) {
-						 CGAffineTransform transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+						 CGAffineTransform transform = CGAffineTransformMakeNormal();///(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 						 [UIView animateWithDuration:0.125 delay:0.000
 							  usingSpringWithDamping:0.805 initialSpringVelocity:0.333
 											 options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)

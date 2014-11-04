@@ -74,7 +74,7 @@
 //		[self.contentView addSubview:_scoreLabel];
 		
 		
-//		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
+//		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, kOrthodoxTableCellHeight))];
 //		_overlayTintView.backgroundColor = BOT_TINT_COLOR;
 //		[self.contentView addSubview:_overlayTintView];
 		

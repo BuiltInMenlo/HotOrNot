@@ -13,7 +13,6 @@
 
 #import "HONStickerSummaryView.h"
 
-const CGSize kStickerSize = {50.0f, 50.0f};
 const CGSize kStickerPaddingSize = {0.0f, 0.0f};
 
 const CGFloat kStickerOutroDuration = 0.125;
@@ -25,8 +24,10 @@ const CGFloat kStickerOutroForce = 0.125;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) NSMutableArray *stickers;
 @property (nonatomic, strong) NSMutableArray *stickerViews;
+@property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @property (nonatomic, strong) HONEmotionVO *selectedEmotionVO;
 @property (nonatomic) int scrollThreshold;
+@property (nonatomic) int stickerSize;
 @property (nonatomic) int stickerSpacing;
 @property (nonatomic) int currentIndex;
 @end
@@ -37,7 +38,8 @@ const CGFloat kStickerOutroForce = 0.125;
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_stickerSpacing = kStickerSize.width + kStickerPaddingSize.width;
+		_stickerSize = frame.size.height;
+		_stickerSpacing = frame.size.height + kStickerPaddingSize.width;
 		_stickers = [NSMutableArray array];
 		_stickerViews = [NSMutableArray array];
 		_selectedEmotionVO = nil;
@@ -45,7 +47,7 @@ const CGFloat kStickerOutroForce = 0.125;
 		_scrollThreshold = ceil(self.frame.size.width / _stickerSpacing);
 		NSLog(@"THRESHOLD:[%d]", _scrollThreshold);
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
 		_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.965];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsZero;
@@ -55,18 +57,18 @@ const CGFloat kStickerOutroForce = 0.125;
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-		lpGestureRecognizer.minimumPressDuration = 0.5;
-		lpGestureRecognizer.delegate = self;
-		lpGestureRecognizer.delaysTouchesBegan = YES;
-		[self addGestureRecognizer:lpGestureRecognizer];
+		_lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+		_lpGestureRecognizer.minimumPressDuration = 0.5;
+		_lpGestureRecognizer.delegate = self;
+		_lpGestureRecognizer.delaysTouchesBegan = YES;
+		[self addGestureRecognizer:_lpGestureRecognizer];
 	}
 	
 	return (self);
 }
 
-- (id)initAtPosition:(CGPoint)position {
-	if ((self = [self initWithFrame:CGRectMake(position.x, position.y, 320.0 - position.x, 50.0)])) {
+- (id)initAtPosition:(CGPoint)position withHeight:(CGFloat)height {
+	if ((self = [self initWithFrame:CGRectMake(position.x, position.y, 320.0 - position.x, height)])) {
 		
 	}
 	
@@ -79,25 +81,34 @@ const CGFloat kStickerOutroForce = 0.125;
 
 
 #pragma mark - Public APIs
-- (void)appendSticker:(HONEmotionVO *)emotionVO {
-	UIView *stickerView = [[UIView alloc] initWithFrame:CGRectMake(_stickerSpacing * [_stickers count], 0.0, kStickerSize.width, kStickerSize.height)];
+- (void)appendStickerAndSelect:(HONEmotionVO *)emotionVO {
+	[self appendSticker:emotionVO];
 	
+	UIView *stickerView = (UIView *)[_stickerViews lastObject];
+	UIButton *button = [stickerView.subviews lastObject];
+	[button setSelected:YES];
+}
+
+- (void)appendSticker:(HONEmotionVO *)emotionVO {
+	UIView *stickerView = [[UIView alloc] initWithFrame:CGRectMake(_stickerSpacing * [_stickers count], 0.0, _stickerSize, _stickerSize)];
+	
+	CGRect frame = CGRectMakeFromSize(CGSizeMake(_stickerSize, _stickerSize));
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-		animatedImageView.frame = CGRectMake(0.0, 0.0, 50.0, 50.0);
+		animatedImageView.frame = frame;
 		animatedImageView.contentMode = UIViewContentModeScaleAspectFit;
 		animatedImageView.clipsToBounds = YES;
 		animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;
 		[stickerView addSubview:animatedImageView];
 		
 	} else if (emotionVO.imageType == HONEmotionImageTypePNG) {
-		UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 50.0, 50.0)];
+		UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:frame];
 		thumbImageView.image = emotionVO.image;
 		[stickerView addSubview:thumbImageView];
 	}
 	
 	UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-	button.frame = CGRectMake(0.0, 0.0, 50.0, 50.0);
+	button.frame = frame;
 	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:UIControlStateNormal];
 	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:UIControlStateHighlighted];
 	[button setBackgroundImage:[UIImage imageNamed:@"blackMatte_000"] forState:UIControlStateSelected];
@@ -147,8 +158,19 @@ const CGFloat kStickerOutroForce = 0.125;
 		offset = _scrollView.contentOffset.x;
 	}
 	
-	NSLog(@"[*:*] scrollToStickerAtIndex:[%d]:[%d]:", index, offset);
 	[_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:[[HONAnimationOverseer sharedInstance] isScrollingAnimationEnabledForScrollView:self]];
+}
+
+- (void)selectStickerAtIndex:(int)index {
+	_selectedEmotionVO = (HONEmotionVO *)[_stickers objectAtIndex:index];
+	[_stickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		UIView *view = (UIView *)obj;
+		UIButton *btn = [view.subviews lastObject];
+		[btn setSelected:(btn.tag == index)];
+	}];
+	
+	_currentIndex = index;
+	[self scrollToStickerAtIndex:index];
 }
 
 
@@ -180,12 +202,13 @@ const CGFloat kStickerOutroForce = 0.125;
 	NSLog(@"gestureRecognizer.state:[%@]", (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"Began" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"Canceled" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"Ended" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"Failed" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"Possible" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN");
 	HONEmotionVO *emotionVO = (HONEmotionVO *)[_stickers lastObject];
 	
+	UIView *stickerView = (UIView *)[_stickerViews lastObject];
+	UIButton *button = (UIButton *)[stickerView.subviews lastObject];
+	[button setSelected:NO];
+	
 	if (_currentIndex == [_stickers count] - 1) {
-		UIView *stickerView = (UIView *)[_stickerViews lastObject];
-		UIButton *button = (UIButton *)[stickerView.subviews lastObject];
-		[button setSelected:NO];
-		
-		CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:0.10 forView:stickerView];
+		//CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:0.10 forView:stickerView];
+		CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineTransformView:stickerView byPercentage:0.10];
 		[UIView animateWithDuration:kStickerOutroDuration delay:kStickerOutroDelay
 			 usingSpringWithDamping:kStickerOutroDamping initialSpringVelocity:kStickerOutroForce options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 						 animations:^(void) {
@@ -202,7 +225,8 @@ const CGFloat kStickerOutroForce = 0.125;
 							 int size = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
 							 
 							 _scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width - size, _scrollView.contentSize.height);
-							 [self scrollToStickerAtIndex:_currentIndex];
+							 //[self scrollToStickerAtIndex:_currentIndex];
+							 [self selectStickerAtIndex:_currentIndex];
 						 }];
 	}
 	

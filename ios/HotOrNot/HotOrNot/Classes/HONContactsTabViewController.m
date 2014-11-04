@@ -15,11 +15,9 @@
 
 #import "HONContactsTabViewController.h"
 #import "HONHeaderView.h"
-#import "HONActivityHeaderButtonView.h"
-#import "HONComposeButtonView.h"
 #import "HONTableView.h"
 #import "HONTableHeaderView.h"
-#import "HONTableViewBGView.h"
+#import "HONLineButtonView.h"
 #import "HONRefreshControl.h"
 #import "HONClubViewCell.h"
 #import "HONRegisterViewController.h"
@@ -30,8 +28,7 @@
 #import "HONContactsSearchViewController.h"
 #import "HONClubTimelineViewController.h"
 
-@interface HONContactsTabViewController () <HONTableViewBGViewDelegate, HONClubViewCellDelegate>
-@property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
+@interface HONContactsTabViewController () <HONClubViewCellDelegate>
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) NSMutableArray *seenClubs;
 @property (nonatomic, strong) NSMutableArray *unseenClubs;
@@ -39,8 +36,8 @@
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONTableViewBGView *emptyClubsBGView;
-@property (nonatomic, strong) HONTableViewBGView *accessContactsBGView;
+@property (nonatomic, strong) HONLineButtonView *emptyClubsBGView;
+@property (nonatomic, strong) HONLineButtonView *accessContactsBGView;
 @property (nonatomic) int joinedTotalClubs;
 @end
 
@@ -270,7 +267,7 @@ static NSString * const kCamera = @"camera";
 		
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height)];
+	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_tableView.frame.size)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
@@ -284,19 +281,18 @@ static NSString * const kCamera = @"camera";
 //	lpGestureRecognizer.delegate = self;
 //	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
-	_accessContactsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
-	_accessContactsBGView.viewType = HONTableViewBGViewTypeAccessContacts;
+	_accessContactsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
+	_accessContactsBGView.viewType = HONLineButtonViewTypeAccessContacts;
 	[_tableView addSubview:_accessContactsBGView];
 	
-	_emptyClubsBGView = [[HONTableViewBGView alloc] initAsType:HONTableViewBGViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
-	_accessContactsBGView.viewType = HONTableViewBGViewTypeCreateStatusUpdate;
+	_emptyClubsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
+	_accessContactsBGView.viewType = HONLineButtonViewTypeCreateStatusUpdate;
 	[_tableView addSubview:_emptyClubsBGView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_home", @"Home")];
 	[self.view addSubview:_headerView];
 	
-	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	[_headerView addButton:[[HONComposeButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[_headerView addComposeButtonWithTarget:self usingAction:@selector(_goCreateChallenge)];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
@@ -402,14 +398,20 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[:|:] _goTableBGSelected:");
 	
 	UIButton *button = (UIButton *)sender;
-	if (button.tag == HONTableViewBGViewTypeAccessContacts) {
+	if (button.tag == HONLineButtonViewTypeAccessContacts) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+										   withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
+		
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 			[self _promptForAddressBookPermission];
 		
 		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
 			[self _promptForAddressBookAccess];
 		
-	} else if (button.tag == HONTableViewBGViewTypeCreateStatusUpdate) {
+	} else if (button.tag == HONLineButtonViewTypeCreateStatusUpdate) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
+										   withProperties:@{@"src"	: @"text"}];
+		
 		[self _goCreateChallenge];
 	}
 }
@@ -495,28 +497,6 @@ static NSString * const kCamera = @"camera";
 											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 	[alertView setTag:0];
 	[alertView show];
-}
-
-
-#pragma mark - TableViewBGView Delegates
-- (void)tableViewBGViewDidSelect:(HONTableViewBGView *)bgView {
-	NSLog(@"[*:*] tableViewBGViewDidSelect [*:*]");
-	
-	if (bgView.viewType == HONTableViewBGViewTypeAccessContacts) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
-										 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
-		
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-			[self _promptForAddressBookPermission];
-		
-		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-			[self _promptForAddressBookAccess];
-	
-	} else if (bgView.viewType == HONTableViewBGViewTypeCreateStatusUpdate) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
-										 withProperties:@{@"src"	: @"text"}];
-		[self _goCreateChallenge];
-	}
 }
 
 

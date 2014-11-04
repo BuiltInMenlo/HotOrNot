@@ -35,7 +35,7 @@
 		_offImageViews = [NSMutableArray arrayWithCapacity:_totalPages];
 		_onImageViews = [NSMutableArray arrayWithCapacity:_totalPages];
 		
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
 		[self addSubview:holderView];
 		
 		for (int i=0; i<_totalPages; i++) {

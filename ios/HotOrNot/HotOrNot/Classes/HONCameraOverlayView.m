@@ -42,7 +42,7 @@
 //		gradientImageView.frame = self.frame;
 //		[self addSubview:gradientImageView];
 		
-		_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+		_headerBGView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 50.0))];
 		[self addSubview:_headerBGView];
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -34,7 +34,7 @@ static HONViewDispensor *sharedInstance = nil;
 }
 
 - (UIView *)matteViewWithSize:(CGSize)size usingColor:(UIColor *)color {
-	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMakeFromSize(size)]; //CGRectMake(0.0, 0.0, size.width, size.height)];
 	view.backgroundColor = color;
 	
 	return (view);
@@ -51,7 +51,7 @@ static HONViewDispensor *sharedInstance = nil;
 	[layer setAlignmentMode:kCAAlignmentCenter];
 	[layer setForegroundColor:[textColor CGColor]];
 	[layer setPosition:CGPointMake(frame.origin.x, frame.origin.y)];
-	[layer setBounds:CGRectMake(0.0, 0.0, size.width, size.height)];
+	[layer setBounds:CGRectMakeFromSize(size)];//CGRectMake(0.0, 0.0, size.width, size.height)];
 	layer.needsDisplayOnBoundsChange = YES;
 	
 	return (layer);
@@ -65,10 +65,14 @@ static HONViewDispensor *sharedInstance = nil;
 	layer.transform = transform;
 }
 
+- (CGRect)frameAtViewOriginAndSize:(UIView *)view {
+	return (CGRectMakeFromSize(view.frame.size));
+}
+
 - (void)maskView:(UIView *)view withMask:(UIImage *)maskImage {
 	CALayer *maskLayer = [CALayer layer];
 	maskLayer.contents = (id)[maskImage CGImage];
-	maskLayer.frame = CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height);
+	maskLayer.frame = CGRectMakeFromSize(view.frame.size);//(0.0, 0.0, //CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height);
 	
 	view.layer.mask = maskLayer;
 	view.layer.masksToBounds = YES;
@@ -79,17 +83,12 @@ static HONViewDispensor *sharedInstance = nil;
 	view.layer.backgroundColor = color.CGColor;
 }
 
-- (CGAffineTransform)affineFrameTransformationByPercentage:(CGFloat)percent forView:(UIView *)view {
-	CGSize perSize = CGSizeMake(view.frame.size.width * percent, view.frame.size.height * percent);
-	CGSize scaleSize = CGSizeMake(perSize.width / view.frame.size.width, perSize.width / view.frame.size.height);
-	CGPoint offsetPt = CGPointMake(CGRectGetMidX(view.frame) - CGRectGetMidX(CGRectInset(view.frame, perSize.width, perSize.height)), CGRectGetMidY(view.frame) - CGRectGetMidY(CGRectInset(view.frame, perSize.width, perSize.height)));
-	
-	return (CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y));
+- (CGAffineTransform)affineTransformView:(UIView *)view byPercentage:(CGFloat)percent {
+	return (CGAffineTransformMakeScalePercent(view.frame, percent));
 }
 
-- (CGAffineTransform)affineFrameTransformationToSize:(CGSize)size forView:(UIView *)view {
-	CGFloat percent = MIN(MAX(0.00, view.frame.size.width / size.width), view.frame.size.height / size.height);
-	return ([[HONViewDispensor sharedInstance] affineFrameTransformationByPercentage:percent forView:view]);
+- (CGAffineTransform)affineTransformView:(UIView *)view toSize:(CGSize)size {
+	return (CGAffineTransformMakeScalePercent(view.frame, MIN(MAX(0.00, view.frame.size.width / size.width), view.frame.size.height / size.height)));
 }
 
 - (CGFloat)screenHeight {

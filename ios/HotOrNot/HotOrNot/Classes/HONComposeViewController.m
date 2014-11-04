@@ -244,7 +244,7 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMakeFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	NSString *largeURL = [_filename stringByAppendingString:kSnapLargeSuffix];
 	NSString *tabURL = [_filename stringByAppendingString:kSnapLargeSuffix];
@@ -379,7 +379,7 @@
 	[self.view addSubview:_tabButtonsHolderView];
 	
 	for (int i=0; i<5; i++) {
-		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _emotionsPickerHolderView.frame.size.height) asGroupIndex:i];
+		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, _emotionsPickerHolderView.frame.size.height)) asGroupIndex:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -394,7 +394,7 @@
 		[_tabButtonsHolderView addSubview:button];
 	}
 	
-	_stickerSummaryView = [[HONStickerSummaryView alloc] initAtPosition:CGPointMake(0.0, 297.0)];
+	_stickerSummaryView = [[HONStickerSummaryView alloc] initAtPosition:CGPointMake(0.0, 297.0) withHeight:50.0];
 	_stickerSummaryView.delegate = self;
 	[self.view addSubview:_stickerSummaryView];
 	
@@ -416,21 +416,9 @@
 	}];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Create"];
-	[self.view addSubview:_headerView];
-	
-	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[_closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[_closeButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:_closeButton];
-	
-	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_nextButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:_nextButton];
+	[_headerView addCloseButtonWithTarget:self usingAction:@selector(_goCancel)];
+	[_headerView addNextButtonWithTarget:self usingAction:@selector(_goSubmit)];
+	[self.view addSubview:_headerView];	
 }
 
 - (void)viewDidLoad {
@@ -781,7 +769,7 @@
 		NSLog(@"imgURL:[%@]", imgURL);
 		_filename = [[imgURL componentsSeparatedByString:@"/"] lastObject];
 		
-		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapLargeSize)];
 		[_bgSelectImageView setImageWithURL:[NSURL URLWithString:imgURL]];
 		
 		if (emotionVO.imageType == HONEmotionImageTypeGIF)
@@ -795,7 +783,7 @@
 		[_selectedEmotions addObject:emotionVO];
 		[_subjectNames addObject:emotionVO.emotionName];
 		[_composeDisplayView addEmotion:emotionVO];
-		[_stickerSummaryView appendSticker:emotionVO];
+		[_stickerSummaryView appendStickerAndSelect:emotionVO];
 	}
 	
 	//[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
@@ -901,7 +889,7 @@
 																maskImage:nil] : _processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _processedImage.size.width, _processedImage.size.height)];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_processedImage.size)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
 	
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];

@@ -27,7 +27,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 		
 		
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
-		_button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+		_button.frame = CGRectMakeFromSize(self.frame.size);//CGRectMake(0.0, 0.0, 93.0, 44.0);
 		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
 		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
 		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
@@ -40,7 +40,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 		_activityBGImageView.alpha = 0.0;
 		[self addSubview:_activityBGImageView];
 		
-		_activityTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMaxActivityWidth, 44.0)];
+		_activityTotalLabel = [[UILabel alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(kMaxActivityWidth, 44.0))];
 		_activityTotalLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		_activityTotalLabel.textColor = [UIColor whiteColor];
 		_activityTotalLabel.backgroundColor = [UIColor clearColor];

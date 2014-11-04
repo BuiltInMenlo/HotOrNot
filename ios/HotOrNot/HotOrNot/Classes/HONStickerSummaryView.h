@@ -16,11 +16,13 @@
 @end
 
 @interface HONStickerSummaryView : UIView <UIGestureRecognizerDelegate, UIScrollViewDelegate>
-- (id)initAtPosition:(CGPoint)position;
+- (id)initAtPosition:(CGPoint)position withHeight:(CGFloat)height;
 - (void)appendSticker:(HONEmotionVO *)emotionVO;
+- (void)appendStickerAndSelect:(HONEmotionVO *)emotionVO;
 - (void)removeStickerAtIndex:(int)index;
 - (void)removeLastSticker;
 - (void)scrollToStickerAtIndex:(int)index;
+- (void)selectStickerAtIndex:(int)index;
 
 @property (nonatomic, assign) id <HONStickerSummaryViewDelegate> delegate;
 @end

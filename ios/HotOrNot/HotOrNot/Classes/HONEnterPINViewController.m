@@ -14,6 +14,8 @@
 
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
+#import "HONBackNavButtonView.h"
+#import "HONLineButtonView.h"
 
 @interface HONEnterPINViewController ()
 @property (nonatomic, strong) NSString *pin;
@@ -111,16 +113,11 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter PIN")];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter pin")];
+	[headerView addBackButtonWithTarget:self usingAction:@selector(_goBack)];
 	[self.view addSubview:headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
-		 
+	
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
@@ -129,7 +126,7 @@
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
 	[self.view addSubview:_pinButton];
 	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 77.0, 30.0)];
+	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 80.0, 177.0, 30.0)];
 	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -137,43 +134,23 @@
 	[_pinTextField setTextColor:[UIColor blackColor]];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
 	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
+	_pinTextField.placeholder = [@"  " stringByAppendingString:NSLocalizedString(@"enter_pin", @"Enter pin")];
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
 	
 	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
+	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 64.0);
 	_pinCheckImageView.alpha = 0.0;
 	[self.view addSubview:_pinCheckImageView];
 	
 	
-	NSMutableString *footer = [NSLocalizedString(@"pin_footer", @"Enter the four digit PIN that was\nsent to your device. ¡Resend") mutableCopy];
-	NSRange buttonRange = [footer rangeOfString:@"¡"];
-	[footer replaceOccurrencesOfString:@"¡"
-							withString:@""
-							   options:NSCaseInsensitiveSearch
-								 range:buttonRange];
-	
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.minimumLineHeight = 26.0;
-	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
-	paragraphStyle.alignment = NSTextAlignmentCenter;
-	
-	UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 123.0, 280.0, 64.0)];
-	footerLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
-	footerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	footerLabel.numberOfLines = 2;
-	footerLabel.attributedText = [[NSAttributedString alloc] initWithString:footer attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
-	[footerLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
-	[footerLabel setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor] range:NSMakeRange(buttonRange.location, ([footer length] - buttonRange.location))];
-	[self.view addSubview:footerLabel];
-	
-	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	resendButton.frame = CGRectMake(196.0, 164.0, 55.0, 18.0);
-	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:resendButton];
+	HONLineButtonView *bgView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypePINEntry withCaption:@"Enter your four digit pin.\nResend" usingTarget:self action:@selector(_goResend)];
+	bgView.hidden = NO;
+	[bgView setYOffset:-98.0];
+	[self.view addSubview:bgView];
 	
 	
 #if __APPSTORE_BUILD__ == 0
