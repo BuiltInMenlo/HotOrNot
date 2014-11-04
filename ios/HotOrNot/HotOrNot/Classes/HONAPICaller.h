@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, HONS3BucketType) {
 };
 
 
+
 // api endpts
 extern NSString * const kAPIChallenges;
 extern NSString * const kAPIComments;
@@ -79,6 +80,9 @@ extern NSString * const kAPIUsersCheckUsername;
 extern NSString * const kAPIUsersCheckPhone;
 extern NSString * const kAPIStatusupdate;
 
+// network error descriptions
+extern NSString * const kNetErrorNoConnection;
+extern NSString * const kNetErrorStatusCode404;
 
 // network times
 extern const CGFloat kNotifiyDelay;

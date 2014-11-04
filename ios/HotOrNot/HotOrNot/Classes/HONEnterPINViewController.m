@@ -55,7 +55,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
@@ -212,11 +212,11 @@
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.yOffset = -80.0;
-	_progressHUD.graceTime = kHUDTime;
+	_progressHUD.graceTime = kProgressHUDMinDuration;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_pass"]];
 	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
 	
 	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {

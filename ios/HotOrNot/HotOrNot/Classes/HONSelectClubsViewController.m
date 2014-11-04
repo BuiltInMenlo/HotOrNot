@@ -30,7 +30,7 @@
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {

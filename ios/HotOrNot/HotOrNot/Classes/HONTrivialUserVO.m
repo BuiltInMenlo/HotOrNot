@@ -12,7 +12,7 @@
 
 @implementation HONTrivialUserVO
 @synthesize dictionary;
-@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, totalUpvotes;
+@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, totalUpvotes, invitedDate;
 
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];
@@ -26,6 +26,7 @@
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.totalUpvotes = [[dictionary objectForKey:@"total_votes"] intValue];
 	
+	vo.invitedDate = ([dictionary objectForKey:@"invited"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
 	return (vo);
 }
 
@@ -37,7 +38,7 @@
 }
 
 + (HONTrivialUserVO *)userFromContactUserVO:(HONContactUserVO *)contactVO {
-	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: @"0",//(contactVO.isSMSAvailable) ? contactVO.mobileNumber : contactVO.email,
+	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: (contactVO.isSMSAvailable) ? contactVO.mobileNumber : contactVO.email,
 												   @"username"	: contactVO.fullName,
 												   @"img_url"	: contactVO.avatarPrefix,
 												   @"alt_id"	: (contactVO.isSMSAvailable) ? contactVO.mobileNumber : contactVO.email}]);
@@ -65,5 +66,6 @@
 	self.username = nil;
 	self.avatarPrefix = nil;
 	self.altID = nil;
+	self.invitedDate = nil;
 }
 @end

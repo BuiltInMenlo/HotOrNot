@@ -16,8 +16,11 @@
 @synthesize contactType, firstName, lastName, fullName, rawNumber, mobileNumber, email, avatarData, avatarImage, isSMSAvailable, userID, username, avatarPrefix;
 
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary {
+	NSLog(@"contactWithDictionary:[%@]", dictionary);
+	
 	HONContactUserVO *vo = [[HONContactUserVO alloc] init];
 	vo.dictionary = dictionary;
+	
 	vo.firstName = ([dictionary objectForKey:@"f_name"] != nil) ? [dictionary objectForKey:@"f_name"] : @"";
 	vo.lastName = ([dictionary objectForKey:@"l_name"] != nil) ? ([[dictionary objectForKey:@"l_name"] length] > 0) ? [dictionary objectForKey:@"l_name"] : @"" : @"";
 	vo.fullName = [NSString stringWithFormat:([vo.lastName length] > 0) ? @"%@ %@" : @"%@%@", vo.firstName, vo.lastName];
@@ -50,16 +53,27 @@
 
 
 + (HONContactUserVO *)contactFromTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"contactFromTrivialUserVO:[%@]", trivialUserVO.dictionary);
+	
+	NSLog(@"trivialUserVO.userID:[%d]", trivialUserVO.userID);
+	NSLog(@"trivialUserVO.username:[%@]", [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject]);
+	NSLog(@"trivialUserVO.username:[%@]", [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject]);
+	NSLog(@"trivialUserVO.username:[%@]", trivialUserVO.username);
+	NSLog(@"trivialUserVO.avatarPrefix:[%@]", trivialUserVO.avatarPrefix);
+//	NSLog(@"trivialUserVO.:[%@]", [@"" stringf]);
+//	NSLog(@"trivialUserVO.:[]", trivialUserVO);
+//	NSLog(@"trivialUserVO.:[]", trivialUserVO);
+	
 	NSDictionary *dict = @{@"id"			: @(trivialUserVO.userID),
 						   @"f_name"		: [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject],
 						   @"l_name"		: [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject],
 						   @"username"		: trivialUserVO.username,
 						   @"avatar_url"	: trivialUserVO.avatarPrefix,
-						   @"extern_name"	: [NSString stringWithFormat:@"%@%@", [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject], [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject]],
+						   @"extern_name"	: [NSString stringWithFormat:@"%@ %@", [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject], [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject]],
 						   @"email"			: ([trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
 						   @"phone"			: (![trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
 						   @"image"			: UIImageJPEGRepresentation([[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapLargeSize], [HONAppDelegate compressJPEGPercentage]),
-						   @"invited"		: ([trivialUserVO.dictionary objectForKey:@"invited"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromISO9601UTCFormattedString:[trivialUserVO.dictionary objectForKey:@"invited"]] : [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromDate:[NSDate date]]};
+						   @"invited"		: ([trivialUserVO.dictionary objectForKey:@"invited"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[trivialUserVO.dictionary objectForKey:@"invited"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate]};
 	
 	return ([HONContactUserVO contactWithDictionary:dict]);
 }

@@ -13,6 +13,7 @@
 
 #import "NSMutableDictionary+Replacements.h"
 #import "NSString+DataTypes.h"
+#import "NSString+Formatting.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
@@ -146,118 +147,91 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveClubWithClubID:(int)clubID ownerID:(int)ownerID {
-	_userClubVO = [[HONClubAssistant sharedInstance] fetchClubWithClubID:clubID];
-	
+- (void)_submitReplyStatusUpdate {
 	NSMutableArray *selectedUsers = [NSMutableArray array];
 	NSMutableArray *selectedContacts = [NSMutableArray array];
-	if ([[HONClubAssistant sharedInstance] fetchClubWithClubID:clubID] == nil) {
-		[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:ownerID completion:^(NSDictionary *result) {
-			_userClubVO = [HONUserClubVO clubWithDictionary:result];
-		}];
+	
+	__block NSString *names = @"";
+	NSMutableArray *participants = [NSMutableArray array];
+	
+	NSLog(@"activeMembers:%@", _userClubVO.activeMembers);
+	NSLog(@"pendingMembers:%@", _userClubVO.pendingMembers);
+	
+	[_userClubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		[selectedUsers addObject:vo];
+		[participants addObject:vo.username];
+		names = [names stringByAppendingFormat:@"%@, ", vo.username];
+	}];
+	
+	[_userClubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
 		
-	} else {
-		_userClubVO = [[HONClubAssistant sharedInstance] fetchClubWithClubID:clubID];
-	}
+		if ([trivialUserVO.altID length] > 0)
+			[selectedContacts addObject:[HONContactUserVO contactFromTrivialUserVO:trivialUserVO]];
+		
+		else
+			[selectedUsers addObject:trivialUserVO];
+		
+		[participants addObject:trivialUserVO.username];
+		names = [names stringByAppendingFormat:@"%@, ", trivialUserVO.username];
+	}];
 	
+	names = [names stringByTrimmingFinalSubstring:@", "];
 	
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:ownerID completion:^(NSDictionary *result) {
+	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| CLUB -=- (CREATE) |~|*|~|*|~|*|~|*|~|*|~|*^*");
+	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
+	[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+	_userClubVO = [HONUserClubVO clubWithDictionary:dict];
+	
+	[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 		_userClubVO = [HONUserClubVO clubWithDictionary:result];
+		[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forExistingKey:@"club_id"];
 		
-		NSLog(@"%d <> %d", [[_submitParams objectForKey:@"club_id"] intValue], _userClubVO.clubID);
-		if ([[_submitParams objectForKey:@"club_id"] intValue] == _userClubVO.clubID) {
-			
-			__block NSString *names = @"";
-			__block HONClubPhotoVO *clubPhotoVO = nil;
-			NSMutableArray *participants = [NSMutableArray array];
-			[_userClubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-				[selectedUsers addObject:vo];
-				[participants addObject:vo.username];
-				names = [names stringByAppendingFormat:@"%@, ", vo.username];
-			}];
-			
-			[_userClubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONContactUserVO *contactUserVO = (HONContactUserVO *)obj;
-				HONTrivialUserVO *trivialUserVO = [HONTrivialUserVO userFromContactUserVO:(HONContactUserVO *)obj];
-
-				[selectedContacts addObject:contactUserVO];
-				[participants addObject:trivialUserVO.username];
-				names = [names stringByAppendingFormat:@"%@, ", trivialUserVO.username];
-			}];
-//				HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
-//				
-//				[selectedContacts addObject:[HONContactUserVO contactWithDictionary:trivialUserVO.dictionary]];
-//				[participants addObject:trivialUserVO.username];
-//				names = [names stringByAppendingFormat:@"%@, ", trivialUserVO.username];
-//			}];
-			
-			names = ([names rangeOfString:@", "].location != NSNotFound) ? [names substringToIndex:[names length] - 2] : names;
-			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@", (_selfieSubmitType == HONSelfieSubmitTypeCreate) ? @"Friend Picker" : @"Submit Reply"]
-												 withUserClub:_userClubVO];
-			
-			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| CLUB -=- (CREATE) |~|*|~|*|~|*|~|*|~|*|~|*^*");
-			NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
-			[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
-			_userClubVO = [HONUserClubVO clubWithDictionary:dict];
-			
-			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"CREATING CLUB [%@]", _userClubVO.clubName]
-										message:[NSString stringWithFormat:@"%@", names]
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			
-			
-			[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
-				_userClubVO = [HONUserClubVO clubWithDictionary:result];
-				[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forExistingKey:@"club_id"];
+		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
+		[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
+			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kProgressHUDMinDuration;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+				_progressHUD.labelText = @"Error!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+				_progressHUD = nil;
 				
-				NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-				[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-					if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-						if (_progressHUD == nil)
-							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-						_progressHUD.minShowTime = kHUDTime;
-						_progressHUD.mode = MBProgressHUDModeCustomView;
-						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-						_progressHUD.labelText = @"Error!";
-						[_progressHUD show:NO];
-						[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-						_progressHUD = nil;
-						
-					} else {
-						clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:result];
-						[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:clubPhotoVO.challengeID];
-						
-						NSMutableArray *users = [NSMutableArray array];
-						for (HONTrivialUserVO *vo in selectedUsers)
-							[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
-						
-						NSMutableArray *contacts = [NSMutableArray array];
-						for (HONContactUserVO *vo in selectedContacts)
-							[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
-						
-						[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
-														   withProperties:@{@"clubs"	: [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO],
-																			@"members"	: users,
-																			@"contacts"	: contacts}];
-					
-						[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:selectedUsers ToNonAppContacts:selectedContacts onCompletion:^(BOOL success) {
-							if (_selfieSubmitType == HONSelfieSubmitTypeCreate) {
-								_isPushing = YES;
-								[self.navigationController pushViewController:[[HONComposeSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
-								
-							} else {
-								[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-									[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
-								}];
-							}
+			} else {
+				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
+				
+				NSMutableArray *users = [NSMutableArray array];
+				for (HONTrivialUserVO *vo in selectedUsers)
+					[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
+				
+				NSMutableArray *contacts = [NSMutableArray array];
+				for (HONContactUserVO *vo in selectedContacts)
+					[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
+				
+				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Send Club Reply Invites [%@]", _userClubVO.clubName]
+											message:[NSString stringWithFormat:@"users:[%@]\ncontacts:[%@]", selectedUsers, selectedContacts]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+				[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
+												   withProperties:@{@"clubs"	: [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO],
+																	@"members"	: users,
+																	@"contacts"	: contacts}];
+				
+				[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:selectedUsers ToNonAppContacts:selectedContacts onCompletion:^(BOOL success) {
+					[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 						}];
-					}
+					}];
 				}];
-			}];
-		}
+			}
+		}];
 	}];
 }
 
@@ -297,12 +271,12 @@
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		
-		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.minShowTime = kProgressHUDMinDuration;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 		_progressHUD = nil;
 	}
 }
@@ -335,8 +309,10 @@
 		
 //		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 
-
+		
 		if (_selfieSubmitType != HONSelfieSubmitTypeReply) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Friend Picker"];
+			
 			_isPushing = YES;
 			[self.navigationController pushViewController:[[HONComposeSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
  
@@ -345,7 +321,9 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit Reply"
 											   withUserClub:_userClubVO];
 			
-			[self _retrieveClubWithClubID:[[_submitParams objectForKey:@"club_id"] intValue] ownerID:[[_submitParams objectForKey:@"owner_id"] intValue]];
+			[self _submitReplyStatusUpdate];
+			
+//			[self _retrieveClubWithClubID:[[_submitParams objectForKey:@"club_id"] intValue] ownerID:[[_submitParams objectForKey:@"owner_id"] intValue]];
 		}
 	}
 }
@@ -371,12 +349,12 @@
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
 }
 
@@ -662,7 +640,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	[self.imagePickerController takePicture];
@@ -1002,12 +980,12 @@
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
 }
 

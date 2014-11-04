@@ -10,6 +10,7 @@
 
 #import "NSString+DataTypes.h"
 #import "NSString+Formatting.h"
+#import "NSUserDefaults+Replacements.h"
 
 #import "HONClubAssistant.h"
 
@@ -554,17 +555,19 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 }
 
-- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] == nil) {
-		[[NSUserDefaults standardUserDefaults] setValue:@{} forKey:@"seen_updates"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion {
+	[[NSUserDefaults standardUserDefaults] setObject:@{} forNonExistingKey:@"seen_updates"];
 	
 	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
 	[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:[@"" stringFromInt:statusUpdateID]];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
+		if (completion)
+			completion(result);
+	}];
 }
 
 - (void)writeUserClubs:(NSDictionary *)clubs {

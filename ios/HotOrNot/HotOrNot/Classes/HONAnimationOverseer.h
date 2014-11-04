@@ -10,6 +10,9 @@
 
 #import "HONViewController.h"
 
+extern const CGFloat kProgressHUDMinDuration;
+extern const CGFloat kProgressHUDErrorDuration;
+
 @interface HONAnimationOverseer : NSObject
 + (HONAnimationOverseer *)sharedInstance;
 

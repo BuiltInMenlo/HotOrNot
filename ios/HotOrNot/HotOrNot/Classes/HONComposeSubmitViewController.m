@@ -49,34 +49,34 @@
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = @"Error!";
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
 			
 		} else {
-			HONClubPhotoVO *clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:result];
-			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:clubPhotoVO.challengeID];
-			
-			NSMutableArray *users = [NSMutableArray array];
-			for (HONTrivialUserVO *vo in _selectedUsers)
-				[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
-			
-			NSMutableArray *contacts = [NSMutableArray array];
-			for (HONContactUserVO *vo in _selectedContacts)
-				[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
-			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Invites"
-											   withProperties:@{@"clubs"	: [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO],
-																@"members"	: users,
-																@"contacts"	: contacts}];
-			
-			[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+			HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
+			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
+				NSMutableArray *users = [NSMutableArray array];
+				for (HONTrivialUserVO *vo in _selectedUsers)
+					[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
+				
+				NSMutableArray *contacts = [NSMutableArray array];
+				for (HONContactUserVO *vo in _selectedContacts)
+					[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
+				
+				[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Invites"
+												   withProperties:@{@"clubs"	: [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO],
+																	@"members"	: users,
+																	@"contacts"	: contacts}];
+				
+				[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+					}];
 				}];
 			}];
 		}
@@ -262,29 +262,15 @@
 		for (NSString *name in participants)
 			names = [names stringByAppendingFormat:@"%@, ", name];
 		names = ([names rangeOfString:@", "].location != NSNotFound) ? [names substringToIndex:[names length] - 2] : names;
-
-
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"CREATING CLUB [%@]", _userClubVO.clubName]
-									message:[NSString stringWithFormat:@"%@", names]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
 		
 		NSLog(@"CLUB -=- (CREATE) -=-");
 		NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
 		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
 		_userClubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"CREATING CLUB [%@]", _userClubVO.clubName]
-									message:[NSString stringWithFormat:@"%@", names]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
 		[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
-			[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forExistingKey:@"club_id"];
 			_userClubVO = [HONUserClubVO clubWithDictionary:result];
+			[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forExistingKey:@"club_id"];
 			
 			[self _submitStatusUpdate:_userClubVO];
 		}];

@@ -71,7 +71,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	_searchUsers = [NSMutableArray array];

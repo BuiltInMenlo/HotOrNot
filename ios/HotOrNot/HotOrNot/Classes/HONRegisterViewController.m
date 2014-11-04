@@ -101,12 +101,12 @@
 				if (_progressHUD == nil)
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.minShowTime = kProgressHUDMinDuration;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
 				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 				_progressHUD = nil;
 				
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -124,12 +124,12 @@
 						if (_progressHUD == nil)
 							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 						[_progressHUD setYOffset:-80.0];
-						_progressHUD.minShowTime = kHUDTime;
+						_progressHUD.minShowTime = kProgressHUDMinDuration;
 						_progressHUD.mode = MBProgressHUDModeCustomView;
 						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 						_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
 						[_progressHUD show:NO];
-						[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+						[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 						_progressHUD = nil;
 						
 						_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -169,14 +169,14 @@
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 				
 				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.minShowTime = kProgressHUDDisplayTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 				
 				if (checkErrorType == HONRegisterErrorTypeUsername) {
 					_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 					_progressHUD = nil;
 					
 					_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -189,7 +189,7 @@
 				} else if (checkErrorType == HONRegisterCheckErrorTypePhone) {
 					_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 					_progressHUD = nil;
 					
 					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -204,7 +204,7 @@
 				} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
 					_progressHUD.labelText = NSLocalizedString(@"user_phone", @"Username & phone # taken!");
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 					_progressHUD = nil;
 					
 					_clubNameLabel.text = @"joinselfie.club/";
@@ -242,7 +242,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -289,12 +289,12 @@
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			
 			[_progressHUD setYOffset:-80.0];
-			_progressHUD.minShowTime = kHUDErrorTime;
+			_progressHUD.minShowTime = kProgressHUDErrorDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime + 0.75];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration + 0.75];
 			_progressHUD = nil;
 			
 			if (responseCode == 1) {
@@ -658,7 +658,7 @@
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	_irisView = [[UIView alloc] initWithFrame:_profileCameraOverlayView.frame];

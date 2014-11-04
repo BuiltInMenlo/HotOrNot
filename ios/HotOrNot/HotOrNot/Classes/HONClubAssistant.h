@@ -51,7 +51,7 @@
 - (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID;
 - (void)addClub:(NSDictionary *)club forKey:(NSString *)key;
 - (void)writeUserClubs:(NSDictionary *)clubs;
-- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID;
+- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion;
 - (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion;
 
 - (NSArray *)excludedClubDomains;

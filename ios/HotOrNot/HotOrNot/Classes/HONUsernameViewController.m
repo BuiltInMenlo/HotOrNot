@@ -109,7 +109,7 @@
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	[[HONAPICaller sharedInstance] updateUsernameForUser:_username completion:^(NSDictionary *result) {
@@ -123,12 +123,12 @@
 			}];
 			
 		} else {
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);  //@"Username taken!";
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
 			
 			[_usernameTextField becomeFirstResponder];

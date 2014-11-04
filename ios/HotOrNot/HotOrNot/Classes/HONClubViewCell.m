@@ -140,7 +140,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	[super accVisible:NO];
 	
-	[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_statusUpdateVO.challengeID];
+//	[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_statusUpdateVO.challengeID];
 	
 	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
 	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];

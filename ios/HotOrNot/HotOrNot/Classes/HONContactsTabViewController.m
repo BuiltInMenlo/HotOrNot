@@ -292,7 +292,7 @@ static NSString * const kCamera = @"camera";
 	_accessContactsBGView.viewType = HONTableViewBGViewTypeCreateStatusUpdate;
 	[_tableView addSubview:_emptyClubsBGView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_friends", @"Friends")];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_home", @"Home")];
 	[self.view addSubview:_headerView];
 	
 	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
@@ -524,7 +524,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[*:*] clubViewCell:didSelectClub");
 	
-	[self _goSelectClub:clubVO];
+//	[self _goSelectClub:clubVO];
 }
 
 

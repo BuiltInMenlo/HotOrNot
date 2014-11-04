@@ -13,6 +13,9 @@
 #import "HONClubTimelineViewController.h"
 #import "HONStoreProductsViewController.h"
 
+const CGFloat kProgressHUDMinDuration = 0.5f;
+const CGFloat kProgressHUDErrorDuration = 1.5f;
+
 @implementation HONAnimationOverseer
 static HONAnimationOverseer *sharedInstance = nil;
 

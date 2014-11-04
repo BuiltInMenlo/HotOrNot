@@ -104,8 +104,6 @@ const CGSize kTabSize = {80.0, 50.0};
 const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
-const CGFloat kHUDTime = 0.5f;
-const CGFloat kHUDErrorTime = 1.5f;
 const CGFloat kProfileTime = 0.25f;
 
 // image sizes
@@ -122,10 +120,6 @@ NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
 const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheDataElseLoad;//NSURLRequestUseProtocolCachePolicy;
 NSString * const kTwilioSMS = @"6475577873";
-
-// network error descriptions
-NSString * const kNetErrorNoConnection = @"The Internet connection appears to be offline.";
-NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
 #if __APPSTORE_BUILD__ == 0
@@ -240,10 +234,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSArray *)subjectFormats {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"subject_formats"]);
-}
-
-+ (NSRange)rangeForImageQueue {
-	return (NSRangeFromString([[NSUserDefaults standardUserDefaults] objectForKey:@"image_queue"]));;
 }
 
 
@@ -1059,12 +1049,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
 	}
 	
-//	[HONAppDelegate resetTotals];
 	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 #endif
 	
 #if __RESET_TOTALS__ == 1
-//	[HONAppDelegate resetTotals];
 	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 #endif
 	

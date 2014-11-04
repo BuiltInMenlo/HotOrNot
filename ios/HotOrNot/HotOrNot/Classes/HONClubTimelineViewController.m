@@ -126,7 +126,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
 	_clubPhotos = [NSArray array];
@@ -163,7 +163,7 @@
 		
 		if (!isSeen) {
 			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID];
+				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
 			}];
 		}
 	}];
@@ -290,17 +290,6 @@
 	
 	if ([((UINavigationController *)self.presentedViewController).viewControllers firstObject] == nil)
 		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-	
-	
-	NSLog(@"\n\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]");
-	UIViewController *parentVC = (UIViewController *)[self.navigationController.viewControllers firstObject];
-	UIViewController *currentVC = (UIViewController *)[self.navigationController.viewControllers lastObject];
-	
-	UINavigationController *navigationController = (UINavigationController *)self.presentedViewController;
-	UIViewController *presentedVC = (UIViewController *)[navigationController.viewControllers lastObject];
-	NSLog(@"\nself.navigationController.VCs:[%@]\nparentVC:[%@]\ncurrentVC:[%@]", self.navigationController.viewControllers, parentVC, currentVC);
-	NSLog(@"\nnavigationController.VCs:[%@]\npresentedVC:[%@]", navigationController.viewControllers, presentedVC);
-	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=||=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n");
 }
 
 
@@ -503,7 +492,7 @@
 		
 		if (!isSeen) {
 			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID];
+				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
 			}];
 		}
 	}];

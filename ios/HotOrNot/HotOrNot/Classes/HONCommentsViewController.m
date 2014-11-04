@@ -73,12 +73,12 @@
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDDisplayTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -105,12 +105,12 @@
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.minShowTime = kProgressHUDDisplayTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 		_progressHUD = nil;
 	}];
 	 */
@@ -120,7 +120,7 @@
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submitComment", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	_progressHUD.yOffset = -75.0;
 	
@@ -143,12 +143,12 @@
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDDisplayTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_dlFailed", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -166,12 +166,12 @@
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.minShowTime = kProgressHUDDisplayTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 		_progressHUD = nil;
 	}];
 	 */
@@ -196,12 +196,12 @@
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDDisplayTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -215,12 +215,12 @@
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.minShowTime = kProgressHUDDisplayTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		[_progressHUD hide:YES afterDelay:kProgressHUDErrorTime];
 		_progressHUD = nil;
 	}];
 	 */

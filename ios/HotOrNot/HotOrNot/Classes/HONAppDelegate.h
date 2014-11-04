@@ -114,8 +114,6 @@ extern const CGSize kTabSize;
 extern const UIEdgeInsets kOrthodoxTableViewEdgeInsets;
 
 // animation params
-extern const CGFloat kHUDTime;
-extern const CGFloat kHUDErrorTime;
 extern const CGFloat kProfileTime;
 
 // image sizes
@@ -133,10 +131,6 @@ extern NSString * const kSnapLargeSuffix;
 
 extern const NSURLRequestCachePolicy kOrthodoxURLCachePolicy;
 extern NSString * const kTwilioSMS;
-
-// network error descriptions
-extern NSString * const kNetErrorNoConnection;
-extern NSString * const kNetErrorStatusCode404;
 
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
@@ -164,8 +158,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)smsShareComment;
 + (NSDictionary *)emailShareComment;
 + (NSArray *)subjectFormats;
-
-+ (NSRange)rangeForImageQueue;
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;

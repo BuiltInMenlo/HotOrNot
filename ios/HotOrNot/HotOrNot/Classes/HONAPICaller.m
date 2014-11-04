@@ -83,6 +83,9 @@ NSString * const kAPIStatusupdate			= @"statusupdate/";
 
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
+// network error descriptions
+NSString * const kNetErrorNoConnection = @"The Internet connection appears to be offline.";
+NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
 const CGFloat kNotifiyDelay = (float)(2 / 3);
@@ -228,12 +231,12 @@ static HONAPICaller *sharedInstance = nil;
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = NSLocalizedString(@"alert_connectionError_t", @"Connection Error");
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
 
 	}];
@@ -301,12 +304,12 @@ static HONAPICaller *sharedInstance = nil;
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		
-		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.minShowTime = kProgressHUDMinDuration;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 		_progressHUD = nil;
 		
 		if ([bucketName rangeOfString:@"hotornot-challenges"].location != NSNotFound)
@@ -660,12 +663,12 @@ static HONAPICaller *sharedInstance = nil;
 		
 		if ([error.description isEqualToString:kNetErrorNoConnection]) {
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = @"No network connection!";
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
 		}
 	}];
@@ -2005,23 +2008,23 @@ static HONAPICaller *sharedInstance = nil;
 - (void)showDataErrorHUD {
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
 }
 
 - (void)showSuccessHUD {
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_pass"]];
 	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
 }
 
@@ -2093,12 +2096,12 @@ static HONAPICaller *sharedInstance = nil;
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.mode = MBProgressHUDModeCustomView;
 	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
 	
 	if ([[tag firstObject] isEqualToString:@"hotornot-avatars"]) {
