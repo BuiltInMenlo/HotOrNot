@@ -77,7 +77,8 @@
 }
 
 - (void)_reloadCollectionViewContents {
-	[_refreshControl beginRefreshing];
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 	
 	_productImages = [NSMutableArray array];
 	[_collectionView reloadData];
@@ -101,7 +102,7 @@
 	_productImages = [NSMutableArray array];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_storeProductVO.productName];
-	[headerView addBackButtonWithTarget:self usingAction:@selector(_goBack)];
+	[headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	[self.view addSubview:headerView];
 	
 	UIView *summaryHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 74.0)];

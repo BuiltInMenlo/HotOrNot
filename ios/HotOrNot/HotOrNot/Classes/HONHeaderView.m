@@ -91,23 +91,23 @@
 	[self addSubview:buttonView];
 }
 
-- (void)addBackButtonWithTarget:(id)target usingAction:(SEL)action {
+- (void)addBackButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONBackNavButtonView alloc] initWithTarget:target action:action]];
 }
 
-- (void)addCloseButtonWithTarget:(id)target usingAction:(SEL)action {
+- (void)addCloseButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONCloseNavButtonView alloc] initWithTarget:target action:action]];
 }
 
-- (void)addComposeButtonWithTarget:(id)target usingAction:(SEL)action {
+- (void)addComposeButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONComposeNavButtonView alloc] initWithTarget:target action:action]];
 }
 
-- (void)addDoneButtonWithTarget:(id)target usingAction:(SEL)action {
+- (void)addDoneButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONDoneNavButtonView alloc] initWithTarget:target action:action]];
 }
 
-- (void)addNextButtonWithTarget:(id)target usingAction:(SEL)action {
+- (void)addNextButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONNextNavButtonView alloc] initWithTarget:target action:action]];
 }
 

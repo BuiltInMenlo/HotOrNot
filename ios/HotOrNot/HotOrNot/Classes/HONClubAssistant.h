@@ -16,6 +16,7 @@
 - (NSArray *)clubTypeKeys;
 - (NSDictionary *)createClubDictionary;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
+- (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (NSDictionary *)orthodoxThresholdClubDictionary;
 - (NSDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
@@ -57,7 +58,6 @@
 - (NSArray *)excludedClubDomains;
 
 - (HONUserClubVO *)clubWithParticipants:(NSArray *)participants;
-//- (void)generateClubWithClubMembers:(NSArray *)
 - (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants;
 - (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO;
 

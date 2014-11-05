@@ -7,7 +7,7 @@
 //
 
 #import "NSString+DataTypes.h"
-
+#import "UIImageView+AFNetworking.h"
 
 #import "HONStoreProductsViewController.h"
 #import "HONHeaderView.h"
@@ -103,8 +103,7 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Store"];
-	[headerView addCloseButtonWithTarget:self usingAction:@selector(_goClose)];
-//	[headerView addButton:closeButton];
+	[headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
@@ -178,8 +177,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 101.0))];
-	headerImageView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.90];
+	NSString *url = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"store"] objectForKey:@"banner"]  stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]];
+	
+	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize([tableView rectForHeaderInSection:section].size)];
+	[headerImageView setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"storeProductsBanner"]];
 	
 	return (headerImageView);
 }
@@ -205,7 +206,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (101.0);
+	return (100.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

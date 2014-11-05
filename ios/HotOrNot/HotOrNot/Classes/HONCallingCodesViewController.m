@@ -94,7 +94,7 @@
 	_cells = [NSMutableArray array];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
-	[headerView addDoneButtonWithTarget:self usingAction:@selector(_goDone)];
+	[headerView addDoneButtonWithTarget:self action:@selector(_goDone)];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];

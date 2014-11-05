@@ -26,6 +26,7 @@
 @property (nonatomic, retain) NSString *altID;
 @property (nonatomic, retain) NSString *phoneNumber;
 @property (nonatomic, retain) NSDate *invitedDate;
+@property (nonatomic, retain) NSDate *joinedDate;
 @property (nonatomic) int totalUpvotes;
 @property (nonatomic) BOOL isVerified;
 @end

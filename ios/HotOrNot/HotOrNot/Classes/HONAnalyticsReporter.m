@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 
 #import "HONAnalyticsReporter.h"
@@ -65,8 +66,8 @@ static HONAnalyticsReporter *sharedInstance = nil;
 			  @"adid"			: [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO],
 			  @"push_token"		: [[HONDeviceIntrinsics sharedInstance] pushToken],
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
-			  @"time"			: [[HONDateTimeAlloter sharedInstance] utcNowDateFormattedISO8601],
-			  @"tz"				: [[HONDateTimeAlloter sharedInstance] utcHourOffsetFromDeviceLocale],
+			  @"time"			: [[NSDate utcNowDate] formattedISO8601StringUTC],
+			  @"tz"				: [[NSDate date] utcHourOffsetFromDeviceLocale],
 			  @"battery_per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)],
 			  @"hmac"			: [[HONDeviceIntrinsics sharedInstance] hmacToken]});
 }
@@ -89,13 +90,13 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)userProperties {
-	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
+	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [NSDate utcNowDate];
 	
 	return(@{@"id"			: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
 			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
 			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
-			 @"cohort_date"	: [[HONDateTimeAlloter sharedInstance] ISO8601FormattedStringFromUTCDate:cohortDate],
-			 @"cohort_week"	: [NSString stringWithFormat:@"%04d-%02d", [[HONDateTimeAlloter sharedInstance] yearFromDate:cohortDate], [[HONDateTimeAlloter sharedInstance] weekOfYearFromDate:cohortDate]]});
+			 @"cohort_date"	: [cohortDate formattedISO8601StringUTC],
+			 @"cohort_week"	: [NSString stringWithFormat:@"%04d-%02d", [cohortDate year], [cohortDate weekOfYear]]});
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
@@ -145,7 +146,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	return (@{@"club"	: @{@"id"		: [@"" stringFromInt:vo.clubID],
 							@"name"		: vo.clubName,
 							@"owner_id"	: [@"" stringFromInt:vo.ownerID],
-							@"created"	: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:vo.addedDate]}});
+							@"created"	: [vo.addedDate formattedISO8601StringUTC]}});
 }
 
 

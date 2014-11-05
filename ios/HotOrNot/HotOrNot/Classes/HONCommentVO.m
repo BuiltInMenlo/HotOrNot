@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
+
 #import "HONCommentVO.h"
 
 
@@ -27,7 +29,7 @@
 	vo.userScore = [[dictionary objectForKey:@"score"] intValue];
 	vo.content = [dictionary objectForKey:@"text"];
 	
-	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }

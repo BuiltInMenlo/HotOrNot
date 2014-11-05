@@ -8,8 +8,6 @@
 
 #import "NSString+DataTypes.h"
 
-#import "HONRefreshControl.h"
-#import "MBProgressHUD.h"
 
 #import "HONClubTimelineViewController.h"
 #import "HONComposeViewController.h"
@@ -18,13 +16,12 @@
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
 #import "HONHeaderView.h"
-#import "HONHeaderView.h"
+#import "HONRefreshControl.h"
 
 @interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIView *emptySetView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -32,6 +29,7 @@
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
 @property (nonatomic) int clubPhotoID;
+@property (nonatomic) BOOL refreshOnBack;
 @end
 
 
@@ -49,6 +47,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_tareClubTimeline:)
 													 name:@"TARE_CLUB_TIMELINE" object:nil];
+		_refreshOnBack = NO;
 	}
 	
 	return (self);
@@ -122,13 +121,6 @@
 - (void)_retrieveClub {
 	_tableView.hidden = YES;
 	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.taskInProgress = YES;
-	
 	_clubPhotos = [NSArray array];
 	[_tableView reloadData];
 	
@@ -158,15 +150,14 @@
 - (void)_didFinishDataRefresh {
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
 	
-	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
-		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
-		
-		if (!isSeen) {
-			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
-			}];
-		}
-	}];
+//	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
+//		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+//		
+//		if (!isSeen) {
+//			_refreshOnBack = YES;
+//			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
+//		}
+//	}];
 	
 	
 	[_headerView setTitle:_clubPhotoVO.username];
@@ -179,11 +170,6 @@
 	[_refreshControl endRefreshing];
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 	_tableView.hidden = NO;
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
 	
 	if (_index != 0 || _clubPhotoID != 0)
 		[self _jumpToPhotoFromID];
@@ -248,7 +234,7 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView removeBackground];
-	[_headerView addCloseButtonWithTarget:self usingAction:@selector(_goBack)];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goBack)];
 	[self.view addSubview:_headerView];
 	
 //	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
@@ -261,6 +247,15 @@
 			_index = MIN(MAX(0, _index), [_clubPhotos count] - 1);
 			[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 		}
+		
+		[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
+			NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+			
+			if (!isSeen) {
+				_refreshOnBack = YES;
+				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
+			}
+		}];
 	}
 	
 	if (_clubVO == nil && _clubID > 0)
@@ -291,6 +286,11 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply"
 										 withClubPhoto:_clubPhotoVO];
 	
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoViewCell *viewCell = (HONClubPhotoViewCell *)obj;
+		[viewCell destroy];
+	}];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:^(void) {
@@ -301,7 +301,16 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back"
 									   withUserClub:_clubVO];
 	
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoViewCell *viewCell = (HONClubPhotoViewCell *)obj;
+		[viewCell destroy];
+	}];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
+	
+	if (_refreshOnBack)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+	
 	[self.navigationController popViewControllerAnimated:NO];
 }
 
@@ -318,14 +327,13 @@
 		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
-//	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
-//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
-//										  withClubPhoto:_clubPhotoVO];
-//		
-//		[self _goReply];
-//	}
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
+										  withClubPhoto:_clubPhotoVO];
+		
+		[self _goReply];
+	}
 }
-
 
 
 #pragma mark - Notifications
@@ -333,6 +341,14 @@
 	NSLog(@"::|> _refreshClubTimeline <|::");
 	_index = 0;
 	_clubPhotoID = 0;
+	
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoViewCell *viewCell = (HONClubPhotoViewCell *)obj;
+		[viewCell destroy];
+	}];
+	
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 	
 	[self _retrieveClub];
 }
@@ -478,15 +494,12 @@
 		[_headerView transitionTitle:_clubPhotoVO.username];
 	
 	
-	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
-		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
-		
-		if (!isSeen) {
-			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
-			}];
-		}
-	}];
+//	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
+//		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+//		
+//		if (!isSeen)
+//			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
+//	}];
 }
 
 

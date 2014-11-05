@@ -100,7 +100,7 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
-	[headerView addComposeButtonWithTarget:self usingAction:@selector(_goCreateChallenge)];
+	[headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];

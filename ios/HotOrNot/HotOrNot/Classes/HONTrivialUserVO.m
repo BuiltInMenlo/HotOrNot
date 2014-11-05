@@ -6,27 +6,29 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 
 #import "HONTrivialUserVO.h"
 
 @implementation HONTrivialUserVO
 @synthesize dictionary;
-@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, totalUpvotes, invitedDate;
+@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, totalUpvotes, invitedDate, joinedDate;
 
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];
-	
 	vo.dictionary = dictionary;
+	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"img_url"]];
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? @"" : vo.avatarPrefix;
-	vo.altID = ([dictionary objectForKey:@"alt_id"] != [NSNull null]) ? [dictionary objectForKey:@"alt_id"] : @"";
+	vo.altID = ([dictionary objectForKey:@"alt_id"] != nil) ? [dictionary objectForKey:@"alt_id"] : @"";
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.totalUpvotes = [[dictionary objectForKey:@"total_votes"] intValue];
+	vo.invitedDate = ([dictionary objectForKey:@"invited"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]] : [NSDate blankTimestamp];
+	vo.joinedDate =([dictionary objectForKey:@"joined"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]] : [NSDate blankTimestamp];
 	
-	vo.invitedDate = ([dictionary objectForKey:@"invited"] != nil) ? [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]] : [[HONDateTimeAlloter sharedInstance] utcNowDate];
 	return (vo);
 }
 
@@ -66,6 +68,8 @@
 	self.username = nil;
 	self.avatarPrefix = nil;
 	self.altID = nil;
+	self.phoneNumber = nil;
 	self.invitedDate = nil;
+	self.joinedDate = nil;
 }
 @end

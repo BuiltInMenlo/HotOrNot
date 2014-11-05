@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "UIImageView+AFNetworking.h"
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
+#import "UIImageView+AFNetworking.h"
 #import "UILabel+FormattedText.h"
 
 #import "FLAnimatedImage.h"
@@ -139,8 +140,6 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 //	NSLog(@"cell.emotionVOs:[%@]", _emotionVOs);
 	
 	[super accVisible:NO];
-	
-//	[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_statusUpdateVO.challengeID];
 	
 	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
 	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];

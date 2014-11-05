@@ -40,6 +40,7 @@ typedef NS_ENUM(NSUInteger, HONStickerPakType) {
 - (NSDictionary *)fetchStickerStoreInfo;
 - (void)nameForContentGroupID:(NSString *)contentGroupID completion:(void (^)(NSString *result))completion;
 - (NSArray *)retrieveStickerStoreProducts;
+- (NSArray *)fetchAllContentGroupIDs;
 - (void)retrieveAllStickerPakTypesWithDelay:(CGFloat)delay ignoringCache:(BOOL)ignoreCache;
 - (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(BOOL success))completion;
 - (void)purchaseStickerWithContentID:(NSString *)contentID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate;
@@ -54,10 +55,14 @@ typedef NS_ENUM(NSUInteger, HONStickerPakType) {
 - (PicoSticker *)stickerFromCandyBoxWithContentID:(NSString *)contentID;
 
 - (NSDictionary *)fetchCoverStickerForContentGroupID:(NSString *)contentGroupID;
+- (NSString *)fetchContentGroupIDForGroupIndex:(int)stickerGroupIndex;
 - (NSArray *)fetchStickersForGroupIndex:(int)stickerGroupIndex;
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
 - (void)retrieveContentsForContentGroupID:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion;
 
 - (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID;
 - (BOOL)isStickerPakPurchasedWithContentGroupID:(NSString *)contentGroupID;
+
+- (void)writeContentGroupCachedWithContentGroupID:(NSString *)contentGroupID;
+- (BOOL)isContentGroupCachedForContentGroupID:(NSString *)contentGroupID;
 @end

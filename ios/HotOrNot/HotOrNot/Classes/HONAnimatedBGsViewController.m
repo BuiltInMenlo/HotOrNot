@@ -89,7 +89,7 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Animations"];
-	[headerView addCloseButtonWithTarget:self usingAction:@selector(_goClose)];
+	[headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:headerView];
 	
 	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONAnimatedBGViewFlowLayout alloc] init]];

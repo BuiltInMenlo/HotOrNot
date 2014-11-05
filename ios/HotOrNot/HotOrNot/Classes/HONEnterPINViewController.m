@@ -114,7 +114,7 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter pin")];
-	[headerView addBackButtonWithTarget:self usingAction:@selector(_goBack)];
+	[headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	[self.view addSubview:headerView];
 	
 	

@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
+
 #import "HONClubPhotoVO.h"
 
 @implementation HONClubPhotoVO
@@ -28,7 +30,7 @@
 	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
-	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }

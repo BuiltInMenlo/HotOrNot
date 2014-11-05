@@ -123,7 +123,7 @@
 	
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			NSLog(@"PHONE CONTACT:[%@]", dict);
+//			NSLog(@"PHONE CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
 			for (HONTrivialUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]] || vo.userID == [[dict objectForKey:@"id"] intValue]) {
@@ -238,7 +238,8 @@
 }
 
 - (void)_goReloadTableViewContents {
-	[_refreshControl beginRefreshing];
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";

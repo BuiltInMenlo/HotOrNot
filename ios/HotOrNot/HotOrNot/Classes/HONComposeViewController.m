@@ -11,12 +11,13 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSMutableDictionary+Replacements.h"
-#import "NSString+DataTypes.h"
-#import "NSString+Formatting.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
+#import "NSDate+Operations.h"
+#import "NSMutableDictionary+Replacements.h"
+#import "NSString+DataTypes.h"
+#import "NSString+Formatting.h"
 
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
@@ -42,6 +43,8 @@
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
+@property (nonatomic, strong) NSMutableArray *selectedUsers;
+@property (nonatomic, strong) NSMutableArray *selectedContacts;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
@@ -84,7 +87,7 @@
 													 name:@"RELOAD_EMOTION_PICKER" object:nil];
 		
 		_selfieAttempts = 0;
-		_filename = [[HONClubAssistant sharedInstance] rndCoverImageURL];
+		_filename = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] rndCoverImageURL]];
 		
 		_selectedEmotions = [NSMutableArray array];
 		_subjectNames = [NSMutableArray array];
@@ -108,7 +111,7 @@
 	NSLog(@"%@ - initWithContact", [self description]);
 	if ((self = [self init])) {
 		_contactUserVO = contactUserVO;
-		_selfieSubmitType = HONSelfieSubmitTypeCreate;
+		_selfieSubmitType = HONSelfieSubmitTypeSearchContact;
 	}
 	
 	return (self);
@@ -118,7 +121,7 @@
 	NSLog(@"%@ - initWithUser", [self description]);
 	if ((self = [self init])) {
 		_trivialUserVO = trivialUserVO;
-		_selfieSubmitType = HONSelfieSubmitTypeCreate;
+		_selfieSubmitType = HONSelfieSubmitTypeSearchUser;
 	}
 	
 	return (self);
@@ -148,8 +151,15 @@
 
 #pragma mark - Data Calls
 - (void)_submitReplyStatusUpdate {
-	NSMutableArray *selectedUsers = [NSMutableArray array];
-	NSMutableArray *selectedContacts = [NSMutableArray array];
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
+	_progressHUD.taskInProgress = YES;
+	
+	_selectedUsers = [NSMutableArray array];
+	_selectedContacts = [NSMutableArray array];
 	
 	__block NSString *names = @"";
 	NSMutableArray *participants = [NSMutableArray array];
@@ -159,29 +169,34 @@
 	
 	[_userClubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-		[selectedUsers addObject:vo];
+		NSLog(@"activeMembers:%@", vo.dictionary);
+		[_selectedUsers addObject:vo];
 		[participants addObject:vo.username];
 		names = [names stringByAppendingFormat:@"%@, ", vo.username];
 	}];
 	
 	[_userClubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		NSLog(@"pendingMembers:%@", vo.dictionary);
 		
-		if ([trivialUserVO.altID length] > 0)
-			[selectedContacts addObject:[HONContactUserVO contactFromTrivialUserVO:trivialUserVO]];
+		if ([vo.altID length] > 0)
+			[_selectedContacts addObject:[HONContactUserVO contactFromTrivialUserVO:vo]];
 		
 		else
-			[selectedUsers addObject:trivialUserVO];
+			[_selectedUsers addObject:vo];
 		
-		[participants addObject:trivialUserVO.username];
-		names = [names stringByAppendingFormat:@"%@, ", trivialUserVO.username];
+		[participants addObject:vo.username];
+		names = [names stringByAppendingFormat:@"%@, ", vo.username];
 	}];
 	
 	names = [names stringByTrimmingFinalSubstring:@", "];
 	
+	NSLog(@"_selectedUsers:%@", _selectedUsers);
+	NSLog(@"_selectedContacts:%@", _selectedContacts);
+	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| CLUB -=- (CREATE) |~|*|~|*|~|*|~|*|~|*|~|*^*");
 	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
-	[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+	[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 	_userClubVO = [HONUserClubVO clubWithDictionary:dict];
 	
 	[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
@@ -202,34 +217,24 @@
 				_progressHUD = nil;
 				
 			} else {
-				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
+//				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
+//				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
 				
-				NSMutableArray *users = [NSMutableArray array];
-				for (HONTrivialUserVO *vo in selectedUsers)
-					[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
+													   withProperties:[self _trackingProps]];
 				
-				NSMutableArray *contacts = [NSMutableArray array];
-				for (HONContactUserVO *vo in selectedContacts)
-					[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
-				
-				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Send Club Reply Invites [%@]", _userClubVO.clubName]
-											message:[NSString stringWithFormat:@"users:[%@]\ncontacts:[%@]", selectedUsers, selectedContacts]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-				[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
-												   withProperties:@{@"clubs"	: [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO],
-																	@"members"	: users,
-																	@"contacts"	: contacts}];
-				
-				[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:selectedUsers ToNonAppContacts:selectedContacts onCompletion:^(BOOL success) {
-					[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
+					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
+						if (_progressHUD != nil) {
+							[_progressHUD hide:YES];
+							_progressHUD = nil;
+						}
+						
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 						}];
 					}];
-				}];
+//				}];
 			}
 		}];
 	}];
@@ -240,7 +245,8 @@
 	_isUploadComplete = NO;
 	_uploadCounter = 0;
 	
-	_filename = [NSString stringWithFormat:@"%@_%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_filename = [NSString stringWithFormat:@"%@/%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
@@ -297,33 +303,26 @@
 													 encoding:NSUTF8StringEncoding];
 		
 		_submitParams = [@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
+						   @"img_url"		: _filename,
 						   @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieSubmitTypeReply) ? _userClubVO.clubID : 0],
 						   @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieSubmitTypeReply) ? _userClubVO.ownerID : 0],
 						   @"subject"		: @"",
 						   @"subjects"		: jsonString,
 						   @"challenge_id"	: [@"" stringFromInt:0],
-						   @"recipients"		: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
+						   @"recipients"	: (_trivialUserVO != nil) ? [@"" stringFromInt:_trivialUserVO.userID] : (_contactUserVO != nil) ? (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email : @"",
 						   @"api_endpt"		: kAPICreateChallenge} mutableCopy];
 		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", _submitParams);
-		
-//		[self.navigationController pushViewController:[[HONStatusUpdateSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:YES];
 
 		
-		if (_selfieSubmitType != HONSelfieSubmitTypeReply) {
+		if (_selfieSubmitType == HONSelfieSubmitTypeCreate) {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Friend Picker"];
-			
-			_isPushing = YES;
 			[self.navigationController pushViewController:[[HONComposeSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
  
-		
 		} else {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit Reply"
-											   withUserClub:_userClubVO];
+												 withUserClub:_userClubVO];
 			
 			[self _submitReplyStatusUpdate];
-			
-//			[self _retrieveClubWithClubID:[[_submitParams objectForKey:@"club_id"] intValue] ownerID:[[_submitParams objectForKey:@"owner_id"] intValue]];
 		}
 	}
 }
@@ -356,6 +355,25 @@
 	[_progressHUD show:NO];
 	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 	_progressHUD = nil;
+}
+
+
+#pragma mark - Data Handling
+- (NSDictionary *)_trackingProps {
+	NSMutableArray *users = [NSMutableArray array];
+	for (HONTrivialUserVO *vo in _selectedUsers)
+		[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
+	
+	NSMutableArray *contacts = [NSMutableArray array];
+	for (HONContactUserVO *vo in _selectedContacts)
+		[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
+	
+	NSMutableDictionary *props = [NSMutableDictionary dictionary];
+	[props setValue:[[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO] forKey:@"clubs"];
+	[props setValue:users forKey:@"members"];
+	[props setValue:contacts forKey:@"contacts"];
+	
+	return ([props copy]);
 }
 
 
@@ -416,8 +434,8 @@
 	}];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Create"];
-	[_headerView addCloseButtonWithTarget:self usingAction:@selector(_goCancel)];
-	[_headerView addNextButtonWithTarget:self usingAction:@selector(_goSubmit)];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goCancel)];
+	[_headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
 	[self.view addSubview:_headerView];	
 }
 
@@ -744,7 +762,7 @@
 
 #pragma mark - StickerButtonsPickerView Delegates
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
-	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
+	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@ - {%@}) [*:*]", self.class, emotionVO.emotionName, (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"GIF" : @"JPG");
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
 										  withEmotion:emotionVO];
@@ -765,18 +783,18 @@
 //	});
 	
 	if (stickerButtonsPickerView.stickerGroupIndex == 3) {
-		NSString *imgURL = [NSString stringWithFormat:@"https://s3.amazonaws.com/hotornot-challenges/%@Large_640x1136.%@", emotionVO.emotionName, @"gif"];// (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"gif" : @"jpg"];
-		NSLog(@"imgURL:[%@]", imgURL);
-		_filename = [[imgURL componentsSeparatedByString:@"/"] lastObject];
+		_filename = [[emotionVO.smallImageURL componentsSeparatedByString:@"/"] lastObject];
+		_filename = emotionVO.smallImageURL;
+		NSLog(@"imgURL:[%@] filename:[%@]", emotionVO.smallImageURL, _filename);
 		
-		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapLargeSize)];
-		[_bgSelectImageView setImageWithURL:[NSURL URLWithString:imgURL]];
-		
-		if (emotionVO.imageType == HONEmotionImageTypeGIF)
+		if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 			[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
 		
-		else
+		} else {
+			_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapLargeSize)];
+			[_bgSelectImageView setImageWithURL:[NSURL URLWithString:emotionVO.smallImageURL]];
 			[_composeDisplayView updatePreview:_bgSelectImageView.image];
+		}
 		
 	} else {
 		[_headerView transitionTitle:emotionVO.emotionName];
@@ -796,6 +814,11 @@
 										  withProperties:@{@"index"		: @(stickerButtonsPickerView.stickerGroupIndex)}];
 	
 	[stickerButtonsPickerView cacheAllStickerContent];
+}
+
+- (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didFinishDownloadingForContentGroupID:(NSString *)contentGroupID {
+	NSLog(@"[*:*] stickerButtonsPickerView:didFinishDownloadingForContentGroupID:[%@]:(%@) [*:*]", self.class, contentGroupID);
+	[[HONStickerAssistant sharedInstance] writeContentGroupCachedWithContentGroupID:contentGroupID];
 }
 
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didChangeToPage:(int)page withDirection:(int)direction {

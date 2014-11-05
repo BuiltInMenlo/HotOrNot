@@ -10,6 +10,7 @@
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CommonCrypto/CommonHMAC.h>
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 
 #import "MBProgressHUD.h"
@@ -200,7 +201,7 @@ static HONAPICaller *sharedInstance = nil;
 
 
 - (void)retreiveBootConfigWithCompletion:(void (^)(id result))completion {
-	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, [[HONDateTimeAlloter sharedInstance] elapsedSecondsSinceUnixEpoch]];
+	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 	SelfieclubJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
 	

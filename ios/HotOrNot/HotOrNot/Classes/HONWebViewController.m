@@ -69,7 +69,7 @@
 	[self.view addSubview:_webView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:_headerTitle];
-	[_headerView addCloseButtonWithTarget:self usingAction:@selector(_goClose)];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:_headerView];
 }
 

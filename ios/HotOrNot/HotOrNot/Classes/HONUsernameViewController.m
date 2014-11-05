@@ -45,7 +45,7 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Username"];
-	[headerView addDoneButtonWithTarget:self usingAction:@selector(_goClose)];
+	[headerView addDoneButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:headerView];
 	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];

@@ -8,6 +8,7 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 #import "NSString+Formatting.h"
 #import "NSUserDefaults+Replacements.h"
@@ -81,8 +82,8 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
 	
 	return ([dict copy]);
 }
@@ -113,6 +114,54 @@ static HONClubAssistant *sharedInstance = nil;
 			} mutableCopy]);
 }
 
+- (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)actives pendingMembers:(NSArray *)invites {
+	NSMutableArray *members = [NSMutableArray array];
+	[actives enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		[members addObject:@{@"id"			: [@"" stringFromInt:vo.userID],
+							 @"username"	: vo.username,
+							 @"avatar"		: vo.avatarPrefix,
+							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC],
+							 @"joined"		: [vo.joinedDate formattedISO8601StringUTC]}];
+	}];
+	
+	NSMutableArray *pending = [NSMutableArray array];
+	[invites enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		[pending addObject:@{@"id"			: [@"" stringFromInt:vo.userID],
+							 @"username"	: vo.username,
+							 @"avatar"		: vo.avatarPrefix,
+							 @"extern_name"	: ([vo.altID length] > 0) ? vo.username : @"",
+							 @"phone"		: vo.altID,
+							 @"email"		: vo.altID,
+							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC]}];
+	}];
+	
+	return ([@{@"id"			: @"",
+			   @"name"			: @"",
+			   
+			   @"description"	: @"",
+			   @"img"			: @"",
+			   @"club_type"		: @"",
+			   @"added"			: @"0000-00-00 00:00:00",
+			   @"updated"		: @"0000-00-00 00:00:00",
+			   
+			   @"total_members"		: [@"" stringFromInt:(1 + ([members count] + [pending count]))],
+			   @"total_score"		: @"0",
+			   @"total_submissions"	: @"0",
+			   
+			   @"owner"			: ([owner count] == 0) ? @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+														   @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+														   @"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]} : owner,
+			   
+			   @"members"		: [members copy],
+			   @"pending"		: [pending copy],
+			   @"blocked"		: @[],
+			   
+			   @"submissions"	: @[]
+			   } mutableCopy]);
+}
+
 - (NSDictionary *)orthodoxThresholdClubDictionary {
 	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"			: @"2394",
 																								  @"username"	: @"Selfieclub",
@@ -122,8 +171,8 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict setValue:@"LOCKED" forKey:@"club_type"];
 	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
 	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
 	[dict setValue:@"https://hotornot-challenges.s3.amazonaws.com/26mgmt" forKey:@"img"];
 	
@@ -138,20 +187,20 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"img"			: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
 			  @"score"			: @"0",
 			  @"subjects"		: @[],
-			  @"added"			: [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]]});
+			  @"added"			: [NSDate utcStringFormattedISO8601]});
 }
 
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableArray *emotions = [NSMutableArray array];
 	for (NSString *subject in clubPhotoVO.subjectNames) {
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll]) {
-//			NSLog(@"SUBJECT:[%@] STICKER:[%@]", subject, dict);
-			HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:dict];
+		[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:(NSDictionary *)obj];
 			if ([[vo.emotionName lowercaseString] isEqualToString:[subject lowercaseString]]) {
+//				NSLog(@"(%02d) =-= SUBJECT:[%@] STICKER:[%@]", idx, subject, vo.emotionName);
 				[emotions addObject:vo];
-				break;
+				*stop = YES;
 			}
-		}
+		}];
 	}
 	
 	return ([emotions copy]);
@@ -190,15 +239,30 @@ static HONClubAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
+	NSLog(@"!!!!! LOCAL SEEN:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
+	
 	__block BOOL isFound = NO;
-	if (![[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:statusUpdateID]] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:statusUpdateID]] != nil) {
+		if (completion)
+			completion(YES);
+	
+	} else {
 		[[HONAPICaller sharedInstance] retrieveSeenMembersChallengeWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
 			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSDictionary *dict = (NSDictionary *)obj;
 				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-				
 //				NSLog(@"--- dict:[%@]", dict);
 //				NSLog(@"--- isFound:[%@]", [@"" stringFromBOOL:isFound]);
+				
+				if (isFound) {
+					NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
+					[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:[@"" stringFromInt:statusUpdateID]];
+					
+					[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+				}
+				
 				*stop = isFound;
 			}];
 			
@@ -649,7 +713,7 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	} else {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubPhotoDictionary] mutableCopy];
-		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
 		clubVO = [HONUserClubVO clubWithDictionary:dict];
 		

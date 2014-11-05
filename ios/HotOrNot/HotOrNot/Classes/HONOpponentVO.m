@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
+
 #import "HONOpponentVO.h"
 
 @implementation HONOpponentVO
@@ -26,7 +28,7 @@
 	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	
-	vo.joinedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]];
+	vo.joinedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]];
 		
 	return (vo);
 }

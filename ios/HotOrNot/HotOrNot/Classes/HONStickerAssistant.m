@@ -212,6 +212,28 @@ static HONStickerAssistant *sharedInstance = nil;
 	return (nil);
 }
 
+- (NSString *)fetchContentGroupIDForGroupIndex:(int)stickerGroupIndex {
+	NSDictionary *pakTypeStickers = [[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"];
+	
+	if (stickerGroupIndex == 0) {
+		return ([[pakTypeStickers objectForKey:kStickersGroup] objectForKey:@"content_group"]);
+		
+	} else if (stickerGroupIndex == 1) {
+		return ([[pakTypeStickers objectForKey:kFacesGroup] objectForKey:@"content_group"]);
+		
+	} else if (stickerGroupIndex == 2) {
+		return ([[pakTypeStickers objectForKey:kAnimalsGroup] objectForKey:@"content_group"]);
+		
+	} else if (stickerGroupIndex == 3) {
+		return ([[pakTypeStickers objectForKey:kObjectsGroup] objectForKey:@"content_group"]);
+		
+	} else if (stickerGroupIndex == 4) {
+		return ([[pakTypeStickers objectForKey:kOtherGroup] objectForKey:@"content_group"]);
+	}
+	
+	return (@"0");
+}
+
 - (NSArray *)fetchStickersForGroupIndex:(int)stickerGroupIndex {
 	NSMutableDictionary *contentGroups = ([[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] mutableCopy] : [NSMutableDictionary dictionary];
 	NSArray *allPakTypeStickers = [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll];
@@ -351,6 +373,33 @@ static HONStickerAssistant *sharedInstance = nil;
 	}];
 }
 
+- (NSArray *)fetchAllContentGroupIDs {
+	NSMutableArray *cgIDs = [NSMutableArray array];
+	NSDictionary *contentGroups = [[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"];
+	for (NSString *key in [contentGroups keyEnumerator]) {
+		[cgIDs addObject:key];
+	}
+	
+	
+//	
+//	
+//	
+//	[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		NSDictionary *dict = (NSDictionary *)obj;
+//		
+//		__block BOOL isFound = NO;
+//		[cgIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			isFound = ([(NSString *)obj isEqualToString:[dict objectForKey:@"cg_id"]]);
+//			*stop = isFound;
+//		}];
+//		
+//		if (!isFound)
+//			[cgIDs addObject:[dict objectForKey:@"cg_id"]];
+//	}];
+	
+	return ([cgIDs copy]);
+}
+
 - (BOOL)candyBoxContainsContentForContentID:(NSString *)contentID {
 	__block BOOL isFound = NO;
 	CandyBox *candyBox = [PicoManager sharedManager].candyBox;
@@ -433,6 +482,41 @@ static HONStickerAssistant *sharedInstance = nil;
 	}];
 	
 	return (sticker);
+}
+
+
+- (void)writeContentGroupCachedWithContentGroupID:(NSString *)contentGroupID {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"cached_cg"] == nil) {
+		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+		[[[HONStickerAssistant sharedInstance] fetchAllContentGroupIDs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSString *cgID = (NSString *)obj;
+			[dict setValue:[@"" stringFromBOOL:NO] forKey:cgID];
+		}];
+		
+		[[NSUserDefaults standardUserDefaults] setValue:[dict copy] forKey:@"cached_cg"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"cached_cg"] mutableCopy];
+	[dict setValue:[@"" stringFromBOOL:YES] forKey:contentGroupID];
+	
+	[[NSUserDefaults standardUserDefaults] setValue:[dict copy] forKey:@"cached_cg"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)isContentGroupCachedForContentGroupID:(NSString *)contentGroupID {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"cached_cg"] == nil) {
+		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+		[[[HONStickerAssistant sharedInstance] fetchAllContentGroupIDs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSString *cgID = (NSString *)obj;
+			[dict setValue:[@"" stringFromBOOL:NO] forKey:cgID];
+		}];
+		
+		[[NSUserDefaults standardUserDefaults] setValue:[dict copy] forKey:@"cached_cg"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"cached_cg"] objectForKey:contentGroupID] isEqualToString:@"YES"]);
 }
 
 @end

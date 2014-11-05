@@ -7,6 +7,7 @@
 //
 
 
+#import "NSDate+Operations.h"
 #import "NSDictionary+NullReplacement.h"
 #import "NSString+DataTypes.h"
 
@@ -29,7 +30,7 @@
 	vo.isSuspended = ((BOOL)[[dictionary objectForKey:@"is_suspended"] intValue]);
 	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"avatar_url"]];
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"avatar"] : vo.avatarPrefix;
-	vo.birthday = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"age"]];
+	vo.birthday = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"age"]];
 	
 	vo.friends = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"friends"]) {

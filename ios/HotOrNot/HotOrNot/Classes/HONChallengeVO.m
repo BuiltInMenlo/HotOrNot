@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
+
 #import "HONChallengeVO.h"
 
 @implementation HONChallengeVO
@@ -26,7 +28,7 @@
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
 	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	
-	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	switch (vo.statusID) {
 		case 1:

@@ -48,7 +48,6 @@ static HONDateTimeAlloter *sharedInstance = nil;
 
 - (NSDate *)dateFromISO9601UTCFormattedString:(NSString *)stringDate {
 	return ([[[HONDateTimeAlloter sharedInstance] dateFormatterWithSymbols:kISO8601UTCFormatSymbols] dateFromString:stringDate]);
-	
 }
 
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate {
@@ -124,10 +123,6 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	
 	interval = (suffix != nil && [suffix length] > 0) ? [interval stringByAppendingString:suffix] : interval;
 	return ((secs <= minSeconds) ? @"1s" : interval);
-}
-
-- (BOOL)isPastDate:(NSDate *)date {
-	return ([[HONDateTimeAlloter sharedInstance] didDate:[NSDate date] occurBerforeDate:date]);
 }
 
 - (NSString *)orthodoxBlankTimestampFormattedString {

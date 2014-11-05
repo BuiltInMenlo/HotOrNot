@@ -73,11 +73,12 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 			_animatedImageView.frame = _imageView.frame;
 			[_imageView addSubview:_animatedImageView];
 			
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 				NSURL *url = [NSURL URLWithString:_emotionVO.smallImageURL];
 				FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
+					_imageView.image = animatedImage.posterImage;
 					_animatedImageView.animatedImage = animatedImage;
 					_emotionVO.animatedImageView = _animatedImageView;
 				});

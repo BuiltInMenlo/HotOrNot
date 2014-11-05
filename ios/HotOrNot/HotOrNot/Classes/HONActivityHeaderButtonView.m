@@ -70,7 +70,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 //			_isFirstRun = NO;
 //		}
 //	
-//		NSLog(@"updateActivityBadge -[%@]- newTot:[%d]", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]], newTot);
+//		NSLog(@"updateActivityBadge -[%@]- newTot:[%d]", [[HONDateTimeAlloter sharedInstance] utcNowDate]], newTot);
 //		[UIView animateWithDuration:0.25 delay:delay options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
 //			_activityBGImageView.alpha = (newTot > 0);
 //		} completion:^(BOOL finished) {}];

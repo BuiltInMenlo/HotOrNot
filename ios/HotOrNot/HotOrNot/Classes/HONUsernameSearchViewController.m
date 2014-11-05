@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONUsernameSearchViewController.h"
@@ -18,6 +18,7 @@
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
+#import "HONRefreshControl.h"
 #import "HONUserProfileViewController.h"
 #import "HONComposeViewController.h"
 
@@ -130,8 +131,8 @@
 	_selectedUsers = [NSMutableArray array];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_search", @"Search")];
-	[headerView addCloseButtonWithTarget:self usingAction:@selector(_goClose)];
-	[headerView addNextButtonWithTarget:self usingAction:@selector(_goDone)];
+	[headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
+	[headerView addNextButtonWithTarget:self action:@selector(_goDone)];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight)];
@@ -391,35 +392,38 @@
 		
 		if (buttonIndex == 1) {
 			_isPushing = YES;
-			__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:_selectedUsers];
+//			__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] clubWithParticipants:_selectedUsers];
+//			
+//			if (clubVO != nil) {
+//				NSLog(@"CLUB -=- (JOIN) -=-");
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:YES completion:nil];
 			
-			if (clubVO != nil) {
-				NSLog(@"CLUB -=- (JOIN) -=-");
+//				[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
+//					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
+//					[navigationController setNavigationBarHidden:YES];
+//					[self presentViewController:navigationController animated:YES completion:nil];
+//				}];
 				
-				[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
-					[navigationController setNavigationBarHidden:YES];
-					[self presentViewController:navigationController animated:YES completion:nil];
-				}];
+//			} else {
 				
-			} else {
-				NSLog(@"CLUB -=- (CREATE) -=-");
-				
-				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
-				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] clubDictionaryWithOwner:@{} activeMembers:@[] pendingMembers:_selectedUsers];
+				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 				[dict setValue:[[HONClubAssistant sharedInstance] rndCoverImageURL] forKey:@"img"];
-				clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
-				
-				[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
-					clubVO = [HONUserClubVO clubWithDictionary:result];
-					
-					[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
+				HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
+			
+			NSLog(@"CLUB -=- (GENERATE) -=-\n%@", clubVO.dictionary);
+//				[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+//					clubVO = [HONUserClubVO clubWithDictionary:result];
+//					
+//					[[HONAPICaller sharedInstance] inviteInAppUsers:_selectedUsers toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
 						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
 						[navigationController setNavigationBarHidden:YES];
 						[self presentViewController:navigationController animated:YES completion:nil];
-					}];
-				}];
-			}
+//					}];
+//				}];
+//			}
 		}
 	}
 }

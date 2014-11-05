@@ -20,6 +20,7 @@
 
 @interface HONClubPhotoViewCell : HONTableViewCell <UIScrollViewDelegate>
 + (NSString *)cellReuseIdentifier;
+- (void)destroy;
 
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;

@@ -21,6 +21,7 @@
 #import <Tapjoy/Tapjoy.h>
 
 #import "NSData+Base64.h"
+#import "NSDate+Operations.h"
 #import "NSString+Base64.h"
 #import "NSString+DataTypes.h"
 #import "NSUserDefaults+Replacements.h"
@@ -122,12 +123,12 @@ const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheD
 NSString * const kTwilioSMS = @"6475577873";
 
 
-#if __APPSTORE_BUILD__ == 0
+//#if __APPSTORE_BUILD__ == 0
 @interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONInsetOverlayViewDelegate>
 //@interface HONAppDelegate() <HONInsetOverlayViewDelegate, PicoStickerDelegate>
-#else
-@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
-#endif
+//#else
+//@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
+//#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
@@ -603,10 +604,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	
 
-#if __APPSTORE_BUILD__ == 0
+//#if __APPSTORE_BUILD__ == 0
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
 	[[BITHockeyManager sharedHockeyManager] startManager];
-#endif
+//#endif
 
 	
 	[self _establishUserDefaults];
@@ -658,7 +659,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
 									 withProperties:@{@"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]],
-													  @"duration"	: [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]}];
+													  @"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
 	
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	
@@ -699,7 +700,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeSpringboard];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
-									 withProperties:@{@"duration"	: [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]],
+									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),
 													  @"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground]]}];
 	
 	_isFromBackground = YES;
@@ -781,7 +782,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Terminating"
-									 withProperties:@{@"duration"	: [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]}];
+									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
 	
 }
 
@@ -1645,12 +1646,10 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
 //}
 
-#if __APPSTORE_BUILD__ == 0
+//#if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 	return ([[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
-#ifndef CONFIGURATION_AppStore
-#endif
 	return (nil);
 }
 
@@ -1681,6 +1680,8 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
 	NSLog(@"sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
 }
-#endif
+//#endif
+
+
 @end
 

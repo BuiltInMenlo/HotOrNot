@@ -287,6 +287,8 @@ typedef NS_ENUM(NSUInteger, FLAnimatedImageFrameCacheSize) {
         // Calculate the optimal frame cache size: try choosing a larger buffer window depending on the predicted image size.
         // It's only dependent on the image size & number of frames and never changes.
         CGFloat animatedImageDataSize = CGImageGetBytesPerRow(self.posterImage.CGImage) * self.size.height * self.frameCount / MEGABYTE;
+//		NSLog(@"animatedImageDataSize:[%.04f]", animatedImageDataSize);
+		
         if (animatedImageDataSize <= FLAnimatedImageDataSizeCategoryAll) {
             _frameCacheSizeOptimal = self.frameCount;
         } else if (animatedImageDataSize <= FLAnimatedImageDataSizeCategoryDefault) {

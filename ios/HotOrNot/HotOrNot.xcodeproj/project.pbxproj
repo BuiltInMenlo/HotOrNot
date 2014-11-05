@@ -50,6 +50,8 @@
 		3051F8B21A08B2C500CD85F2 /* reply1Button_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8B41A08B2C500CD85F2 /* reply1Button_Active@2x.png */; };
 		3051F8B51A08B2C900CD85F2 /* reply1Button_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8B71A08B2C900CD85F2 /* reply1Button_nonActive@2x.png */; };
 		3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */; };
+		3051F8C71A09964B00CD85F2 /* UIImage+AnimatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C61A09964A00CD85F2 /* UIImage+AnimatedGIF.m */; };
+		3051F8C91A09BC2100CD85F2 /* StoreProductsElementals.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3051F8C81A09BC2100CD85F2 /* StoreProductsElementals.xcassets */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3075E02E19D66107007B3346 /* HONCameraOverlayView.m */; };
@@ -77,6 +79,7 @@
 		30B3091F19E2319C0017ACBF /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091D19E2319C0017ACBF /* Tapjoy.framework */; };
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
+		30B7BB891A0A1BC10005C761 /* NSDate+Operations.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B7BB881A0A1BC10005C761 /* NSDate+Operations.m */; };
 		30BFAC441A01B499000CE4FC /* HONStickerButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30BFAC431A01B499000CE4FC /* HONStickerButtonView.m */; };
 		30BFAC521A01BD01000CE4FC /* doneButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC541A01BD01000CE4FC /* doneButton_Active@2x.png */; };
 		30BFAC591A01BD0D000CE4FC /* doneButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30BFAC5B1A01BD0D000CE4FC /* doneButton_nonActive@2x.png */; };
@@ -439,6 +442,9 @@
 		3051F8C11A08DD9600CD85F2 /* HONStaticInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStaticInlines.h; sourceTree = "<group>"; };
 		3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDoneNavButtonView.h; sourceTree = "<group>"; };
 		3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDoneNavButtonView.m; sourceTree = "<group>"; };
+		3051F8C51A09964A00CD85F2 /* UIImage+AnimatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+AnimatedGIF.h"; sourceTree = "<group>"; };
+		3051F8C61A09964A00CD85F2 /* UIImage+AnimatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+AnimatedGIF.m"; sourceTree = "<group>"; };
+		3051F8C81A09BC2100CD85F2 /* StoreProductsElementals.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = StoreProductsElementals.xcassets; sourceTree = "<group>"; };
 		305ED7B419C3EE5100BDCB04 /* HONToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleViewCell.h; sourceTree = "<group>"; };
 		305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleViewCell.m; sourceTree = "<group>"; };
 		305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Random.h"; sourceTree = "<group>"; };
@@ -538,6 +544,8 @@
 		30B3096619E292D80017ACBF /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		30B3096819E292D80017ACBF /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
+		30B7BB871A0A1BC10005C761 /* NSDate+Operations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Operations.h"; sourceTree = "<group>"; };
+		30B7BB881A0A1BC10005C761 /* NSDate+Operations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Operations.m"; sourceTree = "<group>"; };
 		30BFAC431A01B499000CE4FC /* HONStickerButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonView.m; sourceTree = "<group>"; };
 		30BFAC531A01BD01000CE4FC /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/doneButton_Active@2x.png"; sourceTree = "<group>"; };
 		30BFAC551A01BD03000CE4FC /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/doneButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -1769,6 +1777,7 @@
 				4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */,
 				4C83FD89190F600700CAEABB /* SearchElements.xcassets */,
 				4C45A9461996B20100A2086E /* TabBannerElements.xcassets */,
+				3051F8C81A09BC2100CD85F2 /* StoreProductsElementals.xcassets */,
 			);
 			name = "Asset Catalogs";
 			sourceTree = "<group>";
@@ -2362,6 +2371,8 @@
 				305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */,
 				4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */,
 				4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */,
+				30B7BB871A0A1BC10005C761 /* NSDate+Operations.h */,
+				30B7BB881A0A1BC10005C761 /* NSDate+Operations.m */,
 				4CCED5D5181F7A8000D1D673 /* NSDictionary+NullReplacement.h */,
 				4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */,
 				30CA9CB01A02FE0800A0A703 /* NSMutableDictionary+Replacements.h */,
@@ -2378,6 +2389,8 @@
 				30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */,
 				30CA9C9D1A02332E00A0A703 /* NSUserDefaults+Replacements.h */,
 				30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */,
+				3051F8C51A09964A00CD85F2 /* UIImage+AnimatedGIF.h */,
+				3051F8C61A09964A00CD85F2 /* UIImage+AnimatedGIF.m */,
 				4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */,
 				4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */,
 				4C81A013163337C100AB188B /* UIImage+fixOrientation.h */,
@@ -2516,6 +2529,7 @@
 				07B6E7291988548D00DA0805 /* lockedOverlay@2x.png in Resources */,
 				8F4E621D198ACD7800E8A171 /* inviteOverlay@2x.png in Resources */,
 				4C0F3CB51988DDE300703D09 /* Localizable.strings in Resources */,
+				3051F8C91A09BC2100CD85F2 /* StoreProductsElementals.xcassets in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				3051F8A41A08750B00CD85F2 /* downloadButton_nonActive@2x.png in Resources */,
 				30BFAC641A01BE7D000CE4FC /* replyButton_Active@2x.png in Resources */,
@@ -2622,6 +2636,7 @@
 				4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */,
 				4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */,
 				4C65C63A194F904F0067FEA6 /* UILabel+FormattedText.m in Sources */,
+				30B7BB891A0A1BC10005C761 /* NSDate+Operations.m in Sources */,
 				4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */,
 				4CEF9201196DFED9007D56BE /* HONCallingCodeViewCell.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
@@ -2655,6 +2670,7 @@
 				4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */,
 				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
 				4CC606DA198C3E650042A951 /* HONInsetOverlayView.m in Sources */,
+				3051F8C71A09964B00CD85F2 /* UIImage+AnimatedGIF.m in Sources */,
 				30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */,
 				4C4328A518E3A9FA0035FF06 /* BlowfishAlgorithm.m in Sources */,
 				4C2400ED18C2916C00C9AE53 /* HONClubSettingsViewController.m in Sources */,
@@ -3410,8 +3426,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;

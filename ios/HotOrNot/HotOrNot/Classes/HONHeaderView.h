@@ -14,11 +14,11 @@
 - (id)initWithTitleImage:(UIImage *)image;
 
 - (void)addButton:(UIView *)buttonView;
-- (void)addBackButtonWithTarget:(id)target usingAction:(SEL)action;
-- (void)addCloseButtonWithTarget:(id)target usingAction:(SEL)action;
-- (void)addComposeButtonWithTarget:(id)target usingAction:(SEL)action;
-- (void)addDoneButtonWithTarget:(id)target usingAction:(SEL)action;
-- (void)addNextButtonWithTarget:(id)target usingAction:(SEL)action;
+- (void)addBackButtonWithTarget:(id)target action:(SEL)action;
+- (void)addCloseButtonWithTarget:(id)target action:(SEL)action;
+- (void)addComposeButtonWithTarget:(id)target action:(SEL)action;
+- (void)addDoneButtonWithTarget:(id)target action:(SEL)action;
+- (void)addNextButtonWithTarget:(id)target action:(SEL)action;
 - (void)transitionTitle:(NSString *)title;
 - (void)leftAlignTitle;
 - (void)toggleLightStyle:(BOOL)isLightStyle;

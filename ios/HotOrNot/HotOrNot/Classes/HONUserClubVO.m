@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 
 #import "HONUserClubVO.h"
@@ -36,8 +37,9 @@
 	NSMutableString *imgURL = [vo.coverImagePrefix mutableCopy];
 	[imgURL replaceOccurrencesOfString:@"http://d1fqnfrnudpaz6.cloudfront.net" withString:@"https://hotornot-challenges.s3.amazonaws.com" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imgURL length])];
 	vo.coverImagePrefix = [imgURL copy];
-	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
-	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
+	
+	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.updatedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
@@ -112,7 +114,7 @@
 	
 	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
 	
-	NSLog(@"//-/--/--/ {%@} -(%@)- [%d | %@] /--/--/-//", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:vo.updatedDate], (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName);
+	NSLog(@"//-/--/--/ {%@} -(%@)- [%d | %@] /--/--/-//", [vo.updatedDate formattedISO8601String], (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName);
 //	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	return (vo);
 }

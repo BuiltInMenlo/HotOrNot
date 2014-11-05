@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BoundingRect.h"
@@ -38,6 +39,8 @@
 @synthesize clubVO = _clubVO;
 @synthesize clubPhotoVO = _clubPhotoVO;
 
+const CGFloat kStickerTimerInterval = 0.875f;
+
 const CGRect kEmotionInitFrame = {80.0f, 80.0f, 53.0f, 53.0f};
 const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 320.0f, 320.0f};
 const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
@@ -64,6 +67,22 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 
 - (void)dealloc {
 	_scrollView.delegate = nil;
+	_stickerSummaryView.delegate = nil;
+	
+	if (_tintTimer != nil) {
+		[_tintTimer invalidate];
+		_tintTimer = nil;
+	}
+	
+	if (_stickerTimer != nil) {
+		[_stickerTimer invalidate];
+		_stickerTimer = nil;
+	}
+}
+
+- (void)destroy {
+	_scrollView.delegate = nil;
+	_stickerSummaryView.delegate = nil;
 	
 	if (_tintTimer != nil) {
 		[_tintTimer invalidate];
@@ -85,11 +104,9 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	}
 	
 	_imgView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 320.0))];
-	_imgView.frame = CGRectOffset(_imgView.frame, 0.0, -25.0);
 	[self.contentView addSubview:_imgView];
 	
 	
-	NSLog(@"IMG SIZE:[%@]", NSStringFromCGSize(_imgView.frame.size));
 	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
 		
 	} else {
@@ -103,10 +120,10 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 				NSURL *url = [NSURL URLWithString:_clubPhotoVO.imagePrefix];
 				NSLog(@"IMG URL:[%@]", url);
-				FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+				FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
-					animatedImageView.animatedImage = animatedImage1;
+					animatedImageView.animatedImage = animatedImage;
 				});
 			});
 			
@@ -130,7 +147,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	}
 	
 	
-	NSLog(@"FRAME:[%@][%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.contentView.frame));
+//	NSLog(@"FRAME:[%@][%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.contentView.frame));
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, kEmotionLoadedFrame.size.height))];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -146,6 +163,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	[self.contentView addSubview:footerView];
 	
 	_stickerSummaryView = [[HONStickerSummaryView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 64.0))];
+	_stickerSummaryView.delegate = self;
 	[footerView addSubview:_stickerSummaryView];
 	
 	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 68.0, 150.0, 22.0)];
@@ -196,19 +214,22 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 }
 
 - (void)_goNextSticker {
-	int offset = (_scrollView.contentOffset.x + self.frame.size.width == _scrollView.contentSize.width) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
+	int offset = (_scrollView.contentOffset.x >= (_scrollView.contentSize.width - _scrollView.frame.size.width)) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
+	//int offset = (_scrollView.contentOffset.x + self.frame.size.width == _scrollView.contentSize.width) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
 	int ind = MIN(MAX(0, offset / _scrollView.frame.size.width), [_emotions count] - 1);
 	
+//	NSLog(@"IND:[%d]", ind);
+	
 	[_stickerSummaryView selectStickerAtIndex:ind];
-	[UIView animateWithDuration:0.000250 delay:0.000
-		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
-						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-	 
-					 animations:^(void) {
+//	[UIView animateWithDuration:0.000250 delay:0.000
+//		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
+//						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+	
+//					 animations:^(void) {
 						 [_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:NO];
 						 
-					 } completion:^(BOOL finished) {
-					 }];
+//					 } completion:^(BOOL finished) {
+//					 }];
 }
 
 
@@ -230,6 +251,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 		cnt++;
 	}
 	
+	[self _loadEmotionAtIndex:0];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * [_emotions count], _scrollView.frame.size.height);
 }
 
@@ -259,9 +281,6 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 //	[holderView addSubview:picoSticker];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:kEmotionLoadedFrame];
-//	CGSize scaleSize = CGSizeMake(kEmotionInitFrame.size.width / kEmotionLoadedFrame.size.width, kEmotionInitFrame.size.height / kEmotionLoadedFrame.size.height);
-//	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionInitFrame) - CGRectGetMidX(kEmotionLoadedFrame), CGRectGetMidY(kEmotionInitFrame) - CGRectGetMidY(kEmotionLoadedFrame));
-//	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineTransformView:imageView toSize:kEmotionInitFrame.size];
 	
 	if (emotionVO.imageType == HONEmotionImageTypePNG) {
@@ -271,6 +290,27 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 		imageView.transform = transform;
 		[holderView addSubview:imageView];
 	
+	} else {
+		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+		animatedImageView.contentMode = UIViewContentModeScaleToFill;//UIViewContentModeScaleAspectFit; // centers in frame
+		animatedImageView.clipsToBounds = YES;
+		animatedImageView.frame = kEmotionLoadedFrame;
+		animatedImageView.alpha = 0.0;
+		animatedImageView.transform = transform;
+		[holderView addSubview:animatedImageView];
+	}
+	
+	return (holderView);
+}
+
+- (void)_loadEmotionAtIndex:(int)index {
+	HONEmotionVO *emotionVO = (HONEmotionVO *)[_emotions objectAtIndex:index];
+	UIView *holderView = (UIView *)[_emotionViews objectAtIndex:index];
+	HONImageLoadingView *imageLoadingView = (HONImageLoadingView *)[holderView.subviews firstObject];
+	
+	if (emotionVO.imageType == HONEmotionImageTypePNG) {
+		UIImageView *imageView = [holderView.subviews lastObject];
+		
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			
@@ -278,24 +318,24 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 			imageLoadingView.hidden = YES;
 			[imageLoadingView removeFromSuperview];
 			
-			UIImageView *thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(index * 64.0, 0.0, 64.0, 64.0)];
-			thumbImageView.image = image;
-//			[_emotionThumbsHolderView addSubview:thumbImageView];
-			
 			emotionVO.image = image;
 			[_stickerSummaryView appendSticker:emotionVO];
 			
-			[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
+			[UIView animateWithDuration:0.250 delay:0.000
 				 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
 								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
 			 
 							 animations:^(void) {
 								 imageView.alpha = 1.0;
-								 imageView.transform = CGAffineTransformMakeNormal();//(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+								 imageView.transform = CGAffineTransformMakeNormal();
 							 } completion:^(BOOL finished) {
-								 if (index == 0) {
+								 if (index == 0 && _stickerTimer == nil) {
 									 [_stickerSummaryView selectStickerAtIndex:0];
-									 _stickerTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+									 //_stickerTimer = [NSTimer scheduledTimerWithTimeInterval:kStickerTimerInterval target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+								 }
+								 
+								 if (index < [_emotions count] - 1) {
+									 [self _loadEmotionAtIndex:index + 1];
 								 }
 							 }];
 			
@@ -307,7 +347,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 			[imageLoadingView removeFromSuperview];
 		};
 		
-	//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
+		//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
 														   cachePolicy:kOrthodoxURLCachePolicy
 													   timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -315,48 +355,63 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 								  success:imageSuccessBlock
 								  failure:imageFailureBlock];
 		
-	} else {
-		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-		animatedImageView.contentMode = UIViewContentModeScaleToFill;//UIViewContentModeScaleAspectFit; // centers in frame
-		animatedImageView.clipsToBounds = YES;
-		animatedImageView.frame = kEmotionLoadedFrame;
-		animatedImageView.alpha = 0.0;
-		animatedImageView.transform = transform;
-		[holderView addSubview:animatedImageView];
+		
+	
+	} else if (emotionVO.imageType == HONEmotionImageTypeGIF) {
+		FLAnimatedImageView *animatedImageView = (FLAnimatedImageView *)[holderView.subviews lastObject];
 		
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			NSURL *url = [NSURL URLWithString:emotionVO.smallImageURL];
-			FLAnimatedImage *animatedImage1 = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:emotionVO.smallImageURL]]];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
-				animatedImageView.animatedImage = animatedImage1;
+				animatedImageView.animatedImage = animatedImage;
 				
 				FLAnimatedImageView *animatedThumbImageView = [[FLAnimatedImageView alloc] init];
-				animatedThumbImageView.frame = CGRectMake(index * 64.0, 0.0, 64.0, 64.0);
+				animatedThumbImageView.frame = CGRectMakeFromSize(CGSizeMake(64.0, 64.0));
 				animatedThumbImageView.contentMode = UIViewContentModeScaleAspectFit;
 				animatedThumbImageView.clipsToBounds = YES;
-				animatedThumbImageView.animatedImage = animatedImage1;
-//				[_emotionThumbsHolderView addSubview:animatedThumbImageView];
+				animatedThumbImageView.animatedImage = animatedImage;
 				
 				emotionVO.animatedImageView = animatedThumbImageView;
 				[_stickerSummaryView appendSticker:emotionVO];
 				
-				[UIView animateWithDuration:0.250 delay:0.500 + (0.125 * index)
+				[UIView animateWithDuration:0.250 delay:0.000
 					 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
 									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
 				 
 								 animations:^(void) {
 									 animatedImageView.alpha = 1.0;
-									 animatedImageView.transform = CGAffineTransformMakeNormal();// CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+									 animatedImageView.transform = CGAffineTransformMakeNormal();
 								 } completion:^(BOOL finished) {
-									 [_stickerSummaryView selectStickerAtIndex:0];
-									 _stickerTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+									 if (index == 0 && _stickerTimer == nil) {
+										 [_stickerSummaryView selectStickerAtIndex:0];
+										 //_stickerTimer = [NSTimer scheduledTimerWithTimeInterval:kStickerTimerInterval target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+									 }
+									 
+									 if (index < [_emotions count] - 1) {
+										 [self _loadEmotionAtIndex:index + 1];
+									 }
 								 }];
 			});
 		});
 	}
+}
+
+
+#pragma mark - StickerSummaryView Delegates
+- (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumb:(HONEmotionVO *)emotionVO atIndex:(int)index {
+	NSLog(@"[*:*] stickerSummaryView:didSelectThumb[%@ - %@] (%d)", emotionVO.emotionID, emotionVO.emotionName, index);
 	
-	return (holderView);
+	int offset = MIN(MAX(0.0, index * _scrollView.frame.size.width), _scrollView.frame.size.width * ([_emotions count] - 1));
+	[UIView animateWithDuration:0.333 delay:0.000
+		 usingSpringWithDamping:0.875 initialSpringVelocity:0.0625
+						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+
+					 animations:^(void) {
+						[_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:NO];
+
+					 } completion:^(BOOL finished) {
+					 }];
 }
 
 
@@ -369,8 +424,6 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 //	int axisInd = (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width;
 	int updtInd = MAX(0, MIN([_emotions count], (_emotionInsetAmt + scrollView.contentOffset.x) / _emotionSpacingSize.width));
 	int axisCoord = (updtInd * _emotionSpacingSize.width) - _emotionInsetAmt;
-	
-	
 	
 	if (updtInd == currInd) {
 //		NSLog(@"‹~|≈~~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~|[ EQL ]|~≈~¡~≈~!~≈~¡~≈~!~≈~¡~≈~!~≈~¡~~≈|~›");

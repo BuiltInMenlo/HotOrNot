@@ -49,7 +49,7 @@ const CGFloat kStickerOutroForce = 0.125;
 		
 		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
 		_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.965];
-		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
+		_scrollView.contentSize = CGSizeMake(0.0, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsZero;
 		_scrollView.showsHorizontalScrollIndicator = NO;
 		_scrollView.showsVerticalScrollIndicator = NO;
@@ -87,6 +87,8 @@ const CGFloat kStickerOutroForce = 0.125;
 	UIView *stickerView = (UIView *)[_stickerViews lastObject];
 	UIButton *button = [stickerView.subviews lastObject];
 	[button setSelected:YES];
+	
+	[self scrollToStickerAtIndex:[_stickers count] - 1];
 }
 
 - (void)appendSticker:(HONEmotionVO *)emotionVO {
@@ -121,11 +123,10 @@ const CGFloat kStickerOutroForce = 0.125;
 	[_stickerViews addObject:stickerView];
 	[_stickers addObject:emotionVO];
 	
-	_currentIndex = [_stickers count] - 1;
-	
-	int size = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
-	_scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width + size, _scrollView.contentSize.height);
-	[self scrollToStickerAtIndex:_currentIndex];
+//	int size = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
+//	int size = ([_stickers count] <= _scrollThreshold) ? 0 : _stickerSpacing;
+	_scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width + _stickerSpacing, _scrollView.contentSize.height);
+//	[self scrollToStickerAtIndex:[_stickers count] - 1];
 }
 
 - (void)removeLastSticker {
@@ -143,16 +144,17 @@ const CGFloat kStickerOutroForce = 0.125;
 - (void)scrollToStickerAtIndex:(int)index {
 	_currentIndex = index;
 	
-	CGFloat multInc = 1.36;
+	int overhang = (_scrollThreshold * _stickerSpacing) - _scrollView.frame.size.width;
+	
 	int offset = 0;
 	if (index < _scrollThreshold * 0.5) {
 		offset = 0;
 	
 	} else if (index >= (_scrollThreshold * 0.5) && index < ([_stickers count] - (_scrollThreshold * 0.5))) {
-		offset = (_stickerSpacing * multInc) + (_stickerSpacing * (MAX(0, (index - (_scrollThreshold * 0.5)))));
+		offset = (overhang * 1.75) + (_stickerSpacing * (MAX(0, (index - (_scrollThreshold * 0.5)))));
 	
 	} else if (index >= ([_stickers count] - (_scrollThreshold * 0.5))) {
-		offset = _scrollView.contentSize.width - _scrollView.frame.size.width;
+		offset = (_scrollView.contentSize.width > _scrollView.frame.size.width) ? _scrollView.contentSize.width - _scrollView.frame.size.width : 0;
 	
 	} else {
 		offset = _scrollView.contentOffset.x;
@@ -162,6 +164,8 @@ const CGFloat kStickerOutroForce = 0.125;
 }
 
 - (void)selectStickerAtIndex:(int)index {
+	index = MIN(MAX(0, index), [_stickers count] - 1);
+	
 	_selectedEmotionVO = (HONEmotionVO *)[_stickers objectAtIndex:index];
 	[_stickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIView *view = (UIView *)obj;
@@ -193,6 +197,8 @@ const CGFloat kStickerOutroForce = 0.125;
 	
 	_currentIndex = ind;
 	[self scrollToStickerAtIndex:ind];
+	
+	NSLog(@"_goSelectSticker:[%d]", _currentIndex);
 }
 
 - (void)_goLongPress:(UIGestureRecognizer *)gestureRecognizer {

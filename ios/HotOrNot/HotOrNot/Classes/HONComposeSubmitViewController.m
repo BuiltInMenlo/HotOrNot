@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
+
 #import "HONComposeSubmitViewController.h"
 
 @interface HONComposeSubmitViewController () <HONClubViewCellDelegate, HONLineButtonViewDelegate>
@@ -58,31 +60,33 @@
 			_progressHUD = nil;
 			
 		} else {
-			HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
-			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
-				NSMutableArray *users = [NSMutableArray array];
-				for (HONTrivialUserVO *vo in _selectedUsers)
-					[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
-				
-				NSMutableArray *contacts = [NSMutableArray array];
-				for (HONContactUserVO *vo in _selectedContacts)
-					[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
-				
+//			HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
+//			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
+//				NSMutableArray *users = [NSMutableArray array];
+//				for (HONTrivialUserVO *vo in _selectedUsers)
+//					[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
+//				
+//				NSMutableArray *contacts = [NSMutableArray array];
+//				for (HONContactUserVO *vo in _selectedContacts)
+//					[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
+			
 				[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Invites"
-												   withProperties:@{@"clubs"	: [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO],
-																	@"members"	: users,
-																	@"contacts"	: contacts}];
+												   withProperties:[self _trackingProps]];
 				
 				[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
+					if (_progressHUD != nil) {
+						[_progressHUD hide:YES];
+						_progressHUD = nil;
+					}
+					
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 					}];
 				}];
-			}];
+//			}];
 		}
 	}];
 }
-
 
 
 #pragma mark - Data Handling
@@ -93,7 +97,9 @@
 }
 
 - (void)_goReloadTableViewContents {
-	[_refreshControl beginRefreshing];
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
+	
 	[super _goReloadTableViewContents];
 }
 
@@ -102,7 +108,7 @@
 		[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			for (HONContactUserVO *contactUserVO in _allDeviceContacts) {
 				NSString *altID = (NSString *)obj;
-				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
+//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
 				
 				if ([contactUserVO.mobileNumber isEqualToString:altID]) {
 					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
@@ -116,7 +122,7 @@
 		for (HONContactUserVO *contactUserVO in _allDeviceContacts) {
 			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSString *altID = (NSString *)obj;
-				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
+//				NSLog(@"altID:[%@]=- cell.contactUserVO.mobileNumber:[%@]", altID, contactUserVO.mobileNumber);
 				
 				if ([contactUserVO.mobileNumber isEqualToString:altID]) {
 					NSLog(@"********DELETE*********\n%@", contactUserVO.fullName);
@@ -131,7 +137,7 @@
 	[_clubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONUserClubVO *vo = (HONUserClubVO *)obj;
 		
-		NSLog(@"%d <> %d", [[_submitParams objectForKey:@"club_id"] intValue], vo.clubID);
+//		NSLog(@"%d <> %d", [[_submitParams objectForKey:@"club_id"] intValue], vo.clubID);
 		if ([[_submitParams objectForKey:@"club_id"] intValue] == vo.clubID) {
 			if (![_selectedClubs containsObject:vo])
 				[_selectedClubs addObject:vo];
@@ -165,6 +171,7 @@
 		[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
 	
 	NSMutableDictionary *props = [NSMutableDictionary dictionary];
+	[props setValue:(_userClubVO != nil) ? [[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO] : @{} forKey:@"clubs"];
 	[props setValue:users forKey:@"members"];
 	[props setValue:contacts forKey:@"contacts"];
 	
@@ -183,7 +190,7 @@
 	
 	[_headerView setTitle:NSLocalizedString(@"header_selectFriends", @"Select Friends")];
 	
-	[_headerView addBackButtonWithTarget:self usingAction:@selector(_goBack)];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0);
@@ -192,7 +199,8 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
-	[_refreshControl beginRefreshing];
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 	
 //	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom - submitButton.frame.size.height, _tableView.contentInset.right)];
 }
@@ -245,6 +253,13 @@
 						  otherButtonTitles:nil] show];
 		
 	} else {
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kProgressHUDMinDuration;
+		_progressHUD.taskInProgress = YES;
+		
 		NSMutableArray *participants = [NSMutableArray array];
 
 		for (HONTrivialUserVO *vo in _selectedUsers)
@@ -260,7 +275,7 @@
 		
 		NSLog(@"CLUB -=- (CREATE) -=-");
 		NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
-		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], (int)[[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSince1970]] forKey:@"name"];
+		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 		_userClubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 		
 		[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
@@ -488,7 +503,7 @@
 		} else if (indexPath.section == 2) {
 			[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-				//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
+//				NSLog(@"CELL:[%d] -=- [%d]VO", cell.trivialUserVO.userID, vo.userID);
 				[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
 				*stop = cell.isSelected;
 			}];
@@ -496,7 +511,7 @@
 			[_matchedUserIDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSString *altID = (NSString *)obj;
 				if ([cell.trivialUserVO.altID isEqualToString:altID]) {
-					//					NSLog(@"********MERGE ATTEMPT*********\n");
+//					NSLog(@"********MERGE ATTEMPT*********\n");
 					[_allDeviceContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 						HONContactUserVO *vo = (HONContactUserVO *)obj;
 						
@@ -515,7 +530,7 @@
 		} else if (indexPath.section == 3) {
 			[_selectedContacts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONContactUserVO *vo = (HONContactUserVO *)obj;
-				//				NSLog(@"CELL:[%@] -=- [%@]VO", cell.contactUserVO.mobileNumber, vo.mobileNumber);
+//				NSLog(@"CELL:[%@] -=- [%@]VO", cell.contactUserVO.mobileNumber, vo.mobileNumber);
 				[cell toggleSelected:([vo.mobileNumber isEqualToString:cell.contactUserVO.mobileNumber])];
 				*stop = cell.isSelected;
 			}];
@@ -544,16 +559,16 @@
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		if (indexPath.section == 0) {
-			//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
-			//											 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+//											 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 			
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
 			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
 			[props setValue:[[HONAnalyticsReporter sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
-			//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-			//											 withProperties:props];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//											 withProperties:props];
 			
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
@@ -572,16 +587,16 @@
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		if (indexPath.section == 0) {
-			//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
-			//											 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
+//											 withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 			
 		} else if (indexPath.section == 1) {
 			NSLog(@"RECENT CLUB:[%@]", cell.clubVO.clubName);
 			
 			NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
 			[props setValue:[[HONAnalyticsReporter sharedInstance] propertyForUserClub:cell.clubVO] forKey:@"club"];
-			//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
-			//											 withProperties:props];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step - Selected Club"
+//											 withProperties:props];
 			
 		} else if (indexPath.section == 2) {
 			NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);

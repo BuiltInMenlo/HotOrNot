@@ -8,6 +8,7 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 
 #import "KeychainItemWrapper.h"
@@ -172,7 +173,8 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goReloadTableViewContents {
-	[_refreshControl beginRefreshing];
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 	
 	_seenClubs = [NSMutableArray array];
 	_unseenClubs = [NSMutableArray array];
@@ -201,10 +203,12 @@ static NSString * const kCamera = @"camera";
 			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
 			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
 			
-			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+//			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedAscending);
 			
-			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+//			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedDescending);
 			
 			return ((NSComparisonResult)NSOrderedSame);
@@ -214,10 +218,12 @@ static NSString * const kCamera = @"camera";
 			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
 			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
 			
-			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+//			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
+			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedAscending);
 			
-			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+//			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
+			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedDescending);
 			
 			return ((NSComparisonResult)NSOrderedSame);
@@ -290,7 +296,7 @@ static NSString * const kCamera = @"camera";
 	[_tableView addSubview:_emptyClubsBGView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_home", @"Home")];
-	[_headerView addComposeButtonWithTarget:self usingAction:@selector(_goCreateChallenge)];
+	[_headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
 	[self.view addSubview:_headerView];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -312,6 +318,9 @@ static NSString * const kCamera = @"camera";
 		
 		} else
 			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
+		
+		if (![_refreshControl isRefreshing])
+			[_refreshControl beginRefreshing];
 	}
 	
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];

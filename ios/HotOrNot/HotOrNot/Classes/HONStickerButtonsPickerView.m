@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "MBProgressHUD.h"
+#import "NSString+DataTypes.h"
 
 #import "HONStickerButtonsPickerView.h"
 #import "HONStickerButtonView.h"
@@ -22,6 +22,7 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) NSMutableArray *buttonPageViews;
 @property (nonatomic, strong) NSMutableArray *buttonViews;
+@property (nonatomic, strong) NSMutableArray *contentGroupIDs;
 @property (nonatomic) CGSize gridItemSpacingSize;
 @property (nonatomic, strong) UIButton *downloadButton;
 @property (nonatomic, strong) HONPaginationView *paginationView;
@@ -44,10 +45,12 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 		_stickerGroupIndex = stickerGroupIndex;
 		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
+		_contentGroupIDs = [NSMutableArray array];
+		[_contentGroupIDs addObject:[[HONStickerAssistant sharedInstance] fetchContentGroupIDForGroupIndex:_stickerGroupIndex]];
 		
 		_prevPage = 0;
 		_totalPages = 0;
-		_hasCachedAllStickers = NO;
+		_hasCachedAllStickers = [[HONStickerAssistant sharedInstance] isContentGroupCachedForContentGroupID:[_contentGroupIDs firstObject]];
 		_buttonPageViews = [NSMutableArray array];
 		_buttonViews = [NSMutableArray array];
 		
@@ -67,8 +70,7 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
 		}];
 		
-//		_totalPages = ((int)ceil([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+		NSLog(@"[%@ _hasCachedAllStickers] (%@)", self.class, [@"" stringFromBOOL:_hasCachedAllStickers]);
 		
 		if (!_hasCachedAllStickers) {
 			_downloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -150,6 +152,8 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 }
 
 - (void)appendPurchasedStickersWithContentGroupID:(NSString *)contentGroupID {
+	[_contentGroupIDs addObject:contentGroupID];
+	
 	int loc = [_availableEmotions count] - 1;
 	[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:(NSDictionary *)obj];
@@ -158,7 +162,8 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 		}
 	}];
 	
-	[self cacheStickerContentInRange:NSMakeRange(loc, [_availableEmotions count] - loc)];
+	if (![[HONStickerAssistant sharedInstance] isContentGroupCachedForContentGroupID:contentGroupID])
+		[self cacheStickerContentInRange:NSMakeRange(loc, [_availableEmotions count] - loc)];
 }
 
 - (void)cacheStickerContentInRange:(NSRange)range {
@@ -242,6 +247,9 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 	[_paginationView updateToPage:0];
 	[self addSubview:_paginationView];
 	
+	
+	if ([self.delegate respondsToSelector:@selector(stickerButtonsPickerView:didFinishDownloadingForContentGroupID:)])
+		[self.delegate stickerButtonsPickerView:self didFinishDownloadingForContentGroupID:[_contentGroupIDs firstObject]];
 	
 	[self _buildGrid];
 }

@@ -15,6 +15,7 @@
 typedef NS_ENUM(NSUInteger, HONSelfieSubmitType) {
 	HONSelfieSubmitTypeCreate = 0,
 	HONSelfieSubmitTypeReply,
+	HONSelfieSubmitTypeSearchContact,
 	HONSelfieSubmitTypeSearchUser
 };
 

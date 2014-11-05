@@ -170,7 +170,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 
 - (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)animatedImageView {
 	FLAnimatedImageView *animImageView = [[FLAnimatedImageView alloc] init];
-	animImageView.frame = CGRectMakeFromSize(CGSizeMake(50.0, 50.0));
+	animImageView.frame = CGRectMakeFromSize(CGSizeMake(320.0, 320.0));
 	animImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFill; // stretches w/ ratio -- UIViewContentModeScaleAspectFit; // centers in frame
 	animImageView.clipsToBounds = YES;
 	animImageView.animatedImage = animatedImageView.animatedImage;
@@ -259,19 +259,19 @@ const CGFloat kEmotionOutroForce = 0.250;
 		[imageView addSubview:_animatedImageView];
 		
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[UIView animateWithDuration:kEmotionIntroDuration delay:kEmotionIntroDelay
-				 usingSpringWithDamping:kEmotionIntroDamping initialSpringVelocity:kEmotionIntroForce
-								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-			 
-							 animations:^(void) {
+//			[UIView animateWithDuration:kEmotionIntroDuration delay:kEmotionIntroDelay
+//				 usingSpringWithDamping:kEmotionIntroDamping initialSpringVelocity:kEmotionIntroForce
+//								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+//			 
+//							 animations:^(void) {
 								 imageView.alpha = 1.0;
 								 imageView.transform = CGAffineTransformMakeNormal();//(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-							 } completion:^(BOOL finished) {
+//							 } completion:^(BOOL finished) {
 								 [self _updateDisplayWithCompletion:nil];
 								 
 								 [imageLoadingView stopAnimating];
 								 [imageLoadingView removeFromSuperview];
-							 }];
+//							 }];
 		});
 		
 	} else if (emotionVO.imageType == HONEmotionImageTypePNG) {
@@ -281,19 +281,19 @@ const CGFloat kEmotionOutroForce = 0.250;
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			
-			[UIView animateWithDuration:kEmotionIntroDuration delay:kEmotionIntroDelay
-				 usingSpringWithDamping:kEmotionIntroDamping initialSpringVelocity:kEmotionIntroForce
-								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-			 
-							 animations:^(void) {
+//			[UIView animateWithDuration:kEmotionIntroDuration delay:kEmotionIntroDelay
+//				 usingSpringWithDamping:kEmotionIntroDamping initialSpringVelocity:kEmotionIntroForce
+//								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+			
+//							 animations:^(void) {
 								 imageView.alpha = 1.0;
 								 imageView.transform = CGAffineTransformMakeNormal();//(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-							 } completion:^(BOOL finished) {
+//							 } completion:^(BOOL finished) {
 								 [self _updateDisplayWithCompletion:nil];
 								 
 								 [imageLoadingView stopAnimating];
 								 [imageLoadingView removeFromSuperview];
-							 }];
+//							 }];
 		};
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
@@ -344,22 +344,22 @@ const CGFloat kEmotionOutroForce = 0.250;
 	}
 		
 	
-	[UIView animateWithDuration:kEmotionOutroDuration delay:kEmotionOutroDelay
-		 usingSpringWithDamping:kEmotionOutroDamping initialSpringVelocity:kEmotionOutroForce
-						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
-	 
-					 animations:^(void) {
+//	[UIView animateWithDuration:kEmotionOutroDuration delay:kEmotionOutroDelay
+//		 usingSpringWithDamping:kEmotionOutroDamping initialSpringVelocity:kEmotionOutroForce
+//						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+	
+//					 animations:^(void) {
 						 imageView.alpha = 0.0;
 						 imageView.transform = CGAffineTransformMake(1.333, 0.0, 0.0, 1.333, 0.0, 0.0);
 						 
-					 } completion:^(BOOL finished) {
+//					 } completion:^(BOOL finished) {
 						 [imageView removeFromSuperview];
 						 
 						 _emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * _emotionSpacingSize.width, kEmotionNormalFrame.size.height);
 						 _loaderHolderView.frame = _emotionHolderView.frame;
 
 						 [self _updateDisplayWithCompletion:nil];
-					 }];
+//					 }];
 }
 
 
@@ -377,10 +377,10 @@ const CGFloat kEmotionOutroForce = 0.250;
 //					 } completion:^(BOOL finished) {
 						 _scrollView.contentSize = CGSizeMake(offset, _scrollView.contentSize.height);
 						 
-						 [UIView animateWithDuration:0.25 animations:^(void) {
-							 _bgView.alpha = ([_emotions count] == 0);
-						 }];
-						 
+//						 [UIView animateWithDuration:0.25 animations:^(void) {
+//							 _bgView.alpha = ([_emotions count] == 0);
+//						 }];
+	
 						 if (completion)
 							 completion(YES);
 //					 }];

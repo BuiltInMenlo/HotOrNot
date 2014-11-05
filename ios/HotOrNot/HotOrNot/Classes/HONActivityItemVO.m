@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
+
 #import "HONActivityItemVO.m"
 
 @implementation HONActivityItemVO
@@ -21,7 +23,7 @@
 	vo.challengeID = ([dictionary objectForKey:@"challengeID"] != [NSNull null]) ? [[dictionary objectForKey:@"challengeID"] intValue] : -1;
 	vo.clubID = ([dictionary objectForKey:@"club_id"] != [NSNull null]) ? [[dictionary objectForKey:@"club_id"] intValue] : -1;
 	vo.clubName = [dictionary objectForKey:@"club_name"];
-	vo.sentDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
+	vo.sentDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
 	
 	vo.originUserID = [[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
 	vo.originUsername = (vo.originUserID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"user"] objectForKey:@"username"];

@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 #import "UIImageView+AFNetworking.h"
@@ -110,7 +111,7 @@
 	
 	_indicatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(295.0, 16.0, 13.0, 13.0)];
 	_indicatorImageView.image = [UIImage imageNamed:@"redDot"];
-	_indicatorImageView.hidden = ([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:_activityItemVO.sentDate] > 1800);
+	_indicatorImageView.hidden = ([[NSDate utcNowDate] timeIntervalSinceDate:_activityItemVO.sentDate] > 1800);
 	[self.contentView addSubview:_indicatorImageView];
 }
 

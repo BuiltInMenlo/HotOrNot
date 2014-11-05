@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDate+Operations.h"
 #import "NSUserDefaults+Replacements.h"
 
 #import "HONStateMitigator.h"
@@ -131,21 +132,22 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (void)writeAppInstallTimestamp {
-	[[NSUserDefaults standardUserDefaults] replaceObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate date]] forExistingKey:kStateMitigatorInstallTimestampKey];
+	[[NSUserDefaults standardUserDefaults] replaceObject:[[NSDate date] formattedISO8601StringUTC] forExistingKey:kStateMitigatorInstallTimestampKey];
 }
 
 - (void)updateLastTrackingCallTimestamp:(NSDate *)date {
-	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:date] forKey:kStateMitigatorTrackingTimestampKey];
+//	[[NSUserDefaults standardUserDefaults] setValue:date] forKey:kStateMitigatorTrackingTimestampKey];
+	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601StringUTC] forKey:kStateMitigatorTrackingTimestampKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)updateAppEntryTimestamp:(NSDate *)date {
-	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:date] forKey:kStateMitigatorEntryTimestampKey];
+	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601StringUTC] forKey:kStateMitigatorEntryTimestampKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)updateAppExitTimestamp:(NSDate *)date {
-	[[NSUserDefaults standardUserDefaults] setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:date] forKey:kStateMitigatorExitTimestampKey];
+	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601StringUTC] forKey:kStateMitigatorExitTimestampKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -228,28 +230,28 @@ static HONStateMitigator *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorInstallTimestampKey] == nil)
 		[[HONStateMitigator sharedInstance] writeAppInstallTimestamp];
 	
-	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorInstallTimestampKey]]);
+	return ([NSDate dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorInstallTimestampKey]]);
 }
 
 - (NSDate *)appEntryTimestamp {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorEntryTimestampKey] == nil)
 		[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	
-	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorEntryTimestampKey]]);
+	return ([NSDate dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorEntryTimestampKey]]);
 }
 
 - (NSDate *)appExitTimestamp {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorExitTimestampKey] == nil)
 		[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	
-	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorExitTimestampKey]]);
+	return ([NSDate dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorExitTimestampKey]]);
 }
 
 - (NSDate *)lastTrackingCallTimestamp {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorTrackingTimestampKey] == nil)
 		[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
-	return ([[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorTrackingTimestampKey]]);
+	return ([NSDate dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorTrackingTimestampKey]]);
 }
 
 - (int)totalCounterForType:(HONStateMitigatorTotalType)totalType {

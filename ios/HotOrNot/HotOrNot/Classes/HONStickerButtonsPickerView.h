@@ -16,6 +16,7 @@
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView selectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)stickerButtonsPickerViewDidStartDownload:(HONStickerButtonsPickerView *)stickerButtonsPickerView;
 @optional
+- (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didFinishDownloadingForContentGroupID:(NSString *)contentGroupID;
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO;
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didChangeToPage:(int)page withDirection:(int)direction;
 @end

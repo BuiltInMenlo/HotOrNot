@@ -6,8 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONVoterVO.h"
+#import "NSDate+Operations.h"
 
+#import "HONVoterVO.h"
 
 @implementation HONVoterVO
 @synthesize dictionary;
@@ -29,7 +30,7 @@
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.challengerName = [dictionary objectForKey:@"challenger_name"];
 	
-	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }
