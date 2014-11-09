@@ -153,19 +153,19 @@ static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 
 
 - (int)dayOfYear {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:self] day]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:self] day]);
 }
 
 - (int)weekOfMonth {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfMonth fromDate:self] weekOfMonth]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfMonth fromDate:self] weekOfMonth]);
 }
 
 - (int)weekOfYear {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:self] weekOfYear]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:self] weekOfYear]);
 }
 
 - (int)year {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:self] year]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:self] year]);
 }
 
 

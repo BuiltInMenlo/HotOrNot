@@ -61,8 +61,8 @@ static HONStickerAssistant *sharedInstance = nil;
 			  @"updated"		: storeInfo.updated_at,
 			  @"description"	: storeInfo.description,
 			  @"currency"		: storeInfo.currency.name,
-			  @"products_tot"	: [@"" stringFromInt:[storeInfo.availableProducts count]],
-			  @"vendor_tot"		: [@"" stringFromInt:[storeInfo.availableVendorIds count]]});
+			  @"products_tot"	: [@"" stringFromInt:(int)[storeInfo.availableProducts count]],
+			  @"vendor_tot"		: [@"" stringFromInt:(int)[storeInfo.availableVendorIds count]]});
 	
 }
 
@@ -82,7 +82,7 @@ static HONStickerAssistant *sharedInstance = nil;
 - (NSArray *)retrieveStickerStoreProducts {
 	NSMutableArray *products = [[PicoManager sharedManager].candyStore.storeInfo.availableProducts mutableCopy];
 	[products enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		NSLog(@"CandyStore.availableProduct[%d] : %@", idx, obj);
+		NSLog(@"CandyStore.availableProduct[%ld] : %@", (unsigned long)idx, obj);
 		[products addObject:obj];
 	}];
 	

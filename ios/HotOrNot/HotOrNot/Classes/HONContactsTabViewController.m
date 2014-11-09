@@ -12,30 +12,25 @@
 #import "NSString+DataTypes.h"
 
 #import "KeychainItemWrapper.h"
-#import "MBProgressHUD.h"
 
 #import "HONContactsTabViewController.h"
+#import "HONRegisterViewController.h"
+#import "HONComposeViewController.h"
+#import "HONClubTimelineViewController.h"
 #import "HONHeaderView.h"
 #import "HONTableView.h"
 #import "HONTableHeaderView.h"
 #import "HONLineButtonView.h"
 #import "HONRefreshControl.h"
-#import "HONClubViewCell.h"
-#import "HONRegisterViewController.h"
-#import "HONComposeViewController.h"
-#import "HONCreateClubViewController.h"
-#import "HONChangeAvatarViewController.h"
-#import "HONUserProfileViewController.h"
-#import "HONContactsSearchViewController.h"
-#import "HONClubTimelineViewController.h"
+#import "HONClubPhotoViewCell.h"
+#import "HONClubPhotoVO.h"
 
-@interface HONContactsTabViewController () <HONClubViewCellDelegate>
-@property (nonatomic, strong) HONUserClubVO *selectedClubVO;
+@interface HONContactsTabViewController () <HONClubPhotoViewCellDelegate>
+//@property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) NSMutableArray *seenClubs;
 @property (nonatomic, strong) NSMutableArray *unseenClubs;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONLineButtonView *emptyClubsBGView;
 @property (nonatomic, strong) HONLineButtonView *accessContactsBGView;
@@ -112,7 +107,7 @@ static NSString * const kCamera = @"camera";
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
 	[_tableView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
 		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 			cell.alpha = 0.0;
 		} completion:^(BOOL finished) {
@@ -122,7 +117,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
-		_joinedTotalClubs = (_joinedTotalClubs == 0) ? [[result objectForKey:@"pending"] count] : _joinedTotalClubs;
+		_joinedTotalClubs = (_joinedTotalClubs == 0) ? (int)[[result objectForKey:@"pending"] count] : _joinedTotalClubs;
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
@@ -134,11 +129,9 @@ static NSString * const kCamera = @"camera";
 					if ([clubVO.submissions count] == 0)
 						continue;
 					
-					HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[clubVO.submissions firstObject];
-					
-//					NSLog(@"SEEN UPDATES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
-//					if ([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:clubPhotoVO.addedDate] >= (3600 * 12)) {
-					if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:clubPhotoVO.challengeID]] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+					NSLog(@"SEEN UPDATES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
+					if ([clubVO.updatedDate timeIntervalSinceNow] >= (3600 * 12)) {
+//					if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:clubPhotoVO.challengeID]] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 						[_seenClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 					
 					} else {
@@ -203,11 +196,9 @@ static NSString * const kCamera = @"camera";
 			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
 			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
 			
-//			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
 			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedAscending);
 			
-//			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
 			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedDescending);
 			
@@ -218,11 +209,9 @@ static NSString * const kCamera = @"camera";
 			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
 			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
 			
-//			if ([[HONDateTimeAlloter sharedInstance] didDate:club1VO.updatedDate occurBerforeDate:club2VO.updatedDate])
 			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedAscending);
 			
-//			if ([[HONDateTimeAlloter sharedInstance] didDate:club2VO.updatedDate occurBerforeDate:club1VO.updatedDate])
 			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
 				return ((NSComparisonResult)NSOrderedDescending);
 			
@@ -240,21 +229,17 @@ static NSString * const kCamera = @"camera";
 		}
 	}
 	
+	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_unseenClubs count] + [_seenClubs count]));
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
 	[_tableView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
 		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 			cell.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];
 	}];
-	
-//	if (_progressHUD != nil) {
-//		[_progressHUD hide:YES];
-//		_progressHUD = nil;
-//	}
 	
 	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 }
@@ -270,21 +255,27 @@ static NSString * const kCamera = @"camera";
 	
 	_seenClubs = [NSMutableArray array];
 	_unseenClubs = [NSMutableArray array];
-		
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
+	
+	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_unseenClubs count] + [_seenClubs count]));
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_tableView.frame.size)];
+//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top + kNavHeaderHeight, _tableView.contentInset.left, _tableView.contentInset.bottom + (kNavHeaderHeight), _tableView.contentInset.right)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
+	_tableView.pagingEnabled = YES;
 	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[HONRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-//	lpGestureRecognizer.minimumPressDuration = 0.5;
-//	lpGestureRecognizer.delegate = self;
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Last 24 hours"];  //NSLocalizedString(@"header_home", @"Home")];
+	[_headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
+	[self.view addSubview:_headerView];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.5;
+	lpGestureRecognizer.delegate = self;
 //	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
 	_accessContactsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
@@ -294,14 +285,6 @@ static NSString * const kCamera = @"camera";
 	_emptyClubsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
 	_accessContactsBGView.viewType = HONLineButtonViewTypeCreateStatusUpdate;
 	[_tableView addSubview:_emptyClubsBGView];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_home", @"Home")];
-	[_headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
-	[self.view addSubview:_headerView];
-	
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
-		[self _goRegistration];
 }
 
 - (void)viewDidLoad {
@@ -321,14 +304,30 @@ static NSString * const kCamera = @"camera";
 		
 		if (![_refreshControl isRefreshing])
 			[_refreshControl beginRefreshing];
+	
+	} else {
+		[self _goRegistration];
 	}
 	
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];
 	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
+}
 
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewWillAppear:animated];
 	
-//	_panGestureRecognizer.delaysTouchesBegan = NO;
-//	_panGestureRecognizer.enabled = YES;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
+	
+//	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
+//		HONTimelineMapViewController *timelineMapViewController = [[HONTimelineMapViewController alloc] init];
+//		timelineMapViewController.view.frame = CGRectOffset(timelineMapViewController.view.frame, 0.0, -([UIScreen mainScreen].bounds.size.height - 190.0));
+//		timelineMapViewController.delegate = self;
+//		
+//		[self addChildViewController:timelineMapViewController];
+//		[self.view addSubview:timelineMapViewController.view];
+//		[timelineMapViewController didMoveToParentViewController:self];
+//	}
 }
 
 
@@ -343,7 +342,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)_goProfile {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Activity"];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
@@ -355,6 +354,23 @@ static NSString * const kCamera = @"camera";
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
+- (void)_goReplyToClubPhoto:(HONClubPhotoVO *)clubPhotoVO forClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[*:*] _goReply:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab	- Reply"
+										withClubPhoto:clubPhotoVO];
+	
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoViewCell *viewCell = (HONClubPhotoViewCell *)obj;
+		[viewCell destroy];
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:^(void) {
+	}];
+}
+
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
 	NSLog(@"gestureRecognizer.state:[%@]", (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"Began" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"Canceled" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"Ended" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"Failed" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"Possible" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN");
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan && gestureRecognizer.state != UIGestureRecognizerStateCancelled && gestureRecognizer.state != UIGestureRecognizerStateEnded)
@@ -363,19 +379,12 @@ static NSString * const kCamera = @"camera";
 	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]];
 	
 	if (indexPath != nil) {
-		HONClubViewCell *cell = (HONClubViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
+		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
 		
 		if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
 //			NSLog(@"STATUS UPDATE:[%@]", cell.statusUpdateVO.subjectNames);
 			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0];
-			//clubTimelineViewController.view.frame = CGRectMake(0.0, 0.0, clubTimelineViewController.view.frame.size.width, clubTimelineViewController.view.frame.size.height + 20.0); //CGRectOffset(clubTimelineViewController.view.frame, 0.0, 20.0);
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubTimelineViewController];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:NO completion:nil];
-			
-//			[self.navigationController pushViewController:clubTimelineViewController animated:NO];
 			[self.view addSubview:clubTimelineViewController.view];
-//			[self performSelector:@selector(_goFinishLongPress) withObject:nil afterDelay:0.25];
 		
 		} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
 			[[self.view.subviews lastObject] removeFromSuperview];
@@ -427,7 +436,7 @@ static NSString * const kCamera = @"camera";
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 	//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
 	[super _goPanGesture:gestureRecognizer];
-	HONClubViewCell *cell = (HONClubViewCell *)[_tableView cellForRowAtIndexPath:[_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]]];
+	HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]]];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
 										 withUserClub:cell.clubVO];
@@ -489,6 +498,16 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - UI Presentation
+- (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
+	int rows = MIN(amount, (((int)[_tableView numberOfSections] - 1) - (int)[_tableView indexPathForCell:cell].section));
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Next Update"
+										withClubPhoto:cell.clubPhotoVO];
+	
+	int index = MIN(MAX(0, (int)[_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), (((int)[_unseenClubs count] - 1) + ((int)[_seenClubs count] - 1)));
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
+
 - (void)_promptForAddressBookAccess {
 	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
 								message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
@@ -508,11 +527,53 @@ static NSString * const kCamera = @"camera";
 }
 
 
-#pragma mark - ClubViewCell Delegates
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[*:*] clubViewCell:didSelectClub");
+#pragma mark - ClubPhotoViewCell Delegates
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	[self _advanceTimelineFromCell:cell byAmount:1];
+}
+
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
+}
+
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Reply"
+										withClubPhoto:clubPhotoVO];
 	
-//	[self _goSelectClub:clubVO];
+	[self _goReplyToClubPhoto:clubPhotoVO forClub:cell.clubVO];
+}
+
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Upvote"
+										withClubPhoto:clubPhotoVO];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+//	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
+//		[[HONAPICaller sharedInstance] retrieveUserByUserID:clubPhotoVO.userID completion:^(NSDictionary *result) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+//		}];
+	
+		[self _advanceTimelineFromCell:cell byAmount:1];
+//	}];
+}
+
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell downVotePhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:downVotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Down Vote"
+										  withClubPhoto:clubPhotoVO];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+//	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
+//		[[HONAPICaller sharedInstance] retrieveUserByUserID:clubPhotoVO.userID completion:^(NSDictionary *result) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+//		}];
+	
+		[self _advanceTimelineFromCell:cell byAmount:1];
+//	}];
 }
 
 
@@ -526,24 +587,20 @@ static NSString * const kCamera = @"camera";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONClubViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONClubPhotoViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONClubViewCell alloc] initAsCellType:HONClubViewCellTypeBlank];
+		cell = [[HONClubPhotoViewCell alloc] init];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setIndexPath:indexPath];
+	cell.delegate = self;
 	
-	if (indexPath.section == 0) {
-		HONUserClubVO *vo = (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row];
-		cell.clubVO = vo;
-		
-	} else  {
-		HONUserClubVO *vo = (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
-		cell.clubVO = vo;
-	}
+	HONUserClubVO *clubVO = (indexPath.section == 0) ? (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row] : (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
+	HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[clubVO.submissions firstObject];
+	cell.clubVO = clubVO;
+	cell.clubPhotoVO = clubPhotoVO;
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-	cell.delegate = self;
 	
 	if (!tableView.decelerating)
 		[cell toggleImageLoading:YES];
@@ -556,14 +613,13 @@ static NSString * const kCamera = @"camera";
 }
 
 
-
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return ([UIScreen mainScreen].bounds.size.height);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -572,21 +628,20 @@ static NSString * const kCamera = @"camera";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	
 	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
 	
 	if (indexPath.section == 0) {
-		HONUserClubVO *vo = (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row];
-		NSLog(@"UNSEEN CLUB:[%@]", vo.clubName);
-		[self _goSelectClub:cell.clubVO];
+		HONUserClubVO *clubVO = (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row];
+		NSLog(@"UNSEEN CLUB:[%@]", clubVO.clubName);
 		
 	} else {
-		HONUserClubVO *vo = (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
-		NSLog(@"SEEN CLUB:[%@]", vo.clubName);
-		[self _goSelectClub:cell.clubVO];
+		HONUserClubVO *clubVO = (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
+		NSLog(@"SEEN CLUB:[%@]", clubVO.clubName);
 	}
 	
-	[cell toggleOnWithReset:YES];
+	[self _goSelectClub:cell.clubVO];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -602,7 +657,7 @@ static NSString * const kCamera = @"camera";
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONClubViewCell *cell = (HONClubViewCell *)obj;
+		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
 		[cell toggleImageLoading:YES];
 	}];
 }
@@ -611,7 +666,7 @@ static NSString * const kCamera = @"camera";
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		NSLog(@"CONTACTS:[%d]", buttonIndex);
+		NSLog(@"CONTACTS:[%ld]", (long)buttonIndex);
 		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -633,15 +688,7 @@ static NSString * const kCamera = @"camera";
 		}
 		
 	} else if (alertView.tag == 1) {
-		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] createClubWithTitle:_selectedClubVO.clubName withDescription:_selectedClubVO.blurb withImagePrefix:_selectedClubVO.coverImagePrefix completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] addClub:result forKey:@"owned"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
-			}];
-		}
-	
-	}  else if (alertView.tag == 2) {
+	} else if (alertView.tag == 2) {
 		[self _goReloadTableViewContents];
 	}
 }

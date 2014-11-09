@@ -283,13 +283,13 @@ static HONAPICaller *sharedInstance = nil;
 	
 	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucketName];
 	por1.data = [imageData objectAtIndex:0];
-	por1.requestTag = [NSString stringWithFormat:@"%@|%@|%d", por1.bucket, kSnapLargeSuffix, bucketType];
+	por1.requestTag = [NSString stringWithFormat:@"%@|%@|%u", por1.bucket, kSnapLargeSuffix, bucketType];
 	por1.contentType = @"image/jpeg";
 	por1.delegate = self;
 	
 	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapTabSuffix] inBucket:bucketName];
 	por2.data = [imageData objectAtIndex:1];
-	por2.requestTag = [NSString stringWithFormat:@"%@|%@|%d", por2.bucket, kSnapTabSuffix, bucketType];
+	por2.requestTag = [NSString stringWithFormat:@"%@|%@|%u", por2.bucket, kSnapTabSuffix, bucketType];
 	por2.contentType = @"image/jpeg";
 	por2.delegate = self;
 	
@@ -534,7 +534,7 @@ static HONAPICaller *sharedInstance = nil;
 			
 		} else {
 //			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			SelfieclubJSONLog(@"AFNetworking [-] TOTAL ALERTS: %d", [result count]);
+			SelfieclubJSONLog(@"AFNetworking [-] TOTAL ALERTS: %ld", (unsigned long)[result count]);
 			
 			if (completion)
 				completion(result);
@@ -564,7 +564,7 @@ static HONAPICaller *sharedInstance = nil;
 		} else {
 //			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
-			SelfieclubJSONLog(@"AFNetworking [-] %@: FEED TOTAL %d", [[self class] description], [result count]);
+			SelfieclubJSONLog(@"AFNetworking [-] %@: FEED TOTAL %ld", [[self class] description], (unsigned long)[result count]);
 			
 			if (completion)
 				completion(result);
@@ -596,7 +596,7 @@ static HONAPICaller *sharedInstance = nil;
 		} else {
 //			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 //			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
-			SelfieclubJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [result count]);
+			SelfieclubJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%ld]", [[self class] description], (unsigned long)[result count]);
 			
 			if (completion)
 				completion(result);
@@ -1259,7 +1259,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSString stringWithFormat:@"TOTAL:[%d]", [result count]]);
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSString stringWithFormat:@"TOTAL:[%ld]", (long int)[result count]]);
 //			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result objectAtIndex:0]);
 			

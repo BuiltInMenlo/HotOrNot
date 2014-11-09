@@ -52,14 +52,14 @@
 	for (NSDictionary *dict in [dictionary objectForKey:@"pending"])
 		[pending addObject:([[dict objectForKey:@"extern_name"] length] > 0) ? [HONTrivialUserVO userFromContactUserVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
 	vo.pendingMembers = pending;
-	vo.totalMembers += [vo.pendingMembers count];
+	vo.totalMembers += (int)[vo.pendingMembers count];
 	
 	NSMutableArray *members = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
 		[members addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	vo.activeMembers = members;
-	vo.totalMembers += [vo.activeMembers count];
-	vo.visibleMembers += [vo.activeMembers count];
+	vo.totalMembers += (int)[vo.activeMembers count];
+	vo.visibleMembers += (int)[vo.activeMembers count];
 	
 	NSMutableArray *banned = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"blocked"])
@@ -121,7 +121,7 @@
 
 
 - (int)visibleMembers {
-	return ([self.activeMembers count] + 1);
+	return ((int)[self.activeMembers count] + 1);
 }
 
 

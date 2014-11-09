@@ -88,7 +88,7 @@ const CGFloat kStickerOutroForce = 0.125;
 	UIButton *button = [stickerView.subviews lastObject];
 	[button setSelected:YES];
 	
-	[self scrollToStickerAtIndex:[_stickers count] - 1];
+	[self scrollToStickerAtIndex:(int)[_stickers count] - 1];
 }
 
 - (void)appendSticker:(HONEmotionVO *)emotionVO {
@@ -130,11 +130,11 @@ const CGFloat kStickerOutroForce = 0.125;
 }
 
 - (void)removeLastSticker {
-	[self removeStickerAtIndex:[_stickers count] - 1];
+	[self removeStickerAtIndex:(int)[_stickers count] - 1];
 }
 
 - (void)removeStickerAtIndex:(int)index {
-	index = MIN(MAX(0, index), [_stickers count] - 1);
+	index = MIN(MAX(0, index), (int)[_stickers count] - 1);
 	
 	UIView *stickerView = [_stickerViews objectAtIndex:index];
 	[stickerView removeFromSuperview];
@@ -164,7 +164,7 @@ const CGFloat kStickerOutroForce = 0.125;
 }
 
 - (void)selectStickerAtIndex:(int)index {
-	index = MIN(MAX(0, index), [_stickers count] - 1);
+	index = MIN(MAX(0, index), (int)[_stickers count] - 1);
 	
 	_selectedEmotionVO = (HONEmotionVO *)[_stickers objectAtIndex:index];
 	[_stickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -181,7 +181,7 @@ const CGFloat kStickerOutroForce = 0.125;
 #pragma mark - Navigation
 - (void)_goSelectSticker:(id)sender {
 	UIButton *button = (UIButton *)sender;
-	int ind = button.tag;
+	int ind = (int)button.tag;
 	
 	_selectedEmotionVO = (HONEmotionVO *)[_stickers objectAtIndex:ind];
 	[_stickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -227,7 +227,7 @@ const CGFloat kStickerOutroForce = 0.125;
 							 
 							 [stickerView removeFromSuperview];
 							 
-							 _currentIndex = [_stickers count] - 1;
+							 _currentIndex = (int)[_stickers count] - 1;
 							 int size = ([_stickers count] == _scrollThreshold) ? (_stickerSpacing * 0.6) : ([_stickers count] > _scrollThreshold) ? _stickerSpacing : 0;
 							 
 							 _scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width - size, _scrollView.contentSize.height);

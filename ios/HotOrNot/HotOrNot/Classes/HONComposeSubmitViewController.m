@@ -133,7 +133,7 @@
 		}
 	}
 	
-	NSLog(@"%@._didFinishDataRefresh - _clubs() = [%d]", self.class, [_clubs count]);
+	NSLog(@"%@._didFinishDataRefresh - _clubs() = [%ld]", self.class, (unsigned long)[_clubs count]);
 	[_clubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONUserClubVO *vo = (HONUserClubVO *)obj;
 		
@@ -155,7 +155,7 @@
 	[_refreshControl endRefreshing];
 	[_tableView reloadData];
 	
-	NSLog(@"%@._didFinishDataRefresh - _selectedClubs() = [%d]", self.class, [_selectedClubs count]);
+	NSLog(@"%@._didFinishDataRefresh - _selectedClubs() = [%ld]", self.class, (unsigned long)[_selectedClubs count]);
 	
 	if ([_tableView.visibleCells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];

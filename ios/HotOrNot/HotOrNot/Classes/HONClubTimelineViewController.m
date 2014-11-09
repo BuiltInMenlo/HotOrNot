@@ -12,13 +12,14 @@
 #import "HONClubTimelineViewController.h"
 #import "HONComposeViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONTimelineMapViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
 #import "HONHeaderView.h"
 #import "HONRefreshControl.h"
 
-@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate>
+@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONTimelineMapViewControllerDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIView *emptySetView;
@@ -107,15 +108,6 @@
 	return (self);
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	[super touchesBegan:touches withEvent:event];
-	NSLog(@"touchesBegan");
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	[super touchesEnded:touches withEvent:event];
-	NSLog(@"touchesEnded");
-}
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
@@ -173,6 +165,7 @@
 	
 	if (_index != 0 || _clubPhotoID != 0)
 		[self _jumpToPhotoFromID];
+	
 }
 
 
@@ -204,14 +197,13 @@
 //	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
-	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
 	_tableView.backgroundView = _emptySetView;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.pagingEnabled = YES;
-	_tableView.showsHorizontalScrollIndicator = NO;
-	_tableView.alwaysBounceVertical = YES;
+//	_tableView.showsHorizontalScrollIndicator = NO;
+//	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];
@@ -244,7 +236,7 @@
 		[_headerView setTitle:_clubPhotoVO.username];
 		
 		if (_index > 0) {
-			_index = MIN(MAX(0, _index), [_clubPhotos count] - 1);
+			_index = MIN(MAX(0, _index), (int)[_clubPhotos count] - 1);
 			[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 		}
 		
@@ -268,6 +260,20 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
 //	_panGestureRecognizer.enabled = YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewWillAppear:animated];
+	
+	
+	HONTimelineMapViewController *timelineMapViewController = [[HONTimelineMapViewController alloc] init];
+	timelineMapViewController.view.frame = CGRectOffset(timelineMapViewController.view.frame, 0.0, -([UIScreen mainScreen].bounds.size.height - 190.0));
+	timelineMapViewController.delegate = self;
+	
+	[self addChildViewController:timelineMapViewController];
+	[self.view addSubview:timelineMapViewController.view];
+	[timelineMapViewController didMoveToParentViewController:self];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -363,12 +369,12 @@
 
 #pragma mark - UI Presentation
 - (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
-	int rows = MIN(amount, (([_tableView numberOfSections] - 1) - [_tableView indexPathForCell:cell].section));
+	int rows = MIN(amount, (((int)[_tableView numberOfSections] - 1) - (int)[_tableView indexPathForCell:cell].section));
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Next Update"
 									  withClubPhoto:cell.clubPhotoVO];
 	
-	_index = MIN(MAX(0, [_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), [_clubPhotos count] - 1);
+	_index = MIN(MAX(0, (int)[_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), (int)[_clubPhotos count] - 1);
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
@@ -377,15 +383,21 @@
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 		
 		if (vo.challengeID == _clubPhotoID) {
-			_index = idx;
+			_index = (int)idx;
 			*stop = YES;
 		}
 	}];
 	
-	_index = MIN(_index, [_clubPhotos count]);
+	_index = MIN(_index, (int)[_clubPhotos count]);
 	
 	if (_index > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+}
+
+
+#pragma mark - TimelineMapViewController Delegates
+- (void)timelineMapViewController:(HONTimelineMapViewController *)viewController didChangeToLocation:(CLLocation *)location {
+	NSLog(@"[*:*] timelineMapViewController:didChangeToLocation:(%f/%f)", location.coordinate.longitude, location.coordinate.latitude);
 }
 
 
@@ -421,6 +433,10 @@
 		
 		[self _advanceTimelineFromCell:cell byAmount:1];
 	}];
+}
+
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell downVotePhoto:(HONClubPhotoVO *)clubPhotoVO {
+	
 }
 
 
@@ -483,7 +499,7 @@
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-	_index = ((NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject]).section;
+	_index = (int)((NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject]).section;
 	
 	_clubPhotoVO = ((HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index]]).clubPhotoVO;
 	

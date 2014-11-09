@@ -444,7 +444,7 @@
 			assetsGroup = group;
 			*stop = YES;
 			
-			_totaAlbumAssets = group.numberOfAssets;
+			_totaAlbumAssets = (int)group.numberOfAssets;
 			weakSelf.isAlbumFound = YES;
 		}
 		
@@ -507,7 +507,7 @@
 						}];
 						
 					} else
-						NSLog(@"--SAVE FAILURE--\nerror code %i\n%@", error.code, [error localizedDescription]);
+						NSLog(@"--SAVE FAILURE--\nerror code %li\n%@", (long)error.code, [error localizedDescription]);
 				}];
 			}
 		}

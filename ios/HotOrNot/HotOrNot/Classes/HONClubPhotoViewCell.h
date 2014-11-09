@@ -15,11 +15,14 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell downVotePhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end
 
 @interface HONClubPhotoViewCell : HONTableViewCell <UIScrollViewDelegate>
 + (NSString *)cellReuseIdentifier;
+
+- (void)toggleImageLoading:(BOOL)isLoading;
 - (void)destroy;
 
 @property (nonatomic, retain) HONUserClubVO *clubVO;

@@ -44,7 +44,7 @@
 								@"participant"	: _challengeVO.creatorVO}];
 	}
 	
-	NSLog(@"%@.layoutGrid withTotal[%d]", [[self class] description], [_gridItems count]);
+	NSLog(@"%@.layoutGrid withTotal[%ld]", [[self class] description], (unsigned long)[_gridItems count]);
 	[super layoutGrid];
 }
 

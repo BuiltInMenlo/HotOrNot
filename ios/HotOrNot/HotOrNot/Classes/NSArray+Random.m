@@ -13,7 +13,7 @@
 - (NSArray *)randomize {
 	NSMutableArray *rnd = [NSMutableArray arrayWithCapacity:[self count]];
 	
-	for (int i=[self count]-1; i>=0; i--) {
+	for (int i=(int)[self count]-1; i>=0; i--) {
 		[rnd addObject:[self objectAtIndex:arc4random_uniform(i)]];
 	}
 	

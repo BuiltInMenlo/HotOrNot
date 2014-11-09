@@ -100,7 +100,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
-	return (@{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]});
+	return (@{@"activity"	: [NSString stringWithFormat:@"%@ - %u", vo.activityID, vo.activityType]});
 }
 
 - (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {

@@ -245,9 +245,8 @@
 	_isUploadComplete = NO;
 	_uploadCounter = 0;
 	
-	_filename = [NSString stringWithFormat:@"%@/%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
-	
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename);
+	_filename = [NSString stringWithFormat:@"%@/%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+	NSLog(@"FILE PATH:%@", _filename);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMakeFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
@@ -444,11 +443,13 @@
 	[super viewDidLoad];
 	
 //	_panGestureRecognizer.enabled = YES;
+	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
+	
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 }
 
@@ -471,7 +472,7 @@
 - (void)_goGroup:(id)sender {
 	UIButton *button = (UIButton *)sender;
 	
-	int groupIndex = button.tag;
+	int groupIndex = (int)button.tag;
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
  									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
 	
@@ -753,7 +754,7 @@
 		[_headerView transitionTitle:@""];
 		
 	} else {
-		int ind = MIN(MAX(0, index), [_subjectNames count] - 1);
+		int ind = MIN(MAX(0, index), (int)[_subjectNames count] - 1);
 		if (![_headerView.title isEqualToString:[_subjectNames objectAtIndex:ind]])
 			[_headerView transitionTitle:[_subjectNames objectAtIndex:ind]];
 	}
@@ -977,7 +978,7 @@
 			_progressHUD = nil;
 		}
 		
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront], _filename] forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_filename forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;

@@ -102,7 +102,6 @@ const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // ui
 const CGSize kTabSize = {80.0, 50.0};
-const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
 const CGFloat kProfileTime = 0.25f;
@@ -1308,7 +1307,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	NSLog(@"BUTTON:[%d]", buttonIndex);
+	NSLog(@"BUTTON:[%ld]", (long)buttonIndex);
 	
 	if (alertView.tag == HONAppDelegateAlertTypeExit)
 		NSLog(@"EXIT APP");//exit(0);
@@ -1368,7 +1367,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeAllowContactsAccess) {
-		NSLog(@"CONTACTS:[%d]", buttonIndex);
+		NSLog(@"CONTACTS:[%ld]", (long)buttonIndex);
 		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -1678,7 +1677,7 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
-	NSLog(@"sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
+	NSLog(@"sticker.tag:[%ld] (%@)", (long)((PicoSticker *)sticker).tag, contentId);
 }
 //#endif
 

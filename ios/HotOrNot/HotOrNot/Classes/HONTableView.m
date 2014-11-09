@@ -10,6 +10,7 @@
 #import "HONTableView.h"
 
 const CGFloat kOrthodoxTableCellHeight = 74.0f;
+const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 @interface HONTableView ()
 @end
@@ -20,10 +21,10 @@ const CGFloat kOrthodoxTableCellHeight = 74.0f;
 	if ((self = [super initWithFrame:frame style:style])) {
 		[self setBackgroundColor:[UIColor clearColor]];
 		[self setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-		[self setShowsHorizontalScrollIndicator:YES];
+		[self setShowsHorizontalScrollIndicator:NO];
+		[self setShowsVerticalScrollIndicator:NO];
 		[self setAlwaysBounceVertical:YES];
 		[self setSectionIndexMinimumDisplayRowCount:1];
-//		[self.backgroundView setUserInteractionEnabled:YES];
 	}
 	
 	return (self);
@@ -31,10 +32,6 @@ const CGFloat kOrthodoxTableCellHeight = 74.0f;
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [self initWithFrame:frame style:UITableViewStylePlain])) {
-		[self setBackgroundColor:[UIColor clearColor]];
-		[self setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-		[self setShowsHorizontalScrollIndicator:YES];
-		[self setAlwaysBounceVertical:YES];
 	}
 	
 	return (self);

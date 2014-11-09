@@ -52,8 +52,8 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeUnderlay"]];
-		self.backgroundColor = [UIColor whiteColor];
+		//self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeUnderlay"]];
+		self.backgroundColor = [UIColor redColor];
 		
 		_emotions = [NSMutableArray array];
 		_emotionViews = [NSMutableArray array];
@@ -95,103 +95,152 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	}
 }
 
+- (void)toggleImageLoading:(BOOL)isLoading {
+	if (isLoading) {
+		[self _loadEmotionAtIndex:0];
+	}
+}
+
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
+	
+	[self hideChevron];
 	
 	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location == NSNotFound) {
 		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
 		[self.contentView addSubview:_imageLoadingView];
 	}
 	
-	_imgView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 320.0))];
+	_imgView = [[UIImageView alloc] initWithFrame:self.frame];
 	[self.contentView addSubview:_imgView];
 	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_imgView.image = image;
+	};
 	
-	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
-		
-	} else {
-		if (_clubPhotoVO.photoType == HONClubPhotoTypeGIF) {
-			FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
-			animatedImageView.frame = CGRectMakeFromSize(CGSizeMake(320.0, 271.0)); //CGRectMake(0.0, 0.0, 320.0, 271.0);
-			animatedImageView.contentMode = UIViewContentModeScaleToFill; // fills frame w/o proprotions
-			animatedImageView.clipsToBounds = YES;
-			[_imgView addSubview:animatedImageView];
-			
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				NSURL *url = [NSURL URLWithString:_clubPhotoVO.imagePrefix];
-				NSLog(@"IMG URL:[%@]", url);
-				FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{
-					animatedImageView.animatedImage = animatedImage;
-				});
-			});
-			
-		} else {
-			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-				_imgView.image = image;
-			};
-			
-			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-				[_imgView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
-				[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
-			};
-			
-			[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
-																cachePolicy:kOrthodoxURLCachePolicy
-															timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
-									   success:imageSuccessBlock
-									   failure:imageFailureBlock];
-		}
-	}
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[_imgView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+	};
+	
+	NSString *url = [@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:[[[HONClubAssistant sharedInstance] rndCoverImageURL] stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]];
+	NSLog(@"URL:[%@]", url);
+	[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
+													  cachePolicy:kOrthodoxURLCachePolicy
+												  timeoutInterval:[HONAppDelegate timeoutInterval]]
+					placeholderImage:nil
+							 success:imageSuccessBlock
+							 failure:imageFailureBlock];
+	
+	
+//	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location != NSNotFound) {
+//		
+//	} else {
+//		if (_clubPhotoVO.photoType == HONClubPhotoTypeGIF) {
+//			FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
+//			animatedImageView.frame = CGRectMakeFromSize(CGSizeMake(320.0, 271.0)); //CGRectMake(0.0, 0.0, 320.0, 271.0);
+//			animatedImageView.contentMode = UIViewContentModeScaleToFill; // fills frame w/o proprotions
+//			animatedImageView.clipsToBounds = YES;
+//			[_imgView addSubview:animatedImageView];
+//			
+//			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//				NSURL *url = [NSURL URLWithString:_clubPhotoVO.imagePrefix];
+//				NSLog(@"IMG URL:[%@]", url);
+//				FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+//				
+//				dispatch_async(dispatch_get_main_queue(), ^{
+//					animatedImageView.animatedImage = animatedImage;
+//				});
+//			});
+//			
+//		} else {
+//			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//				_imgView.image = image;
+//			};
+//			
+//			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//				[_imgView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
+//				[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+//			};
+//			
+//			[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] rndCoverImageURL] stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
+//																cachePolicy:kOrthodoxURLCachePolicy
+//															timeoutInterval:[HONAppDelegate timeoutInterval]]
+//							  placeholderImage:nil
+//									   success:imageSuccessBlock
+//									   failure:imageFailureBlock];
+//		}
+//	}
 	
 	
 //	NSLog(@"FRAME:[%@][%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.contentView.frame));
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, kEmotionLoadedFrame.size.height))];
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kEmotionLoadedFrame.size.height)];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	_scrollView.showsVerticalScrollIndicator = NO;
 	_scrollView.alwaysBounceHorizontal = YES;
 	_scrollView.delegate = self;
 	_scrollView.pagingEnabled = YES;
-	[self.contentView addSubview:_scrollView];
+	//[self.contentView addSubview:_scrollView];
 	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 271.0, 320.0, self.frame.size.height - 271.0)];
-	footerView.backgroundColor = [UIColor whiteColor];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 64.0, 200.0, 55.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	timeLabel.textColor = [UIColor whiteColor];
+	timeLabel.textAlignment = NSTextAlignmentCenter;
+	timeLabel.numberOfLines = 2;
+	timeLabel.text = [@"Incheon, South Korea\n" stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
+	[self.contentView addSubview:timeLabel];
+	
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 90.0, 320.0, 109.0)];
 	[self.contentView addSubview:footerView];
 	
 	_stickerSummaryView = [[HONStickerSummaryView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 64.0))];
-	_stickerSummaryView.delegate = self;
-	[footerView addSubview:_stickerSummaryView];
+//	_stickerSummaryView.delegate = self;
+//	[footerView addSubview:_stickerSummaryView];
 	
 	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 68.0, 150.0, 22.0)];
 	participantsLabel.backgroundColor = [UIColor clearColor];
 	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	participantsLabel.textColor = [UIColor blackColor];
 	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
-	[footerView addSubview:participantsLabel];
+	//[footerView addSubview:participantsLabel];
 	
 	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"results"] count] > 0)
-			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d/%d", [[result objectForKey:@"results"] count], _clubVO.totalMembers];
+			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d/%d", (int)[[result objectForKey:@"results"] count], _clubVO.totalMembers];
 	}];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(260.0, 68.0, 48.0, 22.0)];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	timeLabel.textColor = [UIColor blackColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""];
-	[footerView addSubview:timeLabel];
+//	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	replyButton.frame = CGRectMake(0.0, footerView.frame.size.height - 50.0, 320.0, 50.0);
+//	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_nonActive"] forState:UIControlStateNormal];
+//	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_Active"] forState:UIControlStateHighlighted];
+//	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+//	[footerView addSubview:replyButton];
 	
-	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(0.0, footerView.frame.size.height - 50.0, 320.0, 50.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_Active"] forState:UIControlStateHighlighted];
-	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[footerView addSubview:replyButton];
+	
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 18.0, 192.0, 22.0)];
+	scoreLabel.backgroundColor = [UIColor clearColor];
+	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	scoreLabel.textAlignment = NSTextAlignmentCenter;
+	scoreLabel.textColor = [UIColor whiteColor];
+	scoreLabel.text = [NSString stringWithFormat:@"%d", _clubVO.totalMembers];
+	[footerView addSubview:scoreLabel];
+	
+	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	upvoteButton.frame = CGRectMake(20.0, 0.0, 64.0, 64.0);
+	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
+	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
+	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+	[footerView addSubview:upvoteButton];
+	
+	UIButton *dnvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	dnvoteButton.frame = CGRectMake(self.frame.size.width - 84.0, 0.0, 64.0, 64.0);
+	[dnvoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
+	[dnvoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
+	[dnvoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	[footerView addSubview:dnvoteButton];
 	
 	[self _populateEmotions];
 }
@@ -209,26 +258,36 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 }
 
 - (void)_goNextPhoto {
-	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
-		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
+//	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
+//		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
+}
+
+- (void)_goUpvote {
+	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:upvotePhoto:)])
+		[self.delegate clubPhotoViewCell:self upvotePhoto:_clubPhotoVO];
+}
+
+- (void)_goDownVote {
+	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:downVotePhoto:)])
+		[self.delegate clubPhotoViewCell:self downVotePhoto:_clubPhotoVO];
 }
 
 - (void)_goNextSticker {
 	int offset = (_scrollView.contentOffset.x >= (_scrollView.contentSize.width - _scrollView.frame.size.width)) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
 	//int offset = (_scrollView.contentOffset.x + self.frame.size.width == _scrollView.contentSize.width) ? 0 : _scrollView.contentOffset.x + self.frame.size.width;
-	int ind = MIN(MAX(0, offset / _scrollView.frame.size.width), [_emotions count] - 1);
+	int ind = MIN(MAX(0, offset / _scrollView.frame.size.width), (int)[_emotions count] - 1);
 	
-//	NSLog(@"IND:[%d]", ind);
+	NSLog(@"IND:[%d]", ind);
 	
-	[_stickerSummaryView selectStickerAtIndex:ind];
+//	[_stickerSummaryView selectStickerAtIndex:ind];
 //	[UIView animateWithDuration:0.000250 delay:0.000
 //		 usingSpringWithDamping:0.875 initialSpringVelocity:0.125
 //						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
 	
 //					 animations:^(void) {
-						 [_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:NO];
-						 
-//					 } completion:^(BOOL finished) {
+//						 [_scrollView setContentOffset:CGPointMake(offset, 0.0) animated:NO];
+	
+//					 } completion:^(BOOL finish=ed) {
 //					 }];
 }
 
@@ -251,14 +310,11 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 		cnt++;
 	}
 	
-	[self _loadEmotionAtIndex:0];
+//	[self _loadEmotionAtIndex:0];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * [_emotions count], _scrollView.frame.size.height);
 }
 
 - (void)_changeTint {
-//	CGFloat hue = (arc4random() % 256 / 256.0);
-//	CGFloat saturation = (arc4random() % 128 / 256.0) + 0.5;
-//	CGFloat brightness = (arc4random() % 128 / 256.0) + 0.5;
 	UIColor *color = [[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.50 andSaturation:0.50];// [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
 	
 	[UIView animateWithDuration:2.0 animations:^(void) {
@@ -284,7 +340,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	CGAffineTransform transform = [[HONViewDispensor sharedInstance] affineTransformView:imageView toSize:kEmotionInitFrame.size];
 	
 	if (emotionVO.imageType == HONEmotionImageTypePNG) {
-		[imageView setTintColor:[UIColor whiteColor]];
+		//[imageView setTintColor:[UIColor whiteColor]];
 		[imageView setTag:[emotionVO.emotionID intValue]];
 		imageView.alpha = 0.0;
 		imageView.transform = transform;

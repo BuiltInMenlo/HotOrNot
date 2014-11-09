@@ -413,7 +413,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 	int axisCoord = (axisInd * _emotionSpacingSize.width) - _emotionInsetAmt;
 	
 	int currInd = _indHistory.horizontal;
-	int updtInd = MAX(0, MIN([_emotions count], axisInd));
+	int updtInd = MAX(0, MIN((int)[_emotions count], axisInd));
 	int changeDir = 0;
 	
 	if (updtInd == currInd) {
@@ -449,7 +449,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 
 #pragma mark - PicoSticker Delegates
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
-	NSLog(@"[*:*] sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
+	NSLog(@"[*:*] sticker.tag:[%ld] (%@)", (long)((PicoSticker *)sticker).tag, contentId);
 }
 
 @end

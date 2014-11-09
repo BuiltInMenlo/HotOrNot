@@ -210,7 +210,7 @@
 			_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
 	}
 	
-	NSLog(@"EMAIL:[%d] SMS:[%d]", [_emailRecipients length], [_smsRecipients length]);
+	NSLog(@"EMAIL:[%ld] SMS:[%ld]", (unsigned long)[_emailRecipients length], (unsigned long)[_smsRecipients length]);
 	if ([_smsRecipients length] == 0 && [_emailRecipients length] == 0)
 		[self _didFinishDataRefresh];
 	
@@ -291,12 +291,6 @@
 	_matchedUserIDs = [NSMutableArray array];
 	_clubs = [NSMutableArray array];
 
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.minimumLineHeight = 26.0;
-	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
-	paragraphStyle.alignment = NSTextAlignmentCenter;
-	
-	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_tableView.frame.size)];
@@ -582,7 +576,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		NSLog(@"CONTACTS:[%d]", buttonIndex);
+		NSLog(@"CONTACTS:[%ld]", (long)buttonIndex);
 		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);

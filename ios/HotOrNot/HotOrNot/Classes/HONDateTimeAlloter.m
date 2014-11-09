@@ -207,15 +207,15 @@ static HONDateTimeAlloter *sharedInstance = nil;
 }
 
 - (int)dayOfYearFromDate:(NSDate *)date {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:date] day]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:date] day]);
 }
 
 - (int)yearFromDate:(NSDate *)date {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:date] year]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:date] year]);
 }
 
 - (int)weekOfYearFromDate:(NSDate *)date {
-	return ([[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:date] weekOfYear]);
+	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitWeekOfYear fromDate:date] weekOfYear]);
 }
 
 - (int)yearsOldFromDate:(NSDate *)date {

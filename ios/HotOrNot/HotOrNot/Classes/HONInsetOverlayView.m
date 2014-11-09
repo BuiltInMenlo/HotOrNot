@@ -217,7 +217,7 @@
 					subtitleCaption = [subtitleCaption stringByAppendingString:@", "];
 					int cnt = 0;
 					for (HONTrivialUserVO *userVO in vo.activeMembers) {
-						NSString *caption = ([vo.activeMembers count] - cnt > 1) ? [subtitleCaption stringByAppendingFormat:@"%@, & %d more", userVO.username, ([vo.activeMembers count] - cnt)] : [subtitleCaption stringByAppendingString:userVO.username];
+						NSString *caption = ((int)[vo.activeMembers count] - cnt > 1) ? [subtitleCaption stringByAppendingFormat:@"%@, & %d more", userVO.username, ((int)[vo.activeMembers count] - cnt)] : [subtitleCaption stringByAppendingString:userVO.username];
 						CGSize size = [caption boundingRectWithSize:subtitleLabel.frame.size
 															options:NSStringDrawingTruncatesLastVisibleLine
 														 attributes:@{NSFontAttributeName:subtitleLabel.font}
@@ -231,7 +231,7 @@
 					}
 					
 					subtitleCaption = [subtitleCaption substringToIndex:[subtitleCaption length] - 2];
-					int remaining = [vo.activeMembers count] - cnt;
+					int remaining = (int)[vo.activeMembers count] - cnt;
 					
 					if (remaining > 0)
 						subtitleCaption = [subtitleCaption stringByAppendingFormat:@", & %d more", remaining];

@@ -94,7 +94,7 @@
 	}
 		
 	if ([userLikes count] > 0 && [dictionary objectForKey:@"recent_likes"] != [NSNull null] && !isTurdInPunchBowl) {
-		int remaining = vo.likedByTotal - [userLikes count];
+		int remaining = vo.likedByTotal - (int)[userLikes count];
 		if ([userLikes count] == 3) {
 				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, %@, %@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [NSString stringWithFormat:@"%@, %@, and %@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"]];
 			

@@ -154,7 +154,7 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 - (void)appendPurchasedStickersWithContentGroupID:(NSString *)contentGroupID {
 	[_contentGroupIDs addObject:contentGroupID];
 	
-	int loc = [_availableEmotions count] - 1;
+	int loc = (int)[_availableEmotions count] - 1;
 	[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:(NSDictionary *)obj];
 		if ([vo.contentGroupID isEqualToString:contentGroupID]) {
@@ -263,7 +263,7 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 #pragma mark - UI Presentation
 static dispatch_queue_t sticker_request_operation_queue;
 - (void)_buildGrid {
-	NSLog(@"\t—//]> [%@ _buildGrid] (%d)/(%d)", self.class, _totalPages, [_availableEmotions count]);
+	NSLog(@"\t—//]> [%@ _buildGrid] (%d)/(%ld)", self.class, _totalPages, (unsigned long)[_availableEmotions count]);
 	
 	
 //	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);

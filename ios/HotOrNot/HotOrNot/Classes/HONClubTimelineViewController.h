@@ -9,6 +9,10 @@
 #import "HONUserClubVO.h"
 #import "HONViewController.h"
 
+#define kMetersPerMile 1609.344f
+#define kMilesPerLatitudeDegree 69.0f
+
+
 @interface HONClubTimelineViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index;
 - (id)initWithClubID:(int)clubID atPhotoIndex:(int)index;

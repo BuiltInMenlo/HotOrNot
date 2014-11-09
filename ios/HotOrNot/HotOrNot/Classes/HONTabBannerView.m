@@ -186,7 +186,7 @@
 	[unlockButton addTarget:self action:@selector(_goUnlock) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:unlockButton];
 	
-	_totalPages = [_clubs count] + 1;
+	_totalPages = (int)[_clubs count] + 1;
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * _totalPages, _scrollView.frame.size.height);
 	
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 8.0) withTotalPages:_totalPages usingDiameter:5.0 andPadding:5.0];

@@ -179,7 +179,7 @@
 	
 	if ([_selectedUsers count] > 0) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
-															message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", [_selectedUsers count], ([_selectedUsers count] == 1) ? @"person" : @"people"]
+															message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", (int)[_selectedUsers count], ((int)[_selectedUsers count] == 1) ? @"person" : @"people"]
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
@@ -228,7 +228,7 @@
 //											 withProperties:[self _trackingProps]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Add to club?"
-																message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", [_selectedUsers count], ([_selectedUsers count] == 1) ? @"person" : @"people"]
+																message:[NSString stringWithFormat:@"Are you sure you want to add %d %@ to a club?", (int)[_selectedUsers count], ((int)[_selectedUsers count] == 1) ? @"person" : @"people"]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];

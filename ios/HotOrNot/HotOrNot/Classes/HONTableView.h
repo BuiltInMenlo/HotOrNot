@@ -6,7 +6,9 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+
 extern const CGFloat kOrthodoxTableCellHeight;
+extern const UIEdgeInsets kOrthodoxTableViewEdgeInsets;
 
 @interface HONTableView : UITableView
 @end

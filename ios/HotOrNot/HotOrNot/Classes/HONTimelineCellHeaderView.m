@@ -127,7 +127,7 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 	CGFloat width = kFeedItemAvatarSize.width + (([avatars count] - 1) * 30.0);
 	holderView.frame = CGRectMake((320.0 - width) * 0.5, 0.0, width, kFeedItemAvatarSize.height);
 	
-	for (int i=[avatars count]-1; i>=0; i--) {
+	for (int i=(int)[avatars count]-1; i>=0; i--) {
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 30.0), 0.0, kFeedItemAvatarSize.width, kFeedItemAvatarSize.height)];
 		[holderView addSubview:avatarImageView];
 		

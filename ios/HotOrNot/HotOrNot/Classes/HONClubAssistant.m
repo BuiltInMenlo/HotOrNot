@@ -146,7 +146,7 @@ static HONClubAssistant *sharedInstance = nil;
 			   @"added"			: @"0000-00-00 00:00:00",
 			   @"updated"		: @"0000-00-00 00:00:00",
 			   
-			   @"total_members"		: [@"" stringFromInt:(1 + ([members count] + [pending count]))],
+			   @"total_members"		: [@"" stringFromInt:(1 + ((int)[members count] + (int)[pending count]))],
 			   @"total_score"		: @"0",
 			   @"total_submissions"	: @"0",
 			   
@@ -452,7 +452,7 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 		
 		for (NSString *key in segmentedDict) {
-			NSLog(@"KEY:[%@]-=-(%d)", key, [[segmentedDict objectForKey:key] count]);
+			NSLog(@"KEY:[%@]-=-(%ld)", key, (unsigned long)[[segmentedDict objectForKey:key] count]);
 			if ([key length] > 0 && [[segmentedDict objectForKey:key] count] >= 3) {
 				clubName = [NSString stringWithFormat:NSLocalizedString(@"family_club", @"My%@Club"), key];
 				break;
@@ -800,7 +800,7 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	
 	for (HONUserClubVO *ownedClubVO in ownedClubs) {
-		int avail = [participants count];
+		int avail = (int)[participants count];
 		
 		if (avail != [ownedClubVO.activeMembers count] + [ownedClubVO.pendingMembers count])
 			continue;
@@ -837,7 +837,7 @@ static HONClubAssistant *sharedInstance = nil;
 		
 		
 		for (HONUserClubVO *memberClubVO in memberClubs) {
-			int avail = [participants count];
+			int avail = (int)[participants count];
 			
 			if (avail != 1 + ([memberClubVO.activeMembers count] - 1) + [memberClubVO.pendingMembers count])
 				continue;
@@ -875,7 +875,7 @@ static HONClubAssistant *sharedInstance = nil;
 				[pendingClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 			
 			for (HONUserClubVO *pendingClubVO in pendingClubs) {
-				int avail = [participants count];
+				int avail = (int)[participants count];
 				
 				if (avail != 1 + [pendingClubVO.activeMembers count] + ([pendingClubVO.pendingMembers count] - 1))
 					continue;

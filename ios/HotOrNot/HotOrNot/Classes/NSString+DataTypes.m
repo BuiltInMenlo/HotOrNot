@@ -47,7 +47,7 @@ unsigned long long unistrlen(unichar *chars) {
 }
 
 - (NSString *)stringFromIndexPath:(NSIndexPath *)indexPath {
-	return ([NSString stringWithFormat:@"(%d × %d)", indexPath.section, indexPath.row]);
+	return ([NSString stringWithFormat:@"(%ld × %ld)", (long)indexPath.section, (long)indexPath.row]);
 }
 
 - (NSString *)stringFromInt:(int)intVal {

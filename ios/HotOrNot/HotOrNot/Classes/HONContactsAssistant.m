@@ -109,8 +109,8 @@ static HONContactsAssistant *sharedInstance = nil;
 
 
 - (int)totalInvitedContacts {
-	NSLog(@"INVITES:[%d]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] count]);
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil) ? 0 : [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] count]);
+	NSLog(@"INVITES:[%ld]", (unsigned long)[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] count]);
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil) ? 0 : (int)[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] count]);
 }
 
 
