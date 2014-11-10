@@ -8,7 +8,6 @@
 
 #import "NSDate+Operations.h"
 #import "NSString+Formatting.h"
-#import "NSString+Validate.h"
 
 #import "HONContactUserVO.h"
 

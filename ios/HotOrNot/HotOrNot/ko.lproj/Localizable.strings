@@ -195,6 +195,7 @@
 "alert_noemotions_title" = "You must select a foreground sticker to submit";
 
 "header_signUp" = "Sign up";
+"header_pin" = "Enter pin";
 "areacode_club" = "%@클럽";
 "family_club" = "내%@클럽";
 "bff_club" = "내BFFs";

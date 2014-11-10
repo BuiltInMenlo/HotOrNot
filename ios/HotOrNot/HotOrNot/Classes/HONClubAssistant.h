@@ -17,14 +17,17 @@
 - (NSDictionary *)createClubDictionary;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
-- (NSDictionary *)orthodoxThresholdClubDictionary;
-- (NSDictionary *)emptyClubPhotoDictionary;
+- (NSMutableDictionary *)orthodoxClubMemberDictionary;
+- (NSMutableDictionary *)orthodoxThresholdClubDictionary;
+- (NSMutableDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
 - (NSString *)defaultCoverImageURL;
 - (NSString *)rndCoverImageURL;
 - (NSString *)defaultClubPhotoURL;
 - (NSArray *)clubCoverPhotoAlbumPrefixes;
 - (int)labelIDForAreaCode:(NSString *)areaCode;
+- (BOOL)isMemberOfClub:(HONUserClubVO *)clubVO includePending:(BOOL)isPending;
+- (BOOL)isMemberOfClubWithClubID:(int)clubID includePending:(BOOL)isPending;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
@@ -57,6 +60,8 @@
 
 - (NSArray *)excludedClubDomains;
 
+- (HONUserClubVO *)clubWithClubID:(int)clubID;
+- (HONUserClubVO *)clubWithName:(NSString *)clubName;
 - (HONUserClubVO *)clubWithParticipants:(NSArray *)participants;
 - (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants;
 - (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO;

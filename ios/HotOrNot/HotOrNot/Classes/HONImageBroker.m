@@ -200,7 +200,7 @@ static HONImageBroker *sharedInstance = nil;
 - (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(size)];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(size)];
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = (image != nil) ? image : [UIImage imageNamed:key];
 		[[HONImageBroker sharedInstance] writeImage:imageView.image toUserDefaulsWithKey:key];
@@ -288,7 +288,7 @@ static HONImageBroker *sharedInstance = nil;
 	UIGraphicsBeginImageContext(size);
 	
 	context = UIGraphicsGetCurrentContext();
-	CGContextDrawImage(context, CGRectMakeFromSize(size), image.CGImage);
+	CGContextDrawImage(context, CGRectFromSize(size), image.CGImage);
 	outputImage = UIGraphicsGetImageFromCurrentImageContext();
 	
 	UIGraphicsEndImageContext();
@@ -360,7 +360,7 @@ static HONImageBroker *sharedInstance = nil;
 	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
 	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(kInstagramSize)];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kInstagramSize)];
 	canvasView.backgroundColor = [UIColor blackColor];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
@@ -375,7 +375,7 @@ static HONImageBroker *sharedInstance = nil;
 	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
 	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(kInstagramSize)];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kInstagramSize)];
 	canvasView.backgroundColor = [UIColor blackColor];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];

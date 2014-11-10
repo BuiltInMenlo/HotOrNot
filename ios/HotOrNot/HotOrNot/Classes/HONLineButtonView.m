@@ -38,14 +38,14 @@
 		paragraphStyle.alignment = NSTextAlignmentCenter;
 		_paragraphStyle = [paragraphStyle copy];
 		
-		_label = [[UILabel alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
+		_label = [[UILabel alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 		_label.backgroundColor = [UIColor clearColor];
 		_label.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:19];
-		_label.textColor = [UIColor blackColor];
+		_label.textColor = (_viewType == HONLineButtonViewTypeRegister || _viewType == HONLineButtonViewTypePINEntry) ? [[HONColorAuthority sharedInstance] honLightGreyTextColor] : [UIColor blackColor];
 		_label.numberOfLines = 2;
 		_label.attributedText = [[NSAttributedString alloc] initWithString:_caption attributes:@{NSParagraphStyleAttributeName	: _paragraphStyle}];
 		[_label setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:_label.font.pointSize] range:range];
-		[_label setTextColor:(_viewType == HONLineButtonViewTypePINEntry) ? [[HONColorAuthority sharedInstance] honBlueTextColor] : _label.textColor range:range];
+		[_label setTextColor:(_viewType == HONLineButtonViewTypeRegister || _viewType == HONLineButtonViewTypePINEntry) ? [[HONColorAuthority sharedInstance] honLightGreyTextColor] : _label.textColor range:range];
 		[self addSubview:_label];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];

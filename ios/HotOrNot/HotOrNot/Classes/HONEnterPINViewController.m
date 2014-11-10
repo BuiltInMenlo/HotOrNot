@@ -15,7 +15,6 @@
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
 #import "HONBackNavButtonView.h"
-#import "HONLineButtonView.h"
 
 @interface HONEnterPINViewController ()
 @property (nonatomic, strong) NSString *pin;
@@ -95,7 +94,7 @@
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
-		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
+//		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 		
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
@@ -113,7 +112,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter pin")];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_pin", @"Enter pin")];
 	[headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	[self.view addSubview:headerView];
 	
@@ -126,7 +125,7 @@
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
 	[self.view addSubview:_pinButton];
 	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 80.0, 177.0, 30.0)];
+	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, _pinButton.frame.origin.y + 21.0, 177.0, 22.0)];
 	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -134,23 +133,27 @@
 	[_pinTextField setTextColor:[UIColor blackColor]];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
-	_pinTextField.placeholder = [@"  " stringByAppendingString:NSLocalizedString(@"enter_pin", @"Enter pin")];
+	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	_pinTextField.keyboardType = UIKeyboardTypeNumberPad;
+	_pinTextField.placeholder = NSLocalizedString(@"enter_pin", @"Enter four digit pin");
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
 	
 	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 64.0);
+	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, _pinButton.frame.origin.y + 3.0);
 	_pinCheckImageView.alpha = 0.0;
 	[self.view addSubview:_pinCheckImageView];
 	
-	
-	HONLineButtonView *bgView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypePINEntry withCaption:@"Enter your four digit pin.\nResend" usingTarget:self action:@selector(_goResend)];
-	bgView.hidden = NO;
-	[bgView setYOffset:-98.0];
-	[self.view addSubview:bgView];
+	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	resendButton.frame = CGRectMake(120.0, 146.0, 80.0, 20.0);
+	[resendButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.80] forState:UIControlStateNormal];
+	[resendButton setTitleColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor] forState:UIControlStateHighlighted];
+	resendButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	[resendButton setTitle:@"Resend" forState:UIControlStateNormal];
+	[resendButton setTitle:@"Resend" forState:UIControlStateHighlighted];
+	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:resendButton];
 	
 	
 #if __APPSTORE_BUILD__ == 0

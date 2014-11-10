@@ -293,7 +293,7 @@
 
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_tableView.frame.size)];
+	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectFromSize(_tableView.frame.size)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];

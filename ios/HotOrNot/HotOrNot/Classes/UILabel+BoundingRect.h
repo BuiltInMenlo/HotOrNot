@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface UILabel (BoundingRect)
+- (CGRect)boundingRectForAllCharacters;
 - (CGRect)boundingRectForCharacterRange:(NSRange)range;
 - (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize;
 @end

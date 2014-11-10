@@ -240,14 +240,14 @@
 			[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 		}
 		
-		[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
-			NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
-			
-			if (!isSeen) {
-				_refreshOnBack = YES;
-				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
-			}
-		}];
+//		[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
+//			NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+//			
+//			if (!isSeen) {
+//				_refreshOnBack = YES;
+//				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];
+//			}
+//		}];
 	}
 	
 	if (_clubVO == nil && _clubID > 0)

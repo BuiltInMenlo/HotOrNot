@@ -44,7 +44,7 @@
 		_blackMatteView.alpha = 0.0;
 		[self addSubview:_blackMatteView];
 		
-		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 50.0))];
+		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 50.0))];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 		[self addSubview:headerBGView];
 		

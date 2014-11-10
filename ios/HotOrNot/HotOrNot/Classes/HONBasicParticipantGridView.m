@@ -68,7 +68,7 @@
 	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_participantCounter % 4), kSnapThumbSize.height * (_participantCounter / 4));
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapThumbSize)];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(kSnapThumbSize)];
 	[imageHolderView addSubview:imageView];
 	
 	UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];

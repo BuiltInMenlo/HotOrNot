@@ -37,7 +37,7 @@
 		[self.contentView addSubview:_imageLoadingView];
 		
 		_animatedImageView = [[FLAnimatedImageView alloc] init];
-		_animatedImageView.frame = CGRectMakeFromSize(self.frame.size);
+		_animatedImageView.frame = CGRectFromSize(self.frame.size);
 		_animatedImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFit; // centers in frame
 		_animatedImageView.clipsToBounds = YES;
 		_animatedImageView.alpha = 0.5;

@@ -24,7 +24,7 @@
 
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
+	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		[self addSubview:_bgImageView];
 		

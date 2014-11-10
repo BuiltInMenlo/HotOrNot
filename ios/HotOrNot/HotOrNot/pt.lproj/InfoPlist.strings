@@ -9,3 +9,6 @@
 
 "CFBundleDisplayName" = "Selfieclub";
 "CFBundleName" = "Selfieclub";
+
+"NSLocationWhenInUseUsageDescription" = "Location needed (IN USE)";
+"NSLocationAlwaysUsageDescription" = "Location needed (ALWAYS)";

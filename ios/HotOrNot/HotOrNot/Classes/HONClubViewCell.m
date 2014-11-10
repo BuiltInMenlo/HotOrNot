@@ -407,7 +407,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 
 #pragma mark - UI Presentation
 - (UIView *)_holderViewForStatusUpdate {
-	UIView *view = [[UIView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(50.0, 50.0))];
+	UIView *view = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(50.0, 50.0))];
 	view.hidden = YES;
 	view.alpha = 0.0;
 

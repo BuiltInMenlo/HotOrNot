@@ -167,6 +167,13 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAIHUQ42RE7R7CIMEA", @"key", @"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ", @"secret", nil]);
 }
 
++ (NSDictionary *)orthodoxClubVO {
+	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"	: [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"owner_id"]}];
+	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] forKey:@"id"];
+	
+	return ([dict copy]);
+}
+
 + (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:(insetType == HONInsetOverlayViewTypeAppReview) ? @"review" : (insetType == HONInsetOverlayViewTypeSuggestions) ? @"contacts" : @"unlock"]);
 }
@@ -324,6 +331,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
@@ -352,7 +360,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 		
 		[self _initThirdPartySDKs];
-		[[HONStickerAssistant sharedInstance] retrieveAllStickerPakTypesWithDelay:0.875 ignoringCache:YES];
+//		[[HONStickerAssistant sharedInstance] retrieveAllStickerPakTypesWithDelay:0.875 ignoringCache:YES];
 		
 		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
 			[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
@@ -1021,6 +1029,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	self.window.rootViewController = self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor blackColor];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }
 
 - (void)_establishUserDefaults {
@@ -1029,6 +1039,7 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"local_challenges"	: @[],
 								   @"upvotes"			: @[],
 								   @"purchases"			: @[],
+								   @"coords"			: @{@"lat" : @(0.00), @"long" : @(0.00)},
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
 	for (NSString *key in [userDefaults allKeys]) {

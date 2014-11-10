@@ -106,25 +106,30 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	
 	[self hideChevron];
 	
-	if ([_clubPhotoVO.imagePrefix rangeOfString:@"defaultClubPhoto"].location == NSNotFound) {
-		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
-		[self.contentView addSubview:_imageLoadingView];
-	}
+	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
+	[self.contentView addSubview:_imageLoadingView];
 	
 	_imgView = [[UIImageView alloc] initWithFrame:self.frame];
 	[self.contentView addSubview:_imgView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_imgView.image = image;
+		[_imageLoadingView stopAnimating];
+		[_imageLoadingView removeFromSuperview];
+		_imageLoadingView = nil;
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[_imgView setImageWithURL:[NSURL URLWithString:[[HONClubAssistant sharedInstance] rndCoverImageURL]]];
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+		[_imgView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
+		[_imageLoadingView stopAnimating];
+		[_imageLoadingView removeFromSuperview];
+		_imageLoadingView = nil;
+		
+//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 	};
 	
-	NSString *url = [@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:[[[HONClubAssistant sharedInstance] rndCoverImageURL] stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]];
-	NSLog(@"URL:[%@]", url);
+	NSString *url = [_clubPhotoVO.imagePrefix stringByAppendingString:kSnapLargeSuffix];
+//	NSLog(@"URL:[%@]", [[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]);
 	[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
 													  cachePolicy:kOrthodoxURLCachePolicy
 												  timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -184,33 +189,40 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	_scrollView.pagingEnabled = YES;
 	//[self.contentView addSubview:_scrollView];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 64.0, 200.0, 55.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 64.0, 260.0, 55.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.textAlignment = NSTextAlignmentCenter;
 	timeLabel.numberOfLines = 2;
-	timeLabel.text = [@"Incheon, South Korea\n" stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
+	timeLabel.text = [@"" stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
 	[self.contentView addSubview:timeLabel];
 	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 90.0, 320.0, 109.0)];
+	if ([[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] count] > 2) {
+		NSString *coords = [[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] objectAtIndex:1];
+		[[HONGeoLocator sharedInstance] addressForLocation:[[CLLocation alloc] initWithLatitude:[[[coords componentsSeparatedByString:@","] lastObject] floatValue] longitude:[[[coords componentsSeparatedByString:@","] firstObject] floatValue]] onCompletion:^(NSDictionary *result) {
+			timeLabel.text = [NSString stringWithFormat:@"%@, %@\n%@", [result objectForKey:@"city"], [result objectForKey:@"country"], [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate]];
+		}];
+	}
+	
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 86.0, 320.0, 109.0)];
 	[self.contentView addSubview:footerView];
 	
-	_stickerSummaryView = [[HONStickerSummaryView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, 64.0))];
+	_stickerSummaryView = [[HONStickerSummaryView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 64.0))];
 //	_stickerSummaryView.delegate = self;
 //	[footerView addSubview:_stickerSummaryView];
 	
-	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 68.0, 150.0, 22.0)];
-	participantsLabel.backgroundColor = [UIColor clearColor];
-	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	participantsLabel.textColor = [UIColor blackColor];
-	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
+//	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 68.0, 150.0, 22.0)];
+//	participantsLabel.backgroundColor = [UIColor clearColor];
+//	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+//	participantsLabel.textColor = [UIColor blackColor];
+//	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
 	//[footerView addSubview:participantsLabel];
 	
-	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-		if ([[result objectForKey:@"results"] count] > 0)
-			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d/%d", (int)[[result objectForKey:@"results"] count], _clubVO.totalMembers];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
+//		if ([[result objectForKey:@"results"] count] > 0)
+//			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d/%d", (int)[[result objectForKey:@"results"] count], _clubVO.totalMembers];
+//	}];
 	
 //	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	replyButton.frame = CGRectMake(0.0, footerView.frame.size.height - 50.0, 320.0, 50.0);
@@ -225,7 +237,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	scoreLabel.textAlignment = NSTextAlignmentCenter;
 	scoreLabel.textColor = [UIColor whiteColor];
-	scoreLabel.text = [NSString stringWithFormat:@"%d", _clubVO.totalMembers];
+	scoreLabel.text = [NSString stringWithFormat:@"%d", _clubPhotoVO.score];
 	[footerView addSubview:scoreLabel];
 	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -242,7 +254,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	[dnvoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	[footerView addSubview:dnvoteButton];
 	
-	[self _populateEmotions];
+//	[self _populateEmotions];
 }
 
 
@@ -360,75 +372,22 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 }
 
 - (void)_loadEmotionAtIndex:(int)index {
-	HONEmotionVO *emotionVO = (HONEmotionVO *)[_emotions objectAtIndex:index];
-	UIView *holderView = (UIView *)[_emotionViews objectAtIndex:index];
-	HONImageLoadingView *imageLoadingView = (HONImageLoadingView *)[holderView.subviews firstObject];
-	
-	if (emotionVO.imageType == HONEmotionImageTypePNG) {
-		UIImageView *imageView = [holderView.subviews lastObject];
+	if (index < [_emotions count]) {
+		HONEmotionVO *emotionVO = (HONEmotionVO *)[_emotions objectAtIndex:index];
+		UIView *holderView = (UIView *)[_emotionViews objectAtIndex:index];
+		HONImageLoadingView *imageLoadingView = (HONImageLoadingView *)[holderView.subviews firstObject];
 		
-		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			imageView.image = image;
+		if (emotionVO.imageType == HONEmotionImageTypePNG) {
+			UIImageView *imageView = [holderView.subviews lastObject];
 			
-			[imageLoadingView stopAnimating];
-			imageLoadingView.hidden = YES;
-			[imageLoadingView removeFromSuperview];
-			
-			emotionVO.image = image;
-			[_stickerSummaryView appendSticker:emotionVO];
-			
-			[UIView animateWithDuration:0.250 delay:0.000
-				 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
-								options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
-			 
-							 animations:^(void) {
-								 imageView.alpha = 1.0;
-								 imageView.transform = CGAffineTransformMakeNormal();
-							 } completion:^(BOOL finished) {
-								 if (index == 0 && _stickerTimer == nil) {
-									 [_stickerSummaryView selectStickerAtIndex:0];
-									 //_stickerTimer = [NSTimer scheduledTimerWithTimeInterval:kStickerTimerInterval target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
-								 }
-								 
-								 if (index < [_emotions count] - 1) {
-									 [self _loadEmotionAtIndex:index + 1];
-								 }
-							 }];
-			
-		};
-		
-		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[imageLoadingView stopAnimating];
-			imageLoadingView.hidden = YES;
-			[imageLoadingView removeFromSuperview];
-		};
-		
-		//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-														   cachePolicy:kOrthodoxURLCachePolicy
-													   timeoutInterval:[HONAppDelegate timeoutInterval]]
-						 placeholderImage:nil
-								  success:imageSuccessBlock
-								  failure:imageFailureBlock];
-		
-		
-	
-	} else if (emotionVO.imageType == HONEmotionImageTypeGIF) {
-		FLAnimatedImageView *animatedImageView = (FLAnimatedImageView *)[holderView.subviews lastObject];
-		
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:emotionVO.smallImageURL]]];
-			
-			dispatch_async(dispatch_get_main_queue(), ^{
-				animatedImageView.animatedImage = animatedImage;
+			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+				imageView.image = image;
 				
-				FLAnimatedImageView *animatedThumbImageView = [[FLAnimatedImageView alloc] init];
-				animatedThumbImageView.frame = CGRectMakeFromSize(CGSizeMake(64.0, 64.0));
-				animatedThumbImageView.contentMode = UIViewContentModeScaleAspectFit;
-				animatedThumbImageView.clipsToBounds = YES;
-				animatedThumbImageView.animatedImage = animatedImage;
+				[imageLoadingView stopAnimating];
+				imageLoadingView.hidden = YES;
+				[imageLoadingView removeFromSuperview];
 				
-				emotionVO.animatedImageView = animatedThumbImageView;
+				emotionVO.image = image;
 				[_stickerSummaryView appendSticker:emotionVO];
 				
 				[UIView animateWithDuration:0.250 delay:0.000
@@ -436,8 +395,8 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 									options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
 				 
 								 animations:^(void) {
-									 animatedImageView.alpha = 1.0;
-									 animatedImageView.transform = CGAffineTransformMakeNormal();
+									 imageView.alpha = 1.0;
+									 imageView.transform = CGAffineTransformMakeNormal();
 								 } completion:^(BOOL finished) {
 									 if (index == 0 && _stickerTimer == nil) {
 										 [_stickerSummaryView selectStickerAtIndex:0];
@@ -448,8 +407,63 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 										 [self _loadEmotionAtIndex:index + 1];
 									 }
 								 }];
+				
+			};
+			
+			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+				[imageLoadingView stopAnimating];
+				imageLoadingView.hidden = YES;
+				[imageLoadingView removeFromSuperview];
+			};
+			
+			//	NSLog(@"emotionVO.largeImageURL:[%@]", emotionVO.largeImageURL);
+			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+															   cachePolicy:kOrthodoxURLCachePolicy
+														   timeoutInterval:[HONAppDelegate timeoutInterval]]
+							 placeholderImage:nil
+									  success:imageSuccessBlock
+									  failure:imageFailureBlock];
+			
+			
+		
+		} else if (emotionVO.imageType == HONEmotionImageTypeGIF) {
+			FLAnimatedImageView *animatedImageView = (FLAnimatedImageView *)[holderView.subviews lastObject];
+			
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:emotionVO.smallImageURL]]];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					animatedImageView.animatedImage = animatedImage;
+					
+					FLAnimatedImageView *animatedThumbImageView = [[FLAnimatedImageView alloc] init];
+					animatedThumbImageView.frame = CGRectFromSize(CGSizeMake(64.0, 64.0));
+					animatedThumbImageView.contentMode = UIViewContentModeScaleAspectFit;
+					animatedThumbImageView.clipsToBounds = YES;
+					animatedThumbImageView.animatedImage = animatedImage;
+					
+					emotionVO.animatedImageView = animatedThumbImageView;
+					[_stickerSummaryView appendSticker:emotionVO];
+					
+					[UIView animateWithDuration:0.250 delay:0.000
+						 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+										options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
+					 
+									 animations:^(void) {
+										 animatedImageView.alpha = 1.0;
+										 animatedImageView.transform = CGAffineTransformMakeNormal();
+									 } completion:^(BOOL finished) {
+										 if (index == 0 && _stickerTimer == nil) {
+											 [_stickerSummaryView selectStickerAtIndex:0];
+											 //_stickerTimer = [NSTimer scheduledTimerWithTimeInterval:kStickerTimerInterval target:self selector:@selector(_goNextSticker) userInfo:nil repeats:YES];
+										 }
+										 
+										 if (index < [_emotions count] - 1) {
+											 [self _loadEmotionAtIndex:index + 1];
+										 }
+									 }];
+				});
 			});
-		});
+		}
 	}
 }
 

@@ -36,6 +36,7 @@
 		30119BDB19F8301B00DE9B16 /* HONAnimatedBGCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BDA19F8301B00DE9B16 /* HONAnimatedBGCollectionViewCell.m */; };
 		30119BDE19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */; };
 		30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */; };
+		301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */; };
 		3022043C19D6228A00C3D677 /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		303BAD0B19D5E40000CB2501 /* InsetOverlayElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0A19D5E40000CB2501 /* InsetOverlayElements.xcassets */; };
@@ -93,7 +94,6 @@
 		30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */; };
-		30CA9CA51A026AEB00A0A703 /* NSString+Validate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */; };
 		30CA9CA81A026CB100A0A703 /* NSString+Formatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */; };
 		30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */; };
 		30CA9CAE1A02FD4400A0A703 /* NSDictionary+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAD1A02FD4400A0A703 /* NSDictionary+Replacements.m */; };
@@ -415,6 +415,8 @@
 		30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimatedBGViewFlowLayout.m; sourceTree = "<group>"; };
 		30119BE019F8527800DE9B16 /* HONCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionViewCell.h; sourceTree = "<group>"; };
 		30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionViewCell.m; sourceTree = "<group>"; };
+		301DF2291A10228B00D2BEB9 /* HONGeoLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGeoLocator.h; sourceTree = "<group>"; };
+		301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGeoLocator.m; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		303BAD0A19D5E40000CB2501 /* InsetOverlayElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = InsetOverlayElements.xcassets; sourceTree = "<group>"; };
@@ -586,8 +588,6 @@
 		30CA9C9D1A02332E00A0A703 /* NSUserDefaults+Replacements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSUserDefaults+Replacements.h"; sourceTree = "<group>"; };
 		30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSUserDefaults+Replacements.m"; sourceTree = "<group>"; };
 		30CA9CA01A0258DA00A0A703 /* HONStateMitigatorEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStateMitigatorEnums.h; sourceTree = "<group>"; };
-		30CA9CA31A026AEB00A0A703 /* NSString+Validate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Validate.h"; sourceTree = "<group>"; };
-		30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Validate.m"; sourceTree = "<group>"; };
 		30CA9CA61A026CB100A0A703 /* NSString+Formatting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Formatting.h"; sourceTree = "<group>"; };
 		30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Formatting.m"; sourceTree = "<group>"; };
 		30CA9CA91A02F62900A0A703 /* HONAnimationOverseer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAnimationOverseer.h; sourceTree = "<group>"; };
@@ -1971,6 +1971,8 @@
 				4C459105189183FF0014FA7E /* HONDeviceIntrinsics.m */,
 				4CDFB3161889349900E9F33B /* HONFontAllocator.h */,
 				4CDFB3171889349900E9F33B /* HONFontAllocator.m */,
+				301DF2291A10228B00D2BEB9 /* HONGeoLocator.h */,
+				301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */,
 				4CC13E6F198543F5000B41C2 /* HONImageBroker.h */,
 				4CC13E70198543F5000B41C2 /* HONImageBroker.m */,
 				30CA9CA01A0258DA00A0A703 /* HONStateMitigatorEnums.h */,
@@ -2400,8 +2402,6 @@
 				30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */,
 				309F59B1199D7FE400EC6C1C /* NSString+Random.h */,
 				309F59B2199D7FE400EC6C1C /* NSString+Random.m */,
-				30CA9CA31A026AEB00A0A703 /* NSString+Validate.h */,
-				30CA9CA41A026AEB00A0A703 /* NSString+Validate.m */,
 				30CA9C9D1A02332E00A0A703 /* NSUserDefaults+Replacements.h */,
 				30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */,
 				3051F8C51A09964A00CD85F2 /* UIImage+AnimatedGIF.h */,
@@ -2682,7 +2682,6 @@
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				4CB77BB018BC03200074C625 /* HONUserClubVO.m in Sources */,
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
-				30CA9CA51A026AEB00A0A703 /* NSString+Validate.m in Sources */,
 				4C99EB5A194D5B1700283C1A /* HONClubTimelineViewController.m in Sources */,
 				4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */,
 				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
@@ -2706,6 +2705,7 @@
 				4C7341921616C078001F9F11 /* HONPrivacyPolicyViewController.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */,
+				301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */,
 				4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4C382FF4178B7D2000C7FA7C /* HONCelebVO.m in Sources */,

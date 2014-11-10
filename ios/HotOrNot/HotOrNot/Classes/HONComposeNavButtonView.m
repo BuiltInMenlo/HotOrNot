@@ -17,7 +17,7 @@
 	if ((self = [super initWithTarget:target action:action])) {
 		[self setFrame:CGRectOffset(self.frame, 272.0, -1.0)];
 		
-		_button.frame = CGRectMakeFromSize(CGSizeMake(44.0, 44.0));
+		_button.frame = CGRectFromSize(CGSizeMake(44.0, 44.0));
 		[_button setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
 		[_button setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
 	}

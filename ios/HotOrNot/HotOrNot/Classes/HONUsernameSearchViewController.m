@@ -309,7 +309,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	_searchHeaderView = [[HONSearchBarView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(tableView.frame.size.width, kSearchHeaderHeight))];
+	_searchHeaderView = [[HONSearchBarView alloc] initWithFrame:CGRectFromSize(CGSizeMake(tableView.frame.size.width, kSearchHeaderHeight))];
 	_searchHeaderView.delegate = self;
 	
 	return (_searchHeaderView);

@@ -37,7 +37,7 @@
 		_totalPages = 0;
 		
 		_clubs = [NSMutableArray array];
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
 		_scrollView.showsHorizontalScrollIndicator = YES;
 		_scrollView.showsVerticalScrollIndicator = NO;

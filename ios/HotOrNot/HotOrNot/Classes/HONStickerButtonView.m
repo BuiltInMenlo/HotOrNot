@@ -37,7 +37,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"stickerItemBG"]]];
 		
-		_imageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
+		_imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
 		_imageView.layer.borderWidth = 2.5f;
 		_imageView.layer.shouldRasterize = YES;

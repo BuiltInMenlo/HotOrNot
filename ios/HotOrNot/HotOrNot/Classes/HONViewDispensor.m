@@ -34,7 +34,7 @@ static HONViewDispensor *sharedInstance = nil;
 }
 
 - (UIView *)matteViewWithSize:(CGSize)size usingColor:(UIColor *)color {
-	UIView *view = [[UIView alloc] initWithFrame:CGRectMakeFromSize(size)]; //CGRectMake(0.0, 0.0, size.width, size.height)];
+	UIView *view = [[UIView alloc] initWithFrame:CGRectFromSize(size)]; //CGRectMake(0.0, 0.0, size.width, size.height)];
 	view.backgroundColor = color;
 	
 	return (view);
@@ -51,7 +51,7 @@ static HONViewDispensor *sharedInstance = nil;
 	[layer setAlignmentMode:kCAAlignmentCenter];
 	[layer setForegroundColor:[textColor CGColor]];
 	[layer setPosition:CGPointMake(frame.origin.x, frame.origin.y)];
-	[layer setBounds:CGRectMakeFromSize(size)];//CGRectMake(0.0, 0.0, size.width, size.height)];
+	[layer setBounds:CGRectFromSize(size)];//CGRectMake(0.0, 0.0, size.width, size.height)];
 	layer.needsDisplayOnBoundsChange = YES;
 	
 	return (layer);
@@ -66,13 +66,13 @@ static HONViewDispensor *sharedInstance = nil;
 }
 
 - (CGRect)frameAtViewOriginAndSize:(UIView *)view {
-	return (CGRectMakeFromSize(view.frame.size));
+	return (CGRectFromSize(view.frame.size));
 }
 
 - (void)maskView:(UIView *)view withMask:(UIImage *)maskImage {
 	CALayer *maskLayer = [CALayer layer];
 	maskLayer.contents = (id)[maskImage CGImage];
-	maskLayer.frame = CGRectMakeFromSize(view.frame.size);//(0.0, 0.0, //CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height);
+	maskLayer.frame = CGRectFromSize(view.frame.size);//(0.0, 0.0, //CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height);
 	
 	view.layer.mask = maskLayer;
 	view.layer.masksToBounds = YES;

@@ -29,12 +29,15 @@
 //@property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) NSMutableArray *seenClubs;
 @property (nonatomic, strong) NSMutableArray *unseenClubs;
+@property (nonatomic, strong) NSMutableArray *clubPhotos;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONLineButtonView *emptyClubsBGView;
 @property (nonatomic, strong) HONLineButtonView *accessContactsBGView;
 @property (nonatomic) int joinedTotalClubs;
+
+@property (nonatomic, strong) CLLocationManager *locationManager;
 @end
 
 
@@ -74,6 +77,8 @@
 }
 
 - (void)dealloc {
+	_locationManager.delegate = nil;
+	
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
 	
@@ -117,42 +122,65 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
-		_joinedTotalClubs = (_joinedTotalClubs == 0) ? (int)[[result objectForKey:@"pending"] count] : _joinedTotalClubs;
+//		_joinedTotalClubs = (_joinedTotalClubs == 0) ? (int)[[result objectForKey:@"pending"] count] : _joinedTotalClubs;
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
-					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
-						continue;
+//					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
+//						continue;
 					
 					HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
-					if ([clubVO.submissions count] == 0)
-						continue;
+//					if ([clubVO.submissions count] == 0)
+//						continue;
 					
-					NSLog(@"SEEN UPDATES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
-					if ([clubVO.updatedDate timeIntervalSinceNow] >= (3600 * 12)) {
+					[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
+						
+						if ([clubPhotoVO.addedDate timeIntervalSinceNow] >= (3600 * 12))
+							return;
+						
+						[_clubPhotos addObject:clubPhotoVO];
+					}];
+					
+//					NSLog(@"SEEN UPDATES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
+//					if ([clubVO.updatedDate timeIntervalSinceNow] >= (3600 * 12)) {
 //					if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:clubPhotoVO.challengeID]] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-						[_seenClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-					
-					} else {
-						[_unseenClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-					}
+//						[_seenClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//					
+//					} else {
+//						[_unseenClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//					}
 				}
 				
-			} else if ([key isEqualToString:@"pending"]) {
-				for (NSDictionary *dict in [result objectForKey:key]) {
-					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-						
-						if ([[result objectForKey:@"pending"] count] == 0)
-							[self _retrieveClubs];
-					}];
-				}
+//			} else if ([key isEqualToString:@"pending"]) {
+//				for (NSDictionary *dict in [result objectForKey:key]) {
+//					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//						
+//						if ([[result objectForKey:@"pending"] count] == 0)
+//							[self _retrieveClubs];
+//					}];
+//				}
 				
 			} else
 				continue;
 		}
 		
-		[self _didFinishDataRefresh];
+		NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
+		NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]]);
+		if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
+			[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxClubMemberDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+				
+				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
+					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+						[[HONClubAssistant sharedInstance] writeUserClubs:result];
+						[self _didFinishDataRefresh];
+					}];
+				}
+			}];
+		
+		} else
+			[self _didFinishDataRefresh];
 	}];
 }
 
@@ -169,6 +197,7 @@ static NSString * const kCamera = @"camera";
 	if (![_refreshControl isRefreshing])
 		[_refreshControl beginRefreshing];
 	
+	_clubPhotos = [NSMutableArray array];
 	_seenClubs = [NSMutableArray array];
 	_unseenClubs = [NSMutableArray array];
 	[_tableView reloadData];
@@ -192,35 +221,49 @@ static NSString * const kCamera = @"camera";
 		_joinedTotalClubs = 0;
 	
 	} else {
-		_seenClubs = [[[[_seenClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
-			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+		_clubPhotos = [[[[_clubPhotos sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+			HONClubPhotoVO *vo1 = (HONClubPhotoVO *)obj1;
+			HONClubPhotoVO *vo2 = (HONClubPhotoVO *)obj2;
 			
-			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
+			if ([vo1.addedDate didDateAlreadyOccur:vo2.addedDate])
 				return ((NSComparisonResult)NSOrderedAscending);
 			
-			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
+			if ([vo2.addedDate didDateAlreadyOccur:vo1.addedDate])
 				return ((NSComparisonResult)NSOrderedDescending);
 			
 			return ((NSComparisonResult)NSOrderedSame);
 		}] reverseObjectEnumerator] allObjects] mutableCopy];
 		
-		_unseenClubs = [[[[_unseenClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
-			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
-			
-			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
-				return ((NSComparisonResult)NSOrderedAscending);
-			
-			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
-				return ((NSComparisonResult)NSOrderedDescending);
-			
-			return ((NSComparisonResult)NSOrderedSame);
-		}] reverseObjectEnumerator] allObjects] mutableCopy];
+		
+//		_seenClubs = [[[[_seenClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
+//			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+//			
+//			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
+//				return ((NSComparisonResult)NSOrderedAscending);
+//			
+//			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
+//				return ((NSComparisonResult)NSOrderedDescending);
+//			
+//			return ((NSComparisonResult)NSOrderedSame);
+//		}] reverseObjectEnumerator] allObjects] mutableCopy];
+//		
+//		_unseenClubs = [[[[_unseenClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
+//			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+//			
+//			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
+//				return ((NSComparisonResult)NSOrderedAscending);
+//			
+//			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
+//				return ((NSComparisonResult)NSOrderedDescending);
+//			
+//			return ((NSComparisonResult)NSOrderedSame);
+//		}] reverseObjectEnumerator] allObjects] mutableCopy];
 		
 		_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
-		_emptyClubsBGView.hidden = ([_seenClubs count] > 0 || [_unseenClubs count] > 0);
-		_emptyClubsBGView.hidden = (!_accessContactsBGView.hidden) ? YES : _emptyClubsBGView.hidden;
+//		_emptyClubsBGView.hidden = ([_seenClubs count] > 0 || [_unseenClubs count] > 0);
+//		_emptyClubsBGView.hidden = (!_accessContactsBGView.hidden) ? YES : _emptyClubsBGView.hidden;
 		
 		if (!_emptyClubsBGView.hidden || !_accessContactsBGView.hidden) {
 			_accessContactsBGView.frame = CGRectMake(_accessContactsBGView.frame.origin.x, _tableView.contentSize.height + 5.0, _accessContactsBGView.frame.size.width, _accessContactsBGView.frame.size.height);
@@ -232,14 +275,6 @@ static NSString * const kCamera = @"camera";
 	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_unseenClubs count] + [_seenClubs count]));
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
-	
-	[_tableView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
-		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			cell.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-	}];
 	
 	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 }
@@ -304,6 +339,13 @@ static NSString * const kCamera = @"camera";
 		
 		if (![_refreshControl isRefreshing])
 			[_refreshControl beginRefreshing];
+		
+		_locationManager = [[CLLocationManager alloc] init];
+		_locationManager.delegate = self;
+		_locationManager.distanceFilter = 100;
+		if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+			[_locationManager requestWhenInUseAuthorization];
+		[_locationManager startUpdatingLocation];
 	
 	} else {
 		[self _goRegistration];
@@ -316,8 +358,6 @@ static NSString * const kCamera = @"camera";
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 	
 //	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
 //		HONTimelineMapViewController *timelineMapViewController = [[HONTimelineMapViewController alloc] init];
@@ -349,7 +389,8 @@ static NSString * const kCamera = @"camera";
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 									 withProperties:@{@"src"	: @"header"}];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -456,16 +497,22 @@ static NSString * const kCamera = @"camera";
 
 - (void)_completedFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _completedFirstRun <|::");
+
+	_locationManager = [[CLLocationManager alloc] init];
+	_locationManager.delegate = self;
+	_locationManager.distanceFilter = 100;
+	if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+		[_locationManager requestWhenInUseAuthorization];
+	[_locationManager startUpdatingLocation];
 	
 	NSLog(@"%@._completedFirstRun - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"Denied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
+//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+//		[self _promptForAddressBookPermission];
+//	
+//	else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+//		[self _promptForAddressBookAccess];
 	
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-		[self _promptForAddressBookPermission];
-	
-	else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-		[self _promptForAddressBookAccess];
-	
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	[self _goReloadTableViewContents];
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
@@ -504,7 +551,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Next Update"
 										withClubPhoto:cell.clubPhotoVO];
 	
-	int index = MIN(MAX(0, (int)[_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), (((int)[_unseenClubs count] - 1) + ((int)[_seenClubs count] - 1)));
+	int index = MIN(MAX(0, (int)[_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), ((int)[_clubPhotos count] - 1));
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
@@ -566,7 +613,7 @@ static NSString * const kCamera = @"camera";
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Down Vote"
 										  withClubPhoto:clubPhotoVO];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 //	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
 //		[[HONAPICaller sharedInstance] retrieveUserByUserID:clubPhotoVO.userID completion:^(NSDictionary *result) {
 //			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
@@ -577,13 +624,44 @@ static NSString * const kCamera = @"camera";
 }
 
 
+#pragma mark - LocationManager Delegates
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+	NSLog(@"**_[%@ locationManager:didFailWithError:(%@)]_**", self.class, error.description);
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, [@"" stringFromCLAuthorizationStatus:status]);// (status == kCLAuthorizationStatusAuthorized) ? @"Authorized" : (status == kCLAuthorizationStatusAuthorizedAlways) ? @"AuthorizedAlways" : (status == kCLAuthorizationStatusAuthorizedWhenInUse) ? @"AuthorizedWhenInUse" : (status == kCLAuthorizationStatusDenied) ? @"Denied" : (status == kCLAuthorizationStatusRestricted) ? @"Restricted" : (status == kCLAuthorizationStatusNotDetermined) ? @"NotDetermined" : @"UNKNOWN");
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+	NSLog(@"**_[%@ locationManager:didUpdateLocations:(%@)]_**", self.class, locations);
+	[_locationManager stopUpdatingLocation];
+	
+	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
+	[self _goReloadTableViewContents];
+	
+//	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
+//	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]]);
+//	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
+//		[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxClubMemberDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//			
+//			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
+//				[self _goReloadTableViewContents];
+//			}
+//		}];
+//		
+//	} else
+//		[self _goReloadTableViewContents];
+}
+
+
 #pragma mark - TableView DataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return ([_clubPhotos count]);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_unseenClubs count] : [_seenClubs count]);
+	return (1);//(section == 0) ? [_unseenClubs count] : [_seenClubs count]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -595,9 +673,9 @@ static NSString * const kCamera = @"camera";
 	[cell setIndexPath:indexPath];
 	cell.delegate = self;
 	
-	HONUserClubVO *clubVO = (indexPath.section == 0) ? (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row] : (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
-	HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[clubVO.submissions firstObject];
-	cell.clubVO = clubVO;
+//	HONUserClubVO *clubVO = (indexPath.section == 0) ? (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row] : (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
+	HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.section];//[clubVO.submissions firstObject];
+//	cell.clubVO = clubVO;
 	cell.clubPhotoVO = clubPhotoVO;
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -609,7 +687,7 @@ static NSString * const kCamera = @"camera";
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"Recent" : @"Seen"]);
+	return (nil);
 }
 
 
@@ -623,26 +701,26 @@ static NSString * const kCamera = @"camera";
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	return (nil);
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	
-	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
-	
-	if (indexPath.section == 0) {
-		HONUserClubVO *clubVO = (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row];
-		NSLog(@"UNSEEN CLUB:[%@]", clubVO.clubName);
-		
-	} else {
-		HONUserClubVO *clubVO = (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
-		NSLog(@"SEEN CLUB:[%@]", clubVO.clubName);
-	}
-	
-	[self _goSelectClub:cell.clubVO];
-}
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+//	HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+//	
+//	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
+//	
+//	if (indexPath.section == 0) {
+//		HONUserClubVO *clubVO = (HONUserClubVO *)[_unseenClubs objectAtIndex:indexPath.row];
+//		NSLog(@"UNSEEN CLUB:[%@]", clubVO.clubName);
+//		
+//	} else {
+//		HONUserClubVO *clubVO = (HONUserClubVO *)[_seenClubs objectAtIndex:indexPath.row];
+//		NSLog(@"SEEN CLUB:[%@]", clubVO.clubName);
+//	}
+//	
+//	[self _goSelectClub:cell.clubVO];
+//}
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	cell.alpha = 1.0;
@@ -670,7 +748,7 @@ static NSString * const kCamera = @"camera";
 		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", [@"" stringFromABAuthorizationStatus:ABAddressBookGetAuthorizationStatus()]);// (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
 				
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {

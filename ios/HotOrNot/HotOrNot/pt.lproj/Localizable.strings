@@ -183,6 +183,7 @@
 "activity_you" = "Você";
 
 "header_signUp" = "Sign up";
+"header_pin" = "Enter pin";
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
 

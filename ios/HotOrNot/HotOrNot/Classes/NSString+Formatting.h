@@ -10,7 +10,7 @@
 
 @interface NSString (Formatting)
 //- (instancetype)newStringByTrimmingFinalSubstring:(NSString *)substring;
-
+- (BOOL)isValidEmailAddress;
 - (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring;
 - (void)trimFinalSubstring:(NSString *)substring;
 - (NSString *)normalizedPhoneNumber;

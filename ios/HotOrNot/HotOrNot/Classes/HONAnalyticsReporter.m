@@ -68,6 +68,8 @@ static HONAnalyticsReporter *sharedInstance = nil;
 			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
 			  @"time"			: [[NSDate utcNowDate] formattedISO8601StringUTC],
 			  @"tz"				: [[NSDate date] utcHourOffsetFromDeviceLocale],
+			  @"latitude"		: [NSString stringWithFormat:@"%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude],
+			  @"longitude"		: [NSString stringWithFormat:@"%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
 			  @"battery_per"	: [NSString stringWithFormat:@"%.02f%%", ([UIDevice currentDevice].batteryLevel * 100.0)],
 			  @"hmac"			: [[HONDeviceIntrinsics sharedInstance] hmacToken]});
 }

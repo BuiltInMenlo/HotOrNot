@@ -12,7 +12,7 @@
 
 
 CG_INLINE CGRect
-CGRectMakeFromSize(CGSize size)
+CGRectFromSize(CGSize size)
 {
 	CGRect rect;
 	rect.origin.x = 0.0;

@@ -25,6 +25,10 @@
 - (NSString *)osNameVersion;
 - (NSString *)osVersion;
 - (NSString *)pushToken;
+
+- (CLLocation *)deviceLocation;
+- (void)updateDeviceLocation:(CLLocation *)location;
+
 - (NSMutableString *)hmacToken;
 
 - (void)writePhoneNumber:(NSString *)phoneNumber;

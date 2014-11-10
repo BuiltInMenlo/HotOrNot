@@ -55,7 +55,7 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], _imagePrefix);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMakeFromSize(CGSizeMult(kSnapTabSize, 2.0))]; //CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectFromSize(CGSizeMult(kSnapTabSize, 2.0))]; //CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imagePrefix completion:^(NSObject *result) {		
 //		[_cameraOverlayView uploadComplete];
@@ -182,7 +182,7 @@
 												   saturationDeltaFactor:1.0
 															   maskImage:nil] : processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(processedImage.size)];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(processedImage.size)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
 	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];

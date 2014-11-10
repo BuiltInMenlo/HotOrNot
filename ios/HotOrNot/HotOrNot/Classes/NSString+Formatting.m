@@ -10,6 +10,13 @@
 
 @implementation NSString (Formatting)
 
+- (BOOL)isValidEmailAddress {
+	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
+	
+	return ([[NSPredicate predicateWithFormat:@"SELF MATCHES %@", (stricterFilter) ? @"^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z‌​]{2,4})$" : @".+@([A-Za-z0-9]+\\.)+[A-Za-z]{2}[A-Za-z]*"]
+			 evaluateWithObject:self]);
+}
+
 - (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring {
 //	NSRange range = NSMakeRange([string length] - [substring length], [substring length]);
 	return (([self rangeOfString:substring].location != NSNotFound) ? [self substringToIndex:[self length] - [substring length]] : self);

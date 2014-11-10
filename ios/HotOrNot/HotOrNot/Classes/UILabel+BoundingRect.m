@@ -11,6 +11,10 @@
 
 @implementation UILabel (BoundingRect)
 
+- (CGRect)boundingRectForAllCharacters {
+	return ([self boundingRectForCharacterRange:[self.text rangeOfString:self.text]]);
+}
+
 - (CGRect)boundingRectForCharacterRange:(NSRange)range {
 	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:(self.attributedText == nil) ? [[NSAttributedString alloc] initWithString:self.text] : self.attributedText];
 	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];

@@ -40,7 +40,7 @@
 //	NSLog(@"setImageDict:[%@]", imageDict);
 	_imageDict = imageDict;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 	bgImageView.image = [UIImage imageNamed:@"stickerItemBG"];
 	[self.contentView addSubview:bgImageView];
 	

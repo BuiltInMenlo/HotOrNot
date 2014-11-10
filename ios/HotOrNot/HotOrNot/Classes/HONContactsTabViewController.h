@@ -6,8 +6,11 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
+//#import <MapKit/MapKit.h>
+
 #import "HONViewController.h"
 #import "HONUserClubVO.h"
 
-@interface HONContactsTabViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONContactsTabViewController : HONViewController <CLLocationManagerDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

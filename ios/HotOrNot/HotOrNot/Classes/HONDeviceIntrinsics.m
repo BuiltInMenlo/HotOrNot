@@ -9,6 +9,8 @@
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
 #import <CommonCrypto/CommonHMAC.h>
+#import <CoreLocation/CoreLocation.h>
+#import <MapKit/MapKit.h>
 
 #include <net/if.h>
 #include <net/if_dl.h>
@@ -111,6 +113,24 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (NSString *)pushToken {
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] : @"");
+}
+
+- (CLLocation *)deviceLocation {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] == nil)
+		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:0.00 longitude:0.00]];
+	
+	return ([[CLLocation alloc] initWithLatitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"long"] doubleValue]]);
+}
+
+- (void)updateDeviceLocation:(CLLocation *)location {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] != nil) {
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"coords"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	[[NSUserDefaults standardUserDefaults] setValue:@{@"lat"	:[NSNumber numberWithDouble:location.coordinate.latitude],
+													  @"long"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSString *)hmacToken {

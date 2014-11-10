@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "submitButton_Active.png"
+      "filename" : "submitButtonBackground_Active@3x-2.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "submitButton_Active@2x.png"
+      "filename" : "submitButtonBackground_Active@3x-1.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "submitButtonBackground_Active@3x.png"
     }
   ],
   "info" : {

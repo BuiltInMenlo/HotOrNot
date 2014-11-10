@@ -45,7 +45,7 @@
 	[imageLoadingView startAnimating];
 	[imageHolderView addSubview:imageLoadingView];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(imageHolderView.frame.size)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(imageHolderView.frame.size)];
 	_avatarImageView.userInteractionEnabled = YES;
 	[imageHolderView addSubview:_avatarImageView];
 	

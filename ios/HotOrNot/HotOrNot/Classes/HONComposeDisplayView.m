@@ -48,7 +48,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *previewGradientImageView;
 @property (nonatomic, strong) NSTimer *tintTimer;
-@property (nonatomic, strong) HONLineButtonView *bgView;
+@property (nonatomic, strong) HONLineButtonView *lineButtonView;
 @property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic) CGFloat emotionInsetAmt;
 @property (nonatomic) CGSize emotionSpacingSize;
@@ -75,10 +75,10 @@ const CGFloat kEmotionOutroForce = 0.250;
 		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]];
 		[self addSubview:_previewGradientImageView];
 		
-		_bgView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
-		[_bgView setYOffset:-144.0];
-		_bgView.hidden = YES;
-		[self addSubview:_bgView];
+		_lineButtonView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
+		[_lineButtonView setYOffset:-144.0];
+		_lineButtonView.hidden = YES;
+		[self addSubview:_lineButtonView];
 		
 		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 22.0, 320.0, kEmotionNormalFrame.size.height)];
 		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -130,7 +130,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 	
 	if ([_emotions count] == 1) {
 		[UIView animateWithDuration:0.125 animations:^(void) {
-			_bgView.alpha = 0.0;
+			_lineButtonView.alpha = 0.0;
 		}];
 	}
 	
@@ -170,7 +170,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 
 - (void)updatePreviewWithAnimatedImageView:(FLAnimatedImageView *)animatedImageView {
 	FLAnimatedImageView *animImageView = [[FLAnimatedImageView alloc] init];
-	animImageView.frame = CGRectMakeFromSize(CGSizeMake(320.0, 320.0));
+	animImageView.frame = CGRectFromSize(CGSizeMake(320.0, 320.0));
 	animImageView.contentMode = UIViewContentModeScaleToFill; // stretches w/o ratio -- UIViewContentModeScaleAspectFill; // stretches w/ ratio -- UIViewContentModeScaleAspectFit; // centers in frame
 	animImageView.clipsToBounds = YES;
 	animImageView.animatedImage = animatedImageView.animatedImage;
@@ -208,7 +208,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 //						 _scrollView.contentSize = CGSizeMake(offset, _scrollView.contentSize.height);
 	
 						 [UIView animateWithDuration:0.25 animations:^(void) {
-							 _bgView.alpha = ([_emotions count] == 0);
+							 _lineButtonView.alpha = ([_emotions count] == 0);
 						 }];
 //					 }];
 	
@@ -252,7 +252,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 //	NSLog(@"EMOTION STICKER:[%@]", emotionVO.largeImageURL);
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 		_animatedImageView = [[FLAnimatedImageView alloc] init];
-		_animatedImageView.frame =CGRectMakeFromSize(kEmotionNormalFrame.size);
+		_animatedImageView.frame =CGRectFromSize(kEmotionNormalFrame.size);
 		_animatedImageView.contentMode = UIViewContentModeScaleAspectFit; // centers in frame
 		_animatedImageView.clipsToBounds = YES;
 		_animatedImageView.animatedImage = emotionVO.animatedImageView.animatedImage;

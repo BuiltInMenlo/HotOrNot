@@ -18,7 +18,7 @@ const CGFloat kOrthodoxTableHeaderHeight = 34.0f;
 @implementation HONTableHeaderView
 
 - (id)initWithTitle:(NSString *)title {
-	if ((self = [super initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, kOrthodoxTableHeaderHeight))])) {
+	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kOrthodoxTableHeaderHeight))])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]]];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 8.0, 200.0, 20.0)];

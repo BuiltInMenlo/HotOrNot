@@ -179,7 +179,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	NSString *url = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"store"] objectForKey:@"banner"]  stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]];
 	
-	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize([tableView rectForHeaderInSection:section].size)];
+	UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize([tableView rectForHeaderInSection:section].size)];
 	[headerImageView setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"storeProductsBanner"]];
 	
 	return (headerImageView);

@@ -45,9 +45,8 @@ const CGFloat kStickerOutroForce = 0.125;
 		_selectedEmotionVO = nil;
 		
 		_scrollThreshold = ceil(self.frame.size.width / _stickerSpacing);
-		NSLog(@"THRESHOLD:[%d]", _scrollThreshold);
 		
-		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMakeFromSize(self.frame.size)];
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 		_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.965];
 		_scrollView.contentSize = CGSizeMake(0.0, _scrollView.frame.size.height);
 		_scrollView.contentInset = UIEdgeInsetsZero;
@@ -94,7 +93,7 @@ const CGFloat kStickerOutroForce = 0.125;
 - (void)appendSticker:(HONEmotionVO *)emotionVO {
 	UIView *stickerView = [[UIView alloc] initWithFrame:CGRectMake(_stickerSpacing * [_stickers count], 0.0, _stickerSize, _stickerSize)];
 	
-	CGRect frame = CGRectMakeFromSize(CGSizeMake(_stickerSize, _stickerSize));
+	CGRect frame = CGRectFromSize(CGSizeMake(_stickerSize, _stickerSize));
 	if (emotionVO.imageType == HONEmotionImageTypeGIF) {
 		FLAnimatedImageView *animatedImageView = [[FLAnimatedImageView alloc] init];
 		animatedImageView.frame = frame;

@@ -83,6 +83,7 @@
 
 "enter_username" = "Digite o nome de usuário";
 "enter_phone" = "Digite o telefone";
+"header_pin" = "Enter pin";
 "header_register" = "Sign up";
 "firstrun_next" = "Avançar";
 "Search for friends" = "Procurar amigos";

@@ -54,7 +54,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>35386</string>
+	<string>35567</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
@@ -65,6 +65,10 @@
 	<true/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location needed (ALWAYS)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location needed (IN USE)</string>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
 	<key>UIAppFonts</key>

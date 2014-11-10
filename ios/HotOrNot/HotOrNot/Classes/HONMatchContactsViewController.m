@@ -7,7 +7,7 @@
 //
 
 #import "UIImageView+AFNetworking.h"
-#import "NSString+Validate.h"
+#import "NSString+Formatting.h"
 
 #import "MBProgressHUD.h"
 

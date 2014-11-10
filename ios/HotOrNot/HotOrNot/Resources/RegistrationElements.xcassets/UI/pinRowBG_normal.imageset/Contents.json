@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "inputFieldRowBG.png"
+      "filename" : "pinInput@3x-2.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "inputFieldRowBG@2x.png"
+      "filename" : "pinInput@3x-1.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "pinInput@3x.png"
     }
   ],
   "info" : {

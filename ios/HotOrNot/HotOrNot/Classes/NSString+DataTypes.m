@@ -21,6 +21,9 @@ unsigned long long unistrlen(unichar *chars) {
 	return length;
 }
 
+- (NSString *)stringFromABAuthorizationStatus:(ABAuthorizationStatus)status {
+	return ((status == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (status == kABAuthorizationStatusDenied) ? @"Denied" : (status == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
+}
 
 - (NSString *)stringFromBOOL:(BOOL)boolVal {
 	return ((boolVal) ? @"YES" : @"NO");
@@ -28,6 +31,14 @@ unsigned long long unistrlen(unichar *chars) {
 
 - (NSString *)stringFromClass:(NSObject *)object {
 	return ([NSString stringWithFormat:@"%@", object.class]);
+}
+
+- (NSString *)stringFromCLAuthorizationStatus:(CLAuthorizationStatus)status {
+	return ((status == kCLAuthorizationStatusAuthorized) ? @"Authorized" : (status == kCLAuthorizationStatusAuthorizedAlways) ? @"AuthorizedAlways" : (status == kCLAuthorizationStatusAuthorizedWhenInUse) ? @"AuthorizedWhenInUse" : (status == kCLAuthorizationStatusDenied) ? @"Denied" : (status == kCLAuthorizationStatusRestricted) ? @"Restricted" : (status == kCLAuthorizationStatusNotDetermined) ? @"NotDetermined" : @"UNKNOWN");
+}
+
+- (NSString *)stringFromCLLocation:(CLLocation *)location {
+	return ([NSString stringWithFormat:@"%.04f, %.04f", location.coordinate.longitude, location.coordinate.latitude]);
 }
 
 - (NSString *)stringFromCGFloat:(CGFloat)floatVal {

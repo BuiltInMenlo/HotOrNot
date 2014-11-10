@@ -9,3 +9,6 @@
 
 "CFBundleDisplayName" = "Selcaクラブ";
 "CFBundleName" = "Selcaクラブ";
+
+"NSLocationWhenInUseUsageDescription" = "Location needed (IN USE)";
+"NSLocationAlwaysUsageDescription" = "Location needed (ALWAYS)";

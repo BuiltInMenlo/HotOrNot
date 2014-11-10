@@ -245,11 +245,14 @@
 	_isUploadComplete = NO;
 	_uploadCounter = 0;
 	
-	_filename = [NSString stringWithFormat:@"%@/%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+	NSString *coords = [@"" stringFromCLLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation]];
+	coords = [coords stringByReplacingOccurrencesOfString:@" " withString:@""];
+	
+	_filename = [NSString stringWithFormat:@"%@/%@_%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], coords, [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 	NSLog(@"FILE PATH:%@", _filename);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMakeFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	NSString *largeURL = [_filename stringByAppendingString:kSnapLargeSuffix];
 	NSString *tabURL = [_filename stringByAppendingString:kSnapLargeSuffix];
@@ -287,9 +290,10 @@
 }
 
 - (void)_modifySubmitParamsAndSubmit:(NSArray *)subjectNames {
-	if ([subjectNames count] == 0) {
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", @"No Emotions Selected!")
-									message:NSLocalizedString(@"alert_noemotions_msg", @"You need to choose some emotions to make a status update.")
+//	if ([subjectNames count] == 0) {
+	if (![[HONGeoLocator sharedInstance] isWithinOrthodoxClub]) {
+		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
+									message:[NSString stringWithFormat:@"Must be within %@ miles", [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"]]
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -321,7 +325,39 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit Reply"
 												 withUserClub:_userClubVO];
 			
-			[self _submitReplyStatusUpdate];
+//			[self _submitReplyStatusUpdate];
+			
+			
+			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
+			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					_progressHUD = nil;
+					
+				} else {
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
+													   withProperties:[self _trackingProps]];
+					
+					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
+						if (_progressHUD != nil) {
+							[_progressHUD hide:YES];
+							_progressHUD = nil;
+						}
+						
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+						}];
+					}];
+				}
+			}];
 		}
 	}
 }
@@ -384,19 +420,18 @@
 	_isBlurred = false;
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	
-	
 	_composeDisplayView = [[HONComposeDisplayView alloc] initWithFrame:self.view.frame];
 	_composeDisplayView.delegate = self;
-	[self.view addSubview:_composeDisplayView];
+//	[self.view addSubview:_composeDisplayView];
 	
 	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 221.0, 320.0, 221.0)];
-	[self.view addSubview:_emotionsPickerHolderView];
+//	[self.view addSubview:_emotionsPickerHolderView];
 	
 	_tabButtonsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
-	[self.view addSubview:_tabButtonsHolderView];
+//	[self.view addSubview:_tabButtonsHolderView];
 	
 	for (int i=0; i<5; i++) {
-		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectMakeFromSize(CGSizeMake(320.0, _emotionsPickerHolderView.frame.size.height)) asGroupIndex:i];
+		HONStickerButtonsPickerView *pickerView = [[HONStickerButtonsPickerView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, _emotionsPickerHolderView.frame.size.height)) asGroupIndex:i];
 		[_emotionsPickerViews addObject:pickerView];
 		
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -413,7 +448,7 @@
 	
 	_stickerSummaryView = [[HONStickerSummaryView alloc] initAtPosition:CGPointMake(0.0, 297.0) withHeight:50.0];
 	_stickerSummaryView.delegate = self;
-	[self.view addSubview:_stickerSummaryView];
+//	[self.view addSubview:_stickerSummaryView];
 	
 	_stickerButtonsPickerView = (HONStickerButtonsPickerView *)[_emotionsPickerViews firstObject];
 	_stickerButtonsPickerView.delegate = self;
@@ -549,7 +584,7 @@
 	}
 	
 	self.imagePickerController = imagePickerController;
-	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
+	[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
 	}];
 }
 
@@ -792,7 +827,7 @@
 			[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
 		
 		} else {
-			_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapLargeSize)];
+			_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
 			[_bgSelectImageView setImageWithURL:[NSURL URLWithString:emotionVO.smallImageURL]];
 			[_composeDisplayView updatePreview:_bgSelectImageView.image];
 		}
@@ -913,7 +948,7 @@
 																maskImage:nil] : _processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMakeFromSize(_processedImage.size)];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(_processedImage.size)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
 	
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
