@@ -23,6 +23,7 @@
 @property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) HONStickerSummaryView *stickerSummaryView;
 
 @property (nonatomic, strong) NSMutableArray *emotionViews;
@@ -129,7 +130,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	};
 	
 	NSString *url = [_clubPhotoVO.imagePrefix stringByAppendingString:kSnapLargeSuffix];
-//	NSLog(@"URL:[%@]", [[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]);
+//	NSLog(@"URL:[%@]", url);
 	[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
 													  cachePolicy:kOrthodoxURLCachePolicy
 												  timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -195,7 +196,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.textAlignment = NSTextAlignmentCenter;
 	timeLabel.numberOfLines = 2;
-	timeLabel.text = [@"" stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
+	timeLabel.text = [@"…\n" stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
 	[self.contentView addSubview:timeLabel];
 	
 	if ([[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] count] > 2) {
@@ -232,13 +233,13 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 //	[footerView addSubview:replyButton];
 	
 	
-	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 18.0, 192.0, 22.0)];
-	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	scoreLabel.textAlignment = NSTextAlignmentCenter;
-	scoreLabel.textColor = [UIColor whiteColor];
-	scoreLabel.text = [NSString stringWithFormat:@"%d", _clubPhotoVO.score];
-	[footerView addSubview:scoreLabel];
+	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 18.0, 192.0, 22.0)];
+	_scoreLabel.backgroundColor = [UIColor clearColor];
+	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_scoreLabel.textAlignment = NSTextAlignmentCenter;
+	_scoreLabel.textColor = [UIColor whiteColor];
+	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+	[footerView addSubview:_scoreLabel];
 	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	upvoteButton.frame = CGRectMake(20.0, 0.0, 64.0, 64.0);
@@ -275,11 +276,13 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 }
 
 - (void)_goUpvote {
+	_scoreLabel.text = [@"" stringFromInt:++_clubPhotoVO.score];
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:upvotePhoto:)])
 		[self.delegate clubPhotoViewCell:self upvotePhoto:_clubPhotoVO];
 }
 
 - (void)_goDownVote {
+	_scoreLabel.text = [@"" stringFromInt:--_clubPhotoVO.score];
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:downVotePhoto:)])
 		[self.delegate clubPhotoViewCell:self downVotePhoto:_clubPhotoVO];
 }

@@ -148,18 +148,13 @@
 			[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-//				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//					[[HONClubAssistant sharedInstance] writeUserClubs:result];
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
 				
-					if (_progressHUD != nil) {
-						[_progressHUD hide:YES];
-						_progressHUD = nil;
-					}
-					
-					[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
-//				}];
+				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			}];
-			
 			
 		} else {
 			_submitButton.userInteractionEnabled = YES;

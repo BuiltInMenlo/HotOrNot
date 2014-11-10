@@ -120,7 +120,7 @@ static NSString * const kCamera = @"camera";
 	}];
 	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 //		_joinedTotalClubs = (_joinedTotalClubs == 0) ? (int)[[result objectForKey:@"pending"] count] : _joinedTotalClubs;
 		
@@ -179,8 +179,10 @@ static NSString * const kCamera = @"camera";
 				}
 			}];
 		
-		} else
+		} else {
+			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			[self _didFinishDataRefresh];
+		}
 	}];
 }
 
@@ -261,22 +263,22 @@ static NSString * const kCamera = @"camera";
 //			return ((NSComparisonResult)NSOrderedSame);
 //		}] reverseObjectEnumerator] allObjects] mutableCopy];
 		
-		_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
+//		_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
 //		_emptyClubsBGView.hidden = ([_seenClubs count] > 0 || [_unseenClubs count] > 0);
 //		_emptyClubsBGView.hidden = (!_accessContactsBGView.hidden) ? YES : _emptyClubsBGView.hidden;
 		
-		if (!_emptyClubsBGView.hidden || !_accessContactsBGView.hidden) {
-			_accessContactsBGView.frame = CGRectMake(_accessContactsBGView.frame.origin.x, _tableView.contentSize.height + 5.0, _accessContactsBGView.frame.size.width, _accessContactsBGView.frame.size.height);
-			_emptyClubsBGView.frame = _accessContactsBGView.frame;
-			[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, kOrthodoxTableCellHeight + kTabSize.height, _tableView.contentInset.right)];
-		}
+//		if (!_emptyClubsBGView.hidden || !_accessContactsBGView.hidden) {
+//			_accessContactsBGView.frame = CGRectMake(_accessContactsBGView.frame.origin.x, _tableView.contentSize.height + 5.0, _accessContactsBGView.frame.size.width, _accessContactsBGView.frame.size.height);
+//			_emptyClubsBGView.frame = _accessContactsBGView.frame;
+//			[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, kOrthodoxTableCellHeight + kTabSize.height, _tableView.contentInset.right)];
+//		}
 	}
 	
-	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_unseenClubs count] + [_seenClubs count]));
+	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_clubPhotos count]));
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
-	NSLog(@"%@._didFinishDataRefresh - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"StatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
+	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, [@"" stringFromCLAuthorizationStatus:[CLLocationManager authorizationStatus]]);
 }
 
 
@@ -292,7 +294,7 @@ static NSString * const kCamera = @"camera";
 	_unseenClubs = [NSMutableArray array];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_unseenClubs count] + [_seenClubs count]));
+	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_clubPhotos count]));
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 //	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top + kNavHeaderHeight, _tableView.contentInset.left, _tableView.contentInset.bottom + (kNavHeaderHeight), _tableView.contentInset.right)];
 	_tableView.delegate = self;
@@ -308,9 +310,9 @@ static NSString * const kCamera = @"camera";
 	[_headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
 	[self.view addSubview:_headerView];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.5;
-	lpGestureRecognizer.delegate = self;
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	lpGestureRecognizer.minimumPressDuration = 0.5;
+//	lpGestureRecognizer.delegate = self;
 //	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
 	_accessContactsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
@@ -342,7 +344,7 @@ static NSString * const kCamera = @"camera";
 		
 		_locationManager = [[CLLocationManager alloc] init];
 		_locationManager.delegate = self;
-		_locationManager.distanceFilter = 100;
+		_locationManager.distanceFilter = 10000;
 		if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
 			[_locationManager requestWhenInUseAuthorization];
 		[_locationManager startUpdatingLocation];
@@ -352,7 +354,7 @@ static NSString * const kCamera = @"camera";
 	}
 	
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];
-	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
+//	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -460,11 +462,11 @@ static NSString * const kCamera = @"camera";
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
 										   withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
 		
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-			[self _promptForAddressBookPermission];
-		
-		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-			[self _promptForAddressBookAccess];
+//		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+//			[self _promptForAddressBookPermission];
+//		
+//		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+//			[self _promptForAddressBookAccess];
 		
 	} else if (button.tag == HONLineButtonViewTypeCreateStatusUpdate) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
@@ -505,7 +507,7 @@ static NSString * const kCamera = @"camera";
 		[_locationManager requestWhenInUseAuthorization];
 	[_locationManager startUpdatingLocation];
 	
-	NSLog(@"%@._completedFirstRun - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"Denied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
+	NSLog(@"%@._completedFirstRun - CLAuthorizationStatus = [%@]", self.class, [@"" stringFromCLAuthorizationStatus:[CLLocationManager authorizationStatus]]);
 //	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 //		[self _promptForAddressBookPermission];
 //	
@@ -555,23 +557,23 @@ static NSString * const kCamera = @"camera";
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
-- (void)_promptForAddressBookAccess {
-	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
-								message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
-							   delegate:nil
-					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-					  otherButtonTitles:nil] show];
-}
-
-- (void)_promptForAddressBookPermission {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to contacts?")
-														message:nil
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-	[alertView setTag:0];
-	[alertView show];
-}
+//- (void)_promptForAddressBookAccess {
+//	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
+//								message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
+//							   delegate:nil
+//					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//					  otherButtonTitles:nil] show];
+//}
+//
+//- (void)_promptForAddressBookPermission {
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to contacts?")
+//														message:nil
+//													   delegate:self
+//											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+//											  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+//	[alertView setTag:0];
+//	[alertView show];
+//}
 
 
 #pragma mark - ClubPhotoViewCell Delegates
@@ -638,18 +640,17 @@ static NSString * const kCamera = @"camera";
 	[_locationManager stopUpdatingLocation];
 	
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
-	[self _goReloadTableViewContents];
 	
-//	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
-//	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]]);
-//	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
-//		[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxClubMemberDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//			
-//			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-//				[self _goReloadTableViewContents];
-//			}
-//		}];
-//		
+	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
+	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]]);
+	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
+		[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxClubMemberDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+			
+			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
+				[self _goReloadTableViewContents];
+			}
+		}];
+	}
 //	} else
 //		[self _goReloadTableViewContents];
 }
@@ -748,7 +749,7 @@ static NSString * const kCamera = @"camera";
 		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", [@"" stringFromABAuthorizationStatus:ABAddressBookGetAuthorizationStatus()]);// (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", [@"" stringFromABAuthorizationStatus:ABAddressBookGetAuthorizationStatus()]);
 				
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {

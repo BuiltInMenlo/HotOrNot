@@ -7,7 +7,7 @@
 //
 
 #import <AssetsLibrary/AssetsLibrary.h>
-#import <AWSiOSSDK/S3/AmazonS3Client.h>
+//#import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
@@ -532,14 +532,14 @@
 				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 					NSLog(@"LOADED:[%@] -- EXISTING ALBUM ADD", request.URL.absoluteString);
 					
-					const char *cKey  = [[NSBundle mainBundle].bundleIdentifier cStringUsingEncoding:NSASCIIStringEncoding];
-					const char *cData = [[[[request.URL.absoluteString componentsSeparatedByString:@"/"] lastObject] substringToIndex:6] cStringUsingEncoding:NSUTF8StringEncoding];
-					unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
-					CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+//					const char *cKey  = [[NSBundle mainBundle].bundleIdentifier cStringUsingEncoding:NSASCIIStringEncoding];
+//					const char *cData = [[[[request.URL.absoluteString componentsSeparatedByString:@"/"] lastObject] substringToIndex:6] cStringUsingEncoding:NSUTF8StringEncoding];
+//					unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
+//					CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
 					
 					NSMutableString *md5 = [NSMutableString string];
-					for (int i=0; i<sizeof cHMAC; i++)
-						[md5 appendFormat:@"%02hhxc", cHMAC[i]];
+//					for (int i=0; i<sizeof cHMAC; i++)
+//						[md5 appendFormat:@"%02hhxc", cHMAC[i]];
 					
 					NSLog(@"MD5:[%@]", md5);
 					

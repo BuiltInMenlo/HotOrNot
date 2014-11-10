@@ -91,7 +91,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	[[HONStateMitigator sharedInstance] updateCurrentViewState:HONStateMitigatorViewStateTypeFriends];
+//	[[HONStateMitigator sharedInstance] updateCurrentViewState:HONStateMitigatorViewStateTypeFriends];
 	
 //	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
 //	[[NSUserDefaults standardUserDefaults] synchronize];

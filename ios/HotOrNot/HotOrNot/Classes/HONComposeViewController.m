@@ -6,8 +6,10 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AWSiOSSDKv2/AWSS3.h>
+#import <AWSiOSSDKv2/AWSS3TransferManager.h>
+#import <AWSiOSSDKv2/S3.h>
 
-#import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
@@ -36,7 +38,7 @@
 #import "HONStickerSummaryView.h"
 #import "HONStickerButtonsPickerView.h"
 
-@interface HONComposeViewController () <AmazonServiceRequestDelegate, HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, HONStoreProductsViewControllerDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONComposeViewController () <HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, HONStoreProductsViewControllerDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -53,14 +55,17 @@
 @property (nonatomic, strong) HONStickerButtonsPickerView *stickerButtonsPickerView;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *fileURL;
 @property (nonatomic, strong) NSMutableDictionary *submitParams;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) BOOL isBlurred;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic, strong) HONStoreTransactionObserver *storeTransactionObserver;
-@property (nonatomic, strong) S3PutObjectRequest *por1;
-@property (nonatomic, strong) S3PutObjectRequest *por2;
+@property (nonatomic, strong) AWSS3PutObjectRequest *por1;
+@property (nonatomic, strong) AWSS3PutObjectRequest *por2;
+@property (nonatomic, strong) AWSS3TransferManagerUploadRequest *uploadReq1;
+@property (nonatomic, strong) AWSS3TransferManagerUploadRequest *uploadReq2;
 
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
@@ -79,6 +84,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		
 		_totalType = HONStateMitigatorTotalTypeCompose;
 		_viewStateType = HONStateMitigatorViewStateTypeCompose;
 		
@@ -99,8 +105,6 @@
 }
 
 - (void)dealloc {
-	_por1.delegate = nil;
-	_por2.delegate = nil;
 	_cameraOverlayView.delegate = nil;
 	_composeDisplayView.delegate = nil;
 	
@@ -254,39 +258,149 @@
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	NSString *largeURL = [_filename stringByAppendingString:kSnapLargeSuffix];
-	NSString *tabURL = [_filename stringByAppendingString:kSnapLargeSuffix];
+	NSString *largeURL = [[[_filename componentsSeparatedByString:@"/"] lastObject] stringByAppendingString:kSnapLargeSuffix];
+	NSString *tabURL = [[[_filename componentsSeparatedByString:@"/"] lastObject] stringByAppendingString:kSnapLargeSuffix];
 	
-	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
-	@try {
-		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		_por1 = [[S3PutObjectRequest alloc] initWithKey:largeURL inBucket:@"hotornot-challenges"];
-		_por1.delegate = self;
-		_por1.contentType = @"image/gif";
-		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-		[s3 putObject:_por1];
+	BFTask *task = [BFTask taskWithResult:nil];
+	[[task continueWithBlock:^id(BFTask *task) {
+		NSData *data1 = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
+		[data1 writeToURL:[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:kSnapLargeSuffix]] atomically:YES];
 		
-		_por2 = [[S3PutObjectRequest alloc] initWithKey:tabURL inBucket:@"hotornot-challenges"];
-		_por2.delegate = self;
-		_por2.contentType = @"image/gif";
-		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
-		[s3 putObject:_por2];
+		NSData *data2 = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage]);
+		[data2 writeToURL:[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:kSnapTabSuffix]] atomically:YES];
 		
-	} @catch (AmazonClientException *exception) {
-		NSLog(@"AWS FAIL:[%@]", exception.message);
+		return (nil);
 		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	}] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+		// done
+		NSLog(@"[BFTask mainThreadExecutor");
+		return (nil);
+	}];
+	
+	
+	_uploadReq1 = [AWSS3TransferManagerUploadRequest new];
+	_uploadReq1.bucket = @"hotornot-challenges";
+	_uploadReq1.contentType = @"image/jpeg";
+	_uploadReq1.key = largeURL;
+	_uploadReq1.body = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:kSnapLargeSuffix]];
+	_uploadReq1.uploadProgress = ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend){
+		dispatch_sync(dispatch_get_main_queue(), ^{
+//			NSLog(@"%lld", totalBytesSent);
+		});
+	};
+
+	_uploadReq2 = [AWSS3TransferManagerUploadRequest new];
+	_uploadReq2.bucket = @"hotornot-challenges";
+	_uploadReq2.contentType = @"image/jpeg";
+	_uploadReq2.key = tabURL;
+	_uploadReq2.body = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:kSnapTabSuffix]];
+	_uploadReq2.uploadProgress = ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend){
+		dispatch_sync(dispatch_get_main_queue(), ^{
+//			NSLog(@"%lld", totalBytesSent);
+		});
+	};
+
+	
+	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
+	[[transferManager upload:_uploadReq1] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+		if (task.error != nil) {
+			if (task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused) {
+				// failed
+				NSLog(@"[AWSS3TransferManager FAILED:[%@]", task.error.description);
+			}
+			
+		} else {
+			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq1.key);
+			_uploadReq1 = nil;
+			if (++_uploadCounter == 2) {
+				// complete
+				
+				_isUploadComplete = YES;
+				if (_isUploadComplete) {
+					if (_progressHUD != nil) {
+						[_progressHUD hide:YES];
+						_progressHUD = nil;
+					}
+			
+					[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_filename forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
+						if (_progressHUD != nil) {
+							[_progressHUD hide:YES];
+							_progressHUD = nil;
+						}
+					}];
+				}
+			}
+		}
 		
-		_progressHUD.minShowTime = kProgressHUDMinDuration;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-		_progressHUD = nil;
-	}
+		return (nil);
+	}];
+	
+	[[transferManager upload:_uploadReq2] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+		if (task.error != nil) {
+			if (task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused) {
+				// failed
+				NSLog(@"[AWSS3TransferManager FAILED:[%@]", task.error.description);
+			}
+			
+		} else {
+			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq2.key);
+			_uploadReq2 = nil;
+			if (++_uploadCounter == 2) {
+				// complete
+				
+				_isUploadComplete = YES;
+				if (_isUploadComplete) {
+					if (_progressHUD != nil) {
+						[_progressHUD hide:YES];
+						_progressHUD = nil;
+					}
+					
+					[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_filename forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
+						if (_progressHUD != nil) {
+							[_progressHUD hide:YES];
+							_progressHUD = nil;
+						}
+					}];
+				}
+			}
+		}
+		
+		return (nil);
+	}];
+
+	
+	
+//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+//	
+//	@try {
+//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+//		_por1 = [[S3PutObjectRequest alloc] initWithKey:largeURL inBucket:@"hotornot-challenges"];
+//		_por1.delegate = self;
+//		_por1.contentType = @"image/gif";
+//		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
+//		[s3 putObject:_por1];
+//		
+//		_por2 = [[S3PutObjectRequest alloc] initWithKey:tabURL inBucket:@"hotornot-challenges"];
+//		_por2.delegate = self;
+//		_por2.contentType = @"image/gif";
+//		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
+//		[s3 putObject:_por2];
+//		
+//	} @catch (AmazonClientException *exception) {
+//		NSLog(@"AWS FAIL:[%@]", exception.message);
+//		
+//		if (_progressHUD == nil)
+//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//		
+//		_progressHUD.minShowTime = kProgressHUDMinDuration;
+//		_progressHUD.mode = MBProgressHUDModeCustomView;
+//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+//		[_progressHUD show:NO];
+//		[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//		_progressHUD = nil;
+//	}
 }
 
 - (void)_modifySubmitParamsAndSubmit:(NSArray *)subjectNames {
@@ -367,12 +481,10 @@
 	_uploadCounter = 0;
 	
 	if (_por1 != nil) {
-		[_por1.urlConnection cancel];
 		_por1 = nil;
 	}
 	
 	if (_por2 != nil) {
-		[_por2.urlConnection cancel];
 		_por2 = nil;
 	}
 }
@@ -1001,39 +1113,39 @@
 
 
 #pragma mark - AWS Delegates
-- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
-	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
-	
-	_uploadCounter++;
-	_isUploadComplete = (_uploadCounter == 2);
-	
-	if (_isUploadComplete) {
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_filename forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-		}];
-	}
-}
-
-- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"AWS didFailWithError:\n%@", error);
-	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.mode = MBProgressHUDModeCustomView;
-	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-	_progressHUD = nil;
-}
+//- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
+//	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+//	
+//	_uploadCounter++;
+//	_isUploadComplete = (_uploadCounter == 2);
+//	
+//	if (_isUploadComplete) {
+//		if (_progressHUD != nil) {
+//			[_progressHUD hide:YES];
+//			_progressHUD = nil;
+//		}
+//		
+//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_filename forBucketType:HONS3BucketTypeSelfies completion:^(NSObject *result) {
+//			if (_progressHUD != nil) {
+//				[_progressHUD hide:YES];
+//				_progressHUD = nil;
+//			}
+//		}];
+//	}
+//}
+//
+//- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
+//	NSLog(@"AWS didFailWithError:\n%@", error);
+//	
+//	if (_progressHUD == nil)
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.minShowTime = kProgressHUDMinDuration;
+//	_progressHUD.mode = MBProgressHUDModeCustomView;
+//	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+//	[_progressHUD show:NO];
+//	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//	_progressHUD = nil;
+//}
 
 @end

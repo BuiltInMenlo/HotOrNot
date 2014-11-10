@@ -158,10 +158,11 @@ static HONStateMitigator *sharedInstance = nil;
 
 - (void)updateCurrentViewState:(HONStateMitigatorViewStateType)viewStateType {
 	HONStateMitigatorViewStateType currentViewStateType = [[HONStateMitigator sharedInstance] currentViewStateType];
-	
-	[[NSUserDefaults standardUserDefaults] setValue:@((int)currentViewStateType) forKey:kStateMitigatorPreviousViewKey];
-	[[NSUserDefaults standardUserDefaults] setValue:@((int)viewStateType) forKey:kStateMitigatorCurrentViewKey];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	if (currentViewStateType != [[HONStateMitigator sharedInstance] previousViewStateType]) {
+		[[NSUserDefaults standardUserDefaults] setValue:@((int)currentViewStateType) forKey:kStateMitigatorPreviousViewKey];
+		[[NSUserDefaults standardUserDefaults] setValue:@((int)viewStateType) forKey:kStateMitigatorCurrentViewKey];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 }
 
 
@@ -195,7 +196,7 @@ static HONStateMitigator *sharedInstance = nil;
 
 - (NSString *)appEntryTypeName {
 	for (NSString *key in [[self _appEntryKeyNamesForTypes] keyEnumerator]) {
-		if ((HONStateMitigatorAppEntryType)[[self _appEntryKeyNamesForTypes] objectForKey:key] == (HONStateMitigatorAppEntryType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorAppEntryKey]) {
+		if ((HONStateMitigatorAppEntryType)[[[self _appEntryKeyNamesForTypes] objectForKey:key] intValue] == (HONStateMitigatorAppEntryType)[[NSUserDefaults standardUserDefaults] objectForKey:kStateMitigatorAppEntryKey]) {
 			return (key);
 			break;
 		}
@@ -206,7 +207,7 @@ static HONStateMitigator *sharedInstance = nil;
 
 - (NSString *)currentViewStateTypeName {
 	for (NSString *key in [[self _viewStateKeyNamesForTypes] keyEnumerator]) {
-		if ((HONStateMitigatorViewStateType)[[self _viewStateKeyNamesForTypes] objectForKey:key] == [[HONStateMitigator sharedInstance] currentViewStateType]) {
+		if ((HONStateMitigatorViewStateType)[[[self _viewStateKeyNamesForTypes] objectForKey:key] intValue] == [[HONStateMitigator sharedInstance] currentViewStateType]) {
 			return (key);
 			break;
 		}
@@ -217,7 +218,7 @@ static HONStateMitigator *sharedInstance = nil;
 
 - (NSString *)previousViewStateTypeName {
 	for (NSString *key in [[self _viewStateKeyNamesForTypes] keyEnumerator]) {
-		if ((HONStateMitigatorViewStateType)[[self _viewStateKeyNamesForTypes] objectForKey:key] == [[HONStateMitigator sharedInstance] previousViewStateType]) {
+		if ((HONStateMitigatorViewStateType)[[[self _viewStateKeyNamesForTypes] objectForKey:key] intValue] == [[HONStateMitigator sharedInstance] previousViewStateType]) {
 			return (key);
 			break;
 		}
@@ -340,7 +341,7 @@ static HONStateMitigator *sharedInstance = nil;
 - (NSString *)_keyForTotalType:(HONStateMitigatorTotalType)totalType {
 	__block NSString *keyName = kStateMitigatorTotalCounterUnknown;
 	[[self _totalKeyPrefixesForTypes] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		if ((HONStateMitigatorTotalType)key == totalType) {
+		if ((HONStateMitigatorTotalType)[obj intValue] == totalType) {
 			keyName = [(NSString *)key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix];
 			*stop = YES;
 		}

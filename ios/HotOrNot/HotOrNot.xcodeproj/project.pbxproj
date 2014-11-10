@@ -27,9 +27,6 @@
 		300D1B851A0B93C900D1D9A7 /* HONTimelineMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B841A0B93C900D1D9A7 /* HONTimelineMapViewController.m */; };
 		300D1B881A0C30F100D1D9A7 /* HONMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B871A0C30F100D1D9A7 /* HONMapAnnotation.m */; };
 		300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B8A1A0C369700D1D9A7 /* HONMapAnnotationView.m */; };
-		300D1B951A0F48B100D1D9A7 /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 300D1B941A0F48B100D1D9A7 /* AWSiOSSDK.framework */; };
-		300D1B9A1A0F4CD600D1D9A7 /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 300D1B981A0F4CD600D1D9A7 /* TapjoyResources.bundle */; };
-		300D1B9B1A0F4CD600D1D9A7 /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 300D1B991A0F4CD600D1D9A7 /* Tapjoy.framework */; };
 		300FCF3319B25D1E0009F5B5 /* HONClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */; };
 		300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */; };
 		30119BD819F81EA700DE9B16 /* HONAnimatedBGsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BD719F81EA700DE9B16 /* HONAnimatedBGsViewController.m */; };
@@ -37,6 +34,14 @@
 		30119BDE19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */; };
 		30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */; };
 		301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */; };
+		301DF22D1A1071A500D2BEB9 /* AWSiOSSDKv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */; };
+		301DF22F1A10755000D2BEB9 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF22E1A10755000D2BEB9 /* Mantle.framework */; };
+		301DF2311A10756500D2BEB9 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2301A10756500D2BEB9 /* Bolts.framework */; };
+		301DF2361A107A8C00D2BEB9 /* GZIP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2321A107A8C00D2BEB9 /* GZIP.framework */; };
+		301DF2371A107A8C00D2BEB9 /* TMCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2331A107A8C00D2BEB9 /* TMCache.framework */; };
+		301DF2381A107A8C00D2BEB9 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */; };
+		301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */; };
+		301DF23D1A1084A800D2BEB9 /* s3-2006-03-01.json in Resources */ = {isa = PBXBuildFile; fileRef = 301DF23C1A1084A800D2BEB9 /* s3-2006-03-01.json */; };
 		3022043C19D6228A00C3D677 /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		303BAD0B19D5E40000CB2501 /* InsetOverlayElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0A19D5E40000CB2501 /* InsetOverlayElements.xcassets */; };
@@ -179,7 +184,6 @@
 		4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43278A18E3A9F90035FF06 /* UIView+HONSnapshot.m */; };
 		4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4327D818E3A9F90035FF06 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */; };
 		4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */; };
 		4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C459105189183FF0014FA7E /* HONDeviceIntrinsics.m */; };
 		4C45A9451996AE0D00A2086E /* HONTabBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45A9441996AE0D00A2086E /* HONTabBannerView.m */; };
@@ -401,9 +405,6 @@
 		300D1B871A0C30F100D1D9A7 /* HONMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMapAnnotation.m; sourceTree = "<group>"; };
 		300D1B891A0C369700D1D9A7 /* HONMapAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMapAnnotationView.h; sourceTree = "<group>"; };
 		300D1B8A1A0C369700D1D9A7 /* HONMapAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMapAnnotationView.m; sourceTree = "<group>"; };
-		300D1B941A0F48B100D1D9A7 /* AWSiOSSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDK.framework; sourceTree = "<group>"; };
-		300D1B981A0F4CD600D1D9A7 /* TapjoyResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapjoyResources.bundle; sourceTree = "<group>"; };
-		300D1B991A0F4CD600D1D9A7 /* Tapjoy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tapjoy.framework; sourceTree = "<group>"; };
 		300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubViewCell.h; sourceTree = "<group>"; };
 		300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubViewCell.m; sourceTree = "<group>"; };
 		300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactsSearchViewController.m; sourceTree = "<group>"; };
@@ -417,6 +418,14 @@
 		30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionViewCell.m; sourceTree = "<group>"; };
 		301DF2291A10228B00D2BEB9 /* HONGeoLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGeoLocator.h; sourceTree = "<group>"; };
 		301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGeoLocator.m; sourceTree = "<group>"; };
+		301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDKv2.framework; sourceTree = "<group>"; };
+		301DF22E1A10755000D2BEB9 /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Mantle.framework; sourceTree = "<group>"; };
+		301DF2301A10756500D2BEB9 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		301DF2321A107A8C00D2BEB9 /* GZIP.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GZIP.framework; sourceTree = "<group>"; };
+		301DF2331A107A8C00D2BEB9 /* TMCache.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TMCache.framework; sourceTree = "<group>"; };
+		301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UICKeyChainStore.framework; sourceTree = "<group>"; };
+		301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XMLDictionary.framework; sourceTree = "<group>"; };
+		301DF23C1A1084A800D2BEB9 /* s3-2006-03-01.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "s3-2006-03-01.json"; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		303BAD0A19D5E40000CB2501 /* InsetOverlayElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = InsetOverlayElements.xcassets; sourceTree = "<group>"; };
@@ -814,7 +823,6 @@
 		4C4327A618E3A9F90035FF06 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		4C4327D718E3A9F90035FF06 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		4C4327D818E3A9F90035FF06 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
 		4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C459104189183FF0014FA7E /* HONDeviceIntrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDeviceIntrinsics.h; sourceTree = "<group>"; };
@@ -1108,33 +1116,37 @@
 				4C08ECEF1956B36D006E83B1 /* AssetsLibrary.framework in Frameworks */,
 				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
 				308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */,
+				301DF22D1A1071A500D2BEB9 /* AWSiOSSDKv2.framework in Frameworks */,
 				4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */,
 				4C62675515F96FA800AA7FCE /* CFNetwork.framework in Frameworks */,
 				4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */,
 				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
 				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
+				301DF2381A107A8C00D2BEB9 /* UICKeyChainStore.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
 				4C62652C15F96C7100AA7FCE /* Foundation.framework in Frameworks */,
+				301DF22F1A10755000D2BEB9 /* Mantle.framework in Frameworks */,
+				301DF2371A107A8C00D2BEB9 /* TMCache.framework in Frameworks */,
 				4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */,
 				4C62675A15F96FA800AA7FCE /* MapKit.framework in Frameworks */,
+				301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
+				301DF2311A10756500D2BEB9 /* Bolts.framework in Frameworks */,
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
-				4C4328F118E3A9FA0035FF06 /* FacebookSDK.framework in Frameworks */,
-				300D1B951A0F48B100D1D9A7 /* AWSiOSSDK.framework in Frameworks */,
+				301DF2361A107A8C00D2BEB9 /* GZIP.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
-				300D1B9B1A0F4CD600D1D9A7 /* Tapjoy.framework in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 				30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */,
@@ -1144,23 +1156,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		300D1B961A0F4CD600D1D9A7 /* Tapjoy.embeddedframework */ = {
-			isa = PBXGroup;
-			children = (
-				300D1B971A0F4CD600D1D9A7 /* Resources */,
-				300D1B991A0F4CD600D1D9A7 /* Tapjoy.framework */,
-			);
-			path = Tapjoy.embeddedframework;
-			sourceTree = "<group>";
-		};
-		300D1B971A0F4CD600D1D9A7 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				300D1B981A0F4CD600D1D9A7 /* TapjoyResources.bundle */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		30119BDF19F84D7D00DE9B16 /* Animated BGs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1172,6 +1167,22 @@
 				30119BD719F81EA700DE9B16 /* HONAnimatedBGsViewController.m */,
 			);
 			name = "Animated BGs";
+			sourceTree = "<group>";
+		};
+		301DF23A1A10848600D2BEB9 /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				301DF23B1A10848600D2BEB9 /* AWS */,
+			);
+			path = JSON;
+			sourceTree = "<group>";
+		};
+		301DF23B1A10848600D2BEB9 /* AWS */ = {
+			isa = PBXGroup;
+			children = (
+				301DF23C1A1084A800D2BEB9 /* s3-2006-03-01.json */,
+			);
+			path = AWS;
 			sourceTree = "<group>";
 		};
 		3022043819D61C2500C3D677 /* Country Codes */ = {
@@ -1911,11 +1922,15 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				300D1B961A0F4CD600D1D9A7 /* Tapjoy.embeddedframework */,
-				300D1B941A0F48B100D1D9A7 /* AWSiOSSDK.framework */,
+				301DF2321A107A8C00D2BEB9 /* GZIP.framework */,
+				301DF2331A107A8C00D2BEB9 /* TMCache.framework */,
+				301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */,
+				301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */,
+				301DF2301A10756500D2BEB9 /* Bolts.framework */,
+				301DF22E1A10755000D2BEB9 /* Mantle.framework */,
+				301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */,
 				30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */,
 				30B3091819E230A70017ACBF /* CouchbaseLite.framework */,
-				4C4327FC18E3A9FA0035FF06 /* FacebookSDK.framework */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -2114,6 +2129,7 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				301DF23A1A10848600D2BEB9 /* JSON */,
 				308F361919E3388E00EE9512 /* FPO */,
 				4C43224A18E37C960035FF06 /* Asset Catalogs */,
 				3022043F19D63B3E00C3D677 /* Localized Assets */,
@@ -2555,12 +2571,12 @@
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
 				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
 				4C0F3CEA1988E65000703D09 /* tabMenu_friendsButton_Active@2x.png in Resources */,
-				300D1B9A1A0F4CD600D1D9A7 /* TapjoyResources.bundle in Resources */,
 				303BAD0B19D5E40000CB2501 /* InsetOverlayElements.xcassets in Resources */,
 				3051F8A01A08748600CD85F2 /* purchaseButton_nonActive@2x.png in Resources */,
 				4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */,
 				07B2532F198C178400F6D8B1 /* tapToReview_nonActive@2x.png in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
+				301DF23D1A1084A800D2BEB9 /* s3-2006-03-01.json in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
 				30BFAC671A01BE81000CE4FC /* replyButton_nonActive@2x.png in Resources */,
 				30840BDE19EB4D870067E46B /* buyButton_Active@2x.png in Resources */,

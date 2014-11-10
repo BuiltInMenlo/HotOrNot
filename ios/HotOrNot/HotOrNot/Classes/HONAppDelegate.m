@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AWSiOSSDKv2/AWSCore.h>
 #import <CommonCrypto/CommonHMAC.h>
 
 #import <AddressBook/AddressBook.h>
@@ -16,9 +17,8 @@
 #import <StoreKit/StoreKit.h>
 #import <sys/utsname.h>
 
-#import <FacebookSDK/FacebookSDK.h>
 #import <HockeySDK/HockeySDK.h>
-#import <Tapjoy/Tapjoy.h>
+//#import <Tapjoy/Tapjoy.h>
 
 #import "NSData+Base64.h"
 #import "NSDate+Operations.h"
@@ -416,17 +416,21 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
-						
-			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+			
+			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
-			} else {
-				if (self.tabBarController == nil) {
-					[self _initTabs];
+				if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+					[navigationController setNavigationBarHidden:YES];
+					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+					
+				} else {
+					if (self.tabBarController == nil) {
+						[self _initTabs];
+					}
 				}
-			}
+			}];
 		}
 	}];
 }
@@ -716,7 +720,7 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
 	
-	[FBAppEvents activateApp];
+//	[FBAppEvents activateApp];
 	
 	[KeenClient sharedClientWithProjectId:kKeenIOProductID
 							  andWriteKey:kKeenIOWriteKey
@@ -783,7 +787,7 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationWillTerminate:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationWillTerminate] [:|:]");
 	
-	[FBSession.activeSession close];
+//	[FBSession.activeSession close];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
@@ -1085,10 +1089,17 @@ NSString * const kTwilioSMS = @"6475577873";
 					   developerSecret:kTapStreamSecretKey
 								config:config];
 	
-	[Tapjoy requestTapjoyConnect:kTapjoyAppID
-					   secretKey:kTapjoyAppSecretKey
-						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
+//	[Tapjoy requestTapjoyConnect:kTapjoyAppID
+//					   secretKey:kTapjoyAppSecretKey
+//						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 
+	AWSStaticCredentialsProvider *credentialsProvider = [AWSStaticCredentialsProvider credentialsWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"]
+																									 secretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionUSEast1
+																		  credentialsProvider:credentialsProvider];
+	[AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+
+	
 	
 //	[Crittercism enableWithAppID:kCritersismAppID
 //					 andDelegate:self];

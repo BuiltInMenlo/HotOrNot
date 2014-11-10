@@ -8,7 +8,7 @@
 
 
 #import <AssetsLibrary/AssetsLibrary.h>
-#import <AWSiOSSDK/S3/AmazonS3Client.h>
+//#import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 

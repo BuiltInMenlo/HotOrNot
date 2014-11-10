@@ -315,7 +315,7 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (UIImage *)mirrorImage:(UIImage *)image {
-	NSLog(@"ORIENTATION:[%d]", image.imageOrientation);
+	NSLog(@"ORIENTATION:[%ld]", image.imageOrientation);
 	
 //	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
 //	imageView.transform = CGAffineTransformScale(imageView.transform, -1.0f, 1.0f);
