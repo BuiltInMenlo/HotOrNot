@@ -42,7 +42,7 @@
 //		gradientImageView.frame = self.frame;
 //		[self addSubview:gradientImageView];
 		
-		_headerBGView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 50.0))];
+		_headerBGView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 74.0))];
 		[self addSubview:_headerBGView];
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -53,7 +53,7 @@
 		//[_headerBGView addSubview:_flipButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(7.0, 7.0, 44.0, 44.0);
+		_cancelButton.frame = CGRectMake(7.0, 7.0, 74.0, 74.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];

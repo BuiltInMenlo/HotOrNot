@@ -14,7 +14,7 @@
 #import "TSTapstream.h"
 
 #import "HONContactsViewController.h"
-#import "HONUserProfileViewController.h"
+#import "HONActivityViewController.h"
 #import "HONComposeViewController.h"
 #import "HONComposeNavButtonView.h"
 #import "HONHeaderView.h"

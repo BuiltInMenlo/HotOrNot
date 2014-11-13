@@ -11,7 +11,7 @@
 
 #import "HONClubTimelineViewController.h"
 #import "HONComposeViewController.h"
-#import "HONUserProfileViewController.h"
+#import "HONActivityViewController.h"
 #import "HONTimelineMapViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
@@ -409,7 +409,7 @@
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
+	[self.navigationController pushViewController:[[HONActivityViewController alloc] init] animated:YES];
 }
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {

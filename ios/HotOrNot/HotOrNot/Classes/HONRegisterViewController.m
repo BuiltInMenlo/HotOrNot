@@ -29,9 +29,12 @@
 @interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *callingCode;
 @property (nonatomic, strong) NSString *phone;
+@property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UITextField *phoneTextField;
+@property (nonatomic, strong) UIButton *usernameButton;
 @property (nonatomic, strong) UIButton *callCodeButton;
 @property (nonatomic, strong) UIButton *phoneButton;
 @property (nonatomic, strong) UIButton *submitButton;
@@ -45,6 +48,7 @@
 		_totalType = HONStateMitigatorTotalTypeRegistration;
 		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
 		
+		_username = @"";
 		_phone = @"";
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Start First Run"];
@@ -61,7 +65,7 @@
 #pragma mark - Data Calls
 - (void)_checkUsername {
 	NSLog(@"_checkUsername -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-	NSLog(@"_checkUsername -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"_checkUsername -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 	NSLog(@"_checkUsername -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
 	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
@@ -202,7 +206,16 @@
 	[self.view addSubview:headerView];
 	
 	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_phoneButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
+	_phoneButton.frame = CGRectMake(0.0, kNavHeaderHeight + 64.0, 320.0, 64.0);
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateNormal];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateHighlighted];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateSelected];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_phoneButton];
+	
+	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_phoneButton.frame = CGRectMake(0.0, kNavHeaderHeight + 64.0, 320.0, 64.0);
 	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateNormal];
 	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateHighlighted];
 	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateSelected];
@@ -259,7 +272,7 @@
 	
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	termsButton.frame = CGRectMake(120.0, 146.0, 80.0, 20.0);
+	termsButton.frame = CGRectMake(120.0, 210.0, 80.0, 20.0);
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.80] forState:UIControlStateNormal];
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor] forState:UIControlStateHighlighted];
 	termsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];

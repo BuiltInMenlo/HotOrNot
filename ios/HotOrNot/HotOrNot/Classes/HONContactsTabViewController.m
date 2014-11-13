@@ -8,6 +8,8 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import <KakaoOpenSDK/KakaoOpenSDK.h>
+
 #import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 
@@ -17,6 +19,7 @@
 #import "HONRegisterViewController.h"
 #import "HONComposeViewController.h"
 #import "HONClubTimelineViewController.h"
+#import "HONActivityViewController.h"
 #import "HONHeaderView.h"
 #import "HONTableView.h"
 #import "HONTableHeaderView.h"
@@ -307,6 +310,7 @@ static NSString * const kCamera = @"camera";
 	[_tableView addSubview: _refreshControl];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Last 24 hours"];  //NSLocalizedString(@"header_home", @"Home")];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goActivity)];
 	[_headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
 	[self.view addSubview:_headerView];
 	
@@ -382,16 +386,30 @@ static NSString * const kCamera = @"camera";
 	}];
 }
 
-- (void)_goProfile {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Activity"];
-//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+- (void)_goActivity {
+	KakaoTalkLinkObject *label = [KakaoTalkLinkObject createLabel:@"Test Label"];
+	[KOAppCall openKakaoTalkAppLink:@[label]];
+	
+	
+//	[KOSessionTask talkProfileTaskWithCompletionHandler:^(KOTalkProfile *result, NSError *error) {
+//		if (result) {
+//			NSLog(@"result:[%@]", result);
+//		} else {
+//			NSLog(@"%@", error);
+//		}
+//	}];
+	
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Activity"];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONActivityViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:^(void) {
+//	}];
 }
 
 - (void)_goCreateChallenge {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 									 withProperties:@{@"src"	: @"header"}];
 	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initAsNewStatusUpdate]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];

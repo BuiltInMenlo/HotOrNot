@@ -19,7 +19,7 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 #import "HONRefreshControl.h"
-#import "HONUserProfileViewController.h"
+#import "HONActivityViewController.h"
 #import "HONComposeViewController.h"
 
 @interface HONUsernameSearchViewController () <HONClubViewCellDelegate, HONSearchBarViewDelegate>

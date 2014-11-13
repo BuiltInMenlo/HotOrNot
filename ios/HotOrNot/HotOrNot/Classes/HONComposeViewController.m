@@ -74,7 +74,8 @@
 @property (nonatomic, strong) UIView *emotionsPickerHolderView;
 @property (nonatomic, strong) UIView *tabButtonsHolderView;
 @property (nonatomic, strong) UIImageView *bgSelectImageView;
-
+@property (nonatomic, strong) UIButton *submitButton;
+@property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UIButton *nextButton;
 @end
@@ -534,7 +535,7 @@
 	
 	_composeDisplayView = [[HONComposeDisplayView alloc] initWithFrame:self.view.frame];
 	_composeDisplayView.delegate = self;
-//	[self.view addSubview:_composeDisplayView];
+	[self.view addSubview:_composeDisplayView];
 	
 	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 221.0, 320.0, 221.0)];
 //	[self.view addSubview:_emotionsPickerHolderView];
@@ -582,7 +583,34 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Create"];
 	[_headerView addCloseButtonWithTarget:self action:@selector(_goCancel)];
 	[_headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
-	[self.view addSubview:_headerView];	
+//	[self.view addSubview:_headerView];
+	
+	
+	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cameraBackButton.frame = CGRectMake(10.0, 10.0, 74.0, 74.0);
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
+	[_cameraBackButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+	_cameraBackButton.hidden = YES;
+	[self.view addSubview:_cameraBackButton];
+	
+	
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateNormal];
+	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateHighlighted];
+	[_submitButton setImageEdgeInsets:UIEdgeInsetsMake(0.0, 140.0, 0.0, 0.0)];
+	_submitButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+	[_submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[_submitButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
+	[_submitButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -45.0, 0.0, 0.0)];
+	[_submitButton setTitle:@"Submit" forState:UIControlStateNormal];
+	[_submitButton setTitle:@"Submit" forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton.hidden = YES;
+	[self.view addSubview:_submitButton];
 }
 
 - (void)viewDidLoad {
@@ -624,6 +652,10 @@
  									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
 	
 	[self _changeToStickerGroupIndex:groupIndex];
+}
+
+- (void)_goCamera {
+	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)_goDelete {
@@ -1071,7 +1103,9 @@
 		_progressHUD = nil;
 	}
 	
-	[self dismissViewControllerAnimated:YES completion:^(void) {
+	_cameraBackButton.hidden = NO;
+	_submitButton.hidden = NO;
+	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self _uploadPhotos];
 	}];
 }
@@ -1083,7 +1117,7 @@
 									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;
-	[self dismissViewControllerAnimated:YES completion:^(void) {
+	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 }
 

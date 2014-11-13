@@ -28,7 +28,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG_normal"]];
+//		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG_normal"]];
 		[self hideChevron];
 	}
 	
@@ -71,9 +71,8 @@
 		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
 		[imageLoadingView stopAnimating];
 		[imageLoadingView removeFromSuperview];
-	}
 	
-	else {
+	} else {
 		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.originAvatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																  cachePolicy:kOrthodoxURLCachePolicy
 															  timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -89,25 +88,18 @@
 	[self.contentView addSubview:avatarButton];
 	
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 202.0, 17.0)];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-	titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	titleLabel.textColor = [UIColor blackColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:_activityItemVO.message attributes:@{}];
-	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13] range:[_activityItemVO.message rangeOfString:_activityItemVO.originUsername]];
-	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:[_activityItemVO.recipientUsername stringByAppendingString:@"'s"]]];
-	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.clubName]];
+	titleLabel.text = @"Amanda";
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, titleLabel.frame.origin.y, 50.0, titleLabel.frame.size.height)];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_activityItemVO.sentDate minSeconds:0 usingIndicators:@{@"seconds"	: @[@"sec", @"s"],
-																																	@"minutes"	: @[@"min", @"s"],
-																																	@"hours"	: @[@"hr", @"s"],
-																																	@"days"		: @[@"dy", @"s"]} includeSuffix:@""];
-	[self.contentView addSubview:timeLabel];
+	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 18.0, 202.0, 15.0)];
+	subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+	subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	subtitleLabel.backgroundColor = [UIColor clearColor];
+	subtitleLabel.text = @"Seoul, Korea 11m away";
+	[self.contentView addSubview:subtitleLabel];
 	
 	_indicatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(295.0, 16.0, 13.0, 13.0)];
 	_indicatorImageView.image = [UIImage imageNamed:@"redDot"];

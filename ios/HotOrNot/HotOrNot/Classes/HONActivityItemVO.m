@@ -42,7 +42,7 @@
 		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"accept_invite", @" accepted %@ invite to %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeLike) {
-		NSLog(@"CLUB NAME(%lu):[%@]", vo.activityType, vo.clubName);
+//		NSLog(@"CLUB NAME(%lu):[%@]", vo.activityType, vo.clubName);
 		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"liked_selfie", @" liked %@ selfie in %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {

@@ -101,12 +101,12 @@ const CGFloat kEmotionOutroForce = 0.250;
 //		[_fullscreenButton addTarget:self action:@selector(_goFullScreen) forControlEvents:UIControlEventTouchUpInside];
 //		[self addSubview:_fullscreenButton];
 		
-		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraButton.frame = CGRectMake(0.0, 297.0, 50.0, 50.0);
-		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addPhotoButton_nonActive"] forState:UIControlStateNormal];
-		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addPhotoButton_Active"] forState:UIControlStateHighlighted];
-		[cameraButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:cameraButton];
+//		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		cameraButton.frame = CGRectMake(0.0, 297.0, 50.0, 50.0);
+//		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addPhotoButton_nonActive"] forState:UIControlStateNormal];
+//		[cameraButton setBackgroundImage:[UIImage imageNamed:@"addPhotoButton_Active"] forState:UIControlStateHighlighted];
+//		[cameraButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:cameraButton];
 		
 		[self _updateDisplayWithCompletion:nil];
 		

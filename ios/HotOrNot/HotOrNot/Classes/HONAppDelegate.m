@@ -52,7 +52,7 @@
 #import "HONFeedViewController.h"
 #import "HONClubsNewsFeedViewController.h"
 #import "HONContactsTabViewController.h"
-#import "HONUserProfileViewController.h"
+#import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONSuspendedViewController.h"
@@ -88,10 +88,10 @@ NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 NSString * const kCritersismAppID = @"5430cc63bb94756634000002";
 
-NSString * const kKeenIOProductID = @"5390d1f705cd660561000003";
-NSString * const kKeenIOMasterKey = @"D498C4D601DD4BEE1D65376E9D3D5248";
-NSString * const kKeenIOReadKey = @"19c453075e8eaf3d30b11292819aaa5e268c6c0855eaacb86637f25afbcde7774a605636fc6a61f2b09ac3e01833c3ad8cf6b1e469a5f5ba2f4bc9beedfc2376910748d47acadd89e3e18a8bf5ee95b6ed3698aee6f48ede001bf73c8ba31dbace6170ff86bb735eefc67dae6df0b52e";
-NSString * const kKeenIOWriteKey = @"7f1b91140d0fcf8aeb5ccde1a22567ea9073838582ee4725fae19a822f22d19ee243e95469f6b3d952007641901eaa8d5b4793af6ff7fe78f3d326e901d9fc14ed758e49f60c15b49cd85de79d7d04eace16ed79f79a7c9c012612c078f2d806b12f5ae060ec2a6f5c482720a4bdb3a8";
+NSString * const kKeenIOProductID = @"54640b10248196128dc50f3e";
+NSString * const kKeenIOMasterKey = @"FE3CC37E284552867F8CFB25B63AF818";
+NSString * const kKeenIOReadKey = @"b4bf1f23b37396bfbd869c70f0a008ed8936d1cc98e069936e322a559878342fb2cf7dec2c74f3fb0bc97f2e9052b3e3c93946da459d0374bc297e9d90acd9cecae5c651694d30100a844224d4b474b43bbf08148e28327627cdac5947a03563aa7d177132464705f6d7b022b0f95eed";
+NSString * const kKeenIOWriteKey = @"14bdc799304b3a9e95ac2941a0baec9c16d58c656ac69834f165bf422ee4892245ad683d33044fdc0906170ab4356e462c5112325640fd79d17731b42078feb8827e9ea4a1fd098826fb4047d2ecbb4c019601bc27f1636d1a99b027bbde6b842ea1f84d4fe80a61cbbe6e3641de3bcc";
 
 
 

@@ -47,6 +47,7 @@ NSString * const kStateMitigatorViewStateNameAnimatedBGs				= @"animated_bgs";
 NSString * const kStateMitigatorViewStateNameStoreProducts				= @"sticker_store";
 NSString * const kStateMitigatorViewStateNameStoreProductDetails		= @"sticker_store_details";
 NSString * const kStateMitigatorViewStateNameComposeSubmit				= @"compose_submit";
+NSString * const kStateMitigatorViewStateNameActivity					= @"activity";
 NSString * const kStateMitigatorViewStateNameSearchUsername				= @"search_username";
 NSString * const kStateMitigatorViewStateNameSearchContact				= @"search_contact";
 NSString * const kStateMitigatorViewStateNameSearchContactCountryCodes	= @"search_contact_country_codes";
@@ -79,6 +80,8 @@ NSString * const kStateMitigatorTotalCounterStoreProductDetails			= @"storeProdu
 NSString * const kStateMitigatorTotalCounterStoreProductDetailsRefresh	= @"storeProductDetailsRefresh";
 NSString * const kStateMitigatorTotalCounterComposeSubmit				= @"composeSubmit";
 NSString * const kStateMitigatorTotalCounterComposeSubmitRefresh		= @"composeSubmitRefresh";
+NSString * const kStateMitigatorTotalCounterActivity					= @"activity";
+NSString * const kStateMitigatorTotalCounterActivityRefresh				= @"activityRefresh";
 NSString * const kStateMitigatorTotalCounterSearchUsername				= @"searchUsername";
 NSString * const kStateMitigatorTotalCounterSearchContacts				= @"searchContacts";
 NSString * const kStateMitigatorTotalCounterSearchContactsCountryCodes	= @"searchContactsCountryCodes";
@@ -283,6 +286,7 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorViewStateNameStoreProducts				: @(HONStateMitigatorViewStateTypeStoreProducts),
 			  kStateMitigatorViewStateNameStoreProductDetails		: @(HONStateMitigatorViewStateTypeStoreProductDetails),
 			  kStateMitigatorViewStateNameComposeSubmit				: @(HONStateMitigatorViewStateTypeComposeSubmit),
+			  kStateMitigatorViewStateNameActivity					: @(HONStateMitigatorViewStateTypeActivity),
 			  kStateMitigatorViewStateNameSearchUsername			: @(HONStateMitigatorViewStateTypeSearchUsername),
 			  kStateMitigatorViewStateNameSearchContact				: @(HONStateMitigatorViewStateTypeSearchContact),
 			  kStateMitigatorViewStateNameSearchContactCountryCodes	: @(HONStateMitigatorViewStateTypeSearchContactCountryCodes),
@@ -314,6 +318,8 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorTotalCounterStoreProductDetailsRefresh	: @(HONStateMitigatorTotalTypeStoreProductDetailsRefresh),
 			  kStateMitigatorTotalCounterComposeSubmit				: @(HONStateMitigatorTotalTypeComposeSubmit),
 			  kStateMitigatorTotalCounterComposeSubmitRefresh		: @(HONStateMitigatorTotalTypeComposeSubmitRefresh),
+			  kStateMitigatorTotalCounterActivity					: @(HONStateMitigatorTotalTypeActivity),
+			  kStateMitigatorTotalCounterActivityRefresh			: @(HONStateMitigatorTotalTypeActivityRefresh),
 			  kStateMitigatorTotalCounterSearchUsername				: @(HONStateMitigatorTotalTypeSearchUsername),
 			  kStateMitigatorTotalCounterSearchContacts				: @(HONStateMitigatorTotalTypeSearchContacts),
 			  kStateMitigatorTotalCounterSupport					: @(HONStateMitigatorTotalTypeSupport),
