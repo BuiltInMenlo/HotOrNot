@@ -18,7 +18,7 @@
 "hud_usernameNotFound" = "사용자 이름을 찾을 수 없습니다!";
 "hud_checkUsername" = "username_ 확인 중";
 "hud_updateFail" = "업데이트 실패";
-"hud_usernameTaken" = "사용자 이름이 이미 사용 중!";
+"hud_usernameTaken" = "이미 사용중인 닉네임";
 "hud_submit" = "제출 중...";
 "hud_noResults" = "결과가 없습니다!";
 "hud_searchUsers" = "사용자 검색 중...";
@@ -79,17 +79,16 @@
 
 "alert_lockedClub_t" = "잠긴 클럽입니다!";
 "alert_lockedClub_m" = "선글라스 클럽에 가입하려면 최소 %d명의 친구를 초대해야 합니다";
-"alert_register_m" = "셀카클럽에 등록하기 위해 돌아오기";
+"alert_register_m" = "등록하러 돌아오기";
 "title_copyURL" = " - URL을 복사하세요";
 "title_joinNow" = " - 클럽명 - 지금 가입하세요!";
 
-"enter_username" = "사용자 이름";
+"enter_username" = "닉네임 입력";
 "enter_phone" = "전화번호";
 "Register" = "등록하기";
 "firstrun_next" = "Avançar";
 "Search for friends" = "Procurar amigos";
 "header_friends" = "친구";
-"header_home" = "Home";
 "alert_member" = "You are already a member of %@!";
 "header_news" = "친구";
 "header_clubs" = "클럽";
@@ -152,8 +151,7 @@
 "no_phone" = "휴대폰 번호가 없습니다!";
 "phone_taken" = "이 전화번호는 이미 사용 중입니다!";
 "user_phone" = "이 사용자명 및 전화번호는 이미 사용 중입니다!";
-"no_user" = "사용자명이 없습니다!";
-"no_user_msg" = "셀카클럽을 사용하시려면 사용자명을 입력하셔야 합니다";
+"no_user_msg" = "등록하려면 닉네임을 제출해야 합니다";
 "no_phone_msg" = "셀카클럽을 이용하시려면 사용자명을 입력하셔야 합니다.";
 "no_userphone" = "사용자명과 휴대폰 번호가 없습니다!";
 "no_userphone_msg" = "셀카클럽을 이용하시려면 사용자명과 휴대폰 번호를 입력하셔야 합니다";
@@ -176,7 +174,7 @@
 "phone_number" = "phone number";
 "header_search" = "Search";
 "empty_timeline" = "No status updates available";
-"register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
+"register_footer" = "조건";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 
 "alert_inviteContact_t" = "%@ 발견!";
@@ -184,7 +182,7 @@
 "alert_inviteContact_m" = "당신은 당신의 개인 클럽 중 하나에 초대 하시겠습니까?";
 "club_inviteSubText" = "당신은 초대되었습니다. 가입 탭!";
 "empty_club" = "누르고 친구를 초대 길게";
-"header_compose" = "Compose";
+"header_compose" = "미리보기";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
 "access_contacts" = "Access your contacts.\nFind friends";
 "empty_contacts" = "No results found.\nCompose";
@@ -193,13 +191,16 @@
 "settings_legal" = "Legal";
 "settings_support" = "Support";
 "alert_noemotions_title" = "You must select a foreground sticker to submit";
+"header_home" = "24시간 후 사진이 없어집니다";
 
-"header_signUp" = "Sign up";
+"header_signUp" = "등록";
 "header_pin" = "Enter pin";
 "areacode_club" = "%@클럽";
 "family_club" = "내%@클럽";
 "bff_club" = "내BFFs";
 "bae_club" = "내BAE";
 "school_club" = "내학교클럽";
+"header_camera" = "셀카찍기";
+"no_results" = "검색 결과가 없습니다";
 
 // club = 클럽

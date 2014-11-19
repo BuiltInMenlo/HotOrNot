@@ -132,6 +132,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)finalizeUserWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)flagUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)recreateUserWithCompletion:(void (^)(id result))completion;
+- (void)retrieveActivityTotalForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)registerNewUserWithCompletion:(void (^)(id result))completion;
 - (void)retrieveNewActivityForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
@@ -164,8 +165,11 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveSeenTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveSeenMembersChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveVoteTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;
+- (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpvote:(BOOL)isUpvote completion:(void (^)(id result))completion;
+
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

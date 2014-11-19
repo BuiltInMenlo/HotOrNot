@@ -65,7 +65,7 @@
 			_progressHUD = nil;
 		}
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Registration - PIN Validation %@", ([[result objectForKey:@"result"] intValue] == 0) ? @"Failed" : @"Pass"]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Registration - PIN Validation %@", ([[result objectForKey:@"result"] intValue] == 0) ? @"Failed" : @"Pass"]];
 		
 		if ([[result objectForKey:@"result"] intValue] == 0) {
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
@@ -88,7 +88,8 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Pass First Run"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_2"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -171,12 +172,20 @@
 //	_panGestureRecognizer.enabled = YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	[super viewWillAppear:animated];
+	
+	_isPopping = NO;
+	[self _goCheat];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
 	
 	_isPopping = NO;
-	[_pinTextField becomeFirstResponder];
+//	[_pinTextField becomeFirstResponder];
 }
 
 

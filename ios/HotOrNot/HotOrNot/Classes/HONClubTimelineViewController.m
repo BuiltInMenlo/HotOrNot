@@ -130,7 +130,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeTimelineRefresh];
 	
 	_index = 0;
@@ -289,8 +289,8 @@
 - (void)_goReply {
 	NSLog(@"[*:*] _goReply:(%d - %@)", _clubPhotoVO.userID, _clubPhotoVO.username);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply"
-										 withClubPhoto:_clubPhotoVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply"
+//										 withClubPhoto:_clubPhotoVO];
 	
 	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoViewCell *viewCell = (HONClubPhotoViewCell *)obj;
@@ -304,8 +304,8 @@
 }
 
 - (void)_goBack {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back"
-									   withUserClub:_clubVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back"
+//									   withUserClub:_clubVO];
 	
 	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoViewCell *viewCell = (HONClubPhotoViewCell *)obj;
@@ -326,16 +326,16 @@
 	
 	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
 		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back SWIPE"
-										   withUserClub:_clubVO];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back SWIPE"
+//										   withUserClub:_clubVO];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
-										  withClubPhoto:_clubPhotoVO];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Reply SWIPE"
+//										  withClubPhoto:_clubPhotoVO];
 		
 		[self _goReply];
 	}
@@ -371,8 +371,8 @@
 - (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
 	int rows = MIN(amount, (((int)[_tableView numberOfSections] - 1) - (int)[_tableView indexPathForCell:cell].section));
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Next Update"
-									  withClubPhoto:cell.clubPhotoVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Next Update"
+//									  withClubPhoto:cell.clubPhotoVO];
 	
 	_index = MIN(MAX(0, (int)[_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), (int)[_clubPhotos count] - 1);
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:YES];

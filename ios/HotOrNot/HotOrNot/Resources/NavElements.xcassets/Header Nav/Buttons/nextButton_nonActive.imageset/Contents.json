@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "blueNextButton_nonActive.png"
+      "filename" : "nextButtonArrow_nonActive@2x-2.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "blueNextButton_nonActive@2x.png"
+      "filename" : "nextButtonArrow_nonActive@2x-1.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "nextButtonArrow_nonActive@2x.png"
     }
   ],
   "info" : {

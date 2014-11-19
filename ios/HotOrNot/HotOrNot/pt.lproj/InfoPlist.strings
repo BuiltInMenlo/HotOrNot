@@ -7,8 +7,8 @@
 */
 
 
-"CFBundleDisplayName" = "Selfieclub";
-"CFBundleName" = "Selfieclub";
+"CFBundleDisplayName" = "Last 24";
+"CFBundleName" = "Last 24";
 
-"NSLocationWhenInUseUsageDescription" = "Location needed (IN USE)";
-"NSLocationAlwaysUsageDescription" = "Location needed (ALWAYS)";
+"NSLocationWhenInUseUsageDescription" = "";
+"NSLocationAlwaysUsageDescription" = "";

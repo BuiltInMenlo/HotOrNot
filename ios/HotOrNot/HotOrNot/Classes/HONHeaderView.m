@@ -22,15 +22,24 @@
 @implementation HONHeaderView
 @synthesize title = _title;
 
+- (id)initWithBranding {
+	if ((self = [self init])) {
+		UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"branding"]];
+		brandingImageView.frame = CGRectOffset(brandingImageView.frame, 84.0, 21.0);
+		[self addSubview:brandingImageView];
+	}
+	
+	return (self);
+}
 
 - (id)init {
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		[self addSubview:_bgImageView];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 27.0, 170.0, 26.0)];
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-		_titleLabel.textColor = [UIColor blackColor];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 30.0, 170.0, 24.0)];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:_titleLabel];

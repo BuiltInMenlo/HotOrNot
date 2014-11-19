@@ -18,7 +18,7 @@
 "hud_usernameNotFound" = "Username not found!";
 "hud_checkUsername" = "Checking username…";
 "hud_updateFail" = "Update failed";
-"hud_usernameTaken" = "Username taken!";
+"hud_usernameTaken" = "Nickname taken!";
 "hud_submit" = "Submitting…";
 "hud_noResults" = "No results found!";
 "hud_searchUsers" = "Searching users…";
@@ -26,11 +26,13 @@
 "hud_sent" = "   Sent   ";
 "share" = "Share club";
 "header_restricted" = "restricted access";
-
+"header_home" = "Photos disappear after 24 hours";
+"no_results" = "No results found";
 //"search_placeHolder" = "Search for people or tags";
 //"search_snap" = "1 snap";
 //"search_snaps" = "%d snaps";
 
+"header_camera" = "Take selfie";
 "restricted_caption" = "";
 "restricted_inviteCode" = "Enter invite code";
 
@@ -77,17 +79,16 @@
 
 "alert_lockedClub_t" = "Locked Club!";
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
-"alert_register_m" = "Come back to register for Selfieclub";
+"alert_register_m" = "Come back to register";
 "title_copyURL" = " - copy your url";
 "title_joinNow" = " - Join Now!";
 
 
-"enter_username" = "Enter username";
+"enter_username" = "Enter a nickname";
 "enter_phone" = "Enter phone number";
 //"firstrun_next" = "Avançar";
 "header_friends" = "Friends";
 "header_pin" = "Enter pin";
-"header_home" = "Home";
 "alert_member" = "You are already a member of %@!";
 "header_news" = "News";
 "header_clubs" = "Clubs";
@@ -152,7 +153,6 @@
 "no_phone" = "No Phone!";
 "phone_taken" = "Phone # taken!";
 "user_phone" = "Username & phone # taken!";
-"no_user" = "No Username!";
 "no_user_msg" = "You need to enter a username to use Selfieclub";
 "no_phone_msg" = "You need a phone # to use Selfieclub.";
 "no_userphone" = "No Username & Phone!";
@@ -188,7 +188,7 @@
 "empty_club" = "Tap and hold to invite friends";
 "empty_timeline" = "No status updates available";
 "header_findFriends" = "Find friends";
-"header_compose" = "Compose";
+"header_compose" = "Preview";
 "search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
 "access_contacts" = "Access your contacts.\nFind friends";
 "empty_contacts" = "No results found.\nCompose";
@@ -198,7 +198,7 @@
 "alert_inviteNewContact_t" = "No user found!";
 "alert_inviteContact_m" = "Would you like to invite them to one of your private clubs?";
 "club_inviteSubText" = "You have been invited. Tap to join!";
-"register_footer" = "Enter your phone number for\ndevice verification. ¡Terms";
+"register_footer" = "Terms";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 "header_selectFriends" = "Select";
 "empty_stickers" = "Select a sticker and\nbackground";

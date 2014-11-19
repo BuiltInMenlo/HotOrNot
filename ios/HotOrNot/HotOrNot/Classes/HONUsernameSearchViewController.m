@@ -166,15 +166,15 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Cancel"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Cancel"];
 	
 	[_searchHeaderView resignFirstResponder];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Done"
-									 withProperties:[self _trackingProps]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Done"
+//									 withProperties:[self _trackingProps]];
 	
 	
 	if ([_selectedUsers count] > 0) {
@@ -215,7 +215,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search - Cancel SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search - Cancel SWIPE"];
 		
 		[_searchHeaderView resignFirstResponder];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
@@ -251,8 +251,8 @@
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
-									withTrivialUser:trivialUserVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
+//									withTrivialUser:trivialUserVO];
 	
 	if ([_selectedUsers containsObject:viewCell.trivialUserVO])
 		[_selectedUsers removeObject:viewCell.trivialUserVO];
@@ -265,16 +265,16 @@
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	NSLog(@"[*:*] searchBarViewHasFocus:");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Search Bar"
-									 withProperties:@{@"state"	: @"focus"}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Search Bar"
+//									 withProperties:@{@"state"	: @"focus"}];
 	
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	NSLog(@"[*:*] searchBarViewCancel:");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Search Bar"
-									 withProperties:@{@"state"	: @"cancel"}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Search Bar"
+//									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_tableView.separatorStyle = ([_searchUsers count] == 0) ? UITableViewCellSeparatorStyleSingleLineEtched : UITableViewCellSeparatorStyleNone;
 }
@@ -282,8 +282,8 @@
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
 	NSLog(@"[*:*] searchBarView:enteredSearch:");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Entered Username"
-									 withProperties:@{@"username"	: searchQuery}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Entered Username"
+//									 withProperties:@{@"username"	: searchQuery}];
 	
 	if (![searchQuery isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]])
 		  [self _retrieveUsers:searchQuery];
@@ -358,8 +358,8 @@
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
-									withTrivialUser:cell.trivialUserVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
+//									withTrivialUser:cell.trivialUserVO];
 	
 	NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
 	
@@ -387,8 +387,8 @@
 		NSMutableDictionary *props = [[self _trackingProps] mutableCopy];
 		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Results Alert"
-										 withProperties:[props copy]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Results Alert"
+//										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {
 			_isPushing = YES;

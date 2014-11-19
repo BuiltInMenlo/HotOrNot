@@ -54,7 +54,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 - (id)init {
 	if ((self = [super init])) {
 		//self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeUnderlay"]];
-		self.backgroundColor = [UIColor redColor];
+		self.backgroundColor = [UIColor blackColor];
 		
 		_emotions = [NSMutableArray array];
 		_emotionViews = [NSMutableArray array];
@@ -111,6 +111,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	[self.contentView addSubview:_imageLoadingView];
 	
 	_imgView = [[UIImageView alloc] initWithFrame:self.frame];
+	_imgView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_imgView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -118,6 +119,8 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 		[_imageLoadingView stopAnimating];
 		[_imageLoadingView removeFromSuperview];
 		_imageLoadingView = nil;
+		
+		[_imgView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -190,23 +193,12 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	_scrollView.pagingEnabled = YES;
 	//[self.contentView addSubview:_scrollView];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 64.0, 260.0, 55.0)];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.textAlignment = NSTextAlignmentCenter;
-	timeLabel.numberOfLines = 2;
-	timeLabel.text = [@"…\n" stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
-	[self.contentView addSubview:timeLabel];
+	UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextPageButton.frame = self.frame;
+	[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:nextPageButton];
 	
-	if ([[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] count] > 2) {
-		NSString *coords = [[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] objectAtIndex:1];
-		[[HONGeoLocator sharedInstance] addressForLocation:[[CLLocation alloc] initWithLatitude:[[[coords componentsSeparatedByString:@","] lastObject] floatValue] longitude:[[[coords componentsSeparatedByString:@","] firstObject] floatValue]] onCompletion:^(NSDictionary *result) {
-			timeLabel.text = [NSString stringWithFormat:@"%@, %@\n%@", [result objectForKey:@"city"], [result objectForKey:@"country"], [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate]];
-		}];
-	}
-	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 86.0, 320.0, 109.0)];
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 203.0, 320.0, 193.0)];
 	[self.contentView addSubview:footerView];
 	
 	_stickerSummaryView = [[HONStickerSummaryView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 64.0))];
@@ -220,11 +212,6 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 //	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
 	//[footerView addSubview:participantsLabel];
 	
-//	[[HONAPICaller sharedInstance] retrieveSeenTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSDictionary *result) {
-//		if ([[result objectForKey:@"results"] count] > 0)
-//			participantsLabel.text = [NSString stringWithFormat:@"Seen: %d/%d", (int)[[result objectForKey:@"results"] count], _clubVO.totalMembers];
-//	}];
-	
 //	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	replyButton.frame = CGRectMake(0.0, footerView.frame.size.height - 50.0, 320.0, 50.0);
 //	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_nonActive"] forState:UIControlStateNormal];
@@ -233,29 +220,69 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 //	[footerView addSubview:replyButton];
 	
 	
-	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 18.0, 192.0, 22.0)];
+	__block BOOL hasVoted = NO;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		
+		NSLog(@"VOTE FOR:[%@]", dict);
+		
+		for (NSString *key in [dict keyEnumerator]) {
+			if ([key intValue] == _clubPhotoVO.challengeID) {
+				hasVoted = YES;
+				break;
+			}
+		}
+		
+		*stop = hasVoted;
+	}];
+	
+	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 38.0, 192.0, 22.0)];
 	_scoreLabel.backgroundColor = [UIColor clearColor];
-	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
 	_scoreLabel.textColor = [UIColor whiteColor];
-	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+	_scoreLabel.text = @"…";
 	[footerView addSubview:_scoreLabel];
 	
+	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSString *result) {
+		_clubPhotoVO.score = [result intValue];
+		_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+	}];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 107.0, 260.0, 22.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	timeLabel.textColor = [UIColor whiteColor];
+	timeLabel.textAlignment = NSTextAlignmentCenter;
+	timeLabel.numberOfLines = 1;
+	timeLabel.text = [@"… " stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
+	[footerView addSubview:timeLabel];
+	
+	if ([[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] count] > 2) {
+		NSString *coords = [[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] objectAtIndex:1];
+		[[HONGeoLocator sharedInstance] addressForLocation:[[CLLocation alloc] initWithLatitude:[[[coords componentsSeparatedByString:@","] lastObject] floatValue] longitude:[[[coords componentsSeparatedByString:@","] firstObject] floatValue]] onCompletion:^(NSDictionary *result) {
+			timeLabel.text = [NSString stringWithFormat:@"%@, %@ %@", [result objectForKey:@"city"], [result objectForKey:@"country"], [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate]];
+		}];
+	}
+	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	upvoteButton.frame = CGRectMake(20.0, 0.0, 64.0, 64.0);
+	upvoteButton.frame = CGRectMake(13.0, 0.0, 100.0, 100.0);
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
 	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	[footerView addSubview:upvoteButton];
 	
 	UIButton *dnvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dnvoteButton.frame = CGRectMake(self.frame.size.width - 84.0, 0.0, 64.0, 64.0);
+	dnvoteButton.frame = CGRectMake(self.frame.size.width - 113.0, 0.0, 100.0, 100.0);
 	[dnvoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 	[dnvoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
 	[dnvoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	[footerView addSubview:dnvoteButton];
 	
-//	[self _populateEmotions];
+	if (hasVoted) {
+		[upvoteButton removeTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+		[dnvoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	}
 }
 
 
@@ -271,8 +298,8 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 }
 
 - (void)_goNextPhoto {
-//	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
-//		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
+	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
+		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
 }
 
 - (void)_goUpvote {

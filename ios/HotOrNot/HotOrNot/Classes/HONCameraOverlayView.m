@@ -13,6 +13,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCameraOverlayView.h"
+#import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
 
@@ -38,9 +39,17 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
+		
 //		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]];
 //		gradientImageView.frame = self.frame;
 //		[self addSubview:gradientImageView];
+		
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_camera", @"Take Selfie")];
+		//headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+		[headerView removeBackground];
+//		[headerView addCloseButtonWithTarget:self action:@selector(_goCancel)];
+		[self addSubview:headerView];
 		
 		_headerBGView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 74.0))];
 		[self addSubview:_headerBGView];
@@ -53,7 +62,7 @@
 		//[_headerBGView addSubview:_flipButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(7.0, 7.0, 74.0, 74.0);
+		_cancelButton.frame = CGRectMake(1.0, 20.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -68,7 +77,7 @@
 		
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake(115.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
+		_takePhotoButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0);
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
@@ -76,7 +85,7 @@
 		
 		_lastCameraRollImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRollBG"]];
 		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 9.0, [UIScreen mainScreen].bounds.size.height - 48.0);
-		[self addSubview:_lastCameraRollImageView];
+		//[self addSubview:_lastCameraRollImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
 		[self _retrieveLastImage];

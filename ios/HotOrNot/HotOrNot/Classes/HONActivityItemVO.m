@@ -19,18 +19,22 @@
 	
 	vo.dictionary = dictionary;
 	vo.activityID = [dictionary objectForKey:@"id"];
-	vo.activityType = [[dictionary objectForKey:@"activity_type"] intValue];
-	vo.challengeID = ([dictionary objectForKey:@"challengeID"] != [NSNull null]) ? [[dictionary objectForKey:@"challengeID"] intValue] : -1;
+	vo.activityType = HONActivityItemTypeLike;//[[dictionary objectForKey:@"activity_type"] intValue];
+	vo.challengeID = ([dictionary objectForKey:@"status_update_id"] != [NSNull null]) ? [[dictionary objectForKey:@"status_update_id"] intValue] : -1;
 	vo.clubID = ([dictionary objectForKey:@"club_id"] != [NSNull null]) ? [[dictionary objectForKey:@"club_id"] intValue] : -1;
-	vo.clubName = [dictionary objectForKey:@"club_name"];
-	vo.sentDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
+	vo.clubName = @"";//[dictionary objectForKey:@"club_name"];
 	
-	vo.originUserID = [[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
-	vo.originUsername = (vo.originUserID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"user"] objectForKey:@"username"];
-	vo.originAvatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]];
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
 	
-	vo.recipientUserID = ([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : [[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] : 0;
-	vo.recipientUsername = ([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"username"] isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : [[dictionary objectForKey:@"recip"] objectForKey:@"username"] : @"";
+	vo.sentDate = [dateFormatter dateFromString:[dictionary objectForKey:@"time"]];//[NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
+	
+	vo.originUserID = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[[dictionary objectForKey:@"subject_member"] objectForKey:@"id"] intValue] : 0;//[[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
+	vo.originUsername = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? (vo.originUserID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"subject_member"] objectForKey:@"name"] : @"";
+	vo.originAvatarPrefix = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"subject_member"] objectForKey:@"avatar_url"]] : @"";
+	
+	vo.recipientUserID = [[[dictionary objectForKey:@"member"] objectForKey:@"id"] intValue];//([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : [[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] : 0;
+	vo.recipientUsername = [[dictionary objectForKey:@"member"] objectForKey:@"name"];//([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"username"] isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : [[dictionary objectForKey:@"recip"] objectForKey:@"username"] : @"";
 	
 	if (vo.activityType == HONActivityItemTypeSignup) {
 		vo.message = NSLocalizedString(@"activity_signup", @"You have just joined Selfieclub!");;

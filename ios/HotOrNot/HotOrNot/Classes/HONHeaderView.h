@@ -9,6 +9,7 @@
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
 - (id)initWithTitle:(NSString *)title asLightStyle:(BOOL)isLightStyle;
+- (id)initWithBranding;
 //- (id)initWithTitleUsingCartoGothic:(NSString *)title;
 //- (id)initWithTitleUsingCartoGothic:(NSString *)title asLightStyle:(BOOL)isLightStyle;
 - (id)initWithTitleImage:(UIImage *)image;

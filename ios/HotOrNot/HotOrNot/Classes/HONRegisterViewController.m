@@ -9,6 +9,7 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 #import "NSString+Formatting.h"
 #import "UIImage+fixOrientation.h"
@@ -49,9 +50,9 @@
 		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
 		
 		_username = @"";
-		_phone = @"";
+		_phone = [NSString stringWithFormat:@"+%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Start First Run"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter_step_0"];
 	}
 	
 	return (self);
@@ -70,11 +71,11 @@
 	
 	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
 	
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username completion:^(NSDictionary *result) {
 		NSLog(@"RESULT:[%@]", result);
 		
 		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username Taken"];
+			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username Taken"];
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -90,7 +91,7 @@
 		} else {
 			[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
 				if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Phone Taken"];
+					//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Phone Taken"];
 					
 					if (_progressHUD == nil)
 						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -114,7 +115,7 @@
 					
 				} else {
 					NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username & Phone OK"];
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_1"];
 					[self _finalizeUser];
 				}
 			}];
@@ -137,16 +138,16 @@
 	NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
 	NSLog(@"\n\n******** FINALIZE W/ API **********");
-	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-																@"phone"	: [_phone stringByAppendingString:@"@selfieclub.com"],
-																@"filename"	: @""} completion:^(NSDictionary *result) {
-																	
+	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																@"username"		: _username,
+																@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"],
+																@"sku_name"		: @"last24",
+																@"filename"		: @""} completion:^(NSDictionary *result) {
+
 		int responseCode = [[result objectForKey:@"result"] intValue];
 		if (result != nil && responseCode == 0) {
 			_phoneCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
 			_phoneCheckImageView.alpha = 1.0;
-			
 			
 			[HONAppDelegate writeUserInfo:result];
 			[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
@@ -159,6 +160,7 @@
 				
 				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			}];
+			
 			
 		} else {
 			_submitButton.userInteractionEnabled = YES;
@@ -203,16 +205,39 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_signUp", @"Sign up")];
+	[headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
 	[self.view addSubview:headerView];
 	
-	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_phoneButton.frame = CGRectMake(0.0, kNavHeaderHeight + 64.0, 320.0, 64.0);
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateNormal];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateHighlighted];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateSelected];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_phoneButton];
+	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateSelected];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateSelected|UIControlStateHighlighted)];
+//	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_usernameButton];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 294.0, 22.0)];
+	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+	[_usernameTextField setTextColor:[UIColor blackColor]];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", @"Enter phone number");;
+	_usernameTextField.text = @"";
+	[_usernameTextField setTag:0];
+	_usernameTextField.delegate = self;
+	[self.view addSubview:_usernameTextField];
+	
+	/*
+	UIImageView *kakaoBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"kakaoBG"]];
+	kakaoBGImageView.frame = CGRectOffset(kakaoBGImageView.frame, 256.0, kNavHeaderHeight);
+	[self.view addSubview:kakaoBGImageView];
+	
 	
 	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_phoneButton.frame = CGRectMake(0.0, kNavHeaderHeight + 64.0, 320.0, 64.0);
@@ -269,35 +294,35 @@
 			}
 		}];
 	}
-	
+	*/
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	termsButton.frame = CGRectMake(120.0, 210.0, 80.0, 20.0);
+	termsButton.frame = CGRectMake(120.0, 148.0, 80.0, 20.0);
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.80] forState:UIControlStateNormal];
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor] forState:UIControlStateHighlighted];
 	termsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	[termsButton setTitle:@"Terms" forState:UIControlStateNormal];
-	[termsButton setTitle:@"Terms" forState:UIControlStateHighlighted];
+	[termsButton setTitle:NSLocalizedString(@"register_footer", @"Terms") forState:UIControlStateNormal];
+	[termsButton setTitle:NSLocalizedString(@"register_footer", @"Terms") forState:UIControlStateHighlighted];
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
 	
 	
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateNormal];
-	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateHighlighted];
-	[_submitButton setImageEdgeInsets:UIEdgeInsetsMake(0.0, 140.0, 0.0, 0.0)];
-	_submitButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-	[_submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[_submitButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-	[_submitButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -45.0, 0.0, 0.0)];
-	[_submitButton setTitle:@"Submit" forState:UIControlStateNormal];
-	[_submitButton setTitle:@"Submit" forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	_submitButton.hidden = YES;
-	[self.view addSubview:_submitButton];
+//	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0);
+//	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+//	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+//	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateNormal];
+//	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateHighlighted];
+//	[_submitButton setImageEdgeInsets:UIEdgeInsetsMake(0.0, 140.0, 0.0, 0.0)];
+//	_submitButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+//	[_submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//	[_submitButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
+//	[_submitButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -45.0, 0.0, 0.0)];
+//	[_submitButton setTitle:@"Submit" forState:UIControlStateNormal];
+//	[_submitButton setTitle:@"Submit" forState:UIControlStateHighlighted];
+//	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+//	_submitButton.hidden = YES;
+//	[self.view addSubview:_submitButton];
 	
 	NSLog(@"loadView -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
@@ -316,7 +341,7 @@
 	[super viewDidAppear:animated];
 	
 	_submitButton.userInteractionEnabled = YES;
-	[_phoneTextField becomeFirstResponder];
+	[_usernameTextField becomeFirstResponder];
 }
 
 
@@ -333,7 +358,7 @@
 - (void)_goTerms {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goPhone {
@@ -344,26 +369,27 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
 		[self _goSubmit];
 	}
 }
 
 - (void)_goSubmit {	
-	if ([_phoneTextField isFirstResponder])
-		[_phoneTextField resignFirstResponder];
+	if ([_usernameTextField isFirstResponder])
+		[_usernameTextField resignFirstResponder];
 	
+	_username = _usernameTextField.text;
 	[_phoneButton setSelected:NO];
 		
 	HONRegisterErrorType registerErrorType = ((int)([[[HONAppDelegate infoForUser] objectForKey:@"username"] length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_phone length] == 0) * HONRegisterErrorTypePhone);
 	if (registerErrorType == HONRegisterErrorTypeNone) {
-		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
+//		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
 		_isPushing = YES;
 		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_user", @"No Username!")
+		[[[UIAlertView alloc] initWithTitle:nil
 									message: NSLocalizedString(@"no_user_msg", @"You need to enter a username to use Selfieclub")
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -416,8 +442,8 @@
 													   @"name"	: countryVO.countryName} forKey:@"country_code"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Country Selector Choosen"
-									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Country Selector Choosen"
+//									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
 	
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateNormal];
 	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateHighlighted];
@@ -442,7 +468,7 @@
 	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _submitButton.frame = CGRectMake(_submitButton.frame.origin.x, self.view.frame.size.height - (217.0 + _submitButton.frame.size.height), _submitButton.frame.size.width, _submitButton.frame.size.height);
+						 _submitButton.frame = CGRectMake(_submitButton.frame.origin.x, self.view.frame.size.height - (216.0 + _submitButton.frame.size.height), _submitButton.frame.size.width, _submitButton.frame.size.height);
 					 } completion:^(BOOL finished) {}];
 }
 
@@ -468,22 +494,22 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
-	_phone = _phoneTextField.text;
+	_username = _usernameTextField.text;
 	
-	[UIView animateWithDuration:0.25
-					 animations:^(void) {
-						 _submitButton.frame = CGRectMake(_submitButton.frame.origin.x, self.view.frame.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
-					 } completion:^(BOOL finished) {
-						 _submitButton.hidden = YES;
-					 }];
+//	[UIView animateWithDuration:0.25
+//					 animations:^(void) {
+//						 _submitButton.frame = CGRectMake(_submitButton.frame.origin.x, self.view.frame.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+//					 } completion:^(BOOL finished) {
+//						 _submitButton.hidden = YES;
+//					 }];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
-	_phone = _phoneTextField.text;
+	_username = _usernameTextField.text;
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
-	_phone = _phoneTextField.text;
+	_username = _usernameTextField.text;
 }
 
 

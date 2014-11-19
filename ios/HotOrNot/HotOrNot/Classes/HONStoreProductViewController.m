@@ -69,8 +69,8 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Refresh"
-									 withStoreProduct:_storeProductVO];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Refresh"
+//									 withStoreProduct:_storeProductVO];
 	
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStoreProductDetailsRefresh];
 	[self _reloadCollectionViewContents];
@@ -198,15 +198,15 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Back"
-									 withStoreProduct:_storeProductVO];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Back"
+//									 withStoreProduct:_storeProductVO];
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goDownload {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Download"
-									 withStoreProduct:_storeProductVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Download"
+//									 withStoreProduct:_storeProductVO];
 	
 	if ([self.delegate respondsToSelector:@selector(storeProductViewController:didDownloadProduct:)])
 		[self.delegate storeProductViewController:self didDownloadProduct:_storeProductVO];
@@ -215,8 +215,8 @@
 }
 
 - (void)_goPurchase {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Purchase"
-									 withStoreProduct:_storeProductVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Product Details - Purchase"
+//									 withStoreProduct:_storeProductVO];
 	
 	[[[UIAlertView alloc] initWithTitle:@"Congrats!"
 								message:@"All store content is currently FREE. The items you have selected have been unlocked"

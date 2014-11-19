@@ -79,7 +79,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Refresh"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Refresh"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStoreProductsRefresh];
 	
 	[self _reloadTableViewContents];
@@ -135,7 +135,7 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Done"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Done"];
 	[self dismissViewControllerAnimated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:self] completion:nil];
 }
 
@@ -144,7 +144,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Close SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Close SWIPE"];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
@@ -220,8 +220,8 @@
 	
 	_storeProductVO = (viewCell.isPurchased) ? viewCell.storeProductVO : nil;
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Selected Product"
-									 withStoreProduct:_storeProductVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Sticker Store - Selected Product"
+//									 withStoreProduct:_storeProductVO];
 	
 	HONStoreProductViewController *storeProductViewController = [[HONStoreProductViewController alloc] initWithStoreProduct:_storeProductVO];
 	storeProductViewController.delegate = self;

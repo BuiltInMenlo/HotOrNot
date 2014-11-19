@@ -215,7 +215,7 @@
 
 #pragma mark - Navigation
 - (void)_goCountryCodes {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Country Selector"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Country Selector"];
 	
 	HONCallingCodesViewController *callingCodesViewController = [[HONCallingCodesViewController alloc] init];
 	callingCodesViewController.delegate = self;
@@ -226,7 +226,7 @@
 }
 
 - (void)_goClose {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Cancel"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Cancel"];
 	
 	_isDismissing = YES;
 	[_phoneTextField resignFirstResponder];
@@ -244,7 +244,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Cancel SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Cancel SWIPE"];
 		
 		_isDismissing = YES;
 		[_phoneTextField resignFirstResponder];
@@ -283,8 +283,8 @@
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
 	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Country Selector Choosen"
-									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Country Selector Choosen"
+//									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
 	
 	_countryCodeLabel.text = [@"+" stringByAppendingString:countryVO.callingCode];
 	
@@ -365,8 +365,8 @@
 		NSMutableDictionary *props = [[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:_searchUserVO] mutableCopy];
 		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
-										 withProperties:[props copy]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
+//										 withProperties:[props copy]];
 		
 		if (buttonIndex == 0) {
 			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[_searchUserVO]] : _clubVO;
@@ -413,8 +413,8 @@
 		NSMutableDictionary *props = [[[HONAnalyticsReporter sharedInstance] propertyForContactUser:_contactUserVO] mutableCopy];
 		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
-										 withProperties:[props copy]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
+//										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {
 			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONTrivialUserVO userFromContactUserVO:_contactUserVO]]] : _clubVO;

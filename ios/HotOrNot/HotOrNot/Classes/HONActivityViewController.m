@@ -36,6 +36,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVITY - enter"];
+		
 		_viewStateType = HONStateMitigatorViewStateTypeActivity;
 		_totalType = HONStateMitigatorTotalTypeActivity;
 	}
@@ -97,24 +99,21 @@
 	_activityAlerts = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
 		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSMutableDictionary *dict = (NSMutableDictionary *)[obj mutableCopy];
-			[dict setValue:@{@"id"			: [@"" stringFromInt:_trivialUserVO.userID],
-							 @"username"	: _trivialUserVO.username} forKey:@"recip"];
-			
-			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:[dict copy]]];
+			NSDictionary *dict = (NSDictionary *)obj;
+			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
 		}];
 		
-		[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:@{@"id"			: [NSString stringWithFormat:@"0_2394_%d", (int)[[NSDate date] timeIntervalSince1970]],
-																			   @"activity_type"	: @"0",
-																			   @"challengeID"	: @"0",
-																			   @"club_id"		: @"0",
-																			   @"club_name"		: @"",
-																			   @"time"			: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-																			   @"user"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-																									@"avatar_url"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
-																			   @"recip"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"]}}]];
+//		[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:@{@"id"			: [NSString stringWithFormat:@"0_2394_%d", (int)[[NSDate date] timeIntervalSince1970]],
+//																			   @"activity_type"	: @"0",
+//																			   @"challengeID"	: @"0",
+//																			   @"club_id"		: @"0",
+//																			   @"club_name"		: @"",
+//																			   @"time"			: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+//																			   @"user"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+//																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+//																									@"avatar_url"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
+//																			   @"recip"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+//																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"]}}]];
 		
 		[self _didFinishDataRefresh];
 	}];
@@ -123,7 +122,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Refresh"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Refresh"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeActivityRefresh];
 	
 	[self _reloadTableContent];
@@ -146,6 +145,18 @@
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	if ([_activityAlerts count] == 0) {
+		UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG"]];
+		[_tableView addSubview:imageView];
+		
+		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 7.0, 202.0, 28.0)];
+		titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+		titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		titleLabel.backgroundColor = [UIColor clearColor];
+		titleLabel.text = NSLocalizedString(@"no_results", nil);
+		[imageView addSubview:titleLabel];
+	}
 }
 
 
@@ -157,7 +168,7 @@
 	
 	_activityAlerts = [NSMutableArray array];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight)];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight - 20.0, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
@@ -177,19 +188,24 @@
 	
 //	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	closeButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
-//	[closeButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-//	[closeButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+//	closeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+//	[closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//	[closeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
+//	[closeButton setTitle:@"Submit" forState:UIControlStateNormal];
+//	[closeButton setTitle:@"Submit" forState:UIControlStateHighlighted];
 //	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 //	[_headerView addButton:closeButton];
 	
-	[self _reloadTableContent];
+	_activityAlerts = [NSMutableArray array];
+	[_tableView reloadData];
+	[self _retrieveActivityItems];
 }
 
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Close"];
-	[self dismissViewControllerAnimated:YES completion:^(void) {
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Close"];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 }
 
@@ -210,9 +226,8 @@
 
 #pragma mark - ActivityItemView Delegates
 - (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Show User Activity" withTrivialUser:trivialUserVO];
-	
-//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Show User Activity"
+//									  withTrivialUser:trivialUserVO];
 }
 
 
@@ -247,7 +262,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return (44.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -264,7 +279,8 @@
 	
 	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Selected Row"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Selected Row"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVITY - copied_id"];
 	
 	NSLog(@"vo:[%@]", vo.dictionary);
 	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : @"UNKNOWN");

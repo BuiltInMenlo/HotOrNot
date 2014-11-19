@@ -147,7 +147,7 @@
 	}
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Country Codes - Cancel SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Country Codes - Cancel SWIPE"];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}

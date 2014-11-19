@@ -85,6 +85,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - enter_step_0"];
 		
 		_totalType = HONStateMitigatorTotalTypeCompose;
 		_viewStateType = HONStateMitigatorViewStateTypeCompose;
@@ -225,8 +226,8 @@
 //				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
 //				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
 				
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
-													   withProperties:[self _trackingProps]];
+					//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
+//													   withProperties:[self _trackingProps]];
 				
 					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
 						if (_progressHUD != nil) {
@@ -234,7 +235,7 @@
 							_progressHUD = nil;
 						}
 						
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 						}];
@@ -256,8 +257,8 @@
 	_filename = [NSString stringWithFormat:@"%@/%@_%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], coords, [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 	NSLog(@"FILE PATH:%@", _filename);
 	
-	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *largeImage = _processedImage;//[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+	UIImage *tabImage = _processedImage;//[[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectFromSize(CGSizeMult(kSnapTabSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	NSString *largeURL = [[[_filename componentsSeparatedByString:@"/"] lastObject] stringByAppendingString:kSnapLargeSuffix];
 	NSString *tabURL = [[[_filename componentsSeparatedByString:@"/"] lastObject] stringByAppendingString:kSnapLargeSuffix];
@@ -275,7 +276,7 @@
 		
 	}] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
 		// done
-		NSLog(@"[BFTask mainThreadExecutor");
+//		NSLog(@"[BFTask mainThreadExecutor");
 		return (nil);
 	}];
 	
@@ -308,11 +309,11 @@
 		if (task.error != nil) {
 			if (task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused) {
 				// failed
-				NSLog(@"[AWSS3TransferManager FAILED:[%@]", task.error.description);
+//				NSLog(@"[AWSS3TransferManager FAILED:[%@]", task.error.description);
 			}
 			
 		} else {
-			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq1.key);
+//			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq1.key);
 			_uploadReq1 = nil;
 			if (++_uploadCounter == 2) {
 				// complete
@@ -341,11 +342,11 @@
 		if (task.error != nil) {
 			if (task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused) {
 				// failed
-				NSLog(@"[AWSS3TransferManager FAILED:[%@]", task.error.description);
+//				NSLog(@"[AWSS3TransferManager FAILED:[%@]", task.error.description);
 			}
 			
 		} else {
-			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq2.key);
+//			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq2.key);
 			_uploadReq2 = nil;
 			if (++_uploadCounter == 2) {
 				// complete
@@ -432,13 +433,13 @@
 		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", _submitParams);
 
 		
-		if (_selfieSubmitType == HONSelfieSubmitTypeCreate) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Friend Picker"];
-			[self.navigationController pushViewController:[[HONComposeSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
+//		if (_selfieSubmitType == HONSelfieSubmitTypeCreate) {
+			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Friend Picker"];
+//			[self.navigationController pushViewController:[[HONComposeSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
  
-		} else {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit Reply"
-												 withUserClub:_userClubVO];
+//		} else {
+			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit Reply"
+//												 withUserClub:_userClubVO];
 			
 //			[self _submitReplyStatusUpdate];
 			
@@ -457,8 +458,8 @@
 					_progressHUD = nil;
 					
 				} else {
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
-													   withProperties:[self _trackingProps]];
+					//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
+//													   withProperties:[self _trackingProps]];
 					
 					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
 						if (_progressHUD != nil) {
@@ -466,14 +467,14 @@
 							_progressHUD = nil;
 						}
 						
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 						}];
 					}];
 				}
 			}];
-		}
+//		}
 	}
 }
 
@@ -530,6 +531,8 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor blackColor];
+	
 	_isBlurred = false;
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	
@@ -580,34 +583,24 @@
 		}
 	}];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Create"];
-	[_headerView addCloseButtonWithTarget:self action:@selector(_goCancel)];
-	[_headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
-//	[self.view addSubview:_headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"Preview")];
+	[_headerView removeBackground];
+	_headerView.hidden = YES;
+	[self.view addSubview:_headerView];
 	
 	
 	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraBackButton.frame = CGRectMake(10.0, 10.0, 74.0, 74.0);
+	_cameraBackButton.frame = CGRectMake(0.0, 20.0, 44.0, 44.0);
 	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
 	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
 	[_cameraBackButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
-	_cameraBackButton.hidden = YES;
-	[self.view addSubview:_cameraBackButton];
+	[_headerView addSubview:_cameraBackButton];
 	
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateNormal];
-	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateHighlighted];
-	[_submitButton setImageEdgeInsets:UIEdgeInsetsMake(0.0, 140.0, 0.0, 0.0)];
-	_submitButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-	[_submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[_submitButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-	[_submitButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -45.0, 0.0, 0.0)];
-	[_submitButton setTitle:@"Submit" forState:UIControlStateNormal];
-	[_submitButton setTitle:@"Submit" forState:UIControlStateHighlighted];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cameraSubmitButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cameraSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];
@@ -632,15 +625,20 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	NSLog(@"[*:*] _goCancel");
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - exit"];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Cancel"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Cancel"];
 	[self _cancelUpload];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+		}];
 	}];
 }
 
 - (void)_goSubmit {
 	_isPushing = YES;
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - submit"];
 	[self _modifySubmitParamsAndSubmit:_subjectNames];
 }
 
@@ -648,8 +646,8 @@
 	UIButton *button = (UIButton *)sender;
 	
 	int groupIndex = (int)button.tag;
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
- 									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
+// 									   withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
 	
 	[self _changeToStickerGroupIndex:groupIndex];
 }
@@ -659,10 +657,10 @@
 }
 
 - (void)_goDelete {
-	HONEmotionVO *emotionVO = (HONEmotionVO *)[_selectedEmotions lastObject];
+//	HONEmotionVO *emotionVO = (HONEmotionVO *)[_selectedEmotions lastObject];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+//										  withEmotion:emotionVO];
 	
 	if ([_subjectNames count] > 0)
 		[_subjectNames removeLastObject];
@@ -682,15 +680,15 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Dismiss SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Dismiss SWIPE"];
 		
 		[self _cancelUpload];
-		[self dismissViewControllerAnimated:YES completion:^(void) {
+		[self dismissViewControllerAnimated:NO completion:^(void) {
 		}];
 	}
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
 		[self _modifySubmitParamsAndSubmit:_subjectNames];
 	}
 }
@@ -725,6 +723,8 @@
 		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
 		imagePickerController.cameraOverlayView = _cameraOverlayView;
+		
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	}
 	
 	self.imagePickerController = imagePickerController;
@@ -791,16 +791,16 @@
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
-									 withProperties:@{@"state"	: @"open"}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+//									 withProperties:@{@"state"	: @"open"}];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Flip Camera"
-								   withCameraDevice:self.imagePickerController.cameraDevice];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Flip Camera"
+//								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
 	
@@ -809,18 +809,23 @@
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Close Camera"
-								   withCameraDevice:self.imagePickerController.cameraDevice];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Close Camera"
+//								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	[self _cancelUpload];
-	[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		self.imagePickerController.delegate = nil;
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+		}];
 	}];
 }
 
 - (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
 	_isBlurred = isFiltered;
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - take_photo"];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -858,8 +863,8 @@
 - (void)animatedBGViewController:(HONAnimatedBGsViewController *)viewController didSelectEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] animatedBGViewController:didSelectEmotion:[%@][%@]", NSStringFromCGSize(emotionVO.animatedImageView.frame.size), emotionVO.smallImageURL);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Animated BG Selected"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Animated BG Selected"
+//										  withEmotion:emotionVO];
 	
 	_filename = [[emotionVO.smallImageURL componentsSeparatedByString:@"/"] lastObject];
 	[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
@@ -871,8 +876,8 @@
 - (void)composeDisplayView:(HONComposeDisplayView *)composeDisplayView deleteLastSticker:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] composeDisplayView:deleteLastSticker:(%@ - %@) [*:*]", emotionVO.emotionID, emotionVO.emotionName);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+//										  withEmotion:emotionVO];
 	
 	if ([_subjectNames count] > 0)
 		[_subjectNames removeLastObject];
@@ -890,7 +895,7 @@
 - (void)composeDisplayViewGoFullScreen:(HONComposeDisplayView *)pickerDisplayView {
 	NSLog(@"[*:*] composeDisplayViewGoFullScreen:(%@) [*:*]", self.class);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
 	
 	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIButton *btn = (UIButton *)obj;
@@ -914,7 +919,7 @@
 - (void)composeDisplayViewShowCamera:(HONComposeDisplayView *)pickerDisplayView {
 	NSLog(@"[*:*] composeDisplayViewShowCamera");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Open Camera"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Open Camera"];
 	
 	_isBlurred = NO;
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -944,8 +949,8 @@
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@ - {%@}) [*:*]", self.class, emotionVO.emotionName, (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"GIF" : @"JPG");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
+//										  withEmotion:emotionVO];
 	
 //	dispatch_async(dispatch_get_main_queue(), ^{
 //		if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
@@ -990,8 +995,8 @@
 - (void)stickerButtonsPickerViewDidStartDownload:(HONStickerButtonsPickerView *)stickerButtonsPickerView {
 	NSLog(@"[*:*] stickerButtonsPickerViewDidStartDownload:(%@) [*:*]", self.class);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Download Sticker Group"
-										  withProperties:@{@"index"		: @(stickerButtonsPickerView.stickerGroupIndex)}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Download Sticker Group"
+//										  withProperties:@{@"index"		: @(stickerButtonsPickerView.stickerGroupIndex)}];
 	
 	[stickerButtonsPickerView cacheAllStickerContent];
 }
@@ -1002,7 +1007,7 @@
 }
 
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)stickerButtonsPickerView didChangeToPage:(int)page withDirection:(int)direction {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 }
 
 
@@ -1010,8 +1015,8 @@
 - (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView deleteLastSticker:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] stickerSummaryView:(%@) deleteLastSticker:[%@ - %@][*:*]", self.class, emotionVO.emotionID, emotionVO.emotionName);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+//										  withEmotion:emotionVO];
 	
 	if ([_subjectNames count] > 0)
 		[_subjectNames removeLastObject];
@@ -1029,8 +1034,8 @@
 - (void)stickerSummaryView:(HONStickerSummaryView *)stickerSummaryView didSelectThumb:(HONEmotionVO *)emotionVO atIndex:(int)index {
 	NSLog(@"[*:*] stickerSummaryView:(%@) didSelectThumb:[%@ - %@] atIndex:(%d) [*:*]", self.class, emotionVO.emotionID, emotionVO.emotionName, index);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Selected Sticker Thumb"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Selected Sticker Thumb"
+//										  withEmotion:emotionVO];
 	
 	[_composeDisplayView scrollToEmotion:emotionVO atIndex:index];
 	
@@ -1081,9 +1086,9 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
-	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
-										 withProperties:@{@"state"	: @"photo"}];
+//	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+//										 withProperties:@{@"state"	: @"photo"}];
 	
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	_processedImage = (_isBlurred) ? [_processedImage applyBlurWithRadius:32.0
@@ -1092,32 +1097,55 @@
 																maskImage:nil] : _processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(_processedImage.size)];
-	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
+//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(_processedImage.size)];
+//	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
+	canvasView.clipsToBounds = YES;
+	[self.view addSubview:canvasView];
+	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(-106.0, 0.0, 852.0, kSnapLargeSize.height * 2.0)];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(-53.0, 0.0, 426.0, kSnapLargeSize.height)];
+	imageView.image = _processedImage;
+	[canvasView addSubview:imageView];
+	
+//	_processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
+	
 	
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-	[_composeDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
+	[_composeDisplayView updatePreview:_processedImage];
+	[canvasView removeFromSuperview];
+	
+//	[_composeDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
 	
-	_cameraBackButton.hidden = NO;
+	_headerView.hidden = NO;
 	_submitButton.hidden = NO;
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self _uploadPhotos];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - enter_step_2"];
 	}];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	NSLog(@"imagePickerControllerDidCancel:[%@]", (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) ? @"CAMERA" : @"LIBRARY");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
-									 withProperties:@{@"state"	: @"cancel"}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
+//									 withProperties:@{@"state"	: @"cancel"}];
 	
 	_isBlurred = NO;
 	[self dismissViewControllerAnimated:NO completion:^(void) {
+		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+			[self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera];
+		
+		else {
+			self.imagePickerController.delegate = nil;
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+			}];
+		}
 	}];
 }
 
@@ -1125,8 +1153,8 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - BG Action Sheet"
-										   withProperties:@{@"btn"	: (buttonIndex == 0) ? @"camera" : (buttonIndex == 1) ? @"camera roll" : (buttonIndex == 2) ? @"animations" : @"cancel"}];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - BG Action Sheet"
+//										   withProperties:@{@"btn"	: (buttonIndex == 0) ? @"camera" : (buttonIndex == 1) ? @"camera roll" : (buttonIndex == 2) ? @"animations" : @"cancel"}];
 		
 		if (buttonIndex == 0) {
 			[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
@@ -1140,7 +1168,7 @@
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:animatedBGsViewController];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	}
 }

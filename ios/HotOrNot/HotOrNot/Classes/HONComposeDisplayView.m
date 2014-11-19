@@ -61,19 +61,21 @@ const CGFloat kEmotionOutroForce = 0.250;
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor whiteColor];
-		
 		_indHistory = UIOffsetZero;
 		_emotions = [NSMutableArray array];
 		_emotionSpacingSize = CGSizeMake(1.0 + (kEmotionSize.width + kEmotionPaddingSize.width), kEmotionSize.height + kEmotionPaddingSize.height);
 		_emotionInsetAmt = 0.5 * (320.0 - kEmotionSize.width);
 		
 		_previewImageView = [[UIImageView alloc] initWithFrame:frame];
-		_previewImageView.image = [UIImage imageNamed:@"bgComposeUnderlay"];
+		_previewImageView.frame = CGRectInset(_previewImageView.frame, -37.0, -68.0);
+		_previewImageView.frame = CGRectOffset(_previewImageView.frame, 25.0, 20.0);
+//		_previewImageView.image = [UIImage imageNamed:@"bgComposeUnderlay"];
 		[self addSubview:_previewImageView];
 		
-		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]];
-		[self addSubview:_previewGradientImageView];
+//		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]];
+//		[self addSubview:_previewGradientImageView];
+		
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
 		
 		_lineButtonView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
 		[_lineButtonView setYOffset:-144.0];

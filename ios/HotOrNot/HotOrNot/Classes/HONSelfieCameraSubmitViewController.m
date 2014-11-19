@@ -68,17 +68,17 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Back"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Refresh"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Refresh"];
 	[super _goRefresh];
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit"];
 	
 	if ([_selectedClubs count] == 0) {
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_selectclub", @"No Club Selected!")
@@ -123,7 +123,7 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell deselectedClub:userClubVO];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Deselected Club" withUserClub:userClubVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Deselected Club" withUserClub:userClubVO];
 	
 	if (userClubVO.clubID == _clubVO.clubID)
 		_clubVO = nil;
@@ -132,11 +132,11 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell selectedClub:userClubVO];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Selected Club" withUserClub:userClubVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Selected Club" withUserClub:userClubVO];
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Select All Toggle " stringByAppendingString:(isSelected) ? @"On" : @"Off"]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Select All Toggle " stringByAppendingString:(isSelected) ? @"On" : @"Off"]];
 	[super clubToggleViewCell:viewCell selectAllToggled:isSelected];
 }
 
@@ -152,8 +152,8 @@
 		HONClubToggleViewCell *cell = (HONClubToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell invertSelected];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@elected Club", (cell.isSelected) ? @"S" : @"Des"]
-										   withUserClub:cell.userClubVO];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@elected Club", (cell.isSelected) ? @"S" : @"Des"]
+//										   withUserClub:cell.userClubVO];
 		
 		if (cell.isSelected) {
 			if (![_selectedClubs containsObject:cell.userClubVO])
@@ -168,7 +168,7 @@
 		}
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Select All Toggle " stringByAppendingString:([_selectedClubs count] != [_allClubs count]) ? @"On" : @"Off"]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Select All Toggle " stringByAppendingString:([_selectedClubs count] != [_allClubs count]) ? @"On" : @"Off"]];
 		[self _goSelectAllToggle];
 	}
 }

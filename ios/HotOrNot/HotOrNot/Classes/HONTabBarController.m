@@ -11,7 +11,7 @@
 
 #import "HONTabBarController.h"
 #import "HONChallengeVO.h"
-#import "HONChangeAvatarViewController.h"
+#import "HONComposeViewController.h"
 
 
 @interface HONTabBarController ()
@@ -77,7 +77,7 @@
 	[_contactsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeFriends)];
 	[_settingsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeSettings)];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEvent]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEvent]];
 	
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
@@ -89,7 +89,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor blackColor];
 	
 //	[[HONStateMitigator sharedInstance] updateCurrentViewState:HONStateMitigatorViewStateTypeFriends];
 	
@@ -134,6 +134,15 @@
 	
 	
 	[self _toggleTabButtonsEnabled:YES];
+	
+	
+	
+	UIButton *composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	composeButton.frame = CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0);
+	[composeButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
+	[composeButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
+	[composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:composeButton];
 }
 
 
@@ -177,11 +186,17 @@
 	[_contactsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeFriends)];
 	[_settingsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeSettings)];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEvent]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEvent]];
 	
 	[super setSelectedIndex:tabBarButtonType];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
+}
+
+- (void)_goCompose {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 

@@ -19,6 +19,7 @@
 
 #import <HockeySDK/HockeySDK.h>
 //#import <Tapjoy/Tapjoy.h>
+#import "Flurry.h"
 
 #import "NSData+Base64.h"
 #import "NSDate+Operations.h"
@@ -88,10 +89,10 @@ NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 NSString * const kCritersismAppID = @"5430cc63bb94756634000002";
 
-NSString * const kKeenIOProductID = @"54640b10248196128dc50f3e";
-NSString * const kKeenIOMasterKey = @"FE3CC37E284552867F8CFB25B63AF818";
-NSString * const kKeenIOReadKey = @"b4bf1f23b37396bfbd869c70f0a008ed8936d1cc98e069936e322a559878342fb2cf7dec2c74f3fb0bc97f2e9052b3e3c93946da459d0374bc297e9d90acd9cecae5c651694d30100a844224d4b474b43bbf08148e28327627cdac5947a03563aa7d177132464705f6d7b022b0f95eed";
-NSString * const kKeenIOWriteKey = @"14bdc799304b3a9e95ac2941a0baec9c16d58c656ac69834f165bf422ee4892245ad683d33044fdc0906170ab4356e462c5112325640fd79d17731b42078feb8827e9ea4a1fd098826fb4047d2ecbb4c019601bc27f1636d1a99b027bbde6b842ea1f84d4fe80a61cbbe6e3641de3bcc";
+NSString * const kKeenIOProductID = @"54659ae5e861705e5b596d97";
+NSString * const kKeenIOMasterKey = @"AE16C421C96B9F2FA9F042A4D590FA87";
+NSString * const kKeenIOReadKey = @"e6b3034c8f81bd7eec877b80a465b0f0c9a97b41908dddb03ce995b43741ee26c571bd6806beadce7cd5c3aec8b3af5ffbb3817103e3eed38ae5ed46194ea3b813532aadfbd267b666bab99eb8330aef7993b96950740afc6348aecf8dfe7a0d7d3352f1fa850301275a421a07df61d1";
+NSString * const kKeenIOWriteKey = @"ba2989a9fb4e30427ca7bd7b02bcf2ee9b97fb3a587579b51b7d39e12e4c3abafe8f41ba1d7e5d2be1930e7c00853a4245aebc637464410379eee855ddfc00836a1021f9daca2a6e8af37d97b7055cdc9240d32af404b3f0421bf1cfcc74bb4752f8fa3ee579fd6cbbe96b80768357e9";
 
 
 
@@ -392,8 +393,8 @@ NSString * const kTwilioSMS = @"6475577873";
 			_isFromBackground = NO;
 			
 		} else {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
-											 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
+			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
+//											 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
 		}
 	}];
 }
@@ -401,7 +402,11 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)_registerUser {
 	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
-			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			[HONAppDelegate writeUserInfo:result];
+			
+//			
+//			[[NSUserDefaults standardUserDefaults] setObject:[HONUserVO userWithDictionary:result] forKey:@"crash"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
@@ -480,6 +485,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	} completion:^(BOOL finished) {
 		[animationImageView removeFromSuperview];
 	}];
+	
+	// 귀하의 게시물 이 만료. + Your post has expired.
 }
 
 //- (void)_toggleStatusBarTint:(NSNotification *)notification {
@@ -631,7 +638,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBoot];
 		
-		self.window.backgroundColor = [UIColor whiteColor];
+		self.window.backgroundColor = [UIColor blackColor];
 		[self.window makeKeyAndVisible];
 		
 		[self _retrieveConfigJSON];
@@ -642,8 +649,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	}
 	
 //	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
-									 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
+//									 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
 	
 	//[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
@@ -653,6 +660,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	[self _showFonts];
 #endif
 
+	
+	[Flurry startSession:@"PTJPQT9J36BJKH3TZRYM"];
+	[Flurry logEvent:@"App_Launch"];
 	
 	return (YES);
 }
@@ -664,13 +674,14 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
 	
+	
 //	[HONAppDelegate incTotalForCounter:@"background"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
-									 withProperties:@{@"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]],
-													  @"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
+//									 withProperties:@{@"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]],
+//													  @"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
 	
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	
@@ -687,7 +698,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
 	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Backgrounding First Run"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Backgrounding First Run"];
 		
 		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
@@ -710,9 +721,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeSpringboard];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
-									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),
-													  @"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground]]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
+//									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),
+//													  @"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground]]}];
 	
 	_isFromBackground = YES;
 }
@@ -738,38 +749,13 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Became Active"];
+	[Flurry logEvent:@"App_Active"];
 
 	
 	if (_isFromBackground) {
 		if ([[HONAPICaller sharedInstance] hasNetwork]) {
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
-				if ([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground] == 3) {
-					if (_insetOverlayView == nil) {
-						_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
-						_insetOverlayView.delegate = self;
-						
-						[[HONViewDispensor sharedInstance] appWindowAdoptsView:_insetOverlayView];
-						[_insetOverlayView introWithCompletion:nil];
-					}
-				}
 				
-				
-				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", @"Allow Access to your contacts?")
-																		message:nil
-																	   delegate:self
-															  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-															  otherButtonTitles:@"Yes", nil];
-					[alertView setTag:HONAppDelegateAlertTypeAllowContactsAccess];
-					[alertView show];
-					
-				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) {
-					[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", @"We need your OK to access the address book.")
-												message:NSLocalizedString(@"grant_access", @"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.")
-											   delegate:nil
-									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									  otherButtonTitles:nil] show];
-				}
 			}
 			
 			if (![[HONAPICaller sharedInstance] canPingConfigServer]) {
@@ -792,8 +778,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Terminating"
-									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Terminating"
+//									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
 	
 }
 
@@ -1306,7 +1292,7 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Close"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Close"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1316,7 +1302,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
@@ -1349,7 +1335,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeInviteFriends) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 //			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1358,7 +1344,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeShare) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate instagramShareMessage], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
@@ -1558,29 +1544,29 @@ NSString * const kTwilioSMS = @"6475577873";
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction Shelf"
-									 withProperties:@{@"state"		: @"presenting",
-													  @"controller"	: [controller name]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction Shelf"
+//									 withProperties:@{@"state"		: @"presenting",
+//													  @"controller"	: [controller name]}];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction Shelf"
-									 withProperties:@{@"state"		: @"dismissing",
-													  @"controller"	: [controller name]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction Shelf"
+//									 withProperties:@{@"state"		: @"dismissing",
+//													  @"controller"	: [controller name]}];
 	
 	_documentInteractionController.delegate = nil;
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction App"
-									 withProperties:@{@"state"		: @"launching",
-													  @"controller"	: [controller name]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction App"
+//									 withProperties:@{@"state"		: @"launching",
+//													  @"controller"	: [controller name]}];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction App Foreground"
-									 withProperties:@{@"state"		: @"entering",
-													  @"controller"	: [controller name]}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - DocInteraction App Foreground"
+//									 withProperties:@{@"state"		: @"entering",
+//													  @"controller"	: [controller name]}];
 }
 
 
@@ -1664,7 +1650,7 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - Cristersism Delegates
 //- (void)crittercismDidCrashOnLastLoad {
 //	NSLog(@"[*:*] crittercismDidCrashOnLastLoad");
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
+//	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
 //}
 
 //#if __APPSTORE_BUILD__ == 0

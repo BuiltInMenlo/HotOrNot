@@ -225,34 +225,40 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
-	UIGraphicsBeginImageContext(size);
 	
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextTranslateCTM(context, 0.0f, size.height);
-	CGContextScaleCTM(context, 1.0f, -1.0f);
-	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
-	
+	[image drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
 	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
+	
+//	UIGraphicsBeginImageContext(size);
+//	CGContextRef context = UIGraphicsGetCurrentContext();
+//	CGContextTranslateCTM(context, 0.0f, size.height);
+//	CGContextScaleCTM(context, 1.0f, -1.0f);
+//	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
+//	
+//	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+//	UIGraphicsEndImageContext();
 	
 	return (scaledImage);
 }
 
 
 - (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor {
-	CGSize size = CGSizeMake(image.size.width * factor, image.size.height * factor);
 	
-	UIGraphicsBeginImageContext(size);
+	return ([[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(image.size.width * factor, image.size.height * factor)]);
 	
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextTranslateCTM(context, 0.0f, size.height);
-	CGContextScaleCTM(context, 1.0f, -1.0f);
-	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
-	
-	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
-	
-	return (scaledImage);
+//	CGSize size = CGSizeMake(image.size.width * factor, image.size.height * factor);
+//	UIGraphicsBeginImageContext(size);
+//	
+//	CGContextRef context = UIGraphicsGetCurrentContext();
+//	CGContextTranslateCTM(context, 0.0f, size.height);
+//	CGContextScaleCTM(context, 1.0f, -1.0f);
+//	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
+//	
+//	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+//	UIGraphicsEndImageContext();
+//	
+//	return (scaledImage);
 }
 
 - (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect {
@@ -315,7 +321,7 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (UIImage *)mirrorImage:(UIImage *)image {
-	NSLog(@"ORIENTATION:[%ld]", image.imageOrientation);
+	NSLog(@"ORIENTATION:[%d]", (int)image.imageOrientation);
 	
 //	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
 //	imageView.transform = CGAffineTransformScale(imageView.transform, -1.0f, 1.0f);

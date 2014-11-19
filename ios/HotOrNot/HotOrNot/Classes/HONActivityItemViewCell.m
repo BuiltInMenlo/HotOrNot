@@ -28,7 +28,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-//		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG_normal"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG"]];
 		[self hideChevron];
 	}
 	
@@ -38,73 +38,82 @@
 - (void)setActivityItemVO:(HONActivityItemVO *)activityItemVO {
 	_activityItemVO = activityItemVO;
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(17.0, 9.0, 28.0, 28.0)];
-	[self.contentView addSubview:imageHolderView];
+//	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 9.0, 45.0, 45.0)];
+//	[self.contentView addSubview:imageHolderView];
+//	
+//	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
+//	[imageLoadingView startAnimating];
+//	[imageHolderView addSubview:imageLoadingView];
+//	
+//	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(imageHolderView.frame.size)];
+//	_avatarImageView.userInteractionEnabled = YES;
+//	[imageHolderView addSubview:_avatarImageView];
+//	
+//	[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+//	
+//	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//		_avatarImageView.image = image;
+//		
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_avatarImageView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//			[imageLoadingView stopAnimating];
+//			[imageLoadingView removeFromSuperview];
+//		}];
+//	};
+//	
+//	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+//		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
+//	};
+//	
+//	if ([_activityItemVO.originAvatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
+//		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
+//		[imageLoadingView stopAnimating];
+//		[imageLoadingView removeFromSuperview];
+//	
+//	} else {
+//		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.originAvatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+//																  cachePolicy:kOrthodoxURLCachePolicy
+//															  timeoutInterval:[HONAppDelegate timeoutInterval]]
+//								placeholderImage:[UIImage imageNamed:@"activityAvatarBG"]
+//										 success:successBlock
+//										 failure:failureBlock];
+//	}
+//	
+//	
+//	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	avatarButton.frame = imageHolderView.frame;
+//	avatarButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+//	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+//	[self.contentView addSubview:avatarButton];
+//
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
-	[imageLoadingView startAnimating];
-	[imageHolderView addSubview:imageLoadingView];
-	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(imageHolderView.frame.size)];
-	_avatarImageView.userInteractionEnabled = YES;
-	[imageHolderView addSubview:_avatarImageView];
-	
-	[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
-	
-	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_avatarImageView.image = image;
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_avatarImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			[imageLoadingView stopAnimating];
-			[imageLoadingView removeFromSuperview];
-		}];
-	};
-	
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
-		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
-	};
-	
-	if ([_activityItemVO.originAvatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
-		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
-		[imageLoadingView stopAnimating];
-		[imageLoadingView removeFromSuperview];
-	
-	} else {
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.originAvatarPrefix stringByAppendingString:kSnapThumbSuffix]]
-																  cachePolicy:kOrthodoxURLCachePolicy
-															  timeoutInterval:[HONAppDelegate timeoutInterval]]
-								placeholderImage:[UIImage imageNamed:@"activityAvatarBG"]
-										 success:successBlock
-										 failure:failureBlock];
-	}
-	
-	
-	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	avatarButton.frame = imageHolderView.frame;
-	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:avatarButton];
-	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 202.0, 17.0)];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 7.0, 252.0, 28.0)];
 	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	titleLabel.textColor = [UIColor blackColor];
+	titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.text = @"Amanda";
+	titleLabel.text = [@"Up vote from " stringByAppendingString:_activityItemVO.originUsername]; // 투표하기 James
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 18.0, 202.0, 15.0)];
-	subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
-	subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	subtitleLabel.backgroundColor = [UIColor clearColor];
-	subtitleLabel.text = @"Seoul, Korea 11m away";
-	[self.contentView addSubview:subtitleLabel];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(270.0, titleLabel.frame.origin.y, 40.0, titleLabel.frame.size.height)];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_activityItemVO.sentDate includeSuffix:@""];
+	[self.contentView addSubview:timeLabel];
 	
-	_indicatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(295.0, 16.0, 13.0, 13.0)];
-	_indicatorImageView.image = [UIImage imageNamed:@"redDot"];
-	_indicatorImageView.hidden = ([[NSDate utcNowDate] timeIntervalSinceDate:_activityItemVO.sentDate] > 1800);
-	[self.contentView addSubview:_indicatorImageView];
+//	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 22.0, 202.0, 20.0)];
+//	subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+//	subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//	subtitleLabel.backgroundColor = [UIColor clearColor];
+//	subtitleLabel.text = @"Seoul, Korea";
+//	[self.contentView addSubview:subtitleLabel];
+	
+//	_indicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"kakaoBG"]];
+//	_indicatorImageView.frame = CGRectOffset(_indicatorImageView.frame, 256.0, 0.0);
+//	[self.contentView addSubview:_indicatorImageView];
 }
 
 - (void)hideIndicator {

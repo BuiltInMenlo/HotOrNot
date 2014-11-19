@@ -11,7 +11,7 @@
 NSString * const kISO8601BlankTimestamp		= @"0000-00-00T00:00:00-0000";
 NSString * const kOrthodoxBlankTimestamp	= @"0000-00-00 00:00:00";
 
-NSString * const kISO860LocaleTemplate		= @"yyyy'-'MM'-'dd'T'HH':'mm':'ssZ";
+NSString * const kISO860LocaleTemplate		= @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
 NSString * const kISO8601UTCTemplate		= @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'-0000'";
 NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 NSString * const kOrthodoxLocaleTemplate	= @"yyyy-MM-dd HH:mm:ssZ";

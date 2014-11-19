@@ -117,7 +117,7 @@
 
 #pragma mark - Navigation
 -(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
-	NSLog(@"goLongPress:[%ld]", lpGestureRecognizer.state);
+	NSLog(@"goLongPress:[%d]", (int)lpGestureRecognizer.state);
 	
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {

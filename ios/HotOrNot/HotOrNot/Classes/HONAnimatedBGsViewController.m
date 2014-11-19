@@ -66,7 +66,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Refresh"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Refresh"];
 	[self _retrieveEmotions];
 }
 
@@ -125,7 +125,7 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Close"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Close"];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -146,8 +146,8 @@
 		HONAnimatedBGCollectionViewCell *viewCell = (HONAnimatedBGCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
 		_selectedEmotionVO = viewCell.emotionVO;
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Long Press Cell"
-											  withEmotion:viewCell.emotionVO];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Long Press Cell"
+//											  withEmotion:viewCell.emotionVO];
 		
 	}
 }
@@ -157,7 +157,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Close SWIPE"];
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Close SWIPE"];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
@@ -168,8 +168,8 @@
 - (void)animatedBGCollectionViewCell:(HONAnimatedBGCollectionViewCell *)viewCell didSelectEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] animatedBGCollectionViewCell:didSelectEmotion:[%@])", emotionVO.dictionary);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Seleted Emotion"
-										  withEmotion:emotionVO];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Seleted Emotion"
+//										  withEmotion:emotionVO];
 	
 	_selectedEmotionVO = emotionVO;
 	[self _goDone];
@@ -210,7 +210,7 @@
 	
 	HONAnimatedBGCollectionViewCell *viewCell = (HONAnimatedBGCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
 	
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Selected Emotion"
+//	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"BG Animations - Selected Emotion"
 //										  withEmotion:viewCell.emotionVO];
 	
 	_selectedEmotionVO = viewCell.emotionVO;

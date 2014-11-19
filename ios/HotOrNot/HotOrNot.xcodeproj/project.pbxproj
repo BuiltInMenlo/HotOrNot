@@ -117,6 +117,7 @@
 		30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */; };
 		30E6150A19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150C19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png */; };
 		30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150F19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png */; };
+		30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E805171A15183300F0A130 /* libFlurry_5.4.0.a */; };
 		30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */; };
 		30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */; };
 		30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C4019A829E900CDB2BC /* TSAppEventSourceImpl.m */; };
@@ -644,6 +645,8 @@
 		30E6151919B903AE0028C165 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/tabMenu_settingsButton_Tapped@2x.png"; sourceTree = "<group>"; };
 		30E6151A19B903AF0028C165 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/tabMenu_settingsButton_Tapped@2x.png"; sourceTree = "<group>"; };
 		30E6151B19B903AF0028C165 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/tabMenu_settingsButton_Tapped@2x.png"; sourceTree = "<group>"; };
+		30E805161A15183300F0A130 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
+		30E805171A15183300F0A130 /* libFlurry_5.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_5.4.0.a; sourceTree = "<group>"; };
 		30FC08A319B3FFA200085E7C /* HONContactsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsSearchViewController.h; sourceTree = "<group>"; };
 		30FC08A519B4125200085E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchInputBG_contacts@2x.png"; sourceTree = "<group>"; };
 		30FC08A719B4125300085E7C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/searchInputBG_contacts@2x.png"; sourceTree = "<group>"; };
@@ -1144,6 +1147,7 @@
 				301DF2311A10756500D2BEB9 /* Bolts.framework in Frameworks */,
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
+				30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
@@ -1511,6 +1515,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		30E805151A15183300F0A130 /* Flurry */ = {
+			isa = PBXGroup;
+			children = (
+				30E805161A15183300F0A130 /* Flurry.h */,
+				30E805171A15183300F0A130 /* libFlurry_5.4.0.a */,
+			);
+			path = Flurry;
+			sourceTree = "<group>";
+		};
 		30FC08A219B3FD2200085E7C /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -1819,6 +1832,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30E805151A15183300F0A130 /* Flurry */,
 				308F361219E337AA00EE9512 /* FLAnimatedImage */,
 				308F35E219E3029E00EE9512 /* PicoCandy */,
 				308F35DD19E301E300EE9512 /* KeenClient */,
@@ -2175,8 +2189,6 @@
 				3024AB1B19D71DFA0054C6BF /* Abstracts */,
 				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
 				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
-				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
-				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
 				4CC606D8198C3E650042A951 /* HONInsetOverlayView.h */,
@@ -2242,6 +2254,8 @@
 		4C9E3B5C18259CC0004878F9 /* Nav */ = {
 			isa = PBXGroup;
 			children = (
+				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
+				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				3051F8A51A08AC0000CD85F2 /* HONBackNavButtonView.h */,
 				3051F8A61A08AC0000CD85F2 /* HONBackNavButtonView.m */,
 				3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */,
@@ -3464,8 +3478,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7A79AC2-DA42-425E-8967-A305CCBF8049";
+				PROVISIONING_PROFILE = "356d3c38-afeb-4bc5-aa43-b01280798024";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "356d3c38-afeb-4bc5-aa43-b01280798024";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -3501,11 +3515,12 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "132e35c3-92e9-4bfc-a719-b7cf453d4a1d";
+				PROVISIONING_PROFILE = "c5c9247d-6d14-4654-8b82-19664e72aaf8";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "c5c9247d-6d14-4654-8b82-19664e72aaf8";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64";
 				WRAPPER_EXTENSION = app;
@@ -3540,11 +3555,12 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CKRefreshControl",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
-				PROVISIONING_PROFILE = "2435f09d-b609-42a2-af04-9b6447e9c132";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2435f09d-b609-42a2-af04-9b6447e9c132";
+				PROVISIONING_PROFILE = "356d3c38-afeb-4bc5-aa43-b01280798024";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "356d3c38-afeb-4bc5-aa43-b01280798024";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64";
 				WRAPPER_EXTENSION = app;

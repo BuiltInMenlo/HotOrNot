@@ -64,7 +64,11 @@ const CGFloat kAnimationTime = 0.5f;
 											[UIImage imageNamed:(_isLarge) ? @"loadDots_lg-03" : @"loadDots_sm-03"]];
 	_animationImageView.animationDuration = kAnimationTime;
 	_animationImageView.animationRepeatCount = 0;
-	[self addSubview:_animationImageView];
+	//[self addSubview:_animationImageView];
+	
+	UIImageView *staticImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadDots"]];
+	staticImageView.frame = CGRectOffset(staticImageView.frame, (frame.size.width - staticImageView.frame.size.width) * 0.5, (frame.size.height - staticImageView.frame.size.height) * 0.5);
+	[self addSubview:staticImageView];
 }
 
 - (void)_goAnimate {

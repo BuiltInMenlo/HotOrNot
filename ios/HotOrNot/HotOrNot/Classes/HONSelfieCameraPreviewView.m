@@ -170,7 +170,7 @@
 		}];
 	}
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
 									 withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
 	
 	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -205,7 +205,7 @@
 - (void)_goDelete {
 	HONEmotionVO *emotionVO = (HONEmotionVO *)[_selectedEmotions lastObject];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
 										withEmotion:emotionVO];
 	
 	if ([_subjectNames count] > 0)
@@ -235,7 +235,7 @@
 - (void)stickerButtonsPickerView:(HONStickerButtonsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Selected"
 										withEmotion:emotionVO];
 	
 //	dispatch_async(dispatch_get_main_queue(), ^{
@@ -278,7 +278,7 @@
 
 - (void)emotionsPickerView:(HONStickerButtonsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
 //	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Camera Step - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 }
 
 
@@ -286,7 +286,7 @@
 - (void)emotionsPickerDisplayViewGoFullScreen:(HONComposeDisplayView *)pickerDisplayView {
 	NSLog(@"[*:*] emotionsPickerDisplayViewGoFullScreen:(%@) [*:*]", self.class);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
 	
 	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		UIButton *btn = (UIButton *)obj;
