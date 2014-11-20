@@ -1281,8 +1281,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	if ([UIApplication sharedApplication].statusBarHidden)
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	
-	if ([UIApplication sharedApplication].statusBarStyle != UIStatusBarStyleDefault)
-		 [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	if ([UIApplication sharedApplication].statusBarStyle != UIStatusBarStyleLightContent)
+		 [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {

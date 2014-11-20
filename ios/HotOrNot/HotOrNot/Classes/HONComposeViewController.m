@@ -34,11 +34,10 @@
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
-#import "HONComposeDisplayView.h"
 #import "HONStickerSummaryView.h"
 #import "HONStickerButtonsPickerView.h"
 
-@interface HONComposeViewController () <HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONComposeDisplayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, HONStoreProductsViewControllerDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONComposeViewController () <HONAnimatedBGsViewControllerDelegate, HONCameraOverlayViewDelegate, HONStickerButtonsPickerViewDelegate, HONStickerSummaryViewDelegate, HONStoreProductsViewControllerDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -50,7 +49,7 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
-@property (nonatomic, strong) HONComposeDisplayView *composeDisplayView;
+@property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) HONStickerSummaryView *stickerSummaryView;
 @property (nonatomic, strong) HONStickerButtonsPickerView *stickerButtonsPickerView;
 @property (nonatomic, strong) UIImage *processedImage;
@@ -78,6 +77,11 @@
 @property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UIButton *nextButton;
+
+@property (nonatomic, strong) UIImageView *maskImageView;
+@property (nonatomic, strong) UIImageView *filteredImageView;
+@property (nonatomic) CGPoint prevPt;
+@property (nonatomic) CGPoint currPt;
 @end
 
 
@@ -108,7 +112,6 @@
 
 - (void)dealloc {
 	_cameraOverlayView.delegate = nil;
-	_composeDisplayView.delegate = nil;
 	
 	[super destroy];
 }
@@ -526,6 +529,59 @@
 }
 
 
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [touches anyObject];
+	
+	if (touch.tapCount == 2) {
+		if (_maskImageView != nil) {
+			[_maskImageView removeFromSuperview];
+			_maskImageView = nil;
+		}
+	}
+	
+	if (_maskImageView == nil) {
+		_maskImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_maskImageView.frame = CGRectInset(_maskImageView.frame, -37.0, -68.0);
+		_maskImageView.frame = CGRectOffset(_maskImageView.frame, 25.0, 20.0);
+	}
+	
+	[self.view addSubview:_maskImageView];
+	
+	_prevPt = [touch locationInView:self.view];
+	[super touchesBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [touches anyObject];
+	
+	_currPt = [touch locationInView:self.view];
+	
+	UIGraphicsBeginImageContext([UIScreen mainScreen].bounds.size);
+	[_maskImageView.image drawInRect:[UIScreen mainScreen].bounds];
+	CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapRound);
+	CGContextSetLineWidth(UIGraphicsGetCurrentContext(), 32.0);
+	CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 0.0, 0.0, 0.0, 1.0);
+	CGContextBeginPath(UIGraphicsGetCurrentContext());
+	CGContextMoveToPoint(UIGraphicsGetCurrentContext(), _prevPt.x, _prevPt.y);
+	CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), _currPt.x, _currPt.y);
+	CGContextStrokePath(UIGraphicsGetCurrentContext());
+	
+	_maskImageView.frame = [UIScreen mainScreen].bounds;
+	_maskImageView.image = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	
+	_prevPt = _currPt;
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	[super touchesEnded:touches withEvent:event];
+	
+	[_maskImageView removeFromSuperview];
+	[[HONViewDispensor sharedInstance] maskView:_filteredImageView withMask:_maskImageView.image];
+}
+
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
@@ -534,11 +590,9 @@
 	self.view.backgroundColor = [UIColor blackColor];
 	
 	_isBlurred = false;
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 	
-	_composeDisplayView = [[HONComposeDisplayView alloc] initWithFrame:self.view.frame];
-	_composeDisplayView.delegate = self;
-	[self.view addSubview:_composeDisplayView];
+	
 	
 	_emotionsPickerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 221.0, 320.0, 221.0)];
 //	[self.view addSubview:_emotionsPickerHolderView];
@@ -582,6 +636,16 @@
 				[_stickerButtonsPickerView appendPurchasedStickersWithContentGroupID:contentGroupID];
 		}
 	}];
+	
+	_previewImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	_previewImageView.frame = CGRectInset(_previewImageView.frame, -37.0, -68.0);
+	_previewImageView.frame = CGRectOffset(_previewImageView.frame, 25.0, 20.0);
+	[self.view addSubview:_previewImageView];
+	
+	_filteredImageView = [[UIImageView alloc] initWithFrame:_previewImageView.frame];
+//	_filteredImageView.frame = CGRectInset(_filteredImageView.frame, -37.0, -68.0);
+//	_filteredImageView.frame = CGRectOffset(_filteredImageView.frame, 25.0, 20.0);
+	[self.view addSubview:_filteredImageView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"Preview")];
 	[_headerView removeBackground];
@@ -671,7 +735,7 @@
 		_subjectNames = [NSMutableArray array];
 	}
 	
-	[_composeDisplayView removeLastEmotion];
+//	[_composeDisplayView removeLastEmotion];
 	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Create"];
 }
 
@@ -867,81 +931,8 @@
 //										  withEmotion:emotionVO];
 	
 	_filename = [[emotionVO.smallImageURL componentsSeparatedByString:@"/"] lastObject];
-	[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
+//	[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
 	viewController.delegate = nil;
-}
-
-
-#pragma mark - ComposeDisplayView Delegates
-- (void)composeDisplayView:(HONComposeDisplayView *)composeDisplayView deleteLastSticker:(HONEmotionVO *)emotionVO {
-	NSLog(@"[*:*] composeDisplayView:deleteLastSticker:(%@ - %@) [*:*]", emotionVO.emotionID, emotionVO.emotionName);
-	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-//										  withEmotion:emotionVO];
-	
-	if ([_subjectNames count] > 0)
-		[_subjectNames removeLastObject];
-	
-	if ([_subjectNames count] == 0) {
-		[_subjectNames removeAllObjects];
-		_subjectNames = nil;
-		_subjectNames = [NSMutableArray array];
-	}
-	
-	[_composeDisplayView removeLastEmotion];
-	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Create"];
-}
-
-- (void)composeDisplayViewGoFullScreen:(HONComposeDisplayView *)pickerDisplayView {
-	NSLog(@"[*:*] composeDisplayViewGoFullScreen:(%@) [*:*]", self.class);
-	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Hide Stickerboard"];
-	
-	[_tabButtonsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		UIButton *btn = (UIButton *)obj;
-		[btn setSelected:NO];
-	}];
-	
-	for (UIView *view in _emotionsPickerHolderView.subviews) {
-		((HONStickerButtonsPickerView *)view).delegate = nil;
-		[UIView animateWithDuration:0.333 delay:0.000
-			 usingSpringWithDamping:0.800 initialSpringVelocity:0.010
-							options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction)
-						 animations:^(void) {
-							 view.frame = CGRectOffset(view.frame, 0.0, 64.0);
-						 } completion:^(BOOL finished) {
-							 view.frame = CGRectOffset(view.frame, 0.0, -64.0);
-							 [view removeFromSuperview];
-						 }];
-	}
-}
-
-- (void)composeDisplayViewShowCamera:(HONComposeDisplayView *)pickerDisplayView {
-	NSLog(@"[*:*] composeDisplayViewShowCamera");
-	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Open Camera"];
-	
-	_isBlurred = NO;
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Take Photo", @"Camera Roll", @"Animations", nil];
-	[actionSheet setTag:0];
-	[actionSheet showInView:self.view];
-}
-
-- (void)composeDisplayView:(HONComposeDisplayView *)pickerDisplayView scrolledEmotionsToIndex:(int)index fromDirection:(int)dir {
-//	NSLog(@"[*:*] composeDisplayView:(%@) scrolledEmotionsToIndex:(%d/%d) fromDirection:(%d) [*:*]", self.class, index, MIN(MAX(0, index), [_selectedEmotions count] - 1), dir);
-	
-	if ([_subjectNames count] == 0) {
-		[_headerView transitionTitle:@""];
-		
-	} else {
-		int ind = MIN(MAX(0, index), (int)[_subjectNames count] - 1);
-		if (![_headerView.title isEqualToString:[_subjectNames objectAtIndex:ind]])
-			[_headerView transitionTitle:[_subjectNames objectAtIndex:ind]];
-	}
 }
 
 
@@ -973,19 +964,19 @@
 		NSLog(@"imgURL:[%@] filename:[%@]", emotionVO.smallImageURL, _filename);
 		
 		if (emotionVO.imageType == HONEmotionImageTypeGIF) {
-			[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
+//			[_composeDisplayView updatePreviewWithAnimatedImageView:emotionVO.animatedImageView];
 		
 		} else {
 			_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
 			[_bgSelectImageView setImageWithURL:[NSURL URLWithString:emotionVO.smallImageURL]];
-			[_composeDisplayView updatePreview:_bgSelectImageView.image];
+//			[_composeDisplayView updatePreview:_bgSelectImageView.image];
 		}
 		
 	} else {
 		[_headerView transitionTitle:emotionVO.emotionName];
 		[_selectedEmotions addObject:emotionVO];
 		[_subjectNames addObject:emotionVO.emotionName];
-		[_composeDisplayView addEmotion:emotionVO];
+//		[_composeDisplayView addEmotion:emotionVO];
 		[_stickerSummaryView appendStickerAndSelect:emotionVO];
 	}
 	
@@ -1027,7 +1018,7 @@
 		_subjectNames = [NSMutableArray array];
 	}
 	
-	[_composeDisplayView removeLastEmotion];
+//	[_composeDisplayView removeLastEmotion];
 	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Compose"];
 }
 
@@ -1037,7 +1028,7 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Selected Sticker Thumb"
 //										  withEmotion:emotionVO];
 	
-	[_composeDisplayView scrollToEmotion:emotionVO atIndex:index];
+//	[_composeDisplayView scrollToEmotion:emotionVO atIndex:index];
 	
 }
 
@@ -1090,6 +1081,11 @@
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
 //										 withProperties:@{@"state"	: @"photo"}];
 	
+	if (_maskImageView != nil) {
+		[_maskImageView removeFromSuperview];
+		_maskImageView = nil;
+	}
+	
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	_processedImage = (_isBlurred) ? [_processedImage applyBlurWithRadius:32.0
 																tintColor:[UIColor colorWithWhite:0.00 alpha:0.50]
@@ -1097,23 +1093,37 @@
 																maskImage:nil] : _processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
-//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(_processedImage.size)];
-//	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
 	canvasView.clipsToBounds = YES;
 	[self.view addSubview:canvasView];
 	
-//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(-106.0, 0.0, 852.0, kSnapLargeSize.height * 2.0)];
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(-53.0, 0.0, 426.0, kSnapLargeSize.height)];
 	imageView.image = _processedImage;
 	[canvasView addSubview:imageView];
 	
-//	_processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-	
-	
+	_processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-	[_composeDisplayView updatePreview:_processedImage];
+	
+	CIImage *filterInputImage = [CIImage imageWithCGImage:[[HONImageBroker sharedInstance] mirrorImage:_processedImage].CGImage];
+	CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
+	[filter setValue:filterInputImage forKey:kCIInputImageKey];
+	[filter setValue:@(32) forKey:kCIInputScaleKey];
+	CIImage *filterOutputImage = filter.outputImage;
+	
+	CIContext* ctx = [CIContext contextWithOptions:nil];
+	CGImageRef createdImage = [ctx createCGImage:filterOutputImage fromRect:filterOutputImage.extent];
+	
+	UIImage *outputImage = [UIImage imageWithCGImage:createdImage scale:1.0 orientation:UIImageOrientationUpMirrored];
+	CGImageRelease(createdImage);
+	createdImage = nil;
+	
+	_previewImageView.image = _processedImage;
+	
+	[[HONViewDispensor sharedInstance] maskView:_filteredImageView withMask:_maskImageView.image];
+	
+	_filteredImageView.image = outputImage;
 	[canvasView removeFromSuperview];
+	
 	
 //	[_composeDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 	

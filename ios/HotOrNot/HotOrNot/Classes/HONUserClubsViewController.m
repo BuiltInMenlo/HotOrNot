@@ -67,26 +67,6 @@
 }
 
 
-#pragma mark -
-static NSString * const kSelfie = @"selfie";
-static NSString * const kMMS = @"mms";
-static NSString * const kSelfPic = @"self pic";
-static NSString * const kPhoto = @"photo";
-static NSString * const kFast = @"fast";
-static NSString * const kTextFree = @"text free";
-static NSString * const kQuick = @"quick";
-static NSString * const kEmoticon = @"emoticon";
-static NSString * const kSnap = @"snap";
-static NSString * const kSelca = @"selca";
-static NSString * const kSelfiesticker = @"selfiesticker";
-static NSString * const kMMSFree = @"mmsfree";
-static NSString * const kEmoji = @"emoji";
-static NSString * const kSticker = @"sticker";
-static NSString * const kCamera = @"camera";
-
-#pragma mark -
-
-
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
 	if (_progressHUD == nil)

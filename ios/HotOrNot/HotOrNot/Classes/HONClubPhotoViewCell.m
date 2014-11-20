@@ -196,7 +196,7 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	UIButton *nextPageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextPageButton.frame = self.frame;
 	[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:nextPageButton];
+	[self.contentView addSubview:nextPageButton];
 	
 	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 203.0, 320.0, 193.0)];
 	[self.contentView addSubview:footerView];

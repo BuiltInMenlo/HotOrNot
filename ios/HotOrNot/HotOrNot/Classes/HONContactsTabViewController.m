@@ -23,7 +23,6 @@
 #import "HONHeaderView.h"
 #import "HONTableView.h"
 #import "HONTableHeaderView.h"
-#import "HONLineButtonView.h"
 #import "HONRefreshControl.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONClubPhotoVO.h"
@@ -34,11 +33,10 @@
 @property (nonatomic, strong) NSMutableArray *unseenClubs;
 @property (nonatomic, strong) NSMutableArray *clubPhotos;
 @property (nonatomic, strong) UIButton *activityButton;
+@property (nonatomic, strong) UILabel *emptyLabel;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONLineButtonView *emptyClubsBGView;
-@property (nonatomic, strong) HONLineButtonView *accessContactsBGView;
 @property (nonatomic) int joinedTotalClubs;
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
@@ -88,24 +86,6 @@
 	
 	[self destroy];
 }
-
-
-#pragma mark -
-static NSString * const kSelfie = @"selfie";
-static NSString * const kMMS = @"mms";
-static NSString * const kSelfPic = @"self pic";
-static NSString * const kPhoto = @"photo";
-static NSString * const kFast = @"fast";
-static NSString * const kTextFree = @"text free";
-static NSString * const kQuick = @"quick";
-static NSString * const kEmoticon = @"emoticon";
-static NSString * const kSnap = @"snap";
-static NSString * const kSelca = @"selca";
-static NSString * const kSelfiesticker = @"selfiesticker";
-static NSString * const kMMSFree = @"mmsfree";
-static NSString * const kEmoji = @"emoji";
-static NSString * const kSticker = @"sticker";
-static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Public APIs
@@ -223,17 +203,6 @@ static NSString * const kCamera = @"camera";
 
 - (void)_didFinishDataRefresh {
 	if (_joinedTotalClubs > 0) {
-		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Joined Clubs"
-//										   withProperties:@{@"joins_total"	: [@"" stringFromInt:_joinedTotalClubs]}];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %d post%@", _joinedTotalClubs, (_joinedTotalClubs == 1) ? @"" : @"s"]
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-												  otherButtonTitles:nil];
-		[alertView setTag:2];
-		[alertView show];
-		
 		_joinedTotalClubs = 0;
 	
 	} else {
@@ -249,54 +218,9 @@ static NSString * const kCamera = @"camera";
 			
 			return ((NSComparisonResult)NSOrderedSame);
 		}] reverseObjectEnumerator] allObjects] mutableCopy];
-		
-		
-//		_seenClubs = [[[[_seenClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-//			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
-//			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
-//			
-//			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
-//				return ((NSComparisonResult)NSOrderedAscending);
-//			
-//			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
-//				return ((NSComparisonResult)NSOrderedDescending);
-//			
-//			return ((NSComparisonResult)NSOrderedSame);
-//		}] reverseObjectEnumerator] allObjects] mutableCopy];
-//		
-//		_unseenClubs = [[[[_unseenClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-//			HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
-//			HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
-//			
-//			if ([club1VO.updatedDate didDateAlreadyOccur:club2VO.updatedDate])
-//				return ((NSComparisonResult)NSOrderedAscending);
-//			
-//			if ([club2VO.updatedDate didDateAlreadyOccur:club1VO.updatedDate])
-//				return ((NSComparisonResult)NSOrderedDescending);
-//			
-//			return ((NSComparisonResult)NSOrderedSame);
-//		}] reverseObjectEnumerator] allObjects] mutableCopy];
-		
-//		_accessContactsBGView.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
-//		_emptyClubsBGView.hidden = ([_seenClubs count] > 0 || [_unseenClubs count] > 0);
-//		_emptyClubsBGView.hidden = (!_accessContactsBGView.hidden) ? YES : _emptyClubsBGView.hidden;
-		
-		if ([_clubPhotos count] == 0) {
-			UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 300, (_tableView.frame.size.height - 22.0) * 0.5)];
-			emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-			emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-			emptyLabel.backgroundColor = [UIColor clearColor];
-			emptyLabel.textAlignment = NSTextAlignmentCenter;
-			emptyLabel.text = NSLocalizedString(@"no_results", @"");
-			[_tableView addSubview:emptyLabel];
-		}
-		
-//		if (!_emptyClubsBGView.hidden || !_accessContactsBGView.hidden) {
-//			_accessContactsBGView.frame = CGRectMake(_accessContactsBGView.frame.origin.x, _tableView.contentSize.height + 5.0, _accessContactsBGView.frame.size.width, _accessContactsBGView.frame.size.height);
-//			_emptyClubsBGView.frame = _accessContactsBGView.frame;
-//			[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, kOrthodoxTableCellHeight + kTabSize.height, _tableView.contentInset.right)];
-//		}
 	}
+	
+	_emptyLabel.hidden = ([_clubPhotos count] > 0);
 	
 	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * ([_clubPhotos count]));
 	[_tableView reloadData];
@@ -354,13 +278,15 @@ static NSString * const kCamera = @"camera";
 //	lpGestureRecognizer.delegate = self;
 //	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
-	_accessContactsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeAccessContacts withCaption:NSLocalizedString(@"access_contacts", @"Access your contacts.\nFind friends") usingTarget:self action:@selector(_goTableBGSelected:)];
-	_accessContactsBGView.viewType = HONLineButtonViewTypeAccessContacts;
-	[_tableView addSubview:_accessContactsBGView];
 	
-	_emptyClubsBGView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeCreateStatusUpdate withCaption:NSLocalizedString(@"empty_contacts", @"No results found.\nCompose") usingTarget:self action:@selector(_goTableBGSelected:)];
-	_accessContactsBGView.viewType = HONLineButtonViewTypeCreateStatusUpdate;
-	[_tableView addSubview:_emptyClubsBGView];
+	_emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 300, (_tableView.frame.size.height - 22.0) * 0.5)];
+	_emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+	_emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_emptyLabel.backgroundColor = [UIColor clearColor];
+	_emptyLabel.textAlignment = NSTextAlignmentCenter;
+	_emptyLabel.text = NSLocalizedString(@"no_results", @"");
+	_emptyLabel.hidden = YES;
+	[_tableView addSubview:_emptyLabel];
 	
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsHeaderText"]];
 	headerImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
@@ -540,28 +466,6 @@ static NSString * const kCamera = @"camera";
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:nil];
 		}
-	}
-}
-
-- (void)_goTableBGSelected:(id)sender {
-	NSLog(@"[:|:] _goTableBGSelected:");
-	
-	UIButton *button = (UIButton *)sender;
-	if (button.tag == HONLineButtonViewTypeAccessContacts) {
-		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Access Contacts"
-//										   withProperties:@{@"access"	: (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"undetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"authorized" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"denied" : @"other"}];
-		
-//		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-//			[self _promptForAddressBookPermission];
-//		
-//		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-//			[self _promptForAddressBookAccess];
-		
-	} else if (button.tag == HONLineButtonViewTypeCreateStatusUpdate) {
-		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
-//										   withProperties:@{@"src"	: @"text"}];
-		
-		[self _goCreateChallenge];
 	}
 }
 
