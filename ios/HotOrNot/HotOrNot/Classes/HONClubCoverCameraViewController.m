@@ -8,7 +8,6 @@
 
 
 #import <AssetsLibrary/AssetsLibrary.h>
-//#import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
@@ -16,13 +15,11 @@
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "MBProgressHUD.h"
 
 #import "HONClubCoverCameraViewController.h"
 
 @interface HONClubCoverCameraViewController ()
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *imagePrefix;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;

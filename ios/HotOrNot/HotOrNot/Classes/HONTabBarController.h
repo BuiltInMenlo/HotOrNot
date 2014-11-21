@@ -8,7 +8,7 @@
 
 
 typedef NS_ENUM(NSUInteger, HONTabBarButtonType) {
-	HONTabBarButtonTypeFriends = 0,
+	HONTabBarButtonTypeHome = 0,
 	HONTabBarButtonTypeSettings
 };
 

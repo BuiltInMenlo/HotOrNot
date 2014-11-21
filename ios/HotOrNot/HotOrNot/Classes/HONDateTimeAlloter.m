@@ -219,7 +219,7 @@ static HONDateTimeAlloter *sharedInstance = nil;
 }
 
 - (int)yearsOldFromDate:(NSDate *)date {
-	return ([date timeIntervalSinceNow] / -31536000);
+	return ([date timeIntervalSinceNow] / 31536000);
 }
 
 @end

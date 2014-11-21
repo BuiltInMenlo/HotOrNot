@@ -15,7 +15,10 @@
 
 @interface HONCollectionViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
+- (void)toggleContentVisible:(BOOL)isContentVisible;
 
+@property (nonatomic) CGSize size;
+@property (nonatomic, readonly, getter=isContentVisible) BOOL contentVisible;
 @property (nonatomic, retain) NSIndexPath *indexPath;
 @property (nonatomic, assign) id <HONCollectionViewCellDelegate> delegate;
 @end

@@ -161,7 +161,11 @@ static HONClubAssistant *sharedInstance = nil;
 			   } mutableCopy]);
 }
 
-- (NSMutableDictionary *)orthodoxClubMemberDictionary {
+- (HONUserClubVO *)orthodoxMemberClub {
+	return ([HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxMemberClubDictionary]]);
+}
+
+- (NSMutableDictionary *)orthodoxMemberClubDictionary {
 	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"			: [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"owner_id"],
 																								  @"username"	: @"",
 																								  @"avatar"		: @""}];

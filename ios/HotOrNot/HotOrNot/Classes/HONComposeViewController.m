@@ -22,7 +22,6 @@
 #import "NSString+Formatting.h"
 
 #import "ImageFilter.h"
-#import "MBProgressHUD.h"
 #import "PCCandyStorePurchaseController.h"
 #import "TSTapstream.h"
 
@@ -33,7 +32,6 @@
 #import "HONComposeSubmitViewController.h"
 #import "HONStoreTransactionObserver.h"
 #import "HONTrivialUserVO.h"
-#import "HONHeaderView.h"
 #import "HONStickerSummaryView.h"
 #import "HONStickerButtonsPickerView.h"
 
@@ -46,8 +44,6 @@
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *selectedContacts;
-@property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) HONStickerSummaryView *stickerSummaryView;
@@ -239,7 +235,7 @@
 						}
 						
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 						}];
 					}];
@@ -316,7 +312,7 @@
 			}
 			
 		} else {
-//			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq1.key);
+			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq1.key);
 			_uploadReq1 = nil;
 			if (++_uploadCounter == 2) {
 				// complete
@@ -349,7 +345,7 @@
 			}
 			
 		} else {
-//			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq2.key);
+			NSLog(@"[AWSS3TransferManager COMPLETE:[%@]", _uploadReq2.key);
 			_uploadReq2 = nil;
 			if (++_uploadCounter == 2) {
 				// complete
@@ -471,7 +467,7 @@
 						}
 						
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 						}];
 					}];
@@ -540,9 +536,9 @@
 	}
 	
 	if (_maskImageView == nil) {
-		_maskImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_maskImageView.frame = CGRectInset(_maskImageView.frame, -37.0, -68.0);
-		_maskImageView.frame = CGRectOffset(_maskImageView.frame, 25.0, 20.0);
+		_maskImageView = [[UIImageView alloc] initWithFrame:_previewImageView.frame];
+//		_maskImageView.frame = CGRectInset(_maskImageView.frame, -37.0, -68.0);
+//		_maskImageView.frame = CGRectOffset(_maskImageView.frame, 25.0, 20.0);
 	}
 	
 	[self.view addSubview:_maskImageView];

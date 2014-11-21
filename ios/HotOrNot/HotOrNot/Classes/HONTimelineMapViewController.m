@@ -54,8 +54,8 @@
 			[_locationManager startUpdatingLocation];
 		}
 		
-		_totalType = HONStateMitigatorTotalTypeTimeline;
-		_viewStateType = HONStateMitigatorViewStateTypeTimeline;
+		_totalType = HONStateMitigatorTotalTypeStatusUpdate;
+		_viewStateType = HONStateMitigatorViewStateTypeStatusUpdate;
 		
 		self.view.backgroundColor = [UIColor brownColor];
 	}

@@ -85,7 +85,7 @@
 		
 		_lastCameraRollImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRollBG"]];
 		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 9.0, [UIScreen mainScreen].bounds.size.height - 48.0);
-		//[self addSubview:_lastCameraRollImageView];
+//		[self addSubview:_lastCameraRollImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
 		[self _retrieveLastImage];

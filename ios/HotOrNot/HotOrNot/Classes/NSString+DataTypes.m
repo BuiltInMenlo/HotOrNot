@@ -69,4 +69,8 @@ unsigned long long unistrlen(unichar *chars) {
 	return ([NSString stringWithCharacters:hexVal length:unistrlen(hexVal)]);
 }
 
+- (NSString *)stringFromNSNumber:(NSNumber *)number includeDecimal:(BOOL)isDecimal {
+	return ((isDecimal) ? [@"" stringFromFloat:[number floatValue]] : [@"" stringFromInt:[number intValue]]);
+}
+
 @end

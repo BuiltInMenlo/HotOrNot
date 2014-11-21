@@ -9,14 +9,11 @@
 #import "NSDate+Operations.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONUsernameSearchViewController.h"
 #import "HONClubViewCell.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 #import "HONRefreshControl.h"
 #import "HONActivityViewController.h"
@@ -28,7 +25,6 @@
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONSearchBarView *searchHeaderView;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
@@ -130,10 +126,10 @@
 	_searchUsers = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_search", @"Search")];
-	[headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
-	[headerView addNextButtonWithTarget:self action:@selector(_goDone)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_search", @"Search")];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
+	[_headerView addNextButtonWithTarget:self action:@selector(_goDone)];
+	[self.view addSubview:_headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;

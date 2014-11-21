@@ -16,6 +16,7 @@
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) UIImageView *titleImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @end
 
@@ -23,10 +24,8 @@
 @synthesize title = _title;
 
 - (id)initWithBranding {
-	if ((self = [self init])) {
-		UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"branding"]];
-		brandingImageView.frame = CGRectOffset(brandingImageView.frame, 84.0, 21.0);
-		[self addSubview:brandingImageView];
+	if ((self = [self initWithTitleImage:[UIImage imageNamed:@"branding"]])) {
+		_titleImageView.frame = CGRectOffset(_titleImageView.frame, 84.0, 21.0);
 	}
 	
 	return (self);
@@ -37,11 +36,13 @@
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		[self addSubview:_bgImageView];
 		
+		_title = @"";
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 30.0, 170.0, 24.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
+		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
 	}
 	
@@ -65,29 +66,8 @@
 	return (self);
 }
 
-- (id)initWithTitleUsingCartoGothic:(NSString *)title {
-	if ((self = [self initWithTitle:title])) {
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22];
-		_titleLabel.frame = CGRectOffset(_titleLabel.frame, 0.0, 5.0);
-		_titleLabel.shadowOffset = CGSizeZero;
-		_titleLabel.shadowColor = [UIColor clearColor];
-	}
-	
-	return (self);
-}
-
-- (id)initWithTitleUsingCartoGothic:(NSString *)title asLightStyle:(BOOL)isLightStyle {
-	if ((self = [self initWithTitleUsingCartoGothic:title])) {
-		_titleLabel.textColor = [UIColor whiteColor];
-	}
-	
-	return (self);
-}
-
 - (id)initWithTitleImage:(UIImage *)image {
 	if ((self = [self init])) {
-		_title = @"";
-		
 		[self addTitleImage:image];
 	}
 	
@@ -122,7 +102,10 @@
 
 - (void)setTitle:(NSString *)title {
 	_title = title;
+	
 	_titleLabel.text = _title;
+	_titleLabel.hidden = ([_title length] == 0);
+	_titleImageView.hidden = ([_title length] > 0);
 }
 
 - (void)leftAlignTitle {
@@ -152,13 +135,12 @@
 	}
 }
 
-
 - (void)addTitleImage:(UIImage *)image {
-	_title = @"";
+	[self setTitle:@""];
 	
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:image];
-	titleImageView.frame = CGRectOffset(titleImageView.frame, (self.frame.size.width - image.size.width) * 0.5, 22.0);
-	[self addSubview:titleImageView];
+	_titleImageView = [[UIImageView alloc] initWithImage:image];
+	_titleImageView.frame = CGRectOffset(_titleImageView.frame, (self.frame.size.width - image.size.width) * 0.5, 22.0);
+	[self addSubview:_titleImageView];
 }
 
 - (void)removeBackground {

@@ -16,7 +16,6 @@
 #import "HONClubPhotoViewCell.h"
 #import "HONTableView.h"
 #import "HONClubPhotoVO.h"
-#import "HONHeaderView.h"
 #import "HONRefreshControl.h"
 
 @interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate, HONTimelineMapViewControllerDelegate>
@@ -25,7 +24,6 @@
 @property (nonatomic, strong) UIView *emptySetView;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
@@ -38,8 +36,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_totalType = HONStateMitigatorTotalTypeTimeline;
-		_viewStateType = HONStateMitigatorViewStateTypeTimeline;
+		_totalType = HONStateMitigatorTotalTypeStatusUpdate;
+		_viewStateType = HONStateMitigatorViewStateTypeStatusUpdate;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_refreshClubTimeline:)
@@ -131,7 +129,7 @@
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Refresh" withUserClub:_clubVO];
-	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeTimelineRefresh];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeStatusUpdateRefresh];
 	
 	_index = 0;
 	_clubPhotoID = 0;
@@ -315,7 +313,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	
 	if (_refreshOnBack)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 	
 	[self.navigationController popViewControllerAnimated:NO];
 }

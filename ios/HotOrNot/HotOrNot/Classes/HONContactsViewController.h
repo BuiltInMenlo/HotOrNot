@@ -11,12 +11,9 @@
 #import "NSMutableDictionary+Replacements.h"
 #import "NSString+DataTypes.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONViewController.h"
 #import "HONRefreshControl.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONClubViewCell.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
@@ -54,10 +51,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	
 	HONTableView *_tableView;
 	UIRefreshControl *_refreshControl;
-	HONHeaderView *_headerView;
 	HONSearchBarView *_searchBarView;
-	
-	MBProgressHUD *_progressHUD;
 	
 	HONLineButtonView *_emptyContactsBGView;
 	HONLineButtonView *_accessContactsBGView;

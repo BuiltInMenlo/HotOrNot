@@ -10,13 +10,10 @@
 
 #import "NSString+DataTypes.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONActivityViewController.h"
 #import "HONRefreshControl.h"
 #import "HONActivityItemViewCell.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 
 #import "HONUserClubVO.h"
@@ -26,10 +23,8 @@
 @property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, assign, readonly) HONActivityProfileType userProfileType;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSMutableArray *activityAlerts;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONActivityViewController

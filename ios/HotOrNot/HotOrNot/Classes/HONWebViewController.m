@@ -6,15 +6,10 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "MBProgressHUD.h"
-
 #import "HONWebViewController.h"
-#import "HONHeaderView.h"
 
 @interface HONWebViewController ()
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONWebViewController

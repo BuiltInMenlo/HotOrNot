@@ -152,7 +152,7 @@
 //		
 //		if ([_selectedNonAppContacts count] == 0) {
 //			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 //			
 //			[self dismissViewControllerAnimated:YES completion:^(void){
 //			}];
@@ -301,7 +301,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";
@@ -442,7 +441,7 @@
 		}
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:^(void){
 		}];
 	}

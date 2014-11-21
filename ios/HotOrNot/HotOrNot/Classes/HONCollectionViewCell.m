@@ -30,6 +30,17 @@
 	_indexPath = indexPath;
 }
 
+- (void)setSize:(CGSize)size {
+	_size = size;
+	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, _size.width, _size.height);
+	self.contentView.frame = CGRectMake(self.contentView.frame.origin.x, self.contentView.frame.origin.y, _size.width, _size.height);
+}
+
+- (void)toggleContentVisible:(BOOL)isContentVisible {
+	_contentVisible = isContentVisible;
+	self.contentView.hidden = !_contentVisible;
+}
+
 
 #pragma mark - Navigation
 - (void)_goSelect {

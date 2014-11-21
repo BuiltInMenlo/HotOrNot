@@ -9,12 +9,10 @@
 #import "NSString+DataTypes.h"
 
 #import "HONRefreshControl.h"
-#import "MBProgressHUD.h"
 
 #import "HONCallingCodesViewController.h"
 #import "HONRegisterViewController.h"
 #import "HONContactsSearchViewController.h"
-#import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTableView.h"
 #import "HONCallingCodeViewCell.h"
@@ -27,7 +25,6 @@
 @property (nonatomic, strong) NSMutableArray *countries;
 @property (nonatomic, strong) HONCountryVO *countryVO;
 @property (nonatomic, strong) NSMutableArray *cells;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *segmentedCountries;
 @property (nonatomic, strong) NSMutableArray *segmentedKeys;
 @end
@@ -93,9 +90,9 @@
 	
 	_cells = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
-	[headerView addDoneButtonWithTarget:self action:@selector(_goDone)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
+	[_headerView addDoneButtonWithTarget:self action:@selector(_goDone)];
+	[self.view addSubview:_headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];

@@ -311,7 +311,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 					NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
 					
 					imageView.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
-					imageView.image = [UIImage imageNamed:@"placeholderClubPhoto"];
+					imageView.image = [UIImage imageNamed:@"placeholderClubPhoto_small"];
 					[[HONViewDispensor sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"placeholderThumbPhotoMask"]];
 					
 					[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {

@@ -6,16 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONClubSettingsViewController.h"
-#import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
 
 
 @interface HONClubSettingsViewController () <HONClubCoverCameraViewControllerDelegate>
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UIView *formHolderView;
 @property (nonatomic, strong) UIImageView *clubCoverImageView;
@@ -184,22 +181,22 @@
 	[_formHolderView addSubview:_blurbCheckImageView];
 	
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Edit Club"];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Edit Club"];
+	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(6.0, 2.0, 44.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
+	[_headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:nextButton];
+	[_headerView addButton:nextButton];
 }
 
 

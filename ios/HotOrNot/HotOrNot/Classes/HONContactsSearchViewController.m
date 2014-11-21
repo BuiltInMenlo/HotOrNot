@@ -8,18 +8,14 @@
 
 #import "NSDate+Operations.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
 #import "HONComposeViewController.h"
-#import "HONHeaderView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONUserClubVO.h"
 
 @interface HONContactsSearchViewController () <HONCallingCodesViewControllerDelegate>
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UITextField *phoneTextField;
 @property (nonatomic, strong) UIButton *countryButton;
 @property (nonatomic, strong) UILabel *countryCodeLabel;
@@ -137,10 +133,10 @@
 	_isDismissing = NO;
 	_searchUsers = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_search", @"Search")];
-	[headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
-	[headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_search", @"Search")];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
+	[_headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
+	[self.view addSubview:_headerView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsSearchBG"]];
 	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, kNavHeaderHeight + 49.0);
@@ -380,7 +376,7 @@
 					[self presentViewController:navigationController animated:YES completion:nil];
 					
 //					[self dismissViewControllerAnimated:YES completion:^(void) {
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 //					}];
 				}];
 				
@@ -402,7 +398,7 @@
 						[self presentViewController:navigationController animated:YES completion:nil];
 						
 //						[self dismissViewControllerAnimated:YES completion:^(void) {
-//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
+//							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 //						}];
 					}];
 				}];

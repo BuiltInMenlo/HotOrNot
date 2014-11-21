@@ -10,10 +10,8 @@
 #import "UILabel+FormattedText.h"
 
 #import "KeychainItemWrapper.h"
-#import "MBProgressHUD.h"
 
 #import "HONEnterPINViewController.h"
-#import "HONHeaderView.h"
 #import "HONBackNavButtonView.h"
 
 @interface HONEnterPINViewController ()
@@ -21,7 +19,6 @@
 @property (nonatomic, strong) UIButton *pinButton;
 @property (nonatomic, strong) UITextField *pinTextField;
 @property (nonatomic, strong) UIImageView *pinCheckImageView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int validateCounter;
 @property (nonatomic) BOOL isPopping;
 @end
@@ -113,9 +110,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_pin", @"Enter pin")];
-	[headerView addBackButtonWithTarget:self action:@selector(_goBack)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_pin", @"Enter pin")];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	[self.view addSubview:_headerView];
 	
 	
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -223,9 +223,6 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	__block BOOL hasVoted = NO;
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSDictionary *dict = (NSDictionary *)obj;
-		
-		NSLog(@"VOTE FOR:[%@]", dict);
-		
 		for (NSString *key in [dict keyEnumerator]) {
 			if ([key intValue] == _clubPhotoVO.challengeID) {
 				hasVoted = YES;
@@ -248,22 +245,6 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 		_clubPhotoVO.score = [result intValue];
 		_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
 	}];
-	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 107.0, 260.0, 22.0)];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
-	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.textAlignment = NSTextAlignmentCenter;
-	timeLabel.numberOfLines = 1;
-	timeLabel.text = [@"… " stringByAppendingString:[[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingString:@""]];
-	[footerView addSubview:timeLabel];
-	
-	if ([[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] count] > 2) {
-		NSString *coords = [[_clubPhotoVO.imagePrefix componentsSeparatedByString:@"_"] objectAtIndex:1];
-		[[HONGeoLocator sharedInstance] addressForLocation:[[CLLocation alloc] initWithLatitude:[[[coords componentsSeparatedByString:@","] lastObject] floatValue] longitude:[[[coords componentsSeparatedByString:@","] firstObject] floatValue]] onCompletion:^(NSDictionary *result) {
-			timeLabel.text = [NSString stringWithFormat:@"%@, %@ %@", [result objectForKey:@"city"], [result objectForKey:@"country"], [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate]];
-		}];
-	}
 	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	upvoteButton.frame = CGRectMake(13.0, 0.0, 100.0, 100.0);

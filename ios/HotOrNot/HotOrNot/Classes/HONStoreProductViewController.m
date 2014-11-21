@@ -101,9 +101,9 @@
 	
 	_productImages = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_storeProductVO.productName];
-	[headerView addBackButtonWithTarget:self action:@selector(_goBack)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_storeProductVO.productName];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	[self.view addSubview:_headerView];
 	
 	UIView *summaryHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 74.0)];
 	[self.view addSubview:summaryHolderView];

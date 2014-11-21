@@ -7,8 +7,6 @@
 //
 
 
-#import "MBProgressHUD.h"
-
 #import "HONUsernameViewController.h"
 #import "HONHeaderView.h"
 
@@ -16,7 +14,6 @@
 @interface HONUsernameViewController ()
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UITextField *usernameTextField;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIButton *submitButton;
 @end
 

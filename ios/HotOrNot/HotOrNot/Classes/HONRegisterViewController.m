@@ -18,18 +18,15 @@
 
 #import "ImageFilter.h"
 #import "KeychainItemWrapper.h"
-#import "MBProgressHUD.h"
 
 #import "HONRegisterViewController.h"
 #import "HONCallingCodesViewController.h"
 #import "HONEnterPINViewController.h"
 #import "HONTermsViewController.h"
-#import "HONHeaderView.h"
 #import "HONNextNavButtonView.h"
 
 @interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *callingCode;
 @property (nonatomic, strong) NSString *phone;
@@ -50,7 +47,7 @@
 		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
 		
 		_username = @"";
-		_phone = [NSString stringWithFormat:@"+%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+		_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter_step_0"];
 	}
@@ -107,7 +104,7 @@
 					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 					_phoneCheckImageView.alpha = 1.0;
 					
-					_phone = @"";
+					_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 					_phoneTextField.text = @"";
 					_phoneTextField.text = @"";
 					_phoneTextField.text = @"";
@@ -141,7 +138,7 @@
 	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																@"username"		: _username,
 																@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"],
-																@"sku_name"		: @"last24",
+																@"sku"			: [[NSBundle mainBundle] bundleIdentifier],
 																@"filename"		: @""} completion:^(NSDictionary *result) {
 
 		int responseCode = [[result objectForKey:@"result"] intValue];
@@ -158,7 +155,19 @@
 					_progressHUD = nil;
 				}
 				
-				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
+				
+				[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_2"];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+					KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+					[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+					
+//					[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+				}];
+				
+//				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			}];
 			
 			
@@ -183,7 +192,7 @@
 			} else if (responseCode == 2) {
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
-				_phone = @"";
+				_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 				_phoneTextField.text = @"";
 				[_phoneTextField becomeFirstResponder];
 			}
@@ -204,9 +213,11 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_signUp", @"Sign up")];
-	[headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
-	[self.view addSubview:headerView];
+	self.view.backgroundColor = [UIColor whiteColor];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_signUp", @"Sign up")];
+	[_headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
+	[self.view addSubview:_headerView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
@@ -228,7 +239,7 @@
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", @"Enter phone number");;
-	_usernameTextField.text = @"";
+	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
@@ -405,7 +416,7 @@
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
-		_phone = @"";
+		_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 		_phoneTextField.text = @"";
 		[_phoneTextField becomeFirstResponder];
 	
@@ -506,10 +517,12 @@
 
 - (void)_onTextEditingDidEnd:(id)sender {
 	_username = _usernameTextField.text;
+	[self _goSubmit];
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
 	_username = _usernameTextField.text;
+	//[self _goSubmit];
 }
 
 

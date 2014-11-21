@@ -15,7 +15,6 @@
 #import "UIImage+ImageEffects.h"
 
 #import "ImageFilter.h"
-#import "MBProgressHUD.h"
 
 #import "HONChangeAvatarViewController.h"
 #import "HONCameraOverlayView.h"
@@ -24,7 +23,6 @@
 @interface HONChangeAvatarViewController () <HONCameraOverlayViewDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *imagePrefix;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;

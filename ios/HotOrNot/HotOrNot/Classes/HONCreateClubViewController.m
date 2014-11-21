@@ -15,14 +15,10 @@
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONCreateClubViewController.h"
-#import "HONHeaderView.h"
 //#import "HONInviteContactsViewController.h"
 
 @interface HONCreateClubViewController ()
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *clubCoverImageView;
 @property (nonatomic, strong) UIButton *addImageButton;
 @property (nonatomic, strong) NSString *clubName;
@@ -158,22 +154,22 @@
 	_clubBlurb = @"";
 	_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];
+	[self.view addSubview:_headerView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(-2.0, 1.0, 44.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButtonActive"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:closeButton];
+	[_headerView addButton:closeButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(282.0, 1.0, 44.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:nextButton];
+	[_headerView addButton:nextButton];
 	
 	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_clubNameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);

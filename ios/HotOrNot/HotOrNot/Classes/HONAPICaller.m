@@ -353,7 +353,8 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)checkForAvailableUsername:(NSString *)username completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"username"	: username};
+							 @"username"	: username,
+							 @"sku"			: [[NSBundle mainBundle] bundleIdentifier]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersCheckUsername, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -380,7 +381,8 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)checkForAvailablePhone:(NSString *)phone completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: @"192505",//[[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"phone"	: @"+12223335555"};//phone};
+							 @"phone"	: @"+12223335555",
+							 @"sku"		: [[NSBundle mainBundle] bundleIdentifier]};//phone};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersCheckPhone, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -539,7 +541,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) COUNT:[%@]", [[self class] description], [[operation request] URL], [result objectForKey:@"count"]);
 			
 			if (completion)
 				completion([result objectForKey:@"count"]);
@@ -1331,7 +1333,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (completion)
 				completion([result objectForKey:@"count"]);

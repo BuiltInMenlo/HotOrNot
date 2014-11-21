@@ -10,13 +10,11 @@
 
 #import "HONRefreshControl.h"
 #import "KeychainItemWrapper.h"
-#import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONComposeNavButtonView.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 #import "HONSettingsViewCell.h"
 #import "HONPrivacyPolicyViewController.h"
@@ -34,7 +32,6 @@
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) NSArray *captions;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONSettingsViewController
@@ -99,9 +96,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
-	[headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", @"Settings")];
+	[_headerView addComposeButtonWithTarget:self action:@selector(_goCreateChallenge)];
+	[self.view addSubview:_headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];

@@ -7,11 +7,9 @@
 //
 
 #import "HONRefreshControl.h"
-#import "MBProgressHUD.h"
 
 #import "HONViewController.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONClubToggleViewCell.h"
 
 @interface HONSelectClubsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
@@ -27,8 +25,6 @@
 	
 	HONTableView *_tableView;
 	UIRefreshControl *_refreshControl;
-	HONHeaderView *_headerView;
-	MBProgressHUD *_progressHUD;
 }
 
 - (void)_retrieveClubs;

@@ -27,8 +27,13 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleTabs:) name:@"TOGGLE_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self
+//												 selector:@selector(_toggleTabs:)
+//													 name:@"TOGGLE_TABS" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_changeTab:)
+													 name:@"CHANGE_TAB" object:nil];
 	}
 	
 	return (self);
@@ -49,32 +54,23 @@
 	
 	NSString *analyticsEvent = @"";
 	NSString *notificationName = @"";
-//	NSString *totalKey = @"";
-//	HONStateMitigatorTotalType totalType = HONStateMitigatorTotalTypeUnknown;
-//	HONStateMitigatorViewStateType viewStateType = HONStateMitigatorViewStateTypeUnknown;
 	
 	switch ((HONTabBarButtonType)selectedIndex) {
-		case HONTabBarButtonTypeFriends:
-			analyticsEvent = @"Friends";
-			notificationName = @"CONTACTS_TAB";
-//			totalKey = @"friendsTab";
-//			totalType = HONStateMitigatorTotalTypeFriendsTab;
-//			viewStateType = HONStateMitigatorViewStateTypeFriends;
+		case HONTabBarButtonTypeHome:
+			analyticsEvent = @"Home";
+			notificationName = @"HOME_TAB";
 			break;
 			
 		case HONTabBarButtonTypeSettings:
 			analyticsEvent = @"Settings";
 			notificationName = @"SETTINGS_TAB";
-//			totalKey = @"settingsTab";
-//			totalType = HONStateMitigatorTotalTypeSettingsTab;
-//			viewStateType = HONStateMitigatorViewStateTypeSettings;
 			break;
 			
 		default:
 			break;
 	}
 	
-	[_contactsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeFriends)];
+	[_contactsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeHome)];
 	[_settingsButton setSelected:((HONTabBarButtonType)selectedIndex == HONTabBarButtonTypeSettings)];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs - %@", analyticsEvent]];
@@ -91,25 +87,21 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-//	[[HONStateMitigator sharedInstance] updateCurrentViewState:HONStateMitigatorViewStateTypeFriends];
-	
-//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-	
 	for (UIView *view in self.view.subviews) {
+		view.backgroundColor = [UIColor blackColor];
 		if([view isKindOfClass:[UITabBar class]])
 			_nativeTabBar = (UITabBar *)view;
 	}
 	
 	
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
+	_tabHolderView.hidden = YES;
 	[self.view addSubview:_tabHolderView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	bgImageView.userInteractionEnabled = YES;
-	[_tabHolderView addSubview:bgImageView];
 	[bgImageView setTag:-1];
-	bgImageView.hidden = YES;
+	[_tabHolderView addSubview:bgImageView];
 	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_contactsButton.frame = CGRectMake(31.0, 0.0, 107.0, kTabSize.height);
@@ -118,7 +110,7 @@
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateSelected];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateDisabled];
-	[_contactsButton setTag:HONTabBarButtonTypeFriends];
+	[_contactsButton setTag:HONTabBarButtonTypeHome];
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];
 	
@@ -153,29 +145,20 @@
 	
 	NSString *analyticsEvent = @"";
 	NSString *notificationName = @"";
-//	NSString *totalKey = @"";
-//	HONStateMitigatorTotalType totalType = HONStateMitigatorTotalTypeUnknown;
-//	HONStateMitigatorViewStateType viewStateType = HONStateMitigatorViewStateTypeUnknown;
 	
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabBarButtonType];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
 	
 	switch (tabBarButtonType) {
-		case HONTabBarButtonTypeFriends:
-			analyticsEvent = @"Friends";
+		case HONTabBarButtonTypeHome:
+			analyticsEvent = @"Home";
 			notificationName = @"CONTACTS_TAB";
-//			totalKey = @"friendsTab";
-//			totalType = HONStateMitigatorTotalTypeFriendsTab;
-//			viewStateType = HONStateMitigatorViewStateTypeFriends;
 			break;
 			
 		case HONTabBarButtonTypeSettings:
 			analyticsEvent = @"Settings";
 			notificationName = @"SETTINGS_TAB";
-//			totalKey = @"settingsTab";
-//			totalType = HONStateMitigatorTotalTypeSettingsTab;
-//			viewStateType = HONStateMitigatorViewStateTypeSettings;
 			break;
 			
 		default:
@@ -183,7 +166,7 @@
 	}
 	
 	
-	[_contactsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeFriends)];
+	[_contactsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeHome)];
 	[_settingsButton setSelected:(tabBarButtonType == HONTabBarButtonTypeSettings)];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Change Tabs %@- %@", (touch.tapCount == 1) ? @"" : @"Double Tap ", analyticsEvent]];
@@ -212,8 +195,8 @@
 								_tabHolderView.frame = tabHolderFrame;
 								_nativeTabBar.frame = nativeBarFrame;
 								
-//								_tabHolderView.alpha = 1.0;
-//								_nativeTabBar.alpha = 1.0;
+								_tabHolderView.alpha = 1.0;
+								_nativeTabBar.alpha = 1.0;
 							} completion:^(BOOL finished) {
 							}];
 		
@@ -225,8 +208,8 @@
 								_nativeTabBar.frame = nativeBarFrame;
 								
 							} completion:^(BOOL finished) {
-//								_tabHolderView.alpha = 0.0;
-//								_nativeTabBar.alpha = 0.0;
+								_tabHolderView.alpha = 0.0;
+								_nativeTabBar.alpha = 0.0;
 							}];
 	}
 }

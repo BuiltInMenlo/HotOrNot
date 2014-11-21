@@ -9,17 +9,14 @@
 #import "NSString+DataTypes.h"
 
 #import "HONRefreshControl.h"
-#import "MBProgressHUD.h"
 
 #import "HONHighSchoolSearchViewController.h"
 #import "HONTableView.h"
-#import "HONHeaderView.h"
 #import "HONSearchBarView.h"
 
 
 @interface HONHighSchoolSearchViewController () <HONSearchBarViewDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSMutableArray *highSchoolClubs;
 @end

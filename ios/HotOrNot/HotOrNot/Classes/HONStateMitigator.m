@@ -39,9 +39,10 @@ NSString * const kStateMitigatorViewStateNameNotAvailable				= @"N/A";
 NSString * const kStateMitigatorViewStateNameRegistration				= @"registration";
 NSString * const kStateMitigatorViewStateNameRegistrationCountryCodes	= @"registration_country_codes";
 NSString * const kStateMitigatorViewStateNamePINEntry					= @"pin_entry";
+NSString * const kStateMitigatorViewStateNameHome						= @"home";
 NSString * const kStateMitigatorViewStateNameFriends					= @"friends";
 NSString * const kStateMitigatorViewStateNameSettings					= @"settings";
-NSString * const kStateMitigatorViewStateNameTimeline					= @"timeline";
+NSString * const kStateMitigatorViewStateNameStatusUpdate				= @"status_update";
 NSString * const kStateMitigatorViewStateNameCompose					= @"compose";
 NSString * const kStateMitigatorViewStateNameAnimatedBGs				= @"animated_bgs";
 NSString * const kStateMitigatorViewStateNameStoreProducts				= @"sticker_store";
@@ -65,11 +66,13 @@ NSString * const kStateMitigatorTotalCounterBackground					= @"background";
 NSString * const kStateMitigatorTotalCounterRegistration				= @"registration";
 NSString * const kStateMitigatorTotalCounterRegistrationCountryCodes	= @"registrationCountryCodes";
 NSString * const kStateMitigatorTotalCounterPINEntry					= @"pinEntry";
+NSString * const kStateMitigatorTotalCounterHomeTab						= @"homeTab";
+NSString * const kStateMitigatorTotalCounterHomeTabRefresh				= @"homeTabRefresh";
 NSString * const kStateMitigatorTotalCounterFriendsTab					= @"friendsTab";
 NSString * const kStateMitigatorTotalCounterFriendsTabRefresh			= @"friendsTabRefresh";
 NSString * const kStateMitigatorTotalCounterSettingsTab					= @"settingsTab";
-NSString * const kStateMitigatorTotalCounterTimeline					= @"timeline";
-NSString * const kStateMitigatorTotalCounterTimelineRefresh				= @"timelineRefresh";
+NSString * const kStateMitigatorTotalCounterStatusUpdate				= @"statusUpdate";
+NSString * const kStateMitigatorTotalCounterStatusUpdateRefresh			= @"statusUpdateRefresh";
 NSString * const kStateMitigatorTotalCounterReply						= @"reply";
 NSString * const kStateMitigatorTotalCounterCompose						= @"compose";
 NSString * const kStateMitigatorTotalCounterAnimatedBGs					= @"animatedBGs";
@@ -278,8 +281,9 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorViewStateNameRegistration				: @(HONStateMitigatorViewStateTypeRegistration),
 			  kStateMitigatorViewStateNameRegistrationCountryCodes	: @(HONStateMitigatorViewStateTypeRegistrationCountryCodes),
 			  kStateMitigatorViewStateNamePINEntry					: @(HONStateMitigatorViewStateTypePINEntry),
+			  kStateMitigatorViewStateNameHome						: @(HONStateMitigatorViewStateTypeHome),
 			  kStateMitigatorViewStateNameFriends					: @(HONStateMitigatorViewStateTypeFriends),
-			  kStateMitigatorViewStateNameTimeline					: @(HONStateMitigatorViewStateTypeTimeline),
+			  kStateMitigatorViewStateNameStatusUpdate				: @(HONStateMitigatorViewStateTypeStatusUpdate),
 			  kStateMitigatorViewStateNameSettings					: @(HONStateMitigatorViewStateTypeSettings),
 			  kStateMitigatorViewStateNameCompose					: @(HONStateMitigatorViewStateTypeCompose),
 			  kStateMitigatorViewStateNameAnimatedBGs				: @(HONStateMitigatorViewStateTypeAnimatedBGs),
@@ -303,11 +307,13 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorTotalCounterBackground					: @(HONStateMitigatorTotalTypeBackground),
 			  kStateMitigatorTotalCounterRegistration				: @(HONStateMitigatorTotalTypeRegistration),
 			  kStateMitigatorTotalCounterPINEntry					: @(HONStateMitigatorTotalTypePINEntry),
+			  kStateMitigatorTotalCounterHomeTab					: @(HONStateMitigatorTotalTypeHomeTab),
+			  kStateMitigatorTotalCounterHomeTabRefresh				: @(HONStateMitigatorTotalTypeHomeTabRefresh),
 			  kStateMitigatorTotalCounterFriendsTab					: @(HONStateMitigatorTotalTypeFriendsTab),
 			  kStateMitigatorTotalCounterFriendsTabRefresh			: @(HONStateMitigatorTotalTypeFriendsTabRefresh),
 			  kStateMitigatorTotalCounterSettingsTab				: @(HONStateMitigatorTotalTypeSettingsTab),
-			  kStateMitigatorTotalCounterTimeline					: @(HONStateMitigatorTotalTypeTimeline),
-			  kStateMitigatorTotalCounterTimelineRefresh			: @(HONStateMitigatorTotalTypeTimelineRefresh),
+			  kStateMitigatorTotalCounterStatusUpdate				: @(HONStateMitigatorTotalTypeStatusUpdate),
+			  kStateMitigatorTotalCounterStatusUpdateRefresh		: @(HONStateMitigatorTotalTypeStatusUpdateRefresh),
 			  kStateMitigatorTotalCounterReply						: @(HONStateMitigatorTotalTypeReply),
 			  kStateMitigatorTotalCounterCompose					: @(HONStateMitigatorTotalTypeCompose),
 			  kStateMitigatorTotalCounterAnimatedBGs				: @(HONStateMitigatorTotalTypeAnimatedBGs),

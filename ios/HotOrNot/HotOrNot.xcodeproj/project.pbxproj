@@ -49,6 +49,9 @@
 		3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E59D19E4CF65003FF312 /* HONStoreProductsViewController.m */; };
 		3045E5A419E4D048003FF312 /* HONStoreProductVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E5A319E4D048003FF312 /* HONStoreProductVO.m */; };
 		3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E5A519E4D9A6003FF312 /* HONStoreProductViewCell.m */; };
+		3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */; };
+		3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */; };
+		3045F9C31A1E624300F4FA88 /* HONHomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */; };
 		3051F8921A082B9800CD85F2 /* HONStoreProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8911A082B9800CD85F2 /* HONStoreProductViewController.m */; };
 		3051F8951A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8941A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m */; };
 		3051F8981A082C5B00CD85F2 /* HONStoreProductImageViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8971A082C5B00CD85F2 /* HONStoreProductImageViewCell.m */; };
@@ -114,6 +117,7 @@
 		30DB24B919CBF64700DCFC49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30DB24B719CBF64700DCFC49 /* InfoPlist.strings */; };
 		30DB24BB19CBF64700DCFC49 /* seflieclub_tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */; };
 		30DD5A9B1A11CDE300A571DA /* KakaoOpenSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */; };
+		30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */; };
 		30E6150719B903930028C165 /* tabMenu_settingsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150919B903930028C165 /* tabMenu_settingsButton_Active@2x.png */; };
 		30E6150A19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150C19B903990028C165 /* tabMenu_settingsButton_NonActive@2x.png */; };
 		30E6150D19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30E6150F19B9039D0028C165 /* tabMenu_settingsButton_Tapped@2x.png */; };
@@ -438,6 +442,12 @@
 		3045E5A219E4D048003FF312 /* HONStoreProductVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductVO.h; sourceTree = "<group>"; };
 		3045E5A319E4D048003FF312 /* HONStoreProductVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreProductVO.m; sourceTree = "<group>"; };
 		3045E5A519E4D9A6003FF312 /* HONStoreProductViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreProductViewCell.m; sourceTree = "<group>"; };
+		3045F9BB1A1E61AD00F4FA88 /* HONHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewController.h; sourceTree = "<group>"; };
+		3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewController.m; sourceTree = "<group>"; };
+		3045F9BE1A1E621000F4FA88 /* HONHomeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewFlowLayout.h; sourceTree = "<group>"; };
+		3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewFlowLayout.m; sourceTree = "<group>"; };
+		3045F9C11A1E624300F4FA88 /* HONHomeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewCell.h; sourceTree = "<group>"; };
+		3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewCell.m; sourceTree = "<group>"; };
 		3051F8901A082B9800CD85F2 /* HONStoreProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductViewController.h; sourceTree = "<group>"; };
 		3051F8911A082B9800CD85F2 /* HONStoreProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreProductViewController.m; sourceTree = "<group>"; };
 		3051F8931A082BE300CD85F2 /* HONStoreProductViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductViewFlowLayout.h; sourceTree = "<group>"; };
@@ -630,6 +640,8 @@
 		30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = seflieclub_tests.m; sourceTree = "<group>"; };
 		30DB24BC19CBF64700DCFC49 /* seflieclub-tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "seflieclub-tests-Prefix.pch"; sourceTree = "<group>"; };
 		30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KakaoOpenSDK.framework; sourceTree = "<group>"; };
+		30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateViewController.h; sourceTree = "<group>"; };
+		30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateViewController.m; sourceTree = "<group>"; };
 		30E6150819B903930028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Active@2x.png"; sourceTree = "<group>"; };
 		30E6150B19B903990028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_NonActive@2x.png"; sourceTree = "<group>"; };
 		30E6150E19B9039D0028C165 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tabMenu_settingsButton_Tapped@2x.png"; sourceTree = "<group>"; };
@@ -1678,14 +1690,18 @@
 			name = "-Settings-";
 			sourceTree = "<group>";
 		};
-		4C2DD82F18E3B41900BC8759 /* -Friends- */ = {
+		4C2DD82F18E3B41900BC8759 /* -Home- */ = {
 			isa = PBXGroup;
 			children = (
-				4C45A9421996AD9500A2086E /* Club Timeline */,
-				4C2DD83618E3B4B100BC8759 /* HONContactsTabViewController.h */,
-				4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */,
+				4C45A9421996AD9500A2086E /* Details */,
+				3045F9BE1A1E621000F4FA88 /* HONHomeViewFlowLayout.h */,
+				3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */,
+				3045F9C11A1E624300F4FA88 /* HONHomeViewCell.h */,
+				3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */,
+				3045F9BB1A1E61AD00F4FA88 /* HONHomeViewController.h */,
+				3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */,
 			);
-			name = "-Friends-";
+			name = "-Home-";
 			sourceTree = "<group>";
 		};
 		4C32B99815FA6F4C0023A0EE /* Verify */ = {
@@ -1968,17 +1984,15 @@
 			name = VO;
 			sourceTree = "<group>";
 		};
-		4C45A9421996AD9500A2086E /* Club Timeline */ = {
+		4C45A9421996AD9500A2086E /* Details */ = {
 			isa = PBXGroup;
 			children = (
 				4C99EB5B194D5FC100283C1A /* HONClubPhotoViewCell.h */,
 				4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */,
-				4C99EB58194D5B1700283C1A /* HONClubTimelineViewController.h */,
-				4C99EB59194D5B1700283C1A /* HONClubTimelineViewController.m */,
-				300D1B831A0B93C900D1D9A7 /* HONTimelineMapViewController.h */,
-				300D1B841A0B93C900D1D9A7 /* HONTimelineMapViewController.m */,
+				30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */,
+				30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */,
 			);
-			name = "Club Timeline";
+			name = Details;
 			sourceTree = "<group>";
 		};
 		4C45FF4616DECE63002F1080 /* Utils */ = {
@@ -2276,7 +2290,7 @@
 			isa = PBXGroup;
 			children = (
 				4C32B9A515FAB60A0023A0EE /* Status Update */,
-				4C2DD82F18E3B41900BC8759 /* -Friends- */,
+				4C2DD82F18E3B41900BC8759 /* -Home- */,
 				4C148F7E17815CA900EBD245 /* -Settings- */,
 				4CED977518E46B1800482813 /* Activity */,
 				4CD16D1D199702760035A8D3 /* Banner */,
@@ -2296,6 +2310,12 @@
 				4C32B9A315FAB5F00023A0EE /* Home Feed */,
 				4C00491819467EE6007FA9F5 /* Clubs */,
 				4CD0D0E418F4F9F800B4ADE9 /* Feed */,
+				4C2DD83618E3B4B100BC8759 /* HONContactsTabViewController.h */,
+				4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */,
+				4C99EB58194D5B1700283C1A /* HONClubTimelineViewController.h */,
+				4C99EB59194D5B1700283C1A /* HONClubTimelineViewController.m */,
+				300D1B831A0B93C900D1D9A7 /* HONTimelineMapViewController.h */,
+				300D1B841A0B93C900D1D9A7 /* HONTimelineMapViewController.m */,
 				4C0B691D179E06C200D3E12A /* HONSnapPreviewViewController.h */,
 				4C0B691E179E06C200D3E12A /* HONSnapPreviewViewController.m */,
 				4C71BF3E181B25C8005044F8 /* HONSuspendedViewController.h */,
@@ -2759,6 +2779,7 @@
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
 				4C386BC6198482130023123A /* HONViewController.m in Sources */,
 				3051F8951A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m in Sources */,
+				30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
 				30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */,
 				300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */,
@@ -2798,6 +2819,7 @@
 				309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */,
+				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */,
 				30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */,
@@ -2829,6 +2851,7 @@
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
 				30119BDB19F8301B00DE9B16 /* HONAnimatedBGCollectionViewCell.m in Sources */,
 				4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */,
+				3045F9C31A1E624300F4FA88 /* HONHomeViewCell.m in Sources */,
 				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
 				3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */,
 				4CC94FEC19079D4900347A34 /* HONComposeDisplayView.m in Sources */,
@@ -2851,6 +2874,7 @@
 				4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */,
 				4C60AF6B17CCFEF800609792 /* HONStickerButtonsPickerView.m in Sources */,
 				30B308D019E20B510017ACBF /* AFNetworkActivityIndicatorManager.m in Sources */,
+				3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
 				4C46ECDD19566B2C007ABD72 /* HONSelectClubsViewController.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m in Sources */,

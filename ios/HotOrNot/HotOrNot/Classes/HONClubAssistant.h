@@ -17,7 +17,8 @@
 - (NSDictionary *)createClubDictionary;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
-- (NSMutableDictionary *)orthodoxClubMemberDictionary;
+- (HONUserClubVO *)orthodoxMemberClub;
+- (NSMutableDictionary *)orthodoxMemberClubDictionary;
 - (NSMutableDictionary *)orthodoxThresholdClubDictionary;
 - (NSMutableDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;

@@ -6,7 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "MBProgressHUD.h"
+
 #import "HONStateMitigatorEnums.h"
+#import "HONHeaderView.h"
 
 @interface HONViewController : UIViewController <UIGestureRecognizerDelegate> {
 	UINavigationController *_presentedNavigationController;
@@ -21,6 +24,10 @@
 	
 	HONStateMitigatorViewStateType _viewStateType;
 	HONStateMitigatorTotalType _totalType;
+	
+	MBProgressHUD *_progressHUD;
+	
+	HONHeaderView *_headerView;
 }
 
 + (NSString *)className;

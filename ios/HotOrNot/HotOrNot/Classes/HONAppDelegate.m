@@ -52,7 +52,7 @@
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
 #import "HONClubsNewsFeedViewController.h"
-#import "HONContactsTabViewController.h"
+#import "HONHomeViewController.h"
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONCreateClubViewController.h"
@@ -119,7 +119,8 @@ NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
 NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
-const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheDataElseLoad;//NSURLRequestUseProtocolCachePolicy;
+const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+//const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReloadIgnoringCacheData;
 NSString * const kTwilioSMS = @"6475577873";
 
 
@@ -373,10 +374,9 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		if (_isFromBackground) {
 			NSString *notificationName = @"";
-//			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
 			switch ([[HONStateMitigator sharedInstance] currentViewStateType]) {
 				case HONStateMitigatorViewStateTypeFriends:
-					notificationName = @"REFRESH_CONTACTS_TAB";
+					notificationName = @"REFRESH_HOME_TAB";
 					break;
 					
 				case HONStateMitigatorViewStateTypeSettings:
@@ -431,8 +431,15 @@ NSString * const kTwilioSMS = @"6475577873";
 					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 					
 				} else {
-					if (self.tabBarController == nil) {
-						[self _initTabs];
+					if (self.window.rootViewController == nil) {
+						//[self _initTabs];
+						
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
+						[navigationController setNavigationBarHidden:YES];
+						
+						self.window.rootViewController = navigationController;
+						self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+						self.window.backgroundColor = [UIColor blackColor];
 					}
 				}
 			}];
@@ -598,6 +605,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	self.window.backgroundColor = [UIColor blackColor];
 	_isFromBackground = NO;
 	
 #if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
@@ -638,7 +646,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBoot];
 		
-		self.window.backgroundColor = [UIColor blackColor];
 		[self.window makeKeyAndVisible];
 		
 		[self _retrieveConfigJSON];
@@ -1001,7 +1008,7 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	
-	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
+	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]]];
 	
 	
@@ -1012,13 +1019,12 @@ NSString * const kTwilioSMS = @"6475577873";
 			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
 	}
 	
-	self.tabBarController = [[HONTabBarController alloc] init];
-	self.tabBarController.viewControllers = navigationControllers;
-	self.tabBarController.delegate = self;
+//	self.tabBarController = [[HONTabBarController alloc] init];
+//	self.tabBarController.viewControllers = navigationControllers;
+//	self.tabBarController.delegate = self;
 	
-	self.window.rootViewController = self.tabBarController;
+	self.window.rootViewController = [[HONHomeViewController alloc] init];//self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-	self.window.backgroundColor = [UIColor blackColor];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }

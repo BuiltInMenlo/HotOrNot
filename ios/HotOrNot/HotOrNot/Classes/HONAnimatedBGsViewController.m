@@ -8,8 +8,6 @@
 
 #import "NSString+DataTypes.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONAnimatedBGsViewController.h"
 #import "HONAnimatedBGViewFlowLayout.h"
 #import "HONAnimatedBGCollectionViewCell.h"
@@ -23,7 +21,6 @@
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSMutableArray *animatedEmotions;
 @property (nonatomic, strong) HONEmotionVO *selectedEmotionVO;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONAnimatedBGsViewController
@@ -88,9 +85,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Animations"];
-	[headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Animations"];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
+	[self.view addSubview:_headerView];
 	
 	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONAnimatedBGViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONAnimatedBGCollectionViewCell class] forCellWithReuseIdentifier:[HONAnimatedBGCollectionViewCell cellReuseIdentifier]];

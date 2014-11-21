@@ -24,4 +24,5 @@ unsigned long long unistrlen(unichar *chars);
 - (NSString *)stringFromIndexPath:(NSIndexPath *)indexPath;
 - (NSString *)stringFromInt:(int)intVal;
 - (NSString *)stringFromHex:(unichar *)hexVal;
+- (NSString *)stringFromNSNumber:(NSNumber *)number includeDecimal:(BOOL)isDecimal;
 @end
