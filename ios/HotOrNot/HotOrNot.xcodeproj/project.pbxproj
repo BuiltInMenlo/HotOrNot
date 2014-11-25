@@ -1932,7 +1932,7 @@
 				4CF84495166503AC00C0CC5B /* Categories */,
 				30CA9CA11A0264DB00A0A703 /* Global */,
 				4C62676A15F9776900AA7FCE /* Root */,
-				4CA8DA531613D00900B7B13C /* -ViewControllers- */,
+				4CA8DA531613D00900B7B13C /* View Controllers */,
 				4C32B99C15FA75870023A0EE /* VO */,
 				4C45FF4616DECE63002F1080 /* Utils */,
 			);
@@ -2063,14 +2063,14 @@
 			name = Nav;
 			sourceTree = "<group>";
 		};
-		4CA8DA531613D00900B7B13C /* -ViewControllers- */ = {
+		4CA8DA531613D00900B7B13C /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C2DD82F18E3B41900BC8759 /* Home */,
 				4C148F7E17815CA900EBD245 /* Settings */,
 			);
-			name = "-ViewControllers-";
+			name = "View Controllers";
 			sourceTree = "<group>";
 		};
 		4CBDDBA41913349A002F9723 /* View Controllers */ = {

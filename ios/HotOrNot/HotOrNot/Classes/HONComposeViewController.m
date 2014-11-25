@@ -367,12 +367,12 @@
 
 		
 		UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-		overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.670];
+		overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
 		[self.view addSubview:overlayView];
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = @"";//NSLocalizedString(@"hud_loading", @"Loading…");
+		_progressHUD.labelText = @"";//NSLocalizedString(@"hud_loading", nil);
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
 		_progressHUD.minShowTime = kProgressHUDMinDuration;
 		_progressHUD.taskInProgress = YES;
@@ -748,12 +748,12 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - take_photo"];
 	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.taskInProgress = YES;
+//	if (_progressHUD == nil)
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kProgressHUDMinDuration;
+//	_progressHUD.taskInProgress = YES;
 	
 	[self.imagePickerController takePicture];
 }
@@ -815,10 +815,10 @@
 	
 //	[_composeDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
 	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
+//	if (_progressHUD != nil) {
+//		[_progressHUD hide:YES];
+//		_progressHUD = nil;
+//	}
 	
 	_headerView.hidden = NO;
 	_submitButton.hidden = NO;

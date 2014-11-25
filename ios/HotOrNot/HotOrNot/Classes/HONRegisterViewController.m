@@ -61,7 +61,7 @@
 - (void)_checkUsername {
 	
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.670];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
 	[self.view addSubview:overlayView];
 	
 	if (_progressHUD == nil)
