@@ -198,7 +198,8 @@
 "alert_inviteNewContact_t" = "No user found!";
 "alert_inviteContact_m" = "Would you like to invite them to one of your private clubs?";
 "club_inviteSubText" = "You have been invited. Tap to join!";
-"register_footer" = "Terms";
+"register_footer" = "Terms of service";
+"register_submit" = "No signup required";
 "pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 "header_selectFriends" = "Select";
 "empty_stickers" = "Select a sticker and\nbackground";

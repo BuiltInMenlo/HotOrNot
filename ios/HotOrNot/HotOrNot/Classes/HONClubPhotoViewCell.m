@@ -24,6 +24,8 @@
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) UIButton *upvoteButton;
+@property (nonatomic, strong) UIButton *downVoteButton;
 @property (nonatomic, strong) HONStickerSummaryView *stickerSummaryView;
 
 @property (nonatomic, strong) NSMutableArray *emotionViews;
@@ -198,46 +200,41 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 	[nextPageButton addTarget:self action:@selector(_goNextPhoto) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:nextPageButton];
 	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 203.0, 320.0, 193.0)];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 77.0, 60.0, 20.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textColor = [UIColor whiteColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate];
+	[self.contentView addSubview:timeLabel];
+	
+	NSLog(@"SUBJECT:[%d]", [[_clubPhotoVO.dictionary objectForKey:@"text"] length]);
+	if ([[_clubPhotoVO.dictionary objectForKey:@"text"] length] > 0) {
+		UIView *subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 262.0, 320.0, 44.0)];
+		subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+		[self.contentView addSubview:subjectBGView];
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 7.0, 280.0, 24.0)];
+		subjectLabel.backgroundColor = [UIColor clearColor];
+		subjectLabel.textColor = [UIColor whiteColor];
+		subjectLabel.textAlignment = NSTextAlignmentCenter;
+		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		subjectLabel.text = [_clubPhotoVO.dictionary objectForKey:@"text"];
+		[subjectBGView addSubview:subjectLabel];
+	}
+	
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 44.0, 320.0, 44.0)];
+	footerView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:footerView];
 	
 	_stickerSummaryView = [[HONStickerSummaryView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 64.0))];
-//	_stickerSummaryView.delegate = self;
-//	[footerView addSubview:_stickerSummaryView];
 	
-//	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 68.0, 150.0, 22.0)];
-//	participantsLabel.backgroundColor = [UIColor clearColor];
-//	participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-//	participantsLabel.textColor = [UIColor blackColor];
-//	participantsLabel.text = [NSString stringWithFormat:@"Seen: 1/%d", _clubVO.totalMembers];//[NSString stringWithFormat:@"1/%d", _clubVO.totalMembers];
-	//[footerView addSubview:participantsLabel];
-	
-//	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	replyButton.frame = CGRectMake(0.0, footerView.frame.size.height - 50.0, 320.0, 50.0);
-//	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_nonActive"] forState:UIControlStateNormal];
-//	[replyButton setBackgroundImage:[UIImage imageNamed:@"reply1Button_Active"] forState:UIControlStateHighlighted];
-//	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-//	[footerView addSubview:replyButton];
-	
-	
-	__block BOOL hasVoted = NO;
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		NSDictionary *dict = (NSDictionary *)obj;
-		for (NSString *key in [dict keyEnumerator]) {
-			if ([key intValue] == _clubPhotoVO.challengeID) {
-				hasVoted = YES;
-				break;
-			}
-		}
-		
-		*stop = hasVoted;
-	}];
-	
-	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 38.0, 192.0, 22.0)];
+	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(198.0, 12.0, 80.0, 20.0)];
 	_scoreLabel.backgroundColor = [UIColor clearColor];
-	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
-	_scoreLabel.textColor = [UIColor whiteColor];
+	_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	_scoreLabel.text = @"…";
 	[footerView addSubview:_scoreLabel];
 	
@@ -246,23 +243,22 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 		_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
 	}];
 	
-	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	upvoteButton.frame = CGRectMake(13.0, 0.0, 100.0, 100.0);
-	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
-	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-	[footerView addSubview:upvoteButton];
+	_upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_upvoteButton.frame = CGRectMake(157.0, 0.0, 44.0, 44.0);
+	[_upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
+	[_upvoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
+	[footerView addSubview:_upvoteButton];
 	
-	UIButton *dnvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dnvoteButton.frame = CGRectMake(self.frame.size.width - 113.0, 0.0, 100.0, 100.0);
-	[dnvoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
-	[dnvoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-	[dnvoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
-	[footerView addSubview:dnvoteButton];
+	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_downVoteButton.frame = CGRectMake(274.0, 0.0, 44.0, 44.0);
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
+	[footerView addSubview:_downVoteButton];
 	
-	if (hasVoted) {
-		[upvoteButton removeTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-		[dnvoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+//	NSLog(@"HAS VOTED:[%@]", [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO]]);
+	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO]) {
+		[_upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}
 }
 
@@ -284,13 +280,19 @@ const CGRect kEmotionOutroFrame = {-6.0f, -6.0f, 224.0f, 224.0f};
 }
 
 - (void)_goUpvote {
-	_scoreLabel.text = [@"" stringFromInt:++_clubPhotoVO.score];
+	[_upvoteButton removeTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	
+	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score + 1];
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:upvotePhoto:)])
 		[self.delegate clubPhotoViewCell:self upvotePhoto:_clubPhotoVO];
 }
 
 - (void)_goDownVote {
-	_scoreLabel.text = [@"" stringFromInt:--_clubPhotoVO.score];
+	[_upvoteButton removeTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	
+	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score - 1];
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:downVotePhoto:)])
 		[self.delegate clubPhotoViewCell:self downVotePhoto:_clubPhotoVO];
 }

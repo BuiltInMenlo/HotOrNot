@@ -209,5 +209,6 @@
 "bae_club" = "MyBAE";
 "school_club" = "MyEscolaClube";
 "header_selectFriends" = "Select Friends";
+"register_submit" = "No signup required";
 
 // club = clube

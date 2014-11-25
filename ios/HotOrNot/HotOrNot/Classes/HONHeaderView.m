@@ -8,6 +8,7 @@
 
 #import "HONHeaderView.h"
 
+#import "HONActivityNavButtonView.h"
 #import "HONBackNavButtonView.h"
 #import "HONCloseNavButtonView.h"
 #import "HONComposeNavButtonView.h"
@@ -18,6 +19,7 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *titleImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) HONActivityNavButtonView *activityNavButtonView;
 @end
 
 @implementation HONHeaderView
@@ -78,6 +80,11 @@
 - (void)addButton:(UIView *)buttonView {
 	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 20.0);
 	[self addSubview:buttonView];
+}
+
+- (void)addActivityButtonWithTarget:(id)target action:(SEL)action {
+	_activityNavButtonView = [[HONActivityNavButtonView alloc] initWithTarget:target action:action];
+	[self addButton:_activityNavButtonView];
 }
 
 - (void)addBackButtonWithTarget:(id)target action:(SEL)action {
@@ -143,17 +150,13 @@
 	[self addSubview:_titleImageView];
 }
 
-- (void)removeBackground {
-	_bgImageView.hidden = YES;
+- (void)refreshActivity {
+	if (_activityNavButtonView != nil)
+		[_activityNavButtonView updateActivityBadge];
 }
 
-- (void)toggleLightStyle:(BOOL)isLightStyle {
-	if (isLightStyle) {
-		_titleLabel.textColor = [UIColor whiteColor];
-	
-	} else {
-		_titleLabel.textColor = [UIColor blackColor];
-	}
+- (void)removeBackground {
+	_bgImageView.hidden = YES;
 }
 
 @end

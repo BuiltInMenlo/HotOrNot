@@ -18,22 +18,24 @@
 #import "HONRegisterViewController.h"
 #import "HONComposeViewController.h"
 #import "HONStatusUpdateViewController.h"
+#import "HONSettingsViewController.h"
 #import "HONRefreshControl.h"
 #import "HONHeaderView.h"
+#import "HONHomeFeedToggleView.h"
 #import "HONHomeViewCell.h"
 #import "HONCollectionView.h"
 #import "HONUserClubVO.h"
 #import "HONClubPhotoVO.h"
 
-@interface HONHomeViewController () <HONHomeViewCellDelegate>
+@interface HONHomeViewController () <HONHomeFeedToggleViewDelegate, HONHomeViewCellDelegate>
+@property (nonatomic, assign) HONHomeFeedType feedType;
+@property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *clubPhotos;
 @property (nonatomic, strong) HONClubPhotoVO *selectedClubPhoto;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
-@property (nonatomic, strong) UIButton *activityButton;
+@property (nonatomic, strong) HONHomeFeedToggleView *toggleView;
 @property (nonatomic, strong) UILabel *emptyLabel;
-
-@property (nonatomic, strong) CLLocationManager *locationManager;
 @end
 
 @implementation HONHomeViewController
@@ -42,6 +44,7 @@
 	if ((self = [super init])) {
 		_totalType = HONStateMitigatorTotalTypeHomeTab;
 		_viewStateType = HONStateMitigatorViewStateTypeHome;
+		_feedType = HONHomeFeedTypeRecent;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_selectedHomeTab:)
@@ -66,6 +69,10 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_completedFirstRun:)
 													 name:@"COMPLETED_FIRST_RUN" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_refreshScore:)
+													 name:@"REFRESH_SCORE" object:nil];
 	}
 	
 	return (self);
@@ -99,6 +106,9 @@
 							if ([clubPhotoVO.addedDate timeIntervalSinceNow] >= (3600 * 24))
 								return;
 							
+							if (_feedType == HONHomeFeedTypeOwned && clubPhotoVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+								return;
+							
 							[_clubPhotos addObject:clubPhotoVO];
 						}];
 					}
@@ -129,15 +139,6 @@
 	}];
 }
 
-- (void)_retrieveActivityItems {
-	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSString *result) {
-		NSLog(@"ACTIVITY:[%@]", result);
-		[_activityButton setTitle:[@"" stringFromInt:[result intValue]] forState:UIControlStateNormal];
-		[_activityButton setTitle:[@"" stringFromInt:[result intValue]] forState:UIControlStateHighlighted];
-	}];
-}
-
-
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
@@ -159,6 +160,7 @@
 	if (![_refreshControl isRefreshing])
 		[_refreshControl beginRefreshing];
 	
+	[_toggleView toggleEnabled:NO];
 	_clubPhotos = [NSMutableArray array];
 	[_collectionView reloadData];
 	
@@ -189,6 +191,9 @@
 	[_collectionView reloadData];
 	[_refreshControl endRefreshing];
 	
+	[_headerView refreshActivity];
+	[_toggleView toggleEnabled:YES];
+	
 	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, [@"" stringFromCLAuthorizationStatus:[CLLocationManager authorizationStatus]]);
 }
 
@@ -202,18 +207,12 @@
 	
 	_clubPhotos = [NSMutableArray array];
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	[_headerView addActivityButtonWithTarget:self action:@selector(_goActivity)];
 	[self.view addSubview:_headerView];
 	
-	_activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_activityButton.frame = CGRectMake(10.0, 0.0, 44.0, 44.0);
-	[_activityButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[_activityButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-	_activityButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-	[_activityButton setTitle:@"0" forState:UIControlStateNormal];
-	[_activityButton setTitle:@"0" forState:UIControlStateHighlighted];
-	[_activityButton addTarget:self action:@selector(_goActivity) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:_activityButton];
-	
+	_toggleView = [[HONHomeFeedToggleView alloc] initAsType:HONHomeFeedTypeRecent];
+	_toggleView.delegate = self;
+	[_headerView addSubview:_toggleView];
 	
 	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONHomeViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONHomeViewCell class] forCellWithReuseIdentifier:[HONHomeViewCell cellReuseIdentifier]];
@@ -243,13 +242,20 @@
 	[composeButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 	[composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:composeButton];
+	
+	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	settingsButton.frame = CGRectMake(self.view.frame.size.width - 44.0, self.view.frame.size.height - 43.0, 44.0, 44.0);
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
+	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:settingsButton];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	//	_panGestureRecognizer.enabled = YES;
+//	_panGestureRecognizer.enabled = YES;
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.5;
@@ -282,9 +288,8 @@
 		[self _goRegistration];
 	}
 	
-	[self _retrieveActivityItems];
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];
-	//	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
+//	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -305,12 +310,19 @@
 }
 
 - (void)_goActivity {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Activity"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Activity"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONActivityViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:^(void) {
-	}];
+	[[[UIAlertView alloc] initWithTitle:@"100 Ronnie points"
+								message:@"Each vote gives you a single Ronnie point!"
+							   delegate:nil
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
+	
+	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONActivityViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:NO completion:^(void) {
+//	}];
 }
 
 - (void)_goCompose {
@@ -318,6 +330,12 @@
 	//									 withProperties:@{@"src"	: @"header"}];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goSettings {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -338,7 +356,6 @@
 //			[self.view addSubview:clubTimelineViewController.view];
 			
 		} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-			
 		}
 	}
 }
@@ -415,8 +432,33 @@
 		[_collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionTop animated:YES];
 }
 
+- (void)_refreshScore:(NSNotification *)notification {
+	NSLog(@"::|> _refreshScore:[%d] <|::", ((HONClubPhotoVO *)[notification object]).challengeID);
+	
+	HONClubPhotoVO *vo = (HONClubPhotoVO *)[notification object];
+	[_collectionView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
+		
+		if (cell.clubPhotoVO.challengeID == vo.challengeID) {
+			[cell refeshScore];
+			*stop = YES;
+		}
+	}];
+}
 
-#pragma mark - HomeViewCellDelegates
+
+#pragma mark - HomeFeedToggleView Delegates
+- (void)homeFeedToggleView:(HONHomeFeedToggleView *)toggleView didSelectFeedType:(HONHomeFeedType)feedType {
+	NSLog(@"[*:*] homeViewCell:didSelectFeedType:[%@])", (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN");
+	
+	_feedType = feedType;
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Toggle Feed"
+									   withProperties:@{@"type"	: (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN"}];
+	
+	[self _goReloadContents];
+}
+
+#pragma mark - HomeViewCell Delegates
 - (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] homeViewCell:didSelectdidSelectClubPhoto:[%@])", clubPhotoVO.dictionary);
 	
@@ -482,8 +524,8 @@
 	cell.clubPhotoVO = vo;
 	cell.delegate = self;
 	
-	if (!collectionView.decelerating)
-		[cell toggleImageLoading:YES];
+//	if (!collectionView.decelerating)
+//		[cell toggleImageLoading:YES];
 	
 	return (cell);
 }
@@ -511,25 +553,25 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * (indexPath.row / 3)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
+	cell.alpha = 1.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * (indexPath.row / 3)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONHomeViewCell *viewCell = (HONHomeViewCell *)cell;
-	[viewCell toggleImageLoading:NO];
+//	HONHomeViewCell *viewCell = (HONHomeViewCell *)cell;
+//	[viewCell toggleImageLoading:NO];
 }
 
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-	[[_collectionView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
-		[cell toggleImageLoading:YES];
-	}];
+//	[[_collectionView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
+//		[cell toggleImageLoading:YES];
+//	}];
 }
 
 

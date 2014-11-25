@@ -104,10 +104,11 @@
 	[super loadView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
+	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0)];
+//	[_tableView setContentOffset:CGPointMake(0.0, -20.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.pagingEnabled = YES;
+//	_tableView.pagingEnabled = YES;
 	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[HONRefreshControl alloc] init];
@@ -117,6 +118,13 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Details"];
 	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:_headerView];
+	
+	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	flagButton.frame = CGRectMake(280.0, 0.0, 44.0, 44.0);
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addButton:flagButton];
 }
 
 
@@ -124,6 +132,24 @@
 - (void)_goClose {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
+}
+
+- (void)_goFlag {
+	if ([MFMailComposeViewController canSendMail]) {
+		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+		[mailComposeViewController setSubject:@"Flag"];
+		[mailComposeViewController setMessageBody:@"" isHTML:NO];
+//		mailComposeViewController.mailComposeDelegate = self;
+		
+		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
+									message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -172,17 +198,12 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - up"];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpvote:YES completion:^(NSDictionary *result) {
+		_statusUpdateVO = clubPhotoVO;
 		_statusUpdateVO.score++;
 		
-		NSMutableArray *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-		[votes addObject:@{@"id"	: @(clubPhotoVO.challengeID),
-						   @"act"	: @(1)}];
-		[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpvote:YES];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
 	}];
 }
 
@@ -193,15 +214,11 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - down"];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpvote:NO completion:^(NSDictionary *result) {
+		_statusUpdateVO = clubPhotoVO;
 		_statusUpdateVO.score--;
 		
-		NSMutableArray *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-		[votes addObject:@{@"id"	: @(clubPhotoVO.challengeID),
-						   @"act"	: @(-1)}];
-		[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpvote:NO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
 	}];
 }
 

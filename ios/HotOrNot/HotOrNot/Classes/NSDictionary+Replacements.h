@@ -10,9 +10,9 @@
 
 @interface NSMutableDictionary (Replacements)
 - (void)defineObject:(id)object forUnknownKey:(NSString *)key;
-- (void)removeObjectForExistingKey:(NSString *)key;
-- (void)replaceObject:(id)object forExistingKey:(NSString *)key;
-- (void)setObject:(id)object forNonExistingKey:(NSString *)key;
+- (BOOL)hasObjectForKey:(NSString *)key;
+- (void)removeObjectForKey:(NSString *)key;
+- (void)replaceObject:(id)object forKey:(NSString *)key;
 //- (void)swapObjectsForKeys:(const id [])keys;
 - (void)swapObjectForKey:(NSString *)keyA withKey:(NSString *)keyB;
 @end

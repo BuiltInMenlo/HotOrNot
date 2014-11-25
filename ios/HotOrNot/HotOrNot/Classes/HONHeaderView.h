@@ -13,6 +13,7 @@
 - (id)initWithTitleImage:(UIImage *)image;
 
 - (void)addButton:(UIView *)buttonView;
+- (void)addActivityButtonWithTarget:(id)target action:(SEL)action;
 - (void)addBackButtonWithTarget:(id)target action:(SEL)action;
 - (void)addCloseButtonWithTarget:(id)target action:(SEL)action;
 - (void)addComposeButtonWithTarget:(id)target action:(SEL)action;
@@ -20,8 +21,8 @@
 - (void)addNextButtonWithTarget:(id)target action:(SEL)action;
 - (void)transitionTitle:(NSString *)title;
 - (void)leftAlignTitle;
-- (void)toggleLightStyle:(BOOL)isLightStyle;
 - (void)addTitleImage:(UIImage *)image;
+- (void)refreshActivity;
 - (void)removeBackground;
 
 @property (nonatomic, strong) NSString *title;

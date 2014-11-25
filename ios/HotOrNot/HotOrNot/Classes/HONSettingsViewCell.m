@@ -27,9 +27,10 @@
 - (id)initWithCaption:(NSString *)caption {
 	if ((self = [super init])) {
 		
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG_normal"]];
 		_caption = caption;
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 24.0, 260.0, 26.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 8.0, 260.0, 26.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_captionLabel.textColor =  [UIColor blackColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];

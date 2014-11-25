@@ -10,5 +10,6 @@
 
 #import "HONViewController.h"
 
+
 @interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
 @end

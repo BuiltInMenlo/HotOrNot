@@ -280,7 +280,7 @@
 		
 		[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 			_userClubVO = [HONUserClubVO clubWithDictionary:result];
-			[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forExistingKey:@"club_id"];
+			[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forKey:@"club_id"];
 			
 			[self _submitStatusUpdate:_userClubVO];
 		}];

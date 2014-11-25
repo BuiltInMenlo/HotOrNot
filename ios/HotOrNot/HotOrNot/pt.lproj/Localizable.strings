@@ -186,6 +186,7 @@
 "header_pin" = "Enter pin";
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
+"register_submit" = "No signup required";
 
 "alert_inviteContact_t" = "%@ encontrado!";
 "alert_inviteNewContact_t" = "Nenhum usuário encontrado!";

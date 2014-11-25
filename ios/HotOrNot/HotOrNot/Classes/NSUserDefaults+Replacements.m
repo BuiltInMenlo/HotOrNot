@@ -10,37 +10,40 @@
 
 @implementation NSUserDefaults (Replacements)
 
-- (void)defineObject:(id)object UnknownKey:(NSString *)key {
+- (void)addObject:(id)object forKey:(NSString *)key {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
+		[[NSUserDefaults standardUserDefaults] setValue:object forKey:key];
+		
+	else {
+		
+	}
+		
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)defineObject:(id)object forKey:(NSString *)key {
 	if ([self objectForKey:key] == nil)
-		[self setObject:object forNonExistingKey:key];
+		[self setObject:object forKey:key];
 
 	else
-		[self replaceObject:object forExistingKey:key];
+		[self replaceObject:object forKey:key];
 }
 
-- (void)removeObjectForExistingKey:(NSString *)key {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil) {
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+- (BOOL)hasObjectForKey:(NSString *)key {
+	return ([self objectForKey:key] != nil);
 }
 
-- (void)replaceObject:(id)object forExistingKey:(NSString *)key {
-	[self removeObjectForExistingKey:key];
+- (void)replaceObject:(id)object forKey:(NSString *)key {
+	if ([self objectForKey:key] != nil)
+		[self removeObjectForKey:key];
+	
 	[self setValue:object forKey:key];
-}
-
-- (void)setObject:(id)object forNonExistingKey:(NSString *)key {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) {
-		[[NSUserDefaults standardUserDefaults] setValue:object forKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
 }
 
 - (void)swapObjectForKey:(NSString *)keyA withKey:(NSString *)keyB {
 	id obj = [self objectForKey:keyA];
-	[self replaceObject:[self objectForKey:keyB] forExistingKey:keyA];
-	[self replaceObject:[self objectForKey:obj] forExistingKey:keyB];
+	[self replaceObject:[self objectForKey:keyB] forKey:keyA];
+	[self replaceObject:[self objectForKey:obj] forKey:keyB];
 	
 	obj = nil;
 }

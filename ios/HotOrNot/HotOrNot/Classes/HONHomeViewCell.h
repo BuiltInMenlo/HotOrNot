@@ -17,7 +17,8 @@
 
 @interface HONHomeViewCell : HONCollectionViewCell
 + (NSString *)cellReuseIdentifier;
-- (void)toggleImageLoading:(BOOL)isLoading;
+//- (void)toggleImageLoading:(BOOL)isLoading;
+- (void)refeshScore;
 @property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;
 @property (nonatomic, assign) id <HONHomeViewCellDelegate> delegate;
 @end

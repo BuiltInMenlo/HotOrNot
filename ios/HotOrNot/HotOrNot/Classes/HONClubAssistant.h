@@ -32,6 +32,7 @@
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
+- (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
@@ -57,6 +58,7 @@
 - (void)addClub:(NSDictionary *)club forKey:(NSString *)key;
 - (void)writeUserClubs:(NSDictionary *)clubs;
 - (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion;
+- (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpvote:(BOOL)isUpvote;
 - (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion;
 
 - (NSArray *)excludedClubDomains;

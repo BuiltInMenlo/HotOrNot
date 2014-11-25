@@ -183,6 +183,7 @@
 "header_pin" = "Enter pin";
 "header_findFriends" = "Find friends";
 "phone_number" = "phone number";
+"register_submit" = "No signup required";
 
 "alert_inviteContact_t" = "%@ 発見!";
 "alert_inviteNewContact_t" = "どのユーザーが見つかりませんでした！";

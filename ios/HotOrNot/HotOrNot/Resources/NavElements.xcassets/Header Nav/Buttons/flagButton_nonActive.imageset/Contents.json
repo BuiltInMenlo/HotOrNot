@@ -3,7 +3,7 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "flagButton_nonActive.png"
+      "filename" : "flagButton_nonActive@2x-2.png"
     },
     {
       "idiom" : "universal",
@@ -12,7 +12,8 @@
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "flagButton_nonActive@2x-1.png"
     }
   ],
   "info" : {

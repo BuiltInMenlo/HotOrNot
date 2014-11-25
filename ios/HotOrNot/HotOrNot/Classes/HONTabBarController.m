@@ -245,58 +245,58 @@
 					 @"score"		: @(0),
 					 @"comments"	: @(0)};
 	
-	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
-		int statusChanges = 0;
-		int voteChanges = 0;
-		int commentChanges = 0;
-		
-		NSMutableArray *challenges = [NSMutableArray array];
-		for (NSDictionary *dict in result) {
-			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
-			
-			if (vo != nil)
-				[challenges addObject:vo];
-		}
-		
-		NSMutableArray *updateChallenges = [NSMutableArray array];
-		for (HONChallengeVO *vo in challenges) {
-			[updateChallenges addObject: @{@"id"		: @(vo.challengeID),
-										   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
-										   @"score"		: @((vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score),
-										   @"comments"	: @(0)}];
-		}
-		
-		NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
-		for (NSDictionary *lDict in localChallenges) {
-			for (NSDictionary *uDict in updateChallenges) {
-				if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
-					if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
-						[_badgeTotals setValue:@(++statusChanges) forKey:@"status"];
-					}
-					
-					if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
-						voteChanges += [[uDict objectForKey:@"score"] intValue] - [[lDict objectForKey:@"score"] intValue];
-						[_badgeTotals setValue:@(voteChanges) forKey:@"score"];
-					}
-					
-					if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
-						commentChanges += [[uDict objectForKey:@"comments"] intValue] - [[lDict objectForKey:@"comments"] intValue];
-						[_badgeTotals setValue:@(commentChanges) forKey:@"comments"];
-					}
-				}
-			}
-		}
-		
-		if ([localChallenges count] < [updateChallenges count])
-			[_badgeTotals setValue:@([[_badgeTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])) forKey:@"status"];
-		
-		[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		//NSLog(@"CHANGES:\n%@", badgeTotals);
-		if ([[_badgeTotals objectForKey:@"status"] intValue] > 0 || [[_badgeTotals objectForKey:@"score"] intValue] > 0 || [[_badgeTotals objectForKey:@"comments"] intValue] > 0)
-			[self _toggleBadges:YES];
-	}];
+//	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+//		int statusChanges = 0;
+//		int voteChanges = 0;
+//		int commentChanges = 0;
+//		
+//		NSMutableArray *challenges = [NSMutableArray array];
+//		for (NSDictionary *dict in result) {
+//			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+//			
+//			if (vo != nil)
+//				[challenges addObject:vo];
+//		}
+//		
+//		NSMutableArray *updateChallenges = [NSMutableArray array];
+//		for (HONChallengeVO *vo in challenges) {
+//			[updateChallenges addObject: @{@"id"		: @(vo.challengeID),
+//										   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
+//										   @"score"		: @((vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score),
+//										   @"comments"	: @(0)}];
+//		}
+//		
+//		NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
+//		for (NSDictionary *lDict in localChallenges) {
+//			for (NSDictionary *uDict in updateChallenges) {
+//				if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
+//					if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
+//						[_badgeTotals setValue:@(++statusChanges) forKey:@"status"];
+//					}
+//					
+//					if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
+//						voteChanges += [[uDict objectForKey:@"score"] intValue] - [[lDict objectForKey:@"score"] intValue];
+//						[_badgeTotals setValue:@(voteChanges) forKey:@"score"];
+//					}
+//					
+//					if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
+//						commentChanges += [[uDict objectForKey:@"comments"] intValue] - [[lDict objectForKey:@"comments"] intValue];
+//						[_badgeTotals setValue:@(commentChanges) forKey:@"comments"];
+//					}
+//				}
+//			}
+//		}
+//		
+//		if ([localChallenges count] < [updateChallenges count])
+//			[_badgeTotals setValue:@([[_badgeTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])) forKey:@"status"];
+//		
+//		[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+//		
+//		//NSLog(@"CHANGES:\n%@", badgeTotals);
+//		if ([[_badgeTotals objectForKey:@"status"] intValue] > 0 || [[_badgeTotals objectForKey:@"score"] intValue] > 0 || [[_badgeTotals objectForKey:@"comments"] intValue] > 0)
+//			[self _toggleBadges:YES];
+//	}];
 }
 
 

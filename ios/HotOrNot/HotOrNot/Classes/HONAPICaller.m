@@ -1335,8 +1335,19 @@ static HONAPICaller *sharedInstance = nil;
 		} else {
 //			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
+			__block int score = 0;
+			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSDictionary *dict = (NSDictionary *)obj;
+				
+				if ([[[dict objectForKey:@"vote"] lowercaseString] isEqualToString:@"up"])
+					score++;
+				
+				else
+					score--;
+			}];
+			
 			if (completion)
-				completion([result objectForKey:@"count"]);
+				completion(@(score));
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

@@ -202,5 +202,6 @@
 "school_club" = "내학교클럽";
 "header_camera" = "셀카찍기";
 "no_results" = "검색 결과가 없습니다";
+"register_submit" = "No signup required";
 
 // club = 클럽

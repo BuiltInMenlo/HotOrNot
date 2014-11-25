@@ -343,6 +343,19 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 }
 
+- (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	__block BOOL isFound = NO;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], [@"" stringFromBOOL:([(NSString *)key isEqualToString:[@"" stringFromInt:clubPhotoVO.challengeID]])], clubPhotoVO.challengeID);
+		if ([(NSString *)key isEqualToString:[@"" stringFromInt:clubPhotoVO.challengeID]])
+			isFound = YES;
+		
+		*stop = isFound;
+	}];
+	
+	return (isFound);
+}
+
 
 - (int)labelIDForAreaCode:(NSString *)areaCode {
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {
@@ -661,6 +674,14 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+- (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpvote:(BOOL)isUpvote {
+	NSMutableDictionary *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
+	[votes setValue:(isUpvote) ? @(1) : @(-1) forKey:[@"" stringFromInt:statusUpdateID]];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 - (NSDictionary *)fetchPreClub {
 //	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"proto_club"];
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"proto_club"]);
@@ -691,7 +712,7 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion {
-	[[NSUserDefaults standardUserDefaults] setObject:@{} forNonExistingKey:@"seen_updates"];
+	[[NSUserDefaults standardUserDefaults] setObject:@{} forKey:@"seen_updates"];
 	
 	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
 	[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:[@"" stringFromInt:statusUpdateID]];

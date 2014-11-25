@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "voteUp_Active@2x-2.png"
+      "filename" : "blueUpArrow_Active@2x-2.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "voteUp_Active@2x-1.png"
+      "filename" : "blueUpArrow_Active@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "voteUp_Active@2x.png"
+      "filename" : "blueUpArrow_Active@2x.png"
     }
   ],
   "info" : {

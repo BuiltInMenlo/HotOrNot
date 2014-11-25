@@ -334,6 +334,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"school_clubs"] forKey:@"school_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
@@ -358,7 +359,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		
+		NSLog(@"IP ADDRESS:[%@]", [[HONDeviceIntrinsics sharedInstance] ipAddress]);
 		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 		
 		[self _initThirdPartySDKs];
@@ -1031,21 +1032,21 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)_establishUserDefaults {
 	NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
-								   @"votes"				: @[],
-								   @"local_challenges"	: @[],
-								   @"upvotes"			: @[],
+								   @"votes"				: @{},
 								   @"purchases"			: @[],
 								   @"coords"			: @{@"lat" : @(0.00), @"long" : @(0.00)},
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
 	for (NSString *key in [userDefaults allKeys]) {
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
+//		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
+		if (![[NSUserDefaults standardUserDefaults] hasObjectForKey:key])
 			[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
 	}
 	
 	for (NSString *key in [[[HONStateMitigator sharedInstance] _totalKeyPrefixesForTypes] allKeys]) {
 		NSString *keyName = [key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix];
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:keyName] == nil)
+//		if ([[NSUserDefaults standardUserDefaults] objectForKey:keyName] == nil)
+		if (![[NSUserDefaults standardUserDefaults] hasObjectForKey:keyName])
 			[[HONStateMitigator sharedInstance] resetTotalCounterForType:(HONStateMitigatorTotalType)[[[HONStateMitigator sharedInstance] _totalKeyPrefixesForTypes] objectForKey:keyName] withValue:-1];
 	}
 	

@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, HONSelfieSubmitType) {
 	HONSelfieSubmitTypeSearchUser
 };
 
-@interface HONComposeViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface HONComposeViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate>
 - (id)initAsNewStatusUpdate;
 - (id)initWithUser:(HONTrivialUserVO *)trivialUserVO;
 - (id)initWithContact:(HONContactUserVO *)contactUserVO;

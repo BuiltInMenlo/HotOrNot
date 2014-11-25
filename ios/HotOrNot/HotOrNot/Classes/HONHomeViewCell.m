@@ -31,6 +31,9 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isLoading = NO;
 		
+		UIImageView *loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingArrows"]];
+		[self.contentView addSubview:loadingImageView];
+		
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 		[self.contentView addSubview:_imageView];
 		
@@ -38,9 +41,9 @@
 		_selectButton.frame = self.frame;
 		[self.contentView addSubview:_selectButton];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 60.0, self.frame.size.height - 20.0, 50.0, 16.0)];
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 55.0, self.frame.size.height - 17.0, 50.0, 16.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_scoreLabel.textAlignment = NSTextAlignmentRight;
 		_scoreLabel.textColor = [UIColor whiteColor];
 		_scoreLabel.text = @"…";
@@ -71,17 +74,27 @@
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
 	
-	if ([_scoreLabel.text isEqualToString:@"…"]) {
-		[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
-			_scoreLabel.text = [@"" stringFromNSNumber:result includeDecimal:NO];
-		}];
-	}
+	_imageView.hidden = YES;
+	_scoreLabel.text = @"…";
+	
+	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
+		_scoreLabel.text = [@"" stringFromNSNumber:result includeDecimal:NO];
+	}];
+	
+	[self toggleImageLoading:YES];
+}
+
+- (void)refeshScore {
+	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
+		_scoreLabel.text = [@"" stringFromNSNumber:result includeDecimal:NO];
+	}];
 }
 
 - (void)toggleImageLoading:(BOOL)isLoading {
 	if (isLoading) {
 		if (!_isLoading) {
 			_isLoading = YES;
+			_imageView.hidden = NO;
 			
 			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 				_imageView.image = image;

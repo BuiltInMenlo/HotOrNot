@@ -9,22 +9,24 @@
 #import "NSMutableDictionary+Replacements.h"
 
 @implementation NSMutableDictionary (Replacements)
-- (void)defineObject:(id)object UnknownKey:(NSString *)key {
+- (void)defineObject:(id)object forKey:(NSString *)key {
 	if ([self objectForKey:key] == nil)
 		[self setObject:object forNonExistingKey:key];
 	
 	else
-		[self replaceObject:object forExistingKey:key];
+		[self replaceObject:object forKey:key];
 }
 
-- (void)removeObjectForExistingKey:(NSString *)key {
+- (void)removeObjectForKey:(NSString *)key {
 	if ([self objectForKey:key] != nil) {
 		[self removeObjectForKey:key];
 	}
 }
 
-- (void)replaceObject:(id)object forExistingKey:(NSString *)key {
-	[self removeObjectForExistingKey:key];
+- (void)replaceObject:(id)object forKey:(NSString *)key {
+	if ([self objectForKey:key] != nil)
+		[self removeObjectForKey:key];
+	
 	[self setValue:object forKey:key];
 }
 
@@ -36,8 +38,8 @@
 
 - (void)swapObjectForKey:(NSString *)keyA withKey:(NSString *)keyB {
 	id obj = [self objectForKey:keyA];
-	[self replaceObject:[self objectForKey:keyB] forExistingKey:keyA];
-	[self replaceObject:[self objectForKey:obj] forExistingKey:keyB];
+	[self replaceObject:[self objectForKey:keyB] forKey:keyA];
+	[self replaceObject:[self objectForKey:obj] forKey:keyB];
 	
 	obj = nil;
 }

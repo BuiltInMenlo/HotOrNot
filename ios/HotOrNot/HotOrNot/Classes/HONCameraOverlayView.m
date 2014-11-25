@@ -55,11 +55,11 @@
 		[self addSubview:_headerBGView];
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_flipButton.frame = CGRectMake(271.0, 7.0, 44.0, 44.0);
+		_flipButton.frame = CGRectMake(self.frame.size.width - 44.0, self.frame.size.height - 44.0, 44.0, 44.0);
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		//[_headerBGView addSubview:_flipButton];
+		[self addSubview:_flipButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(1.0, 20.0, 44.0, 44.0);

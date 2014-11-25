@@ -439,7 +439,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	if (![contentGroupIDs containsObject:contentGroupID])
 		[contentGroupIDs addObject:contentGroupID];
 	
-	[[NSUserDefaults standardUserDefaults] replaceObject:[contentGroupIDs copy] forExistingKey:@"purchases"];
+	[[NSUserDefaults standardUserDefaults] replaceObject:[contentGroupIDs copy] forKey:@"purchases"];
 }
 
 - (BOOL)isStickerPakPurchasedWithContentGroupID:(NSString *)contentGroupID {
