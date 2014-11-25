@@ -25,6 +25,8 @@
 - (NSString *)osName;
 - (NSString *)osNameVersion;
 - (NSString *)osVersion;
+
+- (void)writePushToken:(NSString *)pushToken;
 - (NSString *)pushToken;
 
 - (CLLocation *)deviceLocation;

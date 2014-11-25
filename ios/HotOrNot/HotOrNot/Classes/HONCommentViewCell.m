@@ -2,52 +2,140 @@
 //  HONCommentViewCell.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 02.20.13.
-//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//  Created by BIM  on 11/24/14.
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
-#import "UIImageView+AFNetworking.h"
+#import "NSString+DataTypes.h"
 
 #import "HONCommentViewCell.h"
 
+@interface HONCommentViewCell ()
+@property (nonatomic, strong) UILabel *commentLabel;
+@property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) UILabel *timeLabel;
+@property (nonatomic, strong) UIButton *upVoteButton;
+@property (nonatomic, strong) UIButton *downVoteButton;
+@end
+
+
 @implementation HONCommentViewCell
+@synthesize delegate = _delegate;
+@synthesize commentVO = _commentVO;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
 
+- (id)init {
+	if ((self = [super init])) {
+		[self hideChevron];
+		
+		_commentLabel = [[UILabel alloc] initWithFrame:CGRectMake(8.0, 8.0 - 4.0, 260.0, 20.0 + 22.0)];
+		_commentLabel.backgroundColor = [UIColor clearColor];
+		_commentLabel.textColor = [UIColor blackColor];
+		_commentLabel.numberOfLines = 2;
+		_commentLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
+		[self.contentView addSubview:_commentLabel];
+		
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(8.0, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 4.0, 60.0, 16.0)];
+		_timeLabel.backgroundColor = [UIColor clearColor];
+		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:14];
+		[self.contentView addSubview:_timeLabel];
+		
+		_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_upVoteButton.frame = CGRectMake(274.0, -6.0, 44.0, 44.0);
+		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateDisabled];
+		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
+		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
+		[self.contentView addSubview:_upVoteButton];
+		
+		_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_downVoteButton.frame = CGRectMake(274.0, 35.0, 44.0, 44.0);
+		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateDisabled];
+		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
+		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
+		[self.contentView addSubview:_downVoteButton];
+		
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 28.0, 88.0, 16.0)];
+		_scoreLabel.backgroundColor = [UIColor clearColor];
+		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+		_scoreLabel.textAlignment = NSTextAlignmentCenter;
+		_scoreLabel.text = @"…";
+		[self.contentView addSubview:_scoreLabel];
+	}
+	
+	return (self);
+}
+
+- (void)dealloc {
+	[self destroy];
+}
+
+- (void)destroy {
+	[super destroy];
+}
+
+
+#pragma mark - Public APIs
+- (void)refreshScore {
+	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_commentVO.commentID completion:^(NSNumber *result) {
+		_commentVO.score = [result intValue];
+		_scoreLabel.text = [@"" stringFromInt:_commentVO.score];
+	}];
+}
+
 - (void)setCommentVO:(HONCommentVO *)commentVO {
 	_commentVO = commentVO;
 	
-	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 38.0, 38.0)];
-	[userImageView setImageWithURL:[NSURL URLWithString:_commentVO.avatarPrefix] placeholderImage:nil];
-	[self addSubview:userImageView];
+//	CGSize size = [_commentVO.textContent boundingRectWithSize:_commentLabel.frame.size
+//										options:NSStringDrawingTruncatesLastVisibleLine
+//									 attributes:@{NSFontAttributeName:_commentLabel.font}
+//										context:nil].size;
+
+//	_commentLabel.frame = CGRectResizeHeight(_commentLabel.frame, (size.width > _commentLabel.frame.size.width) ? 22.0 : 0.0);
+//	_commentLabel.frame = CGRectOffset(_commentLabel.frame, 0.0, -4.0);
+//	_commentLabel.numberOfLines = (size.width > _commentLabel.frame.size.width) ? 2 : 1;
+	_commentLabel.text = _commentVO.textContent;
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 60.0, 16.0)];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
-	timeLabel.textColor = [UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
-	[self addSubview:timeLabel];
+//	_timeLabel.frame = CGRectMake(8.0, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 4.0, _timeLabel.frame.size.width, _timeLabel.frame.size.height);
+	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 13.0, 180.0, 18.0)];
-	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
-	usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.455];
-	usernameLabel.backgroundColor = [UIColor clearColor];
-	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
-	[self addSubview:usernameLabel];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
 	
-	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}];
-	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 33.0, 200.0, size.height)];
-	contentLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	contentLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-	contentLabel.backgroundColor = [UIColor clearColor];
-	contentLabel.text = _commentVO.content;
-	[self addSubview:contentLabel];
+	if (![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO]) {
+		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
+		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	}
 	
-	[self hideChevron];
+	[self refreshScore];
+}
+
+
+#pragma mark - Navigation
+- (void)_goDownVote {
+	[_upVoteButton setEnabled:NO];
+	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
+	
+	[_downVoteButton setEnabled:NO];
+	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	
+	if ([self.delegate respondsToSelector:@selector(commentViewCell:didDownVoteComment:)])
+		[self.delegate commentViewCell:self didDownVoteComment:_commentVO];
+}
+
+- (void)_goUpVote {
+	[_upVoteButton setEnabled:NO];
+	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
+	
+	[_downVoteButton setEnabled:NO];
+	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	
+	if ([self.delegate respondsToSelector:@selector(commentViewCell:didUpVoteComment:)])
+		[self.delegate commentViewCell:self didUpVoteComment:_commentVO];
 }
 
 @end

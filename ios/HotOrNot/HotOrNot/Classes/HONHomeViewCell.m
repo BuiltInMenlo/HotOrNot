@@ -77,15 +77,13 @@
 	_imageView.hidden = YES;
 	_scoreLabel.text = @"…";
 	
-	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
-		_scoreLabel.text = [@"" stringFromNSNumber:result includeDecimal:NO];
-	}];
-	
 	[self toggleImageLoading:YES];
+	[self refeshScore];
 }
 
 - (void)refeshScore {
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
+		_clubPhotoVO.score = [result intValue];
 		_scoreLabel.text = [@"" stringFromNSNumber:result includeDecimal:NO];
 	}];
 }

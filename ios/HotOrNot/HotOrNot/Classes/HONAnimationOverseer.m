@@ -10,7 +10,6 @@
 
 #import "HONAnimationOverseer.h"
 #import "HONComposeViewController.h"
-#import "HONClubTimelineViewController.h"
 #import "HONStoreProductsViewController.h"
 
 const CGFloat kProgressHUDMinDuration = 0.5f;
@@ -61,12 +60,12 @@ static HONAnimationOverseer *sharedInstance = nil;
 }
 
 - (BOOL)isSegueAnimationEnabledForPushViewController:(UIViewController *)viewController {
-	if ([viewController isKindOfClass:[HONClubTimelineViewController class]]) {
+//	if ([viewController isKindOfClass:[HONClubTimelineViewController class]]) {
 		return (NO);
-		
-	} else {
-		return (YES);
-	}
+//
+//	} else {
+//		return (YES);
+//	}
 }
 
 @end

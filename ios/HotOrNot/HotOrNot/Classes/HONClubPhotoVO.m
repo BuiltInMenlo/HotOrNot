@@ -11,7 +11,7 @@
 #import "HONClubPhotoVO.h"
 
 @implementation HONClubPhotoVO
-@synthesize dictionary, userID, username, avatarPrefix, challengeID, clubID, imagePrefix, subjectNames, addedDate, score;
+@synthesize dictionary, userID, username, avatarPrefix, challengeID, parentID, clubID, clubOwnerID, submissionType, imagePrefix, comment, subjectNames, addedDate, score;
 
 + (HONClubPhotoVO *)clubPhotoWithDictionary:(NSDictionary *)dictionary {
 	HONClubPhotoVO *vo = [[HONClubPhotoVO alloc] init];
@@ -24,11 +24,14 @@
 	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
+	vo.clubOwnerID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.challengeID = [[dictionary objectForKey:@"challenge_id"] intValue];
-	vo.photoType = ([[dictionary objectForKey:@"img"] rangeOfString:@".gif"].location != NSNotFound) ? HONClubPhotoTypeGIF : ([[dictionary objectForKey:@"img"] rangeOfString:@".png"].location != NSNotFound) ? HONClubPhotoTypePNG : HONClubPhotoTypeJPG;
+	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
+	vo.submissionType = (vo.parentID == 0) ? HONClubPhotoSubmissionTypePhoto : HONClubPhotoSubmissionTypeComment;
 	
 	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
+	vo.comment = [dictionary objectForKey:@"text"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
@@ -41,6 +44,7 @@
 	self.avatarPrefix = nil;
 	self.imagePrefix = nil;
 	self.subjectNames = nil;
+	self.comment = nil;
 	self.addedDate = nil;
 }
 

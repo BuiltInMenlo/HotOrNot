@@ -44,18 +44,9 @@
 #import "HONStoreTransactionObserver.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
-#import "HONInsetOverlayView.h"
-#import "HONUserClubsViewController.h"
-#import "HONVerifyViewController.h"
-#import "HONClubTimelineViewController.h"
-#import "HONTimelineViewController.h"
-#import "HONFeedViewController.h"
-#import "HONClubsNewsFeedViewController.h"
 #import "HONHomeViewController.h"
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
-#import "HONCreateClubViewController.h"
-#import "HONSuspendedViewController.h"
 #import "HONComposeViewController.h"
 
 
@@ -124,10 +115,10 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 //#if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONInsetOverlayViewDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate>
 //@interface HONAppDelegate() <HONInsetOverlayViewDelegate, PicoStickerDelegate>
 //#else
-//@interface HONAppDelegate() <HONInsetOverlayViewDelegate>
+//@interface HONAppDelegate()
 //#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -140,7 +131,6 @@ NSString * const kTwilioSMS = @"6475577873";
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
-@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @end
 
 
@@ -415,22 +405,13 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
-				if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+				if (self.window.rootViewController == nil) {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
 					[navigationController setNavigationBarHidden:YES];
-					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 					
-				} else {
-					if (self.window.rootViewController == nil) {
-						//[self _initTabs];
-						
-						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
-						[navigationController setNavigationBarHidden:YES];
-						
-						self.window.rootViewController = navigationController;
-						self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-						self.window.backgroundColor = [UIColor blackColor];
-					}
+					self.window.rootViewController = navigationController;
+					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+					self.window.backgroundColor = [UIColor blackColor];
 				}
 			}];
 		}
@@ -904,23 +885,13 @@ NSString * const kTwilioSMS = @"6475577873";
 	pushToken = [pushToken stringByReplacingOccurrencesOfString:@" " withString:@""];
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
+	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
 	
-	double delayInSeconds = 2.0;
-	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-		NSLog(@"WRITE PUSH TOKEN");
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:pushToken forKey:@"device_token"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:pushToken]) {
-			[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-				[self _enableNotifications:YES];
-			}];
-		}
-	});
+	if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:pushToken]) {
+		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+			[self _enableNotifications:YES];
+		}];
+	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
@@ -932,21 +903,12 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
-	double delayInSeconds = 2.0;
-	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-		NSLog(@"WRITE PUSH TOKEN");
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
-		
-//		[[NSUserDefaults standardUserDefaults] setObject:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"] forKey:@"device_token"];
-		[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"device_token"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
+	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
+	if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:@""]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
 			[self _enableNotifications:NO];
 		}];
-	});
+	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:@"didFailToRegisterForRemoteNotificationsWithError"
@@ -1260,30 +1222,6 @@ NSString * const kTwilioSMS = @"6475577873";
 */
 
 
-#pragma mark - InsetOverlay Delegates
-- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Close"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-	}];
-}
-
-- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidReview");
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Review Overlay Acknowledge"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-	}];
-}
-
-
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON:[%ld]", (long)buttonIndex);
@@ -1371,7 +1309,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
 //		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		if (buttonIndex == 1) {
-			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
+//			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeJoinCLub) {
@@ -1391,14 +1329,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeCreateClub) {
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:_clubName]];
-			[navigationController setNavigationBarHidden:YES];
-			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:_clubName]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeEnterClub) {
 		if (buttonIndex == 1) {
-			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
+//			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
 	}
 }

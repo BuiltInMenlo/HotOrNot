@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
 
 #import "HONContactsSearchViewController.h"
@@ -306,12 +307,9 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	NSMutableCharacterSet *invalidCharSet = [[NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]] mutableCopy];
-	[invalidCharSet formUnionWithCharacterSet:[NSCharacterSet letterCharacterSet]];
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSetWithLetters]]));
 	
-	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
-	
-	if ([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound)
+	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSetWithLetters]].location != NSNotFound)
 		return (NO);
 	
 	return ([textField.text length] < 25 || [string isEqualToString:@""]);

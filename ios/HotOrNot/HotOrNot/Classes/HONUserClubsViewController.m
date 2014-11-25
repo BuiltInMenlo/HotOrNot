@@ -797,7 +797,6 @@
 		
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] createClubWithTitle:_selectedClubVO.clubName withDescription:_selectedClubVO.blurb withImagePrefix:_selectedClubVO.coverImagePrefix completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] addClub:result forKey:@"owned"];
 				[self _retrieveClubs];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 				

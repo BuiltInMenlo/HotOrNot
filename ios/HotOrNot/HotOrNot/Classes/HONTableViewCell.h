@@ -16,6 +16,7 @@
 - (void)accVisible:(BOOL)isVisible;
 - (void)toggleChevron;
 - (void)removeBackground;
+- (void)destroy;
 - (BOOL)accessoryViewsVisible;
 
 @property (nonatomic) CGSize size;

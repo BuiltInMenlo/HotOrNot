@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 #import <CoreLocation/CoreLocation.h>
 

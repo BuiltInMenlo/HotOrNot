@@ -418,7 +418,7 @@
 	[self _goReply];
 }
 
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upVotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 //	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote"
 //									  withClubPhoto:clubPhotoVO];

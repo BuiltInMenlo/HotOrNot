@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 @interface NSMutableDictionary (Replacements)
 - (void)defineObject:(id)object forKey:(NSString *)key;
 - (void)removeObjectForKey:(NSString *)key;

@@ -9,6 +9,6 @@
 #import "HONViewController.h"
 #import "HONClubPhotoVO.h"
 
-@interface HONStatusUpdateViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONStatusUpdateViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 - (id)initWithStatusUpdate:(HONClubPhotoVO *)statusUpdateVO;
 @end

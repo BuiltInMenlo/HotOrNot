@@ -13,18 +13,15 @@
 @class HONClubPhotoViewCell;
 @protocol HONClubPhotoViewCellDelegate <NSObject>
 @optional
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO withComment:(NSString *)comment;
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upVotePhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell downVotePhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell hideCommentsForPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showCommentsForPhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end
 
-@interface HONClubPhotoViewCell : HONTableViewCell <UIScrollViewDelegate>
+@interface HONClubPhotoViewCell : HONTableViewCell <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 + (NSString *)cellReuseIdentifier;
-
-- (void)toggleImageLoading:(BOOL)isLoading;
-- (void)destroy;
 
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;

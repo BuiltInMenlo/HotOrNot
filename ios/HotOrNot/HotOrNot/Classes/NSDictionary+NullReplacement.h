@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 @interface NSDictionary (NullReplacement)
 - (NSDictionary *)dictionaryByReplacingNullsWithBlanks;
 @end

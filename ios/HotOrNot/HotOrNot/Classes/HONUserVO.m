@@ -16,7 +16,7 @@
 @implementation HONUserVO
 
 @synthesize dictionary;
-@synthesize userID, username, totalUpvotes, totalVolleys, isVerified, isSuspended, avatarPrefix, birthday, friends;
+@synthesize userID, username, voteScore, totalVolleys, isVerified, isSuspended, avatarPrefix, birthday, friends;
 
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONUserVO *vo = [[HONUserVO alloc] init];
@@ -24,7 +24,7 @@
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.totalUpvotes = [[dictionary objectForKey:@"total_votes"] intValue];
+	vo.voteScore = [[dictionary objectForKey:@"total_votes"] intValue];
 	vo.totalVolleys = [[dictionary objectForKey:@"total_challenges"] intValue];
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.isSuspended = ((BOOL)[[dictionary objectForKey:@"is_suspended"] intValue]);

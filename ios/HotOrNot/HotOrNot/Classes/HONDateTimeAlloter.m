@@ -11,13 +11,6 @@
 
 #import "HONDateTimeAlloter.h"
 
-
-//NSString * const kISO8601LocaleFormatSymbols = @"yyyy'-'MM'-'dd'T'HH':'mm':'ssZ";
-//NSString * const kISO8601UTCFormatSymbols = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'-0000'";
-//NSString * const kOrthodoxFormatSymbols = @"yyyy-MM-dd HH:mm:ss";
-//NSString * const kISO8601BlankTime = @"0000-00-00 00:00:00-0000";
-//NSString * const kOrthodoxBlankTime = @"0000-00-00 00:00:00";
-
 @implementation HONDateTimeAlloter
 static HONDateTimeAlloter *sharedInstance = nil;
 
@@ -57,12 +50,12 @@ static HONDateTimeAlloter *sharedInstance = nil;
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix {
 	NSString *interval = [[@"0 " stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:1]];
 	
-	int secs = MAX(0, -[NSDate elapsedSecondsSinceUTCDate:date]);
-	int mins = secs / 60;
-	int hours = mins / 60;
-	int days = hours / 24;
+	int secs = MAX(0, [NSDate elapsedSecondsSinceDate:date isUTC:YES]);
+	int mins = MAX(0, [NSDate elapsedMinutesSinceDate:date isUTC:YES]);
+	int hours = MAX(0, [NSDate elapsedHoursSinceDate:date isUTC:YES]);
+	int days = MAX(0, [NSDate elapsedDaysSinceDate:date isUTC:YES]);
 	
-//	NSLog(@"DATE:[%@][%@] SECS:[%d]", [NSDate utcNowDate], date, [NSDate elapsedSecondsSinceUTCDate:date]);
+//	NSLog(@"UTC_NOW:[%@] DATE:[%@] -=- SECS:[%d]", [NSDate utcNowDate], date, secs);
 	
 	if (days > 0)
 		interval = [[[@"" stringFromInt:days] stringByAppendingString:[[indicators objectForKey:@"days"] objectAtIndex:0]] stringByAppendingString:(days != 1) ? [[indicators objectForKey:@"days"] objectAtIndex:1] : @""];

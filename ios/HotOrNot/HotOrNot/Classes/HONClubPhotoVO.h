@@ -7,10 +7,9 @@
 //
 
 
-typedef NS_ENUM(NSUInteger, HONClubPhotoType) {
-	HONClubPhotoTypePNG = 0,
-	HONClubPhotoTypeJPG,
-	HONClubPhotoTypeGIF
+typedef NS_ENUM(NSUInteger, HONClubPhotoSubmissionType) {
+	HONClubPhotoSubmissionTypePhoto = 0,
+	HONClubPhotoSubmissionTypeComment
 };
 
 
@@ -23,11 +22,14 @@ typedef NS_ENUM(NSUInteger, HONClubPhotoType) {
 @property (nonatomic, retain) NSString *avatarPrefix;
 
 @property (nonatomic) int challengeID;
+@property (nonatomic) int parentID;
 @property (nonatomic) int clubID;
+@property (nonatomic) int clubOwnerID;
 @property (nonatomic, retain) NSString *imagePrefix;
+@property (nonatomic, retain) NSString *comment;
 @property (nonatomic, retain) NSArray *subjectNames;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic) int score;
-@property (nonatomic) HONClubPhotoType photoType;
+@property (nonatomic, assign) HONClubPhotoSubmissionType submissionType;
 @end
 

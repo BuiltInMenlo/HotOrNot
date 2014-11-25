@@ -1418,7 +1418,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpvote:(BOOL)isUpvote completion:(void (^)(id result))completion {
+- (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpVote:(BOOL)isUpVote completion:(void (^)(id result))completion {
 #if __DEV_BUILD__ == 0
 	NSString *apiEndPt = @"http://api.selfieclubapp.com";
 #else
@@ -1426,7 +1426,7 @@ static HONAPICaller *sharedInstance = nil;
 #endif
 	
 	NSDictionary *params = @{@"member_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"vote"		: (isUpvote) ? @"up" : @"down"};
+							 @"vote"		: (isUpVote) ? @"up" : @"down"};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], apiEndPt, [NSString stringWithFormat:@"statusupdate/%d/voters/", statusUpdateID], params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingBasePath:apiEndPt];

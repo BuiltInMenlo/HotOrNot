@@ -8,6 +8,7 @@
 
 #import "HONUserClubVO.h"
 #import "HONClubPhotoVO.h"
+#import "HONCommentVO.h"
 #import "HONEmotionVO.h"
 
 @interface HONClubAssistant : NSObject
@@ -33,6 +34,7 @@
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
 - (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (BOOL)hasVotedForComment:(HONCommentVO *)commentVO;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
@@ -55,13 +57,15 @@
 - (NSDictionary *)fetchUserClubs;
 - (HONUserClubVO *)fetchClubWithClubID:(int)clubID;
 - (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID;
-- (void)addClub:(NSDictionary *)club forKey:(NSString *)key;
+- (void)writeClub:(NSDictionary *)club;
 - (void)writeUserClubs:(NSDictionary *)clubs;
 - (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion;
-- (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpvote:(BOOL)isUpvote;
+- (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpVote:(BOOL)isUpVote;
+- (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote;
 - (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion;
 
 - (NSArray *)excludedClubDomains;
+- (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
 - (HONUserClubVO *)clubWithClubID:(int)clubID;
 - (HONUserClubVO *)clubWithName:(NSString *)clubName;

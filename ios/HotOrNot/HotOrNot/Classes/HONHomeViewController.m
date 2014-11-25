@@ -8,6 +8,7 @@
 
 #import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
+#import "NSUserDefaults+Replacements.h"
 
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
@@ -45,6 +46,9 @@
 		_totalType = HONStateMitigatorTotalTypeHomeTab;
 		_viewStateType = HONStateMitigatorViewStateTypeHome;
 		_feedType = HONHomeFeedTypeRecent;
+		
+//		[[NSUserDefaults standardUserDefaults] replaceObject:@{} forKey:@"votes"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_selectedHomeTab:)
@@ -103,10 +107,13 @@
 					if (clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID) {
 						[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 							HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
-							if ([clubPhotoVO.addedDate timeIntervalSinceNow] >= (3600 * 24))
+							if (clubPhotoVO.parentID != 0)
 								return;
 							
 							if (_feedType == HONHomeFeedTypeOwned && clubPhotoVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+								return;
+							
+							if ([NSDate elapsedHoursSinceDate:clubPhotoVO.addedDate isUTC:YES] > 24)
 								return;
 							
 							[_clubPhotos addObject:clubPhotoVO];
@@ -460,7 +467,7 @@
 
 #pragma mark - HomeViewCell Delegates
 - (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	NSLog(@"[*:*] homeViewCell:didSelectdidSelectClubPhoto:[%@])", clubPhotoVO.dictionary);
+	NSLog(@"[*:*] homeViewCell:didSelectdidSelectClubPhoto:[%d])", clubPhotoVO.challengeID);
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Seleted Photo"
 											  withClubPhoto:clubPhotoVO];

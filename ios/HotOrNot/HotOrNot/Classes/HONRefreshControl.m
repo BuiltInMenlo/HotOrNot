@@ -59,7 +59,7 @@ static void *contentOffsetObservingKey = &contentOffsetObservingKey;
 	CGFloat height = self.bounds.size.height;
 	CGRect newFrame = (CGRect) {
 		.origin.x = 0,
-		.origin.y = -height,
+		.origin.y = -height,// + ((UIScrollView *)self.superview).contentInset.top,
 		.size.width = scrollBounds.size.width,
 		.size.height = height
 	};

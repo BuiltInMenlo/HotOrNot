@@ -18,7 +18,6 @@
 #import "HONContactsTabViewController.h"
 #import "HONRegisterViewController.h"
 #import "HONComposeViewController.h"
-#import "HONClubTimelineViewController.h"
 #import "HONActivityViewController.h"
 #import "HONTableView.h"
 #import "HONTableHeaderView.h"
@@ -435,12 +434,12 @@
 	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:_tableView]];
 	
 	if (indexPath != nil) {
-		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
+//		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
 		
 		if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
 //			NSLog(@"STATUS UPDATE:[%@]", cell.statusUpdateVO.subjectNames);
-			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0];
-			[self.view addSubview:clubTimelineViewController.view];
+//			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:cell.clubVO atPhotoIndex:0];
+//			[self.view addSubview:clubTimelineViewController.view];
 		
 		} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
 			[[self.view.subviews lastObject] removeFromSuperview];
@@ -456,8 +455,8 @@
 //											 withUserClub:clubVO];
 		
 		if ([clubVO.submissions count] > 0) {
-			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0];
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForPushViewController:clubTimelineViewController]];
+//			HONClubTimelineViewController *clubTimelineViewController = [[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0];
+//			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:clubVO atPhotoIndex:0] animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForPushViewController:clubTimelineViewController]];
 		
 		} else {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:clubVO]];
@@ -590,7 +589,7 @@
 	[self _goReplyToClubPhoto:clubPhotoVO forClub:cell.clubVO];
 }
 
-- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upVotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Upvote"
 //										withClubPhoto:clubPhotoVO];
@@ -600,7 +599,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[self _advanceTimelineFromCell:cell byAmount:1];
 	
-	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpvote:YES completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpVote:YES completion:^(NSDictionary *result) {
 		[self _updateScoreForClubPhoto:clubPhotoVO isIncrement:YES];
 		[self _retrieveActivityItems];
 		
@@ -621,7 +620,7 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - down"];
 	[self _advanceTimelineFromCell:cell byAmount:1];
-	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpvote:NO completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpVote:NO completion:^(NSDictionary *result) {
 		[self _updateScoreForClubPhoto:clubPhotoVO isIncrement:NO];
 		
 		NSMutableArray *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
@@ -690,8 +689,8 @@
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
-	if (!tableView.decelerating)
-		[cell toggleImageLoading:YES];
+//	if (!tableView.decelerating)
+//		[cell toggleImageLoading:YES];
 	
 	return (cell);
 }
@@ -744,10 +743,10 @@
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
-		[cell toggleImageLoading:YES];
-	}];
+//	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONClubPhotoViewCell *cell = (HONClubPhotoViewCell *)obj;
+//		[cell toggleImageLoading:YES];
+//	}];
 }
 
 

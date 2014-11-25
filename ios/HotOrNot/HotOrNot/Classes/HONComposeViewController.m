@@ -13,13 +13,14 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "UIImage+fixOrientation.h"
-#import "UIImage+ImageEffects.h"
-#import "UIImageView+AFNetworking.h"
+#import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
 #import "NSMutableDictionary+Replacements.h"
 #import "NSString+DataTypes.h"
 #import "NSString+Formatting.h"
+#import "UIImage+fixOrientation.h"
+#import "UIImage+ImageEffects.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "ImageFilter.h"
 #import "TSTapstream.h"
@@ -868,11 +869,9 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	NSCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]]));
 	
-	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
-	
-	if ([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound)
+	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound)
 		return (NO);
 	
 	return ([textField.text length] <= 80 || [string isEqualToString:@""]);

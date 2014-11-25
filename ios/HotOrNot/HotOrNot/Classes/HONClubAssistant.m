@@ -356,6 +356,19 @@ static HONClubAssistant *sharedInstance = nil;
 	return (isFound);
 }
 
+- (BOOL)hasVotedForComment:(HONCommentVO *)commentVO {
+	__block BOOL isFound = NO;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], [@"" stringFromBOOL:([(NSString *)key isEqualToString:[@"" stringFromInt:clubPhotoVO.challengeID]])], clubPhotoVO.challengeID);
+		if ([(NSString *)key isEqualToString:[@"" stringFromInt:commentVO.commentID]])
+			isFound = YES;
+		
+		*stop = isFound;
+	}];
+	
+	return (isFound);
+}
+
 
 - (int)labelIDForAreaCode:(NSString *)areaCode {
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {
@@ -394,6 +407,20 @@ static HONClubAssistant *sharedInstance = nil;
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
+}
+
+- (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSMutableArray *replies = [NSMutableArray array];
+	
+	[[[HONClubAssistant sharedInstance] fetchClubWithClubID:clubPhotoVO.clubID].submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
+//		NSLog(@"REPLY FOR:[%d] -=- ID:[%d] PARENT:[%d]", clubPhotoVO.challengeID, vo.challengeID, vo.parentID);
+		if (vo.parentID == clubPhotoVO.challengeID && [vo.comment length] > 0) {
+			[replies addObject:[HONCommentVO commentWithClubPhoto:vo]];
+		}
+	}];
+	
+	return ([replies copy]);
 }
 
 - (NSArray *)suggestedClubs {
@@ -674,9 +701,17 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpvote:(BOOL)isUpvote {
+- (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpVote:(BOOL)isUpVote {
 	NSMutableDictionary *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-	[votes setValue:(isUpvote) ? @(1) : @(-1) forKey:[@"" stringFromInt:statusUpdateID]];
+	[votes setValue:(isUpVote) ? @(1) : @(-1) forKey:[@"" stringFromInt:statusUpdateID]];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote {
+	NSMutableDictionary *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
+	[votes setValue:(isUpVote) ? @(1) : @(-1) forKey:[@"" stringFromInt:commentID]];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -691,24 +726,37 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
 }
 
-- (void)addClub:(NSDictionary *)club forKey:(NSString *)key {
+- (void)writeClub:(NSDictionary *)club {
 	NSMutableDictionary *allclubs = [[[HONClubAssistant sharedInstance] fetchUserClubs] mutableCopy];
-	NSMutableArray *clubs = [[allclubs objectForKey:key] mutableCopy];
 	
-	BOOL isFound = NO;
-	for (NSDictionary *dict in clubs) {
-		if ([[dict objectForKey:@"id"] isEqualToString:[club objectForKey:@"id"]]) {
-			isFound = YES;
-			break;
-		}
-	}
-	
-	if (!isFound) {
-		[clubs addObject:club];
-		[allclubs setObject:[clubs copy] forKey:key];
+	__block int ind = -1;
+	__block BOOL isFound = NO;
+	__block NSString *key = [[[HONClubAssistant sharedInstance] clubTypeKeys] firstObject];
+	__block NSMutableArray *clubs = [[allclubs objectForKey:key] mutableCopy];
+	[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		key = (NSString *)obj;
 		
-		[[HONClubAssistant sharedInstance] writeUserClubs:[allclubs copy]];
-	}
+		clubs = [[allclubs objectForKey:key] mutableCopy];
+		[clubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSDictionary *dict = (NSDictionary *)obj;
+			if ([[dict objectForKey:@"id"] isEqualToString:[club objectForKey:@"id"]]) {
+				ind = idx;
+				isFound = YES;
+			}
+			
+			*stop = isFound;
+		}];
+		
+		
+		if (isFound && ind > -1) {
+			[clubs removeObjectAtIndex:ind];
+			*stop = YES;
+		}
+	}];
+	
+	[clubs addObject:club];
+	[allclubs setObject:[clubs copy] forKey:key];
+	[[HONClubAssistant sharedInstance] writeUserClubs:[allclubs copy]];
 }
 
 - (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion {
@@ -727,10 +775,11 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (void)writeUserClubs:(NSDictionary *)clubs {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] != nil)
+//		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
+//	[[NSUserDefaults standardUserDefaults] setObject:clubs forKey:@"clubs"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:clubs forKey:@"clubs"];
+	[[NSUserDefaults standardUserDefaults] replaceObject:clubs forKey:@"clubs"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 

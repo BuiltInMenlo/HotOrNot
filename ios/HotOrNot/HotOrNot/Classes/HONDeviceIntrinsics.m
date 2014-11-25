@@ -20,6 +20,8 @@
 #include <sys/socket.h>
 #include <sys/sysctl.h>
 
+#import "NSUserDefaults+Replacements.h"
+
 #import "KeychainItemWrapper.h"
 
 #import "HONDeviceIntrinsics.h"
@@ -143,6 +145,11 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (NSString *)osVersion {
 	return ([[UIDevice currentDevice] systemVersion]);
+}
+
+- (void)writePushToken:(NSString *)pushToken {
+	[[NSUserDefaults standardUserDefaults] replaceObject:pushToken forKey:@"device_token"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSString *)pushToken {

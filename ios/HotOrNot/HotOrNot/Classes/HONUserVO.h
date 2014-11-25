@@ -13,7 +13,7 @@
 
 @property (nonatomic) int userID;
 @property (nonatomic) int points;
-@property (nonatomic) int totalUpvotes;
+@property (nonatomic) int voteScore;
 @property (nonatomic) int totalVolleys;
 @property (nonatomic) BOOL isVerified;
 @property (nonatomic) BOOL isSuspended;

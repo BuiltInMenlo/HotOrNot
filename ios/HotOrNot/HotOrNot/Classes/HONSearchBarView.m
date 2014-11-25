@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSCharacterSet+AdditionalSets.h"
+
 #import "HONSearchBarView.h"
 
 @interface HONSearchBarView ()
@@ -178,11 +180,9 @@
 		[self.delegate searchBarViewHasFocus:self];
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {	
-	NSCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
-	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
-	
-	return (([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) ? NO : YES);
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]]));	
+	return (([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound) ? NO : YES);
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {

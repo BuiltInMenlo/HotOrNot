@@ -6,10 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 @interface UIImage (fixOrientation)
-
 - (UIImage *)fixOrientation;
-
 @end

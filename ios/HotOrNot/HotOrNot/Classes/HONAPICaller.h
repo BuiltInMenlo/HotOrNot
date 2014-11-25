@@ -168,7 +168,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveVoteTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;
-- (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpvote:(BOOL)isUpvote completion:(void (^)(id result))completion;
+- (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpVote:(BOOL)isUpVote completion:(void (^)(id result))completion;
 
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 

@@ -6,17 +6,18 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONClubPhotoVO.h"
+
 @interface HONCommentVO : NSObject
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary;
++ (HONCommentVO *)commentWithClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;
-@property (nonatomic) int challengeID;
+@property (nonatomic) int parentID;
 @property (nonatomic) int userID;
-@property (nonatomic, retain) NSString *fbID;
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) NSString *avatarPrefix;
-@property (nonatomic) int userScore;
-@property (nonatomic, retain) NSString *content;
+@property (nonatomic) int score;
+@property (nonatomic, retain) NSString *textContent;
 @property (nonatomic, retain) NSDate *addedDate;
 @end

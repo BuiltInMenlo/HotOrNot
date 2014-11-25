@@ -13,7 +13,7 @@
 
 @implementation HONTrivialUserVO
 @synthesize dictionary;
-@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, totalUpvotes, invitedDate, joinedDate;
+@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, voteScore, invitedDate, joinedDate;
 
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];
@@ -25,7 +25,7 @@
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? @"" : vo.avatarPrefix;
 	vo.altID = ([dictionary objectForKey:@"alt_id"] != nil) ? [dictionary objectForKey:@"alt_id"] : @"";
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
-	vo.totalUpvotes = [[dictionary objectForKey:@"total_votes"] intValue];
+	vo.voteScore = [[dictionary objectForKey:@"total_votes"] intValue];
 	vo.invitedDate = ([dictionary objectForKey:@"invited"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"invited"]] : [NSDate blankTimestamp];
 	vo.joinedDate =([dictionary objectForKey:@"joined"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]] : [NSDate blankTimestamp];
 	
@@ -58,7 +58,7 @@
 												  @"username"		: [userVO.dictionary objectForKey:@"username"],
 												  @"img_url"		: [userVO.dictionary objectForKey:@"avatar_url"],
 												  @"alt_id"			: [userVO.dictionary objectForKey:@"device_token"],
-												  @"total_votes"	: [@"" stringFromInt:userVO.totalUpvotes],
+												  @"total_votes"	: [@"" stringFromInt:userVO.voteScore],
 												  @"is_verified"	: [@"" stringFromBOOL:userVO.isVerified]}]);
 }
 

@@ -14,72 +14,34 @@ NSString * const kOrthodoxBlankTimestamp	= @"0000-00-00 00:00:00";
 NSString * const kISO860LocaleTemplate		= @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
 NSString * const kISO8601UTCTemplate		= @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'-0000'";
 NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
-NSString * const kOrthodoxLocaleTemplate	= @"yyyy-MM-dd HH:mm:ssZ";
-NSString * const kOrthodoxUTCTemplate		= @"yyyy-MM-dd HH:mm:ss'-0000'";
 
 @implementation NSDateFormatter (Formatting)
-static NSDateFormatter *dateFormatterISO8601 = nil;
-static NSDateFormatter *orthodoxBaseFormatter = nil;
-static NSDateFormatter *dateFormatterOrthodoxTZ = nil;
-static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 
 + (NSDateFormatter *)dateFormatterISO8601:(BOOL)isUTC {
-	static NSDateFormatter *staticInstance = nil;
-	static dispatch_once_t onceToken;
+	NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithTemplate:(isUTC) ? kISO8601UTCTemplate : kISO860LocaleTemplate];
 	
-	dispatch_once(&onceToken, ^{
-		staticInstance = [[self alloc] init];
-		[staticInstance setDateFormat:(isUTC) ? kISO8601UTCTemplate : kISO860LocaleTemplate];
-	});
+	if (isUTC)
+		[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
 	
-	return (staticInstance);
+	return (dateFormatter);
 }
 
-+ (NSDateFormatter *)orthodoxBaseFormatter {
-	static NSDateFormatter *staticInstance = nil;
-	static dispatch_once_t onceToken;
-	
-	dispatch_once(&onceToken, ^{
-		staticInstance = [[self alloc] init];
-		[staticInstance setDateFormat:kOrthodoxTemplate];
-	});
-	
-	return (staticInstance);
++ (NSDateFormatter *)dateFormatterOrthodox:(BOOL)isUTC {
+	return ([NSDateFormatter dateFormatterOrthodoxWithTZ:(isUTC) ? @"UTC" : @""]);
 }
 
-+ (NSDateFormatter *)orthodoxFormatterWithTZ:(NSString *)tzAbbreviation {
-	static NSDateFormatter *staticInstance = nil;
-	static dispatch_once_t onceToken;
++ (NSDateFormatter *)dateFormatterOrthodoxWithTZ:(NSString *)tzAbbreviation {
+	NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithTemplate:kOrthodoxTemplate];
+	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:tzAbbreviation]];
 	
-	dispatch_once(&onceToken, ^{
-		staticInstance = [NSDateFormatter dateFormatterWithTemplate:([tzAbbreviation isEqualToString:@"UTC"]) ? kOrthodoxUTCTemplate : kOrthodoxTemplate];
-		[staticInstance setTimeZone:[NSTimeZone timeZoneWithName:tzAbbreviation]];
-	});
-	
-	return (staticInstance);
-}
-
-+ (NSDateFormatter *)orthodoxUTCDateFormatter {
-	static NSDateFormatter *staticInstance = nil;
-	static dispatch_once_t onceToken;
-	
-	dispatch_once(&onceToken, ^{
-		staticInstance = [NSDateFormatter orthodoxFormatterWithTZ:@"UTC"];
-	});
-	
-	return (staticInstance);
+	return (dateFormatter);
 }
 
 + (NSDateFormatter *)dateFormatterWithTemplate:(NSString *)template {
-	static NSDateFormatter *staticInstance = nil;
-	static dispatch_once_t onceToken;
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:template];
 	
-	dispatch_once(&onceToken, ^{
-		staticInstance = [[self alloc] init];
-		[staticInstance setDateFormat:template];
-	});
-	
-	return (staticInstance);
+	return (dateFormatter);
 }
 
 
@@ -90,7 +52,7 @@ static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 @implementation NSDate (Operations)
 
 + (instancetype)blankTimestamp {
-	return ([[NSDateFormatter orthodoxUTCDateFormatter] dateFromString:kOrthodoxBlankTimestamp]);
+	return ([[NSDateFormatter dateFormatterOrthodox:NO] dateFromString:kOrthodoxBlankTimestamp]);
 }
 
 + (instancetype)blankUTCTimestamp {
@@ -106,7 +68,7 @@ static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 }
 
 + (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC {
-	return ([dateFormatterISO8601 dateFromString:stringDate]);
+	return ([[NSDateFormatter dateFormatterISO8601:isUTC] dateFromString:stringDate]);
 }
 
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate {
@@ -114,15 +76,15 @@ static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 }
 
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC {
-	return ([[NSDateFormatter orthodoxBaseFormatter] dateFromString:stringDate]);
+	return ([[NSDateFormatter dateFormatterOrthodox:isUTC] dateFromString:stringDate]);
 }
 
-+ (instancetype)utcDateFromDate:(NSDate *)date {
-	return ([[NSDateFormatter orthodoxFormatterWithTZ:@""] dateFromString:[[NSDateFormatter orthodoxUTCDateFormatter] stringFromDate:date]]);
++ (instancetype)dateToUTCDate:(NSDate *)date {
+	return ([[NSDateFormatter dateFormatterOrthodoxWithTZ:@""] dateFromString:[[NSDateFormatter dateFormatterOrthodox:NO] stringFromDate:date]]);
 }
 
 + (instancetype)utcNowDate {
-	return ([NSDate utcDateFromDate:[NSDate date]]);
+	return ([NSDate dateToUTCDate:[NSDate date]]);
 }
 
 + (NSString *)stringFormattedISO8601 {
@@ -133,19 +95,26 @@ static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 	return ([[NSDate utcNowDate] formattedISO8601StringUTC]);
 }
 
-
-+ (int)elapsedSecondsSinceDate:(NSDate *)date {
-	return ((int)[[NSDate date] timeIntervalSinceDate:date]);
++ (int)elapsedDaysSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
+	return ([NSDate elapsedSecondsSinceDate:date isUTC:isUTC] / 86400);
 }
 
-+ (int)elapsedSecondsSinceNow:(BOOL)isUTC {
-	return ([NSDate elapsedSecondsSinceDate:(isUTC) ? [NSDate utcNowDate] : [NSDate date]]);
++ (int)elapsedHoursSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
+	return ([NSDate elapsedSecondsSinceDate:date isUTC:isUTC] / 3600);
 }
 
-+ (int)elapsedSecondsSinceUTCDate:(NSDate *)date {
-	return ((int)[[NSDate utcNowDate] timeIntervalSinceDate:date]);
++ (int)elapsedMinutesSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
+	return ([NSDate elapsedSecondsSinceDate:date isUTC:isUTC] / 60);
 }
 
++ (int)elapsedSecondsSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
+	NSDate *nowDate = (isUTC) ? [NSDate utcNowDate] : [NSDate date];
+	return ((int)[nowDate timeIntervalSinceDate:date]);
+}
+
++ (NSString *)elapsedTimeSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
+	return ([NSString stringWithFormat:@"%02d:%02d:%02d", [NSDate elapsedHoursSinceDate:date isUTC:isUTC], [NSDate elapsedMinutesSinceDate:date isUTC:isUTC], [NSDate elapsedSecondsSinceDate:date isUTC:isUTC]]);
+}
 
 + (int)elapsedUTCSecondsSinceUnixEpoch {
 	return ((int)[[NSDate date] timeIntervalSince1970]);

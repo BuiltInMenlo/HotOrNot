@@ -33,6 +33,15 @@
 	return (self);
 }
 
+- (void)dealloc {
+	[self destroy];
+}
+
+- (void)destroy {
+	
+}
+
+
 - (BOOL)accessoryViewsVisible {
 	return (_accessoryViewsVisible);
 }

@@ -6,15 +6,11 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-
 @interface NSDateFormatter (Formatting)
-+ (NSDateFormatter *)dateFormatterISO8601:(BOOL)isUTC;
 + (NSDateFormatter *)dateFormatterWithTemplate:(NSString *)template;
-+ (NSDateFormatter *)orthodoxBaseFormatter;
-+ (NSDateFormatter *)orthodoxFormatterWithTZ:(NSString *)tzAbbreviation;
-+ (NSDateFormatter *)orthodoxUTCDateFormatter;
++ (NSDateFormatter *)dateFormatterISO8601:(BOOL)isUTC;
++ (NSDateFormatter *)dateFormatterOrthodox:(BOOL)isUTC;
++ (NSDateFormatter *)dateFormatterOrthodoxWithTZ:(NSString *)tzAbbreviation;
 
 @end
 
@@ -30,16 +26,19 @@
 + (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC;
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate;
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC;
-+ (instancetype)utcDateFromDate:(NSDate *)date;
++ (instancetype)dateToUTCDate:(NSDate *)date;
 + (instancetype)utcNowDate;
 
 + (NSString *)stringFormattedISO8601;
 + (NSString *)utcStringFormattedISO8601;
 
 
-+ (int)elapsedSecondsSinceDate:(NSDate *)date;
-+ (int)elapsedSecondsSinceNow:(BOOL)isUTC;
-+ (int)elapsedSecondsSinceUTCDate:(NSDate *)date;
++ (int)elapsedDaysSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
++ (int)elapsedHoursSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
++ (int)elapsedMinutesSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
++ (int)elapsedSecondsSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
++ (NSString *)elapsedTimeSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
+
 + (int)elapsedUTCSecondsSinceUnixEpoch;
 
 - (BOOL)didDateAlreadyOccur:(NSDate *)date;
