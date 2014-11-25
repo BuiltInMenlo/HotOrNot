@@ -142,6 +142,10 @@ static NSDateFormatter *dateFormatterOrthodoxUTC = nil;
 	return ([NSDate elapsedSecondsSinceDate:(isUTC) ? [NSDate utcNowDate] : [NSDate date]]);
 }
 
++ (int)elapsedSecondsSinceUTCDate:(NSDate *)date {
+	return ((int)[[NSDate utcNowDate] timeIntervalSinceDate:date]);
+}
+
 
 + (int)elapsedUTCSecondsSinceUnixEpoch {
 	return ((int)[[NSDate date] timeIntervalSince1970]);

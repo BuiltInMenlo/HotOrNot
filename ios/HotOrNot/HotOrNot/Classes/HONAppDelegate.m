@@ -45,7 +45,6 @@
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONInsetOverlayView.h"
-#import "HONTabBarController.h"
 #import "HONUserClubsViewController.h"
 #import "HONVerifyViewController.h"
 #import "HONClubTimelineViewController.h"
@@ -147,7 +146,6 @@ NSString * const kTwilioSMS = @"6475577873";
 
 @implementation HONAppDelegate
 @synthesize window = _window;
-@synthesize tabBarController = _tabBarController;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 
@@ -302,15 +300,6 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (CGFloat)compressJPEGPercentage {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
-}
-
-
-+ (UIViewController *)appTabBarController {
-	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
-}
-
-- (void)changeTabToIndex:(NSNumber *)selectedIndex {
-	self.tabBarController.selectedIndex = [selectedIndex intValue];
 }
 
 
@@ -1020,11 +1009,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
 	}
 	
-//	self.tabBarController = [[HONTabBarController alloc] init];
-//	self.tabBarController.viewControllers = navigationControllers;
-//	self.tabBarController.delegate = self;
-	
-	self.window.rootViewController = [[HONHomeViewController alloc] init];//self.tabBarController;
+	self.window.rootViewController = [[HONHomeViewController alloc] init];
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
@@ -1275,27 +1260,6 @@ NSString * const kTwilioSMS = @"6475577873";
 */
 
 
-#pragma mark - TabBarController Delegates
-- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-	//NSLog(@"shouldSelectViewController:[%@]", viewController);
-	return (YES);
-}
-
-
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-	//NSLog(@"didSelectViewController:[%@]", viewController);
-	
-	if ([UIApplication sharedApplication].statusBarHidden)
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-	
-	if ([UIApplication sharedApplication].statusBarStyle != UIStatusBarStyleLightContent)
-		 [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-}
-
-- (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {
-}
-
-
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
 	NSLog(@"[*:*] insetOverlayViewDidReview");
@@ -1407,14 +1371,12 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
 //		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App - Notification " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		if (buttonIndex == 1) {
-			[self.tabBarController setSelectedIndex:0];
 			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeJoinCLub) {
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-				[self.tabBarController setSelectedIndex:2];
 				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -1429,7 +1391,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeCreateClub) {
 		if (buttonIndex == 0) {
-			[self.tabBarController setSelectedIndex:2];
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:_clubName]];
 			[navigationController setNavigationBarHidden:YES];
 			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
@@ -1437,7 +1398,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeEnterClub) {
 		if (buttonIndex == 1) {
-			[self.tabBarController setSelectedIndex:1];
 			[self.window.rootViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		}
 	}
@@ -1685,7 +1645,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		sticker.userInteractionEnabled = YES;
 		sticker.delegate = self;
 		[sticker setTag:idx];
-		[self.tabBarController.view addSubview:sticker];
 		
 		idx++;
 	}];

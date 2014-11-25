@@ -41,12 +41,10 @@
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
-@property (nonatomic, strong) NSString *fileURL;
 @property (nonatomic, strong) NSMutableDictionary *submitParams;
 @property (nonatomic) BOOL isUploadComplete;
-@property (nonatomic) BOOL isBlurred;
 @property (nonatomic) int uploadCounter;
-@property (nonatomic) int selfieAttempts;
+
 @property (nonatomic, strong) AWSS3PutObjectRequest *por1;
 @property (nonatomic, strong) AWSS3PutObjectRequest *por2;
 @property (nonatomic, strong) AWSS3TransferManagerUploadRequest *uploadReq1;
@@ -84,7 +82,6 @@
 												 selector:@selector(_reloadEmotionPicker:)
 													 name:@"RELOAD_EMOTION_PICKER" object:nil];
 		
-		_selfieAttempts = 0;
 		_filename = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] rndCoverImageURL]];
 		
 		_subject = @"";
@@ -524,7 +521,6 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	_isBlurred = false;
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 	
 	_uploadView = [[UIView alloc] initWithFrame:self.view.frame];
@@ -748,7 +744,6 @@
 }
 
 - (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
-	_isBlurred = isFiltered;
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - take_photo"];
@@ -784,10 +779,6 @@
 	}
 	
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
-	_processedImage = (_isBlurred) ? [_processedImage applyBlurWithRadius:32.0
-																tintColor:[UIColor colorWithWhite:0.00 alpha:0.50]
-													saturationDeltaFactor:1.0
-																maskImage:nil] : _processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
@@ -843,7 +834,6 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
 //									 withProperties:@{@"state"	: @"cancel"}];
 	
-	_isBlurred = NO;
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
 			[self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera];

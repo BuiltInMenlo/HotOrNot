@@ -3,17 +3,16 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "cameraFlip_nonActive@2x-2.png"
+      "filename" : "rowBackground_selected@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "cameraFlip_nonActive@2x-1.png"
+      "filename" : "rowBackground_selected@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "cameraFlip_nonActive@2x.png"
+      "scale" : "3x"
     }
   ],
   "info" : {

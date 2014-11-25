@@ -39,6 +39,7 @@
 
 + (int)elapsedSecondsSinceDate:(NSDate *)date;
 + (int)elapsedSecondsSinceNow:(BOOL)isUTC;
++ (int)elapsedSecondsSinceUTCDate:(NSDate *)date;
 + (int)elapsedUTCSecondsSinceUnixEpoch;
 
 - (BOOL)didDateAlreadyOccur:(NSDate *)date;

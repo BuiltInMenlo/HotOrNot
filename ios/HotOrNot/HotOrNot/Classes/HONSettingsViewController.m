@@ -442,7 +442,6 @@
 				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@0];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
 				}];
 			}];

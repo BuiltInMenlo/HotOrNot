@@ -132,7 +132,7 @@ extern const NSURLRequestCachePolicy kOrthodoxURLCachePolicy;
 extern NSString * const kTwilioSMS;
 
 
-@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
+@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
 + (NSString *)apiServerPath;
 + (NSString *)customerServiceURLForKey:(NSString *)key;
@@ -164,9 +164,6 @@ extern NSString * const kTwilioSMS;
 
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 
-- (void)changeTabToIndex:(NSNumber *)selectedIndex;
-+ (UIViewController *)appTabBarController;
-
 + (CGFloat)compressJPEGPercentage;
 
 
@@ -174,7 +171,6 @@ extern NSString * const kTwilioSMS;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) UITabBarController *tabBarController;
 
 @end
 
