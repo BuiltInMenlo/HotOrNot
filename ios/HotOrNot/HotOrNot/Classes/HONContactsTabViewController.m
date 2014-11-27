@@ -100,7 +100,7 @@
 		}];
 	}];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 //		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 //		_joinedTotalClubs = (_joinedTotalClubs == 0) ? (int)[[result objectForKey:@"pending"] count] : _joinedTotalClubs;
@@ -153,7 +153,7 @@
 			[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxMemberClubDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				
 				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 						[[HONClubAssistant sharedInstance] writeUserClubs:result];
 						[self _didFinishDataRefresh];
 					}];

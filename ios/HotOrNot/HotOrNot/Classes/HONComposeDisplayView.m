@@ -72,10 +72,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 //		_previewImageView.image = [UIImage imageNamed:@"bgComposeUnderlay"];
 		[self addSubview:_previewImageView];
 		
-//		_previewGradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgComposeOverlay"]];
-//		[self addSubview:_previewGradientImageView];
-		
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
+//		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
 		
 		_lineButtonView = [[HONLineButtonView alloc] initAsType:HONLineButtonViewTypeUndetermined withCaption:NSLocalizedString(@"empty_stickers", @"Select a sticker and\nbackground") usingTarget:self action:nil];
 		[_lineButtonView setYOffset:-144.0];

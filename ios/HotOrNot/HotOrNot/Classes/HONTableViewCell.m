@@ -15,6 +15,7 @@
 
 @implementation HONTableViewCell
 @synthesize size = _size;
+@synthesize rowIndex = _rowIndex;
 @synthesize indexPath = _indexPath;
 
 + (NSString *)cellReuseIdentifier {
@@ -44,6 +45,10 @@
 
 - (BOOL)accessoryViewsVisible {
 	return (_accessoryViewsVisible);
+}
+
+- (void)setRowIndex:(NSInteger)rowIndex {
+	_rowIndex = rowIndex;
 }
 
 - (void)setSize:(CGSize)size {

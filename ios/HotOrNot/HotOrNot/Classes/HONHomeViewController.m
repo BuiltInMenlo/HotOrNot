@@ -36,7 +36,8 @@
 @property (nonatomic, strong) HONClubPhotoVO *selectedClubPhoto;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONHomeFeedToggleView *toggleView;
-@property (nonatomic, strong) UILabel *emptyLabel;
+@property (nonatomic, strong) UIView *emptyFeedView;
+@property (nonatomic) int voteScore;
 @end
 
 @implementation HONHomeViewController
@@ -46,6 +47,8 @@
 		_totalType = HONStateMitigatorTotalTypeHomeTab;
 		_viewStateType = HONStateMitigatorViewStateTypeHome;
 		_feedType = HONHomeFeedTypeRecent;
+		_voteScore = 0;
+		
 		
 //		[[NSUserDefaults standardUserDefaults] replaceObject:@{} forKey:@"votes"];
 //		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -97,7 +100,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClubPhotos {
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
@@ -131,7 +134,7 @@
 			[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxMemberClubDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				
 				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 						[[HONClubAssistant sharedInstance] writeUserClubs:result];
 						[self _didFinishDataRefresh];
 					}];
@@ -172,6 +175,12 @@
 	[_collectionView reloadData];
 	
 	[self _retrieveClubPhotos];
+	
+	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
+		NSLog(@"ACTIVITY:[%@]", result);
+		_voteScore = [result intValue];
+	}];
+
 }
 
 - (void)_didFinishDataRefresh {
@@ -193,7 +202,7 @@
 		return ((NSComparisonResult)NSOrderedSame);
 	}] reverseObjectEnumerator] allObjects] mutableCopy];
 	
-	_emptyLabel.hidden = ([_clubPhotos count] > 0);
+	_emptyFeedView.hidden = ([_clubPhotos count] > 0);
 	
 	[_collectionView reloadData];
 	[_refreshControl endRefreshing];
@@ -210,7 +219,14 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
 	self.view.hidden = YES;
+	
+	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
+		NSLog(@"ACTIVITY:[%@]", result);
+		_voteScore = [result intValue];
+	}];
+
 	
 	_clubPhotos = [NSMutableArray array];
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
@@ -220,6 +236,10 @@
 	_toggleView = [[HONHomeFeedToggleView alloc] initAsType:HONHomeFeedTypeRecent];
 	_toggleView.delegate = self;
 	[_headerView addSubview:_toggleView];
+	
+	
+	[_toggleView setSupportedTypes:@[@(HONHomeFeedTypeRecent),
+									 @(HONHomeFeedTypeOwned)]];
 	
 	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONHomeViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONHomeViewCell class] forCellWithReuseIdentifier:[HONHomeViewCell cellReuseIdentifier]];
@@ -234,15 +254,6 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_collectionView addSubview: _refreshControl];
 	
-	_emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 300, (_collectionView.frame.size.height - 22.0) * 0.5)];
-	_emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-	_emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_emptyLabel.backgroundColor = [UIColor clearColor];
-	_emptyLabel.textAlignment = NSTextAlignmentCenter;
-	_emptyLabel.text = NSLocalizedString(@"no_results", @"");
-	_emptyLabel.hidden = YES;
-	[_collectionView addSubview:_emptyLabel];
-	
 	UIButton *composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	composeButton.frame = CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0);
 	[composeButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
@@ -256,6 +267,20 @@
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:settingsButton];
+	
+	_emptyFeedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+	_emptyFeedView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	_emptyFeedView.hidden = YES;
+	[_emptyFeedView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emptyFeedBG"]]];
+	[self.view addSubview:_emptyFeedView];
+
+	UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+	emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
+	emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	emptyLabel.backgroundColor = [UIColor clearColor];
+	emptyLabel.textAlignment = NSTextAlignmentCenter;
+	emptyLabel.text = NSLocalizedString(@"no_results", @"");
+	[_emptyFeedView addSubview:emptyLabel];
 }
 
 - (void)viewDidLoad {
@@ -319,8 +344,8 @@
 - (void)_goActivity {
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Activity"];
 	
-	[[[UIAlertView alloc] initWithTitle:@"100 Ronnie points"
-								message:@"Each vote gives you a single Ronnie point!"
+	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d Ronnie points", _voteScore]
+								message:@"Each image and comment vote gives you a single point."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
@@ -342,6 +367,8 @@
 }
 
 - (void)_goSettings {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - more_button"];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -385,6 +412,7 @@
 - (void)_showFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _showFirstRun <|::");
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter_fr"];
 	[self _goRegistration];
 }
 
@@ -459,8 +487,7 @@
 	NSLog(@"[*:*] homeViewCell:didSelectFeedType:[%@])", (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN");
 	
 	_feedType = feedType;
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Toggle Feed"
-									   withProperties:@{@"type"	: (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN"}];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"new" : @"top"]];
 	
 	[self _goReloadContents];
 }
@@ -469,8 +496,8 @@
 - (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] homeViewCell:didSelectdidSelectClubPhoto:[%d])", clubPhotoVO.challengeID);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Seleted Photo"
-											  withClubPhoto:clubPhotoVO];
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
 	
 	_selectedClubPhoto = clubPhotoVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedClubPhoto]];
@@ -487,12 +514,19 @@
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
 	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, [@"" stringFromCLAuthorizationStatus:status]);// (status == kCLAuthorizationStatusAuthorized) ? @"Authorized" : (status == kCLAuthorizationStatusAuthorizedAlways) ? @"AuthorizedAlways" : (status == kCLAuthorizationStatusAuthorizedWhenInUse) ? @"AuthorizedWhenInUse" : (status == kCLAuthorizationStatusDenied) ? @"Denied" : (status == kCLAuthorizationStatusRestricted) ? @"Restricted" : (status == kCLAuthorizationStatusNotDetermined) ? @"NotDetermined" : @"UNKNOWN");
+	
+	if (status == kCLAuthorizationStatusAuthorized)
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_accept"];
+	
+	else if (status == kCLAuthorizationStatusDenied)
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_cancel"];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
 	NSLog(@"**_[%@ locationManager:didUpdateLocations:(%@)]_**", self.class, locations);
 	[_locationManager stopUpdatingLocation];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
 	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
@@ -525,7 +559,7 @@
 																	  forIndexPath:indexPath];
 	
 	[cell setIndexPath:indexPath];
-	[cell setSize:CGSizeMake(107.0, 107.0)];
+	[cell setSize:kHomeCollectionViewCellSize];
 	
 	HONClubPhotoVO *vo = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.row];
 	cell.clubPhotoVO = vo;
@@ -546,13 +580,11 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);
+	HONHomeViewCell *cell = (HONHomeViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
 	
-	HONHomeViewCell *viewCell = (HONHomeViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
 	
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Selected Photo"
-//										  withClubPhoto:viewCell.clubPhotoVO];
-	
-	_selectedClubPhoto = viewCell.clubPhotoVO;
+	_selectedClubPhoto = cell.clubPhotoVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedClubPhoto]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:^(void) {

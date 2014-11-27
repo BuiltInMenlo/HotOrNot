@@ -132,13 +132,7 @@
 			} completion:nil];
 		};
 		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[ _clubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]]
-																 cachePolicy:kOrthodoxURLCachePolicy
-															 timeoutInterval:[HONAppDelegate timeoutInterval]]
-							   placeholderImage:nil
-										success:avatarImageSuccessBlock
-										failure:avatarImageFailureBlock];
-	}
+		m	}
 }
 
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {

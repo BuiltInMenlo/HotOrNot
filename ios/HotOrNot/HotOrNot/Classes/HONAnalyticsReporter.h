@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
+
 #import "KeenClient.h"
 #import "KeenProperties.h"
 
@@ -26,6 +28,7 @@
 - (NSDictionary *)orthodoxProperties;
 - (NSDictionary *)applicationProperties;
 - (NSDictionary *)deviceProperties;
+- (NSDictionary *)locationProperties;
 - (NSDictionary *)screenStateProperties;
 - (NSDictionary *)sessionProperties;
 - (NSDictionary *)userProperties;

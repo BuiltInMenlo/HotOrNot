@@ -47,7 +47,22 @@ static HONAnimationOverseer *sharedInstance = nil;
 	}
 }
 
+- (BOOL)segueAnimationEnabledForAnyViewController {
+	return (NO);
+}
+
+- (BOOL)segueAnimationEnabledForModalViewController {
+	return ([[HONAnimationOverseer sharedInstance] segueAnimationEnabledForAnyViewController]);
+}
+
+- (BOOL)segueAnimationEnabledForPushViewController {
+	return ([[HONAnimationOverseer sharedInstance] segueAnimationEnabledForAnyViewController]);
+}
+
 - (BOOL)isSegueAnimationEnabledForModalViewController:(UIViewController *)viewController {
+	return ([[HONAnimationOverseer sharedInstance] segueAnimationEnabledForAnyViewController]);
+	
+	
 	if ([viewController isKindOfClass:[HONComposeViewController class]]) {
 		return (NO);
 		
@@ -55,11 +70,14 @@ static HONAnimationOverseer *sharedInstance = nil;
 		return (YES);
 		
 	} else {
-		return (YES);
+		return (NO);
 	}
 }
 
 - (BOOL)isSegueAnimationEnabledForPushViewController:(UIViewController *)viewController {
+	return ([[HONAnimationOverseer sharedInstance] segueAnimationEnabledForAnyViewController]);
+	
+	
 //	if ([viewController isKindOfClass:[HONClubTimelineViewController class]]) {
 		return (NO);
 //

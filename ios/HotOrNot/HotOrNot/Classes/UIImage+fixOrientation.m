@@ -11,6 +11,7 @@
 @implementation UIImage (fixOrientation)
 
 - (UIImage *)fixOrientation {
+	NSLog(@"PRE-ORIENTATION:[%@]", NSStringFromUIImageOrientation(self.imageOrientation));
 	
 	// No-op if the orientation is already correct
 	if (self.imageOrientation == UIImageOrientationUp) return self;
@@ -84,7 +85,7 @@
 	
 	// And now we just create a new UIImage from the drawing context
 	CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
-	UIImage *img = [UIImage imageWithCGImage:cgimg];
+	UIImage *img = [UIImage imageWithCGImage:cgimg scale:1.0 orientation:UIImageOrientationUp];
 	CGContextRelease(ctx);
 	CGImageRelease(cgimg);
 	return img;

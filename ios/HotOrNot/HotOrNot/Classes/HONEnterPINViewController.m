@@ -85,7 +85,6 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_2"];
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {

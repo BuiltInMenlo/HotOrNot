@@ -55,7 +55,7 @@
 - (void)_retrieveClubs {
 	
 	_clubs = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		NSLog(@":/: retrieveClubsForUserByUserID:[%@] :/:", result);
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		

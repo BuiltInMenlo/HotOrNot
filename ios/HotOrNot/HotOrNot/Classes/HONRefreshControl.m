@@ -19,6 +19,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		self.tintColor = [UIColor whiteColor];
 	}
 	
 	return (self);;
@@ -26,6 +27,7 @@
 
 - (id) initWithCoder:(NSCoder *)aDecoder {
 	if ((self = [super initWithCoder:aDecoder])) {
+		self.tintColor = [UIColor whiteColor];
 	}
 	
 	return (self);

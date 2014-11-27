@@ -6,9 +6,11 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MessageUI/MFMailComposeViewController.h>
+
 #import "HONViewController.h"
 #import "HONClubPhotoVO.h"
 
-@interface HONStatusUpdateViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 - (id)initWithStatusUpdate:(HONClubPhotoVO *)statusUpdateVO;
 @end

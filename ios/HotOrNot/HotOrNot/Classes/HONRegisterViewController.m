@@ -134,7 +134,6 @@
 					[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																				@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
 																				@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"],
-																				@"sku"			: [[NSBundle mainBundle] bundleIdentifier],
 																				@"filename"		: @""} completion:^(NSDictionary *result) {
 																					
 						int responseCode = [[result objectForKey:@"result"] intValue];
@@ -414,6 +413,7 @@
 //		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
 		_isPushing = YES;
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - press_signup_button"];
 		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {

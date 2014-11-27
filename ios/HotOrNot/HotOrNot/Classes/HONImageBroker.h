@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
 typedef NS_ENUM(NSUInteger, HONImageBrokerShareTemplateType) {
@@ -40,12 +41,17 @@ typedef NS_ENUM(NSUInteger, HONImageBrokerImageFormat) {
 - (NSString *)defaultAvatarImageURL;
 
 - (double)totalLuminance:(UIImage *)image;
+- (CGFloat)aspectRatioForImage:(UIImage *)image;
 
 - (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
+- (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size preserveRatio:(BOOL)isRatio;
 - (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
 - (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
-- (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect;
+- (UIImage *)cropImage:(UIImage *)image toFillSize:(CGSize)size;
+- (CGRect)rectForCroppedImage:(UIImage *)image toSize:(CGSize)size;
 - (UIImage *)mirrorImage:(UIImage *)image;
+- (UIImage *)imageWithMosaicFX:(CGFloat)pixelSize toImage:(UIImage *)image;
+- (void)fetchLastCameraRollImageWithCompletion:(void (^)(id result))completion;
 
 - (UIImage *)prepForUploading:(UIImage *)image;
 - (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username;

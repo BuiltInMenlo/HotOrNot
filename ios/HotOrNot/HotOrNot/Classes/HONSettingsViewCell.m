@@ -12,13 +12,13 @@
 #import "HONSettingsViewCell.h"
 
 @interface HONSettingsViewCell()
-@property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UILabel *ptsLabel;
 @property (nonatomic, strong) UILabel *captionLabel;
 @end
 
 @implementation HONSettingsViewCell
+@synthesize caption = _caption;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -41,6 +41,12 @@
 	return (self);
 }
 
+
+#pragma mark - Public APIs
+- (void)setCaption:(NSString *)caption {
+	_caption = caption;
+	_captionLabel.text = _caption;
+}
 
 #pragma mark - Navigation
 @end

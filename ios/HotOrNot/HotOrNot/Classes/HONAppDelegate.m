@@ -21,6 +21,7 @@
 //#import <Tapjoy/Tapjoy.h>
 #import "Flurry.h"
 
+#import "NSCharacterSet+AdditionalSets.h"
 #import "NSData+Base64.h"
 #import "NSDate+Operations.h"
 #import "NSString+Base64.h"
@@ -52,11 +53,13 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_sc0007.json";
+//NSString * const kConfigJSON = @"boot_sc0007.json";
+NSString * const kConfigJSON = @"boot_sc0008.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_ios.json";
+//NSString * const kConfigJSON = @"boot_ios.json";
+NSString * const kConfigJSON = @"boot_yunder.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
@@ -64,26 +67,24 @@ NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRD
 NSString * const kBlowfishIV = @"„7ì”~ís";
 
 #if __APPSTORE_BUILD__ == 1
-NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
+NSString * const kKeenIOProductID = @"547280787d8cb91037ffa14f";
+NSString * const kKeenIOMasterKey = @"DEBAFD13136BB67D6DA2782D5B892D71";
+NSString * const kKeenIOReadKey = @"a5974f32089efc21bf3b6c4deffd3d75505d43759b85b421aaff1d5effcc8d64e42a582291432c7405fb25561c66dbf5a0b8977994b337cbeae601257b13ea67e4c535ad7c47f608be64962e5c750b361b338d3eb553ac824463d3ea9afefe0c49ba280510b7e6661918df88e24c5f0b";
+NSString * const kKeenIOWriteKey = @"6721421761b2ce2cbd58bc80cd0529d237339923613734d6e549f9e079f007793958d1da054d6f539a8768476e2f4779ff2828050a354a63f38a5e6d0ec22854fcd2136834f34fbf76d11bafc845a35171282f40c6e310c824664a269c7589ab41cb100429c5f8e22b5ccb8bfda89204";
 #else
-NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
+NSString * const kKeenIOProductID = @"5472803f7d8cb91037ffa14e";
+NSString * const kKeenIOMasterKey = @"6FF7CA039003552C410EC16300F3634E";
+NSString * const kKeenIOReadKey = @"e9657f3cdd1e1c1be9b55933f6d0ff17b124aedd055f9527bf3a9795d948dfb3c43e67d875306eb092bb00dd12bdbfbbba0b5e8851e6a1c91adc1e7a5f673b36e6e52039a6af2981fe44689f67a192324e57de2fe5747a76c55ef2b9f414a306844837739484ab54d85f6c561b10e5b0";
+NSString * const kKeenIOWriteKey = @"b1cdd775a884281f24e673401727f75c05985ae671db08bc85aa5f642673e0f5714552c5edec79607df590391a891d08a194ab93f7064607f91e858c80d3368c1b2964dab554f2006679f10200b6732e5ea3d2892f084212c297b32b06e8d131feda4bb0a732f0236d519f3d2bb29047";
 #endif
 
 
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
-NSString * const kChartboostAppID = @"";
-NSString * const kChartboostAppSignature = @"";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-NSString * const kCritersismAppID = @"5430cc63bb94756634000002";
-
-NSString * const kKeenIOProductID = @"54659ae5e861705e5b596d97";
-NSString * const kKeenIOMasterKey = @"AE16C421C96B9F2FA9F042A4D590FA87";
-NSString * const kKeenIOReadKey = @"e6b3034c8f81bd7eec877b80a465b0f0c9a97b41908dddb03ce995b43741ee26c571bd6806beadce7cd5c3aec8b3af5ffbb3817103e3eed38ae5ed46194ea3b813532aadfbd267b666bab99eb8330aef7993b96950740afc6348aecf8dfe7a0d7d3352f1fa850301275a421a07df61d1";
-NSString * const kKeenIOWriteKey = @"ba2989a9fb4e30427ca7bd7b02bcf2ee9b97fb3a587579b51b7d39e12e4c3abafe8f41ba1d7e5d2be1930e7c00853a4245aebc637464410379eee855ddfc00836a1021f9daca2a6e8af37d97b7055cdc9240d32af404b3f0421bf1cfcc74bb4752f8fa3ee579fd6cbbe96b80768357e9";
-
+NSString * const kFlurryAPIKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
 // view heights
@@ -235,13 +236,15 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 + (void)writeUserInfo:(NSDictionary *)userInfo {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
+	[[NSUserDefaults standardUserDefaults] replaceObject:userInfo forKey:@"user_info"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	NSMutableDictionary *dict = [userInfo mutableCopy];
+	[dict setValue:[NSString stringWithFormat:@"%@_%@_%d", [[userInfo objectForKey:@"username"] stringByTrimmingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] addChars:@"."]], [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES], [[NSDate dateFromISO9601FormattedString:[userInfo objectForKey:@"added"]] unixEpochTimestamp]] forKey:@"username"];
 	
 #if SC_ACCT_BUILD == 0
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
 #else
-	NSMutableDictionary *dict = [userInfo mutableCopy];
 	[dict setObject:@"2394" forKey:@"id"];
 	[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_info"];
 #endif
@@ -266,6 +269,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
 }
+
 
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag {
 //	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
@@ -384,6 +388,16 @@ NSString * const kTwilioSMS = @"6475577873";
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
 			[HONAppDelegate writeUserInfo:result];
 			
+			NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [NSDate utcNowDate];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - day"
+											   withProperties:@{@"day"	: [NSDate utcNowDate]}];
+			
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_date"
+											   withProperties:@{@"cohort_date"	: [[[cohortDate formattedISO8601StringUTC] componentsSeparatedByString:@"T"] firstObject]}];
+			
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_week"
+											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
+			
 //			
 //			[[NSUserDefaults standardUserDefaults] setObject:[HONUserVO userWithDictionary:result] forKey:@"crash"];
 //			[[NSUserDefaults standardUserDefaults] synchronize];
@@ -402,7 +416,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 			
-			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+			[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
 				if (self.window.rootViewController == nil) {
@@ -638,12 +652,38 @@ NSString * const kTwilioSMS = @"6475577873";
 	[self _showFonts];
 #endif
 
+	[Flurry setCrashReportingEnabled:YES];
+	[Flurry startSession:kFlurryAPIKey];
+	[Flurry logEvent:@"launch"];
 	
-	[Flurry startSession:@"PTJPQT9J36BJKH3TZRYM"];
-	[Flurry logEvent:@"App_Launch"];
+//	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 	
 	return (YES);
 }
+
+//- (void) uncaughtExceptionHandler(NSException *exception) {
+//	NSArray *backtrace = [exception callStackSymbols];
+//	NSString *platform = [[UIDevice currentDevice] platform];
+//	NSString *version = [[UIDevice currentDevice] systemVersion];
+//	NSString *message = [NSString stringWithFormat:@"Device: %@. OS: %@. Backtrace:\n%@",
+//						 platform,
+//						 version,
+//						 backtrace];
+//	
+//	[FlurryAPI logError:@"Uncaught" message:message exception:exception];
+//}
+//
+//void uncaughtExceptionHandler(NSException *exception) {
+//	NSArray *backtrace = [exception callStackSymbols];
+//	NSString *platform = [[UIDevice currentDevice] platform];
+//	NSString *version = [[UIDevice currentDevice] systemVersion];
+//	NSString *message = [NSString stringWithFormat:@"Device: %@. OS: %@. Backtrace:\n%@",
+//						 platform,
+//						 version,
+//						 backtrace];
+//	
+//	[FlurryAPI logError:@"Uncaught" message:message exception:exception];
+//}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
@@ -731,6 +771,8 @@ NSString * const kTwilioSMS = @"6475577873";
 
 	
 	if (_isFromBackground) {
+		[Flurry logEvent:@"resume"];
+		
 		if ([[HONAPICaller sharedInstance] hasNetwork]) {
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 				
@@ -824,7 +866,7 @@ NSString * const kTwilioSMS = @"6475577873";
 											  otherButtonTitles:nil] show];
 							
 						} else { // found the user
-							[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
+							[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:userID completion:^(NSDictionary *result) {
 								int clubID = 0;
 								for (NSDictionary *club in [result objectForKey:@"owned"]) {
 									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubName	]) {
@@ -1035,8 +1077,10 @@ NSString * const kTwilioSMS = @"6475577873";
 
 	AWSStaticCredentialsProvider *credentialsProvider = [AWSStaticCredentialsProvider credentialsWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"]
 																									 secretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	
 	AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionUSEast1
 																		  credentialsProvider:credentialsProvider];
+	
 	[AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
 
 	
@@ -1055,171 +1099,6 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
 	}
 }
-
-
-/*
-#pragma mark - UAPushNotification Delegates
-- (void)receivedForegroundNotification:(NSDictionary *)notification {
-	NSLog(@"receivedForegroundNotification:[%@]", notification);
-	
-	if ([[notification objectForKey:@"type"] intValue] == HONPushTypeUserVerified) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-		[alertView setTag:HONAppDelegateAlertTypeVerifiedNotification];
-		[alertView show];
-	
-	} else {
-		if ([notification objectForKey:@"user"] != nil) {
-			_userID = [[notification objectForKey:@"user"] intValue];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-			[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
-			[alertView show];
-			
-		} else
-			[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
-	}
-}
-
-- (void)receivedForegroundNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-	NSLog(@"receivedForegroundNotification:fetchCompletionHandler:[%@]", notification);
-	completionHandler(UIBackgroundFetchResultNoData);
-	
-	if ([[notification objectForKey:@"type"] intValue] == HONPushTypeUserVerified) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-		[alertView setTag:1];
-		[alertView show];
-		
-	} else {
-		if ([notification objectForKey:@"user"] != nil) {
-			_userID = [[notification objectForKey:@"user"] intValue];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-			[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
-			[alertView show];
-			
-		} else
-			[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
-	}
-}
-
-- (void)receivedBackgroundNotification:(NSDictionary *)notification {
-	NSLog(@"receivedBackgroundNotification:[%@]", notification);
-}
-
-- (void)receivedBackgroundNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-	NSLog(@"receivedBackgroundNotification:fetchCompletionHandler:[%@]", notification);
-	completionHandler(UIBackgroundFetchResultNoData);
-}
-
-- (void)launchedFromNotification:(NSDictionary *)notification {
-	NSLog(@"launchedFromNotification:[%@]", notification);
-	
-	UINavigationController *navigationController;
-	
-	int pushType = [[notification objectForKey:@"type"] intValue];
-	if (pushType == HONPushTypeShowChallengeDetails)
-		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
-	
-	else if (pushType == HONPushTypeUserVerified) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-		[alertView setTag:1];
-		[alertView show];
-		
-	} else if (pushType == HONPushTypeShowUserProfile) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
-		
-	} else if (pushType == HONPushTypeShowAddContacts) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-		
-	} else if (pushType == HONPushTypeShowSettings) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-		
-	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
-		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
-	
-	} else {
-		if ([notification objectForKey:@"user"] != nil)
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
-	}
-	
-	if (navigationController != nil) {
-		[navigationController setNavigationBarHidden:YES];
-		if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-			}];
-			
-		} else
-			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-	}
-}
-
-- (void)launchedFromNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-	NSLog(@"launchedFromNotification:fetchCompletionHandler:[%@]", notification);
-	completionHandler(UIBackgroundFetchResultNoData);
-	
-	UINavigationController *navigationController;
-	
-	int pushType = [[notification objectForKey:@"type"] intValue];
-	if (pushType == HONPushTypeShowChallengeDetails)
-		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
-	
-	else if (pushType == HONPushTypeUserVerified) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-		[alertView setTag:1];
-		[alertView show];
-		
-	} else if (pushType == HONPushTypeShowUserProfile) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
-		
-	} else if (pushType == HONPushTypeShowAddContacts) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-		
-	} else if (pushType == HONPushTypeShowSettings) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-		
-	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
-		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
-	
-	} else {
-		if ([notification objectForKey:@"user"] != nil)
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
-	}
-	
-	if (navigationController != nil) {
-		[navigationController setNavigationBarHidden:YES];
-		if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-			}];
-					
-		} else
-			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-	}
-}
-*/
 
 
 #pragma mark - AlertView delegates

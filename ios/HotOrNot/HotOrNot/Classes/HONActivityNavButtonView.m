@@ -18,7 +18,7 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithTarget:target action:action])) {
-		[self setFrame:CGRectOffset(self.frame, 10.0, 0.0)];
+		[self setFrame:CGRectOffset(self.frame, 2.0, 0.0)];
 		
 		_button.frame = CGRectFromSize(CGSizeMake(44.0, 44.0));
 		[_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];

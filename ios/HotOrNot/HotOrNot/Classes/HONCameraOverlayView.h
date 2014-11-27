@@ -9,7 +9,7 @@
 @class HONCameraOverlayView;
 @protocol HONCameraOverlayViewDelegate <NSObject>
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered;
+- (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;

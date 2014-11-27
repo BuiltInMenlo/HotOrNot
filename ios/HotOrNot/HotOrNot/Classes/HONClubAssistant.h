@@ -14,6 +14,8 @@
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
 
+- (void)generateSelfieclubOwnedClubWithName:(NSString *)clubName andBlurb:(NSString *)blurb;
+
 - (NSArray *)clubTypeKeys;
 - (NSDictionary *)createClubDictionary;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
@@ -33,6 +35,8 @@
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
+- (BOOL)isVotingEnabledForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (BOOL)isVotingEnabledForComment:(HONCommentVO *)commentVO;;
 - (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (BOOL)hasVotedForComment:(HONCommentVO *)commentVO;
 - (HONUserClubVO *)userSignupClub;

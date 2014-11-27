@@ -31,6 +31,8 @@
 	if ((self = [super init])) {
 		[self hideChevron];
 		
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentRowBG"]];
+		
 		_commentLabel = [[UILabel alloc] initWithFrame:CGRectMake(8.0, 8.0 - 4.0, 260.0, 20.0 + 22.0)];
 		_commentLabel.backgroundColor = [UIColor clearColor];
 		_commentLabel.textColor = [UIColor blackColor];
@@ -95,7 +97,7 @@
 //									 attributes:@{NSFontAttributeName:_commentLabel.font}
 //										context:nil].size;
 
-//	_commentLabel.frame = CGRectResizeHeight(_commentLabel.frame, (size.width > _commentLabel.frame.size.width) ? 22.0 : 0.0);
+//	_commentLabel.frame = CGRectExtendHeight(_commentLabel.frame, (size.width > _commentLabel.frame.size.width) ? 22.0 : 0.0);
 //	_commentLabel.frame = CGRectOffset(_commentLabel.frame, 0.0, -4.0);
 //	_commentLabel.numberOfLines = (size.width > _commentLabel.frame.size.width) ? 2 : 1;
 	_commentLabel.text = _commentVO.textContent;
@@ -103,10 +105,10 @@
 //	_timeLabel.frame = CGRectMake(8.0, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 4.0, _timeLabel.frame.size.width, _timeLabel.frame.size.height);
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
 	
-	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
-	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
+	[_upVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForComment:_commentVO])];
+	[_downVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForComment:_commentVO])];
 	
-	if (![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO]) {
+	if ([[HONClubAssistant sharedInstance] isVotingEnabledForComment:_commentVO]) {
 		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E6AB19884AE100DA0805 /* searchInputBG_users@2x.png */; };
 		07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E6B119884AE700DA0805 /* searchInputBG_clubs@2x.png */; };
+		30007CA21A25B47300A333F0 /* NSArray+Iterator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30007CA11A25B47300A333F0 /* NSArray+Iterator.m */; };
 		300D1B881A0C30F100D1D9A7 /* HONMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B871A0C30F100D1D9A7 /* HONMapAnnotation.m */; };
 		300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B8A1A0C369700D1D9A7 /* HONMapAnnotationView.m */; };
 		300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */; };
@@ -50,6 +51,7 @@
 		305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3075E02E19D66107007B3346 /* HONCameraOverlayView.m */; };
+		307BBD971A2552BE001CC708 /* UIImage+Transmute.m in Sources */ = {isa = PBXBuildFile; fileRef = 307BBD961A2552BE001CC708 /* UIImage+Transmute.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
 		308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E319E3029E00EE9512 /* libPicoCandySDKCore.a */; };
@@ -272,6 +274,8 @@
 		07B6E6B219884AEB00DA0805 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
 		07B6E6B319884AEF00DA0805 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
 		07B6E6B419884AEF00DA0805 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
+		30007CA01A25B47300A333F0 /* NSArray+Iterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Iterator.h"; sourceTree = "<group>"; };
+		30007CA11A25B47300A333F0 /* NSArray+Iterator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Iterator.m"; sourceTree = "<group>"; };
 		300D1B831A0B93C900D1D9A7 /* HONTimelineMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineMapViewController.h; sourceTree = "<group>"; };
 		300D1B841A0B93C900D1D9A7 /* HONTimelineMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineMapViewController.m; sourceTree = "<group>"; };
 		300D1B861A0C30F100D1D9A7 /* HONMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMapAnnotation.h; sourceTree = "<group>"; };
@@ -346,6 +350,8 @@
 		305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Random.m"; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
 		3075E02E19D66107007B3346 /* HONCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraOverlayView.m; sourceTree = "<group>"; };
+		307BBD951A2552BE001CC708 /* UIImage+Transmute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Transmute.h"; sourceTree = "<group>"; };
+		307BBD961A2552BE001CC708 /* UIImage+Transmute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Transmute.m"; sourceTree = "<group>"; };
 		308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAudioMaestro.h; sourceTree = "<group>"; };
 		308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAudioMaestro.m; sourceTree = "<group>"; };
 		308F35DE19E301E300EE9512 /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
@@ -1515,6 +1521,8 @@
 		4C32B9A515FAB60A0023A0EE /* Compose */ = {
 			isa = PBXGroup;
 			children = (
+				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
+				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
 				4CEC303B17DA5E270016AAE1 /* HONComposeViewController.h */,
 				4CEC303C17DA5E270016AAE1 /* HONComposeViewController.m */,
 			);
@@ -1927,8 +1935,6 @@
 			isa = PBXGroup;
 			children = (
 				3024AB1B19D71DFA0054C6BF /* Abstracts */,
-				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
-				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
 				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
 				4CC94FD8190733C900347A34 /* HONPaginationView.h */,
@@ -2146,6 +2152,8 @@
 		4CF84495166503AC00C0CC5B /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				30007CA01A25B47300A333F0 /* NSArray+Iterator.h */,
+				30007CA11A25B47300A333F0 /* NSArray+Iterator.m */,
 				4CCED5D8181F7AE900D1D673 /* NSArray+NullReplacement.h */,
 				4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */,
 				305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */,
@@ -2180,6 +2188,8 @@
 				4C81A014163337C200AB188B /* UIImage+fixOrientation.m */,
 				4C65C63B194F90800067FEA6 /* UIImage+ImageEffects.h */,
 				4C65C63C194F90800067FEA6 /* UIImage+ImageEffects.m */,
+				307BBD951A2552BE001CC708 /* UIImage+Transmute.h */,
+				307BBD961A2552BE001CC708 /* UIImage+Transmute.m */,
 				4C65C635194F8E590067FEA6 /* UILabel+BoundingRect.h */,
 				4C65C636194F8E590067FEA6 /* UILabel+BoundingRect.m */,
 				4C65C638194F904F0067FEA6 /* UILabel+FormattedText.h */,
@@ -2432,11 +2442,13 @@
 				30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */,
+				307BBD971A2552BE001CC708 /* UIImage+Transmute.m in Sources */,
 				3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */,
 				308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */,
 				4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */,
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
 				3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */,
+				30007CA21A25B47300A333F0 /* NSArray+Iterator.m in Sources */,
 				3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */,
 				30CA9CB31A02FE4400A0A703 /* NSMutableDictionary+Replacements.m in Sources */,
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,

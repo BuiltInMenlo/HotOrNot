@@ -137,7 +137,10 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveNewActivityForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(id result))completion;
-- (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveOwnedClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveTopClubsForWithUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveRecentClubsForUserByUserID:(int)userID afterDate:(NSDate *)date completion:(void (^)(id result))completion;
+
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)removeAllChallengesForUserWithCompletion:(void (^)(id result))completion;
 - (void)removeUserFromVerifyListWithUserID:(int)userID completion:(void (^)(id result))completion;
@@ -197,10 +200,8 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveLocalSchoolTypeClubsWithAreaCode:(NSString *)areaCode completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
-//- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion;
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
-//- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

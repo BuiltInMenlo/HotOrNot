@@ -32,7 +32,6 @@
 + (NSString *)stringFormattedISO8601;
 + (NSString *)utcStringFormattedISO8601;
 
-
 + (int)elapsedDaysSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
 + (int)elapsedHoursSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
 + (int)elapsedMinutesSinceDate:(NSDate *)date isUTC:(BOOL)isUTC;
@@ -47,6 +46,8 @@
 - (int)weekOfMonth;
 - (int)weekOfYear;
 - (int)year;
+
+- (int)unixEpochTimestamp;
 
 - (NSString *)formattedISO8601String;
 - (NSString *)formattedISO8601StringUTC;

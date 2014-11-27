@@ -6,14 +6,36 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AddressBook/AddressBook.h>
+#import <CoreLocation/CoreLocation.h>
+
 //#ifndef HotOrNot_HONStaticInlines_h
 //#define HotOrNot_HONStaticInlines_h
 //#endif
 
 
+/* Definition of `BIM_INLINE'. */
+
+#if !defined(BIM_INLINE)
+# if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#  define BIM_INLINE static inline
+# elif defined(__cplusplus)
+#  define BIM_INLINE static inline
+# elif defined(__GNUC__)
+#  define BIM_INLINE static __inline__
+# else
+#  define BIM_INLINE static
+# endif
+#endif
+
+
+
+#pragma mark - Logging
+
+
 #pragma mark - CGAffineTransform
 
-CG_INLINE CGAffineTransform
+BIM_INLINE CGAffineTransform
 CGAffineTransformMakeScalePercent(CGRect frame, CGFloat percent)
 {
 	CGSize perSize = CGSizeMake(frame.size.width * percent, frame.size.height * percent);
@@ -25,7 +47,7 @@ CGAffineTransformMakeScalePercent(CGRect frame, CGFloat percent)
 	return (t);
 }
 
-CG_INLINE CGAffineTransform
+BIM_INLINE CGAffineTransform
 CGAffineTransformMakeNormal()
 {
 	CGAffineTransform t;
@@ -36,7 +58,57 @@ CGAffineTransformMakeNormal()
 
 #pragma mark - CGRect
 
-CG_INLINE CGRect
+BIM_INLINE CGRect
+CGRectExtendSize(CGRect rect, CGSize size)
+{
+	CGRect resizeRect;
+	resizeRect.origin.x = rect.origin.x;
+	resizeRect.origin.y = rect.origin.y;
+	resizeRect.size.width = rect.size.width + size.width;
+	resizeRect.size.height = rect.size.width + size.height;
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
+CGRectExtendHeight(CGRect rect, CGFloat length)
+{
+	CGRect resizeRect = CGRectExtendSize(rect, CGSizeMake(0.0, length));
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
+CGRectExtendWidth(CGRect rect, CGFloat length)
+{
+	CGRect resizeRect = CGRectExtendSize(rect, CGSizeMake(length, 0.0));
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
+CGRectFactorResize(CGRect rect, CGPoint factor)
+{
+	CGRect resizeRect;
+	resizeRect.origin.x = rect.origin.x;
+	resizeRect.origin.y = rect.origin.y;
+	resizeRect.size.width = rect.size.width * factor.x;
+	resizeRect.size.height = rect.size.height * factor.y;
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
+CGRectFactorResizeX(CGRect rect, CGFloat factor)
+{
+	CGRect resizeRect = CGRectFactorResize(rect, CGPointMake(factor, 1.0));
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
+CGRectFactorResizeY(CGRect rect, CGFloat factor)
+{
+	CGRect resizeRect = CGRectFactorResize(rect, CGPointMake(1.0, factor));
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
 CGRectFromSize(CGSize size)
 {
 	CGRect rect;
@@ -47,51 +119,51 @@ CGRectFromSize(CGSize size)
 	return rect;
 }
 
-CG_INLINE CGRect
+BIM_INLINE CGRect
 CGRectResize(CGRect rect, CGSize size)
 {
 	CGRect resizeRect;
 	resizeRect.origin.x = rect.origin.x;
 	resizeRect.origin.y = rect.origin.y;
-	resizeRect.size.width = rect.size.width + size.width;
-	resizeRect.size.height = rect.size.height + size.height;
+	resizeRect.size.width = size.width;
+	resizeRect.size.height = size.height;
 	return resizeRect;
 }
 
-CG_INLINE CGRect
-CGRectResizeHeight(CGRect rect, CGFloat amount)
+BIM_INLINE CGRect
+CGRectResizeHeight(CGRect rect, CGFloat length)
 {
-	CGRect resizeRect = CGRectResize(rect, CGSizeMake(0.0, amount));
+	CGRect resizeRect = CGRectResize(rect, CGSizeMake(0.0, length));
 	return resizeRect;
 }
 
-CG_INLINE CGRect
-CGRectResizeWidth(CGRect rect, CGFloat amount)
+BIM_INLINE CGRect
+CGRectResizeWidth(CGRect rect, CGFloat length)
 {
-	CGRect resizeRect = CGRectResize(rect, CGSizeMake(amount, 0.0));
+	CGRect resizeRect = CGRectResize(rect, CGSizeMake(length, 0.0));
 	return resizeRect;
 }
 
-CG_INLINE CGRect
-CGRectTranslate(CGRect rect, CGPoint point)
+BIM_INLINE CGRect
+CGRectTranslate(CGRect rect, CGPoint pos)
 {
 	CGRect transRect;
-	transRect.origin.x = point.x;
-	transRect.origin.y = point.y;
+	transRect.origin.x = pos.x;
+	transRect.origin.y = pos.y;
 	transRect.size.width = rect.size.width;
 	transRect.size.height = rect.size.height;
 	
 	return (transRect);
 }
 
-CG_INLINE CGRect
+BIM_INLINE CGRect
 CGRectTranslateX(CGRect rect, CGFloat pos)
 {
 	CGRect transRect = CGRectTranslate(rect, CGPointMake(pos, 0.0));
 	return (transRect);
 }
 
-CG_INLINE CGRect
+BIM_INLINE CGRect
 CGRectTranslateY(CGRect rect, CGFloat pos)
 {
 	CGRect transRect = CGRectTranslate(rect, CGPointMake(0.0, pos));
@@ -101,20 +173,168 @@ CGRectTranslateY(CGRect rect, CGFloat pos)
 
 #pragma mark - CGSize
 
-CG_INLINE CGSize
-CGSizeMult(CGSize size, CGFloat mult)
+BIM_INLINE CGSize
+CGSizeAdd(CGSize size, CGSize amount)
 {
-	CGSize multSize;
-	multSize.width = size.width * mult;
-	multSize.height = size.height * mult;
-	return multSize;
+	CGSize adjSize;
+	adjSize.width = size.width + amount.width;
+	adjSize.height = size.height + amount.height;
+	return adjSize;
 }
 
-CG_INLINE CGSize
-CGSizeMakeSquare(CGFloat length)
+BIM_INLINE CGSize
+CGSizeExpand(CGSize size, CGSize amount)
+{
+	CGSize adjSize;
+	adjSize.width = size.width + amount.width;
+	adjSize.height = size.height + amount.height;
+	return adjSize;
+}
+
+BIM_INLINE CGSize
+CGSizeMult(CGSize size, CGFloat mult)
+{
+	CGSize adjSize;
+	adjSize.width = size.width * mult;
+	adjSize.height = size.height * mult;
+	return adjSize;
+}
+
+BIM_INLINE CGSize
+CGSizeNegate(CGSize size)
+{
+	CGSize negSize;
+	negSize.width = size.width * -1;
+	negSize.height = size.height * -1;
+	return negSize;
+}
+
+BIM_INLINE CGSize
+CGSizeSubtract(CGSize size, CGSize amount)
+{
+	CGSize adjSize = CGSizeAdd(size, CGSizeNegate(size));
+	return adjSize;
+}
+
+
+BIM_INLINE CGSize
+CGSizeFromLength(CGFloat length)
 {
 	CGSize size;
 	size.width = length;
 	size.height = length;
 	return size;
+}
+
+
+#pragma mark - NSString
+
+inline unsigned long long
+__unistrlen(unichar *chars)
+{
+	unsigned long long length = 0llu;
+	if(NULL == chars) return length;
+	
+	while(NULL != &chars[length])
+		length++;
+	
+	return length;
+}
+
+
+BIM_INLINE NSString*
+NSStringFromABAuthorizationStatus(ABAuthorizationStatus val)
+{
+	NSString *string = (val == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (val == kABAuthorizationStatusDenied) ? @"Denied" : (val == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN";
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromBOOL(BOOL val)
+{
+	NSString *string = (val) ? @"YES" : @"NO";
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromCGFloat(CGFloat val)
+{
+	NSString *string = [NSString stringWithFormat:@"%f", (float)val];
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromCLAuthorizationStatus(CLAuthorizationStatus val)
+{
+	NSString *string = (val == kCLAuthorizationStatusAuthorized) ? @"Authorized" : (val == kCLAuthorizationStatusAuthorizedAlways) ? @"AuthorizedAlways" : (val == kCLAuthorizationStatusAuthorizedWhenInUse) ? @"AuthorizedWhenInUse" : (val == kCLAuthorizationStatusDenied) ? @"Denied" : (val == kCLAuthorizationStatusRestricted) ? @"Restricted" : (val == kCLAuthorizationStatusNotDetermined) ? @"NotDetermined" : @"UNKNOWN";
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromCLLocation(CLLocation *val)
+{
+	NSString *string = [NSString stringWithFormat:@"%.04f, %.04f", val.coordinate.longitude, val.coordinate.latitude];
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromDouble(double val)
+{
+	NSString *string = NSStringFromCGFloat((CGFloat)val);
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromFloat(float val)
+{
+	NSString *string = NSStringFromCGFloat((CGFloat)val);
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromHex(unichar *val)
+{
+	NSString *string = [NSString stringWithCharacters:val
+											   length:__unistrlen(val)];
+	return string;
+}
+
+
+BIM_INLINE NSString*
+NSStringFromInt(int val)
+{
+	NSString *string = [NSString stringWithFormat:@"%d", val];
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromNSDictionary(NSDictionary *val)
+{
+	NSString *string = [NSString stringWithFormat:@"%@", val];
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromNSIndexPath(NSIndexPath *val)
+{
+	NSString *string = [NSString stringWithFormat:@"(%ld × %ld)", (long)val.section, (long)val.row];
+	return string;
+}
+
+BIM_INLINE NSString*
+NSStringFromNSNumber(NSNumber *val, int precision)
+{
+	if (precision == 0)
+		return NSStringFromInt([val intValue]);
+	
+	NSString *string = [NSString stringWithFormat:[NSString stringWithFormat:@"%%.0%df", precision], val];
+	return string;
+}
+
+
+BIM_INLINE NSString*
+NSStringFromUIImageOrientation(UIImageOrientation val)
+{
+	NSString *string = (val == UIImageOrientationUp) ? @"Up" : (val == UIImageOrientationDown) ? @"Down" : (val == UIImageOrientationLeft) ? @"Left" : (val == UIImageOrientationRight) ? @"Right" : (val == UIImageOrientationUpMirrored) ? @"UpMirrored" : (val == UIImageOrientationDownMirrored) ? @"DownMirrored" : (val == UIImageOrientationLeftMirrored) ? @"LeftMirrored" : (val == UIImageOrientationRightMirrored) ? @"RightMirrored" : @"UNKNOWN";
+	return string;
 }

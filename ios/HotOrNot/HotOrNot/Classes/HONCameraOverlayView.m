@@ -14,19 +14,13 @@
 
 #import "HONCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONUserVO.h"
-#import "HONContactUserVO.h"
 
 @interface HONCameraOverlayView()
-@property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
-@property (nonatomic, strong) UIView *headerBGView;
 @property (nonatomic, strong) UIButton *cancelButton;
-@property (nonatomic, strong) UIButton *skipButton;
 @property (nonatomic, strong) UIButton *cameraRollButton;
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
-@property (nonatomic, strong) UIImageView *lastCameraRollImageView;
 @end
 
 @implementation HONCameraOverlayView
@@ -39,42 +33,18 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
-		
-//		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]];
-//		gradientImageView.frame = self.frame;
-//		[self addSubview:gradientImageView];
-		
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_camera", @"Take Selfie")];
-		//headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
-		[headerView removeBackground];
-//		[headerView addCloseButtonWithTarget:self action:@selector(_goCancel)];
-		[self addSubview:headerView];
-		
-		_headerBGView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 74.0))];
-		[self addSubview:_headerBGView];
-		
-		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_flipButton.frame = CGRectMake(self.frame.size.width - 44.0, self.frame.size.height - 44.0, 44.0, 44.0);
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_flipButton];
+//		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(1.0, 20.0, 44.0, 44.0);
+		_cancelButton.frame = CGRectMake(1.0, 0.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
-		[_headerBGView addSubview:_cancelButton];
 		
-		_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_skipButton.frame = CGRectMake(270.0, [UIScreen mainScreen].bounds.size.height - 51.0, 44.0, 44.0);
-		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_nonActive"] forState:UIControlStateNormal];
-		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_Active"] forState:UIControlStateHighlighted];
-		[_skipButton addTarget:self action:@selector(_goSkipCamera) forControlEvents:UIControlEventTouchUpInside];
-//		[self addSubview:_skipButton];
-		
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+		[headerView removeBackground];
+		[headerView addButton:_cancelButton];
+		[self addSubview:headerView];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_takePhotoButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0);
@@ -83,17 +53,27 @@
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_takePhotoButton];
 		
-		_lastCameraRollImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRollBG"]];
-		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 9.0, [UIScreen mainScreen].bounds.size.height - 48.0);
-//		[self addSubview:_lastCameraRollImageView];
-		
-		[[HONViewDispensor sharedInstance] maskView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
-		[self _retrieveLastImage];
+		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_flipButton.frame = CGRectMake(self.frame.size.width - 44.0, self.frame.size.height - 44.0, 44.0, 44.0);
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_flipButton];
 		
 		_cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cameraRollButton.frame = _lastCameraRollImageView.frame;
+		_cameraRollButton.frame = CGRectMake(4.0, self.frame.size.height - 40.0, 36.0, 36.0);
+		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollBG"] forState:UIControlStateNormal];
+		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollBG"] forState:UIControlStateHighlighted];
 		[_cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_cameraRollButton];
+//		[self addSubview:_cameraRollButton];
+		
+		UIImageView *cameraRollImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(CGSizeMake(36.0, 36.0))];
+		[_cameraRollButton addSubview:cameraRollImageView];
+		
+		[[HONViewDispensor sharedInstance] maskView:cameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
+		[[HONImageBroker sharedInstance] fetchLastCameraRollImageWithCompletion:^(UIImage *result) {
+			cameraRollImageView.image = result;
+		}];
 	}
 	
 	return (self);
@@ -124,11 +104,6 @@
 		[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
-- (void)_goSkipCamera {
-	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:includeFilter:)])
-		[self.delegate cameraOverlayViewTakePhoto:self includeFilter:YES];
-}
-
 - (void)_goTakePhoto {
 	_blackMatteView.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
@@ -139,29 +114,8 @@
 		}];
 	}];
 	
-	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:includeFilter:)])
-		[self.delegate cameraOverlayViewTakePhoto:self includeFilter:NO];
-}
-
-- (void)_retrieveLastImage {
-	ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
-	[assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-		if (nil != group) {
-			// be sure to filter the group so you only get photos
-			[group setAssetsFilter:[ALAssetsFilter allPhotos]];
-			
-			[group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-				if (asset) {
-					_lastCameraRollImageView.image = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-					*stop = YES;
-				}
-			}];
-		}
-		
-		*stop = NO;
-	} failureBlock:^(NSError *error) {
-		NSLog(@"error: %@", error);
-	}];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:)])
+		[self.delegate cameraOverlayViewTakePhoto:self];
 }
 
 @end

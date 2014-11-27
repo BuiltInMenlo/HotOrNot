@@ -7,8 +7,16 @@
 //
 
 @interface NSCharacterSet (AdditionalSets)
-+ (instancetype) invalidCharacterSet;
-+ (instancetype) invalidCharacterSetWithLetters;
-+ (instancetype) invalidCharacterSetWithNumbers;
-+ (instancetype) invalidCharacterSetWithPunctuation;
++ (instancetype)invalidCharacterSet;
++ (instancetype)invalidCharacterSetWithLetters;
++ (instancetype)invalidCharacterSetWithNumbers;
++ (instancetype)invalidCharacterSetWithPunctuation;
+
++ (instancetype)characterSetCombiningStringChars:(NSString *)appendChars;
++ (instancetype)characterSetExcludingStringChars:(NSString *)dropChars;
+
+
+- (NSCharacterSet *)addChars:(NSString *)appendChars;
+- (NSCharacterSet *)dropChars:(NSString *)excludeChars;
+
 @end

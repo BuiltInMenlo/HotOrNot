@@ -17,6 +17,10 @@
 
 const CGFloat kSnapRatio = 1.775;//1.853125f;
 const CGSize kInstagramSize = {612.0, 612.0};
+//const CGSize kUploadBaseSize = {960.0, 1280.0};
+//const CGSize kUploadBaseSize = {852.0, 1136.0};
+const CGSize kUploadBaseSize = {640.0, 1136.0};
+
 
 @implementation HONImageBroker
 static HONImageBroker *sharedInstance = nil;
@@ -182,6 +186,10 @@ static HONImageBroker *sharedInstance = nil;
 	return (luminance);
 }
 
+- (CGFloat)aspectRatioForImage:(UIImage *)image {
+	return (image.size.width / image.size.height);
+}
+
 - (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	
@@ -226,26 +234,66 @@ static HONImageBroker *sharedInstance = nil;
 
 - (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
 	
-	[image drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
+//	[image drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
+//	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+//	UIGraphicsEndImageContext();
+	
+	UIGraphicsBeginImageContext(size);
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextTranslateCTM(context, 0.0f, size.height);
+	CGContextScaleCTM(context, 1.0f, -1.0f);
+	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
+	
 	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
 	
-//	UIGraphicsBeginImageContext(size);
-//	CGContextRef context = UIGraphicsGetCurrentContext();
-//	CGContextTranslateCTM(context, 0.0f, size.height);
-//	CGContextScaleCTM(context, 1.0f, -1.0f);
-//	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
-//	
-//	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-//	UIGraphicsEndImageContext();
+	return (scaledImage);
+}
+
+- (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size preserveRatio:(BOOL)isRatio {
+	
+	UIImage *scaledImage = nil;
+	CGFloat ratio = [[HONImageBroker sharedInstance] aspectRatioForImage:image];
+	
+	CGSize scaledSize = CGSizeMake(size.width, size.height);
+	CGSize multSize = CGSizeMake(size.width / image.size.width, size.height / image.size.height);
+	CGFloat scaledRatio = scaledSize.width / scaledSize.height;
+	
+	NSLog(@"ORG_RATIO:[%f] SCALE_RATIO:[%f]", ratio, scaledRatio);
+	
+	if (isRatio) {
+		if (ratio == scaledRatio) {
+			if (CGSizeEqualToSize(image.size, kUploadBaseSize))
+				return (image);
+			
+			else
+				scaledSize = CGSizeMake(size.width, size.height);
+		
+		} else {
+			scaledSize = (multSize.width > multSize.height) ? CGSizeMake(image.size.width * multSize.width, image.size.height * multSize.width) : CGSizeMake(image.size.width * multSize.height, image.size.height * multSize.height);
+		}
+	
+	} else {
+		scaledSize = CGSizeMake(size.width, size.height);
+	}
+	
+	
+	UIGraphicsBeginImageContext(scaledSize);
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextTranslateCTM(context, 0.0f, scaledSize.height);
+	CGContextScaleCTM(context, 1.0f, -1.0f);
+	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, scaledSize.width, scaledSize.height), image.CGImage);
+	scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
 	
 	return (scaledImage);
 }
 
 
 - (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor {
+	return ([[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMult(image.size, factor) preserveRatio:YES]);
 	
-	return ([[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(image.size.width * factor, image.size.height * factor)]);
+//	return ([[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(image.size.width * factor, image.size.height * factor)]);
 	
 //	CGSize size = CGSizeMake(image.size.width * factor, image.size.height * factor);
 //	UIGraphicsBeginImageContext(size);
@@ -261,6 +309,17 @@ static HONImageBroker *sharedInstance = nil;
 //	return (scaledImage);
 }
 
+- (CGRect)rectForCroppedImage:(UIImage *)image toSize:(CGSize)size {
+	CGFloat ratio = size.width / size.height; //[[HONImageBroker sharedInstance] aspectRatioForImage:image];
+	
+	// w > h : w < h : w = h
+//	CGPoint pos = (ratio < 1.0) ? CGPointMake(0.0, ((image.size.width / ratio) - size.height) * 0.5) : (ratio > 1.0) ? CGPointMake(((image.size.height * ratio) - size.width) * 0.5, 0.0) : CGPointZero;
+	CGPoint pos = (image.size.width == size.width) ? CGPointMake(0.0, (image.size.width - size.height) * 0.5) : (image.size.height == size.height) ? CGPointMake((image.size.width - size.width) * 0.5, 0.0) : CGPointZero;
+	NSLog(@"CROPPED POS:[%@] (%@)(%@) {%f}", NSStringFromCGPoint(pos), NSStringFromCGSize(image.size), NSStringFromCGSize(size), ratio);
+	
+	return (CGRectMake(pos.x, pos.y, size.width, size.height));
+}
+
 - (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect {
 	CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], rect);
 	
@@ -270,58 +329,12 @@ static HONImageBroker *sharedInstance = nil;
 	return (croppedImage);
 }
 
-- (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect {
-	CGContextRef				context;
-	CGImageRef				  imageRef;
-	CGSize					  inputSize;
-	UIImage					 *outputImage = nil;
-	CGFloat					 scaleFactor, width;
-	
-	
-	// resize, maintaining aspect ratio:
-	inputSize = image.size;
-	scaleFactor = size.height / inputSize.height;
-	width = roundf(inputSize.width * scaleFactor);
-	
-	if (width > size.width) {
-		scaleFactor = size.width / inputSize.width;
-		size.height = roundf(inputSize.height * scaleFactor);
-		
-	} else {
-		size.width = width;
-	}
-	
-	UIGraphicsBeginImageContext(size);
-	
-	context = UIGraphicsGetCurrentContext();
-	CGContextDrawImage(context, CGRectFromSize(size), image.CGImage);
-	outputImage = UIGraphicsGetImageFromCurrentImageContext();
-	
-	UIGraphicsEndImageContext();
-	
-	inputSize = size;
-	
-	// constrain crop rect to legitimate bounds
-	if (rect.origin.x >= inputSize.width || rect.origin.y >= inputSize.height)
-		return (outputImage);
-	
-	if (rect.origin.x + rect.size.width >= inputSize.width)
-		rect.size.width = inputSize.width - rect.origin.x;
-	
-	if (rect.origin.y + rect.size.height >= inputSize.height)
-		rect.size.height = inputSize.height - rect.origin.y;
-	
-	// crop
-	if ((imageRef = CGImageCreateWithImageInRect(outputImage.CGImage, rect))) {
-		outputImage = [[UIImage alloc] initWithCGImage: imageRef];
-		CGImageRelease(imageRef);
-	}
-	
-	return (outputImage);
+- (UIImage *)cropImage:(UIImage *)image toFillSize:(CGSize)size {
+	return ([[HONImageBroker sharedInstance] cropImage:image toRect:[[HONImageBroker sharedInstance] rectForCroppedImage:image toSize:size]]);
 }
 
 - (UIImage *)mirrorImage:(UIImage *)image {
-	NSLog(@"ORIENTATION:[%d]", (int)image.imageOrientation);
+	NSLog(@"MIRROR-ORIENTATION:[%@] >> [%@]", NSStringFromUIImageOrientation(image.imageOrientation), NSStringFromUIImageOrientation((image.imageOrientation + 4) % 8));
 	
 //	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
 //	imageView.transform = CGAffineTransformScale(imageView.transform, -1.0f, 1.0f);
@@ -329,37 +342,77 @@ static HONImageBroker *sharedInstance = nil;
 	
 	return ([UIImage imageWithCGImage:image.CGImage
 								scale:image.scale
-						  orientation:(image.imageOrientation + 4) % 8]);
+			 orientation:(image.imageOrientation + 4) % 8]);
+//						  orientation:(image.imageOrientation + 4) % 8]);
+}
+
+- (UIImage *)imageWithMosaicFX:(CGFloat)pixelSize toImage:(UIImage *)image {
+	UIImage *fxImage = image;
+	
+	return (fxImage);
+}
+
+- (void)fetchLastCameraRollImageWithCompletion:(void (^)(id result))completion {
+	__block UIImage *lastImage = nil;
+	
+	ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+	[assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+		if (nil != group) {
+			// be sure to filter the group so you only get photos
+			[group setAssetsFilter:[ALAssetsFilter allPhotos]];
+			
+			[group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+				if (asset) {
+					lastImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+					*stop = YES;
+				}
+			}];
+		}
+		
+		if (completion)
+			completion(lastImage);
+		
+//		*stop = NO;
+	} failureBlock:^(NSError *error) {
+		NSLog(@"error: %@", error);
+	}];
 }
 
 - (UIImage *)prepForUploading:(UIImage *)image {
-	if (image.imageOrientation != 0)
+	if (image.imageOrientation != UIImageOrientationUp)
 		image = [image fixOrientation];
 	
+	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
-	UIImage *processedImage;
-	float ratio = image.size.width / image.size.height;
+	UIImage *scaledImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES];
+	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
-	NSLog(@"RAW IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), ratio);
+	UIImage *croppedImage = [[HONImageBroker sharedInstance] cropImage:scaledImage toRect:[[HONImageBroker sharedInstance] rectForCroppedImage:scaledImage toSize:kUploadBaseSize]];
+	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
-	if (ratio > 1.0)
-		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0 * ratio, 1280.0)] toRect:CGRectMake(((1280.0 * ratio) - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
-	
-	else if (ratio == 0.75) {
-		if (CGSizeEqualToSize(image.size, CGSizeMake(960.0, 1280.0)))
-			return (image);
-		
-		else
-			processedImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
-		
-	} else if (ratio < 1.0)
-		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 960.0 / ratio)] toRect:CGRectMake(0.0, ((960.0 / ratio) - 1280.0) * 0.5, 960.0, 1280.0)];
-	
-	else
-		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0, 1280.0)] toRect:CGRectMake((1280.0 - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
+	return (croppedImage);
 	
 	
-	return (processedImage);
+//	UIImage *processedImage = image;
+//	float ratio = [[HONImageBroker sharedInstance] aspectRatioForImage:image];//image.size.width / image.size.height;
+//	if (ratio > 1.0)
+//		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0 * ratio, 1280.0)] toRect:CGRectMake(((1280.0 * ratio) - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
+//	
+//	else if (ratio == 0.75) {
+//		if (CGSizeEqualToSize(image.size, CGSizeMake(960.0, 1280.0)))
+//			return (image);
+//		
+//		else
+//			processedImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
+//		
+//	} else if (ratio < 1.0)
+//		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 960.0 / ratio)] toRect:CGRectMake(0.0, ((960.0 / ratio) - 1280.0) * 0.5, 960.0, 1280.0)];
+//	
+//	else
+//		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0, 1280.0)] toRect:CGRectMake((1280.0 - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
+//	
+//	
+//	return (processedImage);
 }
 
 - (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {

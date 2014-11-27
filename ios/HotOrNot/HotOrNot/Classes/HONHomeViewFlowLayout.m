@@ -15,7 +15,7 @@ const CGSize kHomeCollectionViewCellSpacing = {0.0, 0.0};
 
 - (id)init {
 	if ((self = [super init])) {
-		self.itemSize = kHomeCollectionViewCellSize;
+		self.itemSize = kHomeCollectionViewCellSize;//CGSizeFromLength(106.0);
 		self.scrollDirection = UICollectionViewScrollDirectionVertical;
 		self.minimumInteritemSpacing = kHomeCollectionViewCellSpacing.width;
 		self.minimumLineSpacing = kHomeCollectionViewCellSpacing.height;

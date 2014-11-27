@@ -198,6 +198,12 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
+	
+	
+	self.view.backgroundColor = [UIColor whiteColor];
+	
 	_isSubmitting = NO;
 	_replies = [[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO];
 	
@@ -285,7 +291,7 @@
 	_inputBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_inputBGImageView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 12.0, 280.0, 22.0)];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 12.0, 235.0, 21.0)];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -332,13 +338,14 @@
 }
 
 - (void)_goFlag {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flag"];
+	
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 		[mailComposeViewController setSubject:@"Flag"];
 		[mailComposeViewController setMessageBody:@"" isHTML:NO];
-//		mailComposeViewController.mailComposeDelegate = self;
-		
-		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+		mailComposeViewController.mailComposeDelegate = self;
+		[self presentViewController:mailComposeViewController animated:NO completion:^(void) {}];
 		
 	} else {
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
@@ -350,7 +357,7 @@
 }
 
 - (void)_goUpVote {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - up"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - details_up"];
 	
 	[_upVoteButton setEnabled:NO];
 	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
@@ -361,6 +368,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:YES completion:^(NSDictionary *result) {
 		_statusUpdateVO.score++;
+		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:YES];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
@@ -368,7 +376,7 @@
 }
 
 - (void)_goDownVote {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - down"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - details_down"];
 	
 	[_upVoteButton setEnabled:NO];
 	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
@@ -378,6 +386,7 @@
 	
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:NO completion:^(NSDictionary *result) {
 		_statusUpdateVO.score--;
+		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:NO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
@@ -476,6 +485,7 @@
 - (void)commentViewCell:(HONCommentViewCell *)cell didDownVoteComment:(HONCommentVO *)commentVO {
 	NSLog(@"[*:*] commentViewCell:didDownVoteComment:[%@])", commentVO.dictionary);
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - comment_down"];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:commentVO.commentID isUpVote:NO completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeCommentAsVotedWithID:commentVO.commentID asUpVote:NO];
 		commentVO.score--;
@@ -486,6 +496,7 @@
 - (void)commentViewCell:(HONCommentViewCell *)cell didUpVoteComment:(HONCommentVO *)commentVO {
 	NSLog(@"[*:*] commentViewCell:didUpVoteComment:[%@])", commentVO.dictionary);
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - comment_up"];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:commentVO.commentID isUpVote:YES completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeCommentAsVotedWithID:commentVO.commentID asUpVote:YES];
 		commentVO.score++;
@@ -544,7 +555,7 @@
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateDisabled];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
+	[_upVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO])];
 	[view addSubview:_upVoteButton];
 	
 	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -552,11 +563,11 @@
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateDisabled];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
+	[_downVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO])];
 	[view addSubview:_downVoteButton];
 	
-	//	NSLog(@"HAS VOTED:[%@]", [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO]]);
-	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]) {
+	//	NSLog(@"HAS VOTED:[%@]", [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_clubPhotoVO]]);
+	if ([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO]) {
 		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}
@@ -643,6 +654,38 @@
 	if (!_isSubmitting && [_commentTextField.text length] > 0)
 		[self _goCommentReply];
 }
+
+
+#pragma mark - MailCompose Delegates
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+
+//	NSString *mpAction = @"";
+//	switch (result) {
+//		case MFMailComposeResultCancelled:
+//			mpAction = @"Canceled";
+//			break;
+//
+//		case MFMailComposeResultFailed:
+//			mpAction = @"Failed";
+//			break;
+//
+//		case MFMailComposeResultSaved:
+//			mpAction = @"Saved";
+//			break;
+//
+//		case MFMailComposeResultSent:
+//			mpAction = @"Sent";
+//			break;
+//
+//		default:
+//			mpAction = @"Not Sent";
+//			break;
+//	}
+	
+	[controller dismissViewControllerAnimated:NO completion:^(void) {
+	}];
+}
+
 
 
 #pragma mark - AlertView Delegates

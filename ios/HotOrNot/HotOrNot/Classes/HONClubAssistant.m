@@ -36,6 +36,16 @@ static HONClubAssistant *sharedInstance = nil;
 	return (self);
 }
 
+- (void)generateSelfieclubOwnedClubWithName:(NSString *)clubName andBlurb:(NSString *)blurb {
+	[[HONAPICaller sharedInstance] createClubWithTitle:([clubName length] == 0) ? [NSString stringWithFormat:@"%d_%d", 2394, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : clubName withDescription:([blurb length] > 0) ? blurb : @"STAFF_CLUB" withImagePrefix:[[HONClubAssistant sharedInstance] defaultClubPhotoURL] completion:^(NSDictionary *result) {
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:result];
+		NSLog(@"CLUB:[%@]", NSStringFromNSDictionary(vo.dictionary));
+	}];
+}
+
+
+
+
 - (NSArray *)clubTypeKeys {
 	return (@[@"pending",
 			  @"owned",
@@ -356,6 +366,10 @@ static HONClubAssistant *sharedInstance = nil;
 	return (isFound);
 }
 
+- (BOOL)isVotingEnabledForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	return (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:clubPhotoVO] && [[HONGeoLocator sharedInstance] isWithinOrthodoxClub]);
+}
+
 - (BOOL)hasVotedForComment:(HONCommentVO *)commentVO {
 	__block BOOL isFound = NO;
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -367,6 +381,10 @@ static HONClubAssistant *sharedInstance = nil;
 	}];
 	
 	return (isFound);
+}
+
+- (BOOL)isVotingEnabledForComment:(HONCommentVO *)commentVO {
+	return (![[HONClubAssistant sharedInstance] hasVotedForComment:commentVO] && [[HONGeoLocator sharedInstance] isWithinOrthodoxClub]);
 }
 
 
@@ -785,7 +803,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSDictionary *)fetchUserClubs {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] == nil) {
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		}];
 	}

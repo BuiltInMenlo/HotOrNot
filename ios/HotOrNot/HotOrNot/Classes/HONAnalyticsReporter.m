@@ -12,13 +12,6 @@
 #import "HONAnalyticsReporter.h"
 
 
-#if __APPSTORE_BUILD__ == 1
-NSString * const kKeenIOEventCollection = @"iOS - Live";
-#else
-NSString * const kKeenIOEventCollection = @"iOS - DEV";
-#endif
-
-
 @implementation HONAnalyticsReporter
 static HONAnalyticsReporter *sharedInstance = nil;
 
@@ -45,6 +38,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 - (NSDictionary *)orthodoxProperties {
 	return (@{@"user"			: [[HONAnalyticsReporter sharedInstance] userProperties],
 			  @"device"			: [[HONAnalyticsReporter sharedInstance] deviceProperties],
+			  @"location"		: [[HONAnalyticsReporter sharedInstance] locationProperties],
 //			  @"session"		: [[HONAnalyticsReporter sharedInstance] sessionProperties],
 			  @"application"	: [[HONAnalyticsReporter sharedInstance] applicationProperties]});//,
 //			  @"screen_state"	: [[HONAnalyticsReporter sharedInstance] screenStateProperties]});
@@ -62,7 +56,8 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	return (@{@"platform"			: [[HONDeviceIntrinsics sharedInstance] osName],
 			  @"platform_version"	: [[HONDeviceIntrinsics sharedInstance] osVersion],
 			  @"hardware_make"		: [[[HONDeviceIntrinsics sharedInstance] modelName] substringToIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
-			  @"hardware_model"		: [[[HONDeviceIntrinsics sharedInstance] modelName] substringFromIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3]});//,
+			  @"hardware_model"		: [[[HONDeviceIntrinsics sharedInstance] modelName] substringFromIndex:[[[HONDeviceIntrinsics sharedInstance] modelName] length] - 3],
+			  @"sku"				: [[[[NSBundle mainBundle] bundleIdentifier] componentsSeparatedByString:@"."] lastObject]});
 //			  @"resolution"		: NSStringFromCGSize([UIScreen mainScreen].bounds.size),
 //			  @"os"				: [[HONDeviceIntrinsics sharedInstance] osName],
 //			  @"os_version"		: [[HONDeviceIntrinsics sharedInstance] osVersion],
@@ -75,6 +70,13 @@ static HONAnalyticsReporter *sharedInstance = nil;
 //			  @"longitude"		: [NSString stringWithFormat:@"%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
 //			  @"battery_per"	: [NSString stringWithFormat:@"%.02f", ([UIDevice currentDevice].batteryLevel * 100.0)],
 //			  @"hmac"			: [[HONDeviceIntrinsics sharedInstance] hmacToken]});
+}
+
+
+- (NSDictionary *)locationProperties {
+	CLLocation *location = [[HONDeviceIntrinsics sharedInstance] deviceLocation];
+	return (@{@"latitude"	: @(location.coordinate.latitude),
+			  @"longitude"	: @(location.coordinate.longitude)});
 }
 
 - (NSDictionary *)screenStateProperties {
@@ -101,7 +103,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 //			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
 //			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
 			 @"time"		: [[NSDate utcNowDate] formattedISO8601StringUTC],
-			 @"timezone"	: [[NSDate date] utcHourOffsetFromDeviceLocale],
+			 @"time_zone"	: [[NSDate date] utcHourOffsetFromDeviceLocale],
 			 @"cohort_date"	: [[[cohortDate formattedISO8601StringUTC] componentsSeparatedByString:@"T"] firstObject],
 			 @"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]});
 }

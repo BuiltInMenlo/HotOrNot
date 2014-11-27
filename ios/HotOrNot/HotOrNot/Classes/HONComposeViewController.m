@@ -20,6 +20,7 @@
 #import "NSString+Formatting.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImage+ImageEffects.h"
+#import "UIImage+Transmute.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "ImageFilter.h"
@@ -74,7 +75,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - enter_step_0"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - enter_compose"];
 		
 		_totalType = HONStateMitigatorTotalTypeCompose;
 		_viewStateType = HONStateMitigatorViewStateTypeCompose;
@@ -142,97 +143,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_submitReplyStatusUpdate {
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.taskInProgress = YES;
-	
-	_selectedUsers = [NSMutableArray array];
-	_selectedContacts = [NSMutableArray array];
-	
-	__block NSString *names = @"";
-	NSMutableArray *participants = [NSMutableArray array];
-	
-	NSLog(@"activeMembers:%@", _userClubVO.activeMembers);
-	NSLog(@"pendingMembers:%@", _userClubVO.pendingMembers);
-	
-	[_userClubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-		NSLog(@"activeMembers:%@", vo.dictionary);
-		[_selectedUsers addObject:vo];
-		[participants addObject:vo.username];
-		names = [names stringByAppendingFormat:@"%@, ", vo.username];
-	}];
-	
-	[_userClubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-		NSLog(@"pendingMembers:%@", vo.dictionary);
-		
-		if ([vo.altID length] > 0)
-			[_selectedContacts addObject:[HONContactUserVO contactFromTrivialUserVO:vo]];
-		
-		else
-			[_selectedUsers addObject:vo];
-		
-		[participants addObject:vo.username];
-		names = [names stringByAppendingFormat:@"%@, ", vo.username];
-	}];
-	
-	names = [names stringByTrimmingFinalSubstring:@", "];
-	
-	NSLog(@"_selectedUsers:%@", _selectedUsers);
-	NSLog(@"_selectedContacts:%@", _selectedContacts);
-	
-	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| CLUB -=- (CREATE) |~|*|~|*|~|*|~|*|~|*|~|*^*");
-	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
-	[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
-	_userClubVO = [HONUserClubVO clubWithDictionary:dict];
-	
-	[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
-		_userClubVO = [HONUserClubVO clubWithDictionary:result];
-		[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forKey:@"club_id"];
-		
-		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-		[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kProgressHUDMinDuration;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = @"Error!";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-				_progressHUD = nil;
-				
-			} else {
-//				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:result];
-//				[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:challengeVO.challengeID onCompletion:^(NSDictionary *result) {
-				
-					//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
-//													   withProperties:[self _trackingProps]];
-				
-					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
-						if (_progressHUD != nil) {
-							[_progressHUD hide:YES];
-							_progressHUD = nil;
-						}
-						
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
-						}];
-					}];
-//				}];
-			}
-		}];
-	}];
-}
-
-
 - (void)_uploadPhotos {
 	_isUploadComplete = NO;
 	_uploadCounter = 0;
@@ -243,8 +153,13 @@
 	_filename = [NSString stringWithFormat:@"%@/%@_%@_%d", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], coords, [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 	NSLog(@"FILE PATH:%@", _filename);
 	
-	UIImage *largeImage = _processedImage;//[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *squareImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectFromSize(CGSizeMult(kSnapMediumSize, 2.0))];// CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *largeImage = _processedImage;
+	UIImage *scaledImage = [[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(320.0, 284.0) preserveRatio:YES];
+	UIImage *squareImage = [[HONImageBroker sharedInstance] cropImage:scaledImage toFillSize:CGSizeFromLength(320.0)];
+	
+	NSLog(@"LARGE IMAGE:[%@] (%@)", NSStringFromCGSize(largeImage.size), NSStringFromUIImageOrientation(largeImage.imageOrientation));
+	NSLog(@"SCALED IMAGE:[%@] (%@)", NSStringFromCGSize(scaledImage.size), NSStringFromUIImageOrientation(scaledImage.imageOrientation));
+	NSLog(@"SQUARE IMAGE:[%@] (%@)", NSStringFromCGSize(squareImage.size), NSStringFromUIImageOrientation(squareImage.imageOrientation));
 	
 	NSString *largeURL = [[[_filename componentsSeparatedByString:@"/"] lastObject] stringByAppendingString:kSnapLargeSuffix];
 	NSString *squareURL = [[[_filename componentsSeparatedByString:@"/"] lastObject] stringByAppendingString:kSnapMediumSuffix];
@@ -349,7 +264,7 @@
 						  otherButtonTitles:nil] show];
 		
 	} else {
-		_isPushing = YES;
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flag"];
 		
 		NSError *error;
 		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjectNames options:0 error:&error]
@@ -528,7 +443,7 @@
 	[self.view addSubview:_uploadView];
 	
 	_previewImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	_previewImageView.frame = CGRectInset(_previewImageView.frame, -37.0, -68.0);
+	_previewImageView.frame = CGRectInset(_previewImageView.frame, -25.0, -48.0);
 	_previewImageView.frame = CGRectOffset(_previewImageView.frame, 25.0, 20.0);
 	[_uploadView addSubview:_previewImageView];
 	
@@ -540,7 +455,7 @@
 	[keyboardButton addTarget:self action:@selector(_goDropKeyboard) forControlEvents:UIControlEventTouchUpInside];
 	//[self.view addSubview:keyboardButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"Preview")];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView removeBackground];
 	_headerView.hidden = YES;
 	[self.view addSubview:_headerView];
@@ -554,11 +469,12 @@
 	[_headerView addSubview:_cameraBackButton];
 	
 	
-	_textBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 100.0, 320.0, 100.0)];
+	_textBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 88.0, 320.0, 44.0)];
 	_textBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	_textBGView.hidden = YES;
 	[self.view addSubview:_textBGView];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 5.0, 300.0, 22.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 11.0, 300.0, 22.0)];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -566,10 +482,10 @@
 	[_subjectTextField setTextColor:[UIColor whiteColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_subjectTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	_subjectTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 	_subjectTextField.keyboardType = UIKeyboardTypeASCIICapable;
 	_subjectTextField.textAlignment = NSTextAlignmentCenter;
-	_subjectTextField.text = @"Say something…";
+	_subjectTextField.text = @"Say something";
 	_subjectTextField.delegate = self;
 	[_textBGView addSubview:_subjectTextField];
 	
@@ -601,9 +517,8 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	NSLog(@"[*:*] _goCancel");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - exit"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - exit_button"];
 	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Cancel"];
 	[self _cancelUpload];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 	[self dismissViewControllerAnimated:NO completion:^(void) {
@@ -613,8 +528,7 @@
 }
 
 - (void)_goSubmit {
-	_isPushing = YES;
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - submit"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit_compose"];
 	[self _modifySubmitParamsAndSubmit:_subjectNames];
 }
 
@@ -722,8 +636,7 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Flip Camera"
-//								   withCameraDevice:self.imagePickerController.cameraDevice];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - flip_button"];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
 	
@@ -744,7 +657,7 @@
 	}];
 }
 
-- (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
+- (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - take_photo"];
@@ -769,6 +682,12 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - take_photo"];
+	
+	NSLog(@"MIRRORED:[%@]", NSStringFromBOOL(isSourceImageMirrored));
+	
+	UIImage *srcImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+	NSLog(@"SRC IMAGE:[%@] (%@)", NSStringFromCGSize(srcImage.size), NSStringFromUIImageOrientation(srcImage.imageOrientation));
 	
 //	if (picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Camera Roll"
@@ -779,53 +698,75 @@
 		_maskImageView = nil;
 	}
 	
-	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
-	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
+	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] prepForUploading:srcImage]] : [[HONImageBroker sharedInstance] prepForUploading:srcImage];
+	NSLog(@"PROCESSED IMAGE:[%@] (%@)", NSStringFromCGSize(_processedImage.size), NSStringFromUIImageOrientation(_processedImage.imageOrientation));
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
-	canvasView.clipsToBounds = YES;
-	[self.view addSubview:canvasView];
+	UIImage *previewImage = [[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:kSnapLargeSize preserveRatio:YES];
+	NSLog(@"PREVIEW IMAGE:[%@] (%@)", NSStringFromCGSize(previewImage.size), NSStringFromUIImageOrientation(_processedImage.imageOrientation));
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(-53.0, 0.0, 426.0, kSnapLargeSize.height)];
-	imageView.image = _processedImage;
-	[canvasView addSubview:imageView];
+	_previewImageView.image = previewImage;
+	//float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+	//_previewImageView.frame = CGRectFactorResize(_previewImageView.frame, CGPointMake(scale, scale));
+//	NSLog(@"PREVIEW FRAME:[%@]", NSStringFromCGRect(_previewImageView.frame));
 	
-	_processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
+//	_processedImage = [[HONImageBroker sharedInstance] scaleImage:(isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:_processedImage] : _processedImage toSize:CGSizeMult(kSnapLargeSize, 2.0)];
+//	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
-	CIImage *filterInputImage = [CIImage imageWithCGImage:[[HONImageBroker sharedInstance] mirrorImage:_processedImage].CGImage];
-	CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
-	[filter setValue:filterInputImage forKey:kCIInputImageKey];
-	[filter setValue:@(32) forKey:kCIInputScaleKey];
-	CIImage *filterOutputImage = filter.outputImage;
 	
-	CIContext* ctx = [CIContext contextWithOptions:nil];
-	CGImageRef createdImage = [ctx createCGImage:filterOutputImage fromRect:filterOutputImage.extent];
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
+//	imageView.image = _processedImage;
+//	[self.view addSubview:imageView];
 	
-	UIImage *outputImage = [UIImage imageWithCGImage:createdImage scale:1.0 orientation:UIImageOrientationUpMirrored];
-	CGImageRelease(createdImage);
-	createdImage = nil;
 	
-	_previewImageView.image = _processedImage;
+//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kSnapLargeSize)];
+//	canvasView.clipsToBounds = YES;
+//	[self.view addSubview:canvasView];
+//
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(-53.0, 0.0, 426.0, kSnapLargeSize.height)];
+//	imageView.image = _processedImage;
+//	[canvasView addSubview:imageView];
+//	
+//	_processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
+//	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
+	
+	
+//	
+//	CIImage *filterInputImage = [CIImage imageWithCGImage:[[HONImageBroker sharedInstance] mirrorImage:_processedImage].CGImage];
+//	CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
+//	[filter setValue:filterInputImage forKey:kCIInputImageKey];
+//	[filter setValue:@(32) forKey:kCIInputScaleKey];
+//	CIImage *filterOutputImage = filter.outputImage;
+//	
+//	CIContext* ctx = [CIContext contextWithOptions:nil];
+//	CGImageRef createdImage = [ctx createCGImage:filterOutputImage fromRect:filterOutputImage.extent];
+//	
+//	UIImage *outputImage = [UIImage imageWithCGImage:createdImage scale:1.0 orientation:UIImageOrientationUpMirrored];
+//	CGImageRelease(createdImage);
+//	createdImage = nil;
+	
+	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"taken_photo"] isEqualToString:NSStringFromBOOL(YES)]) {
+		[[[UIAlertView alloc] initWithTitle:@"Touch to pixelate"
+									message:@"Use the pixelate tool to protect the identity who you are, or what you are doing."
+								   delegate:nil cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(YES) forKey:@"taken_photo"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 	
 	[[HONViewDispensor sharedInstance] maskView:_filteredImageView withMask:_maskImageView.image];
-	
-	_filteredImageView.image = outputImage;
-	[canvasView removeFromSuperview];
+	_filteredImageView.image = [_processedImage imageWithMosaic:48.0];
 	
 	
-//	[_composeDisplayView updatePreview:[[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)]];
-	
-//	if (_progressHUD != nil) {
-//		[_progressHUD hide:YES];
-//		_progressHUD = nil;
-//	}
+//	[canvasView removeFromSuperview];
 	
 	_headerView.hidden = NO;
+	_textBGView.hidden = NO;
 	_submitButton.hidden = NO;
+	
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self _uploadPhotos];
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - enter_step_2"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - enter_step_2"];
 	}];
 }
 
@@ -855,10 +796,13 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - add_subject"];
+	
 	_subjectTextField.text = @"";
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _textBGView.frame = CGRectMake(_textBGView.frame.origin.x, self.view.frame.size.height - (216.0 + _textBGView.frame.size.height), _textBGView.frame.size.width, _textBGView.frame.size.height);
+						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, self.view.frame.size.height - 368.0);
+						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, self.view.frame.size.height - 324.0);
 					 } completion:^(BOOL finished) {
 					 }];
 }
@@ -888,7 +832,8 @@
 	textField.text = ([textField.text length] == 0) ? @"Same something…" : textField.text;
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _textBGView.frame = CGRectMake(_textBGView.frame.origin.x, self.view.frame.size.height - _textBGView.frame.size.height, _textBGView.frame.size.width, _textBGView.frame.size.height);
+						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, (self.view.frame.size.height - 44.0) - _textBGView.frame.size.height);
+						 _submitButton.frame = CGRectTranslateY(_submitButton.frame, self.view.frame.size.height - 44.0);
 					 } completion:^(BOOL finished) {
 					 }];
 

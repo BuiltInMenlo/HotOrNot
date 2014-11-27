@@ -12,4 +12,6 @@
 + (NSString *)cellReuseIdentifier;
 
 - (id)initWithCaption:(NSString *)caption;
+
+@property (nonatomic, strong) NSString *caption;
 @end

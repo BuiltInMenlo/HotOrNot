@@ -19,4 +19,8 @@ extern const CGFloat kProgressHUDErrorDuration;
 - (BOOL)isSegueAnimationEnabledForModalViewController:(UIViewController *)viewController;
 - (BOOL)isSegueAnimationEnabledForPushViewController:(UIViewController *)viewController;
 
+- (BOOL)segueAnimationEnabledForAnyViewController;
+- (BOOL)segueAnimationEnabledForModalViewController;
+- (BOOL)segueAnimationEnabledForPushViewController;
+
 @end

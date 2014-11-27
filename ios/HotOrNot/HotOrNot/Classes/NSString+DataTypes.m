@@ -11,15 +11,15 @@
 @implementation NSString (DataTypes)
 
 
-unsigned long long unistrlen(unichar *chars) {
-	unsigned long long length = 0llu;
-	if(NULL == chars) return length;
-	
-	while(NULL != &chars[length])
-		length++;
-	
-	return length;
-}
+//unsigned long long unistrlen(unichar *chars) {
+//	unsigned long long length = 0llu;
+//	if(NULL == chars) return length;
+//	
+//	while(NULL != &chars[length])
+//		length++;
+//	
+//	return length;
+//}
 
 - (NSString *)stringFromABAuthorizationStatus:(ABAuthorizationStatus)status {
 	return ((status == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (status == kABAuthorizationStatusDenied) ? @"Denied" : (status == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
@@ -66,7 +66,7 @@ unsigned long long unistrlen(unichar *chars) {
 }
 
 - (NSString *)stringFromHex:(unichar *)hexVal {
-	return ([NSString stringWithCharacters:hexVal length:unistrlen(hexVal)]);
+	return (@"");//[NSString stringWithCharacters:hexVal length:unistrlen(hexVal)]);
 }
 
 - (NSString *)stringFromNSNumber:(NSNumber *)number includeDecimal:(BOOL)isDecimal {

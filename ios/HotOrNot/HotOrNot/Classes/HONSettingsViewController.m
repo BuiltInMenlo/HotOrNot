@@ -31,7 +31,7 @@
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONActivityNavButtonView *activityHeaderView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
-@property (nonatomic, strong) NSArray *captions;
+@property (nonatomic, strong) NSDictionary *captions;
 @property (nonatomic, strong) NSArray *schoolClubs;
 @end
 
@@ -48,12 +48,19 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		_schoolClubs = [[NSUserDefaults standardUserDefaults] objectForKey:@"school_clubs"];
-		_captions = @[NSLocalizedString(@"settings_search", @"Search"),
-					  NSLocalizedString(@"settings_support", @"Support"),
-					  NSLocalizedString(@"settings_notification", @"Notifications"),
-					  NSLocalizedString(@"settings_legal", @"Legal"),
-					  @"Share",
-					  @" "];
+		_captions = @{
+					  @"bm_00-00"	: @"",
+					  
+					  @"bm_01-00"	: @"Share",
+					  @"bm_01-01"	: @"Rate",
+					  
+					  @"bm_02-00"	: NSLocalizedString(@"settings_notification", @"Notifications"),
+					  
+					  @"bm_04-00"	: NSLocalizedString(@"settings_support", @"Support"),
+					  @"bm_04-01"	: @"Terms",
+					  @"bm_04-02"	: @"Privacy",
+					  
+					  @"bm_08-00"	: @""};
 		
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
@@ -173,11 +180,11 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_schoolClubs count] : [_captions count]);
+	return ((section == 0) ? 1 : (section == 1) ? 2 : (section == 2) ? 1 : (section == 3) ? 3 : 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (5);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -186,40 +193,52 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONSettingsViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-
+	
+	NSString *key = [NSString stringWithFormat:@"bm_%02d-%02d", ((indexPath.section == 0) ? 0 : 1) << ((indexPath.section == 0 || indexPath.section == 1) ? 0 : indexPath.section - 1), indexPath.row];
+	NSLog(@"CELL_INDEX:[%d] TYPE:[%@]", [self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath], key);
+	
+	if (cell == nil)
+		cell = [[HONSettingsViewCell alloc] initWithCaption:[_captions objectForKey:key]];
+	[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
+	
 	if (indexPath.section == 0) {
-		if (cell == nil)
-			cell = [[HONSettingsViewCell alloc] initWithCaption:[[_schoolClubs objectAtIndex:indexPath.row] objectForKey:@"name"]];
-
-	} else {
-		if (cell == nil)
-			cell = [[HONSettingsViewCell alloc] initWithCaption:[_captions objectAtIndex:indexPath.row]];
+		[cell hideChevron];
+//		[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
+		[cell setCaption:[[_schoolClubs objectAtIndex:indexPath.row] objectForKey:@"name"]];
+		[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+		[cell setIndexPath:indexPath];
 		
-		if (indexPath.row == HONSettingsCellTypeNotifications) {
+		UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
+		checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (0.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
+		[cell.contentView addSubview:checkMarkImageView];
+		
+	} else if (indexPath.section == 2) {
+//		[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
+		if (cell.rowIndex == HONSettingsCellTypeNotifications) {
 			[cell hideChevron];
 			cell.accessoryView = _notificationSwitch;
-			
-		} else if (indexPath.row == HONSettingsCellTypeVersion) {
-			[cell hideChevron];
-			cell.backgroundView = nil;
-			
-			UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
-			label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
-			label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-			label.backgroundColor = [UIColor clearColor];
-			label.textAlignment = NSTextAlignmentCenter;
-			label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-			[cell.contentView addSubview:label];
-			
-#if __APPSTORE_BUILD__ != 1
-			label.text = [label.text stringByAppendingFormat:@" (b%d)", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]];
-#endif
 		}
+		
+	} else if (indexPath.section == 4) {
+		[cell hideChevron];
+		cell.backgroundView = nil;
+		[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+		[cell setIndexPath:indexPath];
+		
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
+		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
+		label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		label.backgroundColor = [UIColor clearColor];
+		label.textAlignment = NSTextAlignmentCenter;
+		label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+		[cell.contentView addSubview:label];
+		
+#if __APPSTORE_BUILD__ != 1
+		label.text = [label.text stringByAppendingFormat:@" (b%d)", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]];
+#endif
 	}
 	
-	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
-	[cell setIndexPath:indexPath];
-	[cell setSelectionStyle:(indexPath.section == 1 && (indexPath.row == HONSettingsCellTypeShareClub || indexPath.row == HONSettingsCellTypeNotifications || indexPath.row == HONSettingsCellTypeVersion)) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:(indexPath.section == 2 || indexPath.section == 4) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
 	
 	return (cell);
 }
@@ -235,34 +254,62 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 1 && (indexPath.row == HONSettingsCellTypeNotifications || indexPath.row == HONSettingsCellTypeVersion)) ? nil : indexPath);
+	return (indexPath);//(indexPath.section == 2 || indexPath.section == 4) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-//	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	if (indexPath.section == 0) {
-		[[[UIAlertView alloc] initWithTitle:nil
-									message:@"Location switching not allowed during beta."
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
+		if (indexPath.row != 0) {
+			[[[UIAlertView alloc] initWithTitle:nil
+										message:@"Location switching not allowed."
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+		}
 	
-	} else {
-		if (indexPath.row == HONSettingsCellTypeSearch) {
+	} else if (indexPath.section == 1) {
+		if (cell.rowIndex == HONSettingsCellTypeShare) {
+//			NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]
+			
+			NSString *caption = @"Get Yunder - A live photo feed of who is doing what around you. getyunder.com";
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: caption,
+																															@"twitter"		: caption,
+																															@"sms"			: caption,
+																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], caption],
+																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+																									@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																									@"club"				: [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:nil],
+																									@"mp_event"			: @"Settings Tab - Share",
+																									@"view_controller"	: self}];
+			
+			
+			
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - User Search"];
 			
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																	 delegate:self
-															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													   destructiveButtonTitle:nil
-															otherButtonTitles:@"By Phone Number", @"By Username", nil];
-			[actionSheet setTag:0];
-			[actionSheet showInView:self.view];
+//			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+//																	 delegate:self
+//															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//													   destructiveButtonTitle:nil
+//															otherButtonTitles:@"By Phone Number", @"By Username", nil];
+//			[actionSheet setTag:0];
+//			[actionSheet showInView:self.view];
 		
-		} else if (indexPath.row == HONSettingsCellTypeSupport) {
+		} else if (cell.rowIndex == HONSettingsCellTypeRate) {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];
+			
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+			
+
+		}
+	}
+	
+	if (indexPath.section == 3) {
+		if (cell.rowIndex == HONSettingsCellTypeSupport) {
+			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
 			
 			if ([MFMailComposeViewController canSendMail]) {
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -282,59 +329,29 @@
 								  otherButtonTitles:nil] show];
 			}
 			
-		} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
-			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
 			
+		} else if (cell.rowIndex == HONSettingsCellTypeTermsOfService) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			
-		} else if (indexPath.row == HONSettingsCellTypeShareClub) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate instagramShareMessage], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate twitterShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], [NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],//  [[[[HONAppDelegate emailShareComment] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],
-																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
-																									@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-																									@"club"				: [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:nil],
-																									@"mp_event"			: @"User Profile - Share",
-																									@"view_controller"	: self}];
+		} else if (cell.rowIndex == HONSettingsCellTypePrivacy) {
+//				[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
+//
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
-		
-		
-	//	[NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]
-
-	//	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
-	//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
-	//		
-	//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
-	//		[navigationController setNavigationBarHidden:YES];
-	//		[self presentViewController:navigationController animated:YES completion:nil];
+	
+	} else if (indexPath.section == 4) {
+		if (cell.rowIndex == HONSettingsCellTypePrivacy) {
 			
-	//	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
-	//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
-	//		
-	//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-	//		
-	//	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
-	//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Network Status"];
-	//		
-	//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
-	//		[navigationController setNavigationBarHidden:YES];
-	//		[self presentViewController:navigationController animated:YES completion:nil];
-	//		
-	//	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-	//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Logout"];
-	//		
-	//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
-	//															message:@""
-	//														   delegate:self
-	//												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-	//												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
-	//		[alertView setTag:HONSettingsAlertTypeLogout];
-	//		[alertView show];
-	//	}
+		} else if (cell.rowIndex == HONSettingsCellTypeRate) {
+//				[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
+		
+
+			
+		}
 	}
 }
 
@@ -495,6 +512,17 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
+}
+
+
+
+- (int)_previousCellTotalForTableView:(UITableView *)tableView priorToIndexPath:(NSIndexPath *)indexPath {
+	int tot = 0;
+	for (int i=0; i<indexPath.section; i++)
+		tot += [tableView numberOfRowsInSection:i];
+	
+	tot += MAX(indexPath.row, 0);
+	return  (tot);
 }
 
 @end

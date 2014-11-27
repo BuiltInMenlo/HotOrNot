@@ -141,6 +141,10 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:self] year]);
 }
 
+- (int)unixEpochTimestamp {
+	return ([self timeIntervalSince1970]);
+}
+
 
 - (NSString *)formattedISO8601String {
 	return ([[NSDateFormatter dateFormatterISO8601:NO] stringFromDate:self]);
