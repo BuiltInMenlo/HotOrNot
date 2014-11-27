@@ -59,8 +59,6 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	
-	self.view.backgroundColor = [UIColor blackColor];
 }
 
 - (void)viewDidLoad {

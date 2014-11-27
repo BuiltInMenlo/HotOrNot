@@ -561,7 +561,8 @@ static const CGFloat kDetailsLabelFontSize = 16.f; // 12.f
 	float radius = 10.0f;
 	CGContextBeginPath(context);
 //	CGContextSetGrayFillColor(context, 0.0f, self.opacity);
-	CGContextSetGrayFillColor(context, 0.95f, self.opacity);
+//	CGContextSetGrayFillColor(context, 0.95f, self.opacity);
+	CGContextSetRGBFillColor(context, 1.0f, 1.0f, 1.0f, 0.85f);
 	CGContextMoveToPoint(context, CGRectGetMinX(boxRect) + radius, CGRectGetMinY(boxRect));
 	CGContextAddArc(context, CGRectGetMaxX(boxRect) - radius, CGRectGetMinY(boxRect) + radius, radius, 3 * (float)M_PI / 2, 0, 0);
 	CGContextAddArc(context, CGRectGetMaxX(boxRect) - radius, CGRectGetMaxY(boxRect) - radius, radius, 0, (float)M_PI / 2, 0);
@@ -737,8 +738,8 @@ static const CGFloat kDetailsLabelFontSize = 16.f; // 12.f
 		CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
 		CGFloat endAngle = (2 * (float)M_PI) + startAngle;
 		[processBackgroundPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-//		[[UIColor colorWithRed:1 green:1 blue:1 alpha:0.1] set];
-		[[UIColor darkGrayColor] set];
+		[[UIColor colorWithRed:1 green:1 blue:1 alpha:0.1] set];
+//		[[UIColor darkGrayColor] set];
 		[processBackgroundPath stroke];
 		// Draw progress
 		UIBezierPath *processPath = [UIBezierPath bezierPath];

@@ -45,7 +45,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor blackColor];
 	}
 	
 	return (self);
@@ -60,7 +59,6 @@
 	[self.contentView addSubview:_imageLoadingView];
 	
 	_imgView = [[UIImageView alloc] initWithFrame:self.frame];
-	_imgView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_imgView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

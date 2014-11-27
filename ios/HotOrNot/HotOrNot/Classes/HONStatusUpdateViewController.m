@@ -122,7 +122,7 @@
 	_commentTextField.text = @"";
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
-	[self.view addSubview:overlayView];
+//	[self.view addSubview:overlayView];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -222,7 +222,6 @@
 	[_scrollView addSubview:_imageLoadingView];
 	
 	_imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	_imgView.backgroundColor = [UIColor blackColor];
 	[_scrollView addSubview:_imgView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

@@ -425,7 +425,7 @@ NSString * const kTwilioSMS = @"6475577873";
 					
 					self.window.rootViewController = navigationController;
 					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-					self.window.backgroundColor = [UIColor blackColor];
+					self.window.backgroundColor = [UIColor whiteColor];
 				}
 			}];
 		}
@@ -590,7 +590,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.window.backgroundColor = [UIColor blackColor];
+	self.window.backgroundColor = [UIColor whiteColor];
 	_isFromBackground = NO;
 	
 #if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
@@ -1313,10 +1313,8 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 		
 		} else if (buttonIndex == HONShareSheetActionTypeClipboard) {
-//			[[HONClubAssistant sharedInstance] copyClubToClipBoard:[HONUserClubVO clubWithDictionary:[_shareInfo objectForKey:@"club"]] withAlert:YES];
-			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:NSLocalizedString(@"tap_join", @"Join Selfieclub! http://sel.club username: %@"), [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+			pasteboard.string = @"Get Yunder - A live photo feed of who is doing what around you. getyunder.com";
 			
 			[self _showOKAlert:@"Paste anywhere to share!" withMessage:nil];
 		}

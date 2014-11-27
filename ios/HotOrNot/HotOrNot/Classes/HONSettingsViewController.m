@@ -199,21 +199,19 @@
 	
 	if (cell == nil)
 		cell = [[HONSettingsViewCell alloc] initWithCaption:[_captions objectForKey:key]];
+	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	[cell setIndexPath:indexPath];
 	[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
 	
 	if (indexPath.section == 0) {
 		[cell hideChevron];
-//		[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
 		[cell setCaption:[[_schoolClubs objectAtIndex:indexPath.row] objectForKey:@"name"]];
-		[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
-		[cell setIndexPath:indexPath];
 		
 		UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
 		checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (0.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
 		[cell.contentView addSubview:checkMarkImageView];
 		
 	} else if (indexPath.section == 2) {
-//		[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
 		if (cell.rowIndex == HONSettingsCellTypeNotifications) {
 			[cell hideChevron];
 			cell.accessoryView = _notificationSwitch;
@@ -223,7 +221,6 @@
 		[cell hideChevron];
 		cell.backgroundView = nil;
 		[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
-		[cell setIndexPath:indexPath];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
 		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
@@ -272,14 +269,12 @@
 	
 	} else if (indexPath.section == 1) {
 		if (cell.rowIndex == HONSettingsCellTypeShare) {
-//			NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]
-			
 			NSString *caption = @"Get Yunder - A live photo feed of who is doing what around you. getyunder.com";
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: caption,
 																															@"twitter"		: caption,
+																															@"clipboard"	: caption,
 																															@"sms"			: caption,
-																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], caption],
-																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+																															@"email"		: @[@"Join Yunder", caption]},
 																									@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 																									@"club"				: [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:nil],
