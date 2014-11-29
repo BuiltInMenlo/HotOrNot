@@ -21,6 +21,8 @@
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (HONUserClubVO *)orthodoxMemberClub;
+- (void)locationClubWithCompletion:(void (^)(id result))completion;
+- (HONUserClubVO *)currentLocationClub;
 - (NSMutableDictionary *)orthodoxThresholdClubDictionary;
 - (NSMutableDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
@@ -60,12 +62,12 @@
 - (NSDictionary *)fetchUserClubs;
 - (HONUserClubVO *)fetchClubWithClubID:(int)clubID;
 - (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID;
-- (void)writeClub:(NSDictionary *)club;
+- (void)writeClub:(NSDictionary *)clubDictionary;
 - (void)writeUserClubs:(NSDictionary *)clubs;
-- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion;
+- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID completion:(void (^)(id result))completion;
 - (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpVote:(BOOL)isUpVote;
 - (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote;
-- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion;
+- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers toNonAppContacts:(NSArray *)nonAppContacts completion:(void (^)(BOOL success))completion;
 
 - (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 

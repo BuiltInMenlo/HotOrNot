@@ -7,6 +7,7 @@
 //
 
 #import <AddressBook/AddressBook.h>
+#import <CoreLocation/CoreLocation.h>
 
 #import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
@@ -154,6 +155,53 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict replaceObject:[pending copy] forKey:@"pending"];
 	
 	return (dict);
+}
+
+- (void)locationClubWithCompletion:(void (^)(id result))completion {
+	__block BOOL isFound = NO;
+	__block NSDictionary *foundDict;
+	__block HONUserClubVO *vo = nil;
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"location_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		
+		CLLocation *location = [[CLLocation alloc] initWithLatitude:[[[dict objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dict objectForKey:@"coords"] objectForKey:@"long"] doubleValue]];
+		NSLog(@"LOCATION_CLUB:[%d - %@] -=- (%.03f)", [[dict objectForKey:@"club_id"] intValue], [dict objectForKey:@"name"], [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:location]);
+		
+		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:location] <= [[dict objectForKey:@"radius"] floatValue]) {
+			foundDict = [obj copy];
+			isFound = YES;
+			*stop = YES;
+		}
+	}];
+	
+	if (isFound) {
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:[[foundDict objectForKey:@"club_id"] intValue] withOwnerID:[[foundDict objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
+			vo = [HONUserClubVO clubWithDictionary:result];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:vo.dictionary forKey:@"location_club"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			if (completion)
+				completion(vo);
+			
+		}];
+	
+	} else {
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] withOwnerID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
+			vo = [HONUserClubVO clubWithDictionary:result];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:vo.dictionary forKey:@"location_club"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			if (completion)
+				completion(vo);
+		}];
+	}
+}
+
+- (HONUserClubVO *)currentLocationClub {
+	return ([HONUserClubVO clubWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"location_club"]]);
 }
 
 - (HONUserClubVO *)orthodoxMemberClub {
@@ -718,7 +766,7 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
 }
 
-- (void)writeClub:(NSDictionary *)club {
+- (void)writeClub:(NSDictionary *)clubDictionary {
 	NSMutableDictionary *allclubs = [[[HONClubAssistant sharedInstance] fetchUserClubs] mutableCopy];
 	
 	__block int ind = -1;
@@ -731,7 +779,7 @@ static HONClubAssistant *sharedInstance = nil;
 		clubs = [[allclubs objectForKey:key] mutableCopy];
 		[clubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSDictionary *dict = (NSDictionary *)obj;
-			if ([[dict objectForKey:@"id"] isEqualToString:[club objectForKey:@"id"]]) {
+			if ([[dict objectForKey:@"id"] isEqualToString:[clubDictionary objectForKey:@"id"]]) {
 				ind = idx;
 				isFound = YES;
 			}
@@ -746,12 +794,12 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 	}];
 	
-	[clubs addObject:club];
+	[clubs addObject:clubDictionary];
 	[allclubs setObject:[clubs copy] forKey:key];
 	[[HONClubAssistant sharedInstance] writeUserClubs:[allclubs copy]];
 }
 
-- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID onCompletion:(void (^)(id result))completion {
+- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID completion:(void (^)(id result))completion {
 	[[NSUserDefaults standardUserDefaults] setObject:@{} forKey:@"seen_updates"];
 	
 	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
@@ -777,7 +825,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSDictionary *)fetchUserClubs {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] == nil) {
-		[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		}];
 	}
@@ -891,7 +939,7 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 
-- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion {
+- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers toNonAppContacts:(NSArray *)nonAppContacts completion:(void (^)(BOOL success))completion {
 	if ([inAppUsers count] == 0 && [nonAppContacts count] == 0) {
 		if (completion)
 			completion(YES);

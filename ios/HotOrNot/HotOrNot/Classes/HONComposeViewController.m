@@ -257,7 +257,8 @@
 }
 
 - (void)_modifySubmitParamsAndSubmit:(NSArray *)subjectNames {
-	if (![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
+//	if (![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
+	if ([[HONClubAssistant sharedInstance] currentLocationClub].clubID == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
 		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
 									message:[NSString stringWithFormat:@"Must be within %@ miles", [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"]]
 								   delegate:nil
@@ -312,7 +313,7 @@
 //													   withProperties:[self _trackingProps]];
 					
 					[Flurry logEvent:@"resume"];
-					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers ToNonAppContacts:_selectedContacts onCompletion:^(BOOL success) {
+					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers toNonAppContacts:_selectedContacts completion:^(BOOL success) {
 						if (_progressHUD != nil) {
 							[_progressHUD hide:YES];
 							_progressHUD = nil;

@@ -742,7 +742,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveOwnedClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion {
+- (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion {
 #if SC_ACCT_BUILD == 0
 	NSDictionary *params = @{@"userID"	: [@"" stringFromInt:userID]};
 #else
@@ -1848,7 +1848,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (completion)
 				completion(result);

@@ -92,7 +92,7 @@
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_statusUpdateVO.clubID withOwnerID:2394 completion:^(NSDictionary *result) {
 		
 		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:result];
-		if (clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID) {
+//		if (clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID) {
 			[[HONClubAssistant sharedInstance] writeClub:result];
 			
 			[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -102,7 +102,7 @@
 					*stop = YES;
 				}
 			}];
-		}
+//		}
 		
 		[self _didFinishDataRefresh];
 	}];

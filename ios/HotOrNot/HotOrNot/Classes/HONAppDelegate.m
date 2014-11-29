@@ -322,7 +322,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"school_clubs"] forKey:@"school_clubs"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"location_clubs"] forKey:@"location_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
@@ -411,18 +411,20 @@ void Swizzle(Class c, SEL orig, SEL new)
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
-			[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeUserClubs:result];
-				
+//			[[NSUserDefaults standardUserDefaults] setObject:[HONUserClubVO clubWithDictionary:@{}] forKey:@"crash_me"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+//			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//				[[HONClubAssistant sharedInstance] writeUserClubs:result];
+			
 				if (self.window.rootViewController == nil) {
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
 					[navigationController setNavigationBarHidden:YES];
 					
 					self.window.rootViewController = navigationController;
 					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-					self.window.backgroundColor = [UIColor whiteColor];
 				}
-			}];
+//			}];
 		}
 	}];
 }
@@ -651,7 +653,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 	//[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
-
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -841,7 +842,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 											  otherButtonTitles:nil] show];
 							
 						} else { // found the user
-							[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:userID completion:^(NSDictionary *result) {
+							[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
 								int clubID = 0;
 								for (NSDictionary *club in [result objectForKey:@"owned"]) {
 									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubName	]) {
@@ -1408,19 +1409,13 @@ void uncaughtExceptionHandler(NSException *exception) {
 
 
 
-#pragma mark - Cristersism Delegates
-//- (void)crittercismDidCrashOnLastLoad {
-//	NSLog(@"[*:*] crittercismDidCrashOnLastLoad");
-//	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Crashed Last Run"];
-//}
-
-//#if __APPSTORE_BUILD__ == 0
+#if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 	return ([[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
 	return (nil);
 }
-
+#endif
 
 - (void)_picoCandyTest {
 	NSLog(@"CandyStore:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchStickerStoreInfo]);
@@ -1447,7 +1442,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
 	NSLog(@"sticker.tag:[%ld] (%@)", (long)((PicoSticker *)sticker).tag, contentId);
 }
-//#endif
 
 
 @end

@@ -23,6 +23,7 @@
 		3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */; };
 		3010D7931A24BDDD0078164F /* HONScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3010D7921A24BDDD0078164F /* HONScrollView.m */; };
 		30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */; };
+		3015CF441A29C07E003BD226 /* FAU.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 3015CF431A29C07E003BD226 /* FAU.gpx */; };
 		301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */; };
 		301DF22D1A1071A500D2BEB9 /* AWSiOSSDKv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */; };
 		301DF22F1A10755000D2BEB9 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF22E1A10755000D2BEB9 /* Mantle.framework */; };
@@ -302,6 +303,7 @@
 		30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimatedBGViewFlowLayout.m; sourceTree = "<group>"; };
 		30119BE019F8527800DE9B16 /* HONCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionViewCell.h; sourceTree = "<group>"; };
 		30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionViewCell.m; sourceTree = "<group>"; };
+		3015CF431A29C07E003BD226 /* FAU.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FAU.gpx; sourceTree = "<group>"; };
 		301DF2291A10228B00D2BEB9 /* HONGeoLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGeoLocator.h; sourceTree = "<group>"; };
 		301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGeoLocator.m; sourceTree = "<group>"; };
 		301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDKv2.framework; sourceTree = "<group>"; };
@@ -979,6 +981,14 @@
 				30119BD719F81EA700DE9B16 /* HONAnimatedBGsViewController.m */,
 			);
 			name = "Animated BGs";
+			sourceTree = "<group>";
+		};
+		3015CF421A29C056003BD226 /* GPX */ = {
+			isa = PBXGroup;
+			children = (
+				3015CF431A29C07E003BD226 /* FAU.gpx */,
+			);
+			name = GPX;
 			sourceTree = "<group>";
 		};
 		301DF23A1A10848600D2BEB9 /* JSON */ = {
@@ -1899,6 +1909,7 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3015CF421A29C056003BD226 /* GPX */,
 				308F361919E3388E00EE9512 /* FPO */,
 				303BAD0D19D5E71700CB2501 /* Bundles */,
 				4C83FD96190F62FB00CAEABB /* Fonts */,
@@ -2338,6 +2349,7 @@
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
+				3015CF441A29C07E003BD226 /* FAU.gpx in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,

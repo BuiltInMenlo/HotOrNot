@@ -32,7 +32,7 @@
 @property (nonatomic, strong) HONActivityNavButtonView *activityHeaderView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) NSDictionary *captions;
-@property (nonatomic, strong) NSArray *schoolClubs;
+@property (nonatomic, strong) NSArray *locationClubs;
 @end
 
 @implementation HONSettingsViewController
@@ -47,7 +47,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_schoolClubs = [[NSUserDefaults standardUserDefaults] objectForKey:@"school_clubs"];
+		_locationClubs = @[[[HONClubAssistant sharedInstance] currentLocationClub]];//[[NSUserDefaults standardUserDefaults] objectForKey:@"location_clubs"];
 		_captions = @{
 					  @"bm_00-00"	: @"",
 					  
@@ -180,7 +180,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? 2 : (section == 2) ? 1 : (section == 3) ? 3 : 1);
+	return ((section == 0) ? [_locationClubs count] : (section == 1) ? 2 : (section == 2) ? 1 : (section == 3) ? 3 : 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -204,7 +204,7 @@
 	
 	if (indexPath.section == 0) {
 		[cell hideChevron];
-		[cell setCaption:[[_schoolClubs objectAtIndex:indexPath.row] objectForKey:@"name"]];
+		[cell setCaption:((HONUserClubVO *)[_locationClubs objectAtIndex:indexPath.row]).clubName];
 		
 		UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
 		checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (0.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));

@@ -102,14 +102,15 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClubPhotos {
-	[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 				for (NSDictionary *dict in [result objectForKey:key]) {
 					HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
 					
-//					NSLog(@"CLUB_ID:[%d]-(%@)-[%d]", clubVO.clubID, [@"" stringFromBOOL:(clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID)], [HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxClubMemberDictionary]].clubID);
-					if (clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID) {
+					NSLog(@"CLUB_ID:[%d]-(%@)-[%d]", clubVO.clubID, NSStringFromBOOL(clubVO.clubID == [[HONClubAssistant sharedInstance] currentLocationClub].clubID), [[HONClubAssistant sharedInstance] currentLocationClub].clubID);
+//					if (clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID) {
+					if (clubVO.clubID == [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
 						[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 							HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
 							if (clubPhotoVO.parentID != 0)
@@ -130,24 +131,39 @@
 				continue;
 		}
 		
-		NSLog(@"test**#* WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
-		NSLog(@"test**#* MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]]);
-		if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
-			[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-				
-				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-					[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-						[[HONClubAssistant sharedInstance] writeUserClubs:result];
-						[self _didFinishDataRefresh];
-					}];
-				}
-			}];
-			
-		} else {
-			[[HONClubAssistant sharedInstance] writeUserClubs:result];
-			[self _didFinishDataRefresh];
-		}
 		
+		
+		[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
+			NSLog(@"MEMBER OF:[%d] =-= (%@)", clubVO.clubID, [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]]);
+			if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]) {
+				[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+					if ((BOOL)[[result objectForKey:@"result"] intValue])
+						[self _goReloadContents];
+				}];
+			
+			} else {
+				[[HONClubAssistant sharedInstance] writeUserClubs:result];
+				[self _didFinishDataRefresh];
+			}
+		}];
+		
+//		NSLog(@"test**#* WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
+//		NSLog(@"test**#* MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]]);
+//		if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
+//			[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//				
+//				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
+//					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//						[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//						[self _didFinishDataRefresh];
+//					}];
+//				}
+//			}];
+//			
+//		} else {
+//			[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//			[self _didFinishDataRefresh];
+//		}
 	}];
 }
 
@@ -177,12 +193,6 @@
 	[_collectionView reloadData];
 	
 	[self _retrieveClubPhotos];
-	
-	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
-		NSLog(@"ACTIVITY:[%@]", result);
-		_voteScore = [result intValue];
-	}];
-
 }
 
 - (void)_didFinishDataRefresh {
@@ -211,6 +221,11 @@
 	
 	[_headerView refreshActivity];
 	[_toggleView toggleEnabled:YES];
+	
+	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
+		NSLog(@"ACTIVITY:[%@]", result);
+		_voteScore = [result intValue];
+	}];
 	
 	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, [@"" stringFromCLAuthorizationStatus:[CLLocationManager authorizationStatus]]);
 }
@@ -246,7 +261,7 @@
 	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONHomeViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONHomeViewCell class] forCellWithReuseIdentifier:[HONHomeViewCell cellReuseIdentifier]];
 	[_collectionView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 44.0, 0.0)];
-	_collectionView.backgroundColor = [UIColor whiteColor]; 
+	_collectionView.backgroundColor = [UIColor clearColor];
 	_collectionView.showsVerticalScrollIndicator = NO;
 	_collectionView.alwaysBounceVertical = YES;
 	_collectionView.dataSource = self;
@@ -313,10 +328,8 @@
 		_locationManager.distanceFilter = 10000;
 		if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
 			[_locationManager requestWhenInUseAuthorization];
-		[_locationManager startUpdatingLocation];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
-		[self _goReloadContents];
 		
 	} else {
 		[self _goRegistration];
@@ -363,7 +376,8 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 	//									 withProperties:@{@"src"	: @"header"}];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -436,9 +450,8 @@
 	
 	if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
 		[_locationManager requestWhenInUseAuthorization];
-	[_locationManager startUpdatingLocation];
 	
-	NSLog(@"%@._completedFirstRun - CLAuthorizationStatus = [%@]", self.class, [@"" stringFromCLAuthorizationStatus:[CLLocationManager authorizationStatus]]);
+	NSLog(@"%@._completedFirstRun - CLAuthorizationStatus = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 	
 	[self _goReloadContents];
 	self.view.hidden = NO;
@@ -515,13 +528,40 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, [@"" stringFromCLAuthorizationStatus:status]);// (status == kCLAuthorizationStatusAuthorized) ? @"Authorized" : (status == kCLAuthorizationStatusAuthorizedAlways) ? @"AuthorizedAlways" : (status == kCLAuthorizationStatusAuthorizedWhenInUse) ? @"AuthorizedWhenInUse" : (status == kCLAuthorizationStatusDenied) ? @"Denied" : (status == kCLAuthorizationStatusRestricted) ? @"Restricted" : (status == kCLAuthorizationStatusNotDetermined) ? @"NotDetermined" : @"UNKNOWN");
+	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, [@"" stringFromCLAuthorizationStatus:status]);
 	
-	if (status == kCLAuthorizationStatusAuthorized)
+	if (status == kCLAuthorizationStatusNotDetermined) {
+		[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
+			NSLog(@"MEMBER OF:[%d] =-= (%@)", clubVO.clubID, [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]]);
+			if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]) {
+				[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+					if ((BOOL)[[result objectForKey:@"result"] intValue])
+						[self _goReloadContents];
+				}];
+				
+			} else
+				[self _goReloadContents];
+		}];
+		
+	} else if (status == kCLAuthorizationStatusAuthorized || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_accept"];
+		[_locationManager startUpdatingLocation];
 	
-	else if (status == kCLAuthorizationStatusDenied)
+	} else if (status == kCLAuthorizationStatusDenied) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_cancel"];
+		
+		[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
+			NSLog(@"MEMBER OF:[%d] =-= (%@)", clubVO.clubID, [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]]);
+			if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]) {
+				[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+					if ((BOOL)[[result objectForKey:@"result"] intValue])
+						[self _goReloadContents];
+				}];
+				
+			} else
+				[self _goReloadContents];
+		}];
+	}
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
@@ -531,16 +571,28 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
-	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
-	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]]);
-	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
-		[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-			
-			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-				[self _goReloadContents];
-			}
-		}];
-	}
+	[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
+		NSLog(@"MEMBER OF:[%d] =-= (%@)", clubVO.clubID, [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]]);
+		if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]) {
+			[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+				if ((BOOL)[[result objectForKey:@"result"] intValue])
+					[self _goReloadContents];
+			}];
+		
+		} else
+			[self _goReloadContents];
+	}];
+	
+//	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
+//	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]]);
+//	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
+//		[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//			
+//			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
+//				[self _goReloadContents];
+//			}
+//		}];
+//	}
 }
 
 
