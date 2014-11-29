@@ -72,7 +72,7 @@ static HONViewDispensor *sharedInstance = nil;
 - (void)maskView:(UIView *)view withMask:(UIImage *)maskImage {
 	CALayer *maskLayer = [CALayer layer];
 	maskLayer.contents = (id)[maskImage CGImage];
-	maskLayer.frame = CGRectFromSize(view.frame.size);//(0.0, 0.0, //CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height);
+	maskLayer.frame = CGRectFromSize(view.frame.size);
 	
 	view.layer.mask = maskLayer;
 	view.layer.masksToBounds = YES;

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
 
 typedef NS_ENUM(NSUInteger, HONClubEnrollmentType) {
 	HONClubEnrollmentTypeUndetermined = 0,
@@ -31,6 +32,7 @@ typedef NS_ENUM(NSUInteger, HONClubEnrollmentType) {
 @property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, retain) NSString *coverImagePrefix;
 @property (nonatomic, retain) NSString *blurb;
+@property (nonatomic, strong) CLLocation *location;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *updatedDate;
 

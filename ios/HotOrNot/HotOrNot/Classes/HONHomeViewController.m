@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
+
 #import "NSDate+Operations.h"
 #import "NSString+DataTypes.h"
 #import "NSUserDefaults+Replacements.h"
@@ -129,9 +131,9 @@
 		}
 		
 		NSLog(@"test**#* WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
-		NSLog(@"test**#* MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]]);
-		if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
-			[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxMemberClubDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		NSLog(@"test**#* MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]]);
+		if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
+			[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				
 				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
 					[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
@@ -270,7 +272,6 @@
 	[self.view addSubview:settingsButton];
 	
 	_emptyFeedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
-	_emptyFeedView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 	_emptyFeedView.hidden = YES;
 	[_emptyFeedView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emptyFeedBG"]]];
 	[self.view addSubview:_emptyFeedView];
@@ -345,7 +346,7 @@
 - (void)_goActivity {
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Activity"];
 	
-	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d Ronnie points", _voteScore]
+	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d Yunder points", _voteScore]
 								message:@"Each image and comment vote gives you a single point."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
@@ -398,10 +399,10 @@
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 //	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
 	[super _goPanGesture:gestureRecognizer];
-	HONHomeViewCell *cell = (HONHomeViewCell *)[_collectionView cellForItemAtIndexPath:[_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:_collectionView]]];
+//	HONHomeViewCell *cell = (HONHomeViewCell *)[_collectionView cellForItemAtIndexPath:[_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:_collectionView]]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Status Update SWIPE"
-											 withClubPhoto:cell.clubPhotoVO];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Status Update SWIPE"
+//											 withClubPhoto:cell.clubPhotoVO];
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -1500) {
 	}
@@ -531,9 +532,9 @@
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
 	NSLog(@"WITHIN RANGE:[%@]", [@"" stringFromBOOL:[[HONGeoLocator sharedInstance] isWithinOrthodoxClub]]);
-	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]]);
-	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
-		[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxMemberClubDictionary]] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]]);
+	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
+		[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			
 			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
 				[self _goReloadContents];

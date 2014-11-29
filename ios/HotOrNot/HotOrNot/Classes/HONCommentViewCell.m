@@ -49,14 +49,14 @@
 		_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_upVoteButton.frame = CGRectMake(274.0, -6.0, 44.0, 44.0);
 		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateDisabled];
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
+		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateNormal];
 		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
 		[self.contentView addSubview:_upVoteButton];
 		
 		_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_downVoteButton.frame = CGRectMake(274.0, 35.0, 44.0, 44.0);
 		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateDisabled];
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
+		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateNormal];
 		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
 		[self.contentView addSubview:_downVoteButton];
 		

@@ -11,6 +11,5 @@
 - (BOOL)hasObjectForKey:(NSString *)key;
 - (void)removeObjectForKey:(NSString *)key;
 - (void)replaceObject:(id)object forKey:(NSString *)key;
-//- (void)swapObjectsForKeys:(const id [])keys;
 - (void)swapObjectForKey:(NSString *)keyA withKey:(NSString *)keyB;
 @end

@@ -122,7 +122,7 @@
 	_commentTextField.text = @"";
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
-//	[self.view addSubview:overlayView];
+	[self.view addSubview:overlayView];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -341,8 +341,8 @@
 	
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-		[mailComposeViewController setSubject:@"Flag"];
-		[mailComposeViewController setMessageBody:@"" isHTML:NO];
+		[mailComposeViewController setSubject:[NSString stringWithFormat:@"Post Flag (%d)", _statusUpdateVO.challengeID]];
+		[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"The following post (%d) has been flagged", _statusUpdateVO.challengeID] isHTML:NO];
 		mailComposeViewController.mailComposeDelegate = self;
 		[self presentViewController:mailComposeViewController animated:NO completion:^(void) {}];
 		
@@ -394,8 +394,8 @@
 
 - (void)_goCommentReply {
 	if (![[HONGeoLocator sharedInstance] isWithinOrthodoxClub]) {
-		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
-									message:[NSString stringWithFormat:@"Must be within %@ miles", [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"]]
+		[[[UIAlertView alloc] initWithTitle:@"Outside range"
+									message:[NSString stringWithFormat:@"You must be within %@ miles of this location to post. ", [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"]]
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -551,7 +551,7 @@
 	
 	_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_upVoteButton.frame = CGRectMake(157.0, 0.0, 44.0, 44.0);
-	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateDisabled];
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
 	[_upVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO])];
@@ -559,7 +559,7 @@
 	
 	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_downVoteButton.frame = CGRectMake(274.0, 0.0, 44.0, 44.0);
-	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateDisabled];
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
 	[_downVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO])];

@@ -92,14 +92,6 @@
 	_caption = subject;
 	
 	BOOL isFound = NO;
-	for (NSDictionary *dict in [HONAppDelegate subjectFormats]) {
-		if ([[subject lowercaseString] isEqualToString:[[dict objectForKey:@"name"] lowercaseString]]) {
-			isFound = YES;
-			_caption = [[dict objectForKey:@"format"] stringByReplacingOccurrencesOfString:@"_{{SUBJECT_NAME}}_" withString:[dict objectForKey:@"name"]];
-			_caption = [_caption stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_username];
-		}
-	}
-	
 	_captionLabel.text = _caption;
 	
 	

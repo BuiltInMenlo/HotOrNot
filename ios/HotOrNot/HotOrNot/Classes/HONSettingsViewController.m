@@ -195,7 +195,6 @@
 	HONSettingsViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	NSString *key = [NSString stringWithFormat:@"bm_%02d-%02d", ((indexPath.section == 0) ? 0 : 1) << ((indexPath.section == 0 || indexPath.section == 1) ? 0 : indexPath.section - 1), indexPath.row];
-	NSLog(@"CELL_INDEX:[%d] TYPE:[%@]", [self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath], key);
 	
 	if (cell == nil)
 		cell = [[HONSettingsViewCell alloc] initWithCaption:[_captions objectForKey:key]];
@@ -270,13 +269,14 @@
 	} else if (indexPath.section == 1) {
 		if (cell.rowIndex == HONSettingsCellTypeShare) {
 			NSString *caption = @"Get Yunder - A live photo feed of who is doing what around you. getyunder.com";
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: caption,
-																															@"twitter"		: caption,
-																															@"clipboard"	: caption,
-																															@"sms"			: caption,
-																															@"email"		: @[@"Join Yunder", caption]},
-																									@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: caption,//[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"email"		: @{@"subject"	: [[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject],
+																																				@"body"		: [NSString stringWithFormat:[[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] lastObject], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeClipboard], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+																									@"image"			: [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																									@"url"				: @"",
 																									@"club"				: [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:nil],
 																									@"mp_event"			: @"Settings Tab - Share",
 																									@"view_controller"	: self}];

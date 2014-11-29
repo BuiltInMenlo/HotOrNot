@@ -212,28 +212,6 @@ static HONStickerAssistant *sharedInstance = nil;
 	return (nil);
 }
 
-- (NSString *)fetchContentGroupIDForGroupIndex:(int)stickerGroupIndex {
-	NSDictionary *pakTypeStickers = [[NSUserDefaults standardUserDefaults] objectForKey:@"emotion_groups"];
-	
-	if (stickerGroupIndex == 0) {
-		return ([[pakTypeStickers objectForKey:kStickersGroup] objectForKey:@"content_group"]);
-		
-	} else if (stickerGroupIndex == 1) {
-		return ([[pakTypeStickers objectForKey:kFacesGroup] objectForKey:@"content_group"]);
-		
-	} else if (stickerGroupIndex == 2) {
-		return ([[pakTypeStickers objectForKey:kAnimalsGroup] objectForKey:@"content_group"]);
-		
-	} else if (stickerGroupIndex == 3) {
-		return ([[pakTypeStickers objectForKey:kObjectsGroup] objectForKey:@"content_group"]);
-		
-	} else if (stickerGroupIndex == 4) {
-		return ([[pakTypeStickers objectForKey:kOtherGroup] objectForKey:@"content_group"]);
-	}
-	
-	return (@"0");
-}
-
 - (NSArray *)fetchStickersForGroupIndex:(int)stickerGroupIndex {
 	NSMutableDictionary *contentGroups = ([[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] mutableCopy] : [NSMutableDictionary dictionary];
 	NSArray *allPakTypeStickers = [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll];

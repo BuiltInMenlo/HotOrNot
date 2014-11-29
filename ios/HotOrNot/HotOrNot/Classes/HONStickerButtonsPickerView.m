@@ -46,7 +46,6 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
 		_contentGroupIDs = [NSMutableArray array];
-		[_contentGroupIDs addObject:[[HONStickerAssistant sharedInstance] fetchContentGroupIDForGroupIndex:_stickerGroupIndex]];
 		
 		_prevPage = 0;
 		_totalPages = 0;

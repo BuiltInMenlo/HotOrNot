@@ -543,35 +543,26 @@ static HONAPICaller *sharedInstance = nil;
 		} else {
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) COUNT:[%@]", [[self class] description], [[operation request] URL], [result objectForKey:@"count"]);
 			
+			__block int cnt = [[result objectForKey:@"count"] intValue];
+			__block int score = 0;
+			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSDictionary *dict = (NSDictionary *)obj;
+				
+//				NSLog(@"VOTE:[%d / %d]~(%@) -=- \"%@\"", [[dict objectForKey:@"status_update_id"] intValue], [[[dict objectForKey:@"subject_member"] objectForKey:@"id"] intValue], NSStringFromBOOL(([[[dict objectForKey:@"event_type"] uppercaseString] isEqualToString:@"STATUS_UPVOTED"])), [dict objectForKey:@"event_type"]);
+				if ([[[dict objectForKey:@"event_type"] uppercaseString] isEqualToString:@"STATUS_UPVOTED"])
+					score++;
+				
+				else
+					score--;
+			}];
 			
-			if (error != nil) {
-				SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-				[[HONAPICaller sharedInstance] showDataErrorHUD];
-				
-			} else {
-				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-				
-				__block int cnt = [[result objectForKey:@"count"] intValue];
-				__block int score = 0;
-				[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					NSDictionary *dict = (NSDictionary *)obj;
-					
-					NSLog(@"VOTE:[%d / %d]~(%@) -=- \"%@\"", [[dict objectForKey:@"status_update_id"] intValue], [[[dict objectForKey:@"subject_member"] objectForKey:@"id"] intValue], NSStringFromBOOL(([[[dict objectForKey:@"event_type"] uppercaseString] isEqualToString:@"STATUS_UPVOTED"])), [dict objectForKey:@"event_type"]);
-					if ([[[dict objectForKey:@"event_type"] uppercaseString] isEqualToString:@"STATUS_UPVOTED"])
-						score++;
-					
-					else
-						score--;
-				}];
-				
-				cnt -= 10;
-				
+			cnt -= 10;
+			
 //				if (cnt > 0)
 //					[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:<#(int)#> completion:<#^(id result)completion#>]
-				
-				if (completion)
-					completion(@(score));
-			}
+			
+			if (completion)
+				completion(@(score));
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

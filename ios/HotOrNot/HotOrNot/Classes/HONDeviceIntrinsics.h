@@ -18,7 +18,7 @@
 - (BOOL)isPhoneType5s;
 - (BOOL)isRetina4Inch;
 
-- (NSString *)ipAddress;
+- (NSString *)lanIPAddress;
 - (NSString *)locale;
 - (NSString *)modelName;
 - (NSString *)deviceName;

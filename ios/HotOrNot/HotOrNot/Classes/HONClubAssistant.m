@@ -91,8 +91,6 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
 	
 	return ([dict copy]);
 }
@@ -104,6 +102,8 @@ static HONClubAssistant *sharedInstance = nil;
 			   @"description"	: @"",
 			   @"img"			: @"",
 			   @"club_type"		: @"",
+			   @"coords"		: @{@"lat"	: @(0.00),
+									@"long"	: @(0.00)},
 			   @"added"			: @"0000-00-00 00:00:00",
 			   @"updated"		: @"0000-00-00 00:00:00",
 			   
@@ -146,42 +146,46 @@ static HONClubAssistant *sharedInstance = nil;
 							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC]}];
 	}];
 	
-	return ([@{@"id"			: @"",
-			   @"name"			: @"",
-			   
-			   @"description"	: @"",
-			   @"img"			: @"",
-			   @"club_type"		: @"",
-			   @"added"			: @"0000-00-00 00:00:00",
-			   @"updated"		: @"0000-00-00 00:00:00",
-			   
-			   @"total_members"		: [@"" stringFromInt:(1 + ((int)[members count] + (int)[pending count]))],
-			   @"total_score"		: @"0",
-			   @"total_submissions"	: @"0",
-			   
-			   @"owner"			: ([owner count] == 0) ? @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-														   @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-														   @"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]} : owner,
-			   
-			   @"members"		: [members copy],
-			   @"pending"		: [pending copy],
-			   @"blocked"		: @[],
-			   
-			   @"submissions"	: @[]
-			   } mutableCopy]);
+	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																							 @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+																							 @"avatar"		: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]}];
+	[dict replaceObject:@(1 + ((int)[members count] + (int)[pending count])) forKey:@"total_members"];
+	[dict replaceObject:[members copy] forKey:@"members"];
+	[dict replaceObject:[pending copy] forKey:@"pending"];
+	
+	return (dict);
 }
 
 - (HONUserClubVO *)orthodoxMemberClub {
-	return ([HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxMemberClubDictionary]]);
-}
-
-- (NSMutableDictionary *)orthodoxMemberClubDictionary {
-	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"			: [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"owner_id"],
-																								  @"username"	: @"",
-																								  @"avatar"		: @""}];
-	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] forKey:@"id"];
+	__block HONUserClubVO *vo = nil;
 	
-	return (dict);
+	[[[HONClubAssistant sharedInstance] fetchUserClubs] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		NSArray *clubDict = (NSArray *)obj;
+		[clubDict enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSMutableDictionary *dict = (NSMutableDictionary *)[obj mutableCopy];
+			
+			if ([[dict objectForKey:@"id"] intValue] == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
+				[dict setValue:@{@"lat"		: [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lat"],
+								 @"long"	: [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"long"]} forKey:@"coords"];
+				
+				vo = [HONUserClubVO clubWithDictionary:dict];
+				*stop = YES;
+			}
+		}];
+	}];
+	
+	if (vo == nil) {
+		NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"			: [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"owner_id"],
+																									  @"username"	: @"",
+																									  @"avatar"		: @""}];
+		[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] forKey:@"id"];
+		[dict replaceObject:@{@"lat"	: [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lat"],
+							  @"long"	: [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"long"]} forKey:@"coords"];
+		
+		vo = [HONUserClubVO clubWithDictionary:dict];
+	}
+	
+	return (vo);
 }
 
 - (NSMutableDictionary *)orthodoxThresholdClubDictionary {
@@ -193,8 +197,6 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict setValue:@"LOCKED" forKey:@"club_type"];
 	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
-//	[dict setValue:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
 	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
 	[dict setValue:@"https://hotornot-challenges.s3.amazonaws.com/26mgmt" forKey:@"img"];
 	
@@ -213,30 +215,17 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	NSMutableArray *emotions = [NSMutableArray array];
-	for (NSString *subject in clubPhotoVO.subjectNames) {
-		[[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeAll] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:(NSDictionary *)obj];
-			if ([[vo.emotionName lowercaseString] isEqualToString:[subject lowercaseString]]) {
-//				NSLog(@"(%02d) =-= SUBJECT:[%@] STICKER:[%@]", idx, subject, vo.emotionName);
-				[emotions addObject:vo];
-				*stop = YES;
-			}
-		}];
-	}
-	
-	return ([emotions copy]);
+	return (@[]);
 }
 
 - (BOOL)isMemberOfClub:(HONUserClubVO *)clubVO includePending:(BOOL)isPending {
 	__block BOOL isFound = NO;
 	
-	if (clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+	if (clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 		return (YES);
-	}
 	
 	[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:(NSDictionary *)obj];
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 		
 		if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 			isFound = YES;
@@ -244,9 +233,9 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 	}];
 	
-	if (isPending) {
+	if (isPending && !isFound) {
 		[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:(NSDictionary *)obj];
+			HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 			
 			if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				isFound = YES;
@@ -268,14 +257,16 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 	}];
 	
-	[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"member"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if ([[(NSDictionary *)obj objectForKey:@"id"] intValue] == clubID) {
-			isFound = YES;
-			*stop = YES;
-		}
-	}];
+	if (!isFound) {
+		[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"member"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if ([[(NSDictionary *)obj objectForKey:@"id"] intValue] == clubID) {
+				isFound = YES;
+				*stop = YES;
+			}
+		}];
+	}
 	
-	if (isPending) {
+	if (isPending && !isFound) {
 		[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"pending"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			if ([[(NSDictionary *)obj objectForKey:@"id"] intValue] == clubID) {
 				isFound = YES;
@@ -389,11 +380,6 @@ static HONClubAssistant *sharedInstance = nil;
 
 
 - (int)labelIDForAreaCode:(NSString *)areaCode {
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {
-		if ([[dict objectForKey:@"area_code"] isEqualToString:areaCode])
-			return ([[dict objectForKey:@"label"] intValue]);
-	}
-	
 	return (0);
 }
 
@@ -475,11 +461,6 @@ static HONClubAssistant *sharedInstance = nil;
 	HONUserClubVO *workplaceClubVO = [[HONClubAssistant sharedInstance] suggestedWorkplaceClubVO];
 	if (workplaceClubVO != nil)
 		[clubs addObject:workplaceClubVO];
-	
-	// sand hill
-//	HONUserClubVO *sandHillClubVO = [[HONClubAssistant sharedInstance] suggestedEmailClubVO:[[NSUserDefaults standardUserDefaults] objectForKey:@"sandhill_domains"]];
-//	if (sandHillClubVO != nil)
-//		[clubs addObject:sandHillClubVO];
 	
 	return ([clubs copy]);
 }
@@ -663,13 +644,6 @@ static HONClubAssistant *sharedInstance = nil;
 			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
 			
 			BOOL isValid = YES;
-			for (NSString *domain in [[HONClubAssistant sharedInstance] excludedClubDomains]) {
-				if ([emailDomain isEqualToString:domain]) {
-					isValid = NO;
-					break;
-				}
-			}
-			
 			if (isValid) {
 				if (![segmentedKeys containsObject:emailDomain]) {
 					[segmentedKeys addObject:emailDomain];
@@ -944,10 +918,6 @@ static HONClubAssistant *sharedInstance = nil;
 			}];
 		}
 	}
-}
-
-- (NSArray *)excludedClubDomains {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"excluded_domains"]);
 }
 
 - (HONUserClubVO *)clubWithParticipants:(NSArray *)participants {

@@ -43,10 +43,18 @@ typedef NS_ENUM(NSUInteger, HONPushType) {
 typedef NS_ENUM(NSUInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeInstagram = 0,
 	HONShareSheetActionTypeTwitter,
-//	HONShareSheetActionTypeFacebook,
 	HONShareSheetActionTypeSMS,
 	HONShareSheetActionTypeEmail,
 	HONShareSheetActionTypeClipboard
+};
+
+typedef NS_ENUM(NSUInteger, HONShareMessageType) {
+	HONShareMessageTypeClipboard = 0,
+	HONShareMessageTypeInstagram,
+	HONShareMessageTypeSMS,
+	HONShareMessageTypeEmail,
+	HONShareMessageTypeTwitter,
+	HONShareMessageTypeFacebook
 };
 
 typedef NS_ENUM(NSUInteger, HONAppDelegateAlertType) {
@@ -151,21 +159,16 @@ extern NSString * const kTwilioSMS;
 
 + (CGFloat)minSnapLuminosity;
 
-+ (NSString *)instagramShareMessage;
-+ (NSString *)twitterShareComment;
-+ (NSString *)facebookShareComment;
-+ (NSString *)smsShareComment;
-+ (NSDictionary *)emailShareComment;
-+ (NSArray *)subjectFormats;
++ (NSString *)shareMessageForType:(HONShareMessageType)messageType;
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 + (UIImage *)avatarImage;
 
-+ (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
-
 + (CGFloat)compressJPEGPercentage;
 
+void Swizzle(Class c, SEL orig, SEL new);
+void uncaughtExceptionHandler(NSException *exception);
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

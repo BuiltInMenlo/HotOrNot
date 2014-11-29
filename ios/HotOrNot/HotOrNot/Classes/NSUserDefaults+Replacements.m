@@ -14,11 +14,8 @@
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
 		[[NSUserDefaults standardUserDefaults] setValue:object forKey:key];
 		
-	else {
-		
-	}
-		
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	else
+		[[NSUserDefaults standardUserDefaults] replaceObject:object forKey:key];
 }
 
 - (void)defineObject:(id)object forKey:(NSString *)key {

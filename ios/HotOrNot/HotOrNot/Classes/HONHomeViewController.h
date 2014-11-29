@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <CoreLocation/CoreLocation.h>
 
 #import "HONViewController.h"
 

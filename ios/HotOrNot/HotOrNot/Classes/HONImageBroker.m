@@ -259,7 +259,7 @@ static HONImageBroker *sharedInstance = nil;
 	CGSize multSize = CGSizeMake(size.width / image.size.width, size.height / image.size.height);
 	CGFloat scaledRatio = scaledSize.width / scaledSize.height;
 	
-	NSLog(@"ORG_RATIO:[%f] SCALE_RATIO:[%f]", ratio, scaledRatio);
+//	NSLog(@"ORG_RATIO:[%f] SCALE_RATIO:[%f]", ratio, scaledRatio);
 	
 	if (isRatio) {
 		if (ratio == scaledRatio) {
@@ -310,12 +310,11 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (CGRect)rectForCroppedImage:(UIImage *)image toSize:(CGSize)size {
-	CGFloat ratio = size.width / size.height; //[[HONImageBroker sharedInstance] aspectRatioForImage:image];
+//	CGFloat ratio = size.width / size.height; //[[HONImageBroker sharedInstance] aspectRatioForImage:image];
 	
 	// w > h : w < h : w = h
-//	CGPoint pos = (ratio < 1.0) ? CGPointMake(0.0, ((image.size.width / ratio) - size.height) * 0.5) : (ratio > 1.0) ? CGPointMake(((image.size.height * ratio) - size.width) * 0.5, 0.0) : CGPointZero;
 	CGPoint pos = (image.size.width == size.width) ? CGPointMake(0.0, (image.size.width - size.height) * 0.5) : (image.size.height == size.height) ? CGPointMake((image.size.width - size.width) * 0.5, 0.0) : CGPointZero;
-	NSLog(@"CROPPED POS:[%@] (%@)(%@) {%f}", NSStringFromCGPoint(pos), NSStringFromCGSize(image.size), NSStringFromCGSize(size), ratio);
+//	NSLog(@"CROPPED POS:[%@] (%@)(%@) {%f}", NSStringFromCGPoint(pos), NSStringFromCGSize(image.size), NSStringFromCGSize(size), ratio);
 	
 	return (CGRectMake(pos.x, pos.y, size.width, size.height));
 }
@@ -334,7 +333,7 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (UIImage *)mirrorImage:(UIImage *)image {
-	NSLog(@"MIRROR-ORIENTATION:[%@] >> [%@]", NSStringFromUIImageOrientation(image.imageOrientation), NSStringFromUIImageOrientation((image.imageOrientation + 4) % 8));
+//	NSLog(@"MIRROR-ORIENTATION:[%@] >> [%@]", NSStringFromUIImageOrientation(image.imageOrientation), NSStringFromUIImageOrientation((image.imageOrientation + 4) % 8));
 	
 //	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
 //	imageView.transform = CGAffineTransformScale(imageView.transform, -1.0f, 1.0f);
@@ -382,13 +381,13 @@ static HONImageBroker *sharedInstance = nil;
 	if (image.imageOrientation != UIImageOrientationUp)
 		image = [image fixOrientation];
 	
-	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
 	UIImage *scaledImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES];
-	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
 	UIImage *croppedImage = [[HONImageBroker sharedInstance] cropImage:scaledImage toRect:[[HONImageBroker sharedInstance] rectForCroppedImage:scaledImage toSize:kUploadBaseSize]];
-	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
 	return (croppedImage);
 	

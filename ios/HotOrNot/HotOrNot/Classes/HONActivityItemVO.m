@@ -29,7 +29,7 @@
 	
 	vo.sentDate = [dateFormatter dateFromString:[dictionary objectForKey:@"time"]];//[NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
 	
-	vo.originUserID = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[[dictionary objectForKey:@"subject_member"] objectForKey:@"id"] intValue] : 0;//[[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
+	vo.originUserID = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[[dictionary objectForKey:@"subject_member"] objectForKey:@"id"] intValue] : 0;
 	vo.originUsername = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? (vo.originUserID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"subject_member"] objectForKey:@"name"] : @"";
 	vo.originAvatarPrefix = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"subject_member"] objectForKey:@"avatar_url"]] : @"";
 	

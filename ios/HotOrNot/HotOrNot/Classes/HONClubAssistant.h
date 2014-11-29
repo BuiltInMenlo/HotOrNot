@@ -21,7 +21,6 @@
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (HONUserClubVO *)orthodoxMemberClub;
-- (NSMutableDictionary *)orthodoxMemberClubDictionary;
 - (NSMutableDictionary *)orthodoxThresholdClubDictionary;
 - (NSMutableDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
@@ -68,7 +67,6 @@
 - (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote;
 - (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers ToNonAppContacts:(NSArray *)nonAppContacts onCompletion:(void (^)(BOOL success))completion;
 
-- (NSArray *)excludedClubDomains;
 - (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
 - (HONUserClubVO *)clubWithClubID:(int)clubID;

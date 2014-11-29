@@ -52,7 +52,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 
-- (NSString *)ipAddress {
+- (NSString *)lanIPAddress {
 	NSString *address = @"error";
 	struct ifaddrs *interfaces = NULL;
 	struct ifaddrs *temp_addr = NULL;
@@ -164,10 +164,8 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 - (void)updateDeviceLocation:(CLLocation *)location {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] != nil) {
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"coords"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"coords"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:@{@"lat"	:[NSNumber numberWithDouble:location.coordinate.latitude],
 													  @"long"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];

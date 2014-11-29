@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "shareTemplate_instagram.png"
+      "filename" : "instagram-2.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "shareTemplate_instagram-1.png"
+      "filename" : "instagram-1.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "instagram.png"
     }
   ],
   "info" : {

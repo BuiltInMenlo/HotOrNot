@@ -16,6 +16,7 @@
 #import <Social/SLServiceTypes.h>
 #import <StoreKit/StoreKit.h>
 #import <sys/utsname.h>
+#import </usr/include/objc/objc-class.h>
 
 #import <HockeySDK/HockeySDK.h>
 //#import <Tapjoy/Tapjoy.h>
@@ -84,8 +85,7 @@ NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-NSString * const kFlurryAPIKey = @"llSjQBKKaGBsqsnJZlxE";
-
+NSString * const kFlurryAPIKey = @"XH2STY3SYCJ37QMTKYHZ";
 
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
@@ -115,12 +115,11 @@ const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheD
 NSString * const kTwilioSMS = @"6475577873";
 
 
-//#if __APPSTORE_BUILD__ == 0
+#if __APPSTORE_BUILD__ == 0
 @interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate>
-//@interface HONAppDelegate() <HONInsetOverlayViewDelegate, PicoStickerDelegate>
-//#else
-//@interface HONAppDelegate()
-//#endif
+#else
+@interface HONAppDelegate()
+#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
@@ -140,6 +139,18 @@ NSString * const kTwilioSMS = @"6475577873";
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 
+
+void Swizzle(Class c, SEL orig, SEL new)
+{
+	Method origMethod = class_getInstanceMethod(c, orig);
+	Method newMethod = class_getInstanceMethod(c, new);
+	
+	if(class_addMethod(c, orig, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))
+		class_replaceMethod(c, new, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));
+	
+	else
+		method_exchangeImplementations(origMethod, newMethod);
+}
 
 
 + (NSString *)apiServerPath {
@@ -173,33 +184,35 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeout_interval"] doubleValue]);
 }
 
++ (NSString *)shareMessageForType:(HONShareMessageType)messageType {
+	if (messageType == HONShareMessageTypeClipboard) {
+		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"clipboard"]);
+	
+	} else if (messageType == HONShareMessageTypeEmail) {
+		return ([NSString stringWithFormat:@"%@|%@", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectForKey:@"subject"], [[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectForKey:@"body"]]);
+	
+	} else if (messageType == HONShareMessageTypeFacebook) {
+		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"facebook"]);
+		
+	} else if (messageType == HONShareMessageTypeInstagram) {
+		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"]);
+		
+	} else if (messageType == HONShareMessageTypeSMS) {
+		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"sms"]);
+		
+	} else if (messageType == HONShareMessageTypeTwitter) {
+		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"]);
+	}
+	
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"default"]);
+}
+
 + (int)clubInvitesThreshold {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_threshold"] intValue]);
 }
 
 + (CGFloat)minSnapLuminosity {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_luminosity"] floatValue]);
-}
-
-+ (NSString *)instagramShareMessage { //[0]:Details //[1]:Profile
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] firstObject]);
-}
-
-+ (NSString *)twitterShareComment { //[0]:Details //[1]:Profile
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] firstObject]);
-}
-
-+ (NSString *)facebookShareComment {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"facebook"] firstObject]);
-}
-
-+ (NSString *)smsShareComment {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"sms"] firstObject]);
-}
-
-+ (NSDictionary *)emailShareComment {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] firstObject]);
-	
 }
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
@@ -229,11 +242,6 @@ NSString * const kTwilioSMS = @"6475577873";
 + (NSString *)kikCardURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
 }
-
-+ (NSArray *)subjectFormats {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"subject_formats"]);
-}
-
 
 + (void)writeUserInfo:(NSDictionary *)userInfo {
 	[[NSUserDefaults standardUserDefaults] replaceObject:userInfo forKey:@"user_info"];
@@ -312,18 +320,11 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"suggested_covers"] forKey:@"suggested_covers"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"schools"] forKey:@"schools"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
-		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"school_clubs"] forKey:@"school_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"emotion_groups"] forKey:@"emotion_groups"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"store"] forKey:@"store"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
 														   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
@@ -334,20 +335,18 @@ NSString * const kTwilioSMS = @"6475577873";
 														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"default"	: [[result objectForKey:@"share_formats"] objectForKey:@"default"],
+														   @"clipboard"	: [[result objectForKey:@"share_formats"] objectForKey:@"clipboard"],
+														   @"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
 														   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
 														   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
 														   @"sms"		: [[result objectForKey:@"share_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		NSLog(@"IP ADDRESS:[%@]", [[HONDeviceIntrinsics sharedInstance] ipAddress]);
 		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 		
 		[self _initThirdPartySDKs];
-//		[[HONStickerAssistant sharedInstance] retrieveAllStickerPakTypesWithDelay:0.875 ignoringCache:YES];
-		
 		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
 			[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
 		
@@ -398,10 +397,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_week"
 											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
 			
-//			
-//			[[NSUserDefaults standardUserDefaults] setObject:[HONUserVO userWithDictionary:result] forKey:@"crash"];
-//			[[NSUserDefaults standardUserDefaults] synchronize];
-			
+			[Flurry setUserID:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
 				
@@ -414,7 +410,6 @@ NSString * const kTwilioSMS = @"6475577873";
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 			
 			[[HONAPICaller sharedInstance] retrieveOwnedClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
@@ -558,6 +553,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[KeenClient disableGeoLocation];
 	
+	[Flurry setCrashReportingEnabled:YES];
+	[Flurry setShowErrorInLogEnabled:YES];
+	[Flurry setLogLevel:FlurryLogLevelAll];
+	[Flurry startSession:kFlurryAPIKey];
+	[Flurry logEvent:@"launch"];
+	
+	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+	
 	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
@@ -591,7 +594,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.window.backgroundColor = [UIColor whiteColor];
+	[self.window addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appBG"]]];
 	_isFromBackground = NO;
+	
 	
 #if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -615,10 +620,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	
 
-//#if __APPSTORE_BUILD__ == 0
+#if __APPSTORE_BUILD__ == 0
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
 	[[BITHockeyManager sharedHockeyManager] startManager];
-//#endif
+#endif
 
 	
 	[self _establishUserDefaults];
@@ -651,39 +656,9 @@ NSString * const kTwilioSMS = @"6475577873";
 #ifdef FONTS
 	[self _showFonts];
 #endif
-
-	[Flurry setCrashReportingEnabled:YES];
-	[Flurry startSession:kFlurryAPIKey];
-	[Flurry logEvent:@"launch"];
-	
-//	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 	
 	return (YES);
 }
-
-//- (void) uncaughtExceptionHandler(NSException *exception) {
-//	NSArray *backtrace = [exception callStackSymbols];
-//	NSString *platform = [[UIDevice currentDevice] platform];
-//	NSString *version = [[UIDevice currentDevice] systemVersion];
-//	NSString *message = [NSString stringWithFormat:@"Device: %@. OS: %@. Backtrace:\n%@",
-//						 platform,
-//						 version,
-//						 backtrace];
-//	
-//	[FlurryAPI logError:@"Uncaught" message:message exception:exception];
-//}
-//
-//void uncaughtExceptionHandler(NSException *exception) {
-//	NSArray *backtrace = [exception callStackSymbols];
-//	NSString *platform = [[UIDevice currentDevice] platform];
-//	NSString *version = [[UIDevice currentDevice] systemVersion];
-//	NSString *message = [NSString stringWithFormat:@"Device: %@. OS: %@. Backtrace:\n%@",
-//						 platform,
-//						 version,
-//						 backtrace];
-//	
-//	[FlurryAPI logError:@"Uncaught" message:message exception:exception];
-//}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
@@ -1057,8 +1032,6 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_initThirdPartySDKs {
-	[[HONStickerAssistant sharedInstance] registerStickerStore];
-	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
 //	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
@@ -1094,10 +1067,20 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_writeShareTemplates {
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
-		for (NSString *key in [dict keyEnumerator])
-			[[HONImageBroker sharedInstance] writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
-	}
+	NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"];
+	for (NSString *key in [dict keyEnumerator])
+		[[HONImageBroker sharedInstance] writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
+}
+
+
+#pragma mark - Crash Handling
+void uncaughtExceptionHandler(NSException *exception) {
+	NSString *message = [NSString stringWithFormat:@"Device: %@\nOS: %@\nBacktrace:\n%@", [[HONDeviceIntrinsics sharedInstance] modelName], [[HONDeviceIntrinsics sharedInstance] osNameVersion], [exception callStackSymbols]];
+	NSLog(@"[INFO] Flurry logged an uncaught error: %@\n%@", exception, message);
+	
+	[Flurry logError:@"Uncaught"
+			 message:message
+		   exception:exception];
 }
 
 
@@ -1135,11 +1118,12 @@ NSString * const kTwilioSMS = @"6475577873";
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate instagramShareMessage], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate twitterShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], [NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],//  [[[[HONAppDelegate emailShareComment] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]],
-																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																															@"email"		: @{@"subject"	: [[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject],
+																																				@"body"		: [NSString stringWithFormat:[[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeClipboard], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
 																									@"image"			: [HONAppDelegate avatarImage],
 																									@"url"				: @"",
 																									@"mp_event"			: @"App Root",
@@ -1290,14 +1274,9 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		} else if (buttonIndex == HONShareSheetActionTypeEmail) {
 			if ([MFMailComposeViewController canSendMail]) {
-				NSLog(@"EMAIL:[%@]", [[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] lastObject]);
-//				
-//				NSRange range = [[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] rangeOfString:@"|"];
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] firstObject]];
-				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] lastObject] isHTML:NO];
-//				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] substringToIndex:range.location]];
-//				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] substringFromIndex:range.location + 1] isHTML:NO];
+				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] objectForKey:@"subject"]];
+				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] objectForKey:@"body"] isHTML:NO];
 				mailComposeViewController.mailComposeDelegate = self;
 				
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController

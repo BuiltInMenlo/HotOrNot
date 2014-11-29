@@ -137,9 +137,6 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"club_invites"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
-	
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold])
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
 }
 
 - (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {

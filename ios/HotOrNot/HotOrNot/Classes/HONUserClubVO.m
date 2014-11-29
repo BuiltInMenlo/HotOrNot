@@ -14,7 +14,7 @@
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
+@synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, location, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
 @synthesize visibleMembers, totalMembers;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
@@ -37,6 +37,8 @@
 	NSMutableString *imgURL = [vo.coverImagePrefix mutableCopy];
 	[imgURL replaceOccurrencesOfString:@"http://d1fqnfrnudpaz6.cloudfront.net" withString:@"https://hotornot-challenges.s3.amazonaws.com" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imgURL length])];
 	vo.coverImagePrefix = [imgURL copy];
+	
+	vo.location = ([dictionary objectForKey:@"coords"] != nil) ? [[CLLocation alloc] initWithLatitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"long"] doubleValue]] : [[CLLocation alloc] initWithLatitude:0.00 longitude:0.00];
 	
 	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
@@ -130,6 +132,7 @@
 	self.clubName = nil;
 	self.blurb = nil;
 	self.coverImagePrefix = nil;
+	self.location = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;
 	self.ownerName = nil;

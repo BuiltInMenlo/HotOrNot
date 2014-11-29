@@ -165,8 +165,6 @@
 				NSString *url = [vo.imagePrefix stringByAppendingString:type];
 				[imagesToFetch addObject:[NSURL URLWithString:url]];
 			}
-			if ([imagesToFetch count] > 0)
-				[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(0, [imagesToFetch count]) fromURLs:imagesToFetch withTag:@"feed"];
 		}
 	}
 }

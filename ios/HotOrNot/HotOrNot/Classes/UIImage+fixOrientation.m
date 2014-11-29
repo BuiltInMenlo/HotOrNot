@@ -11,7 +11,7 @@
 @implementation UIImage (fixOrientation)
 
 - (UIImage *)fixOrientation {
-	NSLog(@"PRE-ORIENTATION:[%@]", NSStringFromUIImageOrientation(self.imageOrientation));
+//	NSLog(@"PRE-ORIENTATION:[%@]", NSStringFromUIImageOrientation(self.imageOrientation));
 	
 	// No-op if the orientation is already correct
 	if (self.imageOrientation == UIImageOrientationUp) return self;

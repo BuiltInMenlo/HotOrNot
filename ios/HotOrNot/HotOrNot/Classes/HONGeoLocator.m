@@ -36,11 +36,12 @@ static HONGeoLocator *sharedInstance = nil;
 
 
 - (BOOL)isWithinOrthodoxClub {
-	CLLocation *orthodoxClubLocation = [[CLLocation alloc] initWithLatitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"lat"] doubleValue] longitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"long"] doubleValue]];
-	return ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:orthodoxClubLocation] <= [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"] intValue]);
+	CLLocation *orthodoxClubLocation = [[CLLocation alloc] initWithLatitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"long"] doubleValue]];
+	return ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:orthodoxClubLocation] <= [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"] floatValue]);
 }
 
 - (CGFloat)milesBetweenLocation:(CLLocation *)location andOtherLocation:(CLLocation *)otherLocation {
+//	NSLog(@"DIST:[%f]", MKMetersBetweenMapPoints(MKMapPointForCoordinate(location.coordinate), MKMapPointForCoordinate(otherLocation.coordinate)) / kMetersPerMile);
 	return(MKMetersBetweenMapPoints(MKMapPointForCoordinate(location.coordinate), MKMapPointForCoordinate(otherLocation.coordinate)) / kMetersPerMile);
 }
 
