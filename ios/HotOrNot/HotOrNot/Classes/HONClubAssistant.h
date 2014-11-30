@@ -15,12 +15,11 @@
 + (HONClubAssistant *)sharedInstance;
 
 - (void)generateSelfieclubOwnedClubWithName:(NSString *)clubName andBlurb:(NSString *)blurb;
-
 - (NSArray *)clubTypeKeys;
 - (NSDictionary *)createClubDictionary;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
-- (HONUserClubVO *)orthodoxMemberClub;
+- (void)unknownLocationClubWithCompletion:(void (^)(id result))completion;
 - (void)locationClubWithCompletion:(void (^)(id result))completion;
 - (HONUserClubVO *)currentLocationClub;
 - (NSMutableDictionary *)orthodoxThresholdClubDictionary;
@@ -36,8 +35,6 @@
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
-- (BOOL)isVotingEnabledForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (BOOL)isVotingEnabledForComment:(HONCommentVO *)commentVO;;
 - (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (BOOL)hasVotedForComment:(HONCommentVO *)commentVO;
 - (HONUserClubVO *)userSignupClub;

@@ -14,7 +14,6 @@
 #import "UILabel+FormattedText.h"
 
 #import "HONStatusUpdateViewController.h"
-#import "HONClubPhotoVO.h"
 #import "HONCommentViewCell.h"
 #import "HONImageLoadingView.h"
 #import "HONRefreshControl.h"
@@ -23,6 +22,7 @@
 
 @interface HONStatusUpdateViewController () <HONCommentViewCellDelegate>
 @property (nonatomic, strong) HONClubPhotoVO *statusUpdateVO;
+@property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
@@ -59,10 +59,11 @@
 	return (self);
 }
 
-- (id)initWithStatusUpdate:(HONClubPhotoVO *)statusUpdateVO {
-	NSLog(@"%@ - initWithStatusUpdate:[%@]", [self description], statusUpdateVO.dictionary);
+- (id)initWithStatusUpdate:(HONClubPhotoVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO {
+	NSLog(@"%@ - initWithStatusUpdate:[%@] forClub:[%d - %@]", [self description], statusUpdateVO.dictionary, clubVO.clubID, clubVO.clubName);
 	if ((self = [self init])) {
 		_statusUpdateVO = statusUpdateVO;
+		_clubVO = clubVO;
 	}
 	
 	return (self);
@@ -89,20 +90,18 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveStatusUpdate {
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_statusUpdateVO.clubID withOwnerID:2394 completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		
-		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:result];
-//		if (clubVO.clubID == [[HONClubAssistant sharedInstance] orthodoxMemberClub].clubID) {
-			[[HONClubAssistant sharedInstance] writeClub:result];
+		_clubVO = [HONUserClubVO clubWithDictionary:result];
+		[[HONClubAssistant sharedInstance] writeClub:result];
 			
-			[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
-				if (clubPhotoVO.challengeID == _statusUpdateVO.challengeID) {
-					_statusUpdateVO = [HONClubPhotoVO clubPhotoWithDictionary:clubPhotoVO.dictionary];
-					*stop = YES;
-				}
-			}];
-//		}
+		[_clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
+			if (clubPhotoVO.challengeID == _statusUpdateVO.challengeID) {
+				_statusUpdateVO = [HONClubPhotoVO clubPhotoWithDictionary:clubPhotoVO.dictionary];
+				*stop = YES;
+			}
+		}];
 		
 		[self _didFinishDataRefresh];
 	}];
@@ -111,12 +110,9 @@
 - (void)_submitCommentReply {
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
-						   @"club_id"		: @(_statusUpdateVO.clubID),
+						   @"club_id"		: @(_clubVO.clubID),
 						   @"subject"		: _commentTextField.text,
-						   @"subjects"		: @"",
-						   @"challenge_id"	: @(_statusUpdateVO.challengeID),
-						   @"recipients"	: @"",
-						   @"api_endpt"		: kAPICreateChallenge};
+						   @"challenge_id"	: @(_statusUpdateVO.challengeID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
 	_commentTextField.text = @"";
@@ -126,7 +122,7 @@
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"";//NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.labelText = @"";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
@@ -341,6 +337,7 @@
 	
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+		[mailComposeViewController setToRecipients:@[@"support@getyunder.com"]];
 		[mailComposeViewController setSubject:[NSString stringWithFormat:@"Post Flag (%d)", _statusUpdateVO.challengeID]];
 		[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"The following post (%d) has been flagged", _statusUpdateVO.challengeID] isHTML:NO];
 		mailComposeViewController.mailComposeDelegate = self;
@@ -393,19 +390,19 @@
 }
 
 - (void)_goCommentReply {
-	if (![[HONGeoLocator sharedInstance] isWithinOrthodoxClub]) {
-		[[[UIAlertView alloc] initWithTitle:@"Outside range"
-									message:[NSString stringWithFormat:@"You must be within %@ miles of this location to post. ", [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"]]
+	if ([_commentTextField isFirstResponder])
+		[_commentTextField resignFirstResponder];
+	
+	if (_clubVO.distance > _clubVO.postRadius) {
+		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
+									message:[NSString stringWithFormat:@"Must be within %d miles", (int)_clubVO.postRadius]
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
+		_commentTextField.text = @"";
 		
 	} else {
 		_isSubmitting = YES;
-		
-		if ([_commentTextField isFirstResponder])
-			[_commentTextField resignFirstResponder];
-		
 		[self _submitCommentReply];
 	}
 }
@@ -554,7 +551,7 @@
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_upVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO])];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
 	[view addSubview:_upVoteButton];
 	
 	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -562,11 +559,11 @@
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_downVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO])];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
 	[view addSubview:_downVoteButton];
 	
-	//	NSLog(@"HAS VOTED:[%@]", [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_clubPhotoVO]]);
-	if ([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_statusUpdateVO]) {
+	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]));
+	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]) {
 		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}

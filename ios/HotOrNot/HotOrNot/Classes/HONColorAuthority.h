@@ -25,7 +25,7 @@ typedef enum {
 
 - (UIColor *)percentGreyscaleColor:(CGFloat)percent;
 - (UIColor *)honKhakiColor;
-- (UIColor *)honBGLightGreyColor;
+- (UIColor *)honLightGreyBGColor;
 - (UIColor *)honBlueTextColor;
 - (UIColor *)honBlueTextColorHighlighted;
 - (UIColor *)honGreenTextColor;

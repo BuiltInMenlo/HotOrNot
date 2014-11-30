@@ -82,7 +82,7 @@ NSString * const kKeenIOWriteKey = @"b1cdd775a884281f24e673401727f75c05985ae671d
 
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
-NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
+NSString * const kTapStreamSecretKey = @"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 NSString * const kFlurryAPIKey = @"XH2STY3SYCJ37QMTKYHZ";
@@ -315,6 +315,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invalid_chars"] forKey:@"invalid_chars"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"expire_threshold"] forKey:@"expire_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
@@ -557,7 +558,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 	[Flurry setCrashReportingEnabled:YES];
 	[Flurry setShowErrorInLogEnabled:YES];
-	[Flurry setLogLevel:FlurryLogLevelAll];
+	[Flurry setLogLevel:FlurryLogLevelCriticalOnly];
 	[Flurry startSession:kFlurryAPIKey];
 	[Flurry logEvent:@"launch"];
 	
@@ -731,10 +732,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
 	[KeenClient disableGeoLocation];
-	
-#if KEENIO_LOG == 1
-	[KeenClient enableLogging];
-#endif
+//	[KeenClient enableLogging];
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
@@ -1035,8 +1033,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 - (void)_initThirdPartySDKs {
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
-//	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-	config.idfa = [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO];
+	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+//	config.idfa = [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO];
 //	config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
@@ -1178,7 +1176,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeJoinCLub) {
 		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO completion:^(NSObject *result) {
 				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -1417,6 +1415,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 }
 #endif
 
+#if __APPSTORE_BUILD__ == 0
 - (void)_picoCandyTest {
 	NSLog(@"CandyStore:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchStickerStoreInfo]);
 	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
@@ -1442,7 +1441,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
 	NSLog(@"sticker.tag:[%ld] (%@)", (long)((PicoSticker *)sticker).tag, contentId);
 }
-
+#endif
 
 @end
 

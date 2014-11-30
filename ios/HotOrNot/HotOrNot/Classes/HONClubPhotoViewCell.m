@@ -138,7 +138,7 @@
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateDisabled];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_upVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_clubPhotoVO])];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO])];
 	[_footerView addSubview:_upVoteButton];
 	
 	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -146,11 +146,11 @@
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateDisabled];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_downVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_clubPhotoVO])];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO])];
 	[_footerView addSubview:_downVoteButton];
 	
-//	NSLog(@"HAS VOTED:[%@]", [@"" stringFromBOOL:[[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_clubPhotoVO]]);
-	if ([[HONClubAssistant sharedInstance] isVotingEnabledForClubPhoto:_clubPhotoVO]) {
+	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO]));
+	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_clubPhotoVO]) {
 		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}

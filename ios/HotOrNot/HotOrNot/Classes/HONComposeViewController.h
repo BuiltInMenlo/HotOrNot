@@ -7,21 +7,8 @@
 //
 
 #import "HONViewController.h"
-#import "HONChallengeVO.h"
 #import "HONUserClubVO.h"
-#import "HONContactUserVO.h"
-#import "HONTrivialUserVO.h"
-
-typedef NS_ENUM(NSUInteger, HONSelfieSubmitType) {
-	HONSelfieSubmitTypeCreate = 0,
-	HONSelfieSubmitTypeReply,
-	HONSelfieSubmitTypeSearchContact,
-	HONSelfieSubmitTypeSearchUser
-};
 
 @interface HONComposeViewController : HONViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate>
-- (id)initAsNewStatusUpdate;
-- (id)initWithUser:(HONTrivialUserVO *)trivialUserVO;
-- (id)initWithContact:(HONContactUserVO *)contactUserVO;
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 @end

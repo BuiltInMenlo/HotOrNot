@@ -158,7 +158,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (CLLocation *)deviceLocation {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] == nil)
-		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:0.00 longitude:0.00]];
+		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:CGFLOAT_MAX longitude:CGFLOAT_MAX]];
 	
 	return ([[CLLocation alloc] initWithLatitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"long"] doubleValue]]);
 }

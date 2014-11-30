@@ -23,7 +23,6 @@
 		3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */; };
 		3010D7931A24BDDD0078164F /* HONScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3010D7921A24BDDD0078164F /* HONScrollView.m */; };
 		30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */; };
-		3015CF441A29C07E003BD226 /* FAU.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 3015CF431A29C07E003BD226 /* FAU.gpx */; };
 		301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */; };
 		301DF22D1A1071A500D2BEB9 /* AWSiOSSDKv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */; };
 		301DF22F1A10755000D2BEB9 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF22E1A10755000D2BEB9 /* Mantle.framework */; };
@@ -33,6 +32,7 @@
 		301DF2381A107A8C00D2BEB9 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */; };
 		301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */; };
 		301DF23D1A1084A800D2BEB9 /* s3-2006-03-01.json in Resources */ = {isa = PBXBuildFile; fileRef = 301DF23C1A1084A800D2BEB9 /* s3-2006-03-01.json */; };
+		301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */; };
 		3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONActivityViewController.m */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0E19D5E78600CB2501 /* fpo_push.caf */; };
@@ -89,6 +89,7 @@
 		30DB24B919CBF64700DCFC49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30DB24B719CBF64700DCFC49 /* InfoPlist.strings */; };
 		30DB24BB19CBF64700DCFC49 /* seflieclub_tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */; };
 		30DD5A9B1A11CDE300A571DA /* KakaoOpenSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */; };
+		30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30DDD7821A2A62880032B898 /* Boca Raton.gpx */; };
 		30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */; };
 		30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E805171A15183300F0A130 /* libFlurry_5.4.0.a */; };
 		30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */; };
@@ -303,7 +304,6 @@
 		30119BDD19F84D7900DE9B16 /* HONAnimatedBGViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnimatedBGViewFlowLayout.m; sourceTree = "<group>"; };
 		30119BE019F8527800DE9B16 /* HONCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionViewCell.h; sourceTree = "<group>"; };
 		30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionViewCell.m; sourceTree = "<group>"; };
-		3015CF431A29C07E003BD226 /* FAU.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FAU.gpx; sourceTree = "<group>"; };
 		301DF2291A10228B00D2BEB9 /* HONGeoLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGeoLocator.h; sourceTree = "<group>"; };
 		301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGeoLocator.m; sourceTree = "<group>"; };
 		301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AWSiOSSDKv2.framework; sourceTree = "<group>"; };
@@ -314,6 +314,7 @@
 		301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UICKeyChainStore.framework; sourceTree = "<group>"; };
 		301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XMLDictionary.framework; sourceTree = "<group>"; };
 		301DF23C1A1084A800D2BEB9 /* s3-2006-03-01.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "s3-2006-03-01.json"; sourceTree = "<group>"; };
+		301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cupertino.gpx; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		303BAD0E19D5E78600CB2501 /* fpo_push.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fpo_push.caf; sourceTree = "<group>"; };
@@ -468,6 +469,7 @@
 		30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = seflieclub_tests.m; sourceTree = "<group>"; };
 		30DB24BC19CBF64700DCFC49 /* seflieclub-tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "seflieclub-tests-Prefix.pch"; sourceTree = "<group>"; };
 		30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KakaoOpenSDK.framework; sourceTree = "<group>"; };
+		30DDD7821A2A62880032B898 /* Boca Raton.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Boca Raton.gpx"; sourceTree = "<group>"; };
 		30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateViewController.h; sourceTree = "<group>"; };
 		30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateViewController.m; sourceTree = "<group>"; };
 		30E805161A15183300F0A130 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
@@ -986,7 +988,8 @@
 		3015CF421A29C056003BD226 /* GPX */ = {
 			isa = PBXGroup;
 			children = (
-				3015CF431A29C07E003BD226 /* FAU.gpx */,
+				301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */,
+				30DDD7821A2A62880032B898 /* Boca Raton.gpx */,
 			);
 			name = GPX;
 			sourceTree = "<group>";
@@ -2319,6 +2322,7 @@
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
+				30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */,
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
 				4C639A30195502E90059E444 /* HomeFeedElements.xcassets in Resources */,
 				308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */,
@@ -2327,6 +2331,7 @@
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
+				301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
 				4C01BAD3190CAAD1006CD80D /* StatusUpdateElements.xcassets in Resources */,
@@ -2349,7 +2354,6 @@
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
-				3015CF441A29C07E003BD226 /* FAU.gpx in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,

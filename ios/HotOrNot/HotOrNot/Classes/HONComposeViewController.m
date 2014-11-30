@@ -25,26 +25,17 @@
 
 #import "Flurry.h"
 #import "ImageFilter.h"
-#import "TSTapstream.h"
 
 #import "HONComposeViewController.h"
 #import "HONCameraOverlayView.h"
-#import "HONTrivialUserVO.h"
 
 @interface HONComposeViewController () <HONCameraOverlayViewDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
-@property (nonatomic, assign, readonly) HONSelfieSubmitType selfieSubmitType;
-@property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
-@property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
-@property (nonatomic, strong) HONContactUserVO *contactUserVO;
-@property (nonatomic, strong) NSMutableArray *selectedUsers;
-@property (nonatomic, strong) NSMutableArray *selectedContacts;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
-@property (nonatomic, strong) NSMutableDictionary *submitParams;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) int uploadCounter;
 
@@ -54,8 +45,6 @@
 @property (nonatomic, strong) AWSS3TransferManagerUploadRequest *uploadReq2;
 
 @property (nonatomic, strong) NSString *subject;
-@property (nonatomic, strong) NSMutableArray *subjectNames;
-@property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIButton *closeButton;
@@ -81,15 +70,8 @@
 		_totalType = HONStateMitigatorTotalTypeCompose;
 		_viewStateType = HONStateMitigatorViewStateTypeCompose;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_reloadEmotionPicker:)
-													 name:@"RELOAD_EMOTION_PICKER" object:nil];
-		
 		_filename = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] rndCoverImageURL]];
-		
 		_subject = @"";
-		_selectedEmotions = [NSMutableArray array];
-		_subjectNames = [NSMutableArray array];
 	}
 	
 	return (self);
@@ -101,42 +83,11 @@
 	[super destroy];
 }
 
-- (id)initWithContact:(HONContactUserVO *)contactUserVO {
-	NSLog(@"%@ - initWithContact", [self description]);
-	if ((self = [self init])) {
-		_contactUserVO = contactUserVO;
-		_selfieSubmitType = HONSelfieSubmitTypeSearchContact;
-	}
-	
-	return (self);
-}
-
-- (id)initWithUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"%@ - initWithUser", [self description]);
-	if ((self = [self init])) {
-		_trivialUserVO = trivialUserVO;
-		_selfieSubmitType = HONSelfieSubmitTypeSearchUser;
-	}
-	
-	return (self);
-}
-
 - (id)initWithClub:(HONUserClubVO *)clubVO {
 	NSLog(@"%@ - initWithClub:[%d] (%@)", [self description], clubVO.clubID, clubVO.clubName);
 	
 	if ((self = [self init])) {
 		_userClubVO = clubVO;
-		_selfieSubmitType = HONSelfieSubmitTypeReply;
-	}
-	
-	return (self);
-}
-
-
-- (id)initAsNewStatusUpdate {
-	NSLog(@"%@ - initAsNewChallenge", [self description]);
-	if ((self = [self init])) {
-		_selfieSubmitType = HONSelfieSubmitTypeCreate;
 	}
 	
 	return (self);
@@ -188,7 +139,7 @@
 	_uploadReq1.contentType = @"image/jpeg";
 	_uploadReq1.key = largeURL;
 	_uploadReq1.body = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:kSnapLargeSuffix]];
-	_uploadReq1.uploadProgress = ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend){
+	_uploadReq1.uploadProgress = ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
 		dispatch_sync(dispatch_get_main_queue(), ^{
 //			NSLog(@"%lld", totalBytesSent);
 		});
@@ -199,7 +150,7 @@
 	_uploadReq2.contentType = @"image/jpeg";
 	_uploadReq2.key = squareURL;
 	_uploadReq2.body = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:kSnapMediumSuffix]];
-	_uploadReq2.uploadProgress = ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend){
+	_uploadReq2.uploadProgress = ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
 		dispatch_sync(dispatch_get_main_queue(), ^{
 //			NSLog(@"%lld", totalBytesSent);
 		});
@@ -256,79 +207,55 @@
 	}];
 }
 
-- (void)_modifySubmitParamsAndSubmit:(NSArray *)subjectNames {
-//	if (![[HONClubAssistant sharedInstance] isMemberOfClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] includePending:NO]) {
-	if ([[HONClubAssistant sharedInstance] currentLocationClub].clubID == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
-		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
-									message:[NSString stringWithFormat:@"Must be within %@ miles", [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"]]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flag"];
-		
-		NSError *error;
-		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjectNames options:0 error:&error]
-													 encoding:NSUTF8StringEncoding];
-		
-		_submitParams = [@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+- (void)_submitStatusUpdate {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit_compose"];
+	
+	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						   @"img_url"		: _filename,
-						   @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieSubmitTypeReply) ? _userClubVO.clubID : 0],
-						   @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieSubmitTypeReply) ? _userClubVO.ownerID : 0],
+						   @"club_id"		: @(_userClubVO.clubID),
 						   @"subject"		: _subject,
-						   @"subjects"		: jsonString,
-						   @"challenge_id"	: [@"" stringFromInt:0],
-						   @"recipients"	: @"",
-						   @"api_endpt"		: kAPICreateChallenge} mutableCopy];
-		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", _submitParams);
+						   @"challenge_id"	: @(0)};
+	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 
+	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	[self.view addSubview:overlayView];
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
+	_progressHUD.taskInProgress = YES;
 		
-		UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-		overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
-		[self.view addSubview:overlayView];
-		
-//		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = @"";//NSLocalizedString(@"hud_loading", nil);
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kProgressHUDMinDuration;
-		_progressHUD.taskInProgress = YES;
+	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
+	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = @"Error!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
 			
-			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-					if (_progressHUD == nil)
-						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-					_progressHUD.minShowTime = kProgressHUDMinDuration;
-					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-					_progressHUD.labelText = @"Error!";
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-					_progressHUD = nil;
-					
-				} else {
-					//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Send Club Reply Invites"
-//													   withProperties:[self _trackingProps]];
-					
-					[Flurry logEvent:@"resume"];
-					[[HONClubAssistant sharedInstance] sendClubInvites:_userClubVO toInAppUsers:_selectedUsers toNonAppContacts:_selectedContacts completion:^(BOOL success) {
-						if (_progressHUD != nil) {
-							[_progressHUD hide:YES];
-							_progressHUD = nil;
-						}
-						
-						[overlayView removeFromSuperview];
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
-						}];
-					}];
-				}
+		} else {
+			[Flurry logEvent:@"enter_submit"];
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+			[overlayView removeFromSuperview];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 			}];
-//		}
-	}
+		}
+	}];
 }
 
 - (void)_cancelUpload {
@@ -360,25 +287,7 @@
 }
 
 
-#pragma mark - Data Handling
-- (NSDictionary *)_trackingProps {
-	NSMutableArray *users = [NSMutableArray array];
-	for (HONTrivialUserVO *vo in _selectedUsers)
-		[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
-	
-	NSMutableArray *contacts = [NSMutableArray array];
-	for (HONContactUserVO *vo in _selectedContacts)
-		[contacts addObject:[[HONAnalyticsReporter sharedInstance] propertyForContactUser:vo]];
-	
-	NSMutableDictionary *props = [NSMutableDictionary dictionary];
-	[props setValue:[[HONAnalyticsReporter sharedInstance] propertyForUserClub:_userClubVO] forKey:@"clubs"];
-	[props setValue:users forKey:@"members"];
-	[props setValue:contacts forKey:@"contacts"];
-	
-	return ([props copy]);
-}
-
-
+#pragma mark - Touch Interactions
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
 	
@@ -425,7 +334,7 @@
 	[_maskImageView removeFromSuperview];
 	[[HONViewDispensor sharedInstance] maskView:_filteredImageView withMask:_maskImageView.image];
 	_processedImage = [[HONImageBroker sharedInstance] createImageFromView:_uploadView];
-//	[self _uploadPhotos];
+	[self _uploadPhotos];
 }
 
 
@@ -435,9 +344,8 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor blackColor];
-	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+	self.view.backgroundColor = [UIColor blackColor];
 	
 	_uploadView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_uploadView];
@@ -487,7 +395,7 @@
 	_subjectTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 	_subjectTextField.keyboardType = UIKeyboardTypeASCIICapable;
 	_subjectTextField.textAlignment = NSTextAlignmentCenter;
-	_subjectTextField.text = @"Say something";
+	_subjectTextField.text = @"Say something…";
 	_subjectTextField.delegate = self;
 	[_textBGView addSubview:_subjectTextField];
 	
@@ -530,8 +438,24 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit_compose"];
-	[self _modifySubmitParamsAndSubmit:_subjectNames];
+	if (_userClubVO.clubID == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
+		[[[UIAlertView alloc] initWithTitle:@"Not allowed!"
+									message:@"You must allow access to your location first"
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		if (_userClubVO.distance > _userClubVO.postRadius) {
+			[[[UIAlertView alloc] initWithTitle:@"Not in range!"
+										message:[NSString stringWithFormat:@"Must be within %d miles", (int)_userClubVO.postRadius]
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else
+			[self _submitStatusUpdate];
+	}
 }
 
 - (void)_goCamera {
@@ -541,25 +465,6 @@
 - (void)_goDropKeyboard {
 	if ([_subjectTextField isFirstResponder])
 		[_subjectTextField resignFirstResponder];
-}
-
-- (void)_goDelete {
-//	HONEmotionVO *emotionVO = (HONEmotionVO *)[_selectedEmotions lastObject];
-	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Sticker Deleted"
-//										  withEmotion:emotionVO];
-	
-	if ([_subjectNames count] > 0)
-		[_subjectNames removeLastObject];
-	
-	if ([_subjectNames count] == 0) {
-		[_subjectNames removeAllObjects];
-		_subjectNames = nil;
-		_subjectNames = [NSMutableArray array];
-	}
-	
-//	[_composeDisplayView removeLastEmotion];
-	[_headerView transitionTitle:([_subjectNames count] > 0) ? [_subjectNames lastObject] : @"Create"];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -582,11 +487,6 @@
 
 
 #pragma mark - Notifications
-- (void)_reloadEmotionPicker:(NSNotification *)notification {
-//	HONEmotionsPickerView *pickerView = (HONEmotionsPickerView *)[_emotionsPickerViews firstObject];
-//	[pickerView reload];
-}
-
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 }
@@ -785,10 +685,10 @@
 												  object:textField];
 	
 	_subject = textField.text;
-	textField.text = ([textField.text length] == 0) ? @"Same something…" : textField.text;
+	textField.text = ([textField.text length] == 0) ? @"Say something…" : textField.text;
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, (self.view.frame.size.height - 44.0) - _textBGView.frame.size.height);
+						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, (self.view.frame.size.height - 69.0) - _textBGView.frame.size.height);
 						 _submitButton.frame = CGRectTranslateY(_submitButton.frame, self.view.frame.size.height - 44.0);
 					 } completion:^(BOOL finished) {
 					 }];

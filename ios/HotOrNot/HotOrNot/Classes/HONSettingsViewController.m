@@ -47,7 +47,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_locationClubs = @[[[HONClubAssistant sharedInstance] currentLocationClub]];//[[NSUserDefaults standardUserDefaults] objectForKey:@"location_clubs"];
+		_locationClubs = @[[[HONClubAssistant sharedInstance] currentLocationClub]];
 		_captions = @{
 					  @"bm_00-00"	: @"",
 					  
@@ -65,11 +65,7 @@
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
-		if ([HONAppDelegate infoForUser] != nil)
-			_notificationSwitch.on = [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"];
-		
-		else
-			_notificationSwitch.on = YES;
+		_notificationSwitch.on = ([HONAppDelegate infoForUser] != nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"] : YES;
 	}
 	
 	
@@ -105,9 +101,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.957];
+	self.view.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyBGColor];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"More"];//NSLocalizedString(@"header_settings", @"Settings")];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"More"];
 	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:_headerView];
 	
@@ -136,11 +132,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goProfile {
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Activity"];
-//	[self.navigationController pushViewController:[[HONActivityViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
-}
-
 - (void)_goClose {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Create Status Update"];
 	
@@ -155,7 +146,6 @@
 																  delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-	
 	[alertView setTag:HONSettingsAlertTypeNotifications];
 	[alertView show];
 }
@@ -219,7 +209,7 @@
 	} else if (indexPath.section == 4) {
 		[cell hideChevron];
 		cell.backgroundView = nil;
-		[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+		cell.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyBGColor];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
 		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
@@ -242,7 +232,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 1 && indexPath.row == HONSettingsCellTypeVersion) ? 20.0 : 44.0);
+	return ((indexPath.section == 4) ? 20.0 : 44.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -250,7 +240,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);//(indexPath.section == 2 || indexPath.section == 4) ? nil : indexPath);
+	return ((indexPath.section == 2 || indexPath.section == 4) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -281,24 +271,10 @@
 																									@"mp_event"			: @"Settings Tab - Share",
 																									@"view_controller"	: self}];
 			
-			
-			
-			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - User Search"];
-			
-//			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-//																	 delegate:self
-//															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//													   destructiveButtonTitle:nil
-//															otherButtonTitles:@"By Phone Number", @"By Username", nil];
-//			[actionSheet setTag:0];
-//			[actionSheet showInView:self.view];
-		
 		} else if (cell.rowIndex == HONSettingsCellTypeRate) {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];
 			
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-			
-
 		}
 	}
 	
@@ -310,7 +286,7 @@
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				mailComposeViewController.mailComposeDelegate = self;
 				[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-				[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
+				[mailComposeViewController setToRecipients:@[@"support@getyunder.com"]];
 				[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
 				[mailComposeViewController setMessageBody:@"" isHTML:NO];
 				
@@ -331,21 +307,11 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			
 		} else if (cell.rowIndex == HONSettingsCellTypePrivacy) {
-//				[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
+//			[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Privacy Policy"];
 //
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-	
-	} else if (indexPath.section == 4) {
-		if (cell.rowIndex == HONSettingsCellTypePrivacy) {
-			
-		} else if (cell.rowIndex == HONSettingsCellTypeRate) {
-//				[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings Tab - Rate App"];
-		
-
-			
 		}
 	}
 }

@@ -105,10 +105,10 @@
 //	_timeLabel.frame = CGRectMake(8.0, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 4.0, _timeLabel.frame.size.width, _timeLabel.frame.size.height);
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
 	
-	[_upVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForComment:_commentVO])];
-	[_downVoteButton setEnabled:([[HONClubAssistant sharedInstance] isVotingEnabledForComment:_commentVO])];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
 	
-	if ([[HONClubAssistant sharedInstance] isVotingEnabledForComment:_commentVO]) {
+	if (![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO]) {
 		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}
