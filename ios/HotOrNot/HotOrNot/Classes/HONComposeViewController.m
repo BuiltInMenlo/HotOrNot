@@ -236,7 +236,7 @@
 			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = @"Error!";
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload Fail");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
@@ -563,8 +563,6 @@
 - (void)cameraOverlayViewTakePhoto:(HONCameraOverlayView *)cameraOverlayView {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"Camera Step - %@ Photo", (isFiltered) ? @"Blur" : @"Take"]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"STATUS - take_photo"];
-	
 //	if (_progressHUD == nil)
 //		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 //	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
@@ -605,7 +603,7 @@
 	_previewImageView.image = previewImage;
 	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"taken_photo"] isEqualToString:NSStringFromBOOL(YES)]) {
 		[[[UIAlertView alloc] initWithTitle:@"Touch to pixelate"
-									message:@"Use the pixelate tool to protect the identity who you are, or what you are doing."
+									message:NSLocalizedString(@"pixelate_tool", @"Use the pixelate tool to protect the identity who you are, or what you are doing.")
 								   delegate:nil cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		

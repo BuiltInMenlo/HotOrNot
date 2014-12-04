@@ -84,18 +84,6 @@ static HONClubAssistant *sharedInstance = nil;
 //	return ([rndCovers objectAtIndex:(arc4random() % ([rndCovers count] - 1))]);
 }
 
-
-- (NSDictionary *)createClubDictionary {
-	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"			: @"2394",
-																								  @"username"	: @"Selfieclub",
-																								  @"avatar"		: @""}];
-	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
-	[dict setValue:@"CREATE" forKey:@"club_type"];
-	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
-	
-	return ([dict copy]);
-}
-
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner {
 	return ([@{@"id"			: @"",
 			   @"name"			: @"",

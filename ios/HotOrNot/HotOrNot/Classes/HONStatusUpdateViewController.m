@@ -135,7 +135,7 @@
 			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = @"Error!";
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
@@ -167,7 +167,7 @@
 			_progressHUD.minShowTime = kProgressHUDMinDuration;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = @"Error!";
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
@@ -333,7 +333,7 @@
 	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_commentTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_commentTextField.placeholder = @"Comment";//NSLocalizedString(@"enter_username", @"Enter phone number");;
+	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;
 	[_inputBGImageView addSubview:_commentTextField];
@@ -344,14 +344,14 @@
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateDisabled];
-	[_submitCommentButton setTitle:@"Send" forState:UIControlStateNormal];
-	[_submitCommentButton setTitle:@"Send" forState:UIControlStateHighlighted];
-	[_submitCommentButton setTitle:@"Send" forState:UIControlStateDisabled];
+	[_submitCommentButton setTitle:NSLocalizedString(@"send_comment", @"Send") forState:UIControlStateNormal];
+	[_submitCommentButton setTitle:NSLocalizedString(@"send_comment", @"Send") forState:UIControlStateHighlighted];
+	[_submitCommentButton setTitle:NSLocalizedString(@"send_comment", @"Send") forState:UIControlStateDisabled];
 	[_submitCommentButton addTarget:self action:@selector(_goCommentReply) forControlEvents:UIControlEventTouchUpInside];
 	[_submitCommentButton setEnabled:NO];
 	[_inputBGImageView addSubview:_submitCommentButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Details"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_details", @"Details")];
 	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:_headerView];
 	

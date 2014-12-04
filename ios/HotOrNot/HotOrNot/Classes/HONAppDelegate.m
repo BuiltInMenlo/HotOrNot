@@ -1259,8 +1259,8 @@ void uncaughtExceptionHandler(NSException *exception) {
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"sms_error", nil) //@"SMS Error"
-											message: NSLocalizedString(@"cannot_send", nil)  //@"Cannot send SMS from this device!"
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
@@ -1278,8 +1278,8 @@ void uncaughtExceptionHandler(NSException *exception) {
 																		 completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
-											message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
+				[[[UIAlertView alloc] initWithTitle:@"Email Error"
+											message:@"Cannot send email from this device!"
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];

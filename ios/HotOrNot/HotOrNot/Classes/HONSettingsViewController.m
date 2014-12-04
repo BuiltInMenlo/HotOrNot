@@ -51,14 +51,14 @@
 		_captions = @{
 					  @"bm_00-00"	: @"",
 					  
-					  @"bm_01-00"	: @"Share",
-					  @"bm_01-01"	: @"Rate",
+					  @"bm_01-00"	: NSLocalizedString(@"settings_share", @"Share"),
+					  @"bm_01-01"	: NSLocalizedString(@"settings_rate", @"Rate"),
 					  
-					  @"bm_02-00"	: NSLocalizedString(@"settings_notification", @"Notifications"),
+					  @"bm_02-00"	: NSLocalizedString(@"settings_notifications", @"Notifications"),
 					  
 					  @"bm_04-00"	: NSLocalizedString(@"settings_support", @"Support"),
-					  @"bm_04-01"	: @"Terms",
-					  @"bm_04-02"	: @"Privacy",
+					  @"bm_04-01"	: NSLocalizedString(@"settings_terms", @"Terms of service"),
+					  @"bm_04-02"	: NSLocalizedString(@"settings_privacy", @"Privacy policy"),
 					  
 					  @"bm_08-00"	: @""};
 		
@@ -141,11 +141,11 @@
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"Settings Tab - Toggle Notifications " stringByAppendingString:(switchView.on) ? @"On" : @"Off"]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
-																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
-																  delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_notifications_t", @"Notifications")
+														message:(switchView.on) ? NSLocalizedString(@"alert_notificationsOn_m", @"Turn ON notifications?") : NSLocalizedString(@"alert_notificationsOff_m", @"Turn OFF notifications?")
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 	[alertView setTag:HONSettingsAlertTypeNotifications];
 	[alertView show];
 }
@@ -196,7 +196,7 @@
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		
 		[cell hideChevron];
-		[cell setCaption:((HONUserClubVO *)[_locationClubs objectAtIndex:indexPath.row]).clubName];
+		[cell setCaption:[[((HONUserClubVO *)[_locationClubs objectAtIndex:indexPath.row]).clubName componentsSeparatedByString:@"|"] firstObject]];
 		
 		UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
 		checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (0.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
@@ -222,7 +222,7 @@
 		label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.textAlignment = NSTextAlignmentCenter;
-		label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+		label.text = [NSLocalizedString(@"settings_version", @"Version") stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
 		[cell.contentView addSubview:label];
 		
 #if __APPSTORE_BUILD__ != 1
@@ -293,14 +293,14 @@
 				mailComposeViewController.mailComposeDelegate = self;
 				[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
 				[mailComposeViewController setToRecipients:@[@"support@getyunder.com"]];
-				[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
+				[mailComposeViewController setSubject: NSLocalizedString(@"header_support", @"Report Abuse / Bug")];
 				[mailComposeViewController setMessageBody:@"" isHTML:NO];
 				
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
-											message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_emailError_t", @"Email Error")
+											message:NSLocalizedString(@"alert_emailError_m", @"Cannot send email from this device!")
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];

@@ -16,7 +16,7 @@
 
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"privacy"]
-							 title:NSLocalizedString(@"privacy_policy", @"Privacy policy")])) {
+							 title:NSLocalizedString(@"header_privacy", @"Privacy policy")])) {
 		
 		_viewStateType = HONStateMitigatorViewStateTypeLegal;
 		_totalType = HONStateMitigatorTotalTypeLegal;

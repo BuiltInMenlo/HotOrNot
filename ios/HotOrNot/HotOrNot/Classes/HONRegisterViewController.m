@@ -215,8 +215,7 @@
 	
 	self.view.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.957];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@""];//NSLocalizedString(@"header_signUp", @"Sign up")];
-//	[_headerView addNextButtonWithTarget:self action:@selector(_goSubmit)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -238,7 +237,6 @@
 //	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", @"Enter phone number");;
 	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	[_usernameTextField setTag:0];
 //	_usernameTextField.delegate = self;

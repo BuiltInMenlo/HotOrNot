@@ -7,208 +7,78 @@
  */
 
 
-"hud_connectionError" = "No connection found!";
+// progress hud
 "hud_loadError" = "Problem loading data!";
 "hud_dlFailed" = "Download failed";
-"hud_submitFailed" = "Failed submission";
-"hud_refresh" = "Refreshing…";
 "hud_loading" = "Loading…";
-"hud_submitComment" = "Submitting comment…";
 "hud_uploadFail" = "Upload error";
-"hud_usernameNotFound" = "Username not found!";
-"hud_checkUsername" = "Checking username…";
-"hud_updateFail" = "Update failed";
 "hud_usernameTaken" = "Nickname taken!";
 "hud_submit" = "Submitting…";
 "hud_noResults" = "No results found!";
 "hud_searchUsers" = "Searching users…";
-"hud_searchHashtags" = "Searching hashtags…";
-"hud_sent" = "   Sent   ";
-"share" = "Share club";
-"header_restricted" = "restricted access";
-"header_home" = "Photos disappear after 24 hours";
-"no_results" = "No results found";
-//"search_placeHolder" = "Search for people or tags";
-//"search_snap" = "1 snap";
-//"search_snaps" = "%d snaps";
 
-"header_camera" = "Take selfie";
-"restricted_caption" = "";
-"restricted_inviteCode" = "Enter invite code";
+// alert copy
+"alert_connectionError_t" = "Connection Error";
+"alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
+"alert_instagramError_t" = "Not Available";
+"alert_register_m" = "Come back to register";
+"alert_networkError_t" = "No Network Connection";
+"alert_networkError_m" = "This app requires a network connection to work.";
+"alert_emailError_t" = "Email Error";
+"alert_emailError_m" = "Cannot send email from this device!";
+"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
+"alert_notifications_t" = "Notifications";
+"alert_notificationsOn_m" = "Turn ON notifications?";
+"alert_notificationsOff_m" = "Turn OFF notifications?";
 
-//"register_username" = "Please enter a username";
-//"register_caption1" = "";
-//"register_caption2" = "";
-
-//"timeline_snapAt" = "snap @%@";
-//"timeline_like" = "%d Like";
-//"timeline_likes" = "%d Likes";
-//"timeline_0comments" = "Comment";
-//"timeline_1comment" = "%d Comment";
-//"timeline_comments" = "%d Comments";
-//"timeline_99comments" = "99+ Comments";
-
-"voters_caption" = "@%@ liked this";
-
-//"activity_waiting" = "You are waiting…";
-//"activity_waiting_f" = "You are waiting… (F)";
-
-//"settings_myPhotos" = "My Photos";
-//"settings_inviteSMS" = "Invite Friends via SMS";
-//"settings_inviteEmail" = "Invite Friends via Email";
-//"settings_changeUsername" = "Change Username";
-//"settings_support" = "Support";
-//"settings_privacy" = "Privacy Policy";
-
+// ater buttons
 "alert_yes" = "Yes";
 "alert_no" = "No";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
 "alert_invite" = "Invite Friends";
-"alert_connectionError_t" = "Connection Error";
-"alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
-"alert_instagramError_t" = "Not Available";
-"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
-"alert_networkError_t" = "No Network Connection";
-"alert_networkError_m" = "This app requires a network connection to work.";
-"alert_rateApp_no" = "No Thanks";
-"alert_rateApp_later" = "Ask Me Later";
-"alert_rateApp_store" = "Visit App Store";
-"alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
-"alert_noSelfie_m" = "You need a profile photo to proceed.";
-
-"alert_lockedClub_t" = "Locked Club!";
-"alert_lockedClub_m" = "You must invite at least %d friends to join %@";
-"alert_register_m" = "Come back to register";
-"title_copyURL" = " - copy your url";
-"title_joinNow" = " - Join Now!";
-
-
-"enter_username" = "Enter a nickname";
-"enter_phone" = "Enter phone number";
-//"firstrun_next" = "Avançar";
-"header_friends" = "Friends";
-"header_pin" = "Enter pin";
-"alert_member" = "You are already a member of %@!";
-"header_news" = "News";
-"header_clubs" = "Clubs";
-"alert_join" = "Would you like to join the %@ Selfieclub?";
-"header_addclub" = "Add Club";
-"create_club" = "Add Club";
-"invite_club" = "Invite to Club";
-"select_allclubs" = "Select all clubs";
-"select_friends" = "Select Friends";
-"header_search" = "Search";
-"header_activity" = "Activity";
-"alert_status" = "This club does not have any status updates yet!";
-"alert_create" = "Would you like to create one?";
-"select_feeling" = "Select";
-"grant_access" = "Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.";
-"select_club" = "Select Club";
-"club_name" = "Club Name";
-"settings_notification" = "Notifications";
-"settings_search" = "Search";
-"copy_url" = "Copy Club URL";
-"terms_service" = "Terms of service";
-"privacy_policy" = "Privacy policy";
-"settings_support" = "Support";
-"rate_app" = "Rate this app";
-"network_status" = "Network status";
-"settings_logout" = "Logout";
-"header_settings" = "Settings";
-"alert_noemotions_title" = "";
-"alert_noemotions_msg" = "Please select a sticker to submit.";
-"popup_clubcopied_title" = "%@ has been copied to your clipboard.";
-"popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
-"email_error" = "Email Error";
-"email_errormsg" = "Cannot send email from this device!";
-"are_you_sure" = "Are you sure?";
-"ago_emotion" = " ago with %d emotion";
-"ago_emotions" = " ago with %d emotions";
-"no_club" = "No Club Name!";
-"no_club_msg" = "You need to enter a name for your club!";
-"in_news" = "%@ - in %@";
-"real_profile" = "Your profile photo helps the Selfieclub community know your real.";
-"take_photo" = "Take Photo";
-"is_feeling" = "- is feeling…";
-"is_feeling2" = "is feeling...";
-"enter_pin" = "Enter four digit pin";
-"invalid_pin" = "Invalid PIN!";
-"invalid_pin_msg" = "Pin numbers need to be 4 numbers";
-
-"club_covers" = "Selfieclub Club Covers";
-"sms_error" = "SMS Error";
 "not_now" = "Not Now";
-"cannot_send" = "Cannot send SMS from this device!";
-"report_abuse" = "Report Abuse / Bug";
-"liked_selfie" = " upvoted %@'s selfie in %@";
-"submit_photo" = " submitted a photo into %@";
-"user_notfound" = "User not found!";
-"lev" = "Leave %@";
-"lev_sure" = "Are you sure you want to leave %@?";
-"flag_person" = "This person will be flagged for review";
-"yes_flag" = "Yes, flag user";
-"sent_invite" = " sent you an invite to %@";
-"accept_invite" = " accepted your invite to %@";
-"no_phone" = "No Phone!";
-"phone_taken" = "Phone # taken!";
-"user_phone" = "Username & phone # taken!";
-"no_user_msg" = "You need to enter a username to use Selfieclub";
-"no_phone_msg" = "You need a phone # to use Selfieclub.";
-"no_userphone" = "No Username & Phone!";
-"no_userphone_msg" = "You need to enter a username and phone # to use Selfieclub";
-"no_selectclub" = "No Club Selected!";
-"no_selectclub_msg" = "You have to choose at least one club to submit your photo into.";
-"try_again" = "Please try again or press the resend button";
-"invalid_msg" = "You cannot have spaces or / or ' in your username";
-"invalid_user" = "Invalid username";
-"allow_access" = "Allow contact list access?";
-"ok_access" = "We need your OK to access the address book.";
-"tap_join" = "Join Selfieclub! http://sel.club username: %@";
-//"tap_join" = "Join my private club in @Selfieclub #selfieclub #appstore #googleplay\nhttp://joinselfie.club/%@/%@";
-"alert_create_it" = "Would you like to create it?";
-"club_notfound" = "Club Not Found!";
-"want_invite" = "Want to invite friends to %@?";
-"confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
+"are_you_sure" = "Are you sure?";
 
-
-"add_photo" = "Add Photo";
-"please_enter_club" = "Please enter a club name!";
-"are_you_sure_create_club" = "Are you sure you want to create %@ without a cover image?";
-"select_cover" = "Select cover";
-
-
-"activity_you" = "You";
-"no_selectclub_msg2" = "You have to choose at least one club to invite %@ to.";
-"alert_noClubs" = "No clubs found in your area code!";
-"alert_nofriends_t" = "No Friend Selected!";
-"alert_nofriends_m" = "You need to choose some friends to invite to %@";
-"activity_signup" = "You have just joined Selfieclub!";
-"alert_enterClub" = "Want to go there now?";
-"empty_club" = "Tap and hold to invite friends";
-"empty_timeline" = "No status updates available";
-"header_findFriends" = "Find friends";
-"header_compose" = "Preview";
-"search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
-"access_contacts" = "Access your contacts.\nFind friends";
-"empty_contacts" = "No results found.\nCompose";
+// nav bar titles
 "header_signUp" = "Sign up";
-"phone_number" = "phone number";
-"alert_inviteContact_t" = "%@ found!";
-"alert_inviteNewContact_t" = "No user found!";
-"alert_inviteContact_m" = "Would you like to invite them to one of your private clubs?";
-"club_inviteSubText" = "You have been invited. Tap to join!";
+"header_settings" = "Settings";
+"header_details" = "Details";
+"header_search" = "Search";
+"header_terms" = "Terms of service";
+"header_privacy" = "Privacy policy";
+"header_support" = "Support / Report Abuse";
+
+// register
 "register_footer" = "Terms of service";
 "register_submit" = "No signup required";
-"pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
-"header_selectFriends" = "Select";
-"empty_stickers" = "Select a sticker and\nbackground";
-"settings_legal" = "Legal";
-"settings_support" = "Support";
 
-"areacode_club" = "%@Club";
-"family_club" = "My%@Club";
-"bff_club" = "MyBFFs";
-"bae_club" = "MyBAE";
-"school_club" = "MySchoolClub";
+// home
+"no_results" = "No results found";
+
+// details
+"send_comment" = "Send";
+"enter_comment" = "Comment";
+"flagged_post" = "This post has been flagged for removal.";
+
+// compose
+"say_something" = "Say something…";
+"pixelate_tool" = "Use the pixelate tool to protect the identity who you are, or what you are doing.";
+
+// settings
+"settings_share" = "Share";
+"settings_rate" = "Rate";
+"settings_notifications" = "Notifications";
+"settings_support" = "Support";
+"settings_terms" = "Terms of service";
+"settings_privacy" = "Privacy policy";
+"settings_version" = "Version ";
+
+// activity
+"act_upvote" = "Up vote from ";
+"liked_selfie" = " upvoted %@'s selfie in %@";
+"submit_photo" = " submitted a photo into %@";
+"sent_invite" = " sent you an invite to %@";
+"activity_you" = "You";
+"activity_signup" = "You have just joined Selfieclub!";
 

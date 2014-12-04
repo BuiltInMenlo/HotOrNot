@@ -383,7 +383,7 @@
 	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d Yunder point%@", _voteScore, (_voteScore != 1) ? @"s" : @""]
 								message:@"Each image and comment vote gives you a single point."
 							   delegate:nil
-					  cancelButtonTitle:@"OK"
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 					  otherButtonTitles:nil] show];
 	
 	
@@ -575,7 +575,7 @@
 	[_locationManager stopUpdatingLocation];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
-//	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
+	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
 	[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
 		[self _goReloadContents];

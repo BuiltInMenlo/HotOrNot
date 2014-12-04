@@ -1988,13 +1988,13 @@ static HONAPICaller *sharedInstance = nil;
 	NSString *apiEndPt = @"https://api.devint.selfieclubapp.com";
 #endif
 	
-//	NSDictionary *params = @{@"format"	: @"json",
-//							 @"lat"		: @(location.coordinate.latitude),
-//							 @"lon"		: @(location.coordinate.longitude)};
-	
 	NSDictionary *params = @{@"format"	: @"json",
-							 @"lat"		: @"1",
-							 @"lon"		: @"1"};
+							 @"lat"		: @(location.coordinate.latitude),
+							 @"lon"		: @(location.coordinate.longitude)};
+	
+//	NSDictionary *params = @{@"format"	: @"json",
+//							 @"lat"		: @"1",
+//							 @"lon"		: @"1"};
 
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], apiEndPt, @"club/", params);

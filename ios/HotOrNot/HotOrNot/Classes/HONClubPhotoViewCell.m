@@ -184,7 +184,7 @@
 	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_commentTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_commentTextField.placeholder = @"Comment";//NSLocalizedString(@"enter_username", @"Enter phone number");;
+	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;
 	[_inputBGImageView addSubview:_commentTextField];
@@ -195,9 +195,9 @@
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateDisabled];
-	[_submitCommentButton setTitle:@"Send" forState:UIControlStateNormal];
-	[_submitCommentButton setTitle:@"Send" forState:UIControlStateHighlighted];
-	[_submitCommentButton setTitle:@"Send" forState:UIControlStateDisabled];
+	[_submitCommentButton setTitle:NSLocalizedString(@"send_comment", @"Send") forState:UIControlStateNormal];
+	[_submitCommentButton setTitle:NSLocalizedString(@"send_comment", @"Send") forState:UIControlStateHighlighted];
+	[_submitCommentButton setTitle:NSLocalizedString(@"send_comment", @"Send") forState:UIControlStateDisabled];
 	[_submitCommentButton addTarget:self action:@selector(_goSubmitComment) forControlEvents:UIControlEventTouchUpInside];
 	[_submitCommentButton setEnabled:NO];
 	[_inputBGImageView addSubview:_submitCommentButton];

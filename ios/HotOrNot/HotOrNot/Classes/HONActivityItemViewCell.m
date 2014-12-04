@@ -93,7 +93,7 @@
 	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.text = [@"Up vote from " stringByAppendingString:_activityItemVO.originUsername]; // 투표하기 James
+	titleLabel.text = [NSLocalizedString(@"act_upvote", @"Up vote from") stringByAppendingString:_activityItemVO.originUsername]; // 투표하기 James
 	[self.contentView addSubview:titleLabel];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(270.0, titleLabel.frame.origin.y, 40.0, titleLabel.frame.size.height)];

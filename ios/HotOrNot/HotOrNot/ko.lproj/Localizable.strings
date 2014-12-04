@@ -7,201 +7,78 @@
  */
 
 
-//"hud_connectionError" = "No connection found!";
+// progress hud
 "hud_loadError" = "데이터 로드 중 문제 발생";
 "hud_dlFailed" = "다운로드 실패!";
-"hud_submitFailed" = "전송 실패";
-"hud_refresh" = "새로고침 중...";
 "hud_loading" = "로딩 중...";
-"hud_submitComment" = "코멘트 제출 중...";
 "hud_uploadFail" = "업로드 오류";
-"hud_usernameNotFound" = "사용자 이름을 찾을 수 없습니다!";
-"hud_checkUsername" = "username_ 확인 중";
-"hud_updateFail" = "업데이트 실패";
 "hud_usernameTaken" = "이미 사용중인 닉네임";
 "hud_submit" = "제출 중...";
 "hud_noResults" = "결과가 없습니다!";
 "hud_searchUsers" = "사용자 검색 중...";
-"hud_searchHashtags" = "해시태그 검색 중...";
-"hud_sent" = "   전송   ";
-"share" = "클럽 공유";
-"header_restricted" = "접근 제한";
 
-//"search_placeHolder" = "Search for people or tags";
-//"search_snap" = "1 snap";
-//"search_snaps" = "%d snaps";
+// alert copy
+"alert_connectionError_t" = "연결 오류";
+"alert_connectionError_m" = "초기화 서버에 연결할 수 없습니다, ​​다시 시도해 주세요.";
+"alert_networkError_t" = "ネットワーク接続できません";
+"alert_networkError_m" = "This app requires a network connection to work.";
+"alert_instagramError_t" = "사용할 수 없음";
+"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
+"alert_emailError_t" = "Email Error";
+"alert_emailError_m" = "Cannot send email from this device!";
+"alert_register_m" = "등록하러 돌아오기";
+"alert_notifications_t" = "通知";
+"alert_notificationsOn_m" = "Turn ON notifications?";
+"alert_notificationsOff_m" = "Turn OFF notifications?";
 
-"restricted_caption" = "";
-"restricted_inviteCode" = "초청 코드를 입력";
-
-//"register_username" = "Please enter a username";
-//"register_caption1" = "";
-//"register_caption2" = "";
-
-//"timeline_snapAt" = "snap @%@";
-//"timeline_like" = "%d Like";
-//"timeline_likes" = "%d Likes";
-//"timeline_0comments" = "Comment";
-//"timeline_1comment" = "%d Comment";
-//"timeline_comments" = "%d Comments";
-//"timeline_99comments" = "99+ Comments";
-
-"voters_caption" = "@% 좋아했습니다";
-"my_sticker" = "My Stickers";
-
-//"activity_waiting" = "You are waiting…";
-//"activity_waiting_f" = "You are waiting… (F)";
-
-//"settings_myPhotos" = "My Photos";
-//"settings_inviteSMS" = "Invite Friends via SMS";
-//"settings_inviteEmail" = "Invite Friends via Email";
-//"settings_changeUsername" = "Change Username";
-//"settings_support" = "Support";
-//"settings_privacy" = "Privacy Policy";
-"club_notfound" = "클럽을 찾을 수 없습니다!";
-"global_sticker" = "Sticker Packs";
+// alert buttons
 "alert_yes" = "예";
 "alert_no" = "아니요";
 "alert_ok" = "OK";
 "alert_cancel" = "취소";
 "alert_invite" = "친구 초대하기";
-"alert_connectionError_t" = "연결 오류";
-"alert_connectionError_m" = "초기화 서버에 연결할 수 없습니다, ​​다시 시도해 주세요.";
-"alert_instagramError_t" = "사용할 수 없음";
-"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
-"alert_networkError_t" = "No Network Connection";
-"alert_networkError_m" = "This app requires a network connection to work.";
-"alert_rateApp_no" = "아뇨, 괜찮습니다";
-"alert_rateApp_later" = "Ask Me Later";
-"alert_rateApp_store" = "Visit App Store";
-"alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
-"alert_noSelfie_m" = "You need a profile photo to proceed.";
-
-"alert_lockedClub_t" = "잠긴 클럽입니다!";
-"alert_lockedClub_m" = "선글라스 클럽에 가입하려면 최소 %d명의 친구를 초대해야 합니다";
-"alert_register_m" = "등록하러 돌아오기";
-"title_copyURL" = " - URL을 복사하세요";
-"title_joinNow" = " - 클럽명 - 지금 가입하세요!";
-
-"enter_username" = "닉네임 입력";
-"enter_phone" = "전화번호";
-"Register" = "등록하기";
-"firstrun_next" = "Avançar";
-"Search for friends" = "Procurar amigos";
-"header_friends" = "친구";
-"alert_member" = "You are already a member of %@!";
-"header_news" = "친구";
-"header_clubs" = "클럽";
-"alert_join" = "%@ Selfieclub에 참가하실래요?";
-"header_addclub" = "클럽 추가하기";
-"create_club" = "클럽 만들기"; //-> update to 'Add Club'
-"invite_club" = "클럽으로 초대하기";
-"select_allclubs" = "모든 클럽을 선택";
-"header_activity" = "활동";
-"alert_status" = "이 클럽에는 아직 상태 업데이트가 없습니다!";
-"alert_create" = "하나 만드실래요?";
-"select_feeling" = "느낌을 선택";
-"grant_access" = "접근을 허용하려면, 설정 > 개인 정보 보호 > 연락처 > Selfieclub의 스위치를 켜 주세요.";
-"select_club" = "클럽 선택하기";
-"club_name" = "클럽 이름";
-"settings_notification" = "알림";
-"settings_search" = "Search";
-"copy_url" = "내 클럽 URL을 복사";
-"terms_service" = "서비스 약관";
-"privacy_policy" = "개인정보 보호정책";
-"settings_support" = "지원 요청";
-"rate_app" = "이 앱을 평가하기";
-"network_status" = "네트워크 상태";
-"settings_logout" = "로그아웃";
-"header_settings" = "설정";
-"alert_noemotions_title" = "";
-"alert_noemotions_msg" = "Please select a sticker to submit.";
-"popup_clubcopied_title" = "당신의 %@ 클럽이 복사되었습니다!";
-"popup_clubcopied_msg" = "다른 사람과 공유하려면, URL을 붙여넣기 하세요!";
-"email_error" = "이메일 오류";
-"email_errormsg" = "이 기기에서 메일을 전송할 수 없습니다!";
-"are_you_sure" = "확실합니까";
-"ago_emotion" = " 전에 %d 이모티콘과 함께";
-"ago_emotions" = " 전에 %d 이모티콘과 함께";
-"no_club" = "클럽 이름이 없습니다!";
-"no_club_msg" = "클럽 이름을 기입하셔야 합니다!";
-"in_news" = "%@ - 안 %@";
-"real_profile" = "프로필 사진은 셀카 클럽 커뮤니티가 여러분의 진짜 얼굴을 알 수 있도록 도와줍니다";
-"take_photo" = "사진 촬영";
-"is_feeling" = "- 기분이...";
-"is_feeling2" = "기분이...";
-"enter_pin" = "PIN 번호 입력";
-"invalid_pin" = "잘못된 PIN 번호입니다!";
-"invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";
-
-"club_covers" = "셀카클럽 클럽커버";
-"sms_error" = "SMS 에러";
 "not_now" = "아직";
-"cannot_send" = "이 기기에서는 SMS를 전송할 수 없습니다!";
-"report_abuse" = "어뷰징 / 버그 신고";
-"leave_club" = "클럽 나가기";
+"are_you_sure" = "확실합니까";
+
+// nav bar titles
+"header_search" = "Search";
+"header_settings" = "설정";
+"header_signUp" = "등록";
+"header_details" = "内容";
+"header_terms" = "서비스 약관";
+"header_privacy" = "個人情報保護方針";
+"header_support" = "Support / Report Abuse";
+
+// register
+"register_footer" = "サービス利用規約";
+"register_submit" = "サインアップ不要";
+
+// home
+"no_results" = "검색 결과가 없습니다";
+
+// details
+"send_comment" = "送信";
+"enter_comment" = "コメント";
+"flagged_post" = "このポストは削除フラグが立てられています。";
+
+// compose
+"say_something" = "何か言う…";
+"pixelate_tool" = "モザイクツールを使えば自分が誰か、何をしているかを隠せます。";
+
+// settings
+"settings_share" = "シェア";
+"settings_rate" = "Rate";
+"settings_notifications" = "알림";
+"settings_support" = "지원 요청";
+"settings_terms" = "서비스 약관";
+"settings_privacy" = "個人情報保護方針";
+"settings_version" = "バージョン ";
+
+// activity
+"act_upvote" = "からのアップボート ";
 "liked_selfie" = " 님이 다음에 게시한 셀카를 좋아합니다:";
 "submit_photo" = "님이 다음에 사진을 게시했습니다: %@";
-"user_notfound" = "사용자를 찾을 수 없습니다!";
-"lev" = "%@ 나가기";
-"lev_sure" = "%@에서 정말로 나가시겠습니까?";
-"flag_person" = "이 사람을 리뷰를 위해 체크합니다";
-"yes_flag" = "예, 체크하겠습니다";
 "sent_invite" = "님에 다음에 초대했습니다: %@";
-"no_phone" = "휴대폰 번호가 없습니다!";
-"phone_taken" = "이 전화번호는 이미 사용 중입니다!";
-"user_phone" = "이 사용자명 및 전화번호는 이미 사용 중입니다!";
-"no_user_msg" = "등록하려면 닉네임을 제출해야 합니다";
-"no_phone_msg" = "셀카클럽을 이용하시려면 사용자명을 입력하셔야 합니다.";
-"no_userphone" = "사용자명과 휴대폰 번호가 없습니다!";
-"no_userphone_msg" = "셀카클럽을 이용하시려면 사용자명과 휴대폰 번호를 입력하셔야 합니다";
-"no_selectclub" = "아무 클럽도 선택되지 않았습니다!";
-"no_selectclub_msg" = "사진 정보를 보낼 클럽을 최소 1개 이상 선택해야 합니다.";
-"try_again" = "다시 시도하시거나 재전송 버튼을 눌러주세요";
-"invalid_msg" = "클럽의 이름에는 '나 /를 넣을 수 없습니다";
-"invalid_user" = "올바르지 않은 사용자명";
-"allow_access" = "Allow contact list access?";
-"ok_access" = "연락처 접근 권한 수락이 필요합니다.";
-"tap_join" = "%@ 셀카클럽을 만들었어요! 다음 링크를 눌러 가입해 주세요: http://sel.club %@";
-"alert_create_it" = "새로 만드시겠습니까?";
-"club_notfound" = "클럽을 찾을 수 없습니다!";
-"want_invite" = "%@에 친구를 초대하시겠습니까?";
-"select_friends" = "Select Friends";
-"confirm_purchase" = "Are you sure you want to unlock the %@ sticker pack?";
 "activity_you" = "당신";
 
-"header_findFriends" = "Find friends";
-"phone_number" = "phone number";
-"header_search" = "Search";
-"empty_timeline" = "No status updates available";
-"register_footer" = "조건";
-"pin_footer" = "Enter the four digit PIN that was\nsent to your device. ¡Resend";
 
-"alert_inviteContact_t" = "%@ 발견!";
-"alert_inviteNewContact_t" = "어떤 사용자를 찾을 수 없습니다!";
-"alert_inviteContact_m" = "당신은 당신의 개인 클럽 중 하나에 초대 하시겠습니까?";
-"club_inviteSubText" = "당신은 초대되었습니다. 가입 탭!";
-"empty_club" = "누르고 친구를 초대 길게";
-"header_compose" = "미리보기";
-"search_footer" = "Provide a country code and a phone\nnumber to search for a Selfieclub friend";
-"access_contacts" = "Access your contacts.\nFind friends";
-"empty_contacts" = "No results found.\nCompose";
-"header_selectFriends" = "Select Friends";
-"empty_stickers" = "Select a sticker and\nbackground";
-"settings_legal" = "Legal";
-"settings_support" = "Support";
-"alert_noemotions_title" = "You must select a foreground sticker to submit";
-"header_home" = "24시간 후 사진이 없어집니다";
-
-"header_signUp" = "등록";
-"header_pin" = "Enter pin";
-"areacode_club" = "%@클럽";
-"family_club" = "내%@클럽";
-"bff_club" = "내BFFs";
-"bae_club" = "내BAE";
-"school_club" = "내학교클럽";
-"header_camera" = "셀카찍기";
-"no_results" = "검색 결과가 없습니다";
-"register_submit" = "No signup required";
-
-// club = 클럽

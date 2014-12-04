@@ -16,7 +16,7 @@
 
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"terms"]
-							 title:NSLocalizedString(@"terms_service", @"Terms of service")])) {
+							 title:NSLocalizedString(@"header_terms", @"Terms of service")])) {
 		
 		_viewStateType = HONStateMitigatorViewStateTypeLegal;
 		_totalType = HONStateMitigatorTotalTypeLegal;
