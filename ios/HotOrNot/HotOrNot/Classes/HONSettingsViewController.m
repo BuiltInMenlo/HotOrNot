@@ -193,6 +193,8 @@
 	[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
 	
 	if (indexPath.section == 0) {
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
+		
 		[cell hideChevron];
 		[cell setCaption:((HONUserClubVO *)[_locationClubs objectAtIndex:indexPath.row]).clubName];
 		
@@ -203,9 +205,13 @@
 	} else if (indexPath.section == 2) {
 		if (cell.rowIndex == HONSettingsCellTypeNotifications) {
 			[cell hideChevron];
+			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 			cell.accessoryView = _notificationSwitch;
 		}
 		
+	} else if (indexPath.section == 3 && indexPath.row == 2) {
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
+	
 	} else if (indexPath.section == 4) {
 		[cell hideChevron];
 		cell.backgroundView = nil;

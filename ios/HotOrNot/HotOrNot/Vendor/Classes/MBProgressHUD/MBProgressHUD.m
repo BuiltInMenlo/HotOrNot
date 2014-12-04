@@ -683,7 +683,7 @@
 #pragma mark Lifecycle
 
 - (id)init {
-	return [self initWithFrame:CGRectMake(0.0f, 0.0f, 37.0f, 37.0f)];
+	return [self initWithFrame:CGRectMake(0.0f, 0.0f, 17.0f, 17.0f)];
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -700,7 +700,7 @@
 
 - (void)drawRect:(CGRect)rect {
 	
-	CGRect allRect = self.bounds;
+	CGRect allRect = CGRectFactorSQResize(self.bounds, 0.33);//self.bounds;
 	CGRect circleRect = CGRectInset(allRect, 2.0f, 2.0f);
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();

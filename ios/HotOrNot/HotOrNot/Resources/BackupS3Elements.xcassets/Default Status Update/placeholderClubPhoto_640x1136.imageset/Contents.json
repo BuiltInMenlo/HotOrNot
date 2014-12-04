@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "defaultClubCoverLarge_640x1136-1.jpg"
+      "filename" : "defaultClubCoverLarge_640x1136.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "defaultClubCoverLarge_640x1136.jpg"
+      "filename" : "defaultClubCoverLarge_640x1136-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "defaultClubCoverLarge_640x1136-2.jpg"
+      "filename" : "defaultClubCoverLarge_640x1136-2.png"
     }
   ],
   "info" : {

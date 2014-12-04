@@ -438,24 +438,24 @@
 }
 
 - (void)_goSubmit {
-	if (_userClubVO.clubID == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
-		[[[UIAlertView alloc] initWithTitle:@"Not allowed!"
-									message:@"You must allow access to your location first"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-	} else {
-		if (_userClubVO.distance > _userClubVO.postRadius) {
-			[[[UIAlertView alloc] initWithTitle:@"Not in range!"
-										message:[NSString stringWithFormat:@"Must be within %d miles", (int)_userClubVO.postRadius]
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			
-		} else
+//	if (_userClubVO.clubID == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
+//		[[[UIAlertView alloc] initWithTitle:@"Not allowed!"
+//									message:@"You must allow access to your location first"
+//								   delegate:nil
+//						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//						  otherButtonTitles:nil] show];
+//		
+//	} else {
+//		if (_userClubVO.distance > _userClubVO.postRadius) {
+//			[[[UIAlertView alloc] initWithTitle:@"Not in range!"
+//										message:[NSString stringWithFormat:@"Must be within %d miles", (int)_userClubVO.postRadius]
+//									   delegate:nil
+//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//							  otherButtonTitles:nil] show];
+//			
+//		} else
 			[self _submitStatusUpdate];
-	}
+//	}
 }
 
 - (void)_goCamera {

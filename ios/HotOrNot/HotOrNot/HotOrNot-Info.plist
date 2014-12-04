@@ -42,10 +42,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.builtinmenlo.selfieclub</string>
+			<string>com.builtinmenlo.last24</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>selfieclub</string>
+				<string>yunder</string>
 			</array>
 		</dict>
 		<dict>
@@ -58,11 +58,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>37069</string>
+	<string>37158</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
-	<string>Selfieclub</string>
+	<string>Yunder</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>e7a57bf84ad0eb1cc424fcdd886506a0</string>
 	<key>LSApplicationCategoryType</key>

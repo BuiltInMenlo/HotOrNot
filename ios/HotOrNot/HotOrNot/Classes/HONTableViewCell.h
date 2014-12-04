@@ -19,6 +19,11 @@
 - (void)destroy;
 - (BOOL)accessoryViewsVisible;
 
+- (BOOL)isFirstCellInSection;
+- (BOOL)isLastCellInSection;
+
+
+
 @property (nonatomic) CGSize size;
 @property (nonatomic, retain) NSIndexPath *indexPath;
 @property (nonatomic, assign) NSInteger rowIndex;

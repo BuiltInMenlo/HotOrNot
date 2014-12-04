@@ -8,7 +8,7 @@
 
 #import "HONHomeViewFlowLayout.h"
 
-const CGSize kHomeCollectionViewCellSize = {106.0, 106.0};
+const CGSize kHomeCollectionViewCellSize = {107.0, 107.0};
 const CGSize kHomeCollectionViewCellSpacing = {0.0, 0.0};
 
 @implementation HONHomeViewFlowLayout

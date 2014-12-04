@@ -53,12 +53,12 @@
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
+NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
 //NSString * const kConfigJSON = @"boot_sc0007.json";
-NSString * const kConfigJSON = @"boot_sc0008.json";
+NSString * const kConfigJSON = @"boot_sc0009.json";
 NSString * const kAPIHost = @"data_api";
 #else
-NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
+NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
 //NSString * const kConfigJSON = @"boot_ios.json";
 NSString * const kConfigJSON = @"boot_yunder.json";
 NSString * const kAPIHost = @"data_api-stage";
@@ -250,12 +250,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	NSMutableDictionary *dict = [userInfo mutableCopy];
 	[dict setValue:[NSString stringWithFormat:@"%@_%@_%d", [[userInfo objectForKey:@"username"] stringByTrimmingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] addChars:@"."]], [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES], [[NSDate dateFromISO9601FormattedString:[userInfo objectForKey:@"added"]] unixEpochTimestamp]] forKey:@"username"];
 	
-#if SC_ACCT_BUILD == 0
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
-#else
-	[dict setObject:@"2394" forKey:@"id"];
-	[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_info"];
-#endif
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 

@@ -59,6 +59,7 @@
 		308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361419E337AA00EE9512 /* FLAnimatedImage.m */; };
 		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
+		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BA19E20B510017ACBF /* AFHTTPClient.m */; };
 		30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BC19E20B510017ACBF /* AFHTTPRequestOperation.m */; };
@@ -81,6 +82,7 @@
 		30CA9CAE1A02FD4400A0A703 /* NSDictionary+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAD1A02FD4400A0A703 /* NSDictionary+Replacements.m */; };
 		30CA9CB31A02FE4400A0A703 /* NSMutableDictionary+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */; };
 		30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */; };
+		30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30CAD5001A2FBC06002E61D4 /* Texas State.gpx */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
@@ -411,6 +413,7 @@
 		308F361A19E3389B00EE9512 /* 1lgZ0.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1lgZ0.gif; sourceTree = "<group>"; };
 		3091229F19C501F60081B141 /* HONComposeSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeSubmitViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONComposeSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeSubmitViewController.m; sourceTree = "<group>"; };
+		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
 		309F59B1199D7FE400EC6C1C /* NSString+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Random.h"; sourceTree = "<group>"; };
 		309F59B2199D7FE400EC6C1C /* NSString+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Random.m"; sourceTree = "<group>"; };
 		30B308B919E20B510017ACBF /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
@@ -458,6 +461,7 @@
 		30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+Replacements.m"; sourceTree = "<group>"; };
 		30CA9CC71A033C1800A0A703 /* HONNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavButtonView.h; sourceTree = "<group>"; };
 		30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavButtonView.m; sourceTree = "<group>"; };
+		30CAD5001A2FBC06002E61D4 /* Texas State.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Texas State.gpx"; sourceTree = "<group>"; };
 		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
@@ -668,7 +672,7 @@
 		4C60AF6A17CCFEF800609792 /* HONStickerButtonsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonsPickerView.m; sourceTree = "<group>"; };
 		4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserToggleViewCell.h; sourceTree = "<group>"; };
 		4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserToggleViewCell.m; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* Selfieclub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selfieclub.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* Yunder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yunder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -990,6 +994,8 @@
 			children = (
 				301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */,
 				30DDD7821A2A62880032B898 /* Boca Raton.gpx */,
+				30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */,
+				30CAD5001A2FBC06002E61D4 /* Texas State.gpx */,
 			);
 			name = GPX;
 			sourceTree = "<group>";
@@ -1824,7 +1830,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* Selfieclub.app */,
+				4C62652515F96C7100AA7FCE /* Yunder.app */,
 				30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */,
 			);
 			name = Products;
@@ -2250,7 +2256,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* Selfieclub.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* Yunder.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2342,6 +2348,7 @@
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
 				4C2DD84018E3EEF100BC8759 /* FullScreenAssets.xcassets in Resources */,
 				303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */,
+				30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */,
 				4C83FD9D190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf in Resources */,
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,
 				4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */,
@@ -2353,6 +2360,7 @@
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
+				30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
@@ -2720,7 +2728,6 @@
 					"SC_JSON_LOG=1",
 					"VIEW_CONTROLLER_LOG=0",
 					"DEBUGING_COLORS=1",
-					"SC_ACCT_BUILD=0",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
@@ -2761,7 +2768,6 @@
 					"SC_JSON_LOG=0",
 					"VIEW_CONTROLLER_LOG=0",
 					"ENDORSE_DEBUGING_COLORS=0",
-					"SC_ACCT_BUILD=0",
 				);
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -2814,7 +2820,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Selfieclub;
+				PRODUCT_NAME = Yunder;
 				PROVISIONING_PROFILE = "02c31059-744d-4943-a7aa-f0818eaed762";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "02c31059-744d-4943-a7aa-f0818eaed762";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2854,7 +2860,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Selfieclub;
+				PRODUCT_NAME = Yunder;
 				PROVISIONING_PROFILE = "a7691e77-6785-4ae6-9d49-51489a5a9ae6";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a7691e77-6785-4ae6-9d49-51489a5a9ae6";
 				TARGETED_DEVICE_FAMILY = 1;

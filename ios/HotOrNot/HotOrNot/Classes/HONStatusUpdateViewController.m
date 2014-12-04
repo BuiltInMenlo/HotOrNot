@@ -35,7 +35,7 @@
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *submitCommentButton;
 @property (nonatomic, strong) HONTableView *tableView;
-@property (nonatomic, strong) NSArray *replies;
+@property (nonatomic, strong) NSMutableArray *replies;
 @property (nonatomic) BOOL isSubmitting;
 
 @end
@@ -153,6 +153,32 @@
 	}];
 }
 
+- (void)_flagStatusUpdate {
+	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
+						   @"club_id"		: @(_clubVO.clubID),
+						   @"subject"		: @"__FLAG__",
+						   @"challenge_id"	: @(_statusUpdateVO.challengeID)};
+	
+	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = @"Error!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
+			
+		} else {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+			[self _goReloadContent];
+		}
+	}];
+}
+
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
@@ -179,7 +205,14 @@
 }
 
 - (void)_didFinishDataRefresh {
-	_replies = [[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO];
+	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONCommentVO *vo = (HONCommentVO *)obj;
+		
+		if (![vo.textContent isEqualToString:@"__FLAG__"])
+			[_replies addObject:vo];
+	}];
+	
+	
 	[_tableView reloadData];
 	
 	[_refreshControl endRefreshing];
@@ -201,7 +234,12 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_isSubmitting = NO;
-	_replies = [[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO];
+	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONCommentVO *vo = (HONCommentVO *)obj;
+		
+		if (![vo.textContent isEqualToString:@"__FLAG__"])
+			[_replies addObject:vo];
+	}];
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:self.view.frame];
 	_scrollView.contentInset = UIEdgeInsetsMake(kNavHeaderHeight - 20.0, 0.0, 0.0, 0.0);
@@ -335,21 +373,10 @@
 - (void)_goFlag {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flag"];
 	
-	if ([MFMailComposeViewController canSendMail]) {
-		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-		[mailComposeViewController setToRecipients:@[@"support@getyunder.com"]];
-		[mailComposeViewController setSubject:[NSString stringWithFormat:@"Post Flag (%d)", _statusUpdateVO.challengeID]];
-		[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"The following post (%d) has been flagged", _statusUpdateVO.challengeID] isHTML:NO];
-		mailComposeViewController.mailComposeDelegate = self;
-		[self presentViewController:mailComposeViewController animated:NO completion:^(void) {}];
-		
-	} else {
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
-									message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}
+	[[HONAPICaller sharedInstance] flagStatusUpdateByStatusUpdateID:_statusUpdateVO.challengeID completion:^(NSDictionary *result) {
+	}];
+	
+	[self _flagStatusUpdate];
 }
 
 - (void)_goUpVote {
@@ -368,6 +395,7 @@
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:YES];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	}];
 }
 
@@ -386,6 +414,7 @@
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:NO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	}];
 }
 

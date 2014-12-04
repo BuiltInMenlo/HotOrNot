@@ -80,5 +80,29 @@
 	self.backgroundView = nil;
 }
 
+- (BOOL)isFirstCellInSection {
+	return (self.indexPath.row == 0);
+}
+
+- (BOOL)isLastCellInSection {
+	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.indexPath.row + 1
+												inSection:self.indexPath.section];
+	return (NO);
+	
+	NSLog(@"NEXT ROW : %@", NSStringFromNSIndexPath(indexPath));
+	if (indexPath)
+		
+		if (indexPath != nil) {
+			return (NO);
+			
+		} else {
+			indexPath = [NSIndexPath indexPathForRow:0
+										   inSection:self.indexPath.section + 1];
+		}
+	
+	NSLog(@"NEXT SECTION : %@", NSStringFromNSIndexPath(indexPath));
+	return (indexPath == nil);
+}
+
 
 @end

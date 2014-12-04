@@ -43,6 +43,10 @@
 
 
 #pragma mark - Public APIs
+- (void)setIndexPath:(NSIndexPath *)indexPath {
+	[super setIndexPath:indexPath];
+}
+
 - (void)setCaption:(NSString *)caption {
 	_caption = caption;
 	_captionLabel.text = _caption;

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
+
 #import "AFNetworking.h"
 
 #import "HONContactUserVO.h"
@@ -104,6 +106,7 @@ extern const CGFloat kNotifiyDelay;
 - (BOOL)hasNetwork;
 - (BOOL)canPingAPIServer;
 - (BOOL)canPingConfigServer;
+- (void)retrieveLocationFromIPAddressWithCompletion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
@@ -138,7 +141,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(id result))completion;
 - (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion;
-- (void)retrieveTopClubsForWithUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveTopClubsForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveRecentClubsForUserByUserID:(int)userID afterDate:(NSDate *)date completion:(void (^)(id result))completion;
 
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(id result))completion;
@@ -160,7 +163,7 @@ extern const CGFloat kNotifiyDelay;
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)createShoutoutChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)createShoutoutChallengeWithUserID:(int)userID completion:(void (^)(id result))completion;
-- (void)flagChallengeByChallengeID:(int)challengeID completion:(void (^)(id result))completion;
+- (void)flagStatusUpdateByStatusUpdateID:(int)statusUpdateID completion:(void (^)(id result))completion;
 - (void)markChallengeAsSeenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)removeChallengeForChallengeID:(int)challengeID withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion;
 - (void)retrieveChallengeForChallengeID:(int)challengeID completion:(void (^)(id result))completion;
@@ -189,6 +192,7 @@ extern const CGFloat kNotifiyDelay;
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 //- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion;
+- (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix atLocation:(CLLocation *)location completion:(void (^)(id result))completion;
 - (void)deleteClubWithClubID:(int)clubID completion:(void (^)(id result))completion;
 - (void)editClubWithClubID:(int)clubID withTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion;
 - (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(id result))completion;
@@ -200,6 +204,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveLocalSchoolTypeClubsWithAreaCode:(NSString *)areaCode completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
+- (void)retrieveNearbyClubFromLocation:(CLLocation *)location completion:(void (^)(id result))completion;
 - (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion;
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

@@ -7,7 +7,7 @@
  */
 
 
-//"hud_connectionError" = "No connection found!";
+"hud_connectionError" = "No connection found!";
 "hud_loadError" = "Problem loading data!";
 "hud_dlFailed" = "Download failed";
 "hud_submitFailed" = "Failed submission";

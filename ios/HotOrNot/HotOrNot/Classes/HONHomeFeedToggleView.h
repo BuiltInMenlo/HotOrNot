@@ -19,9 +19,8 @@ typedef NS_ENUM(NSUInteger, HONHomeFeedType) {
 @end
 
 @interface HONHomeFeedToggleView : UIView
-- (id)initAsType:(HONHomeFeedType)feedType;
+- (id)initWithTypes:(NSArray *)types;
 - (void)toggleEnabled:(BOOL)isEnabled;
 
-@property (nonatomic, retain) NSArray *supportedTypes;
 @property (nonatomic, assign) id <HONHomeFeedToggleViewDelegate> delegate;
 @end

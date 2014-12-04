@@ -19,10 +19,9 @@
 - (NSDictionary *)createClubDictionary;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
-- (void)unknownLocationClubWithCompletion:(void (^)(id result))completion;
+- (void)createLocationClubWithCompletion:(void (^)(id result))completion;
 - (void)locationClubWithCompletion:(void (^)(id result))completion;
 - (HONUserClubVO *)currentLocationClub;
-- (NSMutableDictionary *)orthodoxThresholdClubDictionary;
 - (NSMutableDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
 - (NSString *)defaultCoverImageURL;

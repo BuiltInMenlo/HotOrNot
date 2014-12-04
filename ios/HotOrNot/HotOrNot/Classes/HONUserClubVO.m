@@ -25,7 +25,8 @@
 //		NSLog(@"NAME:[%@]", param);
 	
 //	NSLog(@"NAME:[%@]", [dictionary objectForKey:@"name"]);
-//	NSLog(@"DICTIONARY[%@]\nOWNER:[%@]\nMEMBERS:[%@]:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary, [dictionary objectForKey:@"owner"], [dictionary objectForKey:@"members"], [dictionary objectForKey:@"added"]);
+//	NSLog(@"DICTIONARY:[%@]\nOWNER:[%@]\nMEMBERS:[%@]:\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary, [dictionary objectForKey:@"owner"], [dictionary objectForKey:@"members"], [dictionary objectForKey:@"added"]);
+//	NSLog(@"NAME:[%@]\nSUBMISSIONS:[%@]:\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", [dictionary objectForKey:@"name"], [dictionary objectForKey:@"submissions"]);
 	
 	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubName = [dictionary objectForKey:@"name"];
@@ -45,8 +46,8 @@
 	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	
-	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
-	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
+	vo.ownerID = ([[dictionary objectForKey:@"owner"] objectForKey:@"id"] != nil) ? [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue] : 0;
+	vo.ownerName = ([[dictionary objectForKey:@"owner"] objectForKey:@"username"]) ? [[dictionary objectForKey:@"owner"] objectForKey:@"username"] : @"";
 	vo.ownerImagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
 	
 	vo.visibleMembers = 1;
@@ -73,7 +74,7 @@
 	NSMutableArray *submissions = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"]) {
 		NSMutableDictionary *mDict = [dict mutableCopy];
-		[mDict setValue:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+		[mDict setValue:@(vo.clubID) forKey:@"club_id"];
 		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:[mDict copy]]];
 	}
 	
@@ -119,7 +120,6 @@
 	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
 	
 	NSLog(@"//-/--/--/ {%@} -(%@)- [%d | %@] /--/--/-//", [vo.updatedDate formattedISO8601String], (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName);
-//	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	return (vo);
 }
 

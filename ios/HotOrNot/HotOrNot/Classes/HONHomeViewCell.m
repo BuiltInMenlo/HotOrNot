@@ -102,6 +102,7 @@
 			};
 			
 			void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+				NSLog(@"ERROR:[%@]", error.description);
 				_imageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
 				_isLoading = NO;
 				

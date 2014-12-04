@@ -84,6 +84,17 @@ CGRectExtendWidth(CGRect rect, CGFloat length)
 }
 
 BIM_INLINE CGRect
+CGRectFactorSQResize(CGRect rect, CGFloat factor)
+{
+	CGRect resizeRect;
+	resizeRect.origin.x = rect.origin.x;
+	resizeRect.origin.y = rect.origin.y;
+	resizeRect.size.width = rect.size.width * factor;
+	resizeRect.size.height = rect.size.height * factor;
+	return resizeRect;
+}
+
+BIM_INLINE CGRect
 CGRectFactorResize(CGRect rect, CGPoint factor)
 {
 	CGRect resizeRect;
@@ -273,7 +284,7 @@ NSStringFromCLAuthorizationStatus(CLAuthorizationStatus val)
 BIM_INLINE NSString*
 NSStringFromCLLocation(CLLocation *val)
 {
-	NSString *string = [NSString stringWithFormat:@"%.04f, %.04f", val.coordinate.longitude, val.coordinate.latitude];
+	NSString *string = [NSString stringWithFormat:@"(%.04f, %.04f)", val.coordinate.longitude, val.coordinate.latitude];
 	return string;
 }
 
@@ -317,7 +328,7 @@ NSStringFromNSDictionary(NSDictionary *val)
 BIM_INLINE NSString*
 NSStringFromNSIndexPath(NSIndexPath *val)
 {
-	NSString *string = [NSString stringWithFormat:@"(%ld × %ld)", (long)val.section, (long)val.row];
+	NSString *string = [NSString stringWithFormat:@"(%ld × %ld) LEN:[%ld]", (long)val.section, (long)val.row, (long)val.length];
 	return string;
 }
 
