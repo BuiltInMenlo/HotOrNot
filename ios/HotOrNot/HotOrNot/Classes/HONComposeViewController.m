@@ -300,7 +300,7 @@
 	
 	if (_maskImageView == nil)
 		_maskImageView = [[UIImageView alloc] initWithFrame:_previewImageView.frame];
-	[self.view addSubview:_maskImageView];
+	[_uploadView addSubview:_maskImageView];
 	
 	_prevPt = [touch locationInView:self.view];
 	[super touchesBegan:touches withEvent:event];

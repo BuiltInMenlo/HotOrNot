@@ -10,11 +10,12 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONHomeViewCell.h"
+#import "HONRefreshingLabel.h"
 
 @interface HONHomeViewCell()
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIButton *selectButton;
-@property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
 @property (nonatomic) BOOL isLoading;
 @end
 
@@ -41,12 +42,12 @@
 		_selectButton.frame = self.frame;
 		[self.contentView addSubview:_selectButton];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 55.0, self.frame.size.height - 17.0, 50.0, 16.0)];
+		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 55.0, self.frame.size.height - 19.0, 50.0, 20.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_scoreLabel.textAlignment = NSTextAlignmentRight;
 		_scoreLabel.textColor = [UIColor whiteColor];
-		_scoreLabel.text = @"…";
+		[_scoreLabel setText:[@"" stringFromInt:_clubPhotoVO.score]];
 		[self.contentView addSubview:_scoreLabel];
 	}
 	
@@ -75,8 +76,8 @@
 	_clubPhotoVO = clubPhotoVO;
 	
 	_imageView.hidden = YES;
-	_scoreLabel.text = @"…";
 	
+	[_scoreLabel toggleLoading:YES];
 	[self toggleImageLoading:YES];
 	[self refeshScore];
 }
@@ -84,7 +85,8 @@
 - (void)refeshScore {
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
 		_clubPhotoVO.score = [result intValue];
-		_scoreLabel.text = [@"" stringFromNSNumber:result includeDecimal:NO];
+		[_scoreLabel setText:[@"" stringFromInt:_clubPhotoVO.score]];
+		[_scoreLabel toggleLoading:NO];
 	}];
 }
 

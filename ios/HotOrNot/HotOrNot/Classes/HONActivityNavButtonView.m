@@ -24,8 +24,8 @@
 		[_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[_button setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
 		_button.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-		[_button setTitle:@"…" forState:UIControlStateNormal];
-		[_button setTitle:@"…" forState:UIControlStateHighlighted];
+		[_button setTitle:@"0" forState:UIControlStateNormal];
+		[_button setTitle:@"0" forState:UIControlStateHighlighted];
 	}
 	
 	return (self);

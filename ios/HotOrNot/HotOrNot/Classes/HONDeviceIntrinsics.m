@@ -23,6 +23,7 @@
 #import "NSUserDefaults+Replacements.h"
 
 #import "KeychainItemWrapper.h"
+#import "Reachability.h"
 
 #import "HONDeviceIntrinsics.h"
 
@@ -171,6 +172,23 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 													  @"long"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
+
+- (NSDictionary *)geoLocale {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_locale"]);
+}
+
+- (void)updateGeoLocale:(NSDictionary *)locale {
+	[[NSUserDefaults standardUserDefaults] replaceObject:locale forKey:@"device_locale"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)hasNetwork {
+	Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
+	NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
+	
+	return (networkStatus != NotReachable);
+}
+
 
 - (NSString *)hmacToken {
 	NSMutableString *token = [@"unknown" mutableCopy];

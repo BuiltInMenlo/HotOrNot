@@ -43,7 +43,12 @@ CGAffineTransformMakeScalePercent(CGRect frame, CGFloat percent)
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(frame) - CGRectGetMidX(CGRectInset(frame, perSize.width, perSize.height)), CGRectGetMidY(frame) - CGRectGetMidY(CGRectInset(frame, perSize.width, perSize.height)));
 	
 	CGAffineTransform t;
-	t.a = scaleSize.width; t.b = 0.0; t.c = 0.0; t.d = scaleSize.height; t.tx = offsetPt.x; t.ty = offsetPt.y;
+	t.a = scaleSize.width;
+	t.b = 0.0;
+	t.c = 0.0;
+	t.d = scaleSize.height;
+	t.tx = offsetPt.x;
+	t.ty = offsetPt.y;
 	return (t);
 }
 
@@ -51,7 +56,12 @@ BIM_INLINE CGAffineTransform
 CGAffineTransformMakeNormal()
 {
 	CGAffineTransform t;
-	t.a = 1.0; t.b = 0.0; t.c = 0.0; t.d = 1.0; t.tx = 0.0; t.ty = 0.0;
+	t.a = 1.0;
+	t.b = 0.0;
+	t.c = 0.0;
+	t.d = 1.0;
+	t.tx = 0.0;
+	t.ty = 0.0;
 	return t;
 }
 

@@ -306,8 +306,8 @@
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"settingsRowBG_normal"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"settingsRowBG_normal"] forState:UIControlStateHighlighted];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"signupButtonBG_normal"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"signupButtonBG_normal"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	

@@ -19,6 +19,7 @@
 #import "HONRefreshControl.h"
 #import "HONScrollView.h"
 #import "HONTableView.h"
+#import "HONRefreshingLabel.h"
 
 @interface HONStatusUpdateViewController () <HONCommentViewCellDelegate>
 @property (nonatomic, strong) HONClubPhotoVO *statusUpdateVO;
@@ -28,7 +29,8 @@
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIImageView *imgView;
 
-@property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
+@property (nonatomic, strong) UIButton *commentButton;
 @property (nonatomic, strong) UIButton *upVoteButton;
 @property (nonatomic, strong) UIButton *downVoteButton;
 @property (nonatomic, strong) UIImageView *inputBGImageView;
@@ -283,17 +285,9 @@
 							 success:imageSuccessBlock
 							 failure:imageFailureBlock];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 77.0, 60.0, 20.0)];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
-	[_scrollView addSubview:timeLabel];
-	
 	NSLog(@"SUBJECT:[%d]", [[_statusUpdateVO.dictionary objectForKey:@"text"] length]);
 	if ([[_statusUpdateVO.dictionary objectForKey:@"text"] length] > 0) {
-		UIView *subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 262.0, 320.0, 44.0)];
+		UIView *subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 242.0, 320.0, 44.0)];
 		subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_scrollView addSubview:subjectBGView];
 		
@@ -305,6 +299,14 @@
 		subjectLabel.text = [_statusUpdateVO.dictionary objectForKey:@"text"];
 		[subjectBGView addSubview:subjectLabel];
 	}
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 77.0, 60.0, 20.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textColor = [UIColor whiteColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
+	[self.view addSubview:timeLabel];
 	
 	UIButton *cancelReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	cancelReplyButton.frame = _scrollView.frame;
@@ -324,7 +326,7 @@
 	_inputBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_inputBGImageView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 12.0, 235.0, 21.0)];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 12.0, 232.0, 21.0)];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -339,7 +341,7 @@
 	[_inputBGImageView addSubview:_commentTextField];
 	
 	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitCommentButton.frame = CGRectMake(265.0, 0.0, 50.0, 44.0);
+	_submitCommentButton.frame = CGRectMake(262.0, 0.0, 50.0, 44.0);
 	_submitCommentButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
@@ -388,7 +390,7 @@
 	[_downVoteButton setEnabled:NO];
 	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:YES completion:^(NSDictionary *result) {
 		_statusUpdateVO.score++;
 		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
@@ -419,21 +421,23 @@
 }
 
 - (void)_goCommentReply {
+	_isSubmitting = YES;
+	
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
 	
-	if (_clubVO.distance > _clubVO.postRadius) {
-		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
-									message:[NSString stringWithFormat:@"Must be within %d miles", (int)_clubVO.postRadius]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		_commentTextField.text = @"";
-		
-	} else {
-		_isSubmitting = YES;
+	NSLog(@"DIST:[%.04f] RADIUS:[%.04f]", _clubVO.distance, _clubVO.postRadius);
+//	if (_clubVO.distance > _clubVO.postRadius) {
+//		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
+//									message:[NSString stringWithFormat:@"Must be within %d miles", (int)_clubVO.postRadius]
+//								   delegate:nil
+//						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//						  otherButtonTitles:nil] show];
+//		_commentTextField.text = @"";
+//		
+//	} else {
 		[self _submitCommentReply];
-	}
+//	}
 }
 
 - (void)_goCancelReply {
@@ -446,6 +450,7 @@
 
 - (void)_goCollapseComments {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_commentButton setSelected:NO];
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
 						 _tableView.frame = CGRectTranslateY(_tableView.frame, self.view.frame.size.height - 88.0);
@@ -454,9 +459,12 @@
 }
 
 - (void)_goToggleComments {
-	CGFloat offset = (_tableView.frame.origin.y == MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height)) ? self.view.frame.size.height - 88.0 : MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height);
+	BOOL isCollapsing = (_tableView.frame.origin.y == MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height));
+//	CGFloat offset = (_tableView.frame.origin.y == MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height)) ? self.view.frame.size.height - 88.0 : MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height);
+	CGFloat offset = (isCollapsing) ? self.view.frame.size.height - 88.0 : MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height);
 	
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_commentButton setSelected:!isCollapsing];
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
 						 _tableView.frame = CGRectTranslateY(_tableView.frame, offset);
@@ -559,14 +567,15 @@
 	UIView *view = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(320.0, 44.0))];
 	view.backgroundColor = [UIColor whiteColor];
 	
-	UIButton *commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentButton.frame = CGRectMake(3.0, 1.0, 44.0, 44.0);
-	[commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
-	[commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-	[view addSubview:commentButton];
+	_commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_commentButton.frame = CGRectMake(3.0, 1.0, 44.0, 44.0);
+	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
+	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
+	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Selected"] forState:UIControlStateSelected];
+	[view addSubview:_commentButton];
 	
 	if ([_replies count] > 0)
-		[commentButton addTarget:self action:@selector(_goToggleComments) forControlEvents:UIControlEventTouchUpInside];
+		[_commentButton addTarget:self action:@selector(_goToggleComments) forControlEvents:UIControlEventTouchUpInside];
 	
 	UILabel *repliesLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 12.0, 280.0, 20.0)];
 	repliesLabel.backgroundColor = [UIColor clearColor];
@@ -597,17 +606,19 @@
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}
 	
-	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(198.0, 12.0, 80.0, 20.0)];
+	_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(198.0, 12.0, 80.0, 20.0)];
 	_scoreLabel.backgroundColor = [UIColor clearColor];
 	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
 	_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-	_scoreLabel.text = @"…";
+	[_scoreLabel setText:[@"" stringFromInt:_statusUpdateVO.score]];
+	[_scoreLabel toggleLoading:YES];
 	[view addSubview:_scoreLabel];
 	
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_statusUpdateVO.challengeID completion:^(NSString *result) {
 		_statusUpdateVO.score = [result intValue];
-		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
+		[_scoreLabel setText:[@"" stringFromInt:_statusUpdateVO.score]];
+		[_scoreLabel toggleLoading:NO];
 	}];
 	
 	return (view);
@@ -683,30 +694,6 @@
 
 #pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-
-//	NSString *mpAction = @"";
-//	switch (result) {
-//		case MFMailComposeResultCancelled:
-//			mpAction = @"Canceled";
-//			break;
-//
-//		case MFMailComposeResultFailed:
-//			mpAction = @"Failed";
-//			break;
-//
-//		case MFMailComposeResultSaved:
-//			mpAction = @"Saved";
-//			break;
-//
-//		case MFMailComposeResultSent:
-//			mpAction = @"Sent";
-//			break;
-//
-//		default:
-//			mpAction = @"Not Sent";
-//			break;
-//	}
-	
 	[controller dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 }

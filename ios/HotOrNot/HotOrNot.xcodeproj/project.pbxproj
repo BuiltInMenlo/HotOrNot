@@ -52,6 +52,7 @@
 		305ED7B619C3EE5100BDCB04 /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleViewCell.m */; };
 		305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */; };
 		3075E02F19D66107007B3346 /* HONCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3075E02E19D66107007B3346 /* HONCameraOverlayView.m */; };
+		307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */; };
 		307BBD971A2552BE001CC708 /* UIImage+Transmute.m in Sources */ = {isa = PBXBuildFile; fileRef = 307BBD961A2552BE001CC708 /* UIImage+Transmute.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
@@ -351,6 +352,8 @@
 		305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Random.m"; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
 		3075E02E19D66107007B3346 /* HONCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraOverlayView.m; sourceTree = "<group>"; };
+		307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshingLabel.h; sourceTree = "<group>"; };
+		307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRefreshingLabel.m; sourceTree = "<group>"; };
 		307BBD951A2552BE001CC708 /* UIImage+Transmute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Transmute.h"; sourceTree = "<group>"; };
 		307BBD961A2552BE001CC708 /* UIImage+Transmute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Transmute.m"; sourceTree = "<group>"; };
 		308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAudioMaestro.h; sourceTree = "<group>"; };
@@ -1946,6 +1949,8 @@
 				4CC94FD9190733C900347A34 /* HONPaginationView.m */,
 				4C7DBBC6195004C100F7A487 /* HONRefreshControl.h */,
 				4C7DBBC7195004C100F7A487 /* HONRefreshControl.m */,
+				307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */,
+				307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */,
 				3010D7911A24BDDD0078164F /* HONScrollView.h */,
 				3010D7921A24BDDD0078164F /* HONScrollView.m */,
 				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
@@ -2486,6 +2491,7 @@
 				4CCA4165181C19D400FC9863 /* HONBasicParticipantGridView.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
+				307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */,
 				309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,

@@ -55,6 +55,7 @@
 
 // home
 "no_results" = "No results found";
+"no_network" = "No internet connection";
 
 // details
 "send_comment" = "Send";

@@ -85,7 +85,7 @@ NSString * const kAPIStatusupdate			= @"statusupdate/";
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
 // network error descriptions
-NSString * const kNetErrorNoConnection = @"The Internet connection appears to be offline.";
+NSString * const kNetErrorNoConnection = @"The Internet connection appears to be offline."; //{NSErrorFailingURLStringKey=https://api.tapstream.com/yunder/event/ios-yunder-open/, NSErrorFailingURLKey=https://api.tapstream.com/yunder/event/ios-yunder-open/, NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x16695210 "The Internet connection appears to be offline."}
 NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
@@ -173,13 +173,6 @@ static HONAPICaller *sharedInstance = nil;
 	return ([imagePrefix copy]);
 }
 
-- (BOOL)hasNetwork {
-	[[Reachability reachabilityForInternetConnection] startNotifier];
-	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
-	
-	return !(networkStatus == NotReachable);
-}
-
 - (BOOL)canPingAPIServer {
 	return (!([[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
 }
@@ -218,8 +211,12 @@ static HONAPICaller *sharedInstance = nil;
 			}
 			
 			else {
+				NSDictionary *location = @{@"location"	: [[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] doubleValue] longitude:[[result objectForKey:@"lon"] doubleValue]],
+										   @"city"		: [result objectForKey:@"city"],
+										   @"state"		: [result objectForKey:@"region"]};
+				
 				if (completion)
-					completion([[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] doubleValue] longitude:[[result objectForKey:@"lon"] doubleValue]]);
+					completion(location);
 			}
 		}
 		
@@ -1989,8 +1986,8 @@ static HONAPICaller *sharedInstance = nil;
 #endif
 	
 	NSDictionary *params = @{@"format"	: @"json",
-							 @"lat"		: @(location.coordinate.latitude),
-							 @"lon"		: @(location.coordinate.longitude)};
+							 @"lat"		: @([[NSString stringWithFormat:@"%.04f", location.coordinate.latitude] floatValue]),
+							 @"lon"		: @([[NSString stringWithFormat:@"%.04f", location.coordinate.longitude] floatValue])};
 	
 //	NSDictionary *params = @{@"format"	: @"json",
 //							 @"lat"		: @"1",

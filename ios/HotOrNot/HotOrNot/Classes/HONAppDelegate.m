@@ -626,7 +626,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 	[self _establishUserDefaults];
 	
-	if ([[HONAPICaller sharedInstance] hasNetwork]) {
+	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
 		if (![[HONAPICaller sharedInstance] canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
@@ -742,7 +742,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	if (_isFromBackground) {
 		[Flurry logEvent:@"resume"];
 		
-		if ([[HONAPICaller sharedInstance] hasNetwork]) {
+		if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 				
 			}
@@ -993,6 +993,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 								   @"votes"				: @{},
 								   @"purchases"			: @[],
 								   @"coords"			: @{@"lat" : @(0.00), @"long" : @(0.00)},
+								   @"device_locale"		: @{},
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
 	for (NSString *key in [userDefaults allKeys]) {

@@ -32,6 +32,11 @@
 - (CLLocation *)deviceLocation;
 - (void)updateDeviceLocation:(CLLocation *)location;
 
+- (NSDictionary *)geoLocale;
+- (void)updateGeoLocale:(NSDictionary *)locale;
+
+- (BOOL)hasNetwork;
+
 - (NSMutableString *)hmacToken;
 
 - (void)writePhoneNumber:(NSString *)phoneNumber;

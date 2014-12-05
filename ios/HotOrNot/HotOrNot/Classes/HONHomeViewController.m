@@ -40,6 +40,7 @@
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONHomeFeedToggleView *toggleView;
 @property (nonatomic, strong) UIView *emptyFeedView;
+@property (nonatomic, strong) UIView *noNetworkView;
 @property (nonatomic) int voteScore;
 @end
 
@@ -135,8 +136,6 @@
 								
 								[_clubPhotos addObject:clubPhotoVO];
 							}];
-							
-							break;
 						}
 					}
 				}
@@ -177,8 +176,6 @@
 								
 								[_clubPhotos addObject:clubPhotoVO];
 							}];
-							
-							break;
 						}
 					}
 				}
@@ -203,18 +200,28 @@
 		} completion:^(BOOL finished) {}];
 	}];
 	
-	[self _goReloadContents];
+	if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse)
+		[_locationManager startUpdatingLocation];
+	
+	else
+		[self _goReloadContents];
 }
 
 - (void)_goReloadContents {
-	if (![_refreshControl isRefreshing])
-		[_refreshControl beginRefreshing];
+	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+		_noNetworkView.hidden = YES;
+		if (![_refreshControl isRefreshing])
+			[_refreshControl beginRefreshing];
+		
+		[_toggleView toggleEnabled:NO];
+		_clubPhotos = [NSMutableArray array];
+		[_collectionView reloadData];
+		
+		[self _retrieveClubPhotos];
 	
-	[_toggleView toggleEnabled:NO];
-	_clubPhotos = [NSMutableArray array];
-	[_collectionView reloadData];
-	
-	[self _retrieveClubPhotos];
+	} else {
+		_noNetworkView.hidden = NO;
+	}
 }
 
 - (void)_didFinishDataRefresh {
@@ -223,18 +230,20 @@
 		_progressHUD = nil;
 	}
 	
-//	_clubPhotos = [[[[_clubPhotos sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-//		HONClubPhotoVO *vo1 = (HONClubPhotoVO *)obj1;
-//		HONClubPhotoVO *vo2 = (HONClubPhotoVO *)obj2;
-//		
-//		if ([vo1.addedDate didDateAlreadyOccur:vo2.addedDate])
-//			return ((NSComparisonResult)NSOrderedAscending);
-//		
-//		if ([vo2.addedDate didDateAlreadyOccur:vo1.addedDate])
-//			return ((NSComparisonResult)NSOrderedDescending);
-//		
-//		return ((NSComparisonResult)NSOrderedSame);
-//	}] reverseObjectEnumerator] allObjects] mutableCopy];
+	if (_feedType == HONHomeFeedTypeRecent) {
+		_clubPhotos = [[_clubPhotos sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+			HONClubPhotoVO *vo1 = (HONClubPhotoVO *)obj1;
+			HONClubPhotoVO *vo2 = (HONClubPhotoVO *)obj2;
+			
+			if ([vo1.addedDate didDateAlreadyOccur:vo2.addedDate])
+				return ((NSComparisonResult)NSOrderedDescending);
+			
+			if ([vo2.addedDate didDateAlreadyOccur:vo1.addedDate])
+				return ((NSComparisonResult)NSOrderedAscending);
+			
+			return ((NSComparisonResult)NSOrderedSame);
+		}] mutableCopy];
+	}
 	
 	_emptyFeedView.hidden = ([_clubPhotos count] > 0);
 	
@@ -275,6 +284,7 @@
 	
 	_toggleView = [[HONHomeFeedToggleView alloc] initWithTypes:@[@(HONHomeFeedTypeRecent), @(HONHomeFeedTypeTop)]];
 	_toggleView.delegate = self;
+	[_toggleView toggleEnabled:NO];
 	[_headerView addSubview:_toggleView];
 	
 	
@@ -294,8 +304,8 @@
 	
 	UIButton *composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	composeButton.frame = CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0);
-	[composeButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
-	[composeButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
+	[composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
+	[composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
 	[composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:composeButton];
 	
@@ -305,6 +315,19 @@
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:settingsButton];
+	
+	_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+	_noNetworkView.hidden = YES;
+	[_noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
+	[self.view addSubview:_noNetworkView];
+	
+	UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+	noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
+	noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	noNetworkLabel.backgroundColor = [UIColor clearColor];
+	noNetworkLabel.textAlignment = NSTextAlignmentCenter;
+	noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
+	[_noNetworkView addSubview:noNetworkLabel];
 	
 	_emptyFeedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
 	_emptyFeedView.hidden = YES;
@@ -526,6 +549,7 @@
 	_feedType = feedType;
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"new" : @"top"]];
 	
+	[toggleView toggleEnabled:NO];
 	[self _goReloadContents];
 }
 
@@ -561,8 +585,11 @@
 	
 	} else if (status == kCLAuthorizationStatusDenied) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_cancel"];
-		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(CLLocation *result) {
-			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:result];
+		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
+			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
+			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
+																	@"state"	: [result objectForKey:@"region"]}];
+			
 			[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
 				[self _goReloadContents];
 			}];
@@ -577,9 +604,22 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
-	[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
-		[self _goReloadContents];
-	}];
+	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+		[[HONGeoLocator sharedInstance] addressForLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] onCompletion:^(NSDictionary *result) {
+			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
+																	@"state"	: [result objectForKey:@"state"]}];
+		}];
+	
+		[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
+			[self _goReloadContents];
+		}];
+		
+	} else {
+		_noNetworkView.hidden = NO;
+		_clubPhotos = [NSMutableArray array];
+		[_refreshControl endRefreshing];
+		[_collectionView reloadData];
+	}
 }
 
 

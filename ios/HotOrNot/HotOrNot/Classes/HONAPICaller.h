@@ -103,7 +103,6 @@ extern const CGFloat kNotifiyDelay;
 - (NSMutableString *)hmacForKey:(NSString *)key withData:(NSString *)data;
 - (NSString *)normalizePrefixForImageURL:(NSString *)imageURL;
 
-- (BOOL)hasNetwork;
 - (BOOL)canPingAPIServer;
 - (BOOL)canPingConfigServer;
 - (void)retrieveLocationFromIPAddressWithCompletion:(void (^)(id result))completion;

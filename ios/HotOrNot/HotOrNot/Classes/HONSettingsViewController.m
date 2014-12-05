@@ -196,11 +196,15 @@
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		
 		[cell hideChevron];
-		[cell setCaption:[[((HONUserClubVO *)[_locationClubs objectAtIndex:indexPath.row]).clubName componentsSeparatedByString:@"|"] firstObject]];
+		[cell setCaption:[NSString stringWithFormat:@"%@, %@", [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"], [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"state"]]];
+//		[cell setCaption:[[((HONUserClubVO *)[_locationClubs objectAtIndex:indexPath.row]).clubName componentsSeparatedByString:@"|"] firstObject]];
 		
 		UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
 		checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (0.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
 		[cell.contentView addSubview:checkMarkImageView];
+		
+	} else if (indexPath.section == 1 && indexPath.row == 1) {
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		
 	} else if (indexPath.section == 2) {
 		if (cell.rowIndex == HONSettingsCellTypeNotifications) {
