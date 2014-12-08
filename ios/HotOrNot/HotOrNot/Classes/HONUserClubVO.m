@@ -78,7 +78,7 @@
 		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:[mDict copy]]];
 	}
 	
-	vo.submissions = [[[submissions copy] reverseObjectEnumerator] allObjects];
+	vo.submissions = [submissions copy];// [[[submissions copy] reverseObjectEnumerator] allObjects];
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
 	
 	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;

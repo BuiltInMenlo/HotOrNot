@@ -54,12 +54,10 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
-//NSString * const kConfigJSON = @"boot_sc0007.json";
-NSString * const kConfigJSON = @"boot_sc0009.json";
+NSString * const kConfigJSON = @"boot_sc0010.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
-//NSString * const kConfigJSON = @"boot_ios.json";
 NSString * const kConfigJSON = @"boot_yunder.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
@@ -218,6 +216,15 @@ void Swizzle(Class c, SEL orig, SEL new)
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
 	NSString *key = @"";
 	
+	NSDictionary *dict = @{@"avatars"	: @[@"https://hotornot-avatars.s3.amazonaws.com",
+											@"https://d3j8du2hyvd35p.cloudfront.net"],
+						   @"banners"	: @[@"https://hotornot-banners.s3.amazonaws.com",
+											@"https://hotornot-banners.s3.amazonaws.com"],
+						   @"clubs"		: @[@"https://hotornot-challenges.s3.amazonaws.com",
+											@"https://d1fqnfrnudpaz6.cloudfront.net"],
+						   @"emoticons"	: @[@"https://hotornot-emotions.s3.amazonaws.com",
+											@"https://hotornot-banners.s3.amazonaws.com"]};
+	
 	if (s3BucketType == HONAmazonS3BucketTypeAvatarsSource || s3BucketType == HONAmazonS3BucketTypeAvatarsCloudFront)
 		key = @"avatars";
 	
@@ -230,8 +237,9 @@ void Swizzle(Class c, SEL orig, SEL new)
 	else if (s3BucketType == HONAmazonS3BucketTypeEmotionsSource || s3BucketType == HONAmazonS3BucketTypeEmoticonsCloudFront)
 		key = @"emoticons";
 	
+	return ([[dict objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
 	
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
+//	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
 }
 
 + (BOOL)switchEnabledForKey:(NSString *)key {
@@ -313,20 +321,12 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"expire_threshold"] forKey:@"expire_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"suggested_covers"] forKey:@"suggested_covers"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"location_clubs"] forKey:@"location_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
-														   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
-														   @"clubs"			: [[result objectForKey:@"s3_buckets"] objectForKey:@"clubs"],
-														   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
-		
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 		

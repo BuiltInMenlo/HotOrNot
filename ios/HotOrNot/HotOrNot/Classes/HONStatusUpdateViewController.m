@@ -390,10 +390,12 @@
 	[_downVoteButton setEnabled:NO];
 	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	
+	[_scoreLabel toggleLoading:YES];
 //	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:YES completion:^(NSDictionary *result) {
 		_statusUpdateVO.score++;
 		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
+		[_scoreLabel toggleLoading:NO];
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:YES];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
@@ -410,9 +412,11 @@
 	[_downVoteButton setEnabled:NO];
 	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	
+	[_scoreLabel toggleLoading:NO];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:NO completion:^(NSDictionary *result) {
 		_statusUpdateVO.score--;
 		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
+		[_scoreLabel toggleLoading:YES];
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:NO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];

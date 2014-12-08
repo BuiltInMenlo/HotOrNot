@@ -443,6 +443,7 @@
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 			}];
 		}
+		
 	} else if (alertView.tag == HONSettingsAlertTypeLogout) {
 //		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings Tab - Logout Alert " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		

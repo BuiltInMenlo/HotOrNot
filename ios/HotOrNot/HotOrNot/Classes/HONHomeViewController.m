@@ -268,7 +268,7 @@
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
-	self.view.hidden = YES;
+	self.view.hidden = ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0);
 	
 	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
 		NSLog(@"ACTIVITY:[%@]", result);
@@ -357,8 +357,6 @@
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
-		self.view.hidden = NO;
-		
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
 			[[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -480,6 +478,7 @@
 	NSLog(@"::|> _completedFirstRun <|::");
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
+	self.view.hidden = NO;
 	
 	if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 		[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
@@ -498,8 +497,8 @@
 	
 	NSLog(@"%@._completedFirstRun - CLAuthorizationStatus = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 	
-	[self _goReloadContents];
-	self.view.hidden = NO;
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 }
 
 - (void)_selectedHomeTab:(NSNotification *)notification {
@@ -587,8 +586,9 @@
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_cancel"];
 		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
 			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
+			
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
-																	@"state"	: [result objectForKey:@"region"]}];
+																	@"state"	: [result objectForKey:@"state"]}];
 			
 			[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
 				[self _goReloadContents];
@@ -609,7 +609,10 @@
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																	@"state"	: [result objectForKey:@"state"]}];
 		}];
-	
+		
+		if (![_refreshControl isRefreshing])
+			[_refreshControl beginRefreshing];
+		
 		[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
 			[self _goReloadContents];
 		}];

@@ -203,7 +203,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveLocalSchoolTypeClubsWithAreaCode:(NSString *)areaCode completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
-- (void)retrieveNearbyClubFromLocation:(CLLocation *)location completion:(void (^)(id result))completion;
+- (void)retrieveNearbyClubFromLocation:(CLLocation *)location withinRadius:(CGFloat)radius completion:(void (^)(id result))completion;
 - (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion;
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

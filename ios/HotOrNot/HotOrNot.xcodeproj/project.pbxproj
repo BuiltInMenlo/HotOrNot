@@ -2712,7 +2712,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "02c31059-744d-4943-a7aa-f0818eaed762";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s x86_64";
+				VALID_ARCHS = "armv7 armv7s x86_64 arm64";
 			};
 			name = Debug;
 		};
@@ -2753,7 +2753,7 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 armv7s x86_64";
+				VALID_ARCHS = "armv7 armv7s x86_64 arm64";
 			};
 			name = Release;
 		};
@@ -2792,7 +2792,7 @@
 				PROVISIONING_PROFILE = "02c31059-744d-4943-a7aa-f0818eaed762";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "02c31059-744d-4943-a7aa-f0818eaed762";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv6 armv7 armv7s x86_64";
+				VALID_ARCHS = "armv6 armv7 armv7s x86_64 arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -2832,7 +2832,7 @@
 				PROVISIONING_PROFILE = "a7691e77-6785-4ae6-9d49-51489a5a9ae6";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a7691e77-6785-4ae6-9d49-51489a5a9ae6";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv6 armv7 armv7s x86_64";
+				VALID_ARCHS = "armv6 armv7 armv7s x86_64 arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -38,6 +38,8 @@
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) int uploadCounter;
+@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) NSTimer *overlayTimer;
 
 @property (nonatomic, strong) AWSS3PutObjectRequest *por1;
 @property (nonatomic, strong) AWSS3PutObjectRequest *por2;
@@ -216,10 +218,10 @@
 						   @"subject"		: _subject,
 						   @"challenge_id"	: @(0)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
-
-	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
-	[self.view addSubview:overlayView];
+	
+	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	[self.view addSubview:_overlayView];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -249,7 +251,12 @@
 				_progressHUD = nil;
 			}
 			
-			[overlayView removeFromSuperview];
+			[_overlayView removeFromSuperview];
+			_overlayView = nil;
+			
+			if ([_overlayTimer isValid])
+				[_overlayTimer invalidate];
+			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
@@ -454,6 +461,11 @@
 //							  otherButtonTitles:nil] show];
 //			
 //		} else
+	
+	
+	_overlayTimer = [NSTimer timerWithTimeInterval:5.60 target:self
+										  selector:@selector(_orphanSubmitOverlay)
+										  userInfo:nil repeats:NO];
 			[self _submitStatusUpdate];
 //	}
 }
@@ -488,7 +500,27 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	NSLog(@"::|> UITextFieldTextDidChangeNotification:[%@] <|::", [notification object]);
+}
+
+- (void)_orphanSubmitOverlay {
+	NSLog(@"::|> _orphanSubmitOverlay <|::");
+	
+	if ([_overlayTimer isValid])
+		[_overlayTimer invalidate];
+	
+	
+	if (_overlayTimer != nil);
+	_overlayTimer = nil;
+	
+	if (_overlayView != nil) {
+		[_overlayView removeFromSuperview];
+		_overlayView = nil;
+	}
+	
+	if (!_isUploadComplete) {
+		[self _cancelUpload];
+	}
 }
 
 

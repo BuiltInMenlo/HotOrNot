@@ -1978,7 +1978,7 @@ static HONAPICaller *sharedInstance = nil;
 //	}
 }
 
-- (void)retrieveNearbyClubFromLocation:(CLLocation *)location completion:(void (^)(id result))completion {
+- (void)retrieveNearbyClubFromLocation:(CLLocation *)location withinRadius:(CGFloat)radius completion:(void (^)(id result))completion {
 #if __DEV_BUILD__ == 0
 	NSString *apiEndPt = @"https://api.selfieclubapp.com";
 #else
@@ -1987,7 +1987,8 @@ static HONAPICaller *sharedInstance = nil;
 	
 	NSDictionary *params = @{@"format"	: @"json",
 							 @"lat"		: @([[NSString stringWithFormat:@"%.04f", location.coordinate.latitude] floatValue]),
-							 @"lon"		: @([[NSString stringWithFormat:@"%.04f", location.coordinate.longitude] floatValue])};
+							 @"lon"		: @([[NSString stringWithFormat:@"%.04f", location.coordinate.longitude] floatValue]),
+							 @"radius"	: @(radius)};
 	
 //	NSDictionary *params = @{@"format"	: @"json",
 //							 @"lat"		: @"1",

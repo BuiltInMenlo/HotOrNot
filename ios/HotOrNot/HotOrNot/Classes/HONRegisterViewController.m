@@ -37,6 +37,8 @@
 @property (nonatomic, strong) UIButton *phoneButton;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
+@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) NSTimer *overlayTimer;
 @end
 
 @implementation HONRegisterViewController
@@ -61,9 +63,9 @@
 #pragma mark - Data Calls
 - (void)_checkUsername {
 	
-	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
-	[self.view addSubview:overlayView];
+	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	[self.view addSubview:_overlayView];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -150,7 +152,11 @@
 									_progressHUD = nil;
 								}
 								
-								[overlayView removeFromSuperview];
+								[_overlayView removeFromSuperview];
+								_overlayView = nil;
+								
+								if ([_overlayTimer isValid])
+									[_overlayTimer invalidate];
 								
 								[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_2"];
 								
@@ -410,6 +416,10 @@
 	if (registerErrorType == HONRegisterErrorTypeNone) {
 //		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
+		_overlayTimer = [NSTimer timerWithTimeInterval:5.60 target:self
+											  selector:@selector(_orphanSubmitOverlay)
+											  userInfo:nil repeats:NO];
+		
 		_isPushing = YES;
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - press_signup_button"];
 		[self _checkUsername];
@@ -457,6 +467,21 @@
 		_phoneTextField.text = [[[HONDeviceIntrinsics sharedInstance] phoneNumber] substringFromIndex:2];
 	}
 #endif
+}
+
+- (void)_orphanSubmitOverlay {
+	NSLog(@"::|> _orphanSubmitOverlay <|::");
+	
+	if ([_overlayTimer isValid])
+		[_overlayTimer invalidate];
+	
+	if (_overlayTimer != nil);
+	_overlayTimer = nil;
+	
+	if (_overlayView != nil) {
+		[_overlayView removeFromSuperview];
+		_overlayView = nil;
+	}
 }
 
 

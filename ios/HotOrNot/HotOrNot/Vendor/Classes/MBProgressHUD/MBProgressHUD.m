@@ -409,7 +409,7 @@
 	
 	// If the grace time is set postpone the HUD display
 	if (self.graceTime > 0.0) {
-		self.graceTimer = [NSTimer scheduledTimerWithTimeInterval:self.graceTime
+		                    self.graceTimer = [NSTimer scheduledTimerWithTimeInterval:self.graceTime
 														   target:self
 														 selector:@selector(handleGraceTimer:)
 														 userInfo:nil

@@ -9,10 +9,11 @@
 #import "NSString+DataTypes.h"
 
 #import "HONCommentViewCell.h"
+#import "HONRefreshingLabel.h"
 
 @interface HONCommentViewCell ()
 @property (nonatomic, strong) UILabel *commentLabel;
-@property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic, strong) UIButton *upVoteButton;
 @property (nonatomic, strong) UIButton *downVoteButton;
@@ -60,7 +61,7 @@
 		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
 		[self.contentView addSubview:_downVoteButton];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 28.0, 88.0, 16.0)];
+		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(252.0, 28.0, 88.0, 16.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
@@ -83,9 +84,11 @@
 
 #pragma mark - Public APIs
 - (void)refreshScore {
+	[_scoreLabel toggleLoading:YES];
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_commentVO.commentID completion:^(NSNumber *result) {
 		_commentVO.score = [result intValue];
 		_scoreLabel.text = [@"" stringFromInt:_commentVO.score];
+		[_scoreLabel toggleLoading:NO];
 	}];
 }
 
