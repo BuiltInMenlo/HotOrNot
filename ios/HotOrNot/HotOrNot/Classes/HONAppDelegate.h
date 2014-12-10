@@ -9,8 +9,10 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
+#import "AFHTTPRequestOperation.h"
+
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __DEV_BUILD__ 1
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
@@ -21,7 +23,7 @@
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
-#define __APPSTORE_BUILD__ 0
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -159,6 +161,11 @@ extern NSString * const kTwilioSMS;
 
 + (CGFloat)minSnapLuminosity;
 
+
++ (NSSet *)httpRequests;
++ (void)addHTTPRequest:(AFHTTPRequestOperation *)request;
++ (void)removeHTTPRequest:(AFHTTPRequestOperation *)request;
+
 + (NSString *)shareMessageForType:(HONShareMessageType)messageType;
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
@@ -174,7 +181,7 @@ void uncaughtExceptionHandler(NSException *exception);
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 
 @property (strong, nonatomic) UIWindow *window;
-
+@property (strong, nonatomic) NSSet *httpRequestOperations;
 @end
 
 

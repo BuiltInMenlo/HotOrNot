@@ -40,6 +40,9 @@
 @property (nonatomic, strong) NSMutableArray *replies;
 @property (nonatomic) BOOL isSubmitting;
 
+@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) NSTimer *overlayTimer;
+
 @end
 
 @implementation HONStatusUpdateViewController
@@ -117,18 +120,6 @@
 						   @"challenge_id"	: @(_statusUpdateVO.challengeID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
-	_commentTextField.text = @"";
-	UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
-	[self.view addSubview:overlayView];
-	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.taskInProgress = YES;
-	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
@@ -148,8 +139,18 @@
 				_progressHUD = nil;
 			}
 			
+			if ([_overlayTimer isValid])
+				[_overlayTimer invalidate];
+			
+			if (_overlayTimer != nil);
+			_overlayTimer = nil;
+			
+			if (_overlayView != nil) {
+				[_overlayView removeFromSuperview];
+				_overlayView = nil;
+			}
+		
 			_isSubmitting = NO;
-			[overlayView removeFromSuperview];
 			[self _goReloadContent];
 		}
 	}];
@@ -195,7 +196,6 @@
 		HONCommentViewCell *viewCell = (HONCommentViewCell *)obj;
 		[viewCell destroy];
 	}];
-
 	
 	if (![_refreshControl isRefreshing])
 		[_refreshControl beginRefreshing];
@@ -313,11 +313,20 @@
 	[cancelReplyButton addTarget:self action:@selector(_goCancelReply) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:cancelReplyButton];
 	
+	_replies = [NSMutableArray array];
+	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONCommentVO *vo = (HONCommentVO *)obj;
+		
+		if (![vo.textContent isEqualToString:@"__FLAG__"])
+			[_replies addObject:vo];
+	}];
+	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (([_replies count] > 0) ? 146.0 : 88.0), 320.0, self.view.frame.size.height - (kNavHeaderHeight + 44.0))];
 	_tableView.backgroundColor = [UIColor whiteColor];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
+	
 	
 	[_tableView reloadData];
 	
@@ -334,7 +343,7 @@
 	[_commentTextField setTextColor:[UIColor blackColor]];
 	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	_commentTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_commentTextField.keyboardType = UIKeyboardTypeDefault;
 	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;
@@ -342,7 +351,7 @@
 	
 	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitCommentButton.frame = CGRectMake(262.0, 0.0, 50.0, 44.0);
-	_submitCommentButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
+	_submitCommentButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[_submitCommentButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateDisabled];
@@ -375,10 +384,13 @@
 - (void)_goFlag {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flag"];
 	
-	[[HONAPICaller sharedInstance] flagStatusUpdateByStatusUpdateID:_statusUpdateVO.challengeID completion:^(NSDictionary *result) {
-	}];
-	
-	[self _flagStatusUpdate];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+														message:NSLocalizedString(@"alert_flag_m", nil)
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 - (void)_goUpVote {
@@ -440,6 +452,20 @@
 //		_commentTextField.text = @"";
 //		
 //	} else {
+	
+	_commentTextField.text = @"";
+	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	[self.view addSubview:_overlayView];
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
+	_progressHUD.taskInProgress = YES;
+	
+	
 		[self _submitCommentReply];
 //	}
 }
@@ -457,7 +483,8 @@
 	[_commentButton setSelected:NO];
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _tableView.frame = CGRectTranslateY(_tableView.frame, self.view.frame.size.height - 88.0);
+						 _tableView.frame = CGRectTranslateY(_tableView.frame, self.view.frame.size.height - (([_replies count] > 0) ? 146.0 : 88.0));
+//						 _tableView.frame = CGRectTranslateY(_tableView.frame, self.view.frame.size.height - 88.0);
 					 } completion:^(BOOL finished) {
 					 }];
 }
@@ -465,8 +492,9 @@
 - (void)_goToggleComments {
 	BOOL isCollapsing = (_tableView.frame.origin.y == MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height));
 //	CGFloat offset = (_tableView.frame.origin.y == MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height)) ? self.view.frame.size.height - 88.0 : MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height);
-	CGFloat offset = (isCollapsing) ? self.view.frame.size.height - 88.0 : MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height);
-	
+//	CGFloat offset = (isCollapsing) ? self.view.frame.size.height - 88.0 : (MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height)) + 1.0;
+	CGFloat offset = (isCollapsing) ? self.view.frame.size.height - (([_replies count] > 0) ? 146.0 : 88.0) : (MAX(kNavHeaderHeight, ((self.view.frame.size.height - 88.0) - _tableView.contentSize.height) + [_tableView rectForHeaderInSection:0].size.height)) + 1.0;
+
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_commentButton setSelected:!isCollapsing];
 	[UIView animateWithDuration:0.25
@@ -515,6 +543,26 @@
 #endif
 	
 	[_submitCommentButton setEnabled:([_commentTextField.text length] > 0)];
+}
+
+- (void)_orphanSubmitOverlay {
+	NSLog(@"::|> _orphanSubmitOverlay <|::");
+	
+	if ([_overlayTimer isValid])
+		[_overlayTimer invalidate];
+	
+	if (_overlayTimer != nil);
+	_overlayTimer = nil;
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	if (_overlayView != nil) {
+		[_overlayView removeFromSuperview];
+		_overlayView = nil;
+	}
 }
 
 
@@ -703,9 +751,13 @@
 }
 
 
-
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 1) {
+			[self _flagStatusUpdate];
+		}
+	}
 }
 
 

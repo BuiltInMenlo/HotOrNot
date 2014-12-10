@@ -36,7 +36,7 @@ static HONGeoLocator *sharedInstance = nil;
 
 
 - (BOOL)isWithinOrthodoxClub {
-	CLLocation *orthodoxClubLocation = [[CLLocation alloc] initWithLatitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"long"] doubleValue]];
+	CLLocation *orthodoxClubLocation = [[CLLocation alloc] initWithLatitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]];
 	return ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:orthodoxClubLocation] <= [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"] floatValue]);
 }
 
@@ -46,6 +46,7 @@ static HONGeoLocator *sharedInstance = nil;
 }
 
 - (void)addressForLocation:(CLLocation *)location onCompletion:(void (^)(id result))completion {
+	
 	[[[CLGeocoder alloc] init] reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
 		CLPlacemark *placemark = (CLPlacemark *)[placemarks firstObject];
 		NSDictionary *result = @{@"address"	: [NSString stringWithFormat:@"%@ %@", placemark.subThoroughfare, placemark.thoroughfare],
@@ -53,6 +54,8 @@ static HONGeoLocator *sharedInstance = nil;
 								 @"state"	: placemark.administrativeArea,
 								 @"zip"		: placemark.postalCode,
 								 @"country"	: placemark.country};
+		
+		NSLog(@"GEOCODER LOCATION:[%@] %@", NSStringFromCLLocation(location), placemark);
 		if (completion)
 			completion(result);
 	}];

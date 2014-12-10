@@ -32,6 +32,8 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isLoading = NO;
 		
+		[self.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+		
 		UIImageView *loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingArrows"]];
 		[self.contentView addSubview:loadingImageView];
 		
@@ -75,11 +77,36 @@
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
 	
-	_imageView.hidden = YES;
-	
+//	_imageView.hidden = YES;
 	[_scoreLabel toggleLoading:YES];
-	[self toggleImageLoading:YES];
+//	[self toggleImageLoading:YES];
 	[self refeshScore];
+	
+	_isLoading = YES;
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_imageView.image = image;
+		_isLoading = NO;
+		
+		[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		NSLog(@"ERROR:[%@]", error.description);
+		_imageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
+		_isLoading = NO;
+		
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+	};
+	
+	//			NSLog(@"URL:[%@]", [_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]);
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]]
+														cachePolicy:kOrthodoxURLCachePolicy
+													timeoutInterval:[HONAppDelegate timeoutInterval]]
+					  placeholderImage:[UIImage imageNamed:@"loadingArrows"]
+							   success:imageSuccessBlock
+							   failure:imageFailureBlock];
+	
+	
 }
 
 - (void)refeshScore {
@@ -87,6 +114,8 @@
 		_clubPhotoVO.score = [result intValue];
 		[_scoreLabel setText:[@"" stringFromInt:_clubPhotoVO.score]];
 		[_scoreLabel toggleLoading:NO];
+		
+		NSLog(@"STATUS_UPDATE CELL{%@} -=- [%d / %d]-=-(%d)", NSStringFromNSIndexPath(self.indexPath), _clubPhotoVO.challengeID, _clubPhotoVO.clubID, _clubPhotoVO.score);
 	}];
 }
 

@@ -20,6 +20,7 @@
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (void)createLocationClubWithCompletion:(void (^)(id result))completion;
 - (void)locationClubWithCompletion:(void (^)(id result))completion;
+- (NSArray *)staffDesignatedClubsWithThreshold:(int)threshold;
 - (HONUserClubVO *)currentLocationClub;
 - (NSMutableDictionary *)emptyClubPhotoDictionary;
 - (NSString *)userSignupClubCoverImageURL;
@@ -29,6 +30,7 @@
 - (NSArray *)clubCoverPhotoAlbumPrefixes;
 - (int)labelIDForAreaCode:(NSString *)areaCode;
 - (BOOL)isMemberOfClub:(HONUserClubVO *)clubVO includePending:(BOOL)isPending;
+- (BOOL)isStaffClub:(HONUserClubVO *)clubVO;
 - (BOOL)isMemberOfClubWithClubID:(int)clubID includePending:(BOOL)isPending;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;

@@ -92,7 +92,7 @@ static HONClubAssistant *sharedInstance = nil;
 			   @"img"			: @"",
 			   @"club_type"		: @"",
 			   @"coords"		: @{@"lat"	: @(0.00),
-									@"long"	: @(0.00)},
+									@"lon"	: @(0.00)},
 			   @"added"			: @"0000-00-00 00:00:00",
 			   @"updated"		: @"0000-00-00 00:00:00",
 			   
@@ -148,12 +148,11 @@ static HONClubAssistant *sharedInstance = nil;
 - (void)locationClubWithCompletion:(void (^)(id result))completion {
 	__block HONUserClubVO *clubVO = nil;
 	
-	CGFloat radius = 10.0;
+	CGFloat radius = [[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue];
 	[[HONAPICaller sharedInstance] retrieveNearbyClubFromLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] withinRadius:radius completion:^(NSMutableDictionary *result) {
 		if ([result count] == 0) {
 			[[HONClubAssistant sharedInstance] createLocationClubWithCompletion:^(HONUserClubVO *clubVO) {
-				[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
+				[[HONClubAssistant sharedInstance] writeClub:result];
 				
 				if (completion)
 					completion(clubVO);
@@ -172,50 +171,48 @@ static HONClubAssistant *sharedInstance = nil;
 							   @"avatar"	: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]} forKey:@"owner"];
 			
 			
-			NSLog(@"CLOSEST CLUB:[%@] IN RANGE:%@ -=(%@)", result, NSStringFromBOOL([[result objectForKey:@"distance"] floatValue] <= [[result objectForKey:@"radius"] floatValue]), NSStringFromCLLocation([[HONDeviceIntrinsics sharedInstance] deviceLocation]));
-			if ([[result objectForKey:@"distance"] floatValue] <= [[result objectForKey:@"radius"] floatValue]) {
-//				NSLog(@"MEMBER OF:[%d] =-= (%@)", [[result objectForKey:@"id"] intValue], NSStringFromBOOL([[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[result objectForKey:@"id"] intValue] includePending:NO]));
-				if ([[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[result objectForKey:@"id"] intValue] includePending:NO]) {
-					[[HONAPICaller sharedInstance] retrieveClubByClubID:[[result objectForKey:@"id"] intValue] withOwnerID:[[[result objectForKey:@"owner"] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-						NSMutableDictionary *dict = [result mutableCopy];
-						[dict setValue:[result objectForKey:@"coords"] forKey:@"coords"];
-						[dict setValue:[result objectForKey:@"radius"] forKey:@"radius"];
-						[dict setValue:[result objectForKey:@"distance"] forKey:@"distance"];
-						clubVO = [HONUserClubVO clubWithDictionary:dict];
-						
-						[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-						[[NSUserDefaults standardUserDefaults] synchronize];
-						
-						if (completion)
-							completion(clubVO);
-					}];
-					
-				} else {
-					[[HONAPICaller sharedInstance] retrieveClubByClubID:[[result objectForKey:@"id"] intValue] withOwnerID:[[[result objectForKey:@"owner"] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-						NSMutableDictionary *dict = [result mutableCopy];
-						[dict setValue:[result objectForKey:@"coords"] forKey:@"coords"];
-						[dict setValue:[result objectForKey:@"radius"] forKey:@"radius"];
-						[dict setValue:[result objectForKey:@"distance"] forKey:@"distance"];
-						clubVO = [HONUserClubVO clubWithDictionary:dict];
-						
-						[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-						[[NSUserDefaults standardUserDefaults] synchronize];
-						
-						[[HONAPICaller sharedInstance] joinClub:clubVO completion:^(NSDictionary *result) {
+			if ([[HONClubAssistant sharedInstance] currentLocationClub].clubID != [[result objectForKey:@"id"] intValue]) {
+				NSLog(@"CLOSEST CLUB:[%@] IN RANGE:%@ -= %.04f @ (%@)", result, NSStringFromBOOL([[result objectForKey:@"distance"] floatValue] <= [[result objectForKey:@"radius"] floatValue]), [[result objectForKey:@"distance"] floatValue], NSStringFromCLLocation([[HONDeviceIntrinsics sharedInstance] deviceLocation]));
+				if ([[result objectForKey:@"distance"] floatValue] <= [[result objectForKey:@"radius"] floatValue]) {
+					if ([[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[result objectForKey:@"id"] intValue] includePending:NO]) {
+						[[HONAPICaller sharedInstance] retrieveClubByClubID:[[result objectForKey:@"id"] intValue] withOwnerID:[[[result objectForKey:@"owner"] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+							NSMutableDictionary *dict = [result mutableCopy];
+							[dict setValue:[result objectForKey:@"coords"] forKey:@"coords"];
+							[dict setValue:[result objectForKey:@"radius"] forKey:@"radius"];
+							[dict setValue:[result objectForKey:@"distance"] forKey:@"distance"];
+							clubVO = [HONUserClubVO clubWithDictionary:dict];
+							
 							if (completion)
 								completion(clubVO);
 						}];
+						
+					} else {
+						NSMutableDictionary *dict = [result mutableCopy];
+						[dict setValue:[result objectForKey:@"coords"] forKey:@"coords"];
+						[dict setValue:[result objectForKey:@"radius"] forKey:@"radius"];
+						[dict setValue:[result objectForKey:@"distance"] forKey:@"distance"];
+						clubVO = [HONUserClubVO clubWithDictionary:dict];
+						
+						[[HONAPICaller sharedInstance] joinClub:clubVO completion:^(NSDictionary *result) {
+							[[HONAPICaller sharedInstance] retrieveClubByClubID:clubVO.clubID withOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
+								[[HONClubAssistant sharedInstance] writeClub:result];
+								
+								if (completion)
+									completion(clubVO);
+							}];
+						}];
+					}
+				
+				} else {
+					[[HONClubAssistant sharedInstance] createLocationClubWithCompletion:^(HONUserClubVO *clubVO) {
+						if (completion)
+							completion(clubVO);
 					}];
 				}
 			
 			} else {
-				[[HONClubAssistant sharedInstance] createLocationClubWithCompletion:^(HONUserClubVO *clubVO) {
-					[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-					
-					if (completion)
-						completion(clubVO);
-				}];
+				if (completion)
+					completion([[HONClubAssistant sharedInstance] currentLocationClub]);
 			}
 		}
 	}];
@@ -226,7 +223,7 @@ static HONClubAssistant *sharedInstance = nil;
 	NSMutableArray *locationClubs = [NSMutableArray array];
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"location_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSDictionary *dict = [(NSDictionary *)obj mutableCopy];
-		CLLocation *location = [[CLLocation alloc] initWithLatitude:[[[dict objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dict objectForKey:@"coords"] objectForKey:@"long"] doubleValue]];
+		CLLocation *location = [[CLLocation alloc] initWithLatitude:[[[dict objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dict objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]];
 		CGFloat dist = [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:location];
 		
 		[dict setValue:@(dist) forKey:@"distance"];
@@ -283,6 +280,81 @@ static HONClubAssistant *sharedInstance = nil;
 	*/
 }
 
+
+
+- (NSArray *)staffDesignatedClubsWithThreshold:(int)threshold {
+	NSMutableArray *staffClubs = [NSMutableArray arrayWithArray:@[]];
+	__block BOOL isInRange = NO;
+	__block NSDictionary *foundDict;
+//	__block HONUserClubVO *vo = nil;
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"staff_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSMutableDictionary *dict = (NSMutableDictionary *)[obj mutableCopy];
+		
+		CLLocation *location = [[CLLocation alloc] initWithLatitude:[[[dict objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dict objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]];
+		CGFloat distance = [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:location];
+		NSLog(@"LOCATION_CLUB:[%d - %@] -=- (%.03f)", [[dict objectForKey:@"club_id"] intValue], [dict objectForKey:@"name"], [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:location]);
+		
+		[dict setValue:[dict objectForKey:@"club_id"] forKey:@"id"];
+		[dict setObject:@{@"id"			: [dict objectForKey:@"owner_id"],
+						  @"username"	: @"",
+						  @"avatar"		: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]} forKey:@"owner"];
+		[dict setValue:@(distance) forKey:@"distance"];
+		
+//		if (distance <= [[dict objectForKey:@"radius"] floatValue]) {
+//			foundDict = dict;
+//			isInRange = YES;
+//			*stop = YES;
+//		}
+		
+		[staffClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+	}];
+	
+	
+	staffClubs = [[staffClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+		HONUserClubVO *vo1 = (HONUserClubVO *)obj1;
+		HONUserClubVO *vo2 = (HONUserClubVO *)obj2;
+		
+		if (vo1.distance < vo2.distance)
+			return ((NSComparisonResult)NSOrderedAscending);
+		
+		if (vo2.distance < vo1.distance)
+			return ((NSComparisonResult)NSOrderedDescending);
+		
+		return ((NSComparisonResult)NSOrderedSame);
+	}] mutableCopy];
+	
+	
+	// inside the radius, join if needed
+//	if (isInRange) {
+//		[[HONAPICaller sharedInstance] retrieveClubByClubID:[[foundDict objectForKey:@"club_id"] intValue] withOwnerID:[[foundDict objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
+//			vo = [HONUserClubVO clubWithDictionary:result];
+//			
+//			if (![[HONClubAssistant sharedInstance] isMemberOfClub:vo includePending:YES]) {
+//				[[HONAPICaller sharedInstance] joinClub:vo completion:^(NSDictionary *result) {
+//					[[HONAPICaller sharedInstance] retrieveClubByClubID:vo.clubID withOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+//						[[HONClubAssistant sharedInstance] writeClub:result];
+//						
+//						[[NSUserDefaults standardUserDefaults] setObject:vo.dictionary forKey:@"location_club"];
+//						[[NSUserDefaults standardUserDefaults] synchronize];
+//					}];
+//				}];
+//			
+//			} else {
+//				[[NSUserDefaults standardUserDefaults] setObject:vo.dictionary forKey:@"location_club"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
+//			}
+//		}];
+	
+	// leave that club alone, he's just a boigh!
+//	} else {
+//	}
+	
+	
+	return ([staffClubs subarrayWithRange:NSMakeRange(0, MIN(MAX(0, threshold), [staffClubs count] - 1))]);
+}
+
+
 - (HONUserClubVO *)currentLocationClub {
 	return ([HONUserClubVO clubWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"location_club"]]);
 }
@@ -298,7 +370,7 @@ static HONClubAssistant *sharedInstance = nil;
 		NSDictionary *dict = [result mutableCopy];
 		
 		[dict setValue:@(0.0) forKey:@"distance"];
-		[dict setValue:@(50.0) forKey:@"radius"];
+		[dict setValue:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) forKey:@"radius"];
 		[dict setValue:@{@"lat"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
 						 @"lon"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude)} forKey:@"coords"];
 		
@@ -325,8 +397,28 @@ static HONClubAssistant *sharedInstance = nil;
 	return (@[]);
 }
 
+- (BOOL)isStaffClub:(HONUserClubVO *)clubVO {
+	__block BOOL isFound = NO;
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"staff_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSMutableDictionary *dict = (NSMutableDictionary *)[obj mutableCopy];
+		
+		if ([[dict objectForKey:@"club_id"] intValue] == clubVO.clubID) {
+			isFound = YES;
+			*stop = YES;
+		}
+	}];
+	
+	
+	return (isFound);
+}
+
 - (BOOL)isMemberOfClub:(HONUserClubVO *)clubVO includePending:(BOOL)isPending {
 	__block BOOL isFound = NO;
+	
+	
+	if (clubVO.clubID == [[HONClubAssistant sharedInstance] currentLocationClub].clubID)
+		return (YES);
 	
 	if (clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 		return (YES);
@@ -865,10 +957,6 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (void)writeUserClubs:(NSDictionary *)clubs {
-//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] != nil)
-//		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
-//	[[NSUserDefaults standardUserDefaults] setObject:clubs forKey:@"clubs"];
-	
 	[[NSUserDefaults standardUserDefaults] replaceObject:clubs forKey:@"clubs"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -939,7 +1027,6 @@ static HONClubAssistant *sharedInstance = nil;
 	if (clubVO != nil) {
 		[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
 			clubVO = [HONUserClubVO clubWithDictionary:result];
-			
 		}];
 	
 	} else {

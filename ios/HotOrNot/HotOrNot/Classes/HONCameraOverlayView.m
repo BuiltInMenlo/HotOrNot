@@ -33,10 +33,10 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-//		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]]];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(1.0, 0.0, 44.0, 44.0);
+		_cancelButton.frame = CGRectMake(7.0, -12.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -54,7 +54,7 @@
 		[self addSubview:_takePhotoButton];
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_flipButton.frame = CGRectMake(self.frame.size.width - 44.0, self.frame.size.height - 44.0, 44.0, 44.0);
+		_flipButton.frame = CGRectMake(self.frame.size.width - 48.0, self.frame.size.height - 44.0, 44.0, 44.0);
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];

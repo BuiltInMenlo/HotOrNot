@@ -39,9 +39,9 @@
 	[imgURL replaceOccurrencesOfString:@"http://d1fqnfrnudpaz6.cloudfront.net" withString:@"https://hotornot-challenges.s3.amazonaws.com" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imgURL length])];
 	vo.coverImagePrefix = [imgURL copy];
 	
-	vo.location = ([dictionary objectForKey:@"coords"] != nil) ? [[CLLocation alloc] initWithLatitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"long"] doubleValue]] : [[CLLocation alloc] initWithLatitude:0.00 longitude:0.00];
+	vo.location = ([dictionary objectForKey:@"coords"] != nil) ? [[CLLocation alloc] initWithLatitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]] : [[CLLocation alloc] initWithLatitude:0.00 longitude:0.00];
 	vo.postRadius = ([dictionary objectForKey:@"radius"] != nil) ? [[dictionary objectForKey:@"radius"] floatValue] : CGFLOAT_MIN;
-	vo.distance = ([dictionary objectForKey:@"distance"] != nil) ? [[dictionary objectForKey:@"distance"] floatValue] : CGFLOAT_MAX;
+	vo.distance = ([dictionary objectForKey:@"distance"] != nil) ? [[dictionary objectForKey:@"distance"] floatValue] : 0.0;
 	
 	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
@@ -82,10 +82,6 @@
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
 	
 	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;
-	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined && [[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"LOCKED"]) ? HONClubEnrollmentTypeThreshold : vo.clubEnrollmentType;
-	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined && [[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"CREATE"]) ? HONClubEnrollmentTypeCreate : vo.clubEnrollmentType;
-	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined && [[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"]) ? HONClubEnrollmentTypeSuggested : vo.clubEnrollmentType;
-	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined && [[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"HIGH_SCHOOL"]) ? HONClubEnrollmentTypeHighSchool : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (HONTrivialUserVO *trivialUserVO in vo.pendingMembers) {

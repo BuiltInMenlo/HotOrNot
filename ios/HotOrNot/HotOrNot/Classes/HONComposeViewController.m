@@ -36,6 +36,7 @@
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
+@property (nonatomic) BOOL isImageFiltered;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) UIView *overlayView;
@@ -72,6 +73,7 @@
 		_totalType = HONStateMitigatorTotalTypeCompose;
 		_viewStateType = HONStateMitigatorViewStateTypeCompose;
 		
+		_isImageFiltered = NO;
 		_filename = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] rndCoverImageURL]];
 		_subject = @"";
 	}
@@ -299,11 +301,14 @@
 	UITouch *touch = [touches anyObject];
 	
 	if (touch.tapCount == 2) {
+		_isImageFiltered = NO;
 		if (_maskImageView != nil) {
 			[_maskImageView removeFromSuperview];
 			_maskImageView = nil;
 		}
-	}
+	
+	} else
+		_isImageFiltered = YES;
 	
 	if (_maskImageView == nil)
 		_maskImageView = [[UIImageView alloc] initWithFrame:_previewImageView.frame];
@@ -366,6 +371,8 @@
 	[_uploadView addSubview:_filteredImageView];
 	
 	NSLog(@"PREVIEW:[%@] FILTER:[%@]", NSStringFromCGRect(_previewImageView.frame), NSStringFromCGRect(_filteredImageView.frame));
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]]];
+	
 	
 	UIButton *keyboardButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	keyboardButton.frame = self.view.frame;
@@ -386,7 +393,7 @@
 	[_headerView addSubview:_cameraBackButton];
 	
 	
-	_textBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 113.0, 320.0, 44.0)];
+	_textBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 109.0, 320.0, 44.0)];
 	_textBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	_textBGView.hidden = YES;
 	[self.view addSubview:_textBGView];
@@ -400,9 +407,9 @@
 	[_subjectTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_subjectTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-	_subjectTextField.keyboardType = UIKeyboardTypeASCIICapable;
+	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.textAlignment = NSTextAlignmentCenter;
-	_subjectTextField.text = @"Say something…";
+	_subjectTextField.text = NSLocalizedString(@"say_something", @"");
 	_subjectTextField.delegate = self;
 	[_textBGView addSubview:_subjectTextField];
 	
@@ -445,32 +452,36 @@
 }
 
 - (void)_goSubmit {
-//	if (_userClubVO.clubID == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]) {
-//		[[[UIAlertView alloc] initWithTitle:@"Not allowed!"
-//									message:@"You must allow access to your location first"
-//								   delegate:nil
-//						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//						  otherButtonTitles:nil] show];
-//		
-//	} else {
-//		if (_userClubVO.distance > _userClubVO.postRadius) {
-//			[[[UIAlertView alloc] initWithTitle:@"Not in range!"
-//										message:[NSString stringWithFormat:@"Must be within %d miles", (int)_userClubVO.postRadius]
-//									   delegate:nil
-//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//							  otherButtonTitles:nil] show];
-//			
-//		} else
-	
-	
-	_overlayTimer = [NSTimer timerWithTimeInterval:5.60 target:self
-										  selector:@selector(_orphanSubmitOverlay)
-										  userInfo:nil repeats:NO];
+	NSLog(@"DISTANCE:[%.0f]", _userClubVO.distance);
+	if (_userClubVO.distance > [[[NSUserDefaults standardUserDefaults] objectForKey:@"post_radius"] floatValue]) {
+		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
+									message:[NSString stringWithFormat:@"Must be within %d miles", (int)roundf(_userClubVO.postRadius)]
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		if (!_isImageFiltered) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:NSLocalizedString(@"alert_noPixelate_m", nil)
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+			[alertView setTag:0];
+			[alertView show];
+		
+		} else {
+			_subject = ([_subjectTextField.text isEqualToString:NSLocalizedString(@"say_something", @"")]) ? @"" : _subjectTextField.text;
+			_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
+												  selector:@selector(_orphanSubmitOverlay)
+												  userInfo:nil repeats:NO];
 			[self _submitStatusUpdate];
-//	}
+		}
+	}
 }
 
 - (void)_goCamera {
+	_isImageFiltered = NO;
 	[self _showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
@@ -509,9 +520,13 @@
 	if ([_overlayTimer isValid])
 		[_overlayTimer invalidate];
 	
-	
 	if (_overlayTimer != nil);
 	_overlayTimer = nil;
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 	
 	if (_overlayView != nil) {
 		[_overlayView removeFromSuperview];
@@ -687,7 +702,7 @@
 	_subjectTextField.text = @"";
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, self.view.frame.size.height - 329.0);
+						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, self.view.frame.size.height - 325.0);
 						 _submitButton.frame = CGRectTranslateY(_submitButton.frame, self.view.frame.size.height - 260.0);
 					 } completion:^(BOOL finished) {
 					 }];
@@ -715,7 +730,7 @@
 												  object:textField];
 	
 	_subject = textField.text;
-	textField.text = ([textField.text length] == 0) ? @"Say something…" : textField.text;
+	textField.text = ([textField.text length] == 0) ? NSLocalizedString(@"say_something", @"") : textField.text;
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
 						 _textBGView.frame = CGRectTranslateY(_textBGView.frame, (self.view.frame.size.height - 69.0) - _textBGView.frame.size.height);
@@ -729,6 +744,20 @@
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 1) {
+			_subject = ([_subjectTextField.text isEqualToString:NSLocalizedString(@"say_something", @"")]) ? @"" : _subjectTextField.text;
+			_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
+												  selector:@selector(_orphanSubmitOverlay)
+												  userInfo:nil repeats:NO];
+			[self _submitStatusUpdate];
+		}
+	}
 }
 
 @end

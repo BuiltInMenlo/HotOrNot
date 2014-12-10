@@ -49,12 +49,13 @@
 			_activityIndicatorView.frame = CGRectTranslate(_activityIndicatorView.frame, CGPointMake((self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, (self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5));
 			
 		} else if (self.textAlignment == NSTextAlignmentRight) {
-			_activityIndicatorView.frame = CGRectTranslate(_activityIndicatorView.frame, CGPointMake(self.frame.size.width - _activityIndicatorView.frame.size.width, (self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5));
+			_activityIndicatorView.frame = CGRectTranslate(_activityIndicatorView.frame, CGPointMake(((self.frame.size.width - _activityIndicatorView.frame.size.width) + (_activityIndicatorView.frame.size.width * 0.5) - 12.0), ((self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5) - 5.0));
 		
 		} else {
-			_activityIndicatorView.frame = CGRectTranslate(_activityIndicatorView.frame, CGPointMake((self.frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, (self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5));
+			_activityIndicatorView.frame = CGRectTranslate(_activityIndicatorView.frame, CGPointMake(self.frame.size.width - _activityIndicatorView.frame.size.width, (self.frame.size.height - _activityIndicatorView.frame.size.height) * 0.5));
 		}
 		
+//		NSLog(@"FRAME:[%@] / [%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(_activityIndicatorView.frame));
 		[self addSubview:_activityIndicatorView];
 		[_activityIndicatorView startAnimating];
 	

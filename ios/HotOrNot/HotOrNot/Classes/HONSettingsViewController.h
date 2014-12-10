@@ -22,18 +22,18 @@ typedef NS_OPTIONS(NSUInteger, HONSettingsSectionType) {
 };
 
 typedef NS_ENUM(NSUInteger, HONSettingsCellType) {
-	HONSettingsCellTypeLocation		= 0,	//> 0 + (0 << 0)
+	HONSettingsCellTypeLocation	= 0,
 	
-	HONSettingsCellTypeShare,				//> 0 + (1 << 0)
-	HONSettingsCellTypeRate,				//> 1 + (1 << 0)
+	HONSettingsCellTypeShare,
+	HONSettingsCellTypeRate,
 	
-	HONSettingsCellTypeNotifications,		//> 0 + (1 << 1)
+	HONSettingsCellTypeNotifications,
 	
-	HONSettingsCellTypeSupport,				//> 0 + (1 << 2)
-	HONSettingsCellTypeTermsOfService,		//> 1 + (1 << 2)
-	HONSettingsCellTypePrivacy,				//> 2 + (1 << 2)
+	HONSettingsCellTypeSupport,
+	HONSettingsCellTypeTermsOfService,
+	HONSettingsCellTypePrivacy,
 	
-	HONSettingsCellTypeVersion				//> 0 + (1 << 3)
+	HONSettingsCellTypeVersion
 };
 
 

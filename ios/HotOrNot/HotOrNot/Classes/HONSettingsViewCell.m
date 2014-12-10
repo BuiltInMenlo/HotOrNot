@@ -24,18 +24,24 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)initWithCaption:(NSString *)caption {
+- (id)init {
 	if ((self = [super init])) {
-		
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG_normal"]];
-		_caption = caption;
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 8.0, 260.0, 26.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 8.0, 260.0, 26.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_captionLabel.textColor =  [UIColor blackColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
-		_captionLabel.text = _caption;
 		[self.contentView addSubview:_captionLabel];
+	}
+	
+	return (self);
+}
+
+- (id)initWithCaption:(NSString *)caption {
+	if ((self = [super init])) {
+		_caption = caption;
+		_captionLabel.text = _caption;
 	}
 	
 	return (self);

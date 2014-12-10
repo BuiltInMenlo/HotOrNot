@@ -120,6 +120,7 @@ NSString * const kTwilioSMS = @"6475577873";
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UIView *noNetworkView;
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic) int challengeID;
@@ -136,6 +137,7 @@ NSString * const kTwilioSMS = @"6475577873";
 @synthesize window = _window;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
+@synthesize httpRequestOperations = _httpRequestOperations;
 
 
 void Swizzle(Class c, SEL orig, SEL new)
@@ -149,6 +151,10 @@ void Swizzle(Class c, SEL orig, SEL new)
 	else
 		method_exchangeImplementations(origMethod, newMethod);
 }
+
+//+ (NSSet *)httpRequests {
+//	return ([HONAppDelegate h])
+//}
 
 
 + (NSString *)apiServerPath {
@@ -323,7 +329,10 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"join_radius"] forKey:@"join_radius"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"post_radius"] forKey:@"post_radius"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
@@ -627,6 +636,12 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[self _establishUserDefaults];
 	
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+		
+		if (_noNetworkView != nil) {
+			[_noNetworkView removeFromSuperview];
+			_noNetworkView = nil;
+		}
+		
 		if (![[HONAPICaller sharedInstance] canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
@@ -635,12 +650,25 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBoot];
 		
 		[self.window makeKeyAndVisible];
-		
 		[self _retrieveConfigJSON];
 		
 	} else {
-		[self _showOKAlert:@"No Network Connection"
-			   withMessage:@"This app requires a network connection to work."];
+		[self.window makeKeyAndVisible];
+		
+		NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
+		self.window.backgroundColor = [UIColor redColor];
+		
+		UIView *noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+		[noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
+		[self.window addSubview:noNetworkView];
+		
+		UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+		noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
+		noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		noNetworkLabel.backgroundColor = [UIColor clearColor];
+		noNetworkLabel.textAlignment = NSTextAlignmentCenter;
+		noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
+		[noNetworkView addSubview:noNetworkLabel];
 	}
 	
 //	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);
@@ -743,6 +771,13 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[Flurry logEvent:@"resume"];
 		
 		if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+			self.window.userInteractionEnabled = YES;
+			
+			if (_noNetworkView != nil) {
+				[_noNetworkView removeFromSuperview];
+				_noNetworkView = nil;
+			}
+			
 			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 				
 			}
@@ -753,6 +788,23 @@ void Swizzle(Class c, SEL orig, SEL new)
 				
 			} else
 				[self _retrieveConfigJSON];
+		
+		} else {
+			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
+			
+			self.window.userInteractionEnabled = NO;
+			
+			_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+			[_noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
+			[self.window addSubview:_noNetworkView];
+			
+			UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+			noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
+			noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+			noNetworkLabel.backgroundColor = [UIColor clearColor];
+			noNetworkLabel.textAlignment = NSTextAlignmentCenter;
+			noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
+			[_noNetworkView addSubview:noNetworkLabel];
 		}
 	
 	} else {
@@ -992,7 +1044,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 	NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
 								   @"votes"				: @{},
 								   @"purchases"			: @[],
-								   @"coords"			: @{@"lat" : @(0.00), @"long" : @(0.00)},
+								   @"location_club"		: @{},
+								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	

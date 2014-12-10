@@ -161,15 +161,16 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] == nil)
 		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:CGFLOAT_MAX longitude:CGFLOAT_MAX]];
 	
-	return ([[CLLocation alloc] initWithLatitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"long"] doubleValue]]);
+	return ([[CLLocation alloc] initWithLatitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]]);
 }
 
 - (void)updateDeviceLocation:(CLLocation *)location {
+	NSLog(@"DEVICE LOCATION UPDATE:[%@]", NSStringFromCLLocation(location));
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"coords"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:@{@"lat"	:[NSNumber numberWithDouble:location.coordinate.latitude],
-													  @"long"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
+													  @"lon"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -185,7 +186,6 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 - (BOOL)hasNetwork {
 	Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
 	NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
-	
 	return (networkStatus != NotReachable);
 }
 

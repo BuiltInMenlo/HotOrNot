@@ -416,7 +416,7 @@
 	if (registerErrorType == HONRegisterErrorTypeNone) {
 //		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
-		_overlayTimer = [NSTimer timerWithTimeInterval:5.60 target:self
+		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
 											  selector:@selector(_orphanSubmitOverlay)
 											  userInfo:nil repeats:NO];
 		

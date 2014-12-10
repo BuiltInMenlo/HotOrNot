@@ -30,6 +30,8 @@
 "alert_notifications_t" = "通知";
 "alert_notificationsOn_m" = "Turn ON notifications?";
 "alert_notificationsOff_m" = "Turn OFF notifications?";
+"alert_flag_m" = "Do you wish to flag this Yunder as inappropriate?";
+"alert_noPixelate_m" = "Are you sure you do not want to pixelate your photo?";
 
 // alert buttons
 "alert_yes" = "예";
@@ -67,6 +69,8 @@
 "pixelate_tool" = "モザイクツールを使えば自分が誰か、何をしているかを隠せます。";
 
 // settings
+"settings_mylocation" = "MY LOCATION";
+"settings_nearby" = "NEARBY";
 "settings_share" = "シェア";
 "settings_rate" = "Rate";
 "settings_notifications" = "알림";
