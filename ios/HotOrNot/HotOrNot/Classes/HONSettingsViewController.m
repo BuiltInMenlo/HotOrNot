@@ -388,10 +388,12 @@
 		if (![[HONClubAssistant sharedInstance] isStaffClub:[[HONClubAssistant sharedInstance] currentLocationClub]]) {
 			[[NSUserDefaults standardUserDefaults] setObject:[[HONClubAssistant sharedInstance] currentLocationClub].dictionary forKey:@"location_club"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"MORE - location"];
 		
 		} else {
 			[[NSUserDefaults standardUserDefaults] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] forKey:@"location_club"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - fixed"];
 		}
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];

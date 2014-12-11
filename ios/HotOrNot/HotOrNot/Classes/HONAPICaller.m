@@ -1382,7 +1382,7 @@ static HONAPICaller *sharedInstance = nil;
 #if __DEV_BUILD__ == 0
 	NSString *apiEndPt = @"https://api.selfieclubapp.com";
 #else
-	NSString *apiEndPt = @"http://api.devint.selfieclubapp.com";
+	NSString *apiEndPt = @"https://api.devint.selfieclubapp.com";
 #endif
 	
 	NSDictionary *params = @{@"format"	: @"json"};

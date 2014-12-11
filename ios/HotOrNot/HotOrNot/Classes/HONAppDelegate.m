@@ -53,11 +53,11 @@
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
+NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_sc0010.json";
 NSString * const kAPIHost = @"data_api";
 #else
-NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
+NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_yunder.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
@@ -222,14 +222,14 @@ void Swizzle(Class c, SEL orig, SEL new)
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
 	NSString *key = @"";
 	
-	NSDictionary *dict = @{@"avatars"	: @[@"https://hotornot-avatars.s3.amazonaws.com",
-											@"https://d3j8du2hyvd35p.cloudfront.net"],
-						   @"banners"	: @[@"https://hotornot-banners.s3.amazonaws.com",
-											@"https://hotornot-banners.s3.amazonaws.com"],
-						   @"clubs"		: @[@"https://hotornot-challenges.s3.amazonaws.com",
-											@"https://d1fqnfrnudpaz6.cloudfront.net"],
-						   @"emoticons"	: @[@"https://hotornot-emotions.s3.amazonaws.com",
-											@"https://hotornot-banners.s3.amazonaws.com"]};
+	NSDictionary *dict = @{@"avatars"	: @[@"http://hotornot-avatars.s3.amazonaws.com",
+											@"http://d3j8du2hyvd35p.cloudfront.net"],
+						   @"banners"	: @[@"http://hotornot-banners.s3.amazonaws.com",
+											@"http://hotornot-banners.s3.amazonaws.com"],
+						   @"clubs"		: @[@"http://hotornot-challenges.s3.amazonaws.com",
+											@"http://d1fqnfrnudpaz6.cloudfront.net"],
+						   @"emoticons"	: @[@"http://hotornot-emotions.s3.amazonaws.com",
+											@"http://hotornot-banners.s3.amazonaws.com"]};
 	
 	if (s3BucketType == HONAmazonS3BucketTypeAvatarsSource || s3BucketType == HONAmazonS3BucketTypeAvatarsCloudFront)
 		key = @"avatars";

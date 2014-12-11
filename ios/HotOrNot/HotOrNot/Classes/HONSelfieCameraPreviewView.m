@@ -254,7 +254,7 @@
 //	});
 	
 	if (emotionsPickerView.stickerGroupIndex == 3) {
-		NSString *imgURL = [NSString stringWithFormat:@"https://s3.amazonaws.com/hotornot-challenges/%@Large_640x1136.%@", emotionVO.emotionName, @"gif"];// (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"gif" : @"jpg"];
+		NSString *imgURL = [NSString stringWithFormat:@"http://s3.amazonaws.com/hotornot-challenges/%@Large_640x1136.%@", emotionVO.emotionName, @"gif"];// (emotionVO.imageType == HONEmotionImageTypeGIF) ? @"gif" : @"jpg"];
 		NSLog(@"imgURL:[%@]", imgURL);
 		_bgSelectImageView = [[UIImageView alloc] initWithFrame:CGRectMakeFromSize(kSnapLargeSize)];
 		[_bgSelectImageView setImageWithURL:[NSURL URLWithString:imgURL]];

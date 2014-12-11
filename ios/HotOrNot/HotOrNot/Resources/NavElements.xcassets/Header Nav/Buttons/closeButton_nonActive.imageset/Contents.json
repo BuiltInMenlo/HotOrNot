@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "headerCloseButton_nonActive@2x.png"
+      "filename" : "closeButton_nonActive@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "headerCloseButton_nonActive@2x-1.png"
+      "filename" : "closeButton_nonActive@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "headerCloseButton_nonActive@2x-2.png"
+      "filename" : "closeButton_nonActive@2x-2.png"
     }
   ],
   "info" : {

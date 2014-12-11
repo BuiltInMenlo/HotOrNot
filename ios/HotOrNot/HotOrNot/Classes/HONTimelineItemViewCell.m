@@ -149,7 +149,7 @@
 			bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
 		};
 		
-		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_timeline.png"]
+		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://s3.amazonaws.com/hotornot-banners/banner_timeline.png"]
 																 cachePolicy:kOrthodoxURLCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil

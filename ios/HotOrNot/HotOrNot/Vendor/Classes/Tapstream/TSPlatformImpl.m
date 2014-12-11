@@ -279,7 +279,7 @@
 #else
 
 	// Adapted from Listing 1-3
-	// https://developer.apple.com/library/mac/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateLocally.html
+	// http://developer.apple.com/library/mac/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateLocally.html
 	//
 	// Requires the project to link against the IOKit framework
 	

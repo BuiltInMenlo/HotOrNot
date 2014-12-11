@@ -26,7 +26,7 @@
 	vo.score = vo.points + vo.votes + vo.pokes;
 	vo.challenges = [[dictionary objectForKey:@"challenges"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-//	vo.imageURL = ([dictionary objectForKey:@"fb_id"] == [NSNull null]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [dictionary objectForKey:@"img_url"];
+//	vo.imageURL = ([dictionary objectForKey:@"fb_id"] == [NSNull null]) ? @"http://s3.amazonaws.com/picchallenge/default_user.jpg" : [dictionary objectForKey:@"img_url"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.challengerName = [dictionary objectForKey:@"challenger_name"];
 	

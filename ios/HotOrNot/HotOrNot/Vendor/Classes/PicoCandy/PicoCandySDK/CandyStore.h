@@ -74,7 +74,7 @@
  * CandyStore provides a number of NSNotifications when information about the store is updated.
  * To subscribe to these notfications, you have to add observers to the candystore notification center
  * @return CandyStore notification center
- * @see https://developer.apple.com/library/ios/documentation/cocoa/reference/foundation/Classes/NSNotificationCenter_Class/Reference/Reference.html
+ * @see http://developer.apple.com/library/ios/documentation/cocoa/reference/foundation/Classes/NSNotificationCenter_Class/Reference/Reference.html
  */
 +(NSNotificationCenter *)notificationCenter;
 

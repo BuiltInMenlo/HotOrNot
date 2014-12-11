@@ -211,7 +211,7 @@
         
         self.accumulator += displayLink.duration;
         
-        // While-loop first inspired by & good Karma to: https://github.com/ondalabs/OLImageView/blob/master/OLImageView.m
+        // While-loop first inspired by & good Karma to: http://github.com/ondalabs/OLImageView/blob/master/OLImageView.m
         while (self.accumulator >= [self.animatedImage.delayTimes[self.currentFrameIndex] floatValue]) {
             self.accumulator -= [self.animatedImage.delayTimes[self.currentFrameIndex] floatValue];
             self.currentFrameIndex++;

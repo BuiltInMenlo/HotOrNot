@@ -36,6 +36,7 @@
 @property (nonatomic, strong) UIImageView *inputBGImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *submitCommentButton;
+@property (nonatomic, strong) NSString *comment;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) NSMutableArray *replies;
 @property (nonatomic) BOOL isSubmitting;
@@ -59,6 +60,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_tareStatusUpdate:)
 													 name:@"TARE_STATUS_UPDATE" object:nil];
+		
+		_comment = @"";
 	}
 	
 	return (self);
@@ -116,7 +119,7 @@
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
 						   @"club_id"		: @(_clubVO.clubID),
-						   @"subject"		: _commentTextField.text,
+						   @"subject"		: _comment,
 						   @"challenge_id"	: @(_statusUpdateVO.challengeID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -453,6 +456,7 @@
 //		
 //	} else {
 	
+	_comment = _commentTextField.text;
 	_commentTextField.text = @"";
 	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
@@ -466,7 +470,7 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-		[self _submitCommentReply];
+	[self _submitCommentReply];
 //	}
 }
 

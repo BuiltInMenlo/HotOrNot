@@ -58,7 +58,7 @@
 - (void)setEmotionVO:(HONEmotionVO *)emotionVO {
 	_emotionVO = emotionVO;
 	_emotionVO.imageType = HONEmotionImageTypeGIF;
-	_emotionVO.smallImageURL = @"https://s3.amazonaws.com/hotornot-challenges/BigSmiley11.gif";
+	_emotionVO.smallImageURL = @"http://s3.amazonaws.com/hotornot-challenges/BigSmiley11.gif";
 	_emotionVO.mediumImageURL = _emotionVO.smallImageURL;
 	_emotionVO.largeImageURL = _emotionVO.smallImageURL;
 	

@@ -18,7 +18,7 @@
 @implementation HONNetworkStatusViewController
 
 - (id)init {
-	if ((self = [super initWithURL:@"https://www.twitter.com/selfiec_status"
+	if ((self = [super initWithURL:@"http://www.twitter.com/selfiec_status"
 							 title:NSLocalizedString(@"network_status", @"Network status")])) {
 		
 		_viewStateType = HONStateMitigatorViewStateTypeNetworkStatus;

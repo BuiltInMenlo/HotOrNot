@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, FLAnimatedImageFrameCacheSize) {
 {
     // Use old school ivar instead of property for retained non-object types (CF type, dispatch "object") to avoid ARC confusion: http://stackoverflow.com/questions/9684972/strong-property-with-attribute-nsobject-for-a-cf-type-doesnt-retain/9690656#9690656
     CGImageSourceRef _imageSource;
-    // Note: Only if the deployment target is iOS 6.0 or higher, dispatch objects are declared as "true objects" and participate in ARC, etc.; See <os/object.h> or https://github.com/AFNetworking/AFNetworking/pull/517 for details.
+    // Note: Only if the deployment target is iOS 6.0 or higher, dispatch objects are declared as "true objects" and participate in ARC, etc.; See <os/object.h> or http://github.com/AFNetworking/AFNetworking/pull/517 for details.
     dispatch_queue_t _serialQueue;
 }
 
@@ -619,7 +619,7 @@ typedef NS_ENUM(NSUInteger, FLAnimatedImageFrameCacheSize) {
 // Decodes the image's data and draws it off-screen fully in memory; it's thread-safe and hence can be called on a background thread.
 // On success, the returned object is a new `UIImage` instance with the same content as the one passed in.
 // On failure, the returned object is the unchanged passed in one; the data will not be predrawn in memory though and an error will be logged.
-// First inspired by & good Karma to: https://gist.github.com/steipete/1144242
+// First inspired by & good Karma to: http://gist.github.com/steipete/1144242
 + (UIImage *)predrawnImageFromImage:(UIImage *)imageToPredraw
 {
     // Always use a device RGB color space for simplicity and predictability what will be going on.
@@ -754,7 +754,7 @@ typedef NS_ENUM(NSUInteger, FLAnimatedImageFrameCacheSize) {
     // In that case, our weak target has been reclaimed. Return a dummy method signature to keep `doesNotRecognizeSelector:` from firing.
     // We'll emulate the Obj-c messaging nil behavior by setting the return value to nil in `forwardInvocation:`, but we'll assume that the return value is `sizeof(void *)`.
     // Other libraries handle this situation by making use of a global method signature cache, but that seems heavier than necessary and has issues as well.
-    // See https://www.mikeash.com/pyblog/friday-qa-2010-02-26-futures.html and https://github.com/steipete/PSTDelegateProxy/issues/1 for examples of using a method signature cache.
+    // See http://www.mikeash.com/pyblog/friday-qa-2010-02-26-futures.html and http://github.com/steipete/PSTDelegateProxy/issues/1 for examples of using a method signature cache.
     return [NSObject instanceMethodSignatureForSelector:@selector(init)];
 }
 

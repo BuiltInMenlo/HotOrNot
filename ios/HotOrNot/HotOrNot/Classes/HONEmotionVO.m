@@ -18,9 +18,9 @@
 	vo.dictionary = dictionary;
 	
 //	NSString *tmpURL = @"http://i.imgur.com/1lgZ0.gif"; // clapping
-//	NSString *tmpURL = @"https://s3.amazonaws.com/hotornot-challenges/BigSmiley11.gif"; // clapping / s3
+//	NSString *tmpURL = @"http://s3.amazonaws.com/hotornot-challenges/BigSmiley11.gif"; // clapping / s3
 //	NSString *tmpURL = @"http://25.media.tumblr.com/tumblr_ln48mew7YO1qbhtrto1_500.gif"; // data-visor
-//	NSString *tmpURL = @"https://cdn.picocandy.com/1df5644d9e94/t/54331bdfab4b8b0468000167/large.gif"; // 4mb
+//	NSString *tmpURL = @"http://cdn.picocandy.com/1df5644d9e94/t/54331bdfab4b8b0468000167/large.gif"; // 4mb
 //	NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"1lgZ0" withExtension:@"gif"];
 	
 	vo.emotionID = [dictionary objectForKey:@"id"];
