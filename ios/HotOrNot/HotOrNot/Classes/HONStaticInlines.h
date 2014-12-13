@@ -340,7 +340,7 @@ NSStringFromNSDictionary(NSDictionary *val)
 BIM_INLINE NSString*
 NSStringFromNSIndexPath(NSIndexPath *val)
 {
-	NSString *string = [NSString stringWithFormat:@"(%ld × %ld) LEN:[%ld]", (long)val.section, (long)val.row, (long)val.length];
+	NSString *string = [NSString stringWithFormat:@"(%ld × %ld)", (long)val.section, (long)val.row];
 	return string;
 }
 

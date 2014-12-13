@@ -52,12 +52,8 @@
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_sc0010.json";
 NSString * const kAPIHost = @"data_api";
 #else
-NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_waddle.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
@@ -85,7 +81,7 @@ NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 NSString * const kFlurryAPIKey = @"XH2STY3SYCJ37QMTKYHZ";
 
 // view heights
-const CGFloat kNavHeaderHeight = 64.0;
+const CGFloat kNavHeaderHeight = 79.0;
 const CGFloat kSearchHeaderHeight = 43.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
@@ -94,6 +90,7 @@ const CGSize kTabSize = {80.0, 50.0};
 
 // animation params
 const CGFloat kProfileTime = 0.25f;
+const CGFloat kButtonSelectDelay = 0.0625;
 
 // image sizes
 const CGSize kSnapAvatarSize = {48.0f, 48.0f};
@@ -157,7 +154,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 
 
 + (NSString *)apiServerPath {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"api_endpt"]);
 }
 
 + (NSString *)customerServiceURLForKey:(NSString *)key {
@@ -208,14 +205,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 	}
 	
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"default"]);
-}
-
-+ (int)clubInvitesThreshold {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_threshold"] intValue]);
-}
-
-+ (CGFloat)minSnapLuminosity {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_luminosity"] floatValue]);
 }
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
@@ -317,7 +306,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"server_apis"] forKey:@"server_apis"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"api_endpt"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"ts_name"] forKey:@"ts_name"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
@@ -333,8 +323,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_images"] forKey:@"compose_images"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_subjects"] forKey:@"compose_subjects"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
@@ -349,13 +338,12 @@ void Swizzle(Class c, SEL orig, SEL new)
 														   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
-		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
+		NSLog(@"API BASE PATHS:\nPHP\t\t: [%@]\nPYTHON\t: [%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [[HONAPICaller sharedInstance] phpAPIBasePath], [[HONAPICaller sharedInstance] pythonAPIBasePath]);
 		
-		[self _initThirdPartySDKs];
 		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
 			[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
 		
-		
+		[self _initThirdPartySDKs];
 		[self _writeShareTemplates];
 		[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
 		[self _registerUser];
@@ -392,6 +380,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
 			[HONAppDelegate writeUserInfo:result];
 			
+			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			
 			NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [NSDate utcNowDate];
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - day"
 											   withProperties:@{@"day"	: [NSDate utcNowDate]}];
@@ -403,26 +393,13 @@ void Swizzle(Class c, SEL orig, SEL new)
 											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
 			
 			[Flurry setUserID:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
-			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
-				
-			}
+//			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+//			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
+//			}
 			
-//			if ([[result objectForKey:@"email"] length] == 0)
-			if ([[result objectForKey:@"added"] isEqualToString:[result objectForKey:@"last_login"]])
+			if ([[result objectForKey:@"added"] isEqualToString:[result objectForKey:@"last_login"]]) {
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
-			
-			else
-				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
-			
-			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			
-//			[[NSUserDefaults standardUserDefaults] setObject:[HONUserClubVO clubWithDictionary:@{}] forKey:@"crash_me"];
-//			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-//			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//				[[HONClubAssistant sharedInstance] writeUserClubs:result];
-			
+				
 				if (self.window.rootViewController == nil) {
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
 					[navigationController setNavigationBarHidden:YES];
@@ -430,7 +407,22 @@ void Swizzle(Class c, SEL orig, SEL new)
 					self.window.rootViewController = navigationController;
 					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 				}
-//			}];
+			
+			} else {
+				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
+				
+				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+					[[HONClubAssistant sharedInstance] writeUserClubs:result];
+					
+					if (self.window.rootViewController == nil) {
+						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
+						[navigationController setNavigationBarHidden:YES];
+						
+						self.window.rootViewController = navigationController;
+						self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+					}
+				}];
+			}
 		}
 	}];
 }
@@ -601,7 +593,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.window.backgroundColor = [UIColor whiteColor];
+	self.window.backgroundColor = [UIColor colorWithRed:0.937 green:0.937 blue:0.957 alpha:1.000];
 	[self.window addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appBG"]]];
 	_isFromBackground = NO;
 	

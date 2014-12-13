@@ -32,6 +32,8 @@ extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 
+extern NSString * const kAPIClubStatusUpdates;
+
 extern NSString * const kAPIGetFriends;
 extern NSString * const kAPIGetSubscribees;
 extern NSString * const kAPIAddFriend;
@@ -98,8 +100,12 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Utility
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (AFHTTPClient *)getHttpClientWithHMAC;
-- (AFHTTPClient *)getHttpClientWithHMACUsingBasePath:(NSString *)basePath;
+- (NSString *)phpAPIBasePath;
+- (NSString *)pythonAPIBasePath;
+
+- (AFHTTPClient *)getHttpClientWithHMACUsingPHPBasePath;
+- (AFHTTPClient *)getHttpClientWithHMACUsingPythonBasePath;
+
 - (NSMutableString *)hmacForKey:(NSString *)key withData:(NSString *)data;
 - (NSString *)normalizePrefixForImageURL:(NSString *)imageURL;
 
@@ -189,6 +195,9 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Clubs
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+- (void)retrieveStatusUpdatesForClubByClubID:(int)clubID fromPage:(int)page completion:(void (^)(id result))completion;
+
+
 //- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion;
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix atLocation:(CLLocation *)location completion:(void (^)(id result))completion;
@@ -229,6 +238,11 @@ extern const CGFloat kNotifiyDelay;
 - (void)showDataErrorHUD;
 - (void)showSuccessHUD;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
+
+
+- (NSSet *)requestQueue;
+- (void)addRequestToQueue:(AFHTTPRequestOperation *)requestOperation;
+- (void)removeRequestToQueue:(AFHTTPRequestOperation *)requestOperation;
 
 
 @end

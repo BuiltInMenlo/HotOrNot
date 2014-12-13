@@ -396,6 +396,23 @@ static HONClubAssistant *sharedInstance = nil;
 	return (@[]);
 }
 
+- (HONComposeImageVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	__block HONComposeImageVO *composeImageVO = nil;
+	
+	if ([clubPhotoVO.subjectNames count] == 0)
+		return (composeImageVO);
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONComposeImageVO *vo = [HONComposeImageVO composeImageWithDictionary:(NSDictionary *)obj];
+		if ([vo.composeImageName isEqualToString:[clubPhotoVO.subjectNames firstObject]]) {
+			composeImageVO = vo;
+			*stop = YES;
+		}
+	}];
+	
+	return (composeImageVO);
+}
+
 - (BOOL)isStaffClub:(HONUserClubVO *)clubVO {
 	__block BOOL isFound = NO;
 	

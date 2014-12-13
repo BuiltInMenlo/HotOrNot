@@ -23,13 +23,13 @@
 #import "HONCollectionView.h"
 #import "HONComposeViewCell.h"
 #import "HONComposeImageVO.h"
-#import "HONStatusUpdateViewController.h"
+#import "HONComposeSubmitViewController.h"
 
 @interface HONComposeViewController () <HONComposeViewCellDelegate>
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) NSMutableArray *composeImages;
-@property (nonatomic, strong) HONComposeImageVO *selectedcomposeImageVO;
+@property (nonatomic, strong) HONComposeImageVO *selectedComposeImageVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @end
 
@@ -83,7 +83,6 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveComposeImages {
-	
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSDictionary *dict = (NSDictionary *)obj;
 		[_composeImages addObject:[HONComposeImageVO composeImageWithDictionary:dict]];
@@ -130,8 +129,17 @@
 	[super loadView];
 	
 	_composeImages = [NSMutableArray array];
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Close"];
+	
+	_headerView = [[HONHeaderView alloc] init];
 	[self.view addSubview:_headerView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _headerView.frame;
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"composeHeaderButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"composeHeaderButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:closeButton];
+	
 	
 	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, ((kComposeCollectionViewCellSize.width + kComposeCollectionViewCellSpacing.width) * 2.0), self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONComposeViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONComposeViewCell class] forCellWithReuseIdentifier:[HONComposeViewCell cellReuseIdentifier]];
@@ -177,11 +185,27 @@
 	NSLog(@"[*:*] _goClose");
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - exit_button"];
 	
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-	}];
+	[_headerView tappedTitle];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+		}];
+	});
 }
 
 - (void)_goNext {
+	
+	NSError *error;
+	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[_selectedComposeImageVO.composeImageName] options:0 error:&error]
+												 encoding:NSUTF8StringEncoding];
+	
+	NSDictionary *submitParams = @{@"user_id"		: @([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]),
+								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultClubPhotoURL]],
+								   @"club_id"		: @(_userClubVO.clubID),
+								   @"challenge_id"	: @(0),
+								   @"subjects"		: jsonString};
+	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+	
+	[self.navigationController pushViewController:[[HONComposeSubmitViewController alloc] initWithSubmitParameters:submitParams] animated:NO];
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -193,7 +217,7 @@
 	
 	if (indexPath != nil) {
 		HONComposeViewCell *cell = (HONComposeViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
-		_selectedcomposeImageVO = cell.composeImageVO;
+		_selectedComposeImageVO = cell.composeImageVO;
 		
 		if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
 			NSLog(@"COMPOSE IMAGE:[%@]", [cell.composeImageVO toString]);
@@ -222,7 +246,6 @@
 #pragma mark - Notifications
 - (void)_refreshCompose:(NSNotification *)notification {
 	NSLog(@"::|> _refreshCompose <|::");
-	
 	[self _goReloadContents];
 }
 
@@ -240,7 +263,10 @@
 - (void)composeViewCell:(HONComposeViewCell *)viewCell didSelectComposeImage:(HONComposeImageVO *)composeImageVO {
 	NSLog(@"[_] composeViewCell:didSelectComposeImage:[%@]", [composeImageVO toString]);
 	
-	_selectedcomposeImageVO = viewCell.composeImageVO;
+	_selectedComposeImageVO = viewCell.composeImageVO;
+	NSLog(@"COMPOSE IMAGE:[%@]", [_selectedComposeImageVO toString]);
+	
+	[self _goNext];
 }
 
 #pragma mark - CollectionView DataSources
@@ -279,16 +305,15 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@", NSStringFromNSIndexPath(indexPath));
+	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:[%@]", NSStringFromNSIndexPath(indexPath));
 	HONComposeViewCell *cell = (HONComposeViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - select_image"];
 	
-	_selectedcomposeImageVO = cell.composeImageVO;
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedClubPhotoVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:^(void) {
-//	}];
+	_selectedComposeImageVO = cell.composeImageVO;
+	NSLog(@"COMPOSE IMAGE:[%@]", [_selectedComposeImageVO toString]);
+	
+	[self _goNext];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {

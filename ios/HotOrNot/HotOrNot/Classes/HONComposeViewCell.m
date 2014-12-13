@@ -36,7 +36,7 @@
 		_isLoading = NO;
 		[self.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 		
-		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingArrows"]];
+		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_compose"]];
 		[self.contentView addSubview:_loadingImageView];
 		
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
@@ -50,7 +50,7 @@
 		
 		_selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_selectButton.frame = CGRectFromSize(self.frame.size);
-		[self.contentView addSubview:_selectButton];
+//		[self.contentView addSubview:_selectButton];
 	}
 	
 	return (self);
@@ -83,8 +83,8 @@
 			
 			if (_composeImageVO.imageType == HONComposeImageTypeTypeAnimated) {
 				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-					NSURL *url = [NSURL URLWithString:_composeImageVO.urlPrefix];
-					FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:url]];
+					NSLog(@"URL:[%@]", [[_composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix320] stringByAppendingString:kComposeImageAnimatedFileExtension]);
+					FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[[_composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix320] stringByAppendingString:kComposeImageAnimatedFileExtension]]]];
 					
 					dispatch_async(dispatch_get_main_queue(), ^{
 						_animatedImageView.animatedImage = animatedImage;
@@ -106,6 +106,9 @@
 					_imageView.image = image;
 					_composeImageVO.image = image;
 					
+					[_loadingImageView removeFromSuperview];
+					_loadingImageView = nil;
+					
 					[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 				};
 				
@@ -114,13 +117,16 @@
 					_isLoading = NO;
 					_imageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
 					_composeImageVO.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
+					
+					[_loadingImageView removeFromSuperview];
+					_loadingImageView = nil;
 				};
 				
-				NSLog(@"URL:[%@]", [_composeImageVO.urlPrefix stringByAppendingString:kSnapMediumSuffix]);
-				[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_composeImageVO.urlPrefix stringByAppendingString:kSnapMediumSuffix]]
+				NSLog(@"URL:[%@]", [[_composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix320] stringByAppendingString:kComposeImageStaticFileExtension]);
+				[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[_composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix320] stringByAppendingString:kComposeImageStaticFileExtension]]
 																	cachePolicy:kOrthodoxURLCachePolicy
 																timeoutInterval:[HONAppDelegate timeoutInterval]]
-								  placeholderImage:[UIImage imageNamed:@"loadingArrows"]
+								  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_compose"]
 										   success:imageSuccessBlock
 										   failure:imageFailureBlock];
 			}

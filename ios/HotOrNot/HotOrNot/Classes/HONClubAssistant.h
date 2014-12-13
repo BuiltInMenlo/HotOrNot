@@ -10,6 +10,7 @@
 #import "HONClubPhotoVO.h"
 #import "HONCommentVO.h"
 #import "HONEmotionVO.h"
+#import "HONComposeImageVO.h"
 
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
@@ -39,6 +40,7 @@
 - (BOOL)hasVotedForComment:(HONCommentVO *)commentVO;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (HONComposeImageVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
 - (void)copyUserSignupClubToClipboardWithAlert:(BOOL)showsAlert;
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;

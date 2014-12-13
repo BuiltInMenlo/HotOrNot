@@ -106,8 +106,6 @@ typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 
 
 // api endpts
-extern NSString * const kConfigURL;
-extern NSString * const kConfigJSON;
 extern NSString * const kAPIHost;
 
 extern NSString * const kBlowfishKey;
@@ -124,6 +122,7 @@ extern const CGSize kTabSize;
 
 // animation params
 extern const CGFloat kProfileTime;
+extern const CGFloat kButtonSelectDelay;
 
 // image sizes
 extern const CGSize kSnapAvatarSize;
@@ -145,21 +144,19 @@ extern NSString * const kTwilioSMS;
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
 + (NSString *)apiServerPath;
+
 + (NSString *)customerServiceURLForKey:(NSString *)key;
 + (NSString *)kikCardURL;
 + (NSString *)shareURL;
 
 + (NSDictionary *)s3Credentials;
 + (NSTimeInterval)timeoutInterval;
-+ (int)clubInvitesThreshold;
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType;
 
 + (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
-
-+ (CGFloat)minSnapLuminosity;
 
 
 + (NSString *)shareMessageForType:(HONShareMessageType)messageType;

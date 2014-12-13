@@ -162,7 +162,7 @@
 								[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 									KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 									[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
-									NSLog(@"REG_KEYCHAIN:[%@]", [keychain keychainItemData]);
+									
 									[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
 									[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 								}];

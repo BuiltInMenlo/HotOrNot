@@ -12,6 +12,7 @@
 #import "HONRefreshingLabel.h"
 
 @interface HONHomeViewCell()
+@property (nonatomic, strong) UIImageView *loadingImageView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIButton *selectButton;
 @property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
@@ -26,15 +27,14 @@
 	return (NSStringFromClass(self));
 }
 
-
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_isLoading = NO;
 		
 		[self.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 		
-		UIImageView *loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingArrows"]];
-		[self.contentView addSubview:loadingImageView];
+		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_home"]];
+		[self.contentView addSubview:_loadingImageView];
 		
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
 		[self.contentView addSubview:_imageView];
@@ -78,13 +78,15 @@
 	
 //	_imageView.hidden = YES;
 	[_scoreLabel toggleLoading:YES];
-//	[self toggleImageLoading:YES];
 	[self refeshScore];
 	
 	_isLoading = YES;
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_imageView.image = image;
 		_isLoading = NO;
+		
+		[_loadingImageView removeFromSuperview];
+		_loadingImageView = nil;
 		
 		[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 	};
@@ -94,14 +96,17 @@
 		_imageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
 		_isLoading = NO;
 		
+		[_loadingImageView removeFromSuperview];
+		_loadingImageView = nil;
+		
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 	};
 	
-	//			NSLog(@"URL:[%@]", [_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]);
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]]
+	NSLog(@"URL:[%@]", [[_clubPhotoVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]);
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[_clubPhotoVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]]
 														cachePolicy:kOrthodoxURLCachePolicy
 													timeoutInterval:[HONAppDelegate timeoutInterval]]
-					  placeholderImage:[UIImage imageNamed:@"loadingArrows"]
+					  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_home"]
 							   success:imageSuccessBlock
 							   failure:imageFailureBlock];
 	
@@ -114,7 +119,7 @@
 		[_scoreLabel setText:NSStringFromInt(_clubPhotoVO.score)];
 		[_scoreLabel toggleLoading:NO];
 		
-		NSLog(@"STATUS_UPDATE CELL{%@} -=- [%d / %d]-=-(%d)", NSStringFromNSIndexPath(self.indexPath), _clubPhotoVO.challengeID, _clubPhotoVO.clubID, _clubPhotoVO.score);
+		NSLog(@"CELL:{%@} -=- [%d / %d] SCORE:(%d)", NSStringFromNSIndexPath(self.indexPath), _clubPhotoVO.challengeID, _clubPhotoVO.clubID, _clubPhotoVO.score);
 	}];
 }
 

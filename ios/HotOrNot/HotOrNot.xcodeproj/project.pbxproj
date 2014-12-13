@@ -66,6 +66,9 @@
 		30B256071A3BB1F400C789E1 /* HONComposeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256061A3BB1F400C789E1 /* HONComposeViewCell.m */; };
 		30B2560A1A3BB28E00C789E1 /* HONComposeImageVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256091A3BB28E00C789E1 /* HONComposeImageVO.m */; };
 		30B2560D1A3BE28700C789E1 /* HONBaseVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B2560C1A3BE28700C789E1 /* HONBaseVO.m */; };
+		30B2560E1A3C3C0F00C789E1 /* HONComposeSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309122A019C501F60081B141 /* HONComposeSubmitViewController.m */; };
+		30B256111A3C61B100C789E1 /* HONSubjectViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256101A3C61B000C789E1 /* HONSubjectViewCell.m */; };
+		30B256141A3C61D200C789E1 /* HONSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256131A3C61D200C789E1 /* HONSubjectVO.m */; };
 		30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BA19E20B510017ACBF /* AFHTTPClient.m */; };
 		30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BC19E20B510017ACBF /* AFHTTPRequestOperation.m */; };
 		30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BE19E20B510017ACBF /* AFImageRequestOperation.m */; };
@@ -426,6 +429,10 @@
 		30B256091A3BB28E00C789E1 /* HONComposeImageVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeImageVO.m; sourceTree = "<group>"; };
 		30B2560B1A3BE28700C789E1 /* HONBaseVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBaseVO.h; sourceTree = "<group>"; };
 		30B2560C1A3BE28700C789E1 /* HONBaseVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBaseVO.m; sourceTree = "<group>"; };
+		30B2560F1A3C61B000C789E1 /* HONSubjectViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubjectViewCell.h; sourceTree = "<group>"; };
+		30B256101A3C61B000C789E1 /* HONSubjectViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubjectViewCell.m; sourceTree = "<group>"; };
+		30B256121A3C61D200C789E1 /* HONSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubjectVO.h; sourceTree = "<group>"; };
+		30B256131A3C61D200C789E1 /* HONSubjectVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubjectVO.m; sourceTree = "<group>"; };
 		30B308B919E20B510017ACBF /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		30B308BA19E20B510017ACBF /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
 		30B308BB19E20B510017ACBF /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -1510,6 +1517,8 @@
 				B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */,
 				3045E5A219E4D048003FF312 /* HONStoreProductVO.h */,
 				3045E5A319E4D048003FF312 /* HONStoreProductVO.m */,
+				30B256121A3C61D200C789E1 /* HONSubjectVO.h */,
+				30B256131A3C61D200C789E1 /* HONSubjectVO.m */,
 			);
 			name = VO;
 			sourceTree = "<group>";
@@ -1549,6 +1558,10 @@
 				30B256061A3BB1F400C789E1 /* HONComposeViewCell.m */,
 				4CEC303B17DA5E270016AAE1 /* HONComposeViewController.h */,
 				4CEC303C17DA5E270016AAE1 /* HONComposeViewController.m */,
+				30B2560F1A3C61B000C789E1 /* HONSubjectViewCell.h */,
+				30B256101A3C61B000C789E1 /* HONSubjectViewCell.m */,
+				3091229F19C501F60081B141 /* HONComposeSubmitViewController.h */,
+				309122A019C501F60081B141 /* HONComposeSubmitViewController.m */,
 			);
 			name = Compose;
 			sourceTree = "<group>";
@@ -2060,8 +2073,6 @@
 				4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */,
 				4CC94FEA19079D4900347A34 /* HONComposeDisplayView.h */,
 				4CC94FEB19079D4900347A34 /* HONComposeDisplayView.m */,
-				3091229F19C501F60081B141 /* HONComposeSubmitViewController.h */,
-				309122A019C501F60081B141 /* HONComposeSubmitViewController.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
 				4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */,
 				4C41071D18C16300009E9F9E /* HONEnterPINViewController.h */,
@@ -2396,6 +2407,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30B2560E1A3C3C0F00C789E1 /* HONComposeSubmitViewController.m in Sources */,
 				3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */,
 				3010D78F1A24BAED0078164F /* HONClubViewCell.m in Sources */,
 				3010D78E1A24BADB0078164F /* HONClubToggleViewCell.m in Sources */,
@@ -2460,6 +2472,7 @@
 				301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */,
 				4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
+				30B256111A3C61B100C789E1 /* HONSubjectViewCell.m in Sources */,
 				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
 				30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
@@ -2533,6 +2546,7 @@
 				30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,
+				30B256141A3C61D200C789E1 /* HONSubjectVO.m in Sources */,
 				3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */,
 				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
 				30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */,

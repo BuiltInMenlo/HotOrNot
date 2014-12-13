@@ -19,8 +19,10 @@
 - (void)addComposeButtonWithTarget:(id)target action:(SEL)action;
 - (void)addDoneButtonWithTarget:(id)target action:(SEL)action;
 - (void)addNextButtonWithTarget:(id)target action:(SEL)action;
+- (void)addTitleButtonWithTarget:(id)target action:(SEL)action;
 - (void)transitionTitle:(NSString *)title;
 - (void)leftAlignTitle;
+- (void)tappedTitle;
 - (void)addTitleImage:(UIImage *)image;
 - (void)refreshActivity;
 - (void)removeBackground;

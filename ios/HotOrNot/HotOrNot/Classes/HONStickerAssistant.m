@@ -168,12 +168,14 @@ static HONStickerAssistant *sharedInstance = nil;
 	NSArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:key];
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
 	for (NSString *contentGroupID in contentGroupIDs) {
+		NSLog(@"contentGroupID:[%@]", contentGroupID);
+		
 		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
 			NSLog(@"///// fetchStickerPackInfo:[%@] {%@}--(%d) /////", contentGroupID, key, success);
 			[[NHThreadThis backgroundThis] doThis:^{
 				NSMutableArray *stickers = [NSMutableArray array];
 				for (PCContent *content in contentGroup.contents) {
-//					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
+					NSLog(@"PCContent:\n%@\t%@\t%@\t%@\t%@", contentGroupID, content.content_id, content.name, content.large_image, [[content.large_image stringByReplacingOccurrencesOfString:@"/large.gif" withString:@"/"] stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]);
 					[stickers addObject:@{@"id"		: content.content_id,
 										  @"cg_id"	: contentGroupID,
 										  @"name"	: content.name,

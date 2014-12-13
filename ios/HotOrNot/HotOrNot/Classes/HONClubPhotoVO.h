@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONComposeImageVO.h"
 
 typedef NS_ENUM(NSUInteger, HONClubPhotoSubmissionType) {
 	HONClubPhotoSubmissionTypePhoto = 0,
@@ -28,6 +29,7 @@ typedef NS_ENUM(NSUInteger, HONClubPhotoSubmissionType) {
 @property (nonatomic, retain) NSString *imagePrefix;
 @property (nonatomic, retain) NSString *comment;
 @property (nonatomic, retain) NSArray *subjectNames;
+@property (nonatomic, retain) HONComposeImageVO *composeImageVO;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic) int score;
 @property (nonatomic, assign) HONClubPhotoSubmissionType submissionType;

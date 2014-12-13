@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONContactsViewController.h"
+#import "HONViewController.h"
 
-@interface HONComposeSubmitViewController : HONContactsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONComposeSubmitViewController : HONViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithSubmitParameters:(NSDictionary *)submitParams;
 @end

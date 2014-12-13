@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
-               BuildableName = "Yunder.app"
+               BuildableName = "Waddle.app"
                BlueprintName = "HotOrNot"
                ReferencedContainer = "container:HotOrNot.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
-            BuildableName = "Yunder.app"
+            BuildableName = "Waddle.app"
             BlueprintName = "HotOrNot"
             ReferencedContainer = "container:HotOrNot.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
-            BuildableName = "Yunder.app"
+            BuildableName = "Waddle.app"
             BlueprintName = "HotOrNot"
             ReferencedContainer = "container:HotOrNot.xcodeproj">
          </BuildableReference>
@@ -84,7 +84,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
-            BuildableName = "Yunder.app"
+            BuildableName = "Waddle.app"
             BlueprintName = "HotOrNot"
             ReferencedContainer = "container:HotOrNot.xcodeproj">
          </BuildableReference>

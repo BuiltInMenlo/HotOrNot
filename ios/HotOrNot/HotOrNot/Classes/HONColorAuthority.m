@@ -6,7 +6,25 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreImage/CoreImage.h>
+#import <QuartzCore/QuartzCore.h>
+
 #import "HONColorAuthority.h"
+
+
+NSString * const kColorComponentAlphaKey		= @"alpha";
+NSString * const kColorComponentBlueKey			= @"blue";
+NSString * const kColorComponentBrightnessKey	= @"brightness";
+NSString * const kColorComponentGreenKey		= @"green";
+NSString * const kColorComponentHueKey			= @"hue";
+NSString * const kColorComponentLuminanceKey	= @"luminance";
+NSString * const kColorComponentRedKey			= @"red";
+NSString * const kColorComponentSaturationKey	= @"saturation";
+
+
+const CGFloat kBlueLuminanceMultipier = 0.114;
+const CGFloat kGreenLuminanceMultipier = 0.587;
+const CGFloat kRedLuminanceMultipier = 0.299;
 
 @implementation HONColorAuthority
 static HONColorAuthority *sharedInstance = nil;
@@ -31,16 +49,17 @@ static HONColorAuthority *sharedInstance = nil;
 
 - (NSShadow *)orthodoxUIShadowAttribute {
 	NSShadow *shadow = [[NSShadow alloc] init];
-	[shadow setShadowColor:[UIColor colorWithWhite:0.0 alpha:0.875]];
+	[shadow setShadowColor:[UIColor colorWithWhite:0.000 alpha:0.875]];
 	[shadow setShadowOffset:CGSizeMake(0.0, 1.0)];
-	[shadow setShadowBlurRadius:0.5];
+	[shadow setShadowBlurRadius:0.500];
 	
 	return (shadow);
 }
 
 
 - (UIColor *)percentGreyscaleColor:(CGFloat)percent {
-	return ([UIColor colorWithWhite:percent alpha:1.0]);
+	return ([UIColor colorWithWhite:percent
+							  alpha:1.000]);
 }
 
 - (UIColor *)honLightGreyBGColor {
@@ -48,54 +67,158 @@ static HONColorAuthority *sharedInstance = nil;
 }
 
 - (UIColor *)honKhakiColor {
-	return ([UIColor colorWithRed:0.769 green:0.682 blue:0.529 alpha:1.0]);
+	return ([UIColor colorWithRed:0.769
+							green:0.682
+							 blue:0.529
+							alpha:1.000]);
 }
 
 - (UIColor *)honBlueTextColor {
-	return ([UIColor colorWithRed:0.00 green:0.471 blue:1.00 alpha:1.0]);
+	return ([UIColor colorWithRed:0.000
+							green:0.471
+							 blue:1.000
+							alpha:1.000]);
 }
 
 - (UIColor *)honBlueTextColorHighlighted {
-	return ([UIColor colorWithRed:0.580 green:0.729 blue:0.973 alpha:1.0]);
+	return ([UIColor colorWithRed:0.580
+							green:0.729
+							 blue:0.973
+							alpha:1.000]);
 }
 
 - (UIColor *)honGreenTextColor {
-	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
+	return ([UIColor colorWithRed:0.451
+							green:0.757
+							 blue:0.694
+							alpha:1.000]);
 }
 
 - (UIColor *)honGreyTextColor {
-	return ([UIColor colorWithWhite:0.600 alpha:1.0]);
+	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.600]);
 }
 
 - (UIColor *)honDarkGreyTextColor {
-	return ([UIColor colorWithWhite:0.400 alpha:1.0]);
+	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.400]);
 }
 
 - (UIColor *)honLightGreyTextColor {
-	return ([UIColor colorWithWhite:0.671 alpha:1.0]);
+	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.671]);
 }
 
 - (UIColor *)honPlaceholderTextColor {
-	return ([UIColor colorWithWhite:0.790 alpha:1.0]);
+	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.4790]);
 }
 
 - (UIColor *)honRandomColor {
-	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.5 andSaturation:0.5]);
+	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.500
+																	   andSaturation:0.500]);
 }
 
 - (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)offset {
-	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:MIN(MAX(offset, 0.00), 1.00) andSaturation:0.5]);
+	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:MIN(MAX(offset, 0.00), 1.00)
+																	   andSaturation:0.500]);
 }
 
 - (UIColor *)honRandomColorWithStartingSaturation:(CGFloat)offset {
-	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.50 andSaturation:MIN(MAX(offset, 0.00), 1.00)]);
+	return ([[HONColorAuthority sharedInstance] honRandomColorWithStartingBrightness:0.500
+																	   andSaturation:MIN(MAX(offset, 0.00), 1.00)]);
 }
 
 - (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)brightness andSaturation:(CGFloat)saturation {
 	brightness = MIN(MAX(brightness, 0.00), 1.00);
 	saturation = MIN(MAX(saturation, 0.00), 1.00);
 	
-	return ([UIColor colorWithHue:(arc4random() % 256 / 256.0) saturation:((arc4random() % ((int)(256.0 * saturation)) / 256.0) + saturation) brightness:((arc4random() % ((int)(256.0 * brightness)) / 256.0) + brightness) alpha:1.00]);
+	return ([UIColor colorWithHue:(arc4random() % 256 / 256.0)
+					   saturation:((arc4random() % ((int)(256.0 * saturation)) / 256.0) + saturation)
+					   brightness:((arc4random() % ((int)(256.0 * brightness)) / 256.0) + brightness)
+							alpha:1.000]);
+}
+
+- (CGFloat)luminanceFromColor:(UIColor *)color {
+	if (CGColorGetNumberOfComponents(color.CGColor) == 2) {
+		CGFloat wVal, aVal;
+		if ([color getWhite:&wVal alpha:&aVal]) {
+			color = [UIColor colorWithRed:wVal
+									green:wVal
+									 blue:wVal
+									  alpha:aVal];
+		}
+	}
+	
+	NSDictionary *components = [[HONColorAuthority sharedInstance] hsbComponentsFromColor:color];
+	CGFloat rLuminance = ([[components objectForKey:kColorComponentRedKey] floatValue] / 255.0) * kRedLuminanceMultipier;
+	CGFloat gLuminance = ([[components objectForKey:kColorComponentGreenKey] floatValue] / 255.0) * kGreenLuminanceMultipier;
+	CGFloat bLuminance = ([[components objectForKey:kColorComponentBlueKey] floatValue] / 255.0) * kBlueLuminanceMultipier;
+	
+	return((rLuminance > 0.0 && gLuminance > 0.0 && bLuminance > 0.0) ? rLuminance + gLuminance + bLuminance : -1.0);
+}
+
+- (NSDictionary *)hsbComponentsFromColor:(UIColor *)color {
+	if (CGColorGetNumberOfComponents(color.CGColor) == 2) {
+		CGFloat wVal, aVal;
+		
+		if ([color getWhite:&wVal alpha:&aVal]) {
+			color = [UIColor colorWithRed:wVal
+									green:wVal
+									 blue:wVal
+									alpha:aVal];
+		}
+	}
+	
+	CGFloat hVal, sVal, bVal, aVal;
+	if ([color getHue:&hVal saturation:&sVal brightness:&bVal alpha:&aVal]) {
+		return (@{kColorComponentHueKey			: @(hVal),
+				  kColorComponentSaturationKey	: @(sVal),
+				  kColorComponentBrightnessKey	: @(bVal),
+				  kColorComponentAlphaKey		: @(aVal)});
+	}
+	
+	return (@{kColorComponentHueKey			: @(-1),
+			  kColorComponentSaturationKey	: @(-1),
+			  kColorComponentBrightnessKey	: @(-1),
+			  kColorComponentAlphaKey		: @(-1)});
+}
+
+- (NSDictionary *)rgbComponentsFromColor:(UIColor *)color {
+	if (CGColorGetNumberOfComponents(color.CGColor) == 2) {
+		CGFloat wVal, aVal;
+		if ([color getWhite:&wVal alpha:&aVal]) {
+			color = [UIColor colorWithRed:wVal
+									green:wVal
+									 blue:wVal
+									alpha:aVal];
+		}
+	}
+	
+	CGFloat rVal, gVal, bVal, aVal;
+	if ([color getRed:&rVal green:&gVal blue:&bVal alpha:&aVal]) {
+		return (@{kColorComponentRedKey		: @(rVal),
+				  kColorComponentGreenKey	: @(gVal),
+				  kColorComponentBlueKey	: @(bVal),
+				  kColorComponentAlphaKey	: @(aVal)});
+	}
+	
+	return (@{kColorComponentRedKey		: @(-1),
+			  kColorComponentGreenKey	: @(-1),
+			  kColorComponentBlueKey	: @(-1),
+			  kColorComponentAlphaKey	: @(-1)});
+}
+
+- (UIColor *)darkenColor:(UIColor *)color byPercentage:(CGFloat)percent {
+	NSDictionary *components = [[HONColorAuthority sharedInstance] hsbComponentsFromColor:color];
+	return ([UIColor colorWithHue:[[components objectForKey:kColorComponentHueKey] floatValue]
+					   saturation:[[components objectForKey:kColorComponentSaturationKey] floatValue]
+					   brightness:[[components objectForKey:kColorComponentBrightnessKey] floatValue] - ([[components objectForKey:kColorComponentBrightnessKey] floatValue] * MIN(MAX(0.0, percent), 1.0))
+							alpha:[[components objectForKey:kColorComponentAlphaKey] floatValue]]);
+}
+
+- (UIColor *)lightenColor:(UIColor *)color byPercentage:(CGFloat)percent {
+	NSDictionary *components = [[HONColorAuthority sharedInstance] hsbComponentsFromColor:color];
+	return ([UIColor colorWithHue:[[components objectForKey:kColorComponentHueKey] floatValue]
+					   saturation:[[components objectForKey:kColorComponentSaturationKey] floatValue]
+					   brightness:[[components objectForKey:kColorComponentBrightnessKey] floatValue] + ([[components objectForKey:kColorComponentBrightnessKey] floatValue] * MIN(MAX(0.0, percent), 1.0))
+							alpha:[[components objectForKey:kColorComponentAlphaKey] floatValue]]);
 }
 
 - (UIColor *)honDebugDefaultColor {
@@ -117,7 +240,10 @@ static HONColorAuthority *sharedInstance = nil;
 		return ([[UIColor brownColor] colorWithAlphaComponent:0.500]);
 	
 	else if (debugColor == HONDebugFuschiaColor)
-		return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:0.500]);
+		return ([UIColor colorWithRed:0.697
+								green:0.130
+								 blue:0.811
+								alpha:0.500]);
 	
 	else if (debugColor == HONDebugGreenColor)
 		return ([[UIColor greenColor] colorWithAlphaComponent:0.500]);

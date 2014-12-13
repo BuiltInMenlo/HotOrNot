@@ -18,6 +18,7 @@
 @interface HONHeaderView()
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *titleImageView;
+@property (nonatomic, strong) UIButton *titleButton;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) HONActivityNavButtonView *activityNavButtonView;
 @end
@@ -44,7 +45,7 @@
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
-		_titleLabel.text = _title;
+		_titleLabel.hidden = YES;
 		[self addSubview:_titleLabel];
 	}
 	
@@ -55,6 +56,8 @@
 	if ((self = [self init])) {
 		_title = title;
 		_titleLabel.text = _title;
+		
+		_titleLabel.hidden = ([_title length] == 0);
 	}
 	
 	return (self);
@@ -107,6 +110,13 @@
 	[self addButton:[[HONNextNavButtonView alloc] initWithTarget:target action:action]];
 }
 
+- (void)addTitleButtonWithTarget:(id)target action:(SEL)action {
+	_titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_titleButton.frame = _titleLabel.frame;
+	[_titleButton addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:_titleButton];
+}
+
 - (void)setTitle:(NSString *)title {
 	_title = title;
 	
@@ -157,6 +167,16 @@
 
 - (void)removeBackground {
 	_bgImageView.hidden = YES;
+}
+
+
+- (void)tappedTitle {
+	UIColor *orgColor = _titleLabel.textColor;
+	
+	_titleLabel.textColor = [[HONColorAuthority sharedInstance] darkenColor:_titleLabel.textColor byPercentage:0.33];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		_titleLabel.textColor = orgColor;
+	});
 }
 
 @end

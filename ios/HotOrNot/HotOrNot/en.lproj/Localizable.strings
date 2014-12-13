@@ -46,6 +46,8 @@
 "header_signUp" = "Sign up";
 "header_settings" = "Settings";
 "header_details" = "Details";
+"header_compose" = "Close";
+"header_composeSubmit" = "Back";
 "header_search" = "Search";
 "header_terms" = "Terms of service";
 "header_privacy" = "Privacy policy";

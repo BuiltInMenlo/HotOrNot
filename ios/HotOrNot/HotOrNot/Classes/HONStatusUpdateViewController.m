@@ -246,8 +246,8 @@
 			[_replies addObject:vo];
 	}];
 	
-	_scrollView = [[HONScrollView alloc] initWithFrame:self.view.frame];
-	_scrollView.contentInset = UIEdgeInsetsMake(kNavHeaderHeight - 20.0, 0.0, 0.0, 0.0);
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
+	_scrollView.contentInset = UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0);
 	[_scrollView setContentOffset:CGPointZero animated:YES];
 	_scrollView.alwaysBounceVertical = YES;
 	_scrollView.delegate = self;
@@ -260,27 +260,27 @@
 	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.view asLargeLoader:NO];
 	[_scrollView addSubview:_imageLoadingView];
 	
-	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 320.0)];
 	[_scrollView addSubview:_imageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_imageView.image = image;
+		
 		[_imageLoadingView stopAnimating];
 		[_imageLoadingView removeFromSuperview];
 		_imageLoadingView = nil;
-		
-		[_imageView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[_imageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
+		
 		[_imageLoadingView stopAnimating];
 		[_imageLoadingView removeFromSuperview];
 		_imageLoadingView = nil;
 	};
 	
-	NSString *url = [_statusUpdateVO.imagePrefix stringByAppendingString:kSnapLargeSuffix];
-	//	NSLog(@"URL:[%@]", url);
+	NSString *url = [[_statusUpdateVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix640] stringByAppendingString:kComposeImageStaticFileExtension];
+	NSLog(@"URL:[%@]", url);
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
 													  cachePolicy:kOrthodoxURLCachePolicy
 												  timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -303,18 +303,60 @@
 		[subjectBGView addSubview:subjectLabel];
 	}
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 77.0, 60.0, 20.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 90.0, 60.0, 20.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
-	[self.view addSubview:timeLabel];
+//	[self.view addSubview:timeLabel];
 	
 	UIButton *cancelReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	cancelReplyButton.frame = _scrollView.frame;
 	[cancelReplyButton addTarget:self action:@selector(_goCancelReply) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:cancelReplyButton];
+	
+	
+	UIView *voteHolderView = [[UIView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width - 60.0, 57.0, 49.0, 150.0)];
+//	voteHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[_scrollView addSubview:voteHolderView];
+	
+	_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_upVoteButton.frame = CGRectMake(0.0, 0.0, 49.0, 49.0);
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
+	[voteHolderView addSubview:_upVoteButton];
+	
+	_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(0.0, 60.0, 49.0, 26.0)];
+	_scoreLabel.backgroundColor = [UIColor clearColor];
+	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:24];
+	_scoreLabel.textAlignment = NSTextAlignmentCenter;
+	_scoreLabel.textColor = [UIColor whiteColor];
+	[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
+	[_scoreLabel toggleLoading:YES];
+	[voteHolderView addSubview:_scoreLabel];
+	
+	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_downVoteButton.frame = CGRectMake(0.0, 95.0, 49.0, 49.0);
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
+	[voteHolderView addSubview:_downVoteButton];
+	
+	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]));
+	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]) {
+		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
+		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
+	}
+	
+	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_statusUpdateVO.challengeID completion:^(NSString *result) {
+		_statusUpdateVO.score = [result intValue];
+		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
+		[_scoreLabel toggleLoading:NO];
+	}];
 	
 	_replies = [NSMutableArray array];
 	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -640,42 +682,7 @@
 	repliesLabel.text = NSStringFromInt([_replies count]);
 	[view addSubview:repliesLabel];
 	
-	_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_upVoteButton.frame = CGRectMake(157.0, 0.0, 44.0, 44.0);
-	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
-	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
-	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
-	[view addSubview:_upVoteButton];
 	
-	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_downVoteButton.frame = CGRectMake(274.0, 0.0, 44.0, 44.0);
-	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
-	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
-	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
-	[view addSubview:_downVoteButton];
-	
-	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]));
-	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]) {
-		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
-		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
-	}
-	
-	_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(198.0, 12.0, 80.0, 20.0)];
-	_scoreLabel.backgroundColor = [UIColor clearColor];
-	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	_scoreLabel.textAlignment = NSTextAlignmentCenter;
-	_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-	[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-	[_scoreLabel toggleLoading:YES];
-	[view addSubview:_scoreLabel];
-	
-	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_statusUpdateVO.challengeID completion:^(NSString *result) {
-		_statusUpdateVO.score = [result intValue];
-		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-		[_scoreLabel toggleLoading:NO];
-	}];
 	
 	return (view);
 }

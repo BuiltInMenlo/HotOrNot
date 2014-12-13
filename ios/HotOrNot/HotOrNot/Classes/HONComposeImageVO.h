@@ -16,6 +16,15 @@ typedef NS_ENUM(NSUInteger, HONComposeImageType) {
 };
 
 
+extern NSString * const kComposeImageURLSuffix160;
+extern NSString * const kComposeImageURLSuffix214;
+extern NSString * const kComposeImageURLSuffix320;
+extern NSString * const kComposeImageURLSuffix640;
+
+extern NSString * const kComposeImageAnimatedFileExtension;
+extern NSString * const kComposeImageStaticFileExtension;
+
+
 @interface HONComposeImageVO : HONBaseVO
 + (HONComposeImageVO *)composeImageWithDictionary:(NSDictionary *)dictionary;
 
