@@ -7,8 +7,6 @@
 //
 
 #import "NSDictionary+NullReplacement.h"
-#import "NSString+DataTypes.h"
-
 #import "HONStoreProductVO.h"
 
 @implementation HONStoreProductVO

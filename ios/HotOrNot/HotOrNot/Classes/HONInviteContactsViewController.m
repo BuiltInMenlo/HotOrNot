@@ -9,8 +9,6 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "NSString+DataTypes.h"
-
 #import "MBProgressHUD.h"
 
 #import "HONInviteContactsViewController.h"
@@ -28,7 +26,7 @@
 @implementation HONInviteContactsViewController
 
 - (id)initAsViewControllerPushed:(BOOL)isPushed {
-	NSLog(@"%@ - initAsViewControllerPushed:[%@]", [self description], [@"" stringFromBOOL:isPushed]);
+	NSLog(@"%@ - initAsViewControllerPushed:[%@]", [self description], NSStringFromBOOL(isPushed));
 	if ((self = [super init])) {
 		
 		_isPushed = isPushed;
@@ -55,7 +53,7 @@
 }
 
 - (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed {
-	NSLog(@"%@ - initWithClub:[%d] viewControllerPushed:[%@]", [self description], userClub.clubID, [@"" stringFromBOOL:isPushed]);
+	NSLog(@"%@ - initWithClub:[%d] viewControllerPushed:[%@]", [self description], userClub.clubID, NSStringFromBOOL(isPushed));
 	if ((self = [super init])) {
 		_userClubVO = userClub;
 		_clubVO = userClub;

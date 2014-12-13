@@ -7,8 +7,6 @@
 //
 
 
-#import "NSString+DataTypes.h"
-
 #import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
@@ -91,7 +89,7 @@
 //		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
 		
 		for (HONUserClubVO *vo in _selectedClubs) {
-			[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+			[_submitParams setObject:@(vo.clubID) forKey:@"club_id"];
 			NSLog(@"SUBMITTING:[%@]", _submitParams);
 			
 			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {

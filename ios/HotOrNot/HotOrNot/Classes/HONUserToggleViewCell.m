@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
 #import "UILabel+FormattedText.h"
 #import <AddressBook/AddressBook.h>
 
@@ -154,7 +153,7 @@
 //	_arrowImageView.hidden = NO;
 //	
 //	_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-//	_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
+//	_scoreLabel.text = NSStringFromInt(_trivialUserVO.totalUpvotes);
 //	_scoreLabel.hidden = NO;
 //	
 //	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
@@ -208,7 +207,7 @@
 //		
 //		
 //		_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-//		_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
+//		_scoreLabel.text = NSStringFromInt(_trivialUserVO.totalUpvotes);
 //		_scoreLabel.hidden = NO;
 //		
 //		if (_trivialUserVO.isVerified) {

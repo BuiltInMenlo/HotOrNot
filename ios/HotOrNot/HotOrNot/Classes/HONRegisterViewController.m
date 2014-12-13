@@ -11,7 +11,6 @@
 
 #import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 #import "NSString+Formatting.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
@@ -162,14 +161,11 @@
 								
 								[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 									KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-									[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
-									
-									//					[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
+									[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
+									NSLog(@"REG_KEYCHAIN:[%@]", [keychain keychainItemData]);
 									[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
 									[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 								}];
-								
-								//				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 							}];
 							
 							
@@ -369,7 +365,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
 	
 	_submitButton.userInteractionEnabled = YES;

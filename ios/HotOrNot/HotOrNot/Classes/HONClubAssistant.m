@@ -10,7 +10,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 #import "NSString+Formatting.h"
 #import "NSUserDefaults+Replacements.h"
 
@@ -116,7 +115,7 @@ static HONClubAssistant *sharedInstance = nil;
 	NSMutableArray *members = [NSMutableArray array];
 	[actives enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-		[members addObject:@{@"id"			: [@"" stringFromInt:vo.userID],
+		[members addObject:@{@"id"			: @(vo.userID),
 							 @"username"	: vo.username,
 							 @"avatar"		: vo.avatarPrefix,
 							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC],
@@ -126,7 +125,7 @@ static HONClubAssistant *sharedInstance = nil;
 	NSMutableArray *pending = [NSMutableArray array];
 	[invites enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
-		[pending addObject:@{@"id"			: [@"" stringFromInt:vo.userID],
+		[pending addObject:@{@"id"			: @(vo.userID),
 							 @"username"	: vo.username,
 							 @"avatar"		: vo.avatarPrefix,
 							 @"extern_name"	: ([vo.altID length] > 0) ? vo.username : @"",
@@ -284,8 +283,8 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSArray *)staffDesignatedClubsWithThreshold:(int)threshold {
 	NSMutableArray *staffClubs = [NSMutableArray arrayWithArray:@[]];
-	__block BOOL isInRange = NO;
-	__block NSDictionary *foundDict;
+//	__block BOOL isInRange = NO;
+//	__block NSDictionary *foundDict;
 //	__block HONUserClubVO *vo = nil;
 	
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"staff_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -514,7 +513,7 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	__block BOOL isFound = NO;
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:[@"" stringFromInt:statusUpdateID]] != nil) {
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:NSStringFromInt(statusUpdateID)] != nil) {
 		if (completion)
 			completion(YES);
 	
@@ -524,11 +523,11 @@ static HONClubAssistant *sharedInstance = nil;
 				NSDictionary *dict = (NSDictionary *)obj;
 				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 //				NSLog(@"--- dict:[%@]", dict);
-//				NSLog(@"--- isFound:[%@]", [@"" stringFromBOOL:isFound]);
+//				NSLog(@"--- isFound:[%@]", NSStringFromBOOL(isFound));
 				
 				if (isFound) {
 					NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
-					[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:[@"" stringFromInt:statusUpdateID]];
+					[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:NSStringFromInt(statusUpdateID)];
 					
 					[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 					[[NSUserDefaults standardUserDefaults] synchronize];
@@ -546,8 +545,8 @@ static HONClubAssistant *sharedInstance = nil;
 - (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	__block BOOL isFound = NO;
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], [@"" stringFromBOOL:([(NSString *)key isEqualToString:[@"" stringFromInt:clubPhotoVO.challengeID]])], clubPhotoVO.challengeID);
-		if ([(NSString *)key isEqualToString:[@"" stringFromInt:clubPhotoVO.challengeID]])
+//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], NSStringFromBOOL(([(NSString *)key isEqualToString:NSStringFromInt(clubPhotoVO.challengeID)])), clubPhotoVO.challengeID);
+		if ([(NSString *)key isEqualToString:NSStringFromInt(clubPhotoVO.challengeID)])
 			isFound = YES;
 		
 		*stop = isFound;
@@ -559,8 +558,8 @@ static HONClubAssistant *sharedInstance = nil;
 - (BOOL)hasVotedForComment:(HONCommentVO *)commentVO {
 	__block BOOL isFound = NO;
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], [@"" stringFromBOOL:([(NSString *)key isEqualToString:[@"" stringFromInt:clubPhotoVO.challengeID]])], clubPhotoVO.challengeID);
-		if ([(NSString *)key isEqualToString:[@"" stringFromInt:commentVO.commentID]])
+//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], NSStringFromBOOL(([(NSString *)key isEqualToString:NSStringFromInt(clubPhotoVO.challengeID)])), clubPhotoVO.challengeID);
+		if ([(NSString *)key isEqualToString:NSStringFromInt(commentVO.commentID)])
 			isFound = YES;
 		
 		*stop = isFound;
@@ -885,7 +884,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpVote:(BOOL)isUpVote {
 	NSMutableDictionary *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-	[votes setValue:(isUpVote) ? @(1) : @(-1) forKey:[@"" stringFromInt:statusUpdateID]];
+	[votes setValue:(isUpVote) ? @(1) : @(-1) forKey:NSStringFromInt(statusUpdateID)];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -893,7 +892,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote {
 	NSMutableDictionary *votes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-	[votes setValue:(isUpVote) ? @(1) : @(-1) forKey:[@"" stringFromInt:commentID]];
+	[votes setValue:(isUpVote) ? @(1) : @(-1) forKey:NSStringFromInt(commentID)];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[votes copy] forKey:@"votes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -945,7 +944,7 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] setObject:@{} forKey:@"seen_updates"];
 	
 	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
-	[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:[@"" stringFromInt:statusUpdateID]];
+	[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:NSStringFromInt(statusUpdateID)];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

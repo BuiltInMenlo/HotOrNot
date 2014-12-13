@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONSelectClubsViewController.h"
 
 @interface HONSelectClubsViewController () <HONClubToggleViewCellDelegate>
@@ -126,7 +124,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
 	
 	NSLog(@"INSET:[%@]", NSStringFromUIEdgeInsets(_tableView.contentInset));

@@ -9,8 +9,6 @@
 
 #import "NSDate+Operations.h"
 #import "NSDictionary+NullReplacement.h"
-#import "NSString+DataTypes.h"
-
 #import "HONUserVO.h"
 
 @implementation HONUserVO
@@ -35,13 +33,12 @@
 	vo.friends = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"friends"]) {
 		NSDictionary *friend = [dict dictionaryByReplacingNullsWithBlanks];
-		[vo.friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [@"" stringFromInt:[[[friend objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
-															 [@"" stringFromInt:0], @"points",
-															 [@"" stringFromInt:0], @"total_votes",
-															 [@"" stringFromInt:0], @"pics",
-															 [[friend objectForKey:@"user"] objectForKey:@"username"], @"username",
-															 [[friend objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
+		[vo.friends addObject:[HONUserVO userWithDictionary:@{@"id"				: @([[[friend objectForKey:@"user"] objectForKey:@"id"] intValue]),
+															   @"points"		: @(0),
+															   @"total_votes"	: @(0),
+															   @"pics"			: @(0),
+															   @"username"		: [[friend objectForKey:@"user"] objectForKey:@"username"],
+															   @"avatar_url"	: [[friend objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
 	}
 	
 	return (vo);

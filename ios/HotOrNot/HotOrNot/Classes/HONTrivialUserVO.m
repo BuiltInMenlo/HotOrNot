@@ -7,8 +7,6 @@
 //
 
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
-
 #import "HONTrivialUserVO.h"
 
 @implementation HONTrivialUserVO
@@ -58,8 +56,8 @@
 												  @"username"		: [userVO.dictionary objectForKey:@"username"],
 												  @"img_url"		: [userVO.dictionary objectForKey:@"avatar_url"],
 												  @"alt_id"			: [userVO.dictionary objectForKey:@"device_token"],
-												  @"total_votes"	: [@"" stringFromInt:userVO.voteScore],
-												  @"is_verified"	: [@"" stringFromBOOL:userVO.isVerified]}]);
+												  @"total_votes"	: @(userVO.voteScore),
+												  @"is_verified"	: NSStringFromBOOL(userVO.isVerified)}]);
 }
 
 

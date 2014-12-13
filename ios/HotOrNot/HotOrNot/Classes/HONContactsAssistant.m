@@ -8,8 +8,6 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "NSString+DataTypes.h"
-
 #import "HONContactsAssistant.h"
 
 @implementation HONContactsAssistant
@@ -123,15 +121,15 @@ static HONContactsAssistant *sharedInstance = nil;
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
-		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
+		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID)] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
 			isFound = YES;
 			break;
 		}
 	}
 	
 	if (!isFound) {
-		[invites addObject:@{@"club_id"		: [@"" stringFromInt:clubVO.clubID],
-							 @"user_id"		: [@"" stringFromInt:0],
+		[invites addObject:@{@"club_id"		: @(clubVO.clubID),
+							 @"user_id"		: NSStringFromInt(0),
 							 @"phone"		: contactUserVO.mobileNumber}];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"club_invites"];
@@ -149,15 +147,15 @@ static HONContactsAssistant *sharedInstance = nil;
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
-		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:[@"" stringFromInt:trivialUserVO.userID]]) {
+		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID)] && [[dict objectForKey:@"user_id"] isEqualToString:NSStringFromInt(trivialUserVO.userID)]) {
 			isFound = YES;
 			break;
 		}
 	}
 	
 	if (!isFound) {
-		[invites addObject:@{@"club_id"		: [@"" stringFromInt:clubVO.clubID],
-							 @"user_id"		: [@"" stringFromInt:trivialUserVO.userID],
+		[invites addObject:@{@"club_id"		: @(clubVO.clubID),
+							 @"user_id"		: @(trivialUserVO.userID),
 							 @"phone"		: @""}];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"club_invites"];
@@ -177,7 +175,7 @@ static HONContactsAssistant *sharedInstance = nil;
 			for (NSDictionary *clubDict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]) {
 				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:clubDict];
 				
-				if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:vo.clubID]] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
+				if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(vo.clubID)] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
 					isFound = YES;
 					break;
 				}
@@ -233,7 +231,7 @@ static HONContactsAssistant *sharedInstance = nil;
 //	[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 //		NSDictionary *dict = (NSDictionary *)obj;
 //		
-//		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
+//		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID)] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
 //			isFound = YES;
 //			*stop = YES;
 //		}
@@ -263,7 +261,7 @@ static HONContactsAssistant *sharedInstance = nil;
 //	[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 //		NSDictionary *dict = (NSDictionary *)obj;
 //		
-//		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:[@"" stringFromInt:trivialUserVO.userID]]) {
+//		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:NSStringFromInt(trivialUserVO.userID)]) {
 //			isFound = YES;
 //			*stop = YES;
 //		}
@@ -310,13 +308,13 @@ static HONContactsAssistant *sharedInstance = nil;
 	
 	if (arc4random_uniform(100) < 50) {
 		for (int i=0; i<3; i++)
-			phoneNumber = [phoneNumber stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
+			phoneNumber = [phoneNumber stringByAppendingString:NSStringFromInt((arc4random() % 9))];
 		
 		for (int i=0; i<3; i++)
-			phoneNumber = [phoneNumber stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
+			phoneNumber = [phoneNumber stringByAppendingString:NSStringFromInt((arc4random() % 9))];
 		
 		for (int i=0; i<4; i++)
-			phoneNumber = [phoneNumber stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
+			phoneNumber = [phoneNumber stringByAppendingString:NSStringFromInt((arc4random() % 9))];
 		
 	} else {
 		len = arc4random_uniform(10) + 5;

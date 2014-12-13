@@ -8,7 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -171,7 +170,7 @@
 	}
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Change Emotion Group"
-									 withProperties:@{@"index"	: [@"" stringFromInt:groupIndex]}];
+									 withProperties:@{@"index"	: @(groupIndex)}];
 	
 	[_emotionsPickerViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONStickerButtonsPickerView *pickerView = (HONStickerButtonsPickerView *)obj;

@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 
 #import "MBProgressHUD.h"
 
@@ -59,8 +57,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
-//	NSDictionary *params = @{@"action"		: [@"" stringFromInt:5],
-//							 @"challengeID"	: [@"" stringFromInt:_challengeVO.challengeID]};
+//	NSDictionary *params = @{@"action"		: NSStringFromInt(5),
+//							 @"challengeID"	: @(_challengeVO.challengeID)};
 //	
 //	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
 	
@@ -162,12 +160,12 @@
 	_voterVO = (HONVoterVO *)[notification object];
 	
 //	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//												   [@"" stringFromInt:_voterVO.userID], @"id",
-//												   [@"" stringFromInt:_voterVO.points], @"points",
-//												   [@"" stringFromInt:_voterVO.votes], @"total_votes",
-//												   [@"" stringFromInt:_voterVO.pokes], @"pokes",
-//												   [@"" stringFromInt:0], @"pics",
-//												   [@"" stringFromInt:0], @"age",
+//												   @(_voterVO.userID], @"id),
+//												   @(_voterVO.points], @"points),
+//												   @(_voterVO.votes], @"total_votes),
+//												   @(_voterVO.pokes], @"pokes),
+//												   NSStringFromInt(0), @"pics",
+//												   NSStringFromInt(0), @"age",
 //												   _voterVO.username, @"username",
 //												   _voterVO.fbID, @"fb_id",
 //												   _voterVO.imageURL, @"avatar_url", nil]];

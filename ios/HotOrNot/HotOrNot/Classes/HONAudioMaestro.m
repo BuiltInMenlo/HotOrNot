@@ -8,8 +8,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "NSString+DataTypes.h"
-
 #import "HONAudioMaestro.h"
 
 @implementation HONAudioMaestro

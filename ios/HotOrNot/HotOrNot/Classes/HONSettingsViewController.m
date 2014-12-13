@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONRefreshControl.h"
 #import "KeychainItemWrapper.h"
 

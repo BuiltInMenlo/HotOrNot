@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONClubToggleViewCell.h"
 
 @interface HONClubToggleViewCell ()
@@ -113,7 +111,7 @@
 
 - (void)toggleSelected:(BOOL)isSelected {
 	_isSelected = isSelected;
-	NSLog(@"toggleSelected:[%@]", [@"" stringFromBOOL:_isSelected]);
+	NSLog(@"toggleSelected:[%@]", NSStringFromBOOL(_isSelected));
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = (int)_isSelected;

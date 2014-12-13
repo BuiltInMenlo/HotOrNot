@@ -26,7 +26,6 @@
 #import "NSData+Base64.h"
 #import "NSDate+Operations.h"
 #import "NSString+Base64.h"
-#import "NSString+DataTypes.h"
 #import "NSUserDefaults+Replacements.h"
 
 #import "AFNetworking.h"
@@ -58,7 +57,7 @@ NSString * const kConfigJSON = @"boot_sc0010.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_yunder.json";
+NSString * const kConfigJSON = @"boot_waddle.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
@@ -333,6 +332,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"post_radius"] forKey:@"post_radius"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_images"] forKey:@"compose_images"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
@@ -382,7 +382,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 			
 		} else {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
-//											 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
+//											 withProperties:@{@"boots"	: @([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot])}];
 		}
 	}];
 }
@@ -408,7 +408,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 				
 			}
 			
-			if ([[result objectForKey:@"email"] length] == 0)
+//			if ([[result objectForKey:@"email"] length] == 0)
+			if ([[result objectForKey:@"added"] isEqualToString:[result objectForKey:@"last_login"]])
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
 			else
@@ -673,7 +674,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 //	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
-//									 withProperties:@{@"boots"	: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot]]}];
+//									 withProperties:@{@"boots"	: @([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBoot])}];
 	
 	//[[SKPaymentQueue defaultQueue] addTransactionObserver:[[HONStoreTransactionObserver alloc] init]];
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
@@ -698,7 +699,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
-//									 withProperties:@{@"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]],
+//									 withProperties:@{@"total"		: @([[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]),
 //													  @"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
 	
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
@@ -741,7 +742,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
 //									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),
-//													  @"total"		: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground]]}];
+//													  @"total"		: @([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground])}];
 	
 	_isFromBackground = YES;
 }
@@ -1041,7 +1042,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 }
 
 - (void)_establishUserDefaults {
-	NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
+	NSDictionary *userDefaults = @{@"is_deactivated"	: NSStringFromBOOL(NO),
 								   @"votes"				: @{},
 								   @"purchases"			: @[],
 								   @"location_club"		: @{},

@@ -8,7 +8,6 @@
 
 #import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
@@ -27,7 +26,8 @@
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
-@property (nonatomic, strong) UIImageView *imgView;
+@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UIImageView *emotionImageView;
 
 @property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
 @property (nonatomic, strong) UIButton *commentButton;
@@ -260,20 +260,20 @@
 	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.view asLargeLoader:NO];
 	[_scrollView addSubview:_imageLoadingView];
 	
-	_imgView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	[_scrollView addSubview:_imgView];
+	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	[_scrollView addSubview:_imageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_imgView.image = image;
+		_imageView.image = image;
 		[_imageLoadingView stopAnimating];
 		[_imageLoadingView removeFromSuperview];
 		_imageLoadingView = nil;
 		
-		[_imgView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
+		[_imageView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieGradientOverlay"]]];
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[_imgView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
+		[_imageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
 		[_imageLoadingView stopAnimating];
 		[_imageLoadingView removeFromSuperview];
 		_imageLoadingView = nil;
@@ -281,7 +281,7 @@
 	
 	NSString *url = [_statusUpdateVO.imagePrefix stringByAppendingString:kSnapLargeSuffix];
 	//	NSLog(@"URL:[%@]", url);
-	[_imgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
 													  cachePolicy:kOrthodoxURLCachePolicy
 												  timeoutInterval:[HONAppDelegate timeoutInterval]]
 					placeholderImage:nil
@@ -409,7 +409,7 @@
 //	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:YES completion:^(NSDictionary *result) {
 		_statusUpdateVO.score++;
-		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
+		_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
 		[_scoreLabel toggleLoading:NO];
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:YES];
@@ -430,7 +430,7 @@
 	[_scoreLabel toggleLoading:NO];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:NO completion:^(NSDictionary *result) {
 		_statusUpdateVO.score--;
-		_scoreLabel.text = [@"" stringFromInt:_statusUpdateVO.score];
+		_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
 		[_scoreLabel toggleLoading:YES];
 		
 		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:NO];
@@ -637,7 +637,7 @@
 	repliesLabel.backgroundColor = [UIColor clearColor];
 	repliesLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	repliesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	repliesLabel.text = [@"" stringFromInt:[_replies count]];
+	repliesLabel.text = NSStringFromInt([_replies count]);
 	[view addSubview:repliesLabel];
 	
 	_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -667,13 +667,13 @@
 	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_scoreLabel.textAlignment = NSTextAlignmentCenter;
 	_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-	[_scoreLabel setText:[@"" stringFromInt:_statusUpdateVO.score]];
+	[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
 	[_scoreLabel toggleLoading:YES];
 	[view addSubview:_scoreLabel];
 	
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_statusUpdateVO.challengeID completion:^(NSString *result) {
 		_statusUpdateVO.score = [result intValue];
-		[_scoreLabel setText:[@"" stringFromInt:_statusUpdateVO.score]];
+		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
 		[_scoreLabel toggleLoading:NO];
 	}];
 	

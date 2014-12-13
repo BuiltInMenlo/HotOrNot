@@ -11,7 +11,8 @@
 #import "HONClubPhotoVO.h"
 
 @implementation HONClubPhotoVO
-@synthesize dictionary, userID, username, avatarPrefix, challengeID, parentID, clubID, clubOwnerID, submissionType, imagePrefix, comment, subjectNames, addedDate, score;
+@synthesize dictionary;
+@synthesize userID, username, avatarPrefix, challengeID, parentID, clubID, clubOwnerID, submissionType, imagePrefix, comment, subjectNames, addedDate, score;
 
 + (HONClubPhotoVO *)clubPhotoWithDictionary:(NSDictionary *)dictionary {
 	HONClubPhotoVO *vo = [[HONClubPhotoVO alloc] init];

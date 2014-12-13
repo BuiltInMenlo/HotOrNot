@@ -9,7 +9,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 #import "NSUserDefaults+Replacements.h"
 
 #import "KeychainItemWrapper.h"
@@ -23,7 +22,6 @@
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONRefreshControl.h"
-#import "HONHeaderView.h"
 #import "HONHomeFeedToggleView.h"
 #import "HONHomeViewCell.h"
 #import "HONCollectionView.h"
@@ -286,7 +284,7 @@
 		_voteScore = [result intValue];
 	}];
 	
-	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, [@"" stringFromCLAuthorizationStatus:[CLLocationManager authorizationStatus]]);
+	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 }
 
 
@@ -387,6 +385,8 @@
 	[self.collectionView addGestureRecognizer:longPressGestureRecognizer];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	NSLog(@"HOME_KEYCHAIN:[%@]", [keychain keychainItemData]);
+	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
@@ -397,7 +397,7 @@
 		
 		_locationManager = [[CLLocationManager alloc] init];
 		_locationManager.delegate = self;
-		_locationManager.distanceFilter = 10000;
+		_locationManager.distanceFilter = 1000;
 		if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
 			[_locationManager requestWhenInUseAuthorization];
 		[_locationManager startUpdatingLocation];
@@ -413,7 +413,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -464,7 +464,7 @@
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-	NSLog(@"gestureRecognizer.state:[%@]", (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"Began" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"Canceled" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"Ended" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"Failed" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"Possible" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN");
+	NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan && gestureRecognizer.state != UIGestureRecognizerStateCancelled && gestureRecognizer.state != UIGestureRecognizerStateEnded)
 		return;
 	
@@ -618,7 +618,7 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, [@"" stringFromCLAuthorizationStatus:status]);
+	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, NSStringFromCLAuthorizationStatus(status));
 	NSLog(@"LOCATION:[%@]", NSStringFromCLLocation([[HONDeviceIntrinsics sharedInstance] deviceLocation]));
 	
 	if (status == kCLAuthorizationStatusNotDetermined) {
@@ -712,7 +712,7 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-//	NSLog(@"[_] collectionView:cellForItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);
+//	NSLog(@"[_] collectionView:cellForItemAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));
 	
 	HONHomeViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONHomeViewCell cellReuseIdentifier]
 																	  forIndexPath:indexPath];
@@ -737,7 +737,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);
+	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));
 	HONHomeViewCell *cell = (HONHomeViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];

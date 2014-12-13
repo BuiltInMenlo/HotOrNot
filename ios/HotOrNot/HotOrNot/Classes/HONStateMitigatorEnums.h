@@ -64,6 +64,7 @@ typedef NS_ENUM(NSUInteger, HONStateMitigatorTotalType) {
 	HONStateMitigatorTotalTypeStatusUpdateRefresh,
 	HONStateMitigatorTotalTypeReply,
 	HONStateMitigatorTotalTypeCompose,
+	HONStateMitigatorTotalTypeComposeRefresh,
 	HONStateMitigatorTotalTypeAnimatedBGs,
 	HONStateMitigatorTotalTypeAnimatedBGsRefresh,
 	HONStateMitigatorTotalTypeStoreProducts,

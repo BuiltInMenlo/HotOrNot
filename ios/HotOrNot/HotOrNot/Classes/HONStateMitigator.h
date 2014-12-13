@@ -74,6 +74,7 @@ extern NSString * const kStateMitigatorTotalCounterNameStatusUpdate;
 extern NSString * const kStateMitigatorTotalCounterNameStatusUpdateRefresh;
 extern NSString * const kStateMitigatorTotalCounterNameReply;
 extern NSString * const kStateMitigatorTotalCounterNameCompose;
+extern NSString * const kStateMitigatorTotalCounterNameComposeRefresh;
 extern NSString * const kStateMitigatorTotalCounterNameStoreProducts;
 extern NSString * const kStateMitigatorTotalCounterNameStoreProductsRefresh;
 extern NSString * const kStateMitigatorTotalCounterNameStoreProductDetails;

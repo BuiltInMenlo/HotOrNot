@@ -8,8 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
-
 #import "HONActivityViewController.h"
 #import "HONRefreshControl.h"
 #import "HONActivityItemViewCell.h"

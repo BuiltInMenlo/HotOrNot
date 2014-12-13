@@ -6,9 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
-
 #import "HONClubTimelineViewController.h"
 #import "HONComposeViewController.h"
 #import "HONActivityViewController.h"
@@ -141,7 +138,7 @@
 	_clubPhotoVO = (HONClubPhotoVO *)[_clubVO.submissions objectAtIndex:_index];
 	
 //	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
-//		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+//		NSLog(@"!¡!¡!¡ SEEN : %@\n", NSStringFromBOOL(isSeen));
 //		
 //		if (!isSeen) {
 //			_refreshOnBack = YES;
@@ -239,7 +236,7 @@
 		}
 		
 //		[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
-//			NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+//			NSLog(@"!¡!¡!¡ SEEN : %@\n", NSStringFromBOOL(isSeen));
 //			
 //			if (!isSeen) {
 //				_refreshOnBack = YES;
@@ -261,7 +258,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
 	
@@ -275,7 +272,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillDisappear:animated];
 	
 	if ([((UINavigationController *)self.presentedViewController).viewControllers firstObject] == nil)
@@ -509,7 +506,7 @@
 	
 	
 //	[[HONClubAssistant sharedInstance] isStatusUpdateSeenWithID:_clubPhotoVO.challengeID completion:^(BOOL isSeen) {
-//		NSLog(@"!¡!¡!¡ SEEN : %@\n", [@"" stringFromBOOL:isSeen]);
+//		NSLog(@"!¡!¡!¡ SEEN : %@\n", NSStringFromBOOL(isSeen));
 //		
 //		if (!isSeen)
 //			[[HONClubAssistant sharedInstance] writeStatusUpdateAsSeenWithID:_clubPhotoVO.challengeID onCompletion:nil];

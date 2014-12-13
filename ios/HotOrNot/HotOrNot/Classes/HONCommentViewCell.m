@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONCommentViewCell.h"
 #import "HONRefreshingLabel.h"
 
@@ -87,7 +85,7 @@
 	[_scoreLabel toggleLoading:YES];
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_commentVO.commentID completion:^(NSNumber *result) {
 		_commentVO.score = [result intValue];
-		_scoreLabel.text = [@"" stringFromInt:_commentVO.score];
+		_scoreLabel.text = NSStringFromInt(_commentVO.score);
 		[_scoreLabel toggleLoading:NO];
 	}];
 }

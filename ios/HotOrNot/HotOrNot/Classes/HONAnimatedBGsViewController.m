@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONAnimatedBGsViewController.h"
 #import "HONAnimatedBGViewFlowLayout.h"
 #import "HONAnimatedBGCollectionViewCell.h"
@@ -183,7 +181,7 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-//	NSLog(@"[_] collectionView:cellForItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);
+//	NSLog(@"[_] collectionView:cellForItemAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));
 	
 	HONAnimatedBGCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONAnimatedBGCollectionViewCell cellReuseIdentifier]
 																					  forIndexPath:indexPath];
@@ -203,7 +201,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);
+	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));
 	
 	HONAnimatedBGCollectionViewCell *viewCell = (HONAnimatedBGCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
 	

@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONRefreshControl.h"
 
 #import "HONCallingCodesViewController.h"
@@ -115,7 +113,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	
 	_totalType = ([NSStringFromClass(_sireViewController.class) isEqualToString:[HONRegisterViewController className]]) ? HONStateMitigatorTotalTypeRegistrationCountryCodes : HONStateMitigatorTotalTypeSearchContactsCountryCodes;
 	_viewStateType = ([NSStringFromClass(_sireViewController.class) isEqualToString:[HONRegisterViewController className]]) ? HONStateMitigatorViewStateTypeRegistrationCountryCodes : HONStateMitigatorViewStateTypeSearchContactCountryCodes;

@@ -8,7 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
 
 #import "HONClubCoverCameraOverlayView.h"
 #import "HONImageLoadingView.h"

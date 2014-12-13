@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONHomeViewCell.h"
@@ -49,7 +48,7 @@
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_scoreLabel.textAlignment = NSTextAlignmentRight;
 		_scoreLabel.textColor = [UIColor whiteColor];
-		[_scoreLabel setText:[@"" stringFromInt:_clubPhotoVO.score]];
+		[_scoreLabel setText:NSStringFromInt(_clubPhotoVO.score)];
 		[self.contentView addSubview:_scoreLabel];
 	}
 	
@@ -112,7 +111,7 @@
 - (void)refeshScore {
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
 		_clubPhotoVO.score = [result intValue];
-		[_scoreLabel setText:[@"" stringFromInt:_clubPhotoVO.score]];
+		[_scoreLabel setText:NSStringFromInt(_clubPhotoVO.score)];
 		[_scoreLabel toggleLoading:NO];
 		
 		NSLog(@"STATUS_UPDATE CELL{%@} -=- [%d / %d]-=-(%d)", NSStringFromNSIndexPath(self.indexPath), _clubPhotoVO.challengeID, _clubPhotoVO.clubID, _clubPhotoVO.score);

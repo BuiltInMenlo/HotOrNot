@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "AFNetworking.h"
 #import "MBProgressHUD.h"
 
@@ -57,8 +55,8 @@
 #pragma mark - Data Calls
 - (void)_retrieveComments {
 //	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-//									[@"" stringFromInt:1], @"action",
-//									[@"" stringFromInt:_challengeVO.challengeID], @"challengeID",
+//									NSStringFromInt(1), @"action",
+//									@(_challengeVO.challengeID], @"challengeID),
 //									nil];
 //	
 //	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
@@ -126,8 +124,8 @@
 	
 	/*
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[@"" stringFromInt:2], @"action",
-									[@"" stringFromInt:_challengeVO.challengeID], @"challengeID",
+									NSStringFromInt(2), @"action",
+									@(_challengeVO.challengeID], @"challengeID),
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									_commentTextField.text, @"text",
 									nil];
@@ -179,8 +177,8 @@
 
 - (void)_deleteComment:(int)commentID {
 //	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-//							[@"" stringFromInt:8], @"action",
-//							[@"" stringFromInt:commentID], @"commentID",
+//							NSStringFromInt(8), @"action",
+//							@(commentID], @"commentID),
 //							nil];
 //	
 //	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
@@ -365,12 +363,12 @@
 //	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
 	
 //	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//													   [@"" stringFromInt:vo.userID], @"id",
-//													   [@"" stringFromInt:0], @"points",
-//													   [@"" stringFromInt:0], @"total_votes",
-//													   [@"" stringFromInt:0], @"pokes",
-//													   [@"" stringFromInt:0], @"pics",
-//													   [@"" stringFromInt:0], @"age",
+//													   @(vo.userID], @"id),
+//													   NSStringFromInt(0), @"points",
+//													   NSStringFromInt(0), @"total_votes",
+//													   NSStringFromInt(0), @"pokes",
+//													   NSStringFromInt(0), @"pics",
+//													   NSStringFromInt(0), @"age",
 //													   vo.username, @"username",
 //													   vo.fbID, @"fb_id",
 //													   vo.avatarURL, @"avatar_url", nil]];

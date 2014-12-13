@@ -24,6 +24,14 @@
 	return (self);
 }
 
+- (void)destroy {
+	[self.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+}
+
+- (void)dealloc {
+	[self.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+}
+
 
 #pragma mark - Public APIs
 - (void)setIndexPath:(NSIndexPath *)indexPath {

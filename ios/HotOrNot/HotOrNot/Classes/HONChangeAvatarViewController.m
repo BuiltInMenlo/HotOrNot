@@ -10,7 +10,6 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImage+ImageEffects.h"
 

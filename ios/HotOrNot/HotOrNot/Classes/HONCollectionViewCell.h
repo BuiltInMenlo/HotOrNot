@@ -15,6 +15,7 @@
 
 @interface HONCollectionViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
+- (void)destroy;
 - (void)toggleContentVisible:(BOOL)isContentVisible;
 
 @property (nonatomic) CGSize size;

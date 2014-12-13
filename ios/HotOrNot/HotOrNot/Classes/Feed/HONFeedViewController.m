@@ -8,8 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
-
 #import "HONFeedViewController.h"
 
 #import "HONChallengeVO.h"

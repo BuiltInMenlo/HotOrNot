@@ -62,6 +62,10 @@
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
 		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
 		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
+		30B256041A3BB12100C789E1 /* HONComposeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256031A3BB12100C789E1 /* HONComposeViewFlowLayout.m */; };
+		30B256071A3BB1F400C789E1 /* HONComposeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256061A3BB1F400C789E1 /* HONComposeViewCell.m */; };
+		30B2560A1A3BB28E00C789E1 /* HONComposeImageVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256091A3BB28E00C789E1 /* HONComposeImageVO.m */; };
+		30B2560D1A3BE28700C789E1 /* HONBaseVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B2560C1A3BE28700C789E1 /* HONBaseVO.m */; };
 		30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BA19E20B510017ACBF /* AFHTTPClient.m */; };
 		30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BC19E20B510017ACBF /* AFHTTPRequestOperation.m */; };
 		30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308BE19E20B510017ACBF /* AFImageRequestOperation.m */; };
@@ -212,7 +216,6 @@
 		4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD9B190F62FB00CAEABB /* HelveticaNeue.dfont */; };
 		4C93EAE319140896001F43DE /* HONCallingCodesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */; };
 		4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C99EB56194D581B00283C1A /* HONDateTimeAlloter.m */; };
-		4CA246C519083C8B00512295 /* NSString+DataTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C419083C8B00512295 /* NSString+DataTypes.m */; };
 		4CA34C5516F6B6550000751E /* HONTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONTableViewCell.m */; };
 		4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F1161392C600B7B13C /* Social.framework */; };
 		4CA8D9F41613932500B7B13C /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F31613932500B7B13C /* AdSupport.framework */; };
@@ -415,6 +418,14 @@
 		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
 		309F59B1199D7FE400EC6C1C /* NSString+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Random.h"; sourceTree = "<group>"; };
 		309F59B2199D7FE400EC6C1C /* NSString+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Random.m"; sourceTree = "<group>"; };
+		30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeViewFlowLayout.h; sourceTree = "<group>"; };
+		30B256031A3BB12100C789E1 /* HONComposeViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeViewFlowLayout.m; sourceTree = "<group>"; };
+		30B256051A3BB1F400C789E1 /* HONComposeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeViewCell.h; sourceTree = "<group>"; };
+		30B256061A3BB1F400C789E1 /* HONComposeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeViewCell.m; sourceTree = "<group>"; };
+		30B256081A3BB28E00C789E1 /* HONComposeImageVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeImageVO.h; sourceTree = "<group>"; };
+		30B256091A3BB28E00C789E1 /* HONComposeImageVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeImageVO.m; sourceTree = "<group>"; };
+		30B2560B1A3BE28700C789E1 /* HONBaseVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBaseVO.h; sourceTree = "<group>"; };
+		30B2560C1A3BE28700C789E1 /* HONBaseVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBaseVO.m; sourceTree = "<group>"; };
 		30B308B919E20B510017ACBF /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		30B308BA19E20B510017ACBF /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
 		30B308BB19E20B510017ACBF /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -662,7 +673,7 @@
 		4C60AF6A17CCFEF800609792 /* HONStickerButtonsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonsPickerView.m; sourceTree = "<group>"; };
 		4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserToggleViewCell.h; sourceTree = "<group>"; };
 		4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserToggleViewCell.m; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* Yunder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yunder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* Waddle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Waddle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -762,8 +773,6 @@
 		4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONClubPhotoViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CA246C01908178B00512295 /* HONClubToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubToggleViewCell.h; sourceTree = "<group>"; };
 		4CA246C11908178B00512295 /* HONClubToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubToggleViewCell.m; sourceTree = "<group>"; };
-		4CA246C319083C8B00512295 /* NSString+DataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DataTypes.h"; sourceTree = "<group>"; };
-		4CA246C419083C8B00512295 /* NSString+DataTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DataTypes.m"; sourceTree = "<group>"; };
 		4CA34C5316F6B6550000751E /* HONTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewCell.h; sourceTree = "<group>"; };
 		4CA34C5416F6B6550000751E /* HONTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTableViewCell.m; sourceTree = "<group>"; };
 		4CA7426018232F0100E96E31 /* HONTimelineItemFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemFooterView.h; sourceTree = "<group>"; };
@@ -1477,12 +1486,16 @@
 		4C32B99C15FA75870023A0EE /* VO */ = {
 			isa = PBXGroup;
 			children = (
+				30B2560B1A3BE28700C789E1 /* HONBaseVO.h */,
+				30B2560C1A3BE28700C789E1 /* HONBaseVO.m */,
 				4C7DBEE41911A7EA00E9331D /* HONActivityItemVO.h */,
 				4C7DBEE51911A7EA00E9331D /* HONActivityItemVO.m */,
 				4C75502316D5699200833C18 /* HONCommentVO.h */,
 				4C75502416D5699200833C18 /* HONCommentVO.m */,
 				4CAD07361948B9A10030E703 /* HONClubPhotoVO.h */,
 				4CAD07371948B9A10030E703 /* HONClubPhotoVO.m */,
+				30B256081A3BB28E00C789E1 /* HONComposeImageVO.h */,
+				30B256091A3BB28E00C789E1 /* HONComposeImageVO.m */,
 				4C02601B172B4703001CC476 /* HONContactUserVO.h */,
 				4C02601C172B4703001CC476 /* HONContactUserVO.m */,
 				4CEF9202196DFFE3007D56BE /* HONCountryVO.h */,
@@ -1530,6 +1543,10 @@
 			children = (
 				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
 				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
+				30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */,
+				30B256031A3BB12100C789E1 /* HONComposeViewFlowLayout.m */,
+				30B256051A3BB1F400C789E1 /* HONComposeViewCell.h */,
+				30B256061A3BB1F400C789E1 /* HONComposeViewCell.m */,
 				4CEC303B17DA5E270016AAE1 /* HONComposeViewController.h */,
 				4CEC303C17DA5E270016AAE1 /* HONComposeViewController.m */,
 			);
@@ -1818,7 +1835,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* Yunder.app */,
+				4C62652515F96C7100AA7FCE /* Waddle.app */,
 				30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */,
 			);
 			name = Products;
@@ -2182,8 +2199,6 @@
 				30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */,
 				4C3A1D0919920BA1007A85B8 /* NSString+Base64.h */,
 				4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */,
-				4CA246C319083C8B00512295 /* NSString+DataTypes.h */,
-				4CA246C419083C8B00512295 /* NSString+DataTypes.m */,
 				30CA9CA61A026CB100A0A703 /* NSString+Formatting.h */,
 				30CA9CA71A026CB100A0A703 /* NSString+Formatting.m */,
 				309F59B1199D7FE400EC6C1C /* NSString+Random.h */,
@@ -2246,7 +2261,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* Yunder.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* Waddle.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2402,6 +2417,7 @@
 				4CEF9201196DFED9007D56BE /* HONCallingCodeViewCell.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				4C7DBBC8195004C200F7A487 /* HONRefreshControl.m in Sources */,
+				30B256041A3BB12100C789E1 /* HONComposeViewFlowLayout.m in Sources */,
 				4CEC4B0718B9517F00F39C92 /* HONAnalyticsReporter.m in Sources */,
 				4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */,
 				30B308CF19E20B510017ACBF /* AFJSONRequestOperation.m in Sources */,
@@ -2478,6 +2494,7 @@
 				30CA9CAE1A02FD4400A0A703 /* NSDictionary+Replacements.m in Sources */,
 				4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */,
+				30B2560A1A3BB28E00C789E1 /* HONComposeImageVO.m in Sources */,
 				3051F8981A082C5B00CD85F2 /* HONStoreProductImageViewCell.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */,
@@ -2495,10 +2512,11 @@
 				309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
+				30B256071A3BB1F400C789E1 /* HONComposeViewCell.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */,
 				30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */,
-				4CA246C519083C8B00512295 /* NSString+DataTypes.m in Sources */,
+				30B2560D1A3BE28700C789E1 /* HONBaseVO.m in Sources */,
 				4CBDDBAC1913354E002F9723 /* HONContactsViewController.m in Sources */,
 				30FC8C6019A829E900CDB2BC /* TSHit.m in Sources */,
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
@@ -2701,6 +2719,7 @@
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -2708,8 +2727,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "4c1c60fc-8f8d-4581-a58e-619cb0dff4a8";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4c1c60fc-8f8d-4581-a58e-619cb0dff4a8";
+				PROVISIONING_PROFILE = "a01c4cae-561f-405f-a5ed-b2ee45889554";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a01c4cae-561f-405f-a5ed-b2ee45889554";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s x86_64 arm64";
@@ -2740,6 +2759,7 @@
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -2748,8 +2768,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "6eb1bb7e-1c04-4fd8-85b2-f393c4c94a18";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6eb1bb7e-1c04-4fd8-85b2-f393c4c94a18";
+				PROVISIONING_PROFILE = "ffb74bbd-24a1-4f53-abc2-f946e8b7c358";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "ffb74bbd-24a1-4f53-abc2-f946e8b7c358";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -2764,7 +2784,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
@@ -2788,9 +2808,9 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Yunder;
-				PROVISIONING_PROFILE = "4c1c60fc-8f8d-4581-a58e-619cb0dff4a8";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4c1c60fc-8f8d-4581-a58e-619cb0dff4a8";
+				PRODUCT_NAME = Waddle;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a01c4cae-561f-405f-a5ed-b2ee45889554";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64 arm64";
 				WRAPPER_EXTENSION = app;
@@ -2804,7 +2824,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
@@ -2828,9 +2848,9 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Yunder;
-				PROVISIONING_PROFILE = "6eb1bb7e-1c04-4fd8-85b2-f393c4c94a18";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6eb1bb7e-1c04-4fd8-85b2-f393c4c94a18";
+				PRODUCT_NAME = Waddle;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "ffb74bbd-24a1-4f53-abc2-f946e8b7c358";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64 arm64";
 				WRAPPER_EXTENSION = app;

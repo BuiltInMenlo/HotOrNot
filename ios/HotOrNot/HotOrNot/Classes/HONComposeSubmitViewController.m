@@ -280,7 +280,7 @@
 		
 		[[HONAPICaller sharedInstance] createClubWithTitle:_userClubVO.clubName withDescription:_userClubVO.blurb withImagePrefix:_userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 			_userClubVO = [HONUserClubVO clubWithDictionary:result];
-			[_submitParams replaceObject:[@"" stringFromInt:_userClubVO.clubID] forKey:@"club_id"];
+			[_submitParams replaceObject:@(_userClubVO.clubID) forKey:@"club_id"];
 			
 			[self _submitStatusUpdate:_userClubVO];
 		}];
@@ -328,7 +328,7 @@
 //				//
 //				//				[[HONAPICaller sharedInstance] createClubWithTitle:submitClubVO.clubName withDescription:submitClubVO.blurb withImagePrefix:submitClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 //				//					HONUserClubVO *submitClubVO = [HONUserClubVO clubWithDictionary:result];
-//				//					[_submitParams replaceObject:[@"" stringFromInt:submitClubVO.clubID] forExistingKey:@"club_id"];
+//				//					[_submitParams replaceObject:@(submitClubVO.clubID) forExistingKey:@"club_id"];
 //				//					NSLog(@"SUBMITTING:[%@]", _submitParams);
 //				//
 //				//					[self _submitStatusUpdate:submitClubVO];
@@ -365,7 +365,7 @@
 		//				[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		//					HONUserClubVO *submitClubVO = (HONUserClubVO *)obj;
 		//
-		//					[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
+		//					[_submitParams setObject:@(submitClubVO.clubID) forKey:@"club_id"];
 		//					NSLog(@"SUBMITTING:[%@]", _submitParams);
 		//
 		//					[self _submitStatusUpdate:submitClubVO];
@@ -377,7 +377,7 @@
 		//			if ([_selectedUsers count] == 0 && [_selectedContacts count] == 0) {
 		//				HONUserClubVO *submitClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
 		//				NSLog(@"CLUB -=- (JOIN:userSignupClub) -=-");
-		//				[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
+		//				[_submitParams setObject:@(submitClubVO.clubID) forKey:@"club_id"];
 		//
 		//				NSLog(@"SUBMITTING:[%@]", _submitParams);
 		//
@@ -397,7 +397,7 @@
 		//				if (submitClubVO != nil) {
 		//					NSLog(@"CLUB -=- (JOIN) -=-");
 		//
-		//					[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
+		//					[_submitParams setObject:@(submitClubVO.clubID) forKey:@"club_id"];
 		//					NSLog(@"SUBMITTING:[%@]", _submitParams);
 		//
 		//					[_selectedUsers removeAllObjects];
@@ -415,7 +415,7 @@
 		//
 		//					[[HONAPICaller sharedInstance] createClubWithTitle:submitClubVO.clubName withDescription:submitClubVO.blurb withImagePrefix:submitClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 		//						submitClubVO = [HONUserClubVO clubWithDictionary:result];
-		//						[_submitParams setValue:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
+		//						[_submitParams setValue:@(submitClubVO.clubID) forKey:@"club_id"];
 		//						NSLog(@"SUBMITTING:[%@]", _submitParams);
 		//
 		//						[self _submitStatusUpdate:submitClubVO];
@@ -655,7 +655,7 @@
 			[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				HONUserClubVO *submitClubVO = (HONUserClubVO *)obj;
 				
-				[_submitParams setObject:[@"" stringFromInt:submitClubVO.clubID] forKey:@"club_id"];
+				[_submitParams setObject:@(submitClubVO.clubID) forKey:@"club_id"];
 				NSLog(@"SUBMITTING:[%@]", _submitParams);
 				
 				[self _submitStatusUpdate:submitClubVO];

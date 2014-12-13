@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
 #import "NSUserDefaults+Replacements.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -61,8 +60,8 @@ static HONStickerAssistant *sharedInstance = nil;
 			  @"updated"		: storeInfo.updated_at,
 			  @"description"	: storeInfo.description,
 			  @"currency"		: storeInfo.currency.name,
-			  @"products_tot"	: [@"" stringFromInt:(int)[storeInfo.availableProducts count]],
-			  @"vendor_tot"		: [@"" stringFromInt:(int)[storeInfo.availableVendorIds count]]});
+			  @"products_tot"	: @((int)[storeInfo.availableProducts count]),
+			  @"vendor_tot"		: @((int)[storeInfo.availableVendorIds count])});
 	
 }
 
@@ -160,7 +159,7 @@ static HONStickerAssistant *sharedInstance = nil;
 
 - (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(BOOL success))completion {
 	NSString *key = (stickerPakType == HONStickerPakTypeSelfieclub) ? kSelfieclubStickerPak : (stickerPakType == HONStickerPakTypeAvatars) ? kAvatarStickerPak : (stickerPakType == HONStickerPakTypeClubCovers) ? kClubCoverStickerPak : (stickerPakType == HONStickerPakTypeFree) ? kFreeStickerPak : (stickerPakType == HONStickerPakTypeInviteBonus) ? kInviteStickerPak : (stickerPakType == HONStickerPakTypePaid) ? kPaidStickerPak : @"all";
-	NSLog(@"retrieveStickersWithPakType:[%@] ignoringCache:[%@]", key, [@"" stringFromBOOL:ignoreCache]);
+	NSLog(@"retrieveStickersWithPakType:[%@] ignoringCache:[%@]", key, NSStringFromBOOL(ignoreCache));
 	
 	
 	NSMutableDictionary *contentGroups = ([[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"content_groups"] mutableCopy] : [NSMutableDictionary dictionary];
@@ -468,7 +467,7 @@ static HONStickerAssistant *sharedInstance = nil;
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 		[[[HONStickerAssistant sharedInstance] fetchAllContentGroupIDs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSString *cgID = (NSString *)obj;
-			[dict setValue:[@"" stringFromBOOL:NO] forKey:cgID];
+			[dict setValue:NSStringFromBOOL(NO) forKey:cgID];
 		}];
 		
 		[[NSUserDefaults standardUserDefaults] setValue:[dict copy] forKey:@"cached_cg"];
@@ -476,7 +475,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	}
 	
 	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"cached_cg"] mutableCopy];
-	[dict setValue:[@"" stringFromBOOL:YES] forKey:contentGroupID];
+	[dict setValue:NSStringFromBOOL(YES) forKey:contentGroupID];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[dict copy] forKey:@"cached_cg"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -487,7 +486,7 @@ static HONStickerAssistant *sharedInstance = nil;
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 		[[[HONStickerAssistant sharedInstance] fetchAllContentGroupIDs] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSString *cgID = (NSString *)obj;
-			[dict setValue:[@"" stringFromBOOL:NO] forKey:cgID];
+			[dict setValue:NSStringFromBOOL(NO) forKey:cgID];
 		}];
 		
 		[[NSUserDefaults standardUserDefaults] setValue:[dict copy] forKey:@"cached_cg"];

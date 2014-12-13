@@ -204,7 +204,7 @@ const CGFloat kStickerOutroForce = 0.125;
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
 		return;
 	
-	NSLog(@"gestureRecognizer.state:[%@]", (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"Began" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"Canceled" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"Ended" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"Failed" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"Possible" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN");
+	NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
 	HONEmotionVO *emotionVO = (HONEmotionVO *)[_stickers lastObject];
 	
 	UIView *stickerView = (UIView *)[_stickerViews lastObject];

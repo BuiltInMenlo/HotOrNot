@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONStickerButtonsPickerView.h"
 #import "HONStickerButtonView.h"
 #import "HONPaginationView.h"
@@ -69,7 +67,7 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:(NSDictionary *)obj]];
 		}];
 		
-		NSLog(@"[%@ _hasCachedAllStickers] (%@)", self.class, [@"" stringFromBOOL:_hasCachedAllStickers]);
+		NSLog(@"[%@ _hasCachedAllStickers] (%@)", self.class, NSStringFromBOOL(_hasCachedAllStickers));
 		
 		if (!_hasCachedAllStickers) {
 			_downloadButton = [UIButton buttonWithType:UIButtonTypeCustom];

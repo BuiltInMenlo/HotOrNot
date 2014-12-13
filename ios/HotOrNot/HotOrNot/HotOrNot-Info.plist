@@ -17,7 +17,7 @@
 	<key>CFBundleIcons~ipad</key>
 	<dict/>
 	<key>CFBundleIdentifier</key>
-	<string>com.builtinmenlo.last24</string>
+	<string>com.builtinmenlo.shelly</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -45,7 +45,7 @@
 			<string>com.builtinmenlo.last24</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>yunder</string>
+				<string>waddle</string>
 			</array>
 		</dict>
 		<dict>
@@ -58,11 +58,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>37465</string>
+	<string>37509</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
-	<string>Yunder</string>
+	<string>Waddle</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>e7a57bf84ad0eb1cc424fcdd886506a0</string>
 	<key>LSApplicationCategoryType</key>

@@ -11,7 +11,6 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -244,7 +243,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
 	[_clubNameTextField becomeFirstResponder];
@@ -489,7 +488,7 @@
 //				*stop = isFound;
 			}];
 			
-			NSLog(@"FOUND:[%@]", [@"" stringFromBOOL:isFound]);
+			NSLog(@"FOUND:[%@]", NSStringFromBOOL(isFound));
 			if (!isFound) {
 				[_library writeImageToSavedPhotosAlbum:[image CGImage] metadata:[metadata copy] completionBlock:^(NSURL* assetURL, NSError* error) {
 					if (error.code == 0) {

@@ -9,7 +9,6 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCameraOverlayView.h"

@@ -75,6 +75,7 @@ NSString * const kStateMitigatorTotalCounterStatusUpdate				= @"statusUpdate";
 NSString * const kStateMitigatorTotalCounterStatusUpdateRefresh			= @"statusUpdateRefresh";
 NSString * const kStateMitigatorTotalCounterReply						= @"reply";
 NSString * const kStateMitigatorTotalCounterCompose						= @"compose";
+NSString * const kStateMitigatorTotalCounterComposeRefresh				= @"composeRefresh";
 NSString * const kStateMitigatorTotalCounterAnimatedBGs					= @"animatedBGs";
 NSString * const kStateMitigatorTotalCounterAnimatedBGsRefresh			= @"animatedBGsRefresh";
 NSString * const kStateMitigatorTotalCounterStoreProducts				= @"storeProducts";
@@ -316,6 +317,7 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorTotalCounterStatusUpdateRefresh		: @(HONStateMitigatorTotalTypeStatusUpdateRefresh),
 			  kStateMitigatorTotalCounterReply						: @(HONStateMitigatorTotalTypeReply),
 			  kStateMitigatorTotalCounterCompose					: @(HONStateMitigatorTotalTypeCompose),
+			  kStateMitigatorTotalCounterComposeRefresh				: @(HONStateMitigatorTotalTypeComposeRefresh),
 			  kStateMitigatorTotalCounterAnimatedBGs				: @(HONStateMitigatorTotalTypeAnimatedBGs),
 			  kStateMitigatorTotalCounterAnimatedBGsRefresh			: @(HONStateMitigatorTotalTypeAnimatedBGsRefresh),
 			  kStateMitigatorTotalCounterStoreProducts				: @(HONStateMitigatorTotalTypeStoreProducts),

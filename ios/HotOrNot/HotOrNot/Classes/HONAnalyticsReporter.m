@@ -7,7 +7,6 @@
 //
 
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 
 #import "HONAnalyticsReporter.h"
 
@@ -89,10 +88,10 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	
 	return (@{@"id"				: @"0",
 			  @"id_last"		: @"0",
-			  @"session_gap"	: [@"" stringFromInt:[[[HONStateMitigator sharedInstance] appEntryTimestamp] timeIntervalSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]],
-			  @"duration"		: [@"" stringFromInt:[nowDate timeIntervalSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]],
-			  @"idle"			: [@"" stringFromInt:[nowDate timeIntervalSinceDate:[[HONStateMitigator sharedInstance] lastTrackingCallTimestamp]]],
-			  @"count"			: [@"" stringFromInt:[[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeTrackingCalls]],
+			  @"session_gap"	: @([[[HONStateMitigator sharedInstance] appEntryTimestamp] timeIntervalSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),
+			  @"duration"		: @([nowDate timeIntervalSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]]),
+			  @"idle"			: @([nowDate timeIntervalSinceDate:[[HONStateMitigator sharedInstance] lastTrackingCallTimestamp]]),
+			  @"count"			: @([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeTrackingCalls]),
 			  @"entry_point"	: [[HONStateMitigator sharedInstance] appEntryTypeName]});
 }
 
@@ -117,16 +116,16 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
-	return (@{@"photo"	: @{@"id"		: [@"" stringFromInt:vo.challengeID],
-							@"club_id"	: [@"" stringFromInt:vo.clubID],
-							@"user_id"	: [@"" stringFromInt:vo.userID],
+	return (@{@"photo"	: @{@"id"		: @(vo.challengeID),
+							@"club_id"	: @(vo.clubID),
+							@"user_id"	: @(vo.userID),
 							@"username"	: vo.username,
 							@"img"		: vo.imagePrefix}});
 }
 
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo {
 	return (@{@"contact"	: @{@"name"		: vo.fullName,
-								@"is_sms"	: [@"" stringFromBOOL:vo.isSMSAvailable],
+								@"is_sms"	: NSStringFromBOOL(vo.isSMSAvailable),
 								@"phone"	: vo.mobileNumber,
 								@"email"	: vo.email}});
 }
@@ -141,20 +140,20 @@ static HONAnalyticsReporter *sharedInstance = nil;
 - (NSDictionary *)propertyForStoreProduct:(HONStoreProductVO *)vo {
 	return (@{@"product"	: @{@"id"			: vo.productID,
 								@"name"			: vo.productName,
-								@"price"		: [@"" stringFromFloat:vo.price],
-								@"purchased"	: [@"" stringFromBOOL:vo.isPurchased]}});
+								@"price"		: @(vo.price),
+								@"purchased"	: NSStringFromBOOL(vo.isPurchased)}});
 }
 
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
-	return (@{@"member"	: @{@"id"		: [@"" stringFromInt:vo.userID],
+	return (@{@"member"	: @{@"id"		: @(vo.userID),
 							@"username"	: vo.username,
 							@"avatar"	: vo.avatarPrefix}});
 }
 
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo {
-	return (@{@"club"	: @{@"id"		: [@"" stringFromInt:vo.clubID],
+	return (@{@"club"	: @{@"id"		: @(vo.clubID),
 							@"name"		: vo.clubName,
-							@"owner_id"	: [@"" stringFromInt:vo.ownerID],
+							@"owner_id"	: @(vo.ownerID),
 							@"created"	: [vo.addedDate formattedISO8601StringUTC]}});
 }
 

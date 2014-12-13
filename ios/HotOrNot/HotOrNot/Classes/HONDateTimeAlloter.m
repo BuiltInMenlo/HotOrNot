@@ -7,8 +7,6 @@
 //
 
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
-
 #import "HONDateTimeAlloter.h"
 
 @implementation HONDateTimeAlloter
@@ -58,18 +56,18 @@ static HONDateTimeAlloter *sharedInstance = nil;
 //	NSLog(@"UTC_NOW:[%@] DATE:[%@] -=- SECS:[%d]", [NSDate utcNowDate], date, secs);
 	
 	if (days > 0)
-		interval = [[[@"" stringFromInt:days] stringByAppendingString:[[indicators objectForKey:@"days"] objectAtIndex:0]] stringByAppendingString:(days != 1) ? [[indicators objectForKey:@"days"] objectAtIndex:1] : @""];
+		interval = [[NSStringFromInt(days) stringByAppendingString:[[indicators objectForKey:@"days"] objectAtIndex:0]] stringByAppendingString:(days != 1) ? [[indicators objectForKey:@"days"] objectAtIndex:1] : @""];
 	
 	else {
 		if (hours > 0)
-			interval = [[[@"" stringFromInt:hours] stringByAppendingString:[[indicators objectForKey:@"hours"] objectAtIndex:0]] stringByAppendingString:(hours != 1) ? [[indicators objectForKey:@"hours"] objectAtIndex:1] : @""];
+			interval = [[NSStringFromInt(hours) stringByAppendingString:[[indicators objectForKey:@"hours"] objectAtIndex:0]] stringByAppendingString:(hours != 1) ? [[indicators objectForKey:@"hours"] objectAtIndex:1] : @""];
 		
 		else {
 			if (mins > 0)
-				interval = [[[@"" stringFromInt:mins] stringByAppendingString:[[indicators objectForKey:@"minutes"] objectAtIndex:0]] stringByAppendingString:(mins != 1) ? [[indicators objectForKey:@"minutes"] objectAtIndex:1] : @""];
+				interval = [[NSStringFromInt(mins) stringByAppendingString:[[indicators objectForKey:@"minutes"] objectAtIndex:0]] stringByAppendingString:(mins != 1) ? [[indicators objectForKey:@"minutes"] objectAtIndex:1] : @""];
 			
 			else
-				interval = [[[@"" stringFromInt:secs] stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:(secs != 1) ? [[indicators objectForKey:@"seconds"] objectAtIndex:1] : @""];
+				interval = [[NSStringFromInt(secs) stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:(secs != 1) ? [[indicators objectForKey:@"seconds"] objectAtIndex:1] : @""];
 		}
 	}
 	

@@ -6,7 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
 
 #import "HONActivityNavButtonView.h"
 
@@ -34,8 +33,8 @@
 - (void)updateActivityBadge {
 	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSString *result) {
 		NSLog(@"ACTIVITY:[%@]", result);
-		[_button setTitle:[@"" stringFromInt:[result intValue]] forState:UIControlStateNormal];
-		[_button setTitle:[@"" stringFromInt:[result intValue]] forState:UIControlStateHighlighted];
+		[_button setTitle:NSStringFromInt([result intValue]) forState:UIControlStateNormal];
+		[_button setTitle:NSStringFromInt([result intValue]) forState:UIControlStateHighlighted];
 	}];
 }
 

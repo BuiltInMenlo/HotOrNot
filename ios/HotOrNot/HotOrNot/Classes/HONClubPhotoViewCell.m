@@ -8,7 +8,6 @@
 
 #import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
@@ -130,7 +129,7 @@
 	repliesLabel.backgroundColor = [UIColor clearColor];
 	repliesLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	repliesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	repliesLabel.text = [@"" stringFromInt:[_replies count]];
+	repliesLabel.text = NSStringFromInt([_replies count]);
 	[_footerView addSubview:repliesLabel];
 	
 	_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -165,7 +164,7 @@
 	
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSString *result) {
 		_clubPhotoVO.score = [result intValue];
-		_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+		_scoreLabel.text = NSStringFromInt(_clubPhotoVO.score);
 	}];
 	
 	
@@ -235,7 +234,7 @@
 	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	
-	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score - 1];
+	_scoreLabel.text = NSStringFromInt(_clubPhotoVO.score - 1);
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:downVotePhoto:)])
 		[self.delegate clubPhotoViewCell:self downVotePhoto:_clubPhotoVO];
 }
@@ -244,7 +243,7 @@
 	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	
-	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score + 1];
+	_scoreLabel.text = NSStringFromInt(_clubPhotoVO.score + 1);
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:upVotePhoto:)])
 		[self.delegate clubPhotoViewCell:self upVotePhoto:_clubPhotoVO];
 }

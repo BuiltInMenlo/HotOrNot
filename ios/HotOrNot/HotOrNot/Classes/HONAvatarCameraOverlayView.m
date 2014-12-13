@@ -9,8 +9,6 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
-
 #import "HONAvatarCameraOverlayView.h"
 #import "HONImageLoadingView.h"
 

@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
-
 #import "HONAnimationOverseer.h"
 #import "HONComposeViewController.h"
 #import "HONStoreProductsViewController.h"
@@ -31,15 +29,15 @@ static HONAnimationOverseer *sharedInstance = nil;
 
 
 - (BOOL)isScrollingAnimationEnabledForScrollView:(id)scrollView {
-//	NSLog(@"*|* [%@] (%@)-=-(%@)", self.class, scrollView, [@"" stringFromClass:scrollView]);
+//	NSLog(@"*|* [%@] (%@)-=-(%@)", self.class, scrollView, NSStringFromClass(scrollView));
 	
-	if ([[@"" stringFromClass:scrollView] isEqualToString:@"HONComposeDisplayView"]) {
+	if ([NSStringFromClass(scrollView) isEqualToString:@"HONComposeDisplayView"]) {
 		return (NO);
 
-	} else if ([[@"" stringFromClass:scrollView] isEqualToString:@"HONStickerButtonsPickerView"]) {
+	} else if ([NSStringFromClass(scrollView) isEqualToString:@"HONStickerButtonsPickerView"]) {
 		return (NO);
 		
-	} else if ([[@"" stringFromClass:scrollView] isEqualToString:@"HONStickerSummaryView"]) {
+	} else if ([NSStringFromClass(scrollView) isEqualToString:@"HONStickerSummaryView"]) {
 		return (YES);
 	
 	} else {

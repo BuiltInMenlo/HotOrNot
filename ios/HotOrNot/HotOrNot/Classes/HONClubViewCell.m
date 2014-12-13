@@ -7,7 +7,6 @@
 //
 
 #import "NSDate+Operations.h"
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+FormattedText.h"
 

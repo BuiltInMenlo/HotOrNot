@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "FLAnimatedImage.h"
@@ -251,7 +250,7 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-//	NSLog(@"[_] collectionView:cellForItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);
+//	NSLog(@"[_] collectionView:cellForItemAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));
 	
 	HONStoreProductImageViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONStoreProductImageViewCell cellReuseIdentifier]
 																					  forIndexPath:indexPath];
@@ -269,7 +268,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-//	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", [@"" stringFromIndexPath:indexPath]);	
+//	NSLog(@"[_] collectionView:didSelectItemAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));	
 //	HONStoreProductImageViewCell *viewCell = (HONStoreProductImageViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
 }
 

@@ -9,7 +9,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 

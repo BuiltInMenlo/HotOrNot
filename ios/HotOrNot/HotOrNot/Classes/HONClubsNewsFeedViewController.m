@@ -8,8 +8,6 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "NSString+DataTypes.h"
-
 #import "HONRefreshControl.h"
 #import "MBProgressHUD.h"
 
@@ -244,7 +242,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
 	if ([HONAppDelegate totalForCounter:@"background"] >= 3 && _tabBannerView == nil) {
@@ -257,7 +255,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
 	
 	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
@@ -508,7 +506,7 @@
 		
 	} else {
 		HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[_timelineItems objectAtIndex:indexPath.row];
-		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[_clubVOPhotoIDs objectForKey:[@"" stringFromInt:clubPhotoVO.challengeID]]];
+		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[_clubVOPhotoIDs objectForKey:NSStringFromInt(clubPhotoVO.challengeID])];
 		
 		cell.clubVO = clubVO;
 		cell.clubPhotoVO = clubPhotoVO;
@@ -539,7 +537,7 @@
 		
 	else {
 		HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)[_timelineItems objectAtIndex:indexPath.row];
-		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[_clubVOPhotoIDs objectForKey:[@"" stringFromInt:clubPhotoVO.challengeID]]];
+		HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[_clubVOPhotoIDs objectForKey:NSStringFromInt(clubPhotoVO.challengeID])];
 		
 		return ((clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) ? 50.0 : kOrthodoxTableCellHeight);
 	}

@@ -9,6 +9,8 @@
 #import <AddressBook/AddressBook.h>
 #import <CoreLocation/CoreLocation.h>
 
+#import "HONComposeImageVO.h"
+
 //#ifndef HotOrNot_HONStaticInlines_h
 //#define HotOrNot_HONStaticInlines_h
 //#endif
@@ -352,6 +354,12 @@ NSStringFromNSNumber(NSNumber *val, int precision)
 	return string;
 }
 
+BIM_INLINE NSString*
+NSStringFromUIGestureRecognizerState(UIGestureRecognizerState val)
+{
+	NSString *string = (val == UIGestureRecognizerStateBegan) ? @"Began" : (val == UIGestureRecognizerStateCancelled) ? @"Canceled" : (val == UIGestureRecognizerStateEnded) ? @"Ended" : (val == UIGestureRecognizerStateFailed) ? @"Failed" : (val == UIGestureRecognizerStatePossible) ? @"Possible" : (val == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN";
+	return (string);
+}
 
 BIM_INLINE NSString*
 NSStringFromUIImageOrientation(UIImageOrientation val)
