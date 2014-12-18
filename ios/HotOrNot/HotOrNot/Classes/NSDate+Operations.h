@@ -8,7 +8,7 @@
 
 @interface NSDateFormatter (Formatting)
 + (NSDateFormatter *)dateFormatterWithTemplate:(NSString *)template;
-+ (NSDateFormatter *)dateFormatterISO8601:(BOOL)isUTC;
++ (NSDateFormatter *)dateFormatterISO8601;
 + (NSDateFormatter *)dateFormatterOrthodox:(BOOL)isUTC;
 + (NSDateFormatter *)dateFormatterOrthodoxWithTZ:(NSString *)tzAbbreviation;
 
@@ -23,7 +23,6 @@
 
 + (instancetype)dateFromUnixTimestamp:(CGFloat)timestamp;
 + (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate;
-+ (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC;
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate;
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC;
 + (instancetype)dateToUTCDate:(NSDate *)date;

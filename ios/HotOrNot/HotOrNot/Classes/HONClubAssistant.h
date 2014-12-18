@@ -8,6 +8,7 @@
 
 #import "HONUserClubVO.h"
 #import "HONClubPhotoVO.h"
+#import "HONStatusUpdateVO.h"
 #import "HONCommentVO.h"
 #import "HONEmotionVO.h"
 #import "HONComposeImageVO.h"
@@ -15,65 +16,60 @@
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
 
-- (void)generateSelfieclubOwnedClubWithName:(NSString *)clubName andBlurb:(NSString *)blurb;
-- (NSArray *)clubTypeKeys;
+//- (void)generateSelfieclubOwnedClubWithName:(NSString *)clubName andBlurb:(NSString *)blurb;
+//- (NSArray *)clubTypeKeys;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (void)createLocationClubWithCompletion:(void (^)(id result))completion;
-- (void)locationClubWithCompletion:(void (^)(id result))completion;
+- (void)nearbyClubWithCompletion:(void (^)(id result))completion;
 - (NSArray *)staffDesignatedClubsWithThreshold:(int)threshold;
-- (HONUserClubVO *)currentLocationClub;
-- (NSMutableDictionary *)emptyClubPhotoDictionary;
-- (NSString *)userSignupClubCoverImageURL;
-- (NSString *)defaultCoverImageURL;
-- (NSString *)rndCoverImageURL;
-- (NSString *)defaultClubPhotoURL;
-- (NSArray *)clubCoverPhotoAlbumPrefixes;
-- (int)labelIDForAreaCode:(NSString *)areaCode;
-- (BOOL)isMemberOfClub:(HONUserClubVO *)clubVO includePending:(BOOL)isPending;
-- (BOOL)isStaffClub:(HONUserClubVO *)clubVO;
-- (BOOL)isMemberOfClubWithClubID:(int)clubID includePending:(BOOL)isPending;
-- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
-- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
-- (void)isStatusUpdateSeenWithID:(int)statusUpdateID completion:(void (^)(BOOL isSeen))completion;
-- (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (BOOL)hasVotedForComment:(HONCommentVO *)commentVO;
-- (HONUserClubVO *)userSignupClub;
-- (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (HONComposeImageVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
-- (void)copyUserSignupClubToClipboardWithAlert:(BOOL)showsAlert;
+- (HONUserClubVO *)currentLocationClub;
+- (void)writeCurrentLocationClub:(HONUserClubVO *)clubVO;
+
+- (HONUserClubVO *)homeLocationClub;
+- (void)writeHomeLocationClub:(HONUserClubVO *)clubVO;
+
+//- (NSMutableDictionary *)emptyClubPhotoDictionary;
+//- (NSString *)userSignupClubCoverImageURL;
+- (NSString *)defaultCoverImageURL;
+//- (NSString *)rndCoverImageURL;
+//- (NSString *)defaultClubPhotoURL;
+- (NSString *)defaultStatusUpdatePhotoURL;
+//- (NSArray *)clubCoverPhotoAlbumPrefixes;
+//- (int)labelIDForAreaCode:(NSString *)areaCode;
+- (BOOL)isMemberOfClub:(HONUserClubVO *)clubVO;
+- (BOOL)isMemberOfClubWithClubID:(int)clubID;
+- (BOOL)isStaffClub:(HONUserClubVO *)clubVO;
+//- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
+//- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
+//- (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (BOOL)hasVotedForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
+- (BOOL)hasVotedForComment:(HONCommentVO *)commentVO;
+//- (HONUserClubVO *)userSignupClub;
+//- (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+//- (HONComposeImageVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (HONComposeImageVO *)composeImageForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
+
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;
 
-- (NSArray *)suggestedClubs;
-- (HONUserClubVO *)suggestedAreaCodeClubVO;
-- (HONUserClubVO *)suggestedEmailClubVO:(NSArray *)domains;
-- (HONUserClubVO *)suggestedFamilyClubVO;
-- (HONUserClubVO *)suggestedSchoolClubVO;
-- (HONUserClubVO *)suggestedBAEClubVO;
-- (HONUserClubVO *)suggestedBFFsClubVO;
-- (HONUserClubVO *)suggestedWorkplaceClubVO;
-
-- (void)writePreClubWithTitle:(NSString *)title andBlurb:(NSString *)blurb andCoverPrefixURL:(NSString *)coverPrefix;
-- (NSDictionary *)fetchPreClub;
-
-- (void)wipeUserClubs;
-- (NSDictionary *)fetchUserClubs;
-- (HONUserClubVO *)fetchClubWithClubID:(int)clubID;
-- (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID;
-- (void)writeClub:(NSDictionary *)clubDictionary;
-- (void)writeUserClubs:(NSDictionary *)clubs;
-- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID completion:(void (^)(id result))completion;
+//- (void)wipeUserClubs;
+//- (NSDictionary *)fetchUserClubs;
+//- (HONUserClubVO *)fetchClubWithClubID:(int)clubID;
+//- (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID;
+//- (void)writeClub:(NSDictionary *)clubDictionary;
+//- (void)writeUserClubs:(NSDictionary *)clubs;
+//- (void)writeStatusUpdateAsSeenWithID:(int)statusUpdateID completion:(void (^)(id result))completion;
 - (void)writeStatusUpdateAsVotedWithID:(int)statusUpdateID asUpVote:(BOOL)isUpVote;
 - (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote;
-- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers toNonAppContacts:(NSArray *)nonAppContacts completion:(void (^)(BOOL success))completion;
+//- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers toNonAppContacts:(NSArray *)nonAppContacts completion:(void (^)(BOOL success))completion;
 
-- (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+//- (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 
-- (HONUserClubVO *)clubWithClubID:(int)clubID;
-- (HONUserClubVO *)clubWithName:(NSString *)clubName;
-- (HONUserClubVO *)clubWithParticipants:(NSArray *)participants;
-- (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants;
-- (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO;
+//- (HONUserClubVO *)clubWithClubID:(int)clubID;
+//- (HONUserClubVO *)clubWithName:(NSString *)clubName;
+//- (HONUserClubVO *)clubWithParticipants:(NSArray *)participants;
+//- (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants;
+//- (HONClubPhotoVO *)submitClubPhotoIntoClub:(HONUserClubVO *)clubVO;
 
 @end

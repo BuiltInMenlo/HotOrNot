@@ -71,7 +71,7 @@
 	[_allClubs removeAllObjects];
 	[_clubIDs removeAllObjects];
 	
-	[[HONClubAssistant sharedInstance] wipeUserClubs];
+//	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	[self _retrieveClubs];
 }
 

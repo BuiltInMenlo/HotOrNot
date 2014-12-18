@@ -53,7 +53,7 @@ static HONGeoLocator *sharedInstance = nil;
 								 @"zip"		: placemark.postalCode,
 								 @"country"	: placemark.country};
 		
-		NSLog(@"GEOCODER LOCATION:[%@] %@", NSStringFromCLLocation(location), placemark);
+//		NSLog(@"GEOCODER LOCATION:[%@] %@", NSStringFromCLLocation(location), placemark);
 		if (completion)
 			completion(result);
 	}];

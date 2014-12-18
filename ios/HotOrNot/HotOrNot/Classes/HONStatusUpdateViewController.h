@@ -9,9 +9,9 @@
 #import <MessageUI/MFMailComposeViewController.h>
 
 #import "HONViewController.h"
-#import "HONClubPhotoVO.h"
+#import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"
 
 @interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
-- (id)initWithStatusUpdate:(HONClubPhotoVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO;
+- (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO;
 @end

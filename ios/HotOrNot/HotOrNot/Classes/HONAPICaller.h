@@ -32,7 +32,9 @@ extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 
+extern NSString * const kAPIMemberClubs;
 extern NSString * const kAPIClubStatusUpdates;
+extern NSString * const kAPIStatusUpdateVoters;
 
 extern NSString * const kAPIGetFriends;
 extern NSString * const kAPIGetSubscribees;
@@ -179,6 +181,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveVoteTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;
+- (void)voteClubPhotoWithChallengeID:(int)challengeID isUpVote:(BOOL)isUpVote completion:(void (^)(id result))completion;
 - (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpVote:(BOOL)isUpVote completion:(void (^)(id result))completion;
 
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
@@ -196,7 +199,7 @@ extern const CGFloat kNotifiyDelay;
  * Clubs
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)retrieveStatusUpdatesForClubByClubID:(int)clubID fromPage:(int)page completion:(void (^)(id result))completion;
-
+- (void)retrieveUserClubsByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion;
 
 //- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion;
@@ -214,7 +217,8 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
 - (void)retrieveNearbyClubFromLocation:(CLLocation *)location withinRadius:(CGFloat)radius completion:(void (^)(id result))completion;
 - (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion;
-- (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
+//- (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
+- (void)submitStatusUpdateWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

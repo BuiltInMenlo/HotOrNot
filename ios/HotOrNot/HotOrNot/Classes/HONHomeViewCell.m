@@ -21,7 +21,7 @@
 
 @implementation HONHomeViewCell
 @synthesize delegate = _delegate;
-@synthesize clubPhotoVO = _clubPhotoVO;
+@synthesize statusUpdateVO = _statusUpdateVO;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -44,11 +44,11 @@
 		[self.contentView addSubview:_selectButton];
 		
 		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 55.0, self.frame.size.height - 19.0, 50.0, 20.0)];
-		_scoreLabel.backgroundColor = [UIColor clearColor];
+		_scoreLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_scoreLabel.textAlignment = NSTextAlignmentRight;
 		_scoreLabel.textColor = [UIColor whiteColor];
-		[_scoreLabel setText:NSStringFromInt(_clubPhotoVO.score)];
+		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
 		[self.contentView addSubview:_scoreLabel];
 	}
 	
@@ -73,12 +73,14 @@
 
 
 #pragma mark - Public APIs
-- (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
-	_clubPhotoVO = clubPhotoVO;
+- (void)setStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
+	_statusUpdateVO = statusUpdateVO;
 	
 //	_imageView.hidden = YES;
-	[_scoreLabel toggleLoading:YES];
-	[self refeshScore];
+//	[_scoreLabel toggleLoading:YES];
+//	[self refeshScore];
+	
+	[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
 	
 	_isLoading = YES;
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -102,8 +104,8 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 	};
 	
-	NSLog(@"URL:[%@]", [[_clubPhotoVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]);
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[_clubPhotoVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]]
+//	NSLog(@"URL:[%@]", [[_statusUpdateVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]);
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[_statusUpdateVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]]
 														cachePolicy:kOrthodoxURLCachePolicy
 													timeoutInterval:[HONAppDelegate timeoutInterval]]
 					  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_home"]
@@ -114,12 +116,12 @@
 }
 
 - (void)refeshScore {
-	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSNumber *result) {
-		_clubPhotoVO.score = [result intValue];
-		[_scoreLabel setText:NSStringFromInt(_clubPhotoVO.score)];
+	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_statusUpdateVO.statusUpdateID completion:^(NSNumber *result) {
+		_statusUpdateVO.score = [result intValue];
+		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
 		[_scoreLabel toggleLoading:NO];
 		
-		NSLog(@"CELL:{%@} -=- [%d / %d] SCORE:(%d)", NSStringFromNSIndexPath(self.indexPath), _clubPhotoVO.challengeID, _clubPhotoVO.clubID, _clubPhotoVO.score);
+		NSLog(@"CELL:{%@} -=- [%d / %d] SCORE:(%d)", NSStringFromNSIndexPath(self.indexPath), _statusUpdateVO.statusUpdateID, _statusUpdateVO.clubID, _statusUpdateVO.score);
 	}];
 }
 
@@ -145,7 +147,7 @@
 			};
 			
 //			NSLog(@"URL:[%@]", [_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]);
-			[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]]
+			[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_statusUpdateVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]]
 																cachePolicy:kOrthodoxURLCachePolicy
 															timeoutInterval:[HONAppDelegate timeoutInterval]]
 							  placeholderImage:[UIImage imageNamed:@"loadingArrows"]
@@ -162,8 +164,8 @@
 
 #pragma mark - Navigation
 - (void)_goSelect {
-	if ([self.delegate respondsToSelector:@selector(homeViewCell:didSelectClubPhoto:)])
-		[self.delegate homeViewCell:self didSelectClubPhoto:_clubPhotoVO];
+	if ([self.delegate respondsToSelector:@selector(homeViewCell:didSelectStatusUpdate:)])
+		[self.delegate homeViewCell:self didSelectStatusUpdate:_statusUpdateVO];
 }
 
 @end

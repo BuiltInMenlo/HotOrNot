@@ -54,37 +54,37 @@
 - (void)_retrieveClubs {
 	
 	_clubs = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-		NSLog(@":/: retrieveClubsForUserByUserID:[%@] :/:", result);
-		[[HONClubAssistant sharedInstance] writeUserClubs:result];
-		
-		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
-				for (NSDictionary *dict in [result objectForKey:key]) {
-//					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
-//						continue;
-					
-					[_clubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-				}
-				
-//			} else if ([key isEqualToString:@"pending"]) {
+//	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//		NSLog(@":/: retrieveClubsForUserByUserID:[%@] :/:", result);
+//		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//		
+//		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
+//			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
 //				for (NSDictionary *dict in [result objectForKey:key]) {
-//					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//						
-//						if ([[result objectForKey:@"pending"] count] == 0)
-//							[self _retrieveClubs];
-//					}];
+////					if ([[dict objectForKey:@"submissions"] count] == 0 && [[dict objectForKey:@"pending"] count] == 0)
+////						continue;
+//					
+//					[_clubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 //				}
 //				
-			} else
-				continue;
-		}
-		
-		[self _submitPhoneNumberForMatching];
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-			[self _retrieveDeviceContacts];
-		}
-	}];
+////			} else if ([key isEqualToString:@"pending"]) {
+////				for (NSDictionary *dict in [result objectForKey:key]) {
+////					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+////						
+////						if ([[result objectForKey:@"pending"] count] == 0)
+////							[self _retrieveClubs];
+////					}];
+////				}
+////				
+//			} else
+//				continue;
+//		}
+//		
+//		[self _submitPhoneNumberForMatching];
+//		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//			[self _retrieveDeviceContacts];
+//		}
+//	}];
 }
 
 - (void)_sendEmailContacts {

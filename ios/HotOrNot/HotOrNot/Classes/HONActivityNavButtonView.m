@@ -30,12 +30,9 @@
 	return (self);
 }
 
-- (void)updateActivityBadge {
-	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSString *result) {
-		NSLog(@"ACTIVITY:[%@]", result);
-		[_button setTitle:NSStringFromInt([result intValue]) forState:UIControlStateNormal];
-		[_button setTitle:NSStringFromInt([result intValue]) forState:UIControlStateHighlighted];
-	}];
+- (void)updateBadgeWithScore:(int)score {
+	[_button setTitle:NSStringFromInt(score) forState:UIControlStateNormal];
+	[_button setTitle:NSStringFromInt(score) forState:UIControlStateHighlighted];
 }
 
 @end

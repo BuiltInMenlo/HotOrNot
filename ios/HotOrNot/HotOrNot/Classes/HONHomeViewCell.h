@@ -7,18 +7,18 @@
 //
 
 #import "HONCollectionViewCell.h"
-#import "HONClubPhotoVO.h"
+#import "HONStatusUpdateVO.h"
 
 @class HONHomeViewCell;
 @protocol HONHomeViewCellDelegate <HONCollectionViewCellDelegate>
 @optional
-- (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
 @end
 
 @interface HONHomeViewCell : HONCollectionViewCell
 + (NSString *)cellReuseIdentifier;
 //- (void)toggleImageLoading:(BOOL)isLoading;
 - (void)refeshScore;
-@property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;
+@property (nonatomic, retain) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, assign) id <HONHomeViewCellDelegate> delegate;
 @end

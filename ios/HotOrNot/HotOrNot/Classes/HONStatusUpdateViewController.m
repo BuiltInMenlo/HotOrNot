@@ -21,7 +21,7 @@
 #import "HONRefreshingLabel.h"
 
 @interface HONStatusUpdateViewController () <HONCommentViewCellDelegate>
-@property (nonatomic, strong) HONClubPhotoVO *statusUpdateVO;
+@property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
@@ -67,7 +67,7 @@
 	return (self);
 }
 
-- (id)initWithStatusUpdate:(HONClubPhotoVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO {
+- (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO {
 	NSLog(@"%@ - initWithStatusUpdate:[%@] forClub:[%d - %@]", [self description], statusUpdateVO.dictionary, clubVO.clubID, clubVO.clubName);
 	if ((self = [self init])) {
 		_statusUpdateVO = statusUpdateVO;
@@ -101,15 +101,15 @@
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
-		[[HONClubAssistant sharedInstance] writeClub:result];
-			
-		[_clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
-			if (clubPhotoVO.challengeID == _statusUpdateVO.challengeID) {
-				_statusUpdateVO = [HONClubPhotoVO clubPhotoWithDictionary:clubPhotoVO.dictionary];
-				*stop = YES;
-			}
-		}];
+//		[[HONClubAssistant sharedInstance] writeClub:result];
+//		
+//		[_clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
+//			if (clubPhotoVO.challengeID == _clubPhotoVO.challengeID) {
+//				_clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:clubPhotoVO.dictionary];
+//				*stop = YES;
+//			}
+//		}];
 		
 		[self _didFinishDataRefresh];
 	}];
@@ -117,14 +117,14 @@
 
 - (void)_submitCommentReply {
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
+						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_clubVO.clubID),
 						   @"subject"		: _comment,
-						   @"challenge_id"	: @(_statusUpdateVO.challengeID)};
+						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
-	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -152,7 +152,7 @@
 				[_overlayView removeFromSuperview];
 				_overlayView = nil;
 			}
-		
+			
 			_isSubmitting = NO;
 			[self _goReloadContent];
 		}
@@ -161,12 +161,12 @@
 
 - (void)_flagStatusUpdate {
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
+						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_clubVO.clubID),
 						   @"subject"		: @"__FLAG__",
-						   @"challenge_id"	: @(_statusUpdateVO.challengeID)};
+						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	
-	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -210,12 +210,12 @@
 }
 
 - (void)_didFinishDataRefresh {
-	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentVO *vo = (HONCommentVO *)obj;
-		
-		if (![vo.textContent isEqualToString:@"__FLAG__"])
-			[_replies addObject:vo];
-	}];
+//	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONCommentVO *vo = (HONCommentVO *)obj;
+//		
+//		if (![vo.textContent isEqualToString:@"__FLAG__"])
+//			[_replies addObject:vo];
+//	}];
 	
 	
 	[_tableView reloadData];
@@ -239,12 +239,12 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_isSubmitting = NO;
-	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentVO *vo = (HONCommentVO *)obj;
-		
-		if (![vo.textContent isEqualToString:@"__FLAG__"])
-			[_replies addObject:vo];
-	}];
+//	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONCommentVO *vo = (HONCommentVO *)obj;
+//		
+//		if (![vo.textContent isEqualToString:@"__FLAG__"])
+//			[_replies addObject:vo];
+//	}];
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	_scrollView.contentInset = UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0);
@@ -272,7 +272,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[_imageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultClubPhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
+		[_imageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
 		
 		[_imageLoadingView stopAnimating];
 		[_imageLoadingView removeFromSuperview];
@@ -289,7 +289,7 @@
 							 failure:imageFailureBlock];
 	
 	NSLog(@"SUBJECT:[%d]", [[_statusUpdateVO.dictionary objectForKey:@"text"] length]);
-	if ([[_statusUpdateVO.dictionary objectForKey:@"text"] length] > 0) {
+	if ([_statusUpdateVO.comment length] > 0) {
 		UIView *subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 242.0, 320.0, 44.0)];
 		subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_scrollView addSubview:subjectBGView];
@@ -299,7 +299,7 @@
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		subjectLabel.text = [_statusUpdateVO.dictionary objectForKey:@"text"];
+		subjectLabel.text = _statusUpdateVO.comment;
 		[subjectBGView addSubview:subjectLabel];
 	}
 	
@@ -308,7 +308,7 @@
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.updatedDate];
 //	[self.view addSubview:timeLabel];
 	
 	UIButton *cancelReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -326,7 +326,7 @@
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO])];
 	[voteHolderView addSubview:_upVoteButton];
 	
 	_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(0.0, 60.0, 49.0, 26.0)];
@@ -343,28 +343,28 @@
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO])];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO])];
 	[voteHolderView addSubview:_downVoteButton];
 	
-	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]));
-	if (![[HONClubAssistant sharedInstance] hasVotedForClubPhoto:_statusUpdateVO]) {
+	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO]));
+	if (![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO]) {
 		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
 		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}
 	
-	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_statusUpdateVO.challengeID completion:^(NSString *result) {
-		_statusUpdateVO.score = [result intValue];
-		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-		[_scoreLabel toggleLoading:NO];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_clubPhotoVO.challengeID completion:^(NSString *result) {
+//		_clubPhotoVO.score = [result intValue];
+//		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
+//		[_scoreLabel toggleLoading:NO];
+//	}];
 	
 	_replies = [NSMutableArray array];
-	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_statusUpdateVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentVO *vo = (HONCommentVO *)obj;
-		
-		if (![vo.textContent isEqualToString:@"__FLAG__"])
-			[_replies addObject:vo];
-	}];
+//	[[[HONClubAssistant sharedInstance] repliesForClubPhoto:_clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONCommentVO *vo = (HONCommentVO *)obj;
+//		
+//		if (![vo.textContent isEqualToString:@"__FLAG__"])
+//			[_replies addObject:vo];
+//	}];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - (([_replies count] > 0) ? 146.0 : 88.0), 320.0, self.view.frame.size.height - (kNavHeaderHeight + 44.0))];
 	_tableView.backgroundColor = [UIColor whiteColor];
@@ -407,9 +407,15 @@
 	[_submitCommentButton setEnabled:NO];
 	[_inputBGImageView addSubview:_submitCommentButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_details", @"Details")];
-	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
+	_headerView = [[HONHeaderView alloc] init];
 	[self.view addSubview:_headerView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _headerView.frame;
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"statusUpdateHeaderButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"statusUpdateHeaderButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:closeButton];
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(280.0, 0.0, 44.0, 44.0);
@@ -449,12 +455,12 @@
 	
 	[_scoreLabel toggleLoading:YES];
 //	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:YES completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.statusUpdateID isUpVote:NO completion:^(NSDictionary *result) {
 		_statusUpdateVO.score++;
 		_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
 		[_scoreLabel toggleLoading:NO];
 		
-		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:YES];
+		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.statusUpdateID asUpVote:YES];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	}];
@@ -470,12 +476,12 @@
 	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	
 	[_scoreLabel toggleLoading:NO];
-	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.challengeID isUpVote:NO completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:_statusUpdateVO.statusUpdateID isUpVote:NO completion:^(NSDictionary *result) {
 		_statusUpdateVO.score--;
 		_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
 		[_scoreLabel toggleLoading:YES];
 		
-		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.challengeID asUpVote:NO];
+		[[HONClubAssistant sharedInstance] writeStatusUpdateAsVotedWithID:_statusUpdateVO.statusUpdateID asUpVote:NO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SCORE" object:_statusUpdateVO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	}];

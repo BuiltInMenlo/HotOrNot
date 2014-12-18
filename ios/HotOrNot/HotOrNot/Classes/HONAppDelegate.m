@@ -323,7 +323,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_images"] forKey:@"compose_images"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_subjects"] forKey:@"compose_subjects"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_comments"] forKey:@"subject_comments"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
@@ -411,9 +411,9 @@ void Swizzle(Class c, SEL orig, SEL new)
 			} else {
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 				
-				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-					[[HONClubAssistant sharedInstance] writeUserClubs:result];
-					
+//				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//					[[HONClubAssistant sharedInstance] writeUserClubs:result];
+				
 					if (self.window.rootViewController == nil) {
 						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
 						[navigationController setNavigationBarHidden:YES];
@@ -421,7 +421,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 						self.window.rootViewController = navigationController;
 						self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 					}
-				}];
+//				}];
 			}
 		}
 	}];
@@ -823,103 +823,103 @@ void Swizzle(Class c, SEL orig, SEL new)
 	if (!url)
 		return (NO);
 	
-	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
-	if ([protocol isEqualToString:@"selfieclub"]) {
-		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
-		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
-		NSLog(@"PATH:[%@]", path);
-		
-		if ([path count] == 2) {
-			NSString *username = [[path firstObject] lowercaseString];
-			NSString *clubName = [[path lastObject] lowercaseString];
-			
-			[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeDeepLink];
-			
+//	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
+//	if ([protocol isEqualToString:@"selfieclub"]) {
+//		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
+//		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
+//		NSLog(@"PATH:[%@]", path);
+//		
+//		if ([path count] == 2) {
+//			NSString *username = [[path firstObject] lowercaseString];
+//			NSString *clubName = [[path lastObject] lowercaseString];
+//			
+//			[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeDeepLink];
+//			
 			// already a member
-			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
-				for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"]) {
-					if ([[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-						NSLog(@"OWNER_ID:[%d]", [[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue]);
-						_selectedClubVO = [HONUserClubVO clubWithDictionary:dict];
-						break;
-					}
-				}
-				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of"), _selectedClubVO.clubName]
-																	message:NSLocalizedString(@"alert_enterClub", @"Want to go there now?")
-																   delegate:self
-														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-				[alertView setTag:HONAppDelegateAlertTypeEnterClub];
-				[alertView show];
-				
-			} else { // search for this user
-				[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
-					int userID = 0;
-					if ([result count] == 0) {
-						[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
-													message:@""
-												   delegate:nil
-										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-										  otherButtonTitles:nil] show];
-						
-					} else { // user found
-						for (NSDictionary *user in result) {
-							if ([username isEqualToString:[[user objectForKey:@"username"] lowercaseString]]) {
-								userID = [[user objectForKey:@"id"] intValue];
-								break;
-							}
-						}
-						
-						NSLog(@"userID:[%d]", userID);
-						if (userID == 0) { // didn't find the user
-							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
-														message:@""
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:nil] show];
-							
-						} else { // found the user
-							[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
-								int clubID = 0;
-								for (NSDictionary *club in [result objectForKey:@"owned"]) {
-									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubName	]) {
-										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-										clubID = [[club objectForKey:@"id"] intValue];
-										break;
-									}
-								}
-								
-								if (clubID > 0) { // user is the owner, prompt for join
-									[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:userID completion:^(NSDictionary *result) {
-										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-										
-										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", @"Would you like to join the %@ Selfieclub?"), _selectedClubVO.clubName]
-																						   delegate:self
-																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-										[alertView setTag:HONAppDelegateAlertTypeJoinCLub];
-										[alertView show];
-									}];
-																	
-								} else { // user isn't the owner
-									_clubName = clubName;
-									UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"club_notfound", @"Club Not Found!")
-																						message: NSLocalizedString(@"alert_create_it", @"Would you like to create it?")
-																					   delegate:self
-																			  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-																			  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-									[alertView setTag:HONAppDelegateAlertTypeCreateClub];
-									[alertView show];
-								}
-							}]; // clubs for owner
-						} // found club owner
-					} // user found
-				}]; // username search
-			} // two fields
-		} // path split
-	}
+//			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
+//				for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"]) {
+//					if ([[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+//						NSLog(@"OWNER_ID:[%d]", [[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue]);
+//						_selectedClubVO = [HONUserClubVO clubWithDictionary:dict];
+//						break;
+//					}
+//				}
+//				
+//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of"), _selectedClubVO.clubName]
+//																	message:NSLocalizedString(@"alert_enterClub", @"Want to go there now?")
+//																   delegate:self
+//														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+//														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+//				[alertView setTag:HONAppDelegateAlertTypeEnterClub];
+//				[alertView show];
+//				
+//			} else { // search for this user
+//				[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
+//					int userID = 0;
+//					if ([result count] == 0) {
+//						[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
+//													message:@""
+//												   delegate:nil
+//										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//										  otherButtonTitles:nil] show];
+//						
+//					} else { // user found
+//						for (NSDictionary *user in result) {
+//							if ([username isEqualToString:[[user objectForKey:@"username"] lowercaseString]]) {
+//								userID = [[user objectForKey:@"id"] intValue];
+//								break;
+//							}
+//						}
+//						
+//						NSLog(@"userID:[%d]", userID);
+//						if (userID == 0) { // didn't find the user
+//							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
+//														message:@""
+//													   delegate:nil
+//											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//											  otherButtonTitles:nil] show];
+//							
+//						} else { // found the user
+//							[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
+//								int clubID = 0;
+//								for (NSDictionary *club in [result objectForKey:@"owned"]) {
+//									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubName	]) {
+//										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+//										clubID = [[club objectForKey:@"id"] intValue];
+//										break;
+//									}
+//								}
+//								
+//								if (clubID > 0) { // user is the owner, prompt for join
+//									[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:userID completion:^(NSDictionary *result) {
+//										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+//										
+//										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", @"Would you like to join the %@ Selfieclub?"), _selectedClubVO.clubName]
+//																						   delegate:self
+//																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+//										[alertView setTag:HONAppDelegateAlertTypeJoinCLub];
+//										[alertView show];
+//									}];
+//																	
+//								} else { // user isn't the owner
+//									_clubName = clubName;
+//									UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"club_notfound", @"Club Not Found!")
+//																						message: NSLocalizedString(@"alert_create_it", @"Would you like to create it?")
+//																					   delegate:self
+//																			  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+//																			  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
+//									[alertView setTag:HONAppDelegateAlertTypeCreateClub];
+//									[alertView show];
+//								}
+//							}]; // clubs for owner
+//						} // found club owner
+//					} // user found
+//				}]; // username search
+//			} // two fields
+//		} // path split
+//	}
 	
 	return (YES);
 }
@@ -1037,6 +1037,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	NSDictionary *userDefaults = @{@"is_deactivated"	: NSStringFromBOOL(NO),
 								   @"votes"				: @{},
 								   @"purchases"			: @[],
+								   @"home_club"			: @{},
 								   @"location_club"		: @{},
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},

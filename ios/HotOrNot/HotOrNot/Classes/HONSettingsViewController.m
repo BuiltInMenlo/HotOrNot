@@ -69,7 +69,7 @@
 	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:1.33];
 }
 
-- (void)_reloadTableContents {
+- (void)_reloadContents {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:1.33];
 }
@@ -90,8 +90,8 @@
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
-	HONUserClubVO *vo = [[HONClubAssistant sharedInstance] currentLocationClub];
-	NSLog(@"%@._didFinishDataRefresh - [%d - %@]", self.class, vo.clubID, vo.clubName);
+	HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+	NSLog(@"%@._didFinishDataRefresh - [%d - %@]", self.class, locationClubVO.clubID, locationClubVO.clubName);
 }
 
 
@@ -125,9 +125,6 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-//	self.edgesForExtendedLayout = UIRectEdgeNone;
-//	self.automaticallyAdjustsScrollViewInsets = NO;
-	
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:_totalType withValue:([[HONStateMitigator sharedInstance] totalCounterForType:_totalType] - 1)];
 	NSLog(@"[:|:] [%@]:[%@]-=(%d)=-", self.class, [[HONStateMitigator sharedInstance] _keyForTotalType:_totalType], [[HONStateMitigator sharedInstance] totalCounterForType:_totalType]);
 }
@@ -153,22 +150,24 @@
 }
 
 - (void)_goChangeLocationClub:(HONUserClubVO *)clubVO {
-	if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO includePending:NO]) {
-		[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+	if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO]) {
+		[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+//		[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[[HONAPICaller sharedInstance] joinClub:clubVO completion:^(NSDictionary *result) {
 			[[HONAPICaller sharedInstance] retrieveClubByClubID:clubVO.clubID withOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
-				[[HONClubAssistant sharedInstance] writeClub:result];
+//				[[HONClubAssistant sharedInstance] writeClub:result];
 			}];
-			
-			[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+			[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+//			[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 		}];
 		
 	} else {
-		[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+//		[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
 	if (_progressHUD == nil)
@@ -186,7 +185,7 @@
 	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
 	[self.view addSubview:_overlayView];
 	
-	[self performSelector:@selector(_reloadTableContents) withObject:nil afterDelay:2.67];
+	[self performSelector:@selector(_reloadContents) withObject:nil afterDelay:2.67];
 }
 
 
@@ -281,8 +280,10 @@
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		[cell setCaption:[NSString stringWithFormat:@"%@, %@", [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"], [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"state"]]];
 		
-		CLLocation *loc = [[CLLocation alloc] initWithLatitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]];
-		NSLog(@"HOME CLUB:[%d - %@]%@ CURRENT_CLUB:[%d - %@]%@ DISTANCE:[%.04f]", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue], [[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"name"], NSStringFromCLLocation(loc), [[HONClubAssistant sharedInstance] currentLocationClub].clubID, [[HONClubAssistant sharedInstance] currentLocationClub].clubName, [[HONClubAssistant sharedInstance] currentLocationClub].location, [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:[[HONClubAssistant sharedInstance] currentLocationClub].location]);
+		HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+		HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+		
+		NSLog(@"HOME CLUB:[%d - %@]%@ CURRENT_CLUB:[%d - %@]%@ DISTANCE:[%.04f]", homeClubVO.clubID, homeClubVO.clubName, NSStringFromCLLocation(homeClubVO.location), locationClubVO.clubID, locationClubVO.clubName, locationClubVO.location, [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:locationClubVO.location]);
 		if (![[HONClubAssistant sharedInstance] isStaffClub:[[HONClubAssistant sharedInstance] currentLocationClub]]) {
 			[cell hideChevron];
 			UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
@@ -382,15 +383,20 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
+	HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+	HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+	
 	if (indexPath.section == 0) {
-		if (![[HONClubAssistant sharedInstance] isStaffClub:[[HONClubAssistant sharedInstance] currentLocationClub]]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[[HONClubAssistant sharedInstance] currentLocationClub].dictionary forKey:@"location_club"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+		if (![[HONClubAssistant sharedInstance] isStaffClub:locationClubVO]) {
+			[[HONClubAssistant sharedInstance] writeCurrentLocationClub:locationClubVO];
+//			[[NSUserDefaults standardUserDefaults] setObject:locationClubVO.dictionary forKey:@"location_club"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"MORE - location"];
 		
 		} else {
-			[[NSUserDefaults standardUserDefaults] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] forKey:@"location_club"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+			[[HONClubAssistant sharedInstance] writeCurrentLocationClub:homeClubVO];
+//			[[NSUserDefaults standardUserDefaults] setObject:homeClubVO.dictionary forKey:@"location_club"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - fixed"];
 		}
 		
@@ -412,7 +418,7 @@
 		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
 		[self.view addSubview:_overlayView];
 		
-		[self performSelector:@selector(_reloadTableContents) withObject:nil afterDelay:1.125];
+		[self performSelector:@selector(_reloadContents) withObject:nil afterDelay:1.125];
 	
 	} else if (indexPath.section == 1) {
 		HONUserClubVO *vo = (HONUserClubVO *)[_staffClubs objectAtIndex:indexPath.row];

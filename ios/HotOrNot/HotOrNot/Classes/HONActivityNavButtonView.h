@@ -10,5 +10,5 @@
 
 @interface HONActivityNavButtonView : HONNavButtonView
 - (id)initWithTarget:(id)target action:(SEL)action;
-- (void)updateActivityBadge;
+- (void)updateBadgeWithScore:(int)score;
 @end

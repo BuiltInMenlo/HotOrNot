@@ -17,11 +17,9 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 
 @implementation NSDateFormatter (Formatting)
 
-+ (NSDateFormatter *)dateFormatterISO8601:(BOOL)isUTC {
-	NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithTemplate:(isUTC) ? kISO8601UTCTemplate : kISO860LocaleTemplate];
-	
-	if (isUTC)
-		[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
++ (NSDateFormatter *)dateFormatterISO8601 {
+	NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithTemplate:kISO860LocaleTemplate];
+	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
 	
 	return (dateFormatter);
 }
@@ -56,7 +54,7 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 }
 
 + (instancetype)blankUTCTimestamp {
-	return ([[NSDateFormatter dateFormatterISO8601:YES] dateFromString:kISO8601BlankTimestamp]);
+	return ([[NSDateFormatter dateFormatterISO8601] dateFromString:kISO8601BlankTimestamp]);
 }
 
 + (instancetype)dateFromUnixTimestamp:(CGFloat)timestamp {
@@ -64,11 +62,7 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 }
 
 + (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate {
-	return ([NSDate dateFromISO9601FormattedString:stringDate isUTC:YES]);
-}
-
-+ (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC {
-	return ([[NSDateFormatter dateFormatterISO8601:isUTC] dateFromString:stringDate]);
+	return ([[NSDateFormatter dateFormatterISO8601] dateFromString:stringDate]);
 }
 
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate {
@@ -147,11 +141,11 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 
 
 - (NSString *)formattedISO8601String {
-	return ([[NSDateFormatter dateFormatterISO8601:NO] stringFromDate:self]);
+	return ([[NSDateFormatter dateFormatterISO8601] stringFromDate:self]);
 }
 
 - (NSString *)formattedISO8601StringUTC {
-	return ([[NSDateFormatter dateFormatterISO8601:YES] stringFromDate:self]);
+	return ([[NSDateFormatter dateFormatterISO8601] stringFromDate:self]);
 }
 
 - (NSString *)utcHourOffsetFromDeviceLocale {

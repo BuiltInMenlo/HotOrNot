@@ -106,6 +106,10 @@ static HONColorAuthority *sharedInstance = nil;
 	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.671]);
 }
 
+- (UIColor *)honGrey80TextColor {
+	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.800]);
+}
+
 - (UIColor *)honPlaceholderTextColor {
 	return ([[HONColorAuthority sharedInstance] percentGreyscaleColor:0.4790]);
 }

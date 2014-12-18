@@ -42,6 +42,7 @@ extern NSString * const kColorComponentSaturationKey;
 - (UIColor *)honGreyTextColor;
 - (UIColor *)honDarkGreyTextColor;
 - (UIColor *)honLightGreyTextColor;
+- (UIColor *)honGrey80TextColor;
 - (UIColor *)honPlaceholderTextColor;
 - (UIColor *)honRandomColor;
 - (UIColor *)honRandomColorWithStartingBrightness:(CGFloat)offset;

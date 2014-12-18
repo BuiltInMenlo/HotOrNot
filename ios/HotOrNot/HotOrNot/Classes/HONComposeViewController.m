@@ -125,6 +125,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
@@ -199,7 +200,7 @@
 												 encoding:NSUTF8StringEncoding];
 	
 	NSDictionary *submitParams = @{@"user_id"		: @([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]),
-								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultClubPhotoURL]],
+								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
 								   @"club_id"		: @(_userClubVO.clubID),
 								   @"challenge_id"	: @(0),
 								   @"subjects"		: jsonString};

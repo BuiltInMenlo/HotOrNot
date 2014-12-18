@@ -57,11 +57,11 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveSubjects {
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_subjects"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		NSDictionary *dict = (NSDictionary *)obj;
-		[_subjects addObject:[HONSubjectVO subjectWithDictionary:dict]];
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"subject_comments"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:(NSDictionary *)obj];
+		if (((vo.useType ^ HONSubjectUseTypeDisabled) & HONSubjectUseTypeDisabled) && (vo.useType & HONSubjectUseTypeCompose))
+			[_subjects addObject:vo];
 	}];
-	
 	
 	[self _didFinishDataRefresh];
 }
@@ -74,7 +74,7 @@
 	[_submitParams setValue:_selectedSubjectVO.subjectName forKey:@"subject"];
 	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -141,7 +141,7 @@
 	[self.view addSubview:backButton];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
-	_tableView.backgroundView = [[UIView alloc] initWithFrame:CGRectFromSize(_tableView.frame.size)];
+	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 58.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
@@ -151,7 +151,7 @@
 	[_tableView addSubview: _refreshControl];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0);
+	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

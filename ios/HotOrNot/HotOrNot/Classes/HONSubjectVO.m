@@ -11,7 +11,7 @@
 #import "HONSubjectVO.h"
 
 @implementation HONSubjectVO
-@synthesize subjectID, subjectName, score, addedDate;
+@synthesize subjectID, useType, subjectName, score, addedDate;
 
 + (HONSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
 	HONSubjectVO *vo = [[HONSubjectVO alloc] init];
@@ -22,11 +22,31 @@
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	
-	vo.formattedProperties = [NSString stringWithFormat:@".subjectID		: [%d]\n", vo.subjectID];
-	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".subjectName	: [%@]\n", vo.subjectName];
-	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".score		: [%d]\n", vo.score];
-	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".addedDate		: [%@]\n", vo.addedDate];
-	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".dictionary	: [%@]", vo.dictionary];
+	vo.useType = HONSubjectUseTypeUnassigned;
+	vo.useType += (int)(([[[dictionary objectForKey:@"type"] uppercaseString] containsString:@"DISABLED"]) * HONSubjectUseTypeDisabled);
+	vo.useType += (int)(([[[dictionary objectForKey:@"type"] uppercaseString] containsString:@"COMPOSE"]) * HONSubjectUseTypeCompose);
+	vo.useType += (int)(([[[dictionary objectForKey:@"type"] uppercaseString] containsString:@"REPLY"]) * HONSubjectUseTypeReply);
+	vo.useType += (int)(([[[dictionary objectForKey:@"type"] uppercaseString] containsString:@"SPECIAL"]) * HONSubjectUseTypeSpecial);
+	
+	NSMutableArray *useTypes = [NSMutableArray array];
+	if (vo.useType & HONSubjectUseTypeDisabled)
+		[useTypes addObject:@"Disabled"];
+	
+	if (vo.useType & HONSubjectUseTypeCompose)
+		[useTypes addObject:@"Compose"];
+	
+	if (vo.useType & HONSubjectUseTypeReply)
+		[useTypes addObject:@"Reply"];
+	
+	if (vo.useType & HONSubjectUseTypeSpecial)
+		[useTypes addObject:@"Special"];
+	
+	vo.formattedProperties = [NSString stringWithFormat:@".subjectID    : [%d]\n", vo.subjectID];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".useType      : [%@]\n", [useTypes componentsJoinedByString:@"|"]];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".subjectName  : [%@]\n", vo.subjectName];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".score        : [%d]\n", vo.score];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".addedDate    : [%@]\n", vo.addedDate];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".dictionary   : [%@]", vo.dictionary];
 	
 	return (vo);
 }

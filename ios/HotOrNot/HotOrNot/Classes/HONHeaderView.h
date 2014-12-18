@@ -24,7 +24,7 @@
 - (void)leftAlignTitle;
 - (void)tappedTitle;
 - (void)addTitleImage:(UIImage *)image;
-- (void)refreshActivity;
+- (void)updateActivityScore:(int)score;
 - (void)removeBackground;
 
 @property (nonatomic, strong) NSString *title;

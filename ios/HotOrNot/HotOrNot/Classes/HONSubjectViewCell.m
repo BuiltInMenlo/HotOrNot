@@ -46,7 +46,7 @@
 	if ((self = [self init])) {
 		_isSelected = isSelected;
 		
-		_captionLabel.textColor = (_isSelected) ? [UIColor blackColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_captionLabel.textColor = (_isSelected) ? [UIColor whiteColor] : [[HONColorAuthority sharedInstance] honGrey80TextColor];
 		
 		if (_isSelected) {
 			[UIView animateWithDuration:0.125 animations:^(void) {
@@ -76,7 +76,7 @@
 - (void)toggleSelected:(BOOL)isSelected {
 	_isSelected = isSelected;
 	
-	_captionLabel.textColor = (_isSelected) ? [UIColor blackColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_captionLabel.textColor = (_isSelected) ? [UIColor whiteColor] : [[HONColorAuthority sharedInstance] honGrey80TextColor];
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_selectedBGImageView.alpha = (int)_isSelected;
 	} completion:^(BOOL finished) {

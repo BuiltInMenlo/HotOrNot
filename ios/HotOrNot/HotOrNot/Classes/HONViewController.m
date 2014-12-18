@@ -65,6 +65,9 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
+//	self.edgesForExtendedLayout = UIRectEdgeNone;
+//	self.automaticallyAdjustsScrollViewInsets = NO;
+	
 	_panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_goPanGesture:)];
 	_panGestureRecognizer.minimumNumberOfTouches = 1;
 	_panGestureRecognizer.maximumNumberOfTouches = UINT_MAX;

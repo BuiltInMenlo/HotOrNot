@@ -160,9 +160,9 @@
 	[self addSubview:_titleImageView];
 }
 
-- (void)refreshActivity {
+- (void)updateActivityScore:(int)score {
 	if (_activityNavButtonView != nil)
-		[_activityNavButtonView updateActivityBadge];
+		[_activityNavButtonView updateBadgeWithScore:score];
 }
 
 - (void)removeBackground {

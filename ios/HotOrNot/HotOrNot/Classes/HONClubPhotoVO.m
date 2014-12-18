@@ -32,7 +32,7 @@
 	
 	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
-	vo.composeImageVO = ([vo.subjectNames count] > 0) ? [[HONClubAssistant sharedInstance] composeImageForClubPhoto:vo] : nil;
+//	vo.composeImageVO = ([vo.subjectNames count] > 0) ? [[HONClubAssistant sharedInstance] composeImageForClubPhoto:vo] : nil;
 	
 	vo.comment = [dictionary objectForKey:@"text"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];

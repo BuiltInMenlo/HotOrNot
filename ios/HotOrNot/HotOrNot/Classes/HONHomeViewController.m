@@ -34,11 +34,8 @@
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *retrievedStatusUpdates;
-@property (nonatomic) int totalPages;
-@property (nonatomic) int totalStatusUpdates;
-@property (nonatomic) int fetchedStatusUpdates;
-@property (nonatomic, strong) NSMutableArray *clubPhotos;
-@property (nonatomic, strong) HONClubPhotoVO *selectedClubPhotoVO;
+@property (nonatomic, strong) NSMutableArray *statusUpdates;
+@property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONHomeFeedToggleView *toggleView;
 @property (nonatomic, strong) UIView *emptyFeedView;
@@ -52,7 +49,7 @@
 	if ((self = [super init])) {
 		_totalType = HONStateMitigatorTotalTypeHomeTab;
 		_viewStateType = HONStateMitigatorViewStateTypeHome;
-		_feedType = HONHomeFeedTypeTop;
+		_feedType = HONHomeFeedTypeRecent;
 		_voteScore = 0;
 		
 		
@@ -97,6 +94,7 @@
 		cell.delegate = nil;
 	}];
 	
+	_locationManager.delegate = nil;
 	_collectionView.dataSource = nil;
 	_collectionView.delegate = nil;
 	
@@ -105,128 +103,136 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveClubPhotos {
-	if (_feedType == HONHomeFeedTypeRecent) {
-//		[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:[[HONClubAssistant sharedInstance] currentLocationClub].clubID fromPage:1 completion:^(NSDictionary *result) {
-//			NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
-//			
-//			_totalStatusUpdates = [[result objectForKey:@"count"] intValue];
-////			_totalPages = (int)ceil(_totalStatusUpdates / 10);
-//			
-//			[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
-//			_fetchedStatusUpdates = [_retrievedStatusUpdates count];
-//			
+- (void)_retrieveClubPhotosAtPage:(int)page {
+//	if (_feedType == HONHomeFeedTypeRecent) {
+	
+	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+		__block int nextPage = page + 1;
+		[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:page completion:^(NSDictionary *result) {
+			NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
+			
+			[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
+			
+//			NSLog(@"ON PAGE:[%d]", page);
 //			NSLog(@"RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
-//			while ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue]) {
-//				[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:[[HONClubAssistant sharedInstance] currentLocationClub].clubID fromPage:1 completion:^(NSDictionary *result) {
-//					[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
-//					_fetchedStatusUpdates = [_retrievedStatusUpdates count];
-//				}];
-//			}
+			
+			if ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue])
+				[self _retrieveClubPhotosAtPage:nextPage];
+			
+			else {
+//				NSLog(@"FINISHED RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
+				
+				[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+					[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
+					
+					[_statusUpdates addObject:[HONStatusUpdateVO statusUpdateWithDictionary:dict]];
+				}];
+				
+				[self _didFinishDataRefresh];
+			}
+		}];
+	
+	
+//		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 //			
+//			[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				NSString *key = (NSString *)obj;
+//				if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
+//					for (NSDictionary *dict in [result objectForKey:key]) {
+//						NSLog(@"CLUB_ID:[%d]-=-[%d] >> %@", [[dict objectForKey:@"id"] intValue], [[HONClubAssistant sharedInstance] currentLocationClub].clubID, NSStringFromBOOL([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID));
+//						if ([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
+//							
+//							HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
+//							[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//								HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
+//								if (clubPhotoVO.parentID != 0)
+//									return;
+//								
+//								if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue] != 0 && [NSDate elapsedSecondsSinceDate:clubPhotoVO.addedDate isUTC:YES] > [[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue])
+//									return;
+//								
+//								__block BOOL isFlagged = NO;
+//								[[[HONClubAssistant sharedInstance] repliesForClubPhoto:clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//									HONCommentVO *vo = (HONCommentVO *)obj;
+//									if ([vo.textContent isEqualToString:@"__FLAG__"]) {
+//										isFlagged = YES;
+//										*stop = YES;
+//									}
+//								}];
+//								
+//								NSLog(@"*|*|* STATUS_UPDATE -=- [%d / %d][%@]", clubPhotoVO.challengeID, clubPhotoVO.clubID, clubPhotoVO.imagePrefix);
+//								if (isFlagged) {
+//									NSLog(@"*|*|* FLAGGED *|*|* -=- [%d / %d][%@]", clubPhotoVO.challengeID, clubPhotoVO.clubID, clubPhotoVO.imagePrefix);
+//									return;
+//								}
+//								
+//								[_clubPhotos addObject:clubPhotoVO];
+//							}];
+//						}
+//					}
+//				}
+//			}];
 //			
+//			[self _didFinishDataRefresh];
 //		}];
-		
-		
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-			[[HONClubAssistant sharedInstance] writeUserClubs:result];
-			
-			[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				NSString *key = (NSString *)obj;
-				if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
-					for (NSDictionary *dict in [result objectForKey:key]) {
-						NSLog(@"CLUB_ID:[%d]-=-[%d] >> %@", [[dict objectForKey:@"id"] intValue], [[HONClubAssistant sharedInstance] currentLocationClub].clubID, NSStringFromBOOL([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID));
-						if ([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
-							
-							HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
-							[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-								HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
-								if (clubPhotoVO.parentID != 0)
-									return;
-								
-								if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue] != 0 && [NSDate elapsedSecondsSinceDate:clubPhotoVO.addedDate isUTC:YES] > [[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue])
-									return;
-								
-								__block BOOL isFlagged = NO;
-								[[[HONClubAssistant sharedInstance] repliesForClubPhoto:clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-									HONCommentVO *vo = (HONCommentVO *)obj;
-									if ([vo.textContent isEqualToString:@"__FLAG__"]) {
-										isFlagged = YES;
-										*stop = YES;
-									}
-								}];
-								
-								NSLog(@"*|*|* STATUS_UPDATE -=- [%d / %d][%@]", clubPhotoVO.challengeID, clubPhotoVO.clubID, clubPhotoVO.imagePrefix);
-								if (isFlagged) {
-									NSLog(@"*|*|* FLAGGED *|*|* -=- [%d / %d][%@]", clubPhotoVO.challengeID, clubPhotoVO.clubID, clubPhotoVO.imagePrefix);
-									return;
-								}
-								
-								[_clubPhotos addObject:clubPhotoVO];
-							}];
-						}
-					}
-				}
-			}];
-			
-			[self _didFinishDataRefresh];
-		}];
-		
-	} else {
-		[[HONAPICaller sharedInstance] retrieveTopClubsForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-			[[HONClubAssistant sharedInstance] writeUserClubs:result];
-			
-			[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				NSString *key = (NSString *)obj;
-				if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
-					for (NSDictionary *dict in [result objectForKey:key]) {
-						NSLog(@"CLUB_ID:[%d]-=-[%d] >> %@", [[dict objectForKey:@"id"] intValue], [[HONClubAssistant sharedInstance] currentLocationClub].clubID, NSStringFromBOOL([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID));
-						if ([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
-							HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
-							
-							[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-								HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
-								if (clubPhotoVO.parentID != 0)
-									return;
-								
-								if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue] != 0 && [NSDate elapsedSecondsSinceDate:clubPhotoVO.addedDate isUTC:YES] > [[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue])
-									return;
-								
-								__block BOOL isFlagged = NO;
-								[[[HONClubAssistant sharedInstance] repliesForClubPhoto:clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-									HONCommentVO *vo = (HONCommentVO *)obj;
-									if ([vo.textContent isEqualToString:@"__FLAG__"]) {
-										isFlagged = YES;
-										*stop = YES;
-									}
-								}];
-								
-								NSLog(@"*|*|* STATUS_UPDATE -=- [%d][%@]", clubPhotoVO.challengeID, clubPhotoVO.imagePrefix);
-								if (isFlagged) {
-									NSLog(@"*|*|* FLAGGED -=- [%d][%@]", clubPhotoVO.challengeID, clubPhotoVO.imagePrefix);
-									return;
-								}
-								
-								[_clubPhotos addObject:clubPhotoVO];
-							}];
-						}
-					}
-				}
-			}];
-			
-			[self _didFinishDataRefresh];
-		}];
-	}
+//		
+//	} else {
+//		[[HONAPICaller sharedInstance] retrieveTopClubsForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//			[[HONClubAssistant sharedInstance] writeUserClubs:result];
+//			
+//			[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				NSString *key = (NSString *)obj;
+//				if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
+//					for (NSDictionary *dict in [result objectForKey:key]) {
+//						NSLog(@"CLUB_ID:[%d]-=-[%d] >> %@", [[dict objectForKey:@"id"] intValue], [[HONClubAssistant sharedInstance] currentLocationClub].clubID, NSStringFromBOOL([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID));
+//						if ([[dict objectForKey:@"id"] intValue] == [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
+//							HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
+//							
+//							[clubVO.submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//								HONClubPhotoVO *clubPhotoVO = (HONClubPhotoVO *)obj;
+//								if (clubPhotoVO.parentID != 0)
+//									return;
+//								
+//								if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue] != 0 && [NSDate elapsedSecondsSinceDate:clubPhotoVO.addedDate isUTC:YES] > [[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_threshold"] intValue])
+//									return;
+//								
+//								__block BOOL isFlagged = NO;
+//								[[[HONClubAssistant sharedInstance] repliesForClubPhoto:clubPhotoVO] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//									HONCommentVO *vo = (HONCommentVO *)obj;
+//									if ([vo.textContent isEqualToString:@"__FLAG__"]) {
+//										isFlagged = YES;
+//										*stop = YES;
+//									}
+//								}];
+//								
+//								NSLog(@"*|*|* STATUS_UPDATE -=- [%d][%@]", clubPhotoVO.challengeID, clubPhotoVO.imagePrefix);
+//								if (isFlagged) {
+//									NSLog(@"*|*|* FLAGGED -=- [%d][%@]", clubPhotoVO.challengeID, clubPhotoVO.imagePrefix);
+//									return;
+//								}
+//								
+//								[_clubPhotos addObject:clubPhotoVO];
+//							}];
+//						}
+//					}
+//				}
+//			}];
+//			
+//			[self _didFinishDataRefresh];
+//		}];
+//	}
 }
 
 - (void)_flagStatusUpdate {
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultClubPhotoURL],
-						   @"club_id"		: @(_selectedClubPhotoVO.clubID),
+						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+						   @"club_id"		: @(_selectedStatusUpdateVO.clubID),
 						   @"subject"		: @"__FLAG__",
-						   @"challenge_id"	: @(_selectedClubPhotoVO.challengeID)};
+						   @"challenge_id"	: @(_selectedStatusUpdateVO.statusUpdateID)};
 	
-	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -250,6 +256,7 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Refresh"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeHomeTabRefresh];
 	
+	_locationManager.delegate = self;
 	if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse)
 		[_locationManager startUpdatingLocation];
 	
@@ -259,18 +266,19 @@
 
 - (void)_goReloadContents {
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+		_locationManager.delegate = nil;
+		
 		_noNetworkView.hidden = YES;
 		[_toggleView toggleEnabled:NO];
 		
-		_totalPages = 1;
 		_retrievedStatusUpdates = [NSMutableArray array];
-		_clubPhotos = [NSMutableArray array];
+		_statusUpdates = [NSMutableArray array];
 		[_collectionView reloadData];
 		
 		if (![_refreshControl isRefreshing])
 			[_refreshControl beginRefreshing];
 		
-		[self _retrieveClubPhotos];
+		[self _retrieveClubPhotosAtPage:1];
 	
 	} else {
 		_noNetworkView.hidden = NO;
@@ -283,37 +291,60 @@
 		_progressHUD = nil;
 	}
 	
-	if (_feedType == HONHomeFeedTypeRecent) {
-		_clubPhotos = [[_clubPhotos sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-			HONClubPhotoVO *vo1 = (HONClubPhotoVO *)obj1;
-			HONClubPhotoVO *vo2 = (HONClubPhotoVO *)obj2;
+	if (_feedType == HONHomeFeedTypeTop) {
+		_statusUpdates = [[_statusUpdates sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+			HONStatusUpdateVO *vo1 = (HONStatusUpdateVO *)obj1;
+			HONStatusUpdateVO *vo2 = (HONStatusUpdateVO *)obj2;
 			
-			if ([vo1.addedDate didDateAlreadyOccur:vo2.addedDate])
+			if (vo1.score < vo2.score) {
+				NSLog(@"vo1.score:[%d / %d] < vo2.score:[%d / %d]", vo1.score, vo1.statusUpdateID, vo2.score, vo2.statusUpdateID);
 				return ((NSComparisonResult)NSOrderedDescending);
+			}
 			
-			if ([vo2.addedDate didDateAlreadyOccur:vo1.addedDate])
+			if (vo1.score > vo2.score) {
+				NSLog(@"vo1.score:[%d / %d] > vo2.score:[%d / %d]", vo1.score, vo1.statusUpdateID, vo2.score, vo2.statusUpdateID);
 				return ((NSComparisonResult)NSOrderedAscending);
+			}
 			
+			NSLog(@"vo1.score:[%d / %d] = vo2.score:[%d / %d]", vo1.score, vo1.statusUpdateID, vo2.score, vo2.statusUpdateID);
 			return ((NSComparisonResult)NSOrderedSame);
 		}] mutableCopy];
 	}
 	
-	_emptyFeedView.hidden = ([_clubPhotos count] > 0);
-
-//	[_collectionView reloadData];
+	_emptyFeedView.hidden = ([_statusUpdates count] > 0);
 	[_refreshControl endRefreshing];
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[_collectionView reloadData];
-		[_collectionView.collectionViewLayout invalidateLayout];
-	});
+	[_collectionView reloadData];
 	
-	[_headerView refreshActivity];
+//	if (_feedType == HONHomeFeedTypeRecent) {
+//		_clubPhotos = [[_clubPhotos sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//			HONClubPhotoVO *vo1 = (HONClubPhotoVO *)obj1;
+//			HONClubPhotoVO *vo2 = (HONClubPhotoVO *)obj2;
+//			
+//			if ([vo1.addedDate didDateAlreadyOccur:vo2.addedDate])
+//				return ((NSComparisonResult)NSOrderedDescending);
+//			
+//			if ([vo2.addedDate didDateAlreadyOccur:vo1.addedDate])
+//				return ((NSComparisonResult)NSOrderedAscending);
+//			
+//			return ((NSComparisonResult)NSOrderedSame);
+//		}] mutableCopy];
+//	}
+	
+//	_emptyFeedView.hidden = ([_clubPhotos count] > 0);
+//
+//	[_collectionView reloadData];
+//	[_refreshControl endRefreshing];
+//	dispatch_async(dispatch_get_main_queue(), ^{
+//		[_collectionView reloadData];
+//		[_collectionView.collectionViewLayout invalidateLayout];
+//	});
+	
 	[_toggleView toggleEnabled:YES];
-	
-	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
-		NSLog(@"ACTIVITY:[%@]", result);
-		_voteScore = [result intValue];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
+//		NSLog(@"ACTIVITY:[%@]", result);
+//		_voteScore = [result intValue];
+//		[_headerView updateActivityScore:_voteScore];
+//	}];
 	
 	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 }
@@ -324,16 +355,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
 	self.view.hidden = ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0);
-	
-	NSLog(@"HIDDEN:[%@]", NSStringFromBOOL(self.view.hidden));
-	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
-		NSLog(@"ACTIVITY:[%@]", result);
-		_voteScore = [result intValue];
-	}];
-
-	_clubPhotos = [NSMutableArray array];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView addActivityButtonWithTarget:self action:@selector(_goActivity)];
@@ -483,7 +505,7 @@
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSettings {
@@ -503,10 +525,10 @@
 	
 	if (indexPath != nil) {
 		HONHomeViewCell *cell = (HONHomeViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
-		_selectedClubPhotoVO = cell.clubPhotoVO;
+		_selectedStatusUpdateVO = cell.statusUpdateVO;
 		
 		if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-			NSLog(@"STATUS UPDATE:[%@]", cell.clubPhotoVO.dictionary);
+			NSLog(@"STATUS UPDATE:[%@]", cell.statusUpdateVO.dictionary);
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
 																message:NSLocalizedString(@"alert_flag_m", nil)
@@ -604,17 +626,17 @@
 }
 
 - (void)_refreshScore:(NSNotification *)notification {
-	NSLog(@"::|> _refreshScore:[%d] <|::", ((HONClubPhotoVO *)[notification object]).challengeID);
+	NSLog(@"::|> _refreshScore:[%d] <|::", ((HONStatusUpdateVO *)[notification object]).statusUpdateID);
 	
-	HONClubPhotoVO *vo = (HONClubPhotoVO *)[notification object];
-	[_collectionView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
-		
-		if (cell.clubPhotoVO.challengeID == vo.challengeID) {
-			[cell refeshScore];
-			*stop = YES;
-		}
-	}];
+//	HONStatusUpdateVO *vo = (HONStatusUpdateVO *)[notification object];
+//	[_collectionView.visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
+//		
+//		if (cell.statusUpdateVO.statusUpdateID == vo.statusUpdateID) {
+//			[cell refeshScore];
+//			*stop = YES;
+//		}
+//	}];
 }
 
 
@@ -630,13 +652,13 @@
 }
 
 #pragma mark - HomeViewCell Delegates
-- (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	NSLog(@"[*:*] homeViewCell:didSelectdidSelectClubPhoto:[%d])", clubPhotoVO.challengeID);
+- (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
+	NSLog(@"[*:*] homeViewCell:didSelectdidSelectdidSelectStatusUpdate:[%d])", statusUpdateVO.statusUpdateID);
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
 	
-	_selectedClubPhotoVO = clubPhotoVO;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedClubPhotoVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+	_selectedStatusUpdateVO = statusUpdateVO;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:^(void) {
 	}];
@@ -658,7 +680,7 @@
 		
 	} else if (status == kCLAuthorizationStatusAuthorized || status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusAuthorizedAlways) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_accept"];
-		[_locationManager startUpdatingLocation];
+//		[_locationManager startUpdatingLocation];
 	
 	} else if (status == kCLAuthorizationStatusDenied) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_cancel"];
@@ -668,19 +690,21 @@
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																	@"state"	: [result objectForKey:@"state"]}];
 			
-			[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
-				[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"home_club"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
+			[[HONClubAssistant sharedInstance] nearbyClubWithCompletion:^(HONUserClubVO *clubVO) {
+				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+//				[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"home_club"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]",[[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue], [[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"name"], [[HONClubAssistant sharedInstance] currentLocationClub].clubID, [[HONClubAssistant sharedInstance] currentLocationClub].clubName, clubVO.clubID, clubVO.clubName);
-				if ([[HONClubAssistant sharedInstance] currentLocationClub].clubID == 0 || (clubVO.clubID != [[HONClubAssistant sharedInstance] currentLocationClub].clubID && clubVO.clubID != [[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue])) {
-					[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
+				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+//					[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
+//					[[NSUserDefaults standardUserDefaults] synchronize];
 					
-				} else if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue] != [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
-					[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-				}
+				} //else if (homeClubVO.clubID != locationClubVO.clubID)
+//					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
 				
 				[self _goReloadContents];
 			}];
@@ -691,6 +715,7 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
 	NSLog(@"**_[%@ locationManager:didUpdateLocations:(%@)]_**", self.class, locations);
 	[_locationManager stopUpdatingLocation];
+	_locationManager.delegate = nil;
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
@@ -701,28 +726,28 @@
 																	@"state"	: [result objectForKey:@"state"]}];
 		}];
 		
-		[[HONClubAssistant sharedInstance] locationClubWithCompletion:^(HONUserClubVO *clubVO) {
-			[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"home_club"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+		[[HONClubAssistant sharedInstance] nearbyClubWithCompletion:^(HONUserClubVO *clubVO) {
+			[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
 			
-			NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]",[[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue], [[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"name"], [[HONClubAssistant sharedInstance] currentLocationClub].clubID, [[HONClubAssistant sharedInstance] currentLocationClub].clubName, clubVO.clubID, clubVO.clubName);
-			if ([[HONClubAssistant sharedInstance] currentLocationClub].clubID == 0 || (clubVO.clubID != [[HONClubAssistant sharedInstance] currentLocationClub].clubID && clubVO.clubID != [[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue])) {
-				[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
+			HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+			HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+			NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+			if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+				[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+//				[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			} else if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"home_club"] objectForKey:@"id"] intValue] != [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
-				[[NSUserDefaults standardUserDefaults] setObject:clubVO.dictionary forKey:@"location_club"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}
+			} //else if (homeClubVO.clubID != locationClubVO.clubID)
+				//[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
 			
 			[self _goReloadContents];
 		}];
 		
 	} else {
 		_noNetworkView.hidden = NO;
-		_clubPhotos = [NSMutableArray array];
-		[_collectionView reloadData];
+		_statusUpdates = [NSMutableArray array];
 		[_refreshControl endRefreshing];
+		[_collectionView reloadData];
 	}
 }
 
@@ -734,7 +759,7 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-	return ([_clubPhotos count]);
+	return ([_statusUpdates count]);
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -746,8 +771,8 @@
 	[cell setIndexPath:indexPath];
 	[cell setSize:kHomeCollectionViewCellSize];
 	
-	HONClubPhotoVO *vo = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.row];
-	cell.clubPhotoVO = vo;
+	HONStatusUpdateVO *vo = (HONStatusUpdateVO *)[_statusUpdates objectAtIndex:indexPath.row];
+	cell.statusUpdateVO = vo;
 	cell.delegate = self;
 	
 //	if (!collectionView.decelerating)
@@ -768,8 +793,8 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
 	
-	_selectedClubPhotoVO = cell.clubPhotoVO;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedClubPhotoVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+	_selectedStatusUpdateVO = cell.statusUpdateVO;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:^(void) {
 	}];
