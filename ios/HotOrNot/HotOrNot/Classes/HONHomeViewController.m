@@ -245,6 +245,17 @@
 		_clubPhotos = [NSMutableArray array];
 		[_collectionView reloadData];
 		
+		[[[NSUserDefaults standardUserDefaults] objectForKey:@"join_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSDictionary *dict = (NSDictionary *)obj;
+			NSMutableDictionary *emptyClubDict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: [dict objectForKey:@"club_id"],
+																												   @"username"	: @"",
+																												   @"avatar"	: @""}];
+			[emptyClubDict replaceObject:[dict objectForKey:@"club_id"] forKey:@"id"];
+			[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:emptyClubDict] completion:^(NSDictionary *result) {
+				
+			}];
+		}];
+		
 		[self _retrieveClubPhotos];
 	
 	} else {

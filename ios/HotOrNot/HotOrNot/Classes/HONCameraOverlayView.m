@@ -65,7 +65,7 @@
 		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollBG"] forState:UIControlStateNormal];
 		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollBG"] forState:UIControlStateHighlighted];
 		[_cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-//		[self addSubview:_cameraRollButton];
+		[self addSubview:_cameraRollButton];
 		
 		UIImageView *cameraRollImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(CGSizeMake(36.0, 36.0))];
 		[_cameraRollButton addSubview:cameraRollImageView];

@@ -39,6 +39,7 @@
 @property (nonatomic) BOOL isImageFiltered;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) int uploadCounter;
+@property (nonatomic) int submitCounter;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 
@@ -211,12 +212,12 @@
 	}];
 }
 
-- (void)_submitStatusUpdate {
+- (void)_submitStatusUpdate:(int)clubID {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit_compose"];
 	
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						   @"img_url"		: _filename,
-						   @"club_id"		: @(_userClubVO.clubID),
+						   @"club_id"		: @(clubID),
 						   @"subject"		: _subject,
 						   @"challenge_id"	: @(0)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
@@ -232,6 +233,7 @@
 	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 		
+	_submitCounter++;
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:dict completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
@@ -246,23 +248,23 @@
 			_progressHUD = nil;
 			
 		} else {
-			[Flurry logEvent:@"enter_submit"];
-			
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
+			if (_submitCounter == [[[NSUserDefaults standardUserDefaults] objectForKey:@"join_clubs"] count]) {
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+				
+				[_overlayView removeFromSuperview];
+				_overlayView = nil;
+				
+				if ([_overlayTimer isValid])
+					[_overlayTimer invalidate];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+				}];
 			}
-			
-			[_overlayView removeFromSuperview];
-			_overlayView = nil;
-			
-			if ([_overlayTimer isValid])
-				[_overlayTimer invalidate];
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
-			}];
 		}
 	}];
 }
@@ -453,31 +455,16 @@
 
 - (void)_goSubmit {
 	NSLog(@"DISTANCE:[%.0f]", _userClubVO.distance);
-	if (_userClubVO.distance > [[[NSUserDefaults standardUserDefaults] objectForKey:@"post_radius"] floatValue]) {
-		[[[UIAlertView alloc] initWithTitle:@"Not in range!"
-									message:[NSString stringWithFormat:@"Must be within %d miles", (int)roundf(_userClubVO.postRadius)]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-	} else {
-		if (!_isImageFiltered) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:NSLocalizedString(@"alert_noPixelate_m", nil)
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-			[alertView setTag:0];
-			[alertView show];
-		
-		} else {
-			_subject = ([_subjectTextField.text isEqualToString:NSLocalizedString(@"say_something", @"")]) ? @"" : _subjectTextField.text;
-			_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
-												  selector:@selector(_orphanSubmitOverlay)
-												  userInfo:nil repeats:NO];
-			[self _submitStatusUpdate];
-		}
-	}
+	_subject = ([_subjectTextField.text isEqualToString:NSLocalizedString(@"say_something", @"")]) ? @"" : _subjectTextField.text;
+	_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
+										  selector:@selector(_orphanSubmitOverlay)
+										  userInfo:nil repeats:NO];
+	
+	_submitCounter = 0;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"join_clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		[self _submitStatusUpdate:[[dict objectForKey:@"club_id"] intValue]];
+	}];
 }
 
 - (void)_goCamera {
@@ -755,7 +742,7 @@
 			_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
 												  selector:@selector(_orphanSubmitOverlay)
 												  userInfo:nil repeats:NO];
-			[self _submitStatusUpdate];
+//			[self _submitStatusUpdate];
 		}
 	}
 }

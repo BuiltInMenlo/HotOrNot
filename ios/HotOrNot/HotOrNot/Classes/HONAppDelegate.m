@@ -54,7 +54,7 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_sc0010.json";
+NSString * const kConfigJSON = @"boot_yunder.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
@@ -329,7 +329,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"join_radius"] forKey:@"join_radius"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"join_clubs"] forKey:@"join_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"post_radius"] forKey:@"post_radius"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
