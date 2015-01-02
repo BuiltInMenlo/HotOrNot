@@ -27,7 +27,7 @@ NSString * const kConfigJSON = @"boot_sc0011.json";
 #else
 NSString * const kAPIHostKey = @"devint";
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_waddle.json";
+NSString * const kConfigJSON = @"boot_marsh.json";
 #endif
 
 

@@ -7,7 +7,7 @@
 */
 
 
-"CFBundleDisplayName" = "Waddle";
-"CFBundleName" = "Waddle";
+"CFBundleDisplayName" = "MARSH";
+"CFBundleName" = "MARSH";
 
-"NSLocationWhenInUseUsageDescription" = "Waddle 무엇 주위를 하고있는 사람 의 라이브 사진 피드 에 가입 위치를 사용합니다.";
+"NSLocationWhenInUseUsageDescription" = "MARSH 무엇 주위를 하고있는 사람 의 라이브 사진 피드 에 가입 위치를 사용합니다.";
