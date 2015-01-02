@@ -8,12 +8,12 @@
 
 #import "HONBaseVO.h"
 
-typedef NS_OPTIONS(NSUInteger, HONSubjectUseType) {
-	HONSubjectUseTypeUnassigned		= (0UL << 0),
-	HONSubjectUseTypeDisabled		= (1UL << 0),
-	HONSubjectUseTypeCompose		= (1UL << 1),
-	HONSubjectUseTypeReply			= (1UL << 2),
-	HONSubjectUseTypeSpecial		= (1UL << 3)
+typedef NS_ENUM(NSUInteger, HONSubjectUseType) {
+	HONSubjectUseTypeUnassigned	= 0,
+	HONSubjectUseTypeDisabled,
+	HONSubjectUseTypeCompose,
+	HONSubjectUseTypeReply,
+	HONSubjectUseTypeSpecial
 };
 
 @interface HONSubjectVO : HONBaseVO

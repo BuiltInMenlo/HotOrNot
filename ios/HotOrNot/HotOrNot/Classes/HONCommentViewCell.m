@@ -11,10 +11,7 @@
 
 @interface HONCommentViewCell ()
 @property (nonatomic, strong) UILabel *commentLabel;
-@property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
-@property (nonatomic, strong) UIButton *upVoteButton;
-@property (nonatomic, strong) UIButton *downVoteButton;
 @end
 
 
@@ -44,28 +41,6 @@
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:14];
 		[self.contentView addSubview:_timeLabel];
-		
-		_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_upVoteButton.frame = CGRectMake(274.0, -6.0, 44.0, 44.0);
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateDisabled];
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Disabled"] forState:UIControlStateNormal];
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-		[self.contentView addSubview:_upVoteButton];
-		
-		_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_downVoteButton.frame = CGRectMake(274.0, 35.0, 44.0, 44.0);
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateDisabled];
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Disabled"] forState:UIControlStateNormal];
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-		[self.contentView addSubview:_downVoteButton];
-		
-		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(252.0, 28.0, 88.0, 16.0)];
-		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-		_scoreLabel.textAlignment = NSTextAlignmentCenter;
-		_scoreLabel.text = @"…";
-		[self.contentView addSubview:_scoreLabel];
 	}
 	
 	return (self);
@@ -81,15 +56,6 @@
 
 
 #pragma mark - Public APIs
-- (void)refreshScore {
-	[_scoreLabel toggleLoading:YES];
-	[[HONAPICaller sharedInstance] retrieveVoteTotalForChallengeWithChallengeID:_commentVO.commentID completion:^(NSNumber *result) {
-		_commentVO.score = [result intValue];
-		_scoreLabel.text = NSStringFromInt(_commentVO.score);
-		[_scoreLabel toggleLoading:NO];
-	}];
-}
-
 - (void)setCommentVO:(HONCommentVO *)commentVO {
 	_commentVO = commentVO;
 	
@@ -105,40 +71,14 @@
 	
 //	_timeLabel.frame = CGRectMake(8.0, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 4.0, _timeLabel.frame.size.width, _timeLabel.frame.size.height);
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
-	
-	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
-	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO])];
-	
-	if (![[HONClubAssistant sharedInstance] hasVotedForComment:_commentVO]) {
-		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
-		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
-	}
-	
-	[self refreshScore];
 }
 
 
 #pragma mark - Navigation
-- (void)_goDownVote {
-	[_upVoteButton setEnabled:NO];
-	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
-	
-	[_downVoteButton setEnabled:NO];
-	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
-	
-	if ([self.delegate respondsToSelector:@selector(commentViewCell:didDownVoteComment:)])
-		[self.delegate commentViewCell:self didDownVoteComment:_commentVO];
+- (void)_goSelect {
+	if ([self.delegate respondsToSelector:@selector(commentViewCell:didSelectComment:)])
+		[self.delegate commentViewCell:self didSelectComment:_commentVO];
 }
 
-- (void)_goUpVote {
-	[_upVoteButton setEnabled:NO];
-	[_upVoteButton removeTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
-	
-	[_downVoteButton setEnabled:NO];
-	[_downVoteButton removeTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
-	
-	if ([self.delegate respondsToSelector:@selector(commentViewCell:didUpVoteComment:)])
-		[self.delegate commentViewCell:self didUpVoteComment:_commentVO];
-}
 
 @end

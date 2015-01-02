@@ -11,13 +11,10 @@
 
 @class HONCommentViewCell;
 @protocol HONCommentViewCellDelegate <NSObject>
-- (void)commentViewCell:(HONCommentViewCell *)cell didUpVoteComment:(HONCommentVO *)commentVO;
-- (void)commentViewCell:(HONCommentViewCell *)cell didDownVoteComment:(HONCommentVO *)commentVO;
+- (void)commentViewCell:(HONCommentViewCell *)cell didSelectComment:(HONCommentVO *)commentVO;
 @end
 
 @interface HONCommentViewCell : HONTableViewCell
-- (void)refreshScore;
-
 @property (nonatomic, strong) HONCommentVO *commentVO;
 @property (nonatomic, assign) id <HONCommentViewCellDelegate> delegate;
 @end

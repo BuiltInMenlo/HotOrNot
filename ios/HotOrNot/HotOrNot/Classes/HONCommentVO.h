@@ -15,6 +15,7 @@
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;
 @property (nonatomic) int parentID;
+@property (nonatomic) int clubID;
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic) int score;

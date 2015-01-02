@@ -34,6 +34,8 @@ extern NSString * const kAPIVotes;
 
 extern NSString * const kAPIMemberClubs;
 extern NSString * const kAPIClubStatusUpdates;
+extern NSString * const kAPIStatusUpdate;
+extern NSString * const kAPIStatusUpdateChildren;
 extern NSString * const kAPIStatusUpdateVoters;
 
 extern NSString * const kAPIGetFriends;
@@ -199,6 +201,8 @@ extern const CGFloat kNotifiyDelay;
  * Clubs
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)retrieveStatusUpdatesForClubByClubID:(int)clubID fromPage:(int)page completion:(void (^)(id result))completion;
+- (void)retrieveStatusUpdateByStatusUpdateID:(int)statusUpdateID completion:(void (^)(id result))completion;
+- (void)retrieveRepliesForStatusUpdateByStatusUpdateID:(int)statusUpdateID fromPage:(int)page completion:(void (^)(id result))completion;
 - (void)retrieveUserClubsByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion;
 
 //- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;

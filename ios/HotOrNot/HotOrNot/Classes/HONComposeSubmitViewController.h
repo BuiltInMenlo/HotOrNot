@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONViewController.h"
+#import "HONSubjectsViewController.h"
 
-@interface HONComposeSubmitViewController : HONViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
-- (id)initWithSubmitParameters:(NSDictionary *)submitParams;
+@interface HONComposeSubmitViewController : HONSubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

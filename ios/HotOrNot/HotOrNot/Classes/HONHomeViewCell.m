@@ -44,7 +44,7 @@
 		[self.contentView addSubview:_selectButton];
 		
 		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(self.frame.size.width - 55.0, self.frame.size.height - 19.0, 50.0, 20.0)];
-		_scoreLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_scoreLabel.textAlignment = NSTextAlignmentRight;
 		_scoreLabel.textColor = [UIColor whiteColor];

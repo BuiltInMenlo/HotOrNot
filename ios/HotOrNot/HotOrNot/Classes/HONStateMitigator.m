@@ -44,6 +44,7 @@ NSString * const kStateMitigatorViewStateNameFriends					= @"friends";
 NSString * const kStateMitigatorViewStateNameSettings					= @"settings";
 NSString * const kStateMitigatorViewStateNameStatusUpdate				= @"status_update";
 NSString * const kStateMitigatorViewStateNameCompose					= @"compose";
+NSString * const kStateMitigatorViewStateNameReply						= @"reply";
 NSString * const kStateMitigatorViewStateNameAnimatedBGs				= @"animated_bgs";
 NSString * const kStateMitigatorViewStateNameStoreProducts				= @"sticker_store";
 NSString * const kStateMitigatorViewStateNameStoreProductDetails		= @"sticker_store_details";
@@ -74,6 +75,7 @@ NSString * const kStateMitigatorTotalCounterSettingsTab					= @"settingsTab";
 NSString * const kStateMitigatorTotalCounterStatusUpdate				= @"statusUpdate";
 NSString * const kStateMitigatorTotalCounterStatusUpdateRefresh			= @"statusUpdateRefresh";
 NSString * const kStateMitigatorTotalCounterReply						= @"reply";
+NSString * const kStateMitigatorTotalCounterReplyRefresh				= @"replyRefresh";
 NSString * const kStateMitigatorTotalCounterCompose						= @"compose";
 NSString * const kStateMitigatorTotalCounterComposeRefresh				= @"composeRefresh";
 NSString * const kStateMitigatorTotalCounterAnimatedBGs					= @"animatedBGs";
@@ -287,6 +289,7 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorViewStateNameStatusUpdate				: @(HONStateMitigatorViewStateTypeStatusUpdate),
 			  kStateMitigatorViewStateNameSettings					: @(HONStateMitigatorViewStateTypeSettings),
 			  kStateMitigatorViewStateNameCompose					: @(HONStateMitigatorViewStateTypeCompose),
+			  kStateMitigatorViewStateNameReply						: @(HONStateMitigatorViewStateTypeReply),
 			  kStateMitigatorViewStateNameAnimatedBGs				: @(HONStateMitigatorViewStateTypeAnimatedBGs),
 			  kStateMitigatorViewStateNameStoreProducts				: @(HONStateMitigatorViewStateTypeStoreProducts),
 			  kStateMitigatorViewStateNameStoreProductDetails		: @(HONStateMitigatorViewStateTypeStoreProductDetails),
@@ -316,6 +319,7 @@ static HONStateMitigator *sharedInstance = nil;
 			  kStateMitigatorTotalCounterStatusUpdate				: @(HONStateMitigatorTotalTypeStatusUpdate),
 			  kStateMitigatorTotalCounterStatusUpdateRefresh		: @(HONStateMitigatorTotalTypeStatusUpdateRefresh),
 			  kStateMitigatorTotalCounterReply						: @(HONStateMitigatorTotalTypeReply),
+			  kStateMitigatorTotalCounterReplyRefresh				: @(HONStateMitigatorTotalTypeReplyRefresh),
 			  kStateMitigatorTotalCounterCompose					: @(HONStateMitigatorTotalTypeCompose),
 			  kStateMitigatorTotalCounterComposeRefresh				: @(HONStateMitigatorTotalTypeComposeRefresh),
 			  kStateMitigatorTotalCounterAnimatedBGs				: @(HONStateMitigatorTotalTypeAnimatedBGs),

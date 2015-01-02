@@ -690,13 +690,13 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 }
 
-- (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+- (NSArray *)repliesForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
 	NSMutableArray *replies = [NSMutableArray array];
 	
-	[[[HONClubAssistant sharedInstance] fetchClubWithClubID:clubPhotoVO.clubID].submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	[[[HONClubAssistant sharedInstance] fetchClubWithClubID:statusUpdateVO.clubID].submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
 //		NSLog(@"REPLY FOR:[%d] -=- ID:[%d] PARENT:[%d]", clubPhotoVO.challengeID, vo.challengeID, vo.parentID);
-		if (vo.parentID == clubPhotoVO.challengeID && [vo.comment length] > 0) {
+		if (vo.parentID == statusUpdateVO.statusUpdateID && ![vo.comment isEqualToString:@"__FLAG__"]) {
 			[replies addObject:[HONCommentVO commentWithClubPhoto:vo]];
 		}
 	}];

@@ -91,6 +91,9 @@
 		30CA9CB31A02FE4400A0A703 /* NSMutableDictionary+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CB21A02FE4400A0A703 /* NSMutableDictionary+Replacements.m */; };
 		30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */; };
 		30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30CAD5001A2FBC06002E61D4 /* Texas State.gpx */; };
+		30CFAD411A54881100FD25CF /* HONSubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CFAD401A54881100FD25CF /* HONSubjectsViewController.m */; };
+		30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CFAD431A54905E00FD25CF /* HONReplySubmitViewController.m */; };
+		30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CFAD461A549C6600FD25CF /* HONCommentItemView.m */; };
 		30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */; };
 		30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */; };
 		30DB24B119CBF64700DCFC49 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DB24B019CBF64700DCFC49 /* XCTest.framework */; };
@@ -478,6 +481,12 @@
 		30CA9CC71A033C1800A0A703 /* HONNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavButtonView.h; sourceTree = "<group>"; };
 		30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavButtonView.m; sourceTree = "<group>"; };
 		30CAD5001A2FBC06002E61D4 /* Texas State.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Texas State.gpx"; sourceTree = "<group>"; };
+		30CFAD3F1A54881100FD25CF /* HONSubjectsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubjectsViewController.h; sourceTree = "<group>"; };
+		30CFAD401A54881100FD25CF /* HONSubjectsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubjectsViewController.m; sourceTree = "<group>"; };
+		30CFAD421A54905E00FD25CF /* HONReplySubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONReplySubmitViewController.h; sourceTree = "<group>"; };
+		30CFAD431A54905E00FD25CF /* HONReplySubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONReplySubmitViewController.m; sourceTree = "<group>"; };
+		30CFAD451A549C6600FD25CF /* HONCommentItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentItemView.h; sourceTree = "<group>"; };
+		30CFAD461A549C6600FD25CF /* HONCommentItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentItemView.m; sourceTree = "<group>"; };
 		30D5AD8C19C8C980004EDA22 /* NHGroupThese.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHGroupThese.h; sourceTree = "<group>"; };
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
@@ -1070,6 +1079,8 @@
 				4C386BC5198482130023123A /* HONViewController.m */,
 				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
 				4C068AB017028A6B0019428A /* HONWebViewController.m */,
+				30CFAD3F1A54881100FD25CF /* HONSubjectsViewController.h */,
+				30CFAD401A54881100FD25CF /* HONSubjectsViewController.m */,
 			);
 			name = Abstracts;
 			sourceTree = "<group>";
@@ -1768,8 +1779,12 @@
 			children = (
 				3010D7851A2444190078164F /* HONCommentViewCell.h */,
 				3010D7861A2444190078164F /* HONCommentViewCell.m */,
+				30CFAD451A549C6600FD25CF /* HONCommentItemView.h */,
+				30CFAD461A549C6600FD25CF /* HONCommentItemView.m */,
 				30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */,
 				30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */,
+				30CFAD421A54905E00FD25CF /* HONReplySubmitViewController.h */,
+				30CFAD431A54905E00FD25CF /* HONReplySubmitViewController.m */,
 			);
 			name = Details;
 			sourceTree = "<group>";
@@ -2414,6 +2429,8 @@
 				30007CA21A25B47300A333F0 /* NSArray+Iterator.m in Sources */,
 				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
 				3010D78A1A245AFB0078164F /* NSCharacterSet+AdditionalSets.m in Sources */,
+				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
+				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				30B7BB891A0A1BC10005C761 /* NSDate+Operations.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
@@ -2469,6 +2486,7 @@
 				300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */,
 				4CBDDBAC1913354E002F9723 /* HONContactsViewController.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
+				30CFAD411A54881100FD25CF /* HONSubjectsViewController.m in Sources */,
 				4CEF9204196DFFE3007D56BE /* HONCountryVO.m in Sources */,
 				4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */,
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,

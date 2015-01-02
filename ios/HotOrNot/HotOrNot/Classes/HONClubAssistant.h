@@ -64,7 +64,7 @@
 - (void)writeCommentAsVotedWithID:(int)commentID asUpVote:(BOOL)isUpVote;
 //- (void)sendClubInvites:(HONUserClubVO *)clubVO toInAppUsers:(NSArray *)inAppUsers toNonAppContacts:(NSArray *)nonAppContacts completion:(void (^)(BOOL success))completion;
 
-//- (NSArray *)repliesForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (NSArray *)repliesForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
 
 //- (HONUserClubVO *)clubWithClubID:(int)clubID;
 //- (HONUserClubVO *)clubWithName:(NSString *)clubName;

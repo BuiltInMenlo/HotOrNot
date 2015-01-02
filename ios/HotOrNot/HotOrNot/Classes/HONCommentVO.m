@@ -14,17 +14,20 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, parentID, userID, username, score, textContent, addedDate;
+@synthesize commentID, clubID, parentID, userID, username, score, textContent, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
 	vo.dictionary = dictionary;
 	
+	NSLog(@"Comment:[%@]", dictionary);
+	
 	vo.commentID = [[dictionary objectForKey:@"id"] intValue];
+	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.userID = [[dictionary objectForKey:@"user_id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.textContent = [dictionary objectForKey:@"text"];
+	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"N/A";
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	
@@ -33,6 +36,7 @@
 
 + (HONCommentVO *)commentWithClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSDictionary *dict = @{@"id"		: @(clubPhotoVO.challengeID),
+						   @"club_id"	: @(clubPhotoVO.clubID),
 						   @"parent_id"	: @(clubPhotoVO.parentID),
 						   @"user_id"	: @(clubPhotoVO.userID),
 						   @"username"	: clubPhotoVO.username,

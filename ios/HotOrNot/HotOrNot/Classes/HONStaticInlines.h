@@ -77,7 +77,7 @@ CGRectExtendSize(CGRect rect, CGSize size)
 	resizeRect.origin.x = rect.origin.x;
 	resizeRect.origin.y = rect.origin.y;
 	resizeRect.size.width = rect.size.width + size.width;
-	resizeRect.size.height = rect.size.width + size.height;
+	resizeRect.size.height = rect.size.height + size.height;
 	return resizeRect;
 }
 

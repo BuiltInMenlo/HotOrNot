@@ -1,27 +1,27 @@
 //
-//  HONComposeSubmitViewController.m
+//  HONReplySubmitViewController.m
 //  HotOrNot
 //
-//  Created by BIM  on 9/13/14.
+//  Created by BIM  on 12/31/14.
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
 #import "NSDate+Operations.h"
 #import "NSMutableDictionary+Replacements.h"
 
-#import "HONComposeSubmitViewController.h"
+#import "HONReplySubmitViewController.h"
 
-@interface HONComposeSubmitViewController () <HONSubjectViewCellDeleagte>
+@interface HONReplySubmitViewController () <HONSubjectViewCellDeleagte>
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 @end
 
-@implementation HONComposeSubmitViewController
+@implementation HONReplySubmitViewController
 
 - (id)init {
 	if ((self = [super init])) {
-		_totalType = HONStateMitigatorTotalTypeComposeSubmit;
-		_viewStateType = HONStateMitigatorViewStateTypeComposeSubmit;
+		_totalType = HONStateMitigatorTotalTypeReply;
+		_viewStateType = HONStateMitigatorViewStateTypeReply;
 	}
 	
 	return (self);
@@ -32,7 +32,7 @@
 - (void)_retrieveSubjects {
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"subject_comments"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:(NSDictionary *)obj];
-		if (vo.useType == HONSubjectUseTypeCompose)
+		if (vo.useType == HONSubjectUseTypeReply)
 			[_subjects addObject:vo];
 	}];
 	
@@ -42,7 +42,7 @@
 
 - (void)_submitStatusUpdate {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit"
-//									   withProperties:[self _trackingProps]];
+	//									   withProperties:[self _trackingProps]];
 	
 	[_submitParams setValue:_selectedSubjectVO.subjectName forKey:@"subject"];
 	
@@ -61,9 +61,9 @@
 			
 		} else {
 			[self _orphanSubmitOverlay];
-			
+
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_STATUS_UPDATE" object:@"Y"];
 			}];
 		}
 	}];
@@ -86,12 +86,12 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = _headerView.frame;
-	[backButton setBackgroundImage:[UIImage imageNamed:@"composeSubmitHeaderButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"composeSubmitHeaderButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:backButton];
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _headerView.frame;
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"replyHeaderButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"replyHeaderButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:closeButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
@@ -106,7 +106,7 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	
+		
 //	_panGestureRecognizer.enabled = YES;
 }
 
@@ -134,12 +134,12 @@
 
 
 #pragma mark - Navigation
-- (void)_goBack {
+- (void)_goClose {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Back"];
 	
 	[_headerView tappedTitle];
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[self.navigationController popViewControllerAnimated:NO];
+		[self dismissViewControllerAnimated:YES completion:^(void) {}];
 	});
 }
 
@@ -178,13 +178,13 @@
 		return;
 	
 	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
-		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Back SWIPE"];
-//		[self.navigationController popViewControllerAnimated:YES];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Back SWIPE"];
+	//		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
 	if ([gestureRecognizer velocityInView:self.view].x <= -2000) {
-		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit SWIPE"];
-//		[self _goSubmit];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit SWIPE"];
+	//		[self _goSubmit];
 	}
 }
 
