@@ -7,6 +7,10 @@
 //
 
 
+@protocol HONTableViewCellDelegate <NSObject>
+@optional
+@end
+
 @interface HONTableViewCell : UITableViewCell {
 	BOOL _accessoryViewsVisible;
 }
@@ -22,7 +26,7 @@
 - (BOOL)isFirstCellInSection;
 - (BOOL)isLastCellInSection;
 
-
+@property (nonatomic, assign) id <HONTableViewCellDelegate> delegate;
 
 @property (nonatomic) CGSize size;
 @property (nonatomic, retain) NSIndexPath *indexPath;

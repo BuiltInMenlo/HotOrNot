@@ -14,7 +14,7 @@
 
 #import "HONContactsViewController.h"
 #import "HONActivityViewController.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 #import "HONComposeNavButtonView.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
@@ -338,7 +338,7 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeTopicViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

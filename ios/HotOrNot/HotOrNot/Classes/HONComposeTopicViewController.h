@@ -9,6 +9,6 @@
 #import "HONViewController.h"
 #import "HONUserClubVO.h"
 
-@interface HONComposeViewController : HONViewController <UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate>
+@interface HONComposeTopicViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 @end

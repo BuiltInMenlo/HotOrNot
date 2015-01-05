@@ -9,14 +9,14 @@
 #import "NSDate+Operations.h"
 #import "NSMutableDictionary+Replacements.h"
 
-#import "HONComposeSubmitViewController.h"
+#import "HONComposeSubjectViewController.h"
 
-@interface HONComposeSubmitViewController () <HONSubjectViewCellDeleagte>
+@interface HONComposeSubjectViewController () <HONSubjectViewCellDeleagte>
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 @end
 
-@implementation HONComposeSubmitViewController
+@implementation HONComposeSubjectViewController
 
 - (id)init {
 	if ((self = [super init])) {

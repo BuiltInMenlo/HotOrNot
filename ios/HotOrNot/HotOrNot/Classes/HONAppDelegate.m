@@ -48,7 +48,7 @@
 #import "HONHomeViewController.h"
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
@@ -322,7 +322,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"post_radius"] forKey:@"post_radius"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_images"] forKey:@"compose_images"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_topics"] forKey:@"compose_topics"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_comments"] forKey:@"subject_comments"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],

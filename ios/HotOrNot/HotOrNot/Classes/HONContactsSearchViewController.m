@@ -11,7 +11,7 @@
 
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONUserClubVO.h"

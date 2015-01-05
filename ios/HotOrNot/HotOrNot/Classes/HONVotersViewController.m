@@ -14,7 +14,7 @@
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 #import "HONTableView.h"
 
 

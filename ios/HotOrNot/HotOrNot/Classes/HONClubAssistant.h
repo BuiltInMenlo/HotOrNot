@@ -11,7 +11,7 @@
 #import "HONStatusUpdateVO.h"
 #import "HONCommentVO.h"
 #import "HONEmotionVO.h"
-#import "HONComposeImageVO.h"
+#import "HONTopicVO.h"
 
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
@@ -49,7 +49,7 @@
 //- (HONUserClubVO *)userSignupClub;
 //- (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 //- (HONComposeImageVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (HONComposeImageVO *)composeImageForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
+- (HONTopicVO *)composeImageForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
 
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;
 

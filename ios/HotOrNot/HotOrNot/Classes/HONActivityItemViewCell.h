@@ -11,7 +11,7 @@
 #import "HONTrivialUserVO.h"
 
 @class HONActivityItemViewCell;
-@protocol HONActivityItemViewCellDelegate <NSObject>
+@protocol HONActivityItemViewCellDelegate <HONTableViewCellDelegate>
 - (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO;
 @end
 

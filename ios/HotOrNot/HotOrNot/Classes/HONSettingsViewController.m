@@ -20,7 +20,7 @@
 #import "HONActivityViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONNetworkStatusViewController.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONUsernameSearchViewController.h"
 

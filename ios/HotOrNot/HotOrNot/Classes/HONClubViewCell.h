@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONToggleViewCell.h"
+#import "HONToggleLEDViewCell.h"
 #import "HONUserClubVO.h"
 
 typedef NS_ENUM(NSUInteger, HONClubViewCellType) {
@@ -21,14 +21,14 @@ typedef NS_ENUM(NSUInteger, HONClubViewCellType) {
 };
 
 @class HONClubViewCell;
-@protocol HONClubViewCellDelegate <HONToggleViewCellDelegate>
+@protocol HONClubViewCellDelegate <HONToggleLEDViewCellDelegate>
 @optional
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 @end
 
-@interface HONClubViewCell : HONToggleViewCell
+@interface HONClubViewCell : HONToggleLEDViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsCellType:(HONClubViewCellType)cellType;
 - (void)toggleImageLoading:(BOOL)isLoading;

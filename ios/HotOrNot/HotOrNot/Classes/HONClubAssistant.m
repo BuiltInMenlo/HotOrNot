@@ -435,36 +435,36 @@ static HONClubAssistant *sharedInstance = nil;
 	return (@[]);
 }
 
-- (HONComposeImageVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	__block HONComposeImageVO *composeImageVO = nil;
+- (HONTopicVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	__block HONTopicVO *composeImageVO = nil;
 	
 	if ([clubPhotoVO.subjectNames count] == 0)
 		return (composeImageVO);
 	
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONComposeImageVO *vo = [HONComposeImageVO composeImageWithDictionary:(NSDictionary *)obj];
-		if ([vo.composeImageName isEqualToString:[clubPhotoVO.subjectNames firstObject]]) {
-			composeImageVO = vo;
-			*stop = YES;
-		}
-	}];
+//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONComposeTopicVO *vo = [HONComposeTopicVO composeImageWithDictionary:(NSDictionary *)obj];
+//		if ([vo.composeImageName isEqualToString:[clubPhotoVO.subjectNames firstObject]]) {
+//			composeImageVO = vo;
+//			*stop = YES;
+//		}
+//	}];
 	
 	return (composeImageVO);
 }
 
-- (HONComposeImageVO *)composeImageForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
-	__block HONComposeImageVO *composeImageVO = nil;
+- (HONTopicVO *)composeImageForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
+	__block HONTopicVO *composeImageVO = nil;
 	
 	if ([[statusUpdateVO.dictionary objectForKey:@"emotions"] count] == 0)
 		return (composeImageVO);
 	
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONComposeImageVO *vo = [HONComposeImageVO composeImageWithDictionary:(NSDictionary *)obj];
-		if ([vo.composeImageName isEqualToString:[[statusUpdateVO.dictionary objectForKey:@"emotions"] firstObject]]) {
-			composeImageVO = vo;
-			*stop = YES;
-		}
-	}];
+//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONComposeTopicVO *vo = [HONComposeTopicVO composeImageWithDictionary:(NSDictionary *)obj];
+//		if ([vo.composeImageName isEqualToString:[[statusUpdateVO.dictionary objectForKey:@"emotions"] firstObject]]) {
+//			composeImageVO = vo;
+//			*stop = YES;
+//		}
+//	}];
 	
 	return (composeImageVO);
 }

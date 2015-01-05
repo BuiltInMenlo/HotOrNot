@@ -227,7 +227,7 @@
 		_imageLoadingView = nil;
 	};
 	
-	NSString *url = [[_statusUpdateVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix640] stringByAppendingString:kComposeImageStaticFileExtension];
+	NSString *url = _statusUpdateVO.composeImageVO.iconURL;
 	NSLog(@"URL:[%@]", url);
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
 													  cachePolicy:kOrthodoxURLCachePolicy

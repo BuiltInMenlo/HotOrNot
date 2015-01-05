@@ -10,7 +10,7 @@
 #import "HONCommentVO.h"
 
 @class HONCommentViewCell;
-@protocol HONCommentViewCellDelegate <NSObject>
+@protocol HONCommentViewCellDelegate <HONTableViewCellDelegate>
 - (void)commentViewCell:(HONCommentViewCell *)cell didSelectComment:(HONCommentVO *)commentVO;
 @end
 

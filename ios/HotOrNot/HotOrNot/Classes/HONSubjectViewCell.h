@@ -10,7 +10,7 @@
 #import "HONSubjectVO.h"
 
 @class HONSubjectViewCell;
-@protocol HONSubjectViewCellDeleagte <NSObject>
+@protocol HONSubjectViewCellDeleagte <HONTableViewCellDelegate>
 @optional
 - (void)subjectViewCell:(HONSubjectViewCell *)viewCell didSelectSubject:(HONSubjectVO *)subjectVO;
 @end

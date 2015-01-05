@@ -18,7 +18,7 @@
 #import "HONHomeViewFlowLayout.h"
 #import "HONActivityViewController.h"
 #import "HONRegisterViewController.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONRefreshControl.h"
@@ -503,7 +503,7 @@
 	//									 withProperties:@{@"src"	: @"header"}];
 	
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] clubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue]]]];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeTopicViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }

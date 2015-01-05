@@ -10,7 +10,7 @@
 #import "HONCountryVO.h"
 
 @class HONCallingCodeViewCell;
-@protocol HONCallingCodeViewCellDelegate <NSObject>
+@protocol HONCallingCodeViewCellDelegate <HONTableViewCellDelegate>
 - (void)callingCodeViewCell:(HONCallingCodeViewCell *)viewCell didDeselectCountry:(HONCountryVO *)countryVO;
 - (void)callingCodeViewCell:(HONCallingCodeViewCell *)viewCell didSelectCountry:(HONCountryVO *)countryVO;
 @end

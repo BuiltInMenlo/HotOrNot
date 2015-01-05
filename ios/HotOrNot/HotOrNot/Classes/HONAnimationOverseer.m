@@ -7,7 +7,7 @@
 //
 
 #import "HONAnimationOverseer.h"
-#import "HONComposeViewController.h"
+#import "HONComposeTopicViewController.h"
 #import "HONStoreProductsViewController.h"
 
 const CGFloat kProgressHUDMinDuration = 0.5f;
@@ -61,7 +61,7 @@ static HONAnimationOverseer *sharedInstance = nil;
 	return ([[HONAnimationOverseer sharedInstance] segueAnimationEnabledForAnyViewController]);
 	
 	
-	if ([viewController isKindOfClass:[HONComposeViewController class]]) {
+	if ([viewController isKindOfClass:[HONComposeTopicViewController class]]) {
 		return (NO);
 		
 	} else if ([viewController isKindOfClass:[HONStoreProductsViewController class]]) {

@@ -7,7 +7,7 @@
 //
 
 #import "HONBaseVO.h"
-#import "HONComposeImageVO.h"
+#import "HONTopicVO.h"
 
 
 @interface HONStatusUpdateVO : HONBaseVO
@@ -17,7 +17,7 @@
 @property (nonatomic) int clubID;
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *imagePrefix;
-@property (nonatomic, retain) HONComposeImageVO *composeImageVO;
+@property (nonatomic, retain) HONTopicVO *composeImageVO;
 @property (nonatomic, retain) NSString *comment;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSDate *addedDate;

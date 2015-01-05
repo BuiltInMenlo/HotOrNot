@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, HONClubToggleViewCellType) {
 };
 
 @class HONClubToggleViewCell;
-@protocol HONClubToggleViewCellDelegate <NSObject>
+@protocol HONClubToggleViewCellDelegate <HONTableViewCellDelegate>
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO;
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO;
 @optional

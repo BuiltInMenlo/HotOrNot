@@ -8,5 +8,5 @@
 
 #import "HONSubjectsViewController.h"
 
-@interface HONComposeSubmitViewController : HONSubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONComposeSubjectViewController : HONSubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

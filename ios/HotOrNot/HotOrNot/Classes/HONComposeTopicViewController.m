@@ -1,0 +1,336 @@
+//
+//  HONComposeViewController.m
+//  HotOrNot
+//
+//  Created by Matt Holcombe on 9/6/13 @ 12:01 PM.
+//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//
+
+#import <CoreImage/CoreImage.h>
+#import <QuartzCore/QuartzCore.h>
+
+#import "NSCharacterSet+AdditionalSets.h"
+#import "NSDate+Operations.h"
+#import "NSMutableDictionary+Replacements.h"
+#import "NSString+Formatting.h"
+#import "UIImageView+AFNetworking.h"
+
+#import "Flurry.h"
+
+#import "HONComposeTopicViewController.h"
+#import "HONComposeViewFlowLayout.h"
+#import "HONRefreshControl.h"
+#import "HONTableView.h"
+#import "HONTopicViewCell.h"
+#import "HONTopicVO.h"
+#import "HONComposeSubjectViewController.h"
+
+@interface HONComposeTopicViewController () <HONTopicViewCellDelegate>
+@property (nonatomic, strong) HONTableView *tableView;
+@property (nonatomic, strong) HONRefreshControl *refreshControl;
+@property (nonatomic, strong) NSMutableArray *topics;
+@property (nonatomic, strong) HONTopicVO *selectedTopicVO;
+@property (nonatomic, strong) HONUserClubVO *userClubVO;
+@end
+
+
+@implementation HONComposeTopicViewController
+
+- (id)init {
+	if ((self = [super init])) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - enter_compose"];
+		
+		_totalType = HONStateMitigatorTotalTypeCompose;
+		_viewStateType = HONStateMitigatorViewStateTypeCompose;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_refreshCompose:)
+													 name:@"REFRESH_COMPOSE" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_tareCompose:)
+													 name:@"TARE_COMPOSE" object:nil];
+		
+	}
+	
+	return (self);
+}
+
+-(void)dealloc {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTopicViewCell *cell = (HONTopicViewCell *)obj;
+		cell.delegate = nil;
+	}];
+	
+	_tableView.dataSource = nil;
+	_tableView.delegate = nil;
+	
+	[super destroy];
+}
+
+
+- (id)initWithClub:(HONUserClubVO *)clubVO {
+	NSLog(@"%@ - initWithClub:[%d] (%@)", [self description], clubVO.clubID, clubVO.clubName);
+	
+	if ((self = [self init])) {
+		_userClubVO = clubVO;
+	}
+	
+	return (self);
+}
+
+
+#pragma mark - Data Calls
+- (void)_retrieveComposeTopics {
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		[_topics addObject:[HONTopicVO topicWithDictionary:dict]];
+	}];
+	
+	
+	[self _didFinishDataRefresh];
+}
+
+
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(HONRefreshControl *)sender {
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Refresh"];
+	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeComposeRefresh];
+	[self _goReloadContents];
+}
+
+- (void)_goReloadContents {
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
+	
+	_topics = [NSMutableArray array];
+	[_tableView reloadData];
+	
+	[self _retrieveComposeTopics];
+}
+
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+	
+	NSLog(@"%@._didFinishDataRefresh - [%d]", self.class, [_topics count]);
+}
+
+
+#pragma mark - View lifecycle
+- (void)loadView {
+	
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
+	[super loadView];
+	
+	_headerView = [[HONHeaderView alloc] init];
+	[self.view addSubview:_headerView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _headerView.frame;
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"composeHeaderButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"composeHeaderButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:closeButton];
+	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.alwaysBounceVertical = YES;
+	_tableView.showsVerticalScrollIndicator = NO;
+	_tableView.scrollsToTop = NO;
+	[self.view addSubview:_tableView];
+	
+	_refreshControl = [[HONRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
+	
+	[self _goReloadContents];
+}
+
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+//	_panGestureRecognizer.enabled = YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
+	[super viewWillAppear:animated];
+}
+
+
+#pragma mark - Navigation
+- (void)_goClose {
+	NSLog(@"[*:*] _goClose");
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - exit_button"];
+	
+	[_headerView tappedTitle];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+		}];
+	});
+}
+
+- (void)_goNext {
+	NSError *error;
+	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[_selectedTopicVO.topicName] options:0 error:&error]
+												 encoding:NSUTF8StringEncoding];
+	
+	NSDictionary *submitParams = @{@"user_id"		: @([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]),
+								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
+								   @"club_id"		: @(_userClubVO.clubID),
+								   @"challenge_id"	: @(0),
+								   @"subjects"		: jsonString};
+	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+	
+	[self.navigationController pushViewController:[[HONComposeSubjectViewController alloc] initWithSubmitParameters:submitParams] animated:NO];
+}
+
+- (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	[super _goPanGesture:gestureRecognizer];
+	
+	if ([gestureRecognizer velocityInView:self.view].y >= 2000 || [gestureRecognizer velocityInView:self.view].x >= 2000) {
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Dismiss SWIPE"];
+		
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+		}];
+	}
+	
+	if ([gestureRecognizer velocityInView:self.view].x <= -2000 && !_isPushing) {
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Next SWIPE"];
+//		[self _modifySubmitParamsAndSubmit:_subjectNames];
+	}
+}
+
+
+#pragma mark - Notifications
+- (void)_refreshCompose:(NSNotification *)notification {
+	NSLog(@"::|> _refreshCompose <|::");
+	[self _goReloadContents];
+}
+
+- (void)_tareCompose:(NSNotification *)notification {
+	NSLog(@"::|> _tareCompose <|::");
+	
+	if ([_tableView.visibleCells count] > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
+
+#pragma mark - UI Presentation
+
+
+#pragma mark - ComposeTopicViewCell Delegates
+- (void)composeViewCell:(HONTopicViewCell *)viewCell didSelectComposeTopic:(HONTopicVO *)composeTopicVO {
+	NSLog(@"[_] composeViewCell:didSelectComposeTopic:[%@]", [composeTopicVO toString]);
+	
+	_selectedTopicVO = viewCell.topicVO;
+	NSLog(@"COMPOSE TOPIC:[%@]", [_selectedTopicVO toString]);
+	
+	[self _goNext];
+}
+
+
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return ([_topics count]);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	return (nil);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+//	NSLog(@"[_] tableView:cellForRowAtIndexPath:%@)", NSStringFromNSIndexPath(indexPath));
+	
+	HONTopicViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	if (cell == nil)
+		cell = [[HONTopicViewCell alloc] init];
+	
+	[cell setIndexPath:indexPath];
+	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	cell.alpha = 0.0;
+	
+	HONTopicVO *vo = (HONTopicVO *)[_topics objectAtIndex:indexPath.row];
+	cell.topicVO = vo;
+	cell.delegate = self;
+	
+	if (!tableView.decelerating)
+		[cell toggleImageLoading:YES];
+	
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (44.0);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (0.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	NSLog(@"[_] tableView:didSelectRowAtIndexPath:[%@]", NSStringFromNSIndexPath(indexPath));
+	
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	HONTopicViewCell *cell = (HONTopicViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	
+	_selectedTopicVO = cell.topicVO;
+	NSLog(@"COMPOSE TOPIC:[%@]", [_selectedTopicVO toString]);
+	
+	[self _goNext];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * (indexPath.row / 3)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		cell.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONTopicViewCell *viewCell = (HONTopicViewCell *)cell;
+	
+	viewCell.alpha = 0.0;
+	[viewCell toggleImageLoading:NO];
+}
+
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTopicViewCell *cell = (HONTopicViewCell *)obj;
+		[cell toggleImageLoading:YES];
+	}];
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 1) {
+		}
+	}
+}
+
+@end

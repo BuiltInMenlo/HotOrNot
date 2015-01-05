@@ -105,7 +105,7 @@
 	};
 	
 //	NSLog(@"URL:[%@]", [[_statusUpdateVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]);
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[_statusUpdateVO.composeImageVO.urlPrefix stringByAppendingString:kComposeImageURLSuffix214] stringByAppendingString:kComposeImageStaticFileExtension]]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_statusUpdateVO.composeImageVO.iconURL]
 														cachePolicy:kOrthodoxURLCachePolicy
 													timeoutInterval:[HONAppDelegate timeoutInterval]]
 					  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_home"]

@@ -9,7 +9,7 @@
 #import <AddressBook/AddressBook.h>
 #import <CoreLocation/CoreLocation.h>
 
-#import "HONComposeImageVO.h"
+#import "HONTopicVO.h"
 
 //#ifndef HotOrNot_HONStaticInlines_h
 //#define HotOrNot_HONStaticInlines_h
