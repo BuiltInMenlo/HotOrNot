@@ -23,6 +23,7 @@
 #import "HONStateMitigator.h"
 #import "HONStickerAssistant.h"
 #import "HONStoreAssistant.h"
+#import "HONUserAssistant.h"
 #import "HONViewDispensor.h"
 
 //#ifndef HONUtilsSuite_h
