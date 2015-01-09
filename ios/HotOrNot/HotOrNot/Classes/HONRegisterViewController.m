@@ -218,7 +218,11 @@
 	self.view.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.957];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[self.view addSubview:_headerView];
+	//[self.view addSubview:_headerView];
+	
+	UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signupBranding"]];
+	brandingImageView.frame = CGRectOffset(brandingImageView.frame, 0.0, 97.0);
+	[self.view addSubview:brandingImageView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
@@ -229,7 +233,12 @@
 //	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:_usernameButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 294.0, 22.0)];
+	UIImageView *txtFieldBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0)];
+	txtFieldBGImageView.image = [UIImage imageNamed:@"signupButtonBG_normal"];
+	txtFieldBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:txtFieldBGImageView];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 9.0, 220.0, 26.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -239,90 +248,23 @@
 //	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+	_usernameTextField.placeholder = NSLocalizedString(@"register_submit", @"Terms");
+	//_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	[_usernameTextField setTag:0];
-//	_usernameTextField.delegate = self;
-//	[self.view addSubview:_usernameTextField];
+	_usernameTextField.delegate = self;
+	[txtFieldBGImageView addSubview:_usernameTextField];
 	
-	/*
-	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_phoneButton.frame = CGRectMake(0.0, kNavHeaderHeight + 64.0, 320.0, 64.0);
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateNormal];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateHighlighted];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateSelected];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
-	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_phoneButton];
 	
-//	CGSize size = [@"+14" boundingRectWithSize:CGSizeMake(60.0, 24.0)
-//										options:NSStringDrawingTruncatesLastVisibleLine
-//									 attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18]}
-//										context:nil].size;
-	
-	_callCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_callCodeButton.frame = CGRectMake(4.0, _phoneButton.frame.origin.y - 1.0, 60.0, 64.0);
-//	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateNormal];
-	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(3.0, -6.0, 0.0, 0.0)];
-	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:24];
-	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
-	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
-	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_callCodeButton];
-	
-	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(79.0, _phoneButton.frame.origin.y + 21.0, 200.0, 22.0)];
-	[_phoneTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_phoneTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_phoneTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_phoneTextField setReturnKeyType:UIReturnKeyDone];
-	[_phoneTextField setTextColor:[UIColor blackColor]];
-	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_phoneTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-	_phoneTextField.keyboardType = UIKeyboardTypePhonePad;
-	_phoneTextField.placeholder = NSLocalizedString(@"enter_phone", @"Enter phone number");
-	_phoneTextField.text = @"";
-	_phoneTextField.delegate = self;
-	[self.view addSubview:_phoneTextField];
-	
-	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 258.0, _phoneButton.frame.origin.y + 3.0);
-	_phoneCheckImageView.alpha = 0.0;
-	[self.view addSubview:_phoneCheckImageView];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
-		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){
-			if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
-				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
-				[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			}
-		}];
-	}
-	*/
-	
-	UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signupBranding"]];
-	brandingImageView.frame = CGRectOffset(brandingImageView.frame, 0.0, 147.0);
-	[self.view addSubview:brandingImageView];
-	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"signupButtonBG_normal"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"signupButtonBG_normal"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:submitButton];
-	
-	UILabel *submitLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 9.0, 200.0, 26.0)];
-	submitLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	submitLabel.textColor =  [UIColor blackColor];
-	submitLabel.backgroundColor = [UIColor clearColor];
-	submitLabel.text = NSLocalizedString(@"register_submit", @"Terms");
-	[submitButton addSubview:submitLabel];
+//	UILabel *submitLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 9.0, 200.0, 26.0)];
+//	submitLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+//	submitLabel.textColor =  [UIColor blackColor];
+//	submitLabel.backgroundColor = [UIColor clearColor];
+//	submitLabel.text = NSLocalizedString(@"register_submit", @"Terms");
+//	[submitButton addSubview:submitLabel];
 	
 	UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
 	chevronImageView.frame = CGRectOffset(chevronImageView.frame, 280.0, 0.0);
-	[submitButton addSubview:chevronImageView];
+	[txtFieldBGImageView addSubview:chevronImageView];
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	termsButton.frame = CGRectMake(60.0, self.view.frame.size.height - 55.0, 200.0, 18.0);
@@ -333,24 +275,6 @@
 	[termsButton setTitle:NSLocalizedString(@"register_footer", @"Terms") forState:UIControlStateHighlighted];
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
-	
-	
-//	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0);
-//	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-//	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-//	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateNormal];
-//	[_submitButton setImage:[UIImage imageNamed:@"buttonChevron"] forState:UIControlStateHighlighted];
-//	[_submitButton setImageEdgeInsets:UIEdgeInsetsMake(0.0, 140.0, 0.0, 0.0)];
-//	_submitButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
-//	[_submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//	[_submitButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
-//	[_submitButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -45.0, 0.0, 0.0)];
-//	[_submitButton setTitle:@"Submit" forState:UIControlStateNormal];
-//	[_submitButton setTitle:@"Submit" forState:UIControlStateHighlighted];
-//	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-//	_submitButton.hidden = YES;
-//	[self.view addSubview:_submitButton];
 	
 	NSLog(@"loadView -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
@@ -369,7 +293,7 @@
 	[super viewDidAppear:animated];
 	
 	_submitButton.userInteractionEnabled = YES;
-	[_usernameTextField becomeFirstResponder];
+//	[_usernameTextField becomeFirstResponder];
 }
 
 

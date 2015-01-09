@@ -44,6 +44,7 @@
 	vo.addedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	
+	//vo.ownerID = ([[dictionary objectForKey:@"owner"] objectForKey:@"id"] != nil) ? [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue] : ([dictionary objectForKey:@"owner"]);
 	vo.ownerID = ([[dictionary objectForKey:@"owner"] objectForKey:@"id"] != nil) ? [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue] : 0;
 	vo.ownerName = ([[dictionary objectForKey:@"owner"] objectForKey:@"username"]) ? [[dictionary objectForKey:@"owner"] objectForKey:@"username"] : @"";
 	vo.ownerImagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];

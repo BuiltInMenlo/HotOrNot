@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, HONSubjectUseType) {
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int subjectID;
 @property (nonatomic, retain) NSString *subjectName;
+@property (nonatomic, retain) NSString *icoURL;
 @property (nonatomic) int score;
 @property (nonatomic, assign) HONSubjectUseType useType;
 @property (nonatomic, retain) NSDate *addedDate;

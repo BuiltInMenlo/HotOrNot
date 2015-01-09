@@ -9,4 +9,5 @@
 #import "HONSubjectsViewController.h"
 
 @interface HONComposeSubjectViewController : HONSubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
+- (id)initWithSubmitParameters:(NSDictionary *)submitParams;
 @end

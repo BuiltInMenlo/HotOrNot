@@ -144,6 +144,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)finalizeUserWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)flagUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)recreateUserWithCompletion:(void (^)(id result))completion;
+- (void)retrieveActivityForUserByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion;
 - (void)retrieveActivityTotalForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)registerNewUserWithCompletion:(void (^)(id result))completion;
 - (void)retrieveNewActivityForUserByUserID:(int)userID completion:(void (^)(id result))completion;
@@ -152,7 +153,6 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveTopClubsForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveRecentClubsForUserByUserID:(int)userID afterDate:(NSDate *)date completion:(void (^)(id result))completion;
-
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)removeAllChallengesForUserWithCompletion:(void (^)(id result))completion;
 - (void)removeUserFromVerifyListWithUserID:(int)userID completion:(void (^)(id result))completion;
@@ -169,6 +169,7 @@ extern const CGFloat kNotifiyDelay;
 
 /**
  * Challenges
+ 
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)createShoutoutChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)createShoutoutChallengeWithUserID:(int)userID completion:(void (^)(id result))completion;
@@ -179,13 +180,12 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveChallengeForChallengeID:(int)challengeID igoringNextPushes:(BOOL)isIgnore completion:(void (^)(id result))completion;
 - (void)retrieveSeenTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
 - (void)retrieveSeenMembersChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
-- (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(id result))completion;
-- (void)retrieveVoteTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion;
+- (void)retrieveVerifyListForUserID:(int)userI completion:(void (^)(id result))completion;
+- (void)retrieveVoteTotalForStatusUpdateByStatusUpdateID:(int)statusUpdateID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;
 - (void)voteClubPhotoWithChallengeID:(int)challengeID isUpVote:(BOOL)isUpVote completion:(void (^)(id result))completion;
 - (void)voteStatusUpdateWithStatusUpdateID:(int)statusUpdateID isUpVote:(BOOL)isUpVote completion:(void (^)(id result))completion;
-
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

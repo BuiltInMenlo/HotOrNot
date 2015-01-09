@@ -18,7 +18,6 @@
 #import "Flurry.h"
 
 #import "HONComposeTopicViewController.h"
-#import "HONComposeViewFlowLayout.h"
 #import "HONRefreshControl.h"
 #import "HONTableView.h"
 #import "HONTopicViewCell.h"
@@ -84,7 +83,9 @@
 - (void)_retrieveComposeTopics {
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSDictionary *dict = (NSDictionary *)obj;
-		[_topics addObject:[HONTopicVO topicWithDictionary:dict]];
+		
+		if ([[dict objectForKey:@"parent_id"] intValue] == 0)
+			[_topics addObject:[HONTopicVO topicWithDictionary:dict]];
 	}];
 	
 	
@@ -118,7 +119,7 @@
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 	
-	NSLog(@"%@._didFinishDataRefresh - [%d]", self.class, [_topics count]);
+	NSLog(@"%@._didFinishDataRefresh - [%lu]", self.class, (unsigned long)[_topics count]);
 }
 
 
@@ -128,18 +129,11 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	_headerView = [[HONHeaderView alloc] init];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"What are you doing?")];
+	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:_headerView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = _headerView.frame;
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"composeHeaderButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"composeHeaderButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:closeButton];
-	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
-	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -262,6 +256,7 @@
 	
 	[cell setIndexPath:indexPath];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	cell.alpha = 0.0;
 	
 	HONTopicVO *vo = (HONTopicVO *)[_topics objectAtIndex:indexPath.row];
@@ -277,7 +272,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (44.0);
+	return (59.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -305,7 +300,6 @@
 		cell.alpha = 1.0;
 	} completion:^(BOOL finished) {
 	}];
-
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

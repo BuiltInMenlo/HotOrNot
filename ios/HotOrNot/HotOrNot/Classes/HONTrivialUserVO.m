@@ -7,7 +7,10 @@
 //
 
 #import "NSDate+Operations.h"
+#import "RegExCategories.h"
+
 #import "HONTrivialUserVO.h"
+
 
 @implementation HONTrivialUserVO
 @synthesize dictionary;
@@ -16,9 +19,8 @@
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];
 	vo.dictionary = dictionary;
-	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
-	vo.username = [dictionary objectForKey:@"username"];
+	vo.username = [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:[dictionary objectForKey:@"username"]];
 	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"img_url"]];
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? @"" : vo.avatarPrefix;
 	vo.altID = ([dictionary objectForKey:@"alt_id"] != nil) ? [dictionary objectForKey:@"alt_id"] : @"";

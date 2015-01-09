@@ -21,11 +21,11 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kAPIHostKey = @"prod";
-NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
+NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_sc0011.json";
 #else
 NSString * const kAPIHostKey = @"devint";
-NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
+NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_marsh.json";
 #endif
 
@@ -567,6 +567,34 @@ static HONAPICaller *sharedInstance = nil;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)retrieveActivityForUserByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion {
+	NSDictionary *params = @{@"format"		: @"json",
+							 @"member_id"	: @(userID),
+							 @"page"		: @(page)};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"GET", [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingPythonBasePath];
+	[httpClient getPath: @"newsfeed/member/" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }
@@ -1416,12 +1444,12 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveVoteTotalForChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
+- (void)retrieveVoteTotalForStatusUpdateByStatusUpdateID:(int)statusUpdateID completion:(void (^)(id))completion {
 	NSDictionary *params = @{@"format"	: @"json"};
 	
-	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"GET", [[HONAPICaller sharedInstance] pythonAPIBasePath], [NSString stringWithFormat:@"statusupdate/%d/voters/", challengeID], params);
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"GET", [[HONAPICaller sharedInstance] pythonAPIBasePath], [NSString stringWithFormat:@"statusupdate/%d/voters/", statusUpdateID], params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingPythonBasePath];
-	[httpClient getPath:[NSString stringWithFormat:@"statusupdate/%d/voters/", challengeID] parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient getPath:[NSString stringWithFormat:@"statusupdate/%d/voters/", statusUpdateID] parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
@@ -1448,7 +1476,7 @@ static HONAPICaller *sharedInstance = nil;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], [NSString stringWithFormat:@"statusupdate/%d/voters/", challengeID], [error localizedDescription]);
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], [NSString stringWithFormat:@"statusupdate/%d/voters/", statusUpdateID], [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }

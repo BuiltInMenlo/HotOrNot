@@ -11,7 +11,7 @@
 #import "HONSubjectVO.h"
 
 @implementation HONSubjectVO
-@synthesize subjectID, useType, subjectName, score, addedDate;
+@synthesize subjectID, useType, subjectName, icoURL, score, addedDate;
 
 + (HONSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
 	HONSubjectVO *vo = [[HONSubjectVO alloc] init];
@@ -19,6 +19,7 @@
 	vo.dictionary = dictionary;
 	vo.subjectID = [[dictionary objectForKey:@"id"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"name"];
+	vo.icoURL = [dictionary objectForKey:@"url"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	
@@ -37,6 +38,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.subjectName = nil;
+	self.icoURL = nil;
 	self.addedDate = nil;
 }
 @end

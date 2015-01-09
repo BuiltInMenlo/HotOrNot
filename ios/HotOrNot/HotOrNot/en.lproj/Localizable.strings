@@ -46,7 +46,7 @@
 "header_signUp" = "Sign up";
 "header_settings" = "Settings";
 "header_details" = "Details";
-"header_compose" = "Close";
+"header_compose" = "What are you doing?";
 "header_composeSubmit" = "Back";
 "header_search" = "Search";
 "header_terms" = "Terms of service";
@@ -55,7 +55,7 @@
 
 // register
 "register_footer" = "Terms of service";
-"register_submit" = "No signup required";
+"register_submit" = "Enter Nickname";
 
 // home
 "no_results" = "No Yunder posts found";

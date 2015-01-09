@@ -11,18 +11,20 @@
 #import "HONTopicVO.h"
 
 @implementation HONTopicVO
-@synthesize topicID, topicName, iconURL, score, addedDate;
+@synthesize topicID, parentID, topicName, iconURL, score, addedDate;
 
 + (HONTopicVO *)topicWithDictionary:(NSDictionary *)dictionary {
 	HONTopicVO *vo = [[HONTopicVO alloc] init];
 	
 	vo.dictionary = dictionary;
 	vo.topicID = [[dictionary objectForKey:@"id"] intValue];
+	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.topicName = [dictionary objectForKey:@"name"];
 	vo.iconURL = [dictionary objectForKey:@"url"];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	
 	vo.formattedProperties = [NSString stringWithFormat:@".topicID		: [%d]\n", vo.topicID];
+	vo.formattedProperties = [NSString stringWithFormat:@".parentID		: [%d]\n", vo.parentID];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".topicName	: [%@]\n", vo.topicName];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".iconURL		: [%@]\n", vo.iconURL];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".score		: [%d]\n", vo.score];

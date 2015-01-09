@@ -14,6 +14,7 @@
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int topicID;
+@property (nonatomic) int parentID;
 @property (nonatomic, retain) NSString *topicName;
 @property (nonatomic, retain) NSString *iconURL;
 @property (nonatomic) int score;

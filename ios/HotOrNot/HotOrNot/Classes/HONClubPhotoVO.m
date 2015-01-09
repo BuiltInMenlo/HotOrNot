@@ -12,7 +12,7 @@
 
 @implementation HONClubPhotoVO
 @synthesize dictionary;
-@synthesize userID, username, avatarPrefix, challengeID, parentID, clubID, clubOwnerID, submissionType, imagePrefix, comment, subjectNames, composeImageVO, addedDate, score;
+@synthesize userID, username, avatarPrefix, challengeID, parentID, clubID, clubOwnerID, submissionType, imagePrefix, comment, subjectNames, topicVO, addedDate, score;
 
 + (HONClubPhotoVO *)clubPhotoWithDictionary:(NSDictionary *)dictionary {
 	HONClubPhotoVO *vo = [[HONClubPhotoVO alloc] init];
@@ -32,7 +32,7 @@
 	
 	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
-//	vo.composeImageVO = ([vo.subjectNames count] > 0) ? [[HONClubAssistant sharedInstance] composeImageForClubPhoto:vo] : nil;
+	vo.topicVO = ([vo.subjectNames count] > 0) ? [[HONClubAssistant sharedInstance] topicForClubPhoto:vo] : nil;
 	
 	vo.comment = [dictionary objectForKey:@"text"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
@@ -47,7 +47,7 @@
 	self.avatarPrefix = nil;
 	self.imagePrefix = nil;
 	self.subjectNames = nil;
-	self.composeImageVO = nil;
+	self.topicVO = nil;
 	self.comment = nil;
 	self.addedDate = nil;
 }

@@ -29,12 +29,13 @@
 - (id)init {
 	if ((self = [super init])) {
 		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_compose"]];
+		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 12.0, 12.0);
 		[self.contentView addSubview:_loadingImageView];
 		
-		_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
+		_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 35.0, 35.0)];
 		[self.contentView addSubview:_iconImageView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 8.0, 200.0, 26.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 14.0, 200.0, 26.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_captionLabel.textColor =  [UIColor blackColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
@@ -76,10 +77,9 @@
 		[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_topicVO.iconURL]
 																cachePolicy:kOrthodoxURLCachePolicy
 															timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
+							  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_compose"]
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];
-	
 	} else {
 		[_iconImageView cancelImageRequestOperation];
 	}

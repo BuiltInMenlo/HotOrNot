@@ -17,13 +17,9 @@
 
 @interface HONSubjectViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
-
-- (id)initAsSelected:(BOOL)isSelected;
-- (void)invertSelected;
-- (void)toggleSelected:(BOOL)isSelected;
+- (void)toggleImageLoading:(BOOL)isLoading;
 
 @property (nonatomic, retain) HONSubjectVO *subjectVO;
 @property (nonatomic, assign) id <HONSubjectViewCellDeleagte> delegate;
-@property (nonatomic) BOOL isSelected;
 
 @end

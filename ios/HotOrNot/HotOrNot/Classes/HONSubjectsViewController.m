@@ -80,7 +80,7 @@
 	[self.view addSubview:_headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
-	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 58.0, 0.0)];
+//	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 58.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
@@ -123,15 +123,19 @@
 	HONSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONSubjectViewCell alloc] initAsSelected:NO];
+		cell = [[HONSubjectViewCell alloc] init];
 	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setIndexPath:indexPath];
-	[cell hideChevron];
+	cell.alpha = 0.0;
+	
 	cell.subjectVO = (HONSubjectVO *)[_subjects objectAtIndex:indexPath.row];
 	cell.delegate = self;
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	
+	if (!tableView.decelerating)
+		[cell toggleImageLoading:YES];
 	
 	return (cell);
 }
@@ -156,16 +160,22 @@
 	
 	NSLog(@"[[- cell.subjectVO:[%@]", [cell.subjectVO toString]);
 	
-	[cell invertSelected];
 	_selectedSubjectVO = cell.subjectVO;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 1.0;
 	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		cell.alpha = 1.0;
 	} completion:^(BOOL finished) {
 	}];
 }
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONSubjectViewCell *viewCell = (HONSubjectViewCell *)cell;
+	
+	viewCell.alpha = 0.0;
+	[viewCell toggleImageLoading:NO];
+}
+
 
 @end

@@ -431,42 +431,69 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"added"			: [NSDate utcStringFormattedISO8601]} mutableCopy]);
 }
 
-- (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	return (@[]);
+- (HONSubjectVO *)subjectForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	__block HONSubjectVO *subjectVO = nil;
+	
+	if ([clubPhotoVO.comment length] == 0)
+		return (subjectVO);
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"subject_comments"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:(NSDictionary *)obj];
+		if ([vo.subjectName isEqualToString:clubPhotoVO.comment]) {
+			subjectVO = vo;
+			*stop = YES;
+		}
+	}];
+	
+	return (subjectVO);
 }
 
-- (HONTopicVO *)composeImageForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	__block HONTopicVO *composeImageVO = nil;
+- (HONSubjectVO *)subjectForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
+	__block HONSubjectVO *subjectVO = nil;
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"subject_comments"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:(NSDictionary *)obj];
+		if ([vo.subjectName isEqualToString:statusUpdateVO.comment]) {
+			subjectVO = vo;
+			*stop = YES;
+		}
+	}];
+	
+	return (subjectVO);
+}
+
+- (HONTopicVO *)topicForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	__block HONTopicVO *topicVO = nil;
 	
 	if ([clubPhotoVO.subjectNames count] == 0)
-		return (composeImageVO);
+		return (topicVO);
 	
-//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONComposeTopicVO *vo = [HONComposeTopicVO composeImageWithDictionary:(NSDictionary *)obj];
-//		if ([vo.composeImageName isEqualToString:[clubPhotoVO.subjectNames firstObject]]) {
-//			composeImageVO = vo;
-//			*stop = YES;
-//		}
-//	}];
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
+		if ([vo.topicName isEqualToString:[clubPhotoVO.subjectNames firstObject]]) {
+			topicVO = vo;
+			*stop = YES;
+		}
+	}];
 	
-	return (composeImageVO);
+	return (topicVO);
 }
 
-- (HONTopicVO *)composeImageForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
-	__block HONTopicVO *composeImageVO = nil;
+- (HONTopicVO *)topicForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
+	__block HONTopicVO *topicVO = nil;
 	
 	if ([[statusUpdateVO.dictionary objectForKey:@"emotions"] count] == 0)
-		return (composeImageVO);
+		return (topicVO);
 	
-//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_images"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONComposeTopicVO *vo = [HONComposeTopicVO composeImageWithDictionary:(NSDictionary *)obj];
-//		if ([vo.composeImageName isEqualToString:[[statusUpdateVO.dictionary objectForKey:@"emotions"] firstObject]]) {
-//			composeImageVO = vo;
-//			*stop = YES;
-//		}
-//	}];
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
+		if ([vo.topicName isEqualToString:[[statusUpdateVO.dictionary objectForKey:@"emotions"] firstObject]]) {
+			topicVO = vo;
+			*stop = YES;
+		}
+	}];
 	
-	return (composeImageVO);
+	return (topicVO);
 }
 
 - (BOOL)isStaffClub:(HONUserClubVO *)clubVO {
@@ -586,34 +613,34 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	NSLog(@"!!!!! LOCAL SEEN:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
 	
-	__block BOOL isFound = NO;
+//	__block BOOL isFound = NO;
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:NSStringFromInt(statusUpdateID)] != nil) {
 		if (completion)
 			completion(YES);
 	
 	} else {
-		[[HONAPICaller sharedInstance] retrieveSeenMembersChallengeWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
-			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				NSDictionary *dict = (NSDictionary *)obj;
-				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+//		[[HONAPICaller sharedInstance] retrieveStatusUpdateSeenMembersWithStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+//			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//				NSDictionary *dict = (NSDictionary *)obj;
+//				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 //				NSLog(@"--- dict:[%@]", dict);
 //				NSLog(@"--- isFound:[%@]", NSStringFromBOOL(isFound));
 				
-				if (isFound) {
-					NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
-					[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:NSStringFromInt(statusUpdateID)];
-					
-					[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-				}
-				
-				*stop = isFound;
-			}];
-			
-			if (completion)
-				completion(isFound);
-		}];
+//				if (isFound) {
+//					NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
+//					[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:NSStringFromInt(statusUpdateID)];
+//					
+//					[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
+//					[[NSUserDefaults standardUserDefaults] synchronize];
+//				}
+//				
+//				*stop = isFound;
+//			}];
+//			
+//			if (completion)
+//				completion(isFound);
+//		}];
 	}
 }
 
@@ -622,19 +649,6 @@ static HONClubAssistant *sharedInstance = nil;
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 //	NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], NSStringFromBOOL(([(NSString *)key isEqualToString:NSStringFromInt(clubPhotoVO.challengeID)])), clubPhotoVO.challengeID);
 		if ([(NSString *)key isEqualToString:NSStringFromInt(statusUpdateVO.statusUpdateID)])
-			isFound = YES;
-		
-		*stop = isFound;
-	}];
-	
-	return (isFound);
-}
-
-- (BOOL)hasVotedForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
-	__block BOOL isFound = NO;
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-//		NSLog(@"VOTES:[%d]=-(%@)-=[%d]", [key intValue], NSStringFromBOOL(([(NSString *)key isEqualToString:NSStringFromInt(clubPhotoVO.challengeID)])), clubPhotoVO.challengeID);
-		if ([(NSString *)key isEqualToString:NSStringFromInt(clubPhotoVO.challengeID)])
 			isFound = YES;
 		
 		*stop = isFound;
@@ -1037,10 +1051,11 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
-		if (completion)
-			completion(result);
-	}];
+//	[[HONAPICaller sharedInstance] markStatusUpdateAsSeenWithStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+//	[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:statusUpdateID completion:^(NSDictionary *result) {
+//		if (completion)
+//			completion(result);
+//	}];
 }
 
 - (void)writeUserClubs:(NSDictionary *)clubs {
@@ -1087,25 +1102,6 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 	
 	return (clubVO);
-}
-
-- (HONClubPhotoVO *)fetchClubPhotoWithClubPhotoID:(int)challengeID {
-	
-	__block HONClubPhotoVO *clubPhotoVO = nil;
-	[[[HONClubAssistant sharedInstance] clubTypeKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:(NSString *)obj]) {
-			[[HONUserClubVO clubWithDictionary:dict].submissions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
-				if (vo.challengeID == challengeID) {
-					clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:vo.dictionary];
-					*stop = YES;
-				}
-			}];
-		}
-	}];
-	
-	return (clubPhotoVO);
-		
 }
 
 - (HONUserClubVO *)createClubWithSameParticipants:(NSArray *)participants {

@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, HONClubPhotoSubmissionType) {
 @property (nonatomic, retain) NSString *imagePrefix;
 @property (nonatomic, retain) NSString *comment;
 @property (nonatomic, retain) NSArray *subjectNames;
-@property (nonatomic, retain) HONTopicVO *composeImageVO;
+@property (nonatomic, retain) HONTopicVO *topicVO;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic) int score;
 @property (nonatomic, assign) HONClubPhotoSubmissionType submissionType;

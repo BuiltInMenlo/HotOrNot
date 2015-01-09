@@ -14,6 +14,7 @@
 @interface HONComposeSubjectViewController () <HONSubjectViewCellDeleagte>
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
+@property (nonatomic, strong) NSString *topicName;
 @end
 
 @implementation HONComposeSubjectViewController
@@ -27,12 +28,27 @@
 	return (self);
 }
 
+- (id)initWithSubmitParameters:(NSDictionary *)submitParams {
+	if ((self = [super initWithSubmitParameters:submitParams])) {
+		
+		NSError *error = nil;
+		NSArray *subjects = [NSJSONSerialization JSONObjectWithData:[_submitParams objectForKey:@"subjects"] options:0 error:&error];
+		
+		if (error != nil) {
+			NSLog(@"subjects:[%@]", subjects);
+		}
+		
+	}
+	
+	return (self);
+}
+
 
 #pragma mark - Data Calls
 - (void)_retrieveSubjects {
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"subject_comments"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:(NSDictionary *)obj];
-		if (vo.useType == HONSubjectUseTypeCompose)
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
+		if (vo.parentID == 0)
 			[_subjects addObject:vo];
 	}];
 	
@@ -93,12 +109,12 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:backButton];
 	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:submitButton];
+//	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
+//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+//	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:submitButton];
 	
 	[self _goReloadContents];
 }
@@ -195,6 +211,7 @@
 	NSLog(@"[*:*] subjectViewCell:didSelectSubject:[%@]", [subjectVO toString]);
 	
 	[super subjectViewCell:viewCell didSelectSubject:subjectVO];
+	[self _goSubmit];
 }
 
 
@@ -219,6 +236,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
+	[self _goSubmit];
 }
 
 

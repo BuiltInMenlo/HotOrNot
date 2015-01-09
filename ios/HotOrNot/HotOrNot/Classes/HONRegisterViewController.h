@@ -22,5 +22,5 @@ typedef NS_ENUM(NSUInteger, HONRegisterErrorType) {
 	HONRegisterErrorTypePhone		= (1UL << 1)
 };
 
-@interface HONRegisterViewController : HONViewController <MFMailComposeViewControllerDelegate, UIAlertViewDelegate>
+@interface HONRegisterViewController : HONViewController <MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate>
 @end

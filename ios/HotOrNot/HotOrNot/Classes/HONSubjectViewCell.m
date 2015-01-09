@@ -10,7 +10,8 @@
 
 
 @interface HONSubjectViewCell ()
-@property (nonatomic, strong) UIImageView *selectedBGImageView;
+@property (nonatomic, strong) UIImageView *loadingImageView;
+@property (nonatomic, strong) UIImageView *iconImageView;
 @property (nonatomic, strong) UILabel *captionLabel;
 @property (nonatomic, strong) UIButton *selectButton;
 @end
@@ -18,7 +19,6 @@
 @implementation HONSubjectViewCell
 @synthesize delegate = _delegate;
 @synthesize subjectVO = _subjectVO;
-@synthesize isSelected = _isSelected;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -26,36 +26,24 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"subjectRowBG_normal"]];
+		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_compose"]];
+		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 12.0, 12.0);
+		[self.contentView addSubview:_loadingImageView];
 		
-		_selectedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"subjectRowBG_selected"]];
-		_selectedBGImageView.alpha = 0.0;
-		[self.contentView addSubview:_selectedBGImageView];
+		_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 35.0, 35.0)];
+		[self.contentView addSubview:_iconImageView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 14.0, 303.0, 26.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 14.0, 200.0, 26.0)];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_captionLabel.textColor =  [UIColor blackColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
-		_captionLabel.textAlignment = NSTextAlignmentCenter;
 		[self.contentView addSubview:_captionLabel];
+		
+		_selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_selectButton.frame = CGRectFromSize(self.frame.size);
+//		[self.contentView addSubview:_selectButton];
 	}
 	
-	return (self);
-}
-
-- (id)initAsSelected:(BOOL)isSelected {
-	if ((self = [self init])) {
-		_isSelected = isSelected;
-		
-		_captionLabel.textColor = (_isSelected) ? [UIColor whiteColor] : [[HONColorAuthority sharedInstance] honGrey80TextColor];
-		
-		if (_isSelected) {
-			[UIView animateWithDuration:0.125 animations:^(void) {
-				_selectedBGImageView.alpha = (int)_isSelected;
-			} completion:^(BOOL finished) {
-			}];
-		}
-	}
-		
 	return (self);
 }
 
@@ -69,26 +57,33 @@
 
 
 #pragma mark - PublicAPIs
-- (void)invertSelected {
-	[self toggleSelected:!_isSelected];
-}
-
-- (void)toggleSelected:(BOOL)isSelected {
-	_isSelected = isSelected;
-	
-	_captionLabel.textColor = (_isSelected) ? [UIColor whiteColor] : [[HONColorAuthority sharedInstance] honGrey80TextColor];
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		_selectedBGImageView.alpha = (int)_isSelected;
-	} completion:^(BOOL finished) {
-	}];
-}
-
 - (void)setSubjectVO:(HONSubjectVO *)subjectVO {
 	_subjectVO = subjectVO;
 	
 	_captionLabel.text = _subjectVO.subjectName;
 }
 
+- (void)toggleImageLoading:(BOOL)isLoading {
+	if (isLoading) {
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
+		};
+		
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			_iconImageView.image = image;
+		};
+		
+		[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_subjectVO.icoURL]
+																cachePolicy:kOrthodoxURLCachePolicy
+															timeoutInterval:[HONAppDelegate timeoutInterval]]
+							  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_compose"]
+									   success:imageSuccessBlock
+									   failure:imageFailureBlock];
+		
+	} else {
+		[_iconImageView cancelImageRequestOperation];
+	}
+}
 
 #pragma mark - Navigation
 - (void)_goSelect {

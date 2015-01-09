@@ -9,6 +9,5 @@
 
 #import "HONViewController.h"
 
-
-@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate>
+@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 @end
