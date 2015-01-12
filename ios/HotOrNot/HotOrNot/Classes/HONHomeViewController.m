@@ -179,6 +179,7 @@
 		_statusUpdates = [NSMutableArray array];
 		[_tableView reloadData];
 		
+		[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
 		if (![_refreshControl isRefreshing])
 			[_refreshControl beginRefreshing];
 		
@@ -217,7 +218,6 @@
 	
 	_emptyFeedView.hidden = ([_statusUpdates count] > 0);
 	[_refreshControl endRefreshing];
-	[_tableView reloadData];
 	
 	[_toggleView toggleEnabled:YES];
 	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result){
@@ -226,11 +226,10 @@
 		[_headerView updateActivityScore:_voteScore];
 	}];
 	
-//	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result) {
-//		NSLog(@"ACTIVITY:[%@]", result);
-//		_voteScore = [result intValue];
-//		[_headerView updateActivityScore:_voteScore];
-//	}];
+//	[_tableView setContentOffset:CGPointZero animated:NO];
+	[_tableView reloadData];
+	
+	
 	
 	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 }
@@ -354,7 +353,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 }
 
@@ -518,6 +517,7 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"new" : @"top"]];
 	
 	[toggleView toggleEnabled:NO];
+	[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
 	[self _goReloadContents];
 }
 
@@ -562,7 +562,7 @@
 			
 			[[HONClubAssistant sharedInstance] nearbyClubWithCompletion:^(HONUserClubVO *clubVO) {
 				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
-
+				
 				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
 				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
 				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
@@ -677,7 +677,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * (indexPath.row / 3)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+	cell.alpha = 0.0;
+	[UIView animateKeyframesWithDuration:0.125 delay:(0.0625 * MIN(indexPath.row, 6)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		cell.alpha = 1.0;
 	} completion:^(BOOL finished) {
 	}];
@@ -685,8 +686,6 @@
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONHomeViewCell *viewCell = (HONHomeViewCell *)cell;
-	
-	viewCell.alpha = 0.0;
 	[viewCell toggleImageLoading:NO];
 }
 

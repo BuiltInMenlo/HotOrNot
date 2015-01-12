@@ -173,8 +173,8 @@ static HONClubAssistant *sharedInstance = nil;
 			
 			
 			if (locationClubVO.clubID != [[result objectForKey:@"id"] intValue]) {
-				NSLog(@"CLOSEST CLUB:[%@] IN RANGE:%@ -= %.04f @ (%@)", result, NSStringFromBOOL([[result objectForKey:@"distance"] floatValue] <= [[result objectForKey:@"radius"] floatValue]), [[result objectForKey:@"distance"] floatValue], NSStringFromCLLocation([[HONDeviceIntrinsics sharedInstance] deviceLocation]));
-				if ([[result objectForKey:@"distance"] floatValue] <= [[result objectForKey:@"radius"] floatValue]) {
+				NSLog(@"CLOSEST CLUB:[%@] IN RANGE:%@ -= %.04f @ (%@)", result, NSStringFromBOOL(floorf([[result objectForKey:@"distance"] floatValue]) <= [[result objectForKey:@"radius"] floatValue]), [[result objectForKey:@"distance"] floatValue], NSStringFromCLLocation([[HONDeviceIntrinsics sharedInstance] deviceLocation]));
+				if (floorf([[result objectForKey:@"distance"] floatValue]) <= [[result objectForKey:@"radius"] floatValue]) {
 					[[HONAPICaller sharedInstance] retrieveClubByClubID:[[result objectForKey:@"id"] intValue] withOwnerID:[[[result objectForKey:@"owner"] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 						NSMutableDictionary *dict = [result mutableCopy];
 						[dict setValue:[result objectForKey:@"coords"] forKey:@"coords"];
@@ -485,9 +485,11 @@ static HONClubAssistant *sharedInstance = nil;
 	if ([[statusUpdateVO.dictionary objectForKey:@"emotions"] count] == 0)
 		return (topicVO);
 	
+	NSString *topicName = [[statusUpdateVO.dictionary objectForKey:@"emotions"] firstObject];
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
-		if ([vo.topicName isEqualToString:[[statusUpdateVO.dictionary objectForKey:@"emotions"] firstObject]]) {
+		NSLog(@"SU:[%@] <> %@", topicName, vo.topicName);
+		if ([vo.topicName isEqualToString:topicName]) {
 			topicVO = vo;
 			*stop = YES;
 		}

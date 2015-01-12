@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSArray+Random.h"
+
 #import "HONUserAssistant.h"
 
 @implementation HONUserAssistant
@@ -29,6 +31,17 @@ static HONUserAssistant *sharedInstance = nil;
 	return (self);
 }
 
+- (NSString *)rndAvatarURL {
+	NSArray *avatars = @[@"bird",
+						 @"football",
+						 @"pizza",
+						 @"rocket",
+						 @"tree",
+						 @"watermelon"];
+	
+	return ([NSString stringWithFormat:@"%@/%@.png", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], [avatars randomElement]]);
+}
+
 
 - (void)retrieveActivityByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] retrieveActivityForUserByUserID:userID fromPage:page completion:^(NSDictionary *result) {
@@ -42,34 +55,21 @@ static HONUserAssistant *sharedInstance = nil;
 }
 
 - (NSString *)usernameWithDigitsStripped:(NSString *)username {
-	NSString *strippedName;
-	NSError *error = NULL;
-	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(\\d{,2})\\.(\\d{,2}))"
-																		   options:NSRegularExpressionCaseInsensitive
-																			 error:&error];
-	
-	NSArray *matches = [regex matchesInString:username options:0 range:NSMakeRange(0, [username length])];
-	
-	if ([matches count] > 0) {
-		NSLog(@"[matches firstObject]: [%@]", [matches firstObject]);
-		for (NSTextCheckingResult *match in matches) {
-			NSLog(@"match: [%@]", match);
-			
-			return ([username substringWithRange:[match rangeAtIndex:HONRegexMatchWordGroup]]);
-		}
-		
-	} else
-		return (username);
-
-//	NSRegularExpression *matchRegEx = [NSRegularExpression regularExpressionWithPattern:@"(\w\d+.\d+)"
-//								  options:NSRegularExpressionCaseInsensitive
-//								  error:nil];
+//	NSError *error = NULL;
+//	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^[_\\.A-Za-z]*"
+//																		   options:NSRegularExpressionCaseInsensitive
+//																			 error:&error];
 //	
-//	return([matchRegEx stringByReplacingMatchesInString:username options:0
-//												  range:NSMakeRange(0, [username length])
-//										   withTemplate:@""]);
+//	NSArray *matches = [regex matchesInString:username options:0 range:NSMakeRange(0, [username length])];
+//	
+//	if ([matches count] > 0) {
+//		for (NSTextCheckingResult *match in matches) {
+//			return ([username substringWithRange:[match rangeAtIndex:HONRegexMatchWordGroup]]);
+//		}
+//	}
 	
 	
+	return (username);	
 }
 
 - (void)retrieveActivityScoreByUserID:(int)userID completion:(void (^)(id result))completion {

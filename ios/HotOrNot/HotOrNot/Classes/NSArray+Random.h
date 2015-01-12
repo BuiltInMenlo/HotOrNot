@@ -8,4 +8,5 @@
 
 @interface NSArray (Random)
 - (NSArray *)randomize;
+- (id)randomElement;
 @end

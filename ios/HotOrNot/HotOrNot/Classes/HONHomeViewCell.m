@@ -38,17 +38,21 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isLoading = NO;
 		
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
+		
 		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_home"]];
-		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 12.0, 12.0);
+		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 21.0, 27.0);
 		[self.contentView addSubview:_loadingImageView];
 		
-		_subjectImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 50.0, 50.0)];
+		_subjectImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 17.0, 50.0, 50.0)];
 		[self.contentView addSubview:_subjectImageView];
 		
-		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 7.0, 220.0, 22.0)];
+		[[HONViewDispensor sharedInstance] maskView:_subjectImageView withMask:[UIImage imageNamed:@"topicMask"]];
+		
+		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 11.0, 220.0, 16.0)];
 		_usernameLabel.backgroundColor = [UIColor clearColor];
 		_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
-		_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold      ] fontWithSize:13];
+		_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:13];
 		[self.contentView addSubview:_usernameLabel];
 		
 		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 32.0, 220.0, 20.0)];
@@ -57,10 +61,8 @@
 		_subjectLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:16];
 		[self.contentView addSubview:_subjectLabel];
 		
-		UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
-		timeIconImageView.frame = CGRectFromSize(CGSizeMake(12.0, 12.0));
+		UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeIcon"]];
 		timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 58.0);
-		timeIconImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 		[self.contentView addSubview:timeIconImageView];
 		
 		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(88.0, 58.0, 48.0, 16.0)];
@@ -69,16 +71,13 @@
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		[self.contentView addSubview:_timeLabel];
 		
-		UIImageView *likesIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
-		likesIconImageView.frame = CGRectFromSize(CGSizeMake(12.0, 12.0));
+		UIImageView *likesIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likesIcon"]];
 		likesIconImageView.frame = CGRectOffset(timeIconImageView.frame, 32.0, 0.0);
-		likesIconImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugVioletColor];
 		[self.contentView addSubview:likesIconImageView];
 		
 		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(120.0, 58.0, 48.0, 16.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
-//		_scoreLabel.textAlignment = NSTextAlignmentRight;
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance]  percentGreyscaleColor:0.75];
 		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
 		[self.contentView addSubview:_scoreLabel];
@@ -111,27 +110,25 @@
 #pragma mark - Public APIs
 - (void)setStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
 	_statusUpdateVO = statusUpdateVO;
-	_statusUpdateVO.topicVO.topicName = [_statusUpdateVO.topicVO.topicName stringByAppendingString:@"ing"];
-	NSString *actionCaption = [NSString stringWithFormat:@"— is %@ %@", _statusUpdateVO.topicVO.topicName, _statusUpdateVO.subjectVO.subjectName];
+	NSString *actionCaption = [NSString stringWithFormat:@"- is %@ %@", _statusUpdateVO.topicName, _statusUpdateVO.subjectName];
 	
 	_usernameLabel.text = _statusUpdateVO.username;
 	_subjectLabel.text = actionCaption;
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
+	_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
 	
-	if ([actionCaption rangeOfString:_statusUpdateVO.subjectVO.subjectName].location != NSNotFound)
-		[_subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectVO.subjectName]];
+	if ([actionCaption rangeOfString:_statusUpdateVO.subjectName].location != NSNotFound)
+		[_subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectName]];
 	
 	
-	[_scoreLabel toggleLoading:YES];
-	[[HONAPICaller sharedInstance] retrieveVoteTotalForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSNumber *result) {
-		_statusUpdateVO.score = [result intValue];
-//		[_scoreLabel setText:[@"" stringFromInt:_statusUpdateVO.score]];
-		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-		[_scoreLabel toggleLoading:NO];
-		
-//		NSLog(@"STATUS_UPDATE CELL{%@} -=- [%d / %d]-=-(%d)", NSStringFromNSIndexPath(self.indexPath), _clubPhotoVO.challengeID, _clubPhotoVO.clubID, _clubPhotoVO.score);
-	}];
+//	[_scoreLabel toggleLoading:YES];
+//	[[HONAPICaller sharedInstance] retrieveVoteTotalForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSNumber *result) {
+//		_statusUpdateVO.score = [result intValue];
+//		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
+//		[_scoreLabel toggleLoading:NO];
+//	}];
+	
+	[self toggleImageLoading:YES];
 }
 
 - (void)toggleImageLoading:(BOOL)isLoading {
@@ -151,11 +148,11 @@
 				_subjectImageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
 				_isLoading = NO;
 				
-				[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+				//[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 				[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 			};
 			
-//			NSLog(@"URL:[%@]", [_clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]);
+			NSLog(@"URL:[%@]", _statusUpdateVO.imagePrefix);
 			[_subjectImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_statusUpdateVO.imagePrefix]
 																   cachePolicy:kOrthodoxURLCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]

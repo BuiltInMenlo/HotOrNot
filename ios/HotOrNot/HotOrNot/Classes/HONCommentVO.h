@@ -18,6 +18,7 @@
 @property (nonatomic) int clubID;
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *username;
+@property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSString *textContent;
 @property (nonatomic, retain) NSDate *addedDate;

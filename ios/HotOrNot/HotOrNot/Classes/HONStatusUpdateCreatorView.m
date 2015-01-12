@@ -10,12 +10,13 @@
 
 @implementation HONStatusUpdateCreatorView
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+- (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 84.0)])) {
+		
+	}
+	
+	return (self);
 }
-*/
+
 
 @end

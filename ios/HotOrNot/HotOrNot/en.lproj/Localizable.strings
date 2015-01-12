@@ -63,7 +63,7 @@
 
 // details
 "send_comment" = "Send";
-"enter_comment" = "Comment";
+"enter_comment" = "Type a message…";
 "flagged_post" = "This post has been flagged for removal.";
 
 // compose

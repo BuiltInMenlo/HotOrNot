@@ -45,7 +45,7 @@
 			<string>com.builtinmenlo.marsh</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>marsh</string>
+				<string>dood</string>
 			</array>
 		</dict>
 		<dict>
@@ -58,11 +58,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>37937</string>
+	<string>38146</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
-	<string>Marsh</string>
+	<string>Dood</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>e7a57bf84ad0eb1cc424fcdd886506a0</string>
 	<key>LSApplicationCategoryType</key>
@@ -96,7 +96,7 @@
 	<key>UIStatusBarHidden</key>
 	<false/>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleBlackOpaque</string>
+	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

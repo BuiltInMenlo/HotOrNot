@@ -11,7 +11,7 @@
 
 #import "HONComposeSubjectViewController.h"
 
-@interface HONComposeSubjectViewController () <HONSubjectViewCellDeleagte>
+@interface HONComposeSubjectViewController () <HONTopicViewCellDelegate>
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 @property (nonatomic, strong) NSString *topicName;
@@ -30,14 +30,7 @@
 
 - (id)initWithSubmitParameters:(NSDictionary *)submitParams {
 	if ((self = [super initWithSubmitParameters:submitParams])) {
-		
-		NSError *error = nil;
-		NSArray *subjects = [NSJSONSerialization JSONObjectWithData:[_submitParams objectForKey:@"subjects"] options:0 error:&error];
-		
-		if (error != nil) {
-			NSLog(@"subjects:[%@]", subjects);
-		}
-		
+		NSLog(@"topic:[%@]", [_submitParams objectForKey:@"topic_name"]);
 	}
 	
 	return (self);
@@ -48,8 +41,8 @@
 - (void)_retrieveSubjects {
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
-		if (vo.parentID == 0)
-			[_subjects addObject:vo];
+		if (vo.parentID == [[_submitParams objectForKey:@"topic_id"] intValue])
+			[_topics addObject:vo];
 	}];
 	
 	[super _didFinishDataRefresh];
@@ -60,7 +53,8 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit"
 //									   withProperties:[self _trackingProps]];
 	
-	[_submitParams setValue:_selectedSubjectVO.subjectName forKey:@"subject"];
+	
+	[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
 	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
 	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
@@ -102,12 +96,8 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = _headerView.frame;
-	[backButton setBackgroundImage:[UIImage imageNamed:@"composeSubmitHeaderButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"composeSubmitHeaderButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:backButton];
+	[_headerView setTitle:[_submitParams objectForKey:@"topic_name"]];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	
 //	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
@@ -115,8 +105,9 @@
 //	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 //	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:submitButton];
-	
 	[self _goReloadContents];
+	
+	
 }
 
 - (void)viewDidLoad {
@@ -155,12 +146,12 @@
 	
 	[_headerView tappedTitle];
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[self.navigationController popViewControllerAnimated:NO];
+		[self.navigationController popViewControllerAnimated:YES];
 	});
 }
 
 - (void)_goSubmit {
-	if (_selectedSubjectVO == nil) {
+	if (_selectedTopicVO == nil) {
 		[[[UIAlertView alloc] initWithTitle:nil
 									message:@"You must select a subject"
 								   delegate:nil
@@ -206,11 +197,11 @@
 
 
 
-#pragma mark - SubjectViewCell Delegates
-- (void)subjectViewCell:(HONSubjectViewCell *)viewCell didSelectSubject:(HONSubjectVO *)subjectVO {
-	NSLog(@"[*:*] subjectViewCell:didSelectSubject:[%@]", [subjectVO toString]);
+#pragma mark - TopicViewCell Delegates
+- (void)topicViewCell:(HONTopicViewCell *)viewCell didSelectTopic:(HONTopicVO *)topicVO {
+	NSLog(@"[*:*] topicViewCell:didSelectTopic:[%@]", [topicVO toString]);
 	
-	[super subjectViewCell:viewCell didSelectSubject:subjectVO];
+	[super topicViewCell:viewCell didSelectTopic:topicVO];
 	[self _goSubmit];
 }
 
@@ -237,6 +228,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	[self _goSubmit];
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	[super tableView:tableView didEndDisplayingCell:cell forRowAtIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	[super tableView:tableView willDisplayCell:cell forRowAtIndexPath:indexPath];
 }
 
 

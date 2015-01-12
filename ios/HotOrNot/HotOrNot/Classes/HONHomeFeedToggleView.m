@@ -23,7 +23,7 @@
 @synthesize supportedTypes = _supportedTypes;
 
 - (id)initWithTypes:(NSArray *)types {
-	if ((self = [super initWithFrame:CGRectMake(100.0, 20.0, 134.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(100.0, 0.0, 134.0, 44.0)])) {
 		
 		_supportedTypes = types;
 		

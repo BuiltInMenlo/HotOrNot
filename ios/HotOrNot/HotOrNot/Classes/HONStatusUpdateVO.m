@@ -11,7 +11,7 @@
 #import "HONStatusUpdateVO.h"
 
 @implementation HONStatusUpdateVO
-@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicVO, subjectVO, comment, score, addedDate, updatedDate;
+@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, comment, score, addedDate, updatedDate;
 
 + (HONStatusUpdateVO *)statusUpdateWithDictionary:(NSDictionary *)dictionary {
 	HONStatusUpdateVO *vo = [[HONStatusUpdateVO alloc] init];
@@ -19,14 +19,21 @@
 	
 	vo.statusUpdateID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
-	vo.userID = [[dictionary objectForKey:@"owner_member_id"] intValue];
-	vo.username = ([dictionary objectForKey:@"owner_member_name"] != nil) ? [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:[dictionary objectForKey:@"owner_member_name"]] : [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-	
-	vo.username = [NSString stringWithFormat:@"user_%d", vo.userID];//[dictionary objectForKey:@"owner_member_name"];
+	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"owner_member_id"] intValue];
+	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : @"OP";
+	vo.topicName = ([[dictionary objectForKey:@"emotions"] count] > 0) ? [[dictionary objectForKey:@"emotions"] firstObject] : @"";
+	vo.subjectName = [dictionary objectForKey:@"text"];
 	vo.comment = [dictionary objectForKey:@"text"];
-	vo.topicVO = [[HONClubAssistant sharedInstance] topicForStatusUpdate:vo];
-	vo.subjectVO = [[HONClubAssistant sharedInstance] subjectForStatusUpdate:vo];
-	vo.imagePrefix = vo.subjectVO.icoURL;//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
+	
+	vo.username = [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:vo.username];
+	
+	if ([[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] count] > 0) {
+		vo.topicName = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] firstObject];
+		vo.subjectName = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
+		vo.comment = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
+	}
+	
+	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : vo.topicName] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
 	vo.score = ([dictionary objectForKey:@"net_vote_score"] != [NSNull null]) ? [[dictionary objectForKey:@"net_vote_score"] intValue] : 0;
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"updated"]];
@@ -35,7 +42,8 @@
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".clubID          : [%d]\n", vo.clubID];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".userID          : [%d]\n", vo.userID];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".imagePrefix     : [%@]\n", vo.imagePrefix];
-	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".topicVO		: [%@]\n", vo.topicVO];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".topicName     : [%@]\n", vo.topicName];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".subjectName     : [%@]\n", vo.subjectName];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".comment         : [%@]\n", vo.imagePrefix];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".score           : [%d]\n", vo.score];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".addedDate       : [%@]\n", vo.addedDate];
@@ -49,7 +57,8 @@
 	self.dictionary = nil;
 	self.username = nil;
 	self.imagePrefix = nil;
-	self.topicVO = nil;
+	self.topicName = nil;
+	self.subjectName = nil;
 	self.comment = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;

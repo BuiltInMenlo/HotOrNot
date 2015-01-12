@@ -18,8 +18,10 @@
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *imagePrefix;
-@property (nonatomic, retain) HONTopicVO *topicVO;
-@property (nonatomic, retain) HONSubjectVO *subjectVO;
+@property (nonatomic, retain) NSString *topicName;
+@property (nonatomic, retain) NSString *subjectName;
+//@property (nonatomic, retain) HONTopicVO *topicVO;
+//@property (nonatomic, retain) HONSubjectVO *subjectVO;
 @property (nonatomic, retain) NSString *comment;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSDate *addedDate;

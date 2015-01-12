@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "HONStatusUpdateVO.h"
 
 @interface HONStatusUpdateCreatorView : UIView
-
+- (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO;
 @end

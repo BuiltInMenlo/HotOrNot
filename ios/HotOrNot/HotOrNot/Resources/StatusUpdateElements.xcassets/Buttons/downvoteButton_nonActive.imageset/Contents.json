@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "voteDownArrow_nonActive@2x.png"
+      "filename" : "downArrow_nonActive@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "voteDownArrow_nonActive@2x-1.png"
+      "filename" : "downArrow_nonActive@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "voteDownArrow_nonActive@2x-2.png"
+      "filename" : "downArrow_nonActive@2x-2.png"
     }
   ],
   "info" : {

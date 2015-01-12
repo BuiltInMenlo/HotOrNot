@@ -28,6 +28,7 @@
 @interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
 @property (nonatomic, strong) NSString *callingCode;
+@property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UITextField *phoneTextField;
@@ -38,6 +39,8 @@
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
+@property (nonatomic, strong) UIImageView *brandingImageView;
+@property (nonatomic, strong) UIImageView *txtFieldBGImageView;
 @end
 
 @implementation HONRegisterViewController
@@ -75,11 +78,11 @@
 	
 	
 	NSLog(@"_checkUsername -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-	NSLog(@"_checkUsername -- USERNAME:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"_checkUsername -- USERNAME:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
 	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_usernameTextField.text completion:^(NSDictionary *result) {
 		NSLog(@"RESULT:[%@]", result);
 		
 		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
@@ -128,17 +131,29 @@
 					_submitButton.userInteractionEnabled = NO;
 					
 					NSLog(@"_finalizeUser -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-					NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+					NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 					NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 					
 					NSLog(@"\n\n******** FINALIZE W/ API **********");
 					[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																				@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-																				@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"],
-																				@"filename"		: @""} completion:^(NSDictionary *result) {
+																				@"username"		: ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"],
+																				@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
 																					
 						int responseCode = [[result objectForKey:@"result"] intValue];
 						if (result != nil && responseCode == 0) {
+							
+							[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
+								if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+									[HONAppDelegate writeUserInfo:result];
+								}
+							}];
+							
+							[[HONAPICaller sharedInstance] updateUsernameForUser:([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"] completion:^(NSDictionary *result) {
+								if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+								}
+							}];
+							
+								
 							_phoneCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
 							_phoneCheckImageView.alpha = 1.0;
 							
@@ -220,9 +235,9 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	//[self.view addSubview:_headerView];
 	
-	UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signupBranding"]];
-	brandingImageView.frame = CGRectOffset(brandingImageView.frame, 0.0, 97.0);
-	[self.view addSubview:brandingImageView];
+	_brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signupBranding"]];
+	_brandingImageView.frame = CGRectOffset(_brandingImageView.frame, 0.0, 97.0);
+	[self.view addSubview:_brandingImageView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
@@ -233,10 +248,10 @@
 //	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:_usernameButton];
 	
-	UIImageView *txtFieldBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0)];
-	txtFieldBGImageView.image = [UIImage imageNamed:@"signupButtonBG_normal"];
-	txtFieldBGImageView.userInteractionEnabled = YES;
-	[self.view addSubview:txtFieldBGImageView];
+	_txtFieldBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0)];
+	_txtFieldBGImageView.image = [UIImage imageNamed:@"signupButtonBG_normal"];
+	_txtFieldBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:_txtFieldBGImageView];
 	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 9.0, 220.0, 26.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -244,15 +259,15 @@
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[UIColor blackColor]];
-//	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-//	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = NSLocalizedString(@"register_submit", @"Terms");
 	//_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
-	[txtFieldBGImageView addSubview:_usernameTextField];
+	[_txtFieldBGImageView addSubview:_usernameTextField];
 	
 	
 //	UILabel *submitLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 9.0, 200.0, 26.0)];
@@ -264,7 +279,7 @@
 	
 	UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
 	chevronImageView.frame = CGRectOffset(chevronImageView.frame, 280.0, 0.0);
-	[txtFieldBGImageView addSubview:chevronImageView];
+	[_txtFieldBGImageView addSubview:chevronImageView];
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	termsButton.frame = CGRectMake(60.0, self.view.frame.size.height - 55.0, 200.0, 18.0);
@@ -379,6 +394,17 @@
 
 
 #pragma mark - Notifications
+- (void)_onTextEditingDidEnd:(id)sender {
+	NSLog(@"_onTextEditingDidEnd");
+	
+	[self _goSubmit];
+	
+}
+
+- (void)_onTextEditingDidEndOnExit:(id)sender {
+	NSLog(@"_onTextEditingDidEndOnExit");
+}
+
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
@@ -434,12 +460,18 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
-	[_phoneButton setSelected:YES];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"registrationBranding"]];
+	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 77.0);
+	bgImageView.alpha= 0.0;
+	[self.view addSubview:bgImageView];
 	
 	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
-						 _submitButton.frame = CGRectMake(_submitButton.frame.origin.x, self.view.frame.size.height - (216.0 + _submitButton.frame.size.height), _submitButton.frame.size.width, _submitButton.frame.size.height);
+						 bgImageView.alpha = 1.0;
+						 _brandingImageView.alpha = 0.0;
+						 
+						 _txtFieldBGImageView.frame = CGRectMake(_txtFieldBGImageView.frame.origin.x, self.view.frame.size.height - (216.0 + _txtFieldBGImageView.frame.size.height), _txtFieldBGImageView.frame.size.width, _txtFieldBGImageView.frame.size.height);
 					 } completion:^(BOOL finished) {}];
 }
 

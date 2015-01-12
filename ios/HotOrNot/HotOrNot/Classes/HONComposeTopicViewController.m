@@ -183,10 +183,12 @@
 								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
 								   @"club_id"		: @(_userClubVO.clubID),
 								   @"challenge_id"	: @(0),
+								   @"topic_id"		: @(_selectedTopicVO.topicID),
+								   @"topic_name"	: _selectedTopicVO.topicName,
 								   @"subjects"		: jsonString};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
 	
-	[self.navigationController pushViewController:[[HONComposeSubjectViewController alloc] initWithSubmitParameters:submitParams] animated:NO];
+	[self.navigationController pushViewController:[[HONComposeSubjectViewController alloc] initWithSubmitParameters:submitParams] animated:YES];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -296,16 +298,15 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * (indexPath.row / 3)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * indexPath.row) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONTopicViewCell *viewCell = (HONTopicViewCell *)cell;
-	
-	viewCell.alpha = 0.0;
 	[viewCell toggleImageLoading:NO];
 }
 

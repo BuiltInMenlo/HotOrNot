@@ -36,6 +36,8 @@
 		301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */; };
 		3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONActivityViewController.m */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
+		3030DF591A63344D00406AAF /* HONFlagNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF581A63344D00406AAF /* HONFlagNavButtonView.m */; };
+		3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */; };
 		303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0E19D5E78600CB2501 /* fpo_push.caf */; };
 		3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E59D19E4CF65003FF312 /* HONStoreProductsViewController.m */; };
 		3045E5A419E4D048003FF312 /* HONStoreProductVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E5A319E4D048003FF312 /* HONStoreProductVO.m */; };
@@ -328,6 +330,10 @@
 		301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cupertino.gpx; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
+		3030DF571A63344D00406AAF /* HONFlagNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFlagNavButtonView.h; sourceTree = "<group>"; };
+		3030DF581A63344D00406AAF /* HONFlagNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFlagNavButtonView.m; sourceTree = "<group>"; };
+		3030DF5A1A6348ED00406AAF /* HONTopicsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTopicsViewController.h; sourceTree = "<group>"; };
+		3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTopicsViewController.m; sourceTree = "<group>"; };
 		303BAD0E19D5E78600CB2501 /* fpo_push.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fpo_push.caf; sourceTree = "<group>"; };
 		3045E59C19E4CF65003FF312 /* HONStoreProductsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductsViewController.h; sourceTree = "<group>"; };
 		3045E59D19E4CF65003FF312 /* HONStoreProductsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreProductsViewController.m; sourceTree = "<group>"; };
@@ -696,7 +702,7 @@
 		4C60AF6A17CCFEF800609792 /* HONStickerButtonsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonsPickerView.m; sourceTree = "<group>"; };
 		4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserToggleViewCell.h; sourceTree = "<group>"; };
 		4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserToggleViewCell.m; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* Waddle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Waddle.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* dood.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dood.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1588,6 +1594,8 @@
 				30B256101A3C61B000C789E1 /* HONSubjectViewCell.m */,
 				3091229F19C501F60081B141 /* HONComposeSubjectViewController.h */,
 				309122A019C501F60081B141 /* HONComposeSubjectViewController.m */,
+				3030DF5A1A6348ED00406AAF /* HONTopicsViewController.h */,
+				3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */,
 			);
 			name = Compose;
 			sourceTree = "<group>";
@@ -1883,7 +1891,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* Waddle.app */,
+				4C62652515F96C7100AA7FCE /* dood.app */,
 				30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */,
 			);
 			name = Products;
@@ -2087,6 +2095,8 @@
 				4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */,
 				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
 				3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */,
+				3030DF571A63344D00406AAF /* HONFlagNavButtonView.h */,
+				3030DF581A63344D00406AAF /* HONFlagNavButtonView.m */,
 			);
 			name = Nav;
 			sourceTree = "<group>";
@@ -2311,7 +2321,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* Waddle.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* dood.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2453,6 +2463,7 @@
 				3010D78A1A245AFB0078164F /* NSCharacterSet+AdditionalSets.m in Sources */,
 				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
 				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
+				3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				30B7BB891A0A1BC10005C761 /* NSDate+Operations.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
@@ -2464,6 +2475,7 @@
 				30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */,
 				4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */,
 				3051F8C71A09964B00CD85F2 /* UIImage+AnimatedGIF.m in Sources */,
+				3030DF591A63344D00406AAF /* HONFlagNavButtonView.m in Sources */,
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
 				307BBD971A2552BE001CC708 /* UIImage+Transmute.m in Sources */,
 				4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */,
@@ -2862,7 +2874,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Waddle;
+				PRODUCT_NAME = dood;
 				PROVISIONING_PROFILE = "22704408-4932-4db8-bdfa-763c14137e4e";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "22704408-4932-4db8-bdfa-763c14137e4e";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2902,7 +2914,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Waddle;
+				PRODUCT_NAME = dood;
 				PROVISIONING_PROFILE = "84fb90de-a06f-4dfd-a4c5-4e28d6ca20f5";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "84fb90de-a06f-4dfd-a4c5-4e28d6ca20f5";
 				TARGETED_DEVICE_FAMILY = 1;

@@ -26,13 +26,17 @@
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
-@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
+@property (nonatomic, strong) UIImageView *imageLoadingView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIView *commentsHolderView;
-@property (nonatomic, strong) UIImageView *emotionImageView;
+@property (nonatomic, strong) UIImageView *inputBGImageView;
+@property (nonatomic, strong) UITextField *commentTextField;
+@property (nonatomic, strong) UIButton *submitCommentButton;
+@property (nonatomic, strong) NSString *comment;
 
 @property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
+@property (nonatomic, strong) UIButton *commentCloseButton;
 @property (nonatomic, strong) UIButton *commentButton;
 @property (nonatomic, strong) UIButton *upVoteButton;
 @property (nonatomic, strong) UIButton *downVoteButton;
@@ -93,6 +97,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveStatusUpdate {
+	
+	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		
@@ -123,7 +129,52 @@
 				[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
 			}];
 			
+			_replies = [[[_replies reverseObjectEnumerator] allObjects] copy];
 			[self _didFinishDataRefresh];
+		}
+	}];
+}
+
+- (void)_submitCommentReply {
+	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+						   @"club_id"		: @(_clubVO.clubID),
+						   @"subject"		: _comment,
+						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
+	
+	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
+			
+		} else {
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+			if ([_overlayTimer isValid])
+				[_overlayTimer invalidate];
+			
+			if (_overlayTimer != nil);
+			_overlayTimer = nil;
+			
+			if (_overlayView != nil) {
+				[_overlayView removeFromSuperview];
+				_overlayView = nil;
+			}
+			
+			_isSubmitting = NO;
+			[self _goReloadContent];
 		}
 	}];
 }
@@ -169,6 +220,9 @@
 		[view removeFromSuperview];
 	}];
 	
+	_commentsHolderView.frame = CGRectResizeHeight(_commentsHolderView.frame, 0.0);
+	_scrollView.contentSize = CGRectResizeHeight(_scrollView.frame, 0.0).size;
+	
 	if (![_refreshControl isRefreshing])
 		[_refreshControl beginRefreshing];
 	
@@ -180,7 +234,9 @@
 
 - (void)_didFinishDataRefresh {
 	[_refreshControl endRefreshing];
-	[_scrollView setContentOffset:CGPointZero animated:YES];
+//	[_scrollView setContentOffset:CGPointZero animated:NO];
+	
+	_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
 	[self _makeComments];
 	
 	NSLog(@"%@._didFinishDataRefresh", self.class);
@@ -195,24 +251,23 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
 	
-	_isSubmitting = NO;
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
-	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 378.0);
-	_scrollView.contentInset = UIEdgeInsetsMake(-20.0, 0.0, 20.0, 0.0);
-	[_scrollView setContentOffset:CGPointZero animated:YES];
-	_scrollView.alwaysBounceVertical = YES;
-	_scrollView.delegate = self;
-	[self.view addSubview:_scrollView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
+	[self.view addSubview:_headerView];
 	
-	_refreshControl = [[HONRefreshControl alloc] init];
-	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
-	[_scrollView addSubview: _refreshControl];
 	
-	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.view asLargeLoader:NO];
-	[_scrollView addSubview:_imageLoadingView];
+	_creatorView = [[HONStatusUpdateCreatorView alloc] initWithStatusUpdateVO:_statusUpdateVO];
+	_creatorView.frame = CGRectOffset(_creatorView.frame, 0.0, kNavHeaderHeight);
+	[self.view addSubview:_creatorView];
 	
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 8.0, 60.0, 60.0)];
-	[_scrollView addSubview:_imageView];
+	_imageLoadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_home"]];
+	_imageLoadingView.frame = CGRectOffset(_imageLoadingView.frame, 21.0, 22.0);
+	[_creatorView addSubview:_imageLoadingView];
+	
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 12.0, 50.0, 50.0)];
+	[_creatorView addSubview:_imageView];
+	[[HONViewDispensor sharedInstance] maskView:_imageView withMask:[UIImage imageNamed:@"topicMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_imageView.image = image;
@@ -235,109 +290,143 @@
 	NSString *url = _statusUpdateVO.imagePrefix;
 	NSLog(@"URL:[%@]", url);
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
-													  cachePolicy:kOrthodoxURLCachePolicy
-												  timeoutInterval:[HONAppDelegate timeoutInterval]]
-					placeholderImage:nil
-							 success:imageSuccessBlock
-							 failure:imageFailureBlock];
+														cachePolicy:kOrthodoxURLCachePolicy
+													timeoutInterval:[HONAppDelegate timeoutInterval]]
+					  placeholderImage:nil
+							   success:imageSuccessBlock
+							   failure:imageFailureBlock];
 	
 	
 	
 	
-	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 6.0, 220.0, 16.0)];
+	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 11.0, 200.0, 16.0)];
 	_usernameLabel.backgroundColor = [UIColor clearColor];
-	_usernameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:14];
-	[_scrollView addSubview:_usernameLabel];
+	_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
+	_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:13];
+	_usernameLabel.text = _statusUpdateVO.username;
+	[_creatorView addSubview:_usernameLabel];
 	
 	
+	//	NSLog(@"SUBJECT:[%d]", [[_statusUpdateVO.dictionary objectForKey:@"text"] length]);
+	
+	NSLog(@"TOPIC:[%@]", _statusUpdateVO.topicName);
+	NSLog(@"SUBJECT:[%@]", _statusUpdateVO.subjectName);;
 	
 	
-	
-	
-	
-//	NSLog(@"SUBJECT:[%d]", [[_statusUpdateVO.dictionary objectForKey:@"text"] length]);
-	
-	
-	_statusUpdateVO.topicVO.topicName = [_statusUpdateVO.topicVO.topicName stringByAppendingString:@"ing"];
-	NSLog(@"TOPIC:[%@]", _statusUpdateVO.topicVO.topicName);
-	NSLog(@"SUBJECT:[%@]", _statusUpdateVO.subjectVO.subjectName);;
-	
-	
-	NSString *actionCaption = [NSString stringWithFormat:@"— is %@ %@", _statusUpdateVO.topicVO.topicName, _statusUpdateVO.subjectVO.subjectName];
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 30.0, 280.0, 44.0)];
+	NSString *actionCaption = [NSString stringWithFormat:@"— is %@ %@", _statusUpdateVO.topicName, _statusUpdateVO.subjectName];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 32.0, 280.0, 20.0)];
 	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.85];
-	subjectLabel.textAlignment = NSTextAlignmentCenter;
-	subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	subjectLabel.textColor = [UIColor blackColor];
+	subjectLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:16];
 	subjectLabel.text = actionCaption;
-	[_scrollView addSubview:subjectLabel];
+	[_creatorView addSubview:subjectLabel];
 	
-	[subjectLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:12] range:[actionCaption rangeOfString:_statusUpdateVO.subjectVO.subjectName]];
-	[subjectLabel setTextColor:[UIColor blackColor] range:[actionCaption rangeOfString:_statusUpdateVO.subjectVO.subjectName]];
-	
-	
+	if ([actionCaption rangeOfString:_statusUpdateVO.subjectName].location != NSNotFound)
+		[subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectName]];
 	
 	
+	UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeIcon"]];
+	timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 58.0);
+	[_creatorView addSubview:timeIconImageView];
 	
-	if ([_statusUpdateVO.comment length] > 0) {
-		
-		
-		
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(88.0, 58.0, 208.0, 16.0)];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
+	[_creatorView addSubview:timeLabel];
+	
+	_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_upVoteButton.frame = CGRectMake(276.0, 0.0, 44.0, 44.0);
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
+	[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
+	[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO])];
+	[_creatorView addSubview:_upVoteButton];
+	
+	_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_downVoteButton.frame = CGRectMake(276.0, 40.0, 44.0, 44.0);
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
+	[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
+	[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO])];
+	[_creatorView addSubview:_downVoteButton];
+	
+	NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO]));
+	if (![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO]) {
+		[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
+		[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 	}
 	
-//	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 90.0, 60.0, 20.0)];
-//	timeLabel.backgroundColor = [UIColor clearColor];
-//	timeLabel.textColor = [UIColor whiteColor];
-//	timeLabel.textAlignment = NSTextAlignmentRight;
-//	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-//	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.updatedDate];
-//	[self.view addSubview:timeLabel];
+	_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(275.0, 32.0, 44.0, 20.0)];
+	_scoreLabel.backgroundColor = [UIColor clearColor];
+	_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
+	_scoreLabel.textAlignment = NSTextAlignmentCenter;
+	_scoreLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
+	_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
+	[_creatorView addSubview:_scoreLabel];
 	
-	UIView *votesHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 240.0, 320.0, 50.0)];
-//	voteHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-	[_scrollView addSubview:votesHolderView];
+	_isSubmitting = NO;
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 84.0))];
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
+	[_scrollView setContentInset:kOrthodoxTableViewEdgeInsets];
+	_scrollView.alwaysBounceVertical = YES;
+	_scrollView.delegate = self;
+	[self.view addSubview:_scrollView];
 	
+	_refreshControl = [[HONRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_scrollView addSubview: _refreshControl];
 	
-	
-	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(0.0, 320.0, 320.0, 58.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateHighlighted];
-	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:replyButton];
-
-	
-	UIView *bufferView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 378.0, 320.0, 25.0)];
-	bufferView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.947];
-	[_scrollView addSubview:bufferView];
-	
-	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 403.0, 320.0, 0.0)];
-	_commentsHolderView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.0];
+	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
 	
 	
-	_headerView = [[HONHeaderView alloc] init];
-	[self.view addSubview:_headerView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = _headerView.frame;
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"statusUpdateHeaderButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"statusUpdateHeaderButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:closeButton];
+	_inputBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
+	_inputBGImageView.frame = CGRectOffset(_inputBGImageView.frame, 0.0, self.view.frame.size.height - 44.0);
+	_inputBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:_inputBGImageView];
+	
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 12.0, 232.0, 21.0)];
+	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_commentTextField setReturnKeyType:UIReturnKeyDone];
+	[_commentTextField setTextColor:[UIColor blackColor]];
+	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_commentTextField.keyboardType = UIKeyboardTypeDefault;
+	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
+	_commentTextField.text = @"";
+	_commentTextField.delegate = self;
+	[_inputBGImageView addSubview:_commentTextField];
+	
+	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitCommentButton.frame = CGRectMake(265.0, 0.0, 44.0, 44.0);
+	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
+	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
+	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Disabled"] forState:UIControlStateDisabled];
+	[_submitCommentButton addTarget:self action:@selector(_goCommentReply) forControlEvents:UIControlEventTouchUpInside];
+	[_submitCommentButton setEnabled:NO];
+	[_inputBGImageView addSubview:_submitCommentButton];
+	
+	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (216.0 + _inputBGImageView.frame.size.height));
+	[_commentCloseButton addTarget:self action:@selector(_goCancelReply) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
+	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[self _goReloadContent];
 }
 
 
 #pragma mark - Navigation
-- (void)_goClose {
+- (void)_goBack {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 }
@@ -397,18 +486,37 @@
 	}];
 }
 
-- (void)_goReply {
-	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
-						   @"club_id"		: @(_statusUpdateVO.clubID),
-						   @"subject"		: @"",
-						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
-	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
+- (void)_goCommentReply {
+	_isSubmitting = YES;
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONReplySubmitViewController alloc] initWithSubmitParameters:dict]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	if ([_commentTextField isFirstResponder])
+		[_commentTextField resignFirstResponder];
+	
+	NSLog(@"DIST:[%.04f] RADIUS:[%.04f]", _clubVO.distance, _clubVO.postRadius);
+	
+	_comment = _commentTextField.text;
+	_commentTextField.text = @"";
+	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	[self.view addSubview:_overlayView];
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kProgressHUDMinDuration;
+	_progressHUD.taskInProgress = YES;
+	
+	
+	[self _submitCommentReply];
 }
+
+- (void)_goCancelReply {
+	_commentTextField.text = @"";
+	if ([_commentTextField isFirstResponder])
+		[_commentTextField resignFirstResponder];
+}
+
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 //	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
@@ -434,20 +542,109 @@
 - (void)_tareStatusUpdate:(NSNotification *)notification {
 	NSLog(@"::|> _tareStatusUpdate <|::");
 	
-	[_scrollView scrollRectToVisible:[UIScreen mainScreen].bounds animated:YES];
+	[_scrollView setContentOffset:CGPointZero animated:YES];
 }
+
+- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+#if __APPSTORE_BUILD__ == 0
+	if ([_commentTextField.text isEqualToString:@"¡"]) {
+		_commentTextField.text = [[[HONDeviceIntrinsics sharedInstance] phoneNumber] substringFromIndex:2];
+	}
+#endif
+	
+	[_submitCommentButton setEnabled:([_commentTextField.text length] > 0)];
+}
+
 
 
 #pragma mark - UI Presentation
 - (void)_makeComments {
-	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, [_replies count] * 44.0);
-	_scrollView.contentSize = CGSizeExpand(_scrollView.contentSize, CGSizeMake(0.0, _commentsHolderView.frame.size.height));
+	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, [_replies count] * 90.0);
+	_scrollView.contentSize = _commentsHolderView.frame.size;
 	
 	[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0,  44.0 * idx, 320.0, 44.0)];
+		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0,  90.0 * idx, 320.0, 90.0)];
+		itemView.alpha = 0.0;
 		itemView.commentVO = (HONCommentVO *)obj;
 		[_commentsHolderView addSubview:itemView];
+		
+		[UIView animateKeyframesWithDuration:0.25 delay:(0.125 * ([_replies count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			itemView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
 	}];
+	
+	if ([_replies count] > 4)
+		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
+}
+
+- (void)_orphanSubmitOverlay {
+	NSLog(@"::|> _orphanSubmitOverlay <|::");
+	
+	if ([_overlayTimer isValid])
+		[_overlayTimer invalidate];
+	
+	if (_overlayTimer != nil);
+	_overlayTimer = nil;
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	if (_overlayView != nil) {
+		[_overlayView removeFromSuperview];
+		_overlayView = nil;
+	}
+}
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
+	
+	[UIView animateWithDuration:0.25
+					 animations:^(void) {
+						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - (216.0 + _inputBGImageView.frame.size.height));
+					 } completion:^(BOOL finished) {
+						 [self.view addSubview:_commentCloseButton];
+					 }];
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound)
+		return (NO);
+	
+	return ([textField.text length] < 70 || [string isEqualToString:@""]);
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:@"UITextFieldTextDidChangeNotification"
+												  object:textField];
+	[UIView animateWithDuration:0.25
+					 animations:^(void) {
+						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - 44.0);
+					 } completion:^(BOOL finished) {
+						 [_commentCloseButton removeFromSuperview];
+					 }];
+}
+
+- (void)_onTextEditingDidEnd:(id)sender {
+	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
+	
+	if (!_isSubmitting && [_commentTextField.text length] > 0)
+		[self _goCommentReply];
 }
 
 

@@ -20,5 +20,8 @@
 	return ([[[rnd copy] reverseObjectEnumerator] allObjects]);
 }
 
+- (id)randomElement {
+	return ([self objectAtIndex:(arc4random() % [self count])]);
+}
 
 @end

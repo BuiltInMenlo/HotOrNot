@@ -10,7 +10,7 @@
 #import "HONTableView.h"
 
 const CGFloat kOrthodoxTableCellHeight = 74.0f;
-const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
+const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 44.0, 0.0};
 
 @interface HONTableView ()
 @end

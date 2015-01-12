@@ -62,6 +62,7 @@
 	_topicVO = topicVO;
 	
 	_captionLabel.text = _topicVO.topicName;
+	[self toggleImageLoading:YES];
 }
 
 - (void)toggleImageLoading:(BOOL)isLoading {
