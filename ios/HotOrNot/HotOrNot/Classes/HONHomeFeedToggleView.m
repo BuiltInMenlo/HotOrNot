@@ -24,8 +24,9 @@
 @synthesize supportedTypes = _supportedTypes;
 
 - (id)initWithTypes:(NSArray *)types {
-	if ((self = [super initWithFrame:CGRectMake(62.0, 0.0, 196.0, 44.0)])) {
-		
+//	if ((self = [super initWithFrame:CGRectMake(62.0, 0.0, 196.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(93.0, 0.0, 134.0, 44.0)])) {
+	
 		_supportedTypes = types;
 		
 		_feedType = (HONHomeFeedType)[_supportedTypes firstObject];
@@ -37,21 +38,18 @@
 		
 		_recentButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_recentButton.frame = CGRectMake(8.0, 8.0, 59.0, 28.0);
-//		_recentButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[_recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
 		[_imageView addSubview:_recentButton];
 		
 		_topButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_topButton.frame = CGRectMake(68.0, 8.0, 59.0, 28.0);
-//		_topButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 		[_topButton addTarget:self action:@selector(_goTop) forControlEvents:UIControlEventTouchUpInside];
 		[_imageView addSubview:_topButton];
 		
 		_ownedButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_ownedButton.frame = CGRectMake(128.0, 8.0, 59.0, 28.0);
-//		_ownedButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
 		[_ownedButton addTarget:self action:@selector(_goOwned) forControlEvents:UIControlEventTouchUpInside];
-		[_imageView addSubview:_ownedButton];
+//		[_imageView addSubview:_ownedButton];
 	}
 	
 	return (self);

@@ -23,7 +23,7 @@
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : @"OP";
 	vo.topicName = ([[dictionary objectForKey:@"emotions"] count] > 0) ? [[dictionary objectForKey:@"emotions"] firstObject] : @"";
 	vo.subjectName = [dictionary objectForKey:@"text"];
-	vo.appStoreURL = ([dictionary objectForKey:@"app_store"] != nil) ? [dictionary objectForKey:@"app_store"] : @"https://itunes.apple.com/us/app/crossy-road-endless-arcade/id924373886?mt=8";
+	vo.appStoreURL = ([dictionary objectForKey:@"app_store"] != nil) ? [dictionary objectForKey:@"app_store"] : @"";//@"https://itunes.apple.com/us/app/crossy-road-endless-arcade/id924373886?mt=8";
 	vo.comment = [dictionary objectForKey:@"text"];
 	
 	vo.username = [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:vo.username];

@@ -515,7 +515,7 @@
 	NSLog(@"[*:*] homeFeedToggleView:didSelectFeedType:[%@])", (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN");
 	
 	_feedType = feedType;
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"NewToggle" : @"TopToggle"]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"new_toggle" : @"top_toggle"]];
 	
 	[toggleView toggleEnabled:NO];
 	[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
@@ -526,7 +526,7 @@
 - (void)homeViewCell:(HONHomeViewCell *)viewCell didSelectStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
 	NSLog(@"[*:*] homeViewCell:didSelectdidSelectdidSelectStatusUpdate:[%d])", statusUpdateVO.statusUpdateID);
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - row_select"];
 	
 	_selectedStatusUpdateVO = statusUpdateVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
@@ -685,7 +685,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - select_post"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - row_select"];
 	
 	_selectedStatusUpdateVO = cell.statusUpdateVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];

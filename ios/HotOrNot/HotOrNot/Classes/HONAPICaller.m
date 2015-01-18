@@ -1453,38 +1453,6 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"userID"		: [dict objectForKey:@"user_id"],
-							 @"imgURL"		: [dict objectForKey:@"img_url"],
-							 @"challengeID"	: [dict objectForKey:@"challenge_id"],
-							 @"clubID"		: [dict objectForKey:@"club_id"],
-							 @"subject"		: [dict objectForKey:@"subject"],
-							 @"subjects"	: [dict objectForKey:@"subjects"],
-							 @"targets"		: [dict objectForKey:@"recipients"]};
-	
-	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", [[HONAPICaller sharedInstance] phpAPIBasePath], [dict objectForKey:@"api_endpt"], params);
-	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingPHPBasePath];
-	[httpClient postPath:[dict objectForKey:@"api_endpt"] parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			
-		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			
-			if (completion)
-				completion(result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIChallenges, [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
-}
-
 - (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"			: NSStringFromInt(6),
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],

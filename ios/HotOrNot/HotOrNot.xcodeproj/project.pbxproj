@@ -1502,8 +1502,6 @@
 				4CED977518E46B1800482813 /* Activity */,
 				4C32B9A515FAB60A0023A0EE /* Compose */,
 				4C45A9421996AD9500A2086E /* Details */,
-				3045F9BE1A1E621000F4FA88 /* HONHomeViewFlowLayout.h */,
-				3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */,
 				3045F9C11A1E624300F4FA88 /* HONHomeViewCell.h */,
 				3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */,
 				3045F9BB1A1E61AD00F4FA88 /* HONHomeViewController.h */,
@@ -2114,6 +2112,8 @@
 		4CBDDBA41913349A002F9723 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				3045F9BE1A1E621000F4FA88 /* HONHomeViewFlowLayout.h */,
+				3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */,
 				3075E02D19D66107007B3346 /* HONCameraOverlayView.h */,
 				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
 				30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */,

@@ -86,7 +86,6 @@
 		NSLog(@"RESULT:[%@]", result);
 		
 		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Username Taken"];
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -105,7 +104,6 @@
 		} else {
 			[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
 				if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-					//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Phone Taken"];
 					
 					if (_progressHUD == nil)
 						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -129,7 +127,6 @@
 					
 				} else {
 					NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - nickname"];
 					
 					_submitButton.userInteractionEnabled = NO;
 					
@@ -181,7 +178,6 @@
 									KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 									[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
 									
-									[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
 									[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 								}];
 							}];
@@ -357,7 +353,6 @@
 											  userInfo:nil repeats:NO];
 		
 		_isPushing = YES;
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - press_signup_button"];
 		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
@@ -455,6 +450,8 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - nickname"];
+	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
 												 name:UITextFieldTextDidChangeNotification

@@ -56,6 +56,7 @@
 //									   withProperties:[self _trackingProps]];
 	
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
 	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
@@ -135,7 +136,8 @@
 
 #pragma mark - UI Presentation
 - (void)_goCustomTopic {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - Step2Custom"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_custom"];
+
 	[self.view addSubview:_customTopicTextField];
 	[_customTopicTextField becomeFirstResponder];
 	
@@ -176,8 +178,6 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - Submit"];
-	
 	if (_selectedTopicVO == nil) {
 		[[[UIAlertView alloc] initWithTitle:nil
 									message:@"You must select a subject"
@@ -252,10 +252,12 @@
 - (void)topicViewCell:(HONTopicViewCell *)viewCell didSelectTopic:(HONTopicVO *)topicVO {
 	NSLog(@"[*:*] topicViewCell:didSelectTopic:[%@]", [topicVO toString]);
 	
+	
 	if ([[_submitParams objectForKey:@"topic_id"] intValue] == 4 && viewCell.indexPath.row == 0) {
 		[self _goCustomTopic];
 	
 	} else {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
 		[super topicViewCell:viewCell didSelectTopic:topicVO];
 		[self _goSubmit];
 	}
@@ -289,8 +291,10 @@
 	if ([[_submitParams objectForKey:@"topic_id"] intValue] == 4 && cell.indexPath.row == 0) {
 		[self _goCustomTopic];
 		
-	} else
+	} else {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
 		[self _goSubmit];
+	}
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

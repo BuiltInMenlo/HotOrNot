@@ -301,7 +301,6 @@
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
-	_commentCloseButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 	[_commentCloseButton addTarget:self action:@selector(_goCancelReply) forControlEvents:UIControlEventTouchUpInside];
 }
 
@@ -461,12 +460,12 @@
 #pragma mark - StatusUpdateCreatorView Delegates
 - (void)statusUpdateCreatorViewDidDownVote:(HONStatusUpdateCreatorView *)statusUpdateCreatorView {
 	NSLog(@"[*:*] statusUpdateCreatorViewDidDownVote [*:*]");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - details_down"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - down_vote"];
 }
 
 - (void)statusUpdateCreatorViewDidUpVote:(HONStatusUpdateCreatorView *)statusUpdateCreatorView {
 	NSLog(@"[*:*] statusUpdateCreatorViewDidUpVote [*:*]");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - details_up"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - up_vote"];
 	
 //	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 }

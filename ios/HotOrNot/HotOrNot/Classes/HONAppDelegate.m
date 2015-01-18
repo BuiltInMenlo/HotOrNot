@@ -61,15 +61,15 @@ NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRD
 NSString * const kBlowfishIV = @"„7ì”~ís";
 
 #if __APPSTORE_BUILD__ == 1
-NSString * const kKeenIOProductID = @"547280787d8cb91037ffa14f";
-NSString * const kKeenIOMasterKey = @"DEBAFD13136BB67D6DA2782D5B892D71";
-NSString * const kKeenIOReadKey = @"a5974f32089efc21bf3b6c4deffd3d75505d43759b85b421aaff1d5effcc8d64e42a582291432c7405fb25561c66dbf5a0b8977994b337cbeae601257b13ea67e4c535ad7c47f608be64962e5c750b361b338d3eb553ac824463d3ea9afefe0c49ba280510b7e6661918df88e24c5f0b";
-NSString * const kKeenIOWriteKey = @"6721421761b2ce2cbd58bc80cd0529d237339923613734d6e549f9e079f007793958d1da054d6f539a8768476e2f4779ff2828050a354a63f38a5e6d0ec22854fcd2136834f34fbf76d11bafc845a35171282f40c6e310c824664a269c7589ab41cb100429c5f8e22b5ccb8bfda89204";
+NSString * const kKeenIOProjectID = @"54bb13196f31a230ad1cfef9";
+NSString * const kKeenIOMasterKey = @"3DB8C226B5D919804F9A08D6413D4CE2";
+NSString * const kKeenIOReadKey = @"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
+NSString * const kKeenIOWriteKey = @"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
 #else
-NSString * const kKeenIOProductID = @"5472803f7d8cb91037ffa14e";
-NSString * const kKeenIOMasterKey = @"6FF7CA039003552C410EC16300F3634E";
-NSString * const kKeenIOReadKey = @"e9657f3cdd1e1c1be9b55933f6d0ff17b124aedd055f9527bf3a9795d948dfb3c43e67d875306eb092bb00dd12bdbfbbba0b5e8851e6a1c91adc1e7a5f673b36e6e52039a6af2981fe44689f67a192324e57de2fe5747a76c55ef2b9f414a306844837739484ab54d85f6c561b10e5b0";
-NSString * const kKeenIOWriteKey = @"b1cdd775a884281f24e673401727f75c05985ae671db08bc85aa5f642673e0f5714552c5edec79607df590391a891d08a194ab93f7064607f91e858c80d3368c1b2964dab554f2006679f10200b6732e5ea3d2892f084212c297b32b06e8d131feda4bb0a732f0236d519f3d2bb29047";
+NSString * const kKeenIOProjectID = @"54bb1391e0855733be551306";
+NSString * const kKeenIOMasterKey = @"D805BE8BA8AF8F65F7C4825CA31C58E1";
+NSString * const kKeenIOReadKey = @"984990cfc1ba74d560bc85d2fe78ebb4d3595d9d14169a041ac7a3c80d6710c4a43dbcc1b1556f4361e8097cfd11e62bbdcf43be2c612f296225c52d32e12762864d9c569aa277632c08ee6b82783118a9d5052c0dccdf8d364993e184b23a1367e5de9b742b848a9f4f9ded7e58b186";
+NSString * const kKeenIOWriteKey = @"3765f6e50fdb595882038fb5c336dd31cbe55a2977ae03aa25d32fa0ef09b5ef9249a383dc54557c2eafbb539301094b347d97bafd67e948f33ff5df60aa438c02e1be7c06abdeafa468ca8e8cde4dafd54872f82fc21ac1e64d82f4522a86820e20f226253006b2aa713c9ac211ba83";
 #endif
 
 
@@ -152,10 +152,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 //	return ([HONAppDelegate h])
 //}
 
-
-+ (NSString *)apiServerPath {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"api_endpt"]);
-}
 
 + (NSString *)customerServiceURLForKey:(NSString *)key {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"support_urls"] objectForKey:key]);
@@ -307,7 +303,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"server_apis"] forKey:@"server_apis"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"api_endpt"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"ts_name"] forKey:@"ts_name"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
@@ -741,7 +736,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 //	[FBAppEvents activateApp];
 	
-	[KeenClient sharedClientWithProjectId:kKeenIOProductID
+	[KeenClient sharedClientWithProjectId:kKeenIOProjectID
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
 	[KeenClient disableGeoLocation];
@@ -753,7 +748,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Enter"];
 	[Flurry logEvent:@"App_Active"];
 
 	

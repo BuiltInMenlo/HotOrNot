@@ -93,10 +93,12 @@
 		if ([actionCaption rangeOfString:_statusUpdateVO.subjectName].location != NSNotFound) {
 			[_subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectName]];
 			
-			UIButton *linkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			linkButton.frame = [_subjectLabel boundingRectForSubstring:_statusUpdateVO.subjectName];
-			[linkButton addTarget:self action:@selector(_goAppStoreURL) forControlEvents:UIControlEventTouchUpInside];
-			[self addSubview:linkButton];
+			if ([_statusUpdateVO.appStoreURL length] > 0) {
+				UIButton *linkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+				linkButton.frame = [_subjectLabel boundingRectForSubstring:_statusUpdateVO.subjectName];
+				[linkButton addTarget:self action:@selector(_goAppStoreURL) forControlEvents:UIControlEventTouchUpInside];
+				[self addSubview:linkButton];
+			}
 		}
 		
 		
