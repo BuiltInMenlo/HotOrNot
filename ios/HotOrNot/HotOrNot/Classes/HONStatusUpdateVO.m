@@ -11,7 +11,7 @@
 #import "HONStatusUpdateVO.h"
 
 @implementation HONStatusUpdateVO
-@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, comment, score, addedDate, updatedDate;
+@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, appStoreURL, comment, score, addedDate, updatedDate;
 
 + (HONStatusUpdateVO *)statusUpdateWithDictionary:(NSDictionary *)dictionary {
 	HONStatusUpdateVO *vo = [[HONStatusUpdateVO alloc] init];
@@ -23,6 +23,7 @@
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : @"OP";
 	vo.topicName = ([[dictionary objectForKey:@"emotions"] count] > 0) ? [[dictionary objectForKey:@"emotions"] firstObject] : @"";
 	vo.subjectName = [dictionary objectForKey:@"text"];
+	vo.appStoreURL = ([dictionary objectForKey:@"app_store"] != nil) ? [dictionary objectForKey:@"app_store"] : @"https://itunes.apple.com/us/app/crossy-road-endless-arcade/id924373886?mt=8";
 	vo.comment = [dictionary objectForKey:@"text"];
 	
 	vo.username = [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:vo.username];
@@ -33,7 +34,23 @@
 		vo.comment = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
 	}
 	
-	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : vo.topicName] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
+	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : [vo.topicName stringByReplacingOccurrencesOfString:@" " withString:@"%20"]] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
+	
+	if ([vo.topicName isEqualToString:@"Feeling"]) {
+		__block BOOL isFound = NO;
+		[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONTopicVO *topicVO = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
+			
+			if ([topicVO.topicName isEqualToString:vo.subjectName])
+				isFound = YES;
+			
+			*stop = isFound;
+		}];
+		
+		if (!isFound)
+			vo.imagePrefix = [NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", [vo.topicName lowercaseString]];
+	}
+	
 	vo.score = ([dictionary objectForKey:@"net_vote_score"] != [NSNull null]) ? [[dictionary objectForKey:@"net_vote_score"] intValue] : 0;
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"updated"]];

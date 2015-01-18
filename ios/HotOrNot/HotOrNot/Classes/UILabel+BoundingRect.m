@@ -39,6 +39,10 @@
 	return (adjBounds);
 }
 
+- (CGRect)boundingRectForSubstring:(NSString *)substring {
+	return ([self boundingRectForCharacterRange:[self.text rangeOfString:substring]]);
+}
+
 - (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize {
 	CGSize size = [caption boundingRectWithSize:maxSize
 														options:NSStringDrawingTruncatesLastVisibleLine

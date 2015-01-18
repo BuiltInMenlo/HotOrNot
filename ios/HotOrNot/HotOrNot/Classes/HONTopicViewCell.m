@@ -62,7 +62,25 @@
 	_topicVO = topicVO;
 	
 	_captionLabel.text = _topicVO.topicName;
-	[self toggleImageLoading:YES];
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);
+	};
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_iconImageView.image = image;
+	};
+	
+	[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_topicVO.iconURL]
+															cachePolicy:kOrthodoxURLCachePolicy
+														timeoutInterval:[HONAppDelegate timeoutInterval]]
+						  placeholderImage:nil
+								   success:imageSuccessBlock
+								   failure:imageFailureBlock];
+}
+
+- (void)toggleCaption:(BOOL)isVisible {
+	_captionLabel.hidden = !isVisible;
 }
 
 - (void)toggleImageLoading:(BOOL)isLoading {
@@ -78,7 +96,7 @@
 		[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_topicVO.iconURL]
 																cachePolicy:kOrthodoxURLCachePolicy
 															timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_compose"]
+							  placeholderImage:nil
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];
 	} else {

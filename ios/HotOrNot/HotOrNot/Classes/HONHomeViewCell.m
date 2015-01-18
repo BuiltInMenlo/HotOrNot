@@ -22,6 +22,7 @@
 @property (nonatomic, strong) UILabel *subjectLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic, strong) UIButton *selectButton;
+@property (nonatomic, strong) UIImageView *likesIconImageView;
 @property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
 @property (nonatomic) BOOL isLoading;
 @end
@@ -40,19 +41,21 @@
 		
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
 		
-		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_home"]];
-		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 21.0, 27.0);
+		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingDots_50"]];
+		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 11.0, 17.0);
 		[self.contentView addSubview:_loadingImageView];
+		
+		[[HONViewDispensor sharedInstance] maskView:_loadingImageView withMask:[UIImage imageNamed:@"topicMask"]];
 		
 		_subjectImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 17.0, 50.0, 50.0)];
 		[self.contentView addSubview:_subjectImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_subjectImageView withMask:[UIImage imageNamed:@"topicMask"]];
 		
-		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 11.0, 220.0, 16.0)];
+		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 12.0, 220.0, 16.0)];
 		_usernameLabel.backgroundColor = [UIColor clearColor];
 		_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
-		_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:13];
+		_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:14];
 		[self.contentView addSubview:_usernameLabel];
 		
 		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 32.0, 220.0, 20.0)];
@@ -62,25 +65,26 @@
 		[self.contentView addSubview:_subjectLabel];
 		
 		UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeIcon"]];
-		timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 58.0);
+		timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 57.0);
 		[self.contentView addSubview:timeIconImageView];
 		
-		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(88.0, 58.0, 48.0, 16.0)];
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(88.0, 57.0, 48.0, 16.0)];
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		[self.contentView addSubview:_timeLabel];
 		
-		UIImageView *likesIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likesIcon"]];
-		likesIconImageView.frame = CGRectOffset(timeIconImageView.frame, 32.0, 0.0);
-		[self.contentView addSubview:likesIconImageView];
+		_likesIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likesIcon"]];
+		_likesIconImageView.frame = CGRectOffset(timeIconImageView.frame, 32.0, 0.0);
+//		[self.contentView addSubview:_likesIconImageView];
 		
-		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(120.0, 58.0, 48.0, 16.0)];
+		
+		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(120.0, 57.0, 48.0, 16.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance]  percentGreyscaleColor:0.75];
 		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-		[self.contentView addSubview:_scoreLabel];
+//		[self.contentView addSubview:_scoreLabel];
 		
 		_selectButton = [UIButton buttonWithType:UIButtonTypeCustom];	
 		_selectButton.frame = self.frame;
@@ -110,7 +114,7 @@
 #pragma mark - Public APIs
 - (void)setStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
 	_statusUpdateVO = statusUpdateVO;
-	NSString *actionCaption = [NSString stringWithFormat:@"- is %@ %@", _statusUpdateVO.topicName, _statusUpdateVO.subjectName];
+	NSString *actionCaption = [NSString stringWithFormat:@"- is %@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];
 	
 	_usernameLabel.text = _statusUpdateVO.username;
 	_subjectLabel.text = actionCaption;
@@ -120,6 +124,15 @@
 	if ([actionCaption rangeOfString:_statusUpdateVO.subjectName].location != NSNotFound)
 		[_subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectName]];
 	
+	
+	CGSize size = [_timeLabel.text boundingRectWithSize:_timeLabel.frame.size
+													   options:NSStringDrawingTruncatesLastVisibleLine
+													attributes:@{NSFontAttributeName:_timeLabel.font}
+													   context:nil].size;
+	NSLog(@"(%@) SIZE:%@", _timeLabel.text, NSStringFromCGSize(size));
+	
+	_likesIconImageView.frame = CGRectOffset(_likesIconImageView.frame, size.width - 10.0, 0.0);
+	_scoreLabel.frame = CGRectOffset(_scoreLabel.frame, size.width - 10.0, 0.0);
 	
 //	[_scoreLabel toggleLoading:YES];
 //	[[HONAPICaller sharedInstance] retrieveVoteTotalForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSNumber *result) {
@@ -156,7 +169,7 @@
 			[_subjectImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_statusUpdateVO.imagePrefix]
 																   cachePolicy:kOrthodoxURLCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:[UIImage imageNamed:@"loadingArrows"]
+							  placeholderImage:[UIImage imageNamed:@"loadingDots_50"]
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];
 		}

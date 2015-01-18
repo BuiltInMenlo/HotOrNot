@@ -76,7 +76,7 @@
 		[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_subjectVO.icoURL]
 																cachePolicy:kOrthodoxURLCachePolicy
 															timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:[UIImage imageNamed:@"imageLoadingDots_compose"]
+							  placeholderImage:nil
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];
 		

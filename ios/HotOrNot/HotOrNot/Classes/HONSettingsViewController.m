@@ -46,7 +46,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		_staffClubs = [[HONClubAssistant sharedInstance] staffDesignatedClubsWithThreshold:5];
+		_staffClubs = [NSMutableArray array];// [[HONClubAssistant sharedInstance] staffDesignatedClubsWithThreshold:5];
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
 		_notificationSwitch.on = ([HONAppDelegate infoForUser] != nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"] : YES;
@@ -85,7 +85,7 @@
 	
 	if ([_overlayTimer isValid])
 		[_overlayTimer invalidate];
-
+	
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
@@ -100,9 +100,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyBGColor];
+//	self.view.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyBGColor];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"More"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
 	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
 	[self.view addSubview:_headerView];
 	
@@ -182,7 +182,7 @@
 										  userInfo:nil repeats:NO];
 	
 	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
 	[self.view addSubview:_overlayView];
 	
 	[self performSelector:@selector(_reloadContents) withObject:nil afterDelay:2.67];
@@ -229,42 +229,15 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 1) ? [_staffClubs count] : (section == 2) ? 2 : (section == 4) ? 3 : 1);
+	return ((section == 1) ? 2 : (section == 3) ? 3 : 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (6);
+	return (5);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return (nil);
-	
-	UIView *headerView;
-	
-	if (section == 0) {
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(8.0, 8.0, 200.0, 32.0)];
-		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14.0];
-		label.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.302];
-		label.backgroundColor = [UIColor clearColor];
-		label.text = NSLocalizedString(@"settings_mylocation", @"");
-		
-		headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 16.0)];
-		[headerView addSubview:label];
-		
-	} else if (section == 1) {
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(8.0, 8.0, 200.0, 16.0)];
-		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14.0];
-		label.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.302];
-		label.backgroundColor = [UIColor clearColor];
-		label.text = NSLocalizedString(@"settings_nearby", @"");
-		
-		headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 32.0)];
-		[headerView addSubview:label];
-	
-	} else
-		headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 0.0)];
-	
-	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -278,7 +251,8 @@
 	
 	if (indexPath.section == 0) {
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
-		[cell setCaption:[NSString stringWithFormat:@"%@, %@", [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"], [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"state"]]];
+		[cell setCaption:@"Global"];
+//		[cell setCaption:[NSString stringWithFormat:@"%@, %@", [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"], [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"state"]]];
 		
 		HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
 		HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
@@ -298,41 +272,25 @@
 		}
 		
 	} else if (indexPath.section == 1) {
-		HONUserClubVO *vo = ((HONUserClubVO *)[_staffClubs objectAtIndex:indexPath.row]);
-		[cell setCaption:vo.clubName];
-		
-		if (vo.clubID == [[HONClubAssistant sharedInstance] currentLocationClub].clubID) {
-			[cell hideChevron];
-			
-			UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
-			checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (3.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
-			[cell.contentView addSubview:checkMarkImageView];
-		}
-		
-		if (indexPath.row == [_staffClubs count] - 1)
-			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
-		
-	} else if (indexPath.section == 2) {
 		if (indexPath.row == 1)
 			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 			[cell setCaption:(indexPath.row == 0) ? NSLocalizedString(@"settings_share", @"Share") : NSLocalizedString(@"settings_rate", @"Rate")];
 		
-	} else if (indexPath.section == 3) {
+	} else if (indexPath.section == 2) {
 		[cell hideChevron];
 		[cell setCaption:NSLocalizedString(@"settings_notifications", @"Notifications")];
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		cell.accessoryView = _notificationSwitch;
 		
-	} else if (indexPath.section == 4) {
+	} else if (indexPath.section == 3) {
 		if (indexPath.row == 2)
 			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		
 		[cell setCaption:(indexPath.row == 0) ? NSLocalizedString(@"settings_support", @"Support") : (indexPath.row == 1) ? NSLocalizedString(@"settings_terms", @"Terms of service") : NSLocalizedString(@"settings_privacy", @"Privacy policy")];
 	
-	} else if (indexPath.section == 5) {
+	} else if (indexPath.section == 4) {
 		[cell hideChevron];
 		cell.backgroundView = nil;
-		cell.backgroundColor = [[HONColorAuthority sharedInstance] honLightGreyBGColor];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 3.0, 320.0, 12.0)];
 		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
@@ -345,8 +303,7 @@
 #if __APPSTORE_BUILD__ != 1
 		label.text = [label.text stringByAppendingFormat:@" (b%d)", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]];
 #endif
-	} else if (indexPath.section == 0 || indexPath.section == 3 || indexPath.section == 5)
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
+	}
 	
 	
 	[cell setSelectionStyle:(indexPath.section == 3 || indexPath.section == 5) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
@@ -357,26 +314,20 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 5) ? 20.0 : 44.0);
+	return ((indexPath.section == 4) ? 20.0 : 44.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return ((section == 0 || section == 1) ? 32.0 : UITableViewAutomaticDimension);
-//	return ((section == 0 || section == 1) ? 32.0 : 0.0);
 	return (0.0);
 }
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-//	return (UITableViewAutomaticDimension);
-//}
-
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0) {
-		CGFloat distance = [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:[[HONClubAssistant sharedInstance] currentLocationClub].location];
-		return ((distance < [[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) ? nil : indexPath);
-	}
+//	if (indexPath.section == 0) {
+//		CGFloat distance = [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:[[HONClubAssistant sharedInstance] currentLocationClub].location];
+//		return ((distance < [[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) ? nil : indexPath);
+//	}
 	
-	return ((indexPath.section == 3 || indexPath.section == 5) ? nil : indexPath);
+	return ((indexPath.section == 0 || indexPath.section == 2 || indexPath.section == 4) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -421,13 +372,8 @@
 		[self performSelector:@selector(_reloadContents) withObject:nil afterDelay:1.125];
 	
 	} else if (indexPath.section == 1) {
-		HONUserClubVO *vo = (HONUserClubVO *)[_staffClubs objectAtIndex:indexPath.row];
-		if (vo.clubID != [[HONClubAssistant sharedInstance] currentLocationClub].clubID)
-			[self _goChangeLocationClub:vo];
-	
-	} else if (indexPath.section == 2) {
 		if (cell.indexPath.row == 0) {
-			NSString *caption = @"Get Yunder - A live photo feed of who is doing what around you. getyunder.com";
+			NSString *caption = @"Get DOOD - A live photo feed of who is doing what around you. getdood.com";
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: caption,//[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
 																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
 																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
@@ -447,7 +393,7 @@
 		}
 	}
 	
-	if (indexPath.section == 4) {
+	if (indexPath.section == 3) {
 		if (cell.indexPath.row == 0) {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
 			
@@ -455,7 +401,7 @@
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				mailComposeViewController.mailComposeDelegate = self;
 				[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-				[mailComposeViewController setToRecipients:@[@"support@getyunder.com"]];
+				[mailComposeViewController setToRecipients:@[@"support@getdood.com"]];
 				[mailComposeViewController setSubject: NSLocalizedString(@"header_support", @"Report Abuse / Bug")];
 				[mailComposeViewController setMessageBody:@"" isHTML:NO];
 				

@@ -51,7 +51,7 @@
 		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
 		_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter_step_0"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter"];
 	}
 	
 	return (self);
@@ -66,7 +66,7 @@
 - (void)_checkUsername {
 	
 	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
 	[self.view addSubview:_overlayView];
 	
 	if (_progressHUD == nil)
@@ -99,6 +99,9 @@
 			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
 			
+			[self _orphanSubmitOverlay];
+			[_usernameTextField becomeFirstResponder];
+			
 		} else {
 			[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
 				if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
@@ -126,7 +129,7 @@
 					
 				} else {
 					NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_1"];
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - nickname"];
 					
 					_submitButton.userInteractionEnabled = NO;
 					
@@ -172,7 +175,7 @@
 								if ([_overlayTimer isValid])
 									[_overlayTimer invalidate];
 								
-								[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - pass_step_2"];
+								[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
 								
 								[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 									KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -229,8 +232,6 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	
-	self.view.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.957];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	//[self.view addSubview:_headerView];
@@ -398,7 +399,6 @@
 	NSLog(@"_onTextEditingDidEnd");
 	
 	[self _goSubmit];
-	
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
@@ -495,12 +495,6 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
-//	[UIView animateWithDuration:0.25
-//					 animations:^(void) {
-//						 _submitButton.frame = CGRectMake(_submitButton.frame.origin.x, self.view.frame.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
-//					 } completion:^(BOOL finished) {
-//						 _submitButton.hidden = YES;
-//					 }];
 }
 
 

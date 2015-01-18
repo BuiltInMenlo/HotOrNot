@@ -25,7 +25,7 @@
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
-		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_home"]];
+		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingDots_50"]];
 		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 15.0, 15.0);
 		[self addSubview:_loadingImageView];
 		
@@ -79,7 +79,7 @@
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_commentVO.avatarPrefix]
 															   cachePolicy:kOrthodoxURLCachePolicy
 														   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							 placeholderImage:[UIImage imageNamed:@"loadingArrows"]
+							 placeholderImage:[UIImage imageNamed:@"loadingDots_50"]
 									  success:imageSuccessBlock
 									  failure:imageFailureBlock];
 	

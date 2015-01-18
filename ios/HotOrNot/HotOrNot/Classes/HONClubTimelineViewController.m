@@ -275,8 +275,8 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillDisappear:animated];
 	
-	if ([((UINavigationController *)self.presentedViewController).viewControllers firstObject] == nil)
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+//	if ([((UINavigationController *)self.presentedViewController).viewControllers firstObject] == nil)
+//		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 
@@ -320,7 +320,7 @@
 	[super _goPanGesture:gestureRecognizer];
 	
 	if ([gestureRecognizer velocityInView:self.view].x >= 2000) {
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+//		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Club Timeline - Back SWIPE"
 //										   withUserClub:_clubVO];
 		

@@ -78,7 +78,7 @@ NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-NSString * const kFlurryAPIKey = @"XH2STY3SYCJ37QMTKYHZ";
+NSString * const kFlurryAPIKey = @"R84M6PFVNH2Z5Q8JW88C";
 
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
@@ -170,8 +170,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 }
 
 + (NSDictionary *)orthodoxClubVO {
-	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"	: [[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"owner_id"]}];
-	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] forKey:@"id"];
+	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"	: [[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"owner_id"]}];
+	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"club_id"] forKey:@"id"];
 	
 	return ([dict copy]);
 }
@@ -313,14 +313,12 @@ void Swizzle(Class c, SEL orig, SEL new)
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invalid_chars"] forKey:@"invalid_chars"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"expire_threshold"] forKey:@"expire_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"join_radius"] forKey:@"join_radius"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"post_radius"] forKey:@"post_radius"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"orthodox_club"] forKey:@"orthodox_club"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"global_club"] forKey:@"global_club"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_topics"] forKey:@"compose_topics"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
@@ -755,7 +753,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Became Active"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Enter"];
 	[Flurry logEvent:@"App_Active"];
 
 	
@@ -1335,7 +1333,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 		
 		} else if (buttonIndex == HONShareSheetActionTypeClipboard) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = @"Get Yunder - A live photo feed of who is doing what around you. getyunder.com";
+			pasteboard.string = @"Get DOOD - A live photo feed of who is doing what around you. getdood.com";
 			
 			[self _showOKAlert:@"Paste anywhere to share!" withMessage:nil];
 		}

@@ -32,10 +32,10 @@ static HONDateTimeAlloter *sharedInstance = nil;
 
 
 - (NSString *)intervalSinceDate:(NSDate *)date {
-	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"", @""],
-																									   @"minutes"	: @[@"", @""],
-																									   @"hours"		: @[@"", @""],
-																									   @"days"		: @[@"", @""]} includeSuffix:@""]);
+	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"s", @""],
+																									   @"minutes"	: @[@"m", @""],
+																									   @"hours"		: @[@"h", @""],
+																									   @"days"		: @[@"d", @""]} includeSuffix:@""]);
 }
 
 - (NSString *)intervalSinceDate:(NSDate *)date includeSuffix:(NSString *)suffix {

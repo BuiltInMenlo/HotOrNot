@@ -17,6 +17,7 @@
 @property (nonatomic) int parentID;
 @property (nonatomic, retain) NSString *topicName;
 @property (nonatomic, retain) NSString *iconURL;
+@property (nonatomic, retain) NSString *appStoreURL;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSDate *addedDate;
 @end

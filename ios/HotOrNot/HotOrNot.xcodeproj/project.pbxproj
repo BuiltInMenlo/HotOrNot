@@ -85,6 +85,7 @@
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
 		30B7BB891A0A1BC10005C761 /* NSDate+Operations.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B7BB881A0A1BC10005C761 /* NSDate+Operations.m */; };
+		30B7C8671A6862510030A77D /* HOnRestrictedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B7C8661A6862510030A77D /* HOnRestrictedViewController.m */; };
 		30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9C9F1A02332E00A0A703 /* NSUserDefaults+Replacements.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C9E1A02332E00A0A703 /* NSUserDefaults+Replacements.m */; };
@@ -169,7 +170,6 @@
 		4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51643C1681894600EB3C09 /* HONUsernameViewController.m */; };
 		4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5F25101888C496000411A7 /* HONColorAuthority.m */; };
 		4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */; };
 		4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */; };
 		4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */; };
 		4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
@@ -474,6 +474,8 @@
 		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
 		30B7BB871A0A1BC10005C761 /* NSDate+Operations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Operations.h"; sourceTree = "<group>"; };
 		30B7BB881A0A1BC10005C761 /* NSDate+Operations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Operations.m"; sourceTree = "<group>"; };
+		30B7C8651A6862510030A77D /* HOnRestrictedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOnRestrictedViewController.h; sourceTree = "<group>"; };
+		30B7C8661A6862510030A77D /* HOnRestrictedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOnRestrictedViewController.m; sourceTree = "<group>"; };
 		30BFAC431A01B499000CE4FC /* HONStickerButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonView.m; sourceTree = "<group>"; };
 		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
 		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
@@ -695,14 +697,13 @@
 		4C5F25101888C496000411A7 /* HONColorAuthority.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONColorAuthority.m; sourceTree = "<group>"; };
 		4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
-		4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = LoadingElements.xcassets; sourceTree = "<group>"; };
 		4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SharingElements.xcassets; sourceTree = "<group>"; };
 		4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = GlobalElements.xcassets; sourceTree = "<group>"; };
 		4C60AF6917CCFEF800609792 /* HONStickerButtonsPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerButtonsPickerView.h; sourceTree = "<group>"; };
 		4C60AF6A17CCFEF800609792 /* HONStickerButtonsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonsPickerView.m; sourceTree = "<group>"; };
 		4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserToggleViewCell.h; sourceTree = "<group>"; };
 		4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserToggleViewCell.m; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* dood.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dood.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* DOOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DOOD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1101,6 +1102,8 @@
 				4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */,
 				301C96511A5B2F8D002EAF3A /* HONToggleViewCell.h */,
 				301C96521A5B2F8D002EAF3A /* HONToggleViewCell.m */,
+				3030DF5A1A6348ED00406AAF /* HONTopicsViewController.h */,
+				3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */,
 				4C386BC4198482130023123A /* HONViewController.h */,
 				4C386BC5198482130023123A /* HONViewController.m */,
 				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
@@ -1507,6 +1510,8 @@
 				3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */,
 				3010D77F1A24109E0078164F /* HONHomeFeedToggleView.h */,
 				3010D7801A24109E0078164F /* HONHomeFeedToggleView.m */,
+				30B7C8651A6862510030A77D /* HOnRestrictedViewController.h */,
+				30B7C8661A6862510030A77D /* HOnRestrictedViewController.m */,
 			);
 			name = Home;
 			sourceTree = "<group>";
@@ -1590,12 +1595,8 @@
 				30B256061A3BB1F400C789E1 /* HONTopicViewCell.m */,
 				4CEC303B17DA5E270016AAE1 /* HONComposeTopicViewController.h */,
 				4CEC303C17DA5E270016AAE1 /* HONComposeTopicViewController.m */,
-				30B2560F1A3C61B000C789E1 /* HONSubjectViewCell.h */,
-				30B256101A3C61B000C789E1 /* HONSubjectViewCell.m */,
 				3091229F19C501F60081B141 /* HONComposeSubjectViewController.h */,
 				309122A019C501F60081B141 /* HONComposeSubjectViewController.m */,
-				3030DF5A1A6348ED00406AAF /* HONTopicsViewController.h */,
-				3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */,
 			);
 			name = Compose;
 			sourceTree = "<group>";
@@ -1632,7 +1633,6 @@
 				4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */,
 				4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */,
 				4C639A2F195502E90059E444 /* HomeFeedElements.xcassets */,
-				4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */,
 				4CED977018E42FFF00482813 /* NavElements.xcassets */,
 				4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */,
 				4C83FD89190F600700CAEABB /* SearchElements.xcassets */,
@@ -1891,7 +1891,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* dood.app */,
+				4C62652515F96C7100AA7FCE /* DOOD.app */,
 				30DB24AF19CBF64700DCFC49 /* seflieclub-tests.xctest */,
 			);
 			name = Products;
@@ -2143,6 +2143,8 @@
 				300D1B841A0B93C900D1D9A7 /* HONTimelineMapViewController.m */,
 				4C0B691D179E06C200D3E12A /* HONSnapPreviewViewController.h */,
 				4C0B691E179E06C200D3E12A /* HONSnapPreviewViewController.m */,
+				30B2560F1A3C61B000C789E1 /* HONSubjectViewCell.h */,
+				30B256101A3C61B000C789E1 /* HONSubjectViewCell.m */,
 				4C71BF3E181B25C8005044F8 /* HONSuspendedViewController.h */,
 				4C71BF3F181B25C8005044F8 /* HONSuspendedViewController.m */,
 				4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */,
@@ -2321,7 +2323,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* dood.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* DOOD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2400,7 +2402,6 @@
 				4C01BAD3190CAAD1006CD80D /* StatusUpdateElements.xcassets in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
-				4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
 				4C2DD84018E3EEF100BC8759 /* FullScreenAssets.xcassets in Resources */,
 				303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */,
@@ -2618,6 +2619,7 @@
 				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
 				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
 				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,
+				30B7C8671A6862510030A77D /* HOnRestrictedViewController.m in Sources */,
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
 				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
@@ -2874,7 +2876,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = dood;
+				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "22704408-4932-4db8-bdfa-763c14137e4e";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "22704408-4932-4db8-bdfa-763c14137e4e";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2914,7 +2916,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = dood;
+				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "84fb90de-a06f-4dfd-a4c5-4e28d6ca20f5";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "84fb90de-a06f-4dfd-a4c5-4e28d6ca20f5";
 				TARGETED_DEVICE_FAMILY = 1;

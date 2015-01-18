@@ -30,7 +30,7 @@
 "alert_notifications_t" = "通知";
 "alert_notificationsOn_m" = "Turn ON notifications?";
 "alert_notificationsOff_m" = "Turn OFF notifications?";
-"alert_flag_m" = "Do you wish to flag this Yunder as inappropriate?";
+"alert_flag_m" = "Do you wish to flag this DOOD as inappropriate?";
 "alert_noPixelate_m" = "Are you sure you do not want to pixelate your photo?";
 
 // alert buttons
@@ -47,7 +47,7 @@
 "header_settings" = "설정";
 "header_signUp" = "등록";
 "header_details" = "内容";
-"header_compose" = "What are you doing?";
+"header_compose" = "What's up?";
 "header_composeSubmit" = "Back";
 "header_terms" = "서비스 약관";
 "header_privacy" = "個人情報保護方針";

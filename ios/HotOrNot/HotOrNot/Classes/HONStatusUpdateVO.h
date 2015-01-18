@@ -20,6 +20,7 @@
 @property (nonatomic, retain) NSString *imagePrefix;
 @property (nonatomic, retain) NSString *topicName;
 @property (nonatomic, retain) NSString *subjectName;
+@property (nonatomic, retain) NSString *appStoreURL;
 //@property (nonatomic, retain) HONTopicVO *topicVO;
 //@property (nonatomic, retain) HONSubjectVO *subjectVO;
 @property (nonatomic, retain) NSString *comment;

@@ -11,5 +11,6 @@
 @interface UILabel (BoundingRect)
 - (CGRect)boundingRectForAllCharacters;
 - (CGRect)boundingRectForCharacterRange:(NSRange)range;
+- (CGRect)boundingRectForSubstring:(NSString *)substring;
 - (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize;
 @end

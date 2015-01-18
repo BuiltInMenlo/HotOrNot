@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, HONClubEnrollmentType) {
 @property (nonatomic, retain) NSString *coverImagePrefix;
 @property (nonatomic, retain) NSString *blurb;
 @property (nonatomic, strong) CLLocation *location;
+@property (nonatomic) CGFloat joinRadius;
 @property (nonatomic) CGFloat postRadius;
 @property (nonatomic) CGFloat distance;
 @property (nonatomic, retain) NSDate *addedDate;

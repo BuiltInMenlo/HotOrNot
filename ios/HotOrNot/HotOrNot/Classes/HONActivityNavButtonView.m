@@ -20,8 +20,8 @@
 		[self setFrame:CGRectOffset(self.frame, 2.0, 0.0)];
 		
 		_button.frame = CGRectFromSize(CGSizeMake(44.0, 44.0));
-		[_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[_button setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
+		[_button setTitleColor:[[HONColorAuthority sharedInstance] honGreenTextColor] forState:UIControlStateNormal];
+		[_button setTitleColor:[[HONColorAuthority sharedInstance] honGreenTextColor] forState:UIControlStateHighlighted];
 		_button.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 		[_button setTitle:@"0" forState:UIControlStateNormal];
 		[_button setTitle:@"0" forState:UIControlStateHighlighted];

@@ -34,8 +34,8 @@ static HONGeoLocator *sharedInstance = nil;
 
 
 - (BOOL)isWithinOrthodoxClub {
-	CLLocation *orthodoxClubLocation = [[CLLocation alloc] initWithLatitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]];
-	return ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:orthodoxClubLocation] <= [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"radius"] floatValue]);
+	CLLocation *orthodoxClubLocation = [[CLLocation alloc] initWithLatitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]];
+	return ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:orthodoxClubLocation] <= [[[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"radius"] floatValue]);
 }
 
 - (CGFloat)milesBetweenLocation:(CLLocation *)location andOtherLocation:(CLLocation *)otherLocation {

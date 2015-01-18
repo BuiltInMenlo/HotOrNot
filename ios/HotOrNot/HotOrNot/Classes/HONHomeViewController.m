@@ -21,6 +21,7 @@
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
+#import "HOnRestrictedViewController.h"
 #import "HONRefreshControl.h"
 #import "HONHomeFeedToggleView.h"
 #import "HONHomeViewCell.h"
@@ -274,7 +275,7 @@
 	[self.view addSubview:composeButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(self.view.frame.size.width - 44.0, self.view.frame.size.height - 43.0, 44.0, 44.0);
+	settingsButton.frame = CGRectMake(self.view.frame.size.width - 36.0, self.view.frame.size.height - 43.0, 44.0, 44.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
@@ -293,14 +294,14 @@
 	noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
 	[_noNetworkView addSubview:noNetworkLabel];
 	
-	_emptyFeedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+	_emptyFeedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 280.0)];
 	_emptyFeedView.hidden = YES;
 	[_emptyFeedView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emptyFeedBG"]]];
 	[self.view addSubview:_emptyFeedView];
 
-	UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+	UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 260.0, 220.0, 20.0)];
 	emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
-	emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
 	emptyLabel.backgroundColor = [UIColor clearColor];
 	emptyLabel.textAlignment = NSTextAlignmentCenter;
 	emptyLabel.text = NSLocalizedString(@"no_results", @"");
@@ -353,7 +354,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 }
 
@@ -369,7 +370,7 @@
 - (void)_goActivity {
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Activity"];
 	
-	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d Yunder point%@", _voteScore, (_voteScore != 1) ? @"s" : @""]
+	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d DOOD point%@", _voteScore, (_voteScore != 1) ? @"s" : @""]
 								message:@"Each image and comment vote gives you a single point."
 							   delegate:nil
 					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -514,7 +515,7 @@
 	NSLog(@"[*:*] homeFeedToggleView:didSelectFeedType:[%@])", (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN");
 	
 	_feedType = feedType;
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"new" : @"top"]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - %@", (_feedType == HONHomeFeedTypeRecent) ? @"NewToggle" : @"TopToggle"]];
 	
 	[toggleView toggleEnabled:NO];
 	[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
@@ -560,18 +561,29 @@
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																	@"state"	: [result objectForKey:@"state"]}];
 			
-			[[HONClubAssistant sharedInstance] nearbyClubWithCompletion:^(HONUserClubVO *clubVO) {
-				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+				[_locationManager stopUpdatingLocation];
 				
-				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
-				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
-				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
-					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
-				}
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HOnRestrictedViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:NO completion:^(void) {
+				}];
 				
-				[self _goReloadContents];
-			}];
+			} else {
+				[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
+					[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+					
+					HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+					HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+					NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+					if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+						[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+					}
+					
+					[self _goReloadContents];
+				}];
+			}
 		}];
 	}
 }
@@ -584,25 +596,31 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
+	HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
-		[[HONGeoLocator sharedInstance] addressForLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] onCompletion:^(NSDictionary *result) {
-			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
-																	@"state"	: [result objectForKey:@"state"]}];
-		}];
-		
-		[[HONClubAssistant sharedInstance] nearbyClubWithCompletion:^(HONUserClubVO *clubVO) {
-			[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+			[_locationManager stopUpdatingLocation];
 			
-			HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
-			HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-			NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
-			if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
-				[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
-			}
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HOnRestrictedViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:^(void) {
+			}];
 			
-			[self _goReloadContents];
-		}];
-		
+		} else {
+			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
+				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+				
+				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+				}
+				
+				[self _goReloadContents];
+			}];
+		}
+	
 	} else {
 		_noNetworkView.hidden = NO;
 		_statusUpdates = [NSMutableArray array];

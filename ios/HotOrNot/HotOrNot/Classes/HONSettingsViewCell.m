@@ -30,7 +30,7 @@
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 8.0, 260.0, 26.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_captionLabel.textColor =  [UIColor blackColor];
+		_captionLabel.textColor = [[HONColorAuthority sharedInstance]  percentGreyscaleColor:0.75];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_captionLabel];
 	}

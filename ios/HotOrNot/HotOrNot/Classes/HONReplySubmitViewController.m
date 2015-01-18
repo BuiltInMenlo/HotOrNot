@@ -153,7 +153,7 @@
 		
 	} else {
 		_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
 		[self.view addSubview:_overlayView];
 		
 		if (_progressHUD == nil)

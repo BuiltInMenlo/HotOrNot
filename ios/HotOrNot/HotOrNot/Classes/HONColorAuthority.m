@@ -88,9 +88,9 @@ static HONColorAuthority *sharedInstance = nil;
 }
 
 - (UIColor *)honGreenTextColor {
-	return ([UIColor colorWithRed:0.451
-							green:0.757
-							 blue:0.694
+	return ([UIColor colorWithRed:0.384
+							green:0.902
+							 blue:0.635
 							alpha:1.000]);
 }
 

@@ -175,6 +175,8 @@
 }
 
 - (void)_goNext {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - Step1Select"];
+	
 	NSError *error;
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[_selectedTopicVO.topicName] options:0 error:&error]
 												 encoding:NSUTF8StringEncoding];
@@ -299,10 +301,10 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	cell.alpha = 0.0;
-//	[UIView animateKeyframesWithDuration:0.125 delay:(0.125 * indexPath.row) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+	[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		cell.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	}];
+	} completion:^(BOOL finished) {
+	}];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

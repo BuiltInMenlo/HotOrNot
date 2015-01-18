@@ -6,12 +6,14 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
 #import "NSMutableDictionary+Replacements.h"
 
 #import "HONComposeSubjectViewController.h"
 
 @interface HONComposeSubjectViewController () <HONTopicViewCellDelegate>
+@property (nonatomic, strong) UITextField *customTopicTextField;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 @property (nonatomic, strong) NSString *topicName;
@@ -99,6 +101,19 @@
 	[_headerView setTitle:[_submitParams objectForKey:@"topic_name"]];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	
+	_customTopicTextField = [[UITextField alloc] initWithFrame:CGRectMake(60.0, 78.0, 220.0, 26.0)];
+	[_customTopicTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_customTopicTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_customTopicTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_customTopicTextField setReturnKeyType:UIReturnKeyDone];
+	[_customTopicTextField setTextColor:[UIColor blackColor]];
+	[_customTopicTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_customTopicTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_customTopicTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_customTopicTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_customTopicTextField.placeholder = NSLocalizedString(@"register_submit", @"Terms");
+	_customTopicTextField.delegate = self;
+	
 //	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
 //	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
@@ -119,6 +134,16 @@
 
 
 #pragma mark - UI Presentation
+- (void)_goCustomTopic {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - Step2Custom"];
+	[self.view addSubview:_customTopicTextField];
+	[_customTopicTextField becomeFirstResponder];
+	
+	HONTopicViewCell *viewCell = (HONTopicViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+	[viewCell toggleCaption:NO];
+}
+
+
 - (void)_orphanSubmitOverlay {
 	NSLog(@"::|> _orphanSubmitOverlay <|::");
 	
@@ -151,6 +176,8 @@
 }
 
 - (void)_goSubmit {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - Submit"];
+	
 	if (_selectedTopicVO == nil) {
 		[[[UIAlertView alloc] initWithTitle:nil
 									message:@"You must select a subject"
@@ -160,7 +187,7 @@
 		
 	} else {
 		_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.667];
+		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
 		[self.view addSubview:_overlayView];
 		
 		if (_progressHUD == nil)
@@ -196,13 +223,42 @@
 }
 
 
+#pragma mark - Notifications
+- (void)_onTextEditingDidEnd:(id)sender {
+	NSLog(@"_onTextEditingDidEnd");
+	
+	[_customTopicTextField resignFirstResponder];
+	if ([_customTopicTextField.text length] > 0) {
+		_selectedTopicVO = [HONTopicVO topicWithDictionary:@{@"id"			: @(0),
+															 @"parent_id"	: @(4),
+															 @"name"		: _customTopicTextField.text}];
+		[self _goSubmit];
+	}
+}
+
+- (void)_onTextEditingDidEndOnExit:(id)sender {
+	NSLog(@"_onTextEditingDidEndOnExit");
+}
+
+- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+	if ([_customTopicTextField.text length] == 0)
+		[_customTopicTextField resignFirstResponder];
+}
+
 
 #pragma mark - TopicViewCell Delegates
 - (void)topicViewCell:(HONTopicViewCell *)viewCell didSelectTopic:(HONTopicVO *)topicVO {
 	NSLog(@"[*:*] topicViewCell:didSelectTopic:[%@]", [topicVO toString]);
 	
-	[super topicViewCell:viewCell didSelectTopic:topicVO];
-	[self _goSubmit];
+	if ([[_submitParams objectForKey:@"topic_id"] intValue] == 4 && viewCell.indexPath.row == 0) {
+		[self _goCustomTopic];
+	
+	} else {
+		[super topicViewCell:viewCell didSelectTopic:topicVO];
+		[self _goSubmit];
+	}
 }
 
 
@@ -227,7 +283,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
-	[self _goSubmit];
+	
+	
+	HONTopicViewCell *cell = (HONTopicViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	if ([[_submitParams objectForKey:@"topic_id"] intValue] == 4 && cell.indexPath.row == 0) {
+		[self _goCustomTopic];
+		
+	} else
+		[self _goSubmit];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -236,6 +299,42 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView willDisplayCell:cell forRowAtIndexPath:indexPath];
+}
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]]));
+	
+	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound)
+		return (NO);
+	
+	return ([textField.text length] < 25 || [string isEqualToString:@""]);
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:@"UITextFieldTextDidChangeNotification"
+												  object:textField];
+	
+	[_customTopicTextField removeFromSuperview];
+	
+	HONTopicViewCell *viewCell = (HONTopicViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+	[viewCell toggleCaption:YES];
 }
 
 

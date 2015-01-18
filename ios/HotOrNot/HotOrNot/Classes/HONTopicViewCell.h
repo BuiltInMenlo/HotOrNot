@@ -18,6 +18,7 @@
 @interface HONTopicViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)toggleImageLoading:(BOOL)isLoading;
+- (void)toggleCaption:(BOOL)isVisible;
 
 @property (nonatomic, retain) HONTopicVO *topicVO;
 @property (nonatomic, assign) id <HONTopicViewCellDelegate> delegate;

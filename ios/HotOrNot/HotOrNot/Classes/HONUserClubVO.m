@@ -12,7 +12,7 @@
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, location, postRadius, distance, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
+@synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, location, joinRadius, postRadius, distance, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
 @synthesize visibleMembers, totalMembers;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
@@ -38,6 +38,7 @@
 	vo.coverImagePrefix = [imgURL copy];
 	
 	vo.location = ([dictionary objectForKey:@"coords"] != nil) ? [[CLLocation alloc] initWithLatitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"lat"] doubleValue] longitude:[[[dictionary objectForKey:@"coords"] objectForKey:@"lon"] doubleValue]] : [[CLLocation alloc] initWithLatitude:0.00 longitude:0.00];
+	vo.joinRadius = ([dictionary objectForKey:@"radius"] != nil) ? [[dictionary objectForKey:@"radius"] floatValue] : CGFLOAT_MIN;
 	vo.postRadius = ([dictionary objectForKey:@"radius"] != nil) ? [[dictionary objectForKey:@"radius"] floatValue] : CGFLOAT_MIN;
 	vo.distance = ([dictionary objectForKey:@"distance"] != nil) ? [[dictionary objectForKey:@"distance"] floatValue] : 0.0;
 	

@@ -23,8 +23,9 @@
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (void)createLocationClubWithCompletion:(void (^)(id result))completion;
 - (void)nearbyClubWithCompletion:(void (^)(id result))completion;
+- (void)joinGlobalClubWithCompletion:(void (^)(id result))completion;
 - (NSArray *)staffDesignatedClubsWithThreshold:(int)threshold;
-
+- (HONUserClubVO *)globalClub;
 - (HONUserClubVO *)currentLocationClub;
 - (void)writeCurrentLocationClub:(HONUserClubVO *)clubVO;
 
