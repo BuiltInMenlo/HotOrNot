@@ -7,11 +7,12 @@
 //
 
 #import "NSDate+Operations.h"
+#import "NSString+Formatting.h"
 
 #import "HONStatusUpdateVO.h"
 
 @implementation HONStatusUpdateVO
-@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, appStoreURL, comment, score, addedDate, updatedDate;
+@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, appStoreURL, comment, score, replies, layerMessages, addedDate, updatedDate;
 
 + (HONStatusUpdateVO *)statusUpdateWithDictionary:(NSDictionary *)dictionary {
 	HONStatusUpdateVO *vo = [[HONStatusUpdateVO alloc] init];
@@ -28,7 +29,7 @@
 	
 	vo.username = [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:vo.username];
 	
-	if ([[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] count] > 0) {
+	if ([[dictionary objectForKey:@"text"] isDelimitedByString:@"|"]) {
 		vo.topicName = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] firstObject];
 		vo.subjectName = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
 		vo.comment = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
@@ -52,6 +53,8 @@
 	}
 	
 	vo.score = ([dictionary objectForKey:@"net_vote_score"] != [NSNull null]) ? [[dictionary objectForKey:@"net_vote_score"] intValue] : 0;
+	vo.replies = ([dictionary objectForKey:@"replies"] != nil || [dictionary objectForKey:@"replies"] != [NSNull null]) ? [dictionary objectForKey:@"replies"] : @[];
+	vo.layerMessages = [@[] mutableCopy];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"updated"]];
 	
@@ -77,6 +80,8 @@
 	self.topicName = nil;
 	self.subjectName = nil;
 	self.comment = nil;
+	self.replies = nil;
+	self.layerMessages = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;
 }

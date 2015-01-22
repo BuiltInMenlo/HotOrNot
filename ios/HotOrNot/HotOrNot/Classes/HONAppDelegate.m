@@ -162,7 +162,9 @@ void Swizzle(Class c, SEL orig, SEL new)
 }
 
 + (NSDictionary *)s3Credentials {
-	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAIHUQ42RE7R7CIMEA", @"key", @"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ", @"secret", nil]);
+//	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAIHUQ42RE7R7CIMEA", @"key", @"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ", @"secret", nil]);
+	return (@{@"key"		: @"AKIAIHUQ42RE7R7CIMEA",
+			  @"secret"		: @"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"});
 }
 
 + (NSDictionary *)orthodoxClubVO {
@@ -385,12 +387,28 @@ void Swizzle(Class c, SEL orig, SEL new)
 											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
 			
 			[Flurry setUserID:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
+			
+			
+			[[HONLayerKitAssistant sharedInstance] connectClientToServiceWithCompletion:^(BOOL success, NSError *error) {
+				NSLog(@"connectClientToServiceWithCompletion:success:[%@] error:[%@]", NSStringFromBOOL(success), error);
+				
+				[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] withCompletion:^(id result) {
+					NSLog(@"AUTH RESULT:%@", result);
+				}];
+				
+			}];
+
+			
+			
 //			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 //			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
 //			}
 			
+			
+			
 			if ([[result objectForKey:@"added"] isEqualToString:[result objectForKey:@"last_login"]]) {
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+				NSLog(@"HONAppDelegate infoForUser:[%@]", [HONAppDelegate infoForUser]);
 				
 				if (self.window.rootViewController == nil) {
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
@@ -403,17 +421,15 @@ void Swizzle(Class c, SEL orig, SEL new)
 			} else {
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 				
-//				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-//					[[HONClubAssistant sharedInstance] writeUserClubs:result];
+				NSLog(@"HONAppDelegate infoForUser:[%@]", [HONAppDelegate infoForUser]);
 				
-					if (self.window.rootViewController == nil) {
-						UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
-						[navigationController setNavigationBarHidden:YES];
-						
-						self.window.rootViewController = navigationController;
-						self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-					}
-//				}];
+				if (self.window.rootViewController == nil) {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
+					[navigationController setNavigationBarHidden:YES];
+					
+					self.window.rootViewController = navigationController;
+					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+				}
 			}
 		}
 	}];
@@ -771,7 +787,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
 			} else
-				[self _retrieveConfigJSON];
+				NSLog(@"APP ACTIVE |||| GO GET BOOT & -> FIND USER |||||"); //				[self _retrieveConfigJSON];
 		
 		} else {
 			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
@@ -933,8 +949,13 @@ void Swizzle(Class c, SEL orig, SEL new)
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
+	[[HONLayerKitAssistant sharedInstance] notifyClientWithPushToken:deviceToken];
 	
 	if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:pushToken]) {
+		//			NSError * __autoreleasing tmp = e;
+		//	BOOL OK = [myObject performOperationWithError:&tmp];
+		//		- (void)notifyClientWithPushToken:(NSData *)deviceToken error:(NSError *)error
+
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
 			[self _enableNotifications:YES];
 		}];
@@ -951,7 +972,13 @@ void Swizzle(Class c, SEL orig, SEL new)
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
+	[[HONLayerKitAssistant sharedInstance] notifyClientPushTokenNotAvailibleFromError:error];
+	
 	if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:@""]) {
+//		NSError * __strong e;
+//			NSError * __autoreleasing tmp = e;
+		//	BOOL OK = [myObject performOperationWithError:&tmp];
+//		- (void)notifyClientWithPushToken:(NSData *)deviceToken error:(NSError *)error
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
 			[self _enableNotifications:NO];
 		}];
@@ -964,44 +991,34 @@ void Swizzle(Class c, SEL orig, SEL new)
 //					  otherButtonTitles:nil] show];
 }
 
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandle {
+//	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandle];
+	
+	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
+	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
+	
+	// Increment badge count if a message
+	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
+		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
+	}
+	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo];
+}
+
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
-	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeRemoteNotification];
+	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo];
 	
-	NSString *typeID = [[userInfo objectForKey:@"aps"] objectForKey:@"type"];
-	_clubID = [[[userInfo objectForKey:@"aps"] objectForKey:@"club_id"] intValue];
-	_userID = [[[userInfo objectForKey:@"aps"] objectForKey:@"owner_id"] intValue];
-	
-	if ([[typeID uppercaseString] isEqualToString:@"DEV"]) {
-		[self _showOKAlert:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-			   withMessage:[[HONDeviceIntrinsics sharedInstance] pushToken]];
-		
-	} else if ([[typeID uppercaseString] isEqualToString:@"INVITE"]) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//												  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-//		[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
-//		[alertView show];
-	
-	} else {
-		[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:_userID completion:^(NSDictionary *result) {
-			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You have 1 new status update"
-																message:@""
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-			[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
-			[alertView show];
-		}];
+	// Increment badge count if a message
+	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
+		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 	}
-	
-	application.applicationIconBadgeNumber = 0;
 }
+
 
 #pragma mark - Startup Operations
 - (void)_initTabs {
@@ -1027,6 +1044,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 - (void)_establishUserDefaults {
 	NSDictionary *userDefaults = @{@"is_deactivated"	: NSStringFromBOOL(NO),
 								   @"votes"				: @{},
+								   @"layer"				: @{},
 								   @"avatars"			: @{},
 								   @"purchases"			: @[],
 								   @"home_club"			: @{},
@@ -1069,7 +1087,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
 	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-//	config.idfa = [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO];
 //	config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
@@ -1116,7 +1133,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 			 message:message
 		   exception:exception];
 }
-
 
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

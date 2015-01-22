@@ -8,6 +8,10 @@
 	<array>
 		<string></string>
 	</array>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict/>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
@@ -58,9 +62,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>38328</string>
+	<string>38617</string>
 	<key>FacebookAppID</key>
-	<string>600550136636754</string>
+	<string>666666666666666</string>
 	<key>FacebookDisplayName</key>
 	<string>DOOD</string>
 	<key>KAKAO_APP_KEY</key>
@@ -85,6 +89,7 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UIPrerenderedIcon</key>
@@ -92,6 +97,7 @@
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+		<string>gamekit</string>
 	</array>
 	<key>UIStatusBarHidden</key>
 	<false/>

@@ -1,0 +1,4 @@
+#-- a user's status updates --#
+curl --verbose --request GET "https://api.devint.selfieclubapp.com/member/3768/statusupdates/
+
+##|--#-=-#-=-#-=-#-=-#-=-#-=-#-=-#-=-#-=-#-=-#-=-#-=-|##

@@ -12,4 +12,6 @@
 - (void)trimFinalSubstring:(NSString *)substring;
 - (NSString *)normalizedPhoneNumber;
 - (NSDictionary *)parseAsQueryString;
+- (BOOL)isDelimitedByString:(NSString *)delimiter;
+- (NSString *)stringFromAPNSToken:(NSData *)remoteToken;
 @end

@@ -20,6 +20,7 @@
 #import "HONFontAllocator.h"
 #import "HONGeoLocator.h"
 #import "HONImageBroker.h"
+#import "HONLayerKitAssistant.h"
 #import "HONStateMitigator.h"
 #import "HONStickerAssistant.h"
 #import "HONStoreAssistant.h"

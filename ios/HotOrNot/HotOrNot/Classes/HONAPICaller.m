@@ -156,19 +156,33 @@ static HONAPICaller *sharedInstance = nil;
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"server_apis"] objectForKey:kAPIHostKey] objectForKey:@"python"]);
 }
 
-- (AFHTTPClient *)getHttpClientWithHMACUsingPHPBasePath {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] phpAPIBasePath]]];
-	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
-	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
+- (AFHTTPClient *)appendHeaders:(NSDictionary *)headers toHTTPCLient:(AFHTTPClient *)httpClient {
+	[headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[httpClient setDefaultHeader:(NSString *)key value:(NSString *)obj];
+	}];
 	
+	return (httpClient);
+}
+
+- (AFHTTPClient *)getHttpClientWithHMACUsingPHPBasePath {
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] appendHeaders:@{@"HMAC"		: [[HONDeviceIntrinsics sharedInstance] hmacToken],
+																			  @"X-DEVICE"	: [[HONDeviceIntrinsics sharedInstance] modelName]} toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] phpAPIBasePath]]]];
+	
+//	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
+//	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
+//	
 	NSLog(@"OPERATIONS:[%@]", [[httpClient operationQueue] operations]);
 	return (httpClient);
 }
 
 - (AFHTTPClient *)getHttpClientWithHMACUsingPythonBasePath {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] pythonAPIBasePath]]];
-	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
-	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] appendHeaders:@{@"HMAC"		: [[HONDeviceIntrinsics sharedInstance] hmacToken],
+																			  @"X-DEVICE"	: [[HONDeviceIntrinsics sharedInstance] modelName]} toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] pythonAPIBasePath]]]];
+	
+	
+//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] pythonAPIBasePath]]];
+//	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
+//	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	
 	return (httpClient);
 }
@@ -1674,7 +1688,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (completion)
 				completion(result);

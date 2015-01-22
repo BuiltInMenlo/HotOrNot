@@ -37,6 +37,10 @@
 
 - (id)init {
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
+		UIView *statusBarBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, 320.0, 20.0)];
+		statusBarBGView.backgroundColor = [UIColor whiteColor];
+		[self addSubview:statusBarBGView];
+		
 		self.frame = CGRectOffset(self.frame, 0.0, 20.0);
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		[self addSubview:_bgImageView];

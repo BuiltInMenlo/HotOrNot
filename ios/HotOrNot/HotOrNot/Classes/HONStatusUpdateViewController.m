@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <LayerKit/LayerKit.h>
+
 #import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
 #import "UIImageView+AFNetworking.h"
@@ -23,6 +25,7 @@
 
 @interface HONStatusUpdateViewController () <HONStatusUpdateCreatorViewDelegate>
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
+@property (nonatomic, strong) LYRConversation *conversation;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
@@ -113,17 +116,19 @@
 			[self _retrieveRepliesAtPage:nextPage];
 		
 		else {
-			NSLog(@"FINISHED RETRIEVED:[%d]", [_retrievedReplies count]);
+			NSLog(@"FINISHED RETRIEVING COMMENTS:[%d]", [_retrievedReplies count]);
 			
-			[_retrievedReplies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSMutableArray *layerMsgs = [NSMutableArray arrayWithCapacity:[_retrievedReplies count]];
+			[[[_retrievedReplies reverseObjectEnumerator] allObjects] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
 				[dict setValue:@(_statusUpdateVO.clubID) forKey:@"club_id"];
 				[dict setValue:@(_statusUpdateVO.statusUpdateID) forKey:@"parent_id"];
 				
 				[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
+				[layerMsgs addObject:[HONStatusUpdateVO statusUpdateWithDictionary:dict]];
 			}];
 			
-			_replies = [[[_replies reverseObjectEnumerator] allObjects] copy];
+			_statusUpdateVO.replies = [_replies copy];
 			[self _didFinishDataRefresh];
 		}
 	}];
@@ -166,6 +171,12 @@
 				[_overlayView removeFromSuperview];
 				_overlayView = nil;
 			}
+			
+			
+			[[HONLayerKitAssistant sharedInstance] sendTxtMessageToStatusUpdate:_statusUpdateVO withCompletion:^(NSArray *layerMessages) {
+				NSLog(@"MESSAGE POPPED @ StatusUpdateVC:%@", [[layerMessages lastObject] identifier]);
+			}];
+			
 			
 			_isSubmitting = NO;
 			[self _goReloadContent];
@@ -229,6 +240,15 @@
 - (void)_didFinishDataRefresh {
 	[_refreshControl endRefreshing];
 	
+//	__block NSMutableArray *participants = [NSMutableArray arrayWithObject:NSStringFromInt(_statusUpdateVO.userID)];
+//	[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONCommentVO *vo = (HONCommentVO *)obj;
+//		[participants addObject:NSStringFromInt(vo.userID)];
+//	}];
+//	
+//	_conversation = [[HONLayerKitAssistant sharedInstance] conversationWithParticipants:[participants copy]];
+//	
+	
 	[_creatorView refreshScore];
 	[self _makeComments];
 	
@@ -243,16 +263,6 @@
 	
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
-	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
-	//[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
-	[self.view addSubview:_headerView];
-	
-	
-	_creatorView = [[HONStatusUpdateCreatorView alloc] initWithStatusUpdateVO:_statusUpdateVO];
-	_creatorView.delegate = self;
-	[self.view addSubview:_creatorView];
 	
 
 	_isSubmitting = NO;
@@ -269,6 +279,12 @@
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
+	
+	
+	_creatorView = [[HONStatusUpdateCreatorView alloc] initWithStatusUpdateVO:_statusUpdateVO];
+	_creatorView.delegate = self;
+	[self.view addSubview:_creatorView];
+	
 	
 	_comment = @"";
 	
@@ -302,6 +318,12 @@
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
 	[_commentCloseButton addTarget:self action:@selector(_goCancelReply) forControlEvents:UIControlEventTouchUpInside];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	//[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
+	[self.view addSubview:_headerView];
+
 }
 
 - (void)viewDidLoad {
@@ -310,6 +332,18 @@
 	
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[self _goReloadContent];
+	
+	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_clientObjectsDidChangeNotification:)
+												 name:LYRClientDidAuthenticateNotification object:nil];
+	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
+	// --=#=--#=--#=-=#=-#=--=#--=#--=#=-- //
+	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_conversationDidReceiveTypingIndicatorNotification:)
+												 name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
+	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
 }
 
 
@@ -413,6 +447,13 @@
 	[_submitCommentButton setEnabled:([_commentTextField.text length] > 0)];
 }
 
+- (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
+	NSLog (@"::|>_clientObjectsDidChangeNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
+}
+
+- (void)_conversationDidReceiveTypingIndicatorNotification:(NSNotification *)notification {
+	NSLog (@"::|>_conversationDidReceiveTypingIndicatorNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
+}
 
 
 #pragma mark - UI Presentation
@@ -485,6 +526,8 @@
 	
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
+						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, _scrollView.frame.origin.y - (216.0 + _inputBGImageView.frame.size.height));
 						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - (216.0 + _inputBGImageView.frame.size.height));
 					 } completion:^(BOOL finished) {
 						 [self.view addSubview:_commentCloseButton];
@@ -509,6 +552,8 @@
 												  object:textField];
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
+						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight + 84.0);
 						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - 44.0);
 					 } completion:^(BOOL finished) {
 						 [_commentCloseButton removeFromSuperview];

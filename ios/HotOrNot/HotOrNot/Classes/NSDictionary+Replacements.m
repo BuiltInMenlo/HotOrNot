@@ -28,7 +28,9 @@
 }
 
 - (void)replaceObject:(id)object forKey:(NSString *)key {
-	[self removeObjectForKey:key];
+	if ([self objectForKey:key] != nil)
+		[self removeObjectForKey:key];
+		
 	[self setValue:object forKey:key];
 }
 

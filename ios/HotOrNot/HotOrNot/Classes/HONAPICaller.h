@@ -107,6 +107,7 @@ extern const CGFloat kNotifiyDelay;
 - (NSString *)phpAPIBasePath;
 - (NSString *)pythonAPIBasePath;
 
+- (AFHTTPClient *)appendHeaders:(NSDictionary *)headers toHTTPCLient:(AFHTTPClient *)httpClient;
 - (AFHTTPClient *)getHttpClientWithHMACUsingPHPBasePath;
 - (AFHTTPClient *)getHttpClientWithHMACUsingPythonBasePath;
 

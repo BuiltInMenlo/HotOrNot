@@ -18,4 +18,6 @@ ios/_deploy/*
 #-- xcode --#
 *.xcuserdata*
 *.xcuserstate
-ios/HotOrNot/Obj-C Notes
+
+#-- personal skratches / snipps --#
+notes

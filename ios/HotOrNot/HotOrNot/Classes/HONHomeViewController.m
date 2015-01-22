@@ -326,6 +326,8 @@
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
+		[[HONLayerKitAssistant sharedInstance] writePushToken:nil];
+		
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
 			[[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -539,7 +541,37 @@
 #pragma mark - LocationManager Delegates
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
 	NSLog(@"**_[%@ locationManager:didFailWithError:(%@)]_**", self.class, error.description);
-}
+	
+	[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
+		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
+		
+		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
+																@"state"	: [result objectForKey:@"state"]}];
+		
+		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+			[_locationManager stopUpdatingLocation];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HOnRestrictedViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:^(void) {
+			}];
+			
+		} else {
+			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
+				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+				
+				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+				}
+				
+				[self _goReloadContents];
+			}];
+		}
+	}];}
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
 	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, NSStringFromCLAuthorizationStatus(status));

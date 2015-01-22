@@ -61,4 +61,16 @@
 }
 
 
+- (BOOL)isDelimitedByString:(NSString *)delimiter {
+	return ([[self componentsSeparatedByString:delimiter] count] > 0);
+}
+
+- (NSString *)stringFromAPNSToken:(NSData *)remoteToken {
+	NSString *pushToken = [[remoteToken description] substringFromIndex:1];
+	pushToken = [pushToken substringToIndex:[pushToken length] - 1];
+	pushToken = [pushToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+	
+	return (pushToken);
+}
+
 @end

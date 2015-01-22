@@ -21,8 +21,6 @@
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	NSLog(@"Comment:[%@]", dictionary);
-	
 	vo.commentID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];

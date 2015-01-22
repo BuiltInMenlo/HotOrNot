@@ -84,24 +84,29 @@
 									  failure:imageFailureBlock];
 	
 	
+//	CGFloat maxWidth = 265.0;
+	CGFloat bubbleOffset = 35.0;
 	if (_commentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		_bgImageView.image = [UIImage imageNamed:@"greenChatBubble"];
 		_bgImageView.frame = CGRectOffset(_bgImageView.frame, 35, 0.0);
 		
 		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 265.0, 0.0);
 		_avatarImageView.frame = CGRectOffset(_avatarImageView.frame, 265.0, 0.0);
-		
-		_captionLabel.frame = CGRectOffset(_captionLabel.frame, 35.0, 0.0);
+
+		_captionLabel.frame = CGRectOffsetX(_captionLabel.frame, bubbleOffset);
 	}
 	
-	CGFloat maxWidth = 250.0;
-	CGSize size = [_commentVO.textContent boundingRectWithSize:_captionLabel.frame.size
-										options:NSStringDrawingTruncatesLastVisibleLine
-									 attributes:@{NSFontAttributeName:_captionLabel.font}
-										context:nil].size;
-
 	_captionLabel.text = _commentVO.textContent;
-	
+	_captionLabel.numberOfLines = 1;
+//	CGSize size = [_commentVO.textContent boundingRectWithSize:_captionLabel.frame.size
+//										options:NSStringDrawingTruncatesLastVisibleLine
+//									 attributes:@{NSFontAttributeName:_captionLabel.font}
+//										context:nil].size;
+//	
+//	
+//	NSLog(@"SIZE:[%@](%@)", NSStringFromCGSize(size), _commentVO.textContent);
+//	_captionLabel.frame = CGRectResize(_captionLabel.frame, CGSizeMake(MIN(MAX(size.width, 35.0), maxWidth), 15.0));
+//	NSLog(@"FRAME:[%@](%@)", NSStringFromCGRect(_captionLabel.frame), _commentVO.textContent);
 //	_bgImageView.frame = CGRectResizeWidth(_bgImageView.frame, MIN(size.width, maxWidth));
 	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];

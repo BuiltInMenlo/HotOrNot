@@ -143,6 +143,20 @@ CGRectFromSize(CGSize size)
 }
 
 BIM_INLINE CGRect
+CGRectOffsetX(CGRect rect, CGFloat amount)
+{
+	CGRect transRect = CGRectOffset(rect, amount, 0.0);
+	return (transRect);
+}
+
+BIM_INLINE CGRect
+CGRectOffsetY(CGRect rect, CGFloat amount)
+{
+	CGRect transRect = CGRectOffset(rect, 0.0, amount);
+	return (transRect);
+}
+
+BIM_INLINE CGRect
 CGRectResize(CGRect rect, CGSize size)
 {
 	CGRect resizeRect;
@@ -154,16 +168,16 @@ CGRectResize(CGRect rect, CGSize size)
 }
 
 BIM_INLINE CGRect
-CGRectResizeHeight(CGRect rect, CGFloat length)
+CGRectResizeHeight(CGRect rect, CGFloat newHeight)
 {
-	CGRect resizeRect = CGRectResize(rect, CGSizeMake(0.0, length));
+	CGRect resizeRect = CGRectResize(rect, CGSizeMake(rect.size.width, newHeight));
 	return resizeRect;
 }
 
 BIM_INLINE CGRect
-CGRectResizeWidth(CGRect rect, CGFloat length)
+CGRectResizeWidth(CGRect rect, CGFloat newWidth)
 {
-	CGRect resizeRect = CGRectResize(rect, CGSizeMake(length, 0.0));
+	CGRect resizeRect = CGRectResize(rect, CGSizeMake(newWidth, rect.size.height));
 	return resizeRect;
 }
 

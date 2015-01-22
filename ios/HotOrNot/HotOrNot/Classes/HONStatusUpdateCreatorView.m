@@ -32,6 +32,8 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 84.0)])) {
 		_statusUpdateVO = statusUpdateVO;
 		
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"statusUpdateCreatorBG"]]];
+		
 		_imageLoadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingDots_50"]];
 		_imageLoadingView.frame = CGRectOffset(_imageLoadingView.frame, 11.0, 17.0);
 		[self addSubview:_imageLoadingView];
