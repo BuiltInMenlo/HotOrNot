@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E6AB19884AE100DA0805 /* searchInputBG_users@2x.png */; };
 		07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E6B119884AE700DA0805 /* searchInputBG_clubs@2x.png */; };
-		30007CA21A25B47300A333F0 /* NSArray+Iterator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30007CA11A25B47300A333F0 /* NSArray+Iterator.m */; };
 		300641C31A5EF29C0078BCE9 /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 300641C21A5EF29C0078BCE9 /* RegExCategories.m */; };
 		300D1B881A0C30F100D1D9A7 /* HONMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B871A0C30F100D1D9A7 /* HONMapAnnotation.m */; };
 		300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B8A1A0C369700D1D9A7 /* HONMapAnnotationView.m */; };
@@ -37,6 +36,9 @@
 		30213E471A6D269500BCBFA6 /* Pods-seflieclub-tests.debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 30213E461A6D269500BCBFA6 /* Pods-seflieclub-tests.debug.xcconfig */; };
 		30213E491A6D26A900BCBFA6 /* Pods-seflieclub-tests.release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 30213E481A6D26A900BCBFA6 /* Pods-seflieclub-tests.release.xcconfig */; };
 		3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONActivityViewController.m */; };
+		3027CAA51A72ECE000E520F5 /* LYRConversation+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3027CAA41A72ECE000E520F5 /* LYRConversation+Additions.m */; };
+		3027CAA81A72F79800E520F5 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3027CAA71A72F79800E520F5 /* NSArray+Additions.m */; };
+		3027CAAD1A7307CE00E520F5 /* Obj-C Stuff in Resources */ = {isa = PBXBuildFile; fileRef = 3027CAAC1A7307CE00E520F5 /* Obj-C Stuff */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		3030DF591A63344D00406AAF /* HONFlagNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF581A63344D00406AAF /* HONFlagNavButtonView.m */; };
 		3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */; };
@@ -257,8 +259,6 @@
 		4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC94FD9190733C900347A34 /* HONPaginationView.m */; };
 		4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA415A181BE4D100FC9863 /* HONEmotionVO.m */; };
 		4CCA4165181C19D400FC9863 /* HONBasicParticipantGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA4164181C19D400FC9863 /* HONBasicParticipantGridView.m */; };
-		4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */; };
-		4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */; };
 		4CD071A819553039003894F4 /* UIView+ReverseSubviews.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */; };
 		4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */; };
 		4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */; };
@@ -301,8 +301,6 @@
 		07B6E6AE19884AE400DA0805 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_users@2x.png"; sourceTree = "<group>"; };
 		07B6E6B019884AE700DA0805 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
 		07B6E6B419884AEF00DA0805 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
-		30007CA01A25B47300A333F0 /* NSArray+Iterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Iterator.h"; sourceTree = "<group>"; };
-		30007CA11A25B47300A333F0 /* NSArray+Iterator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Iterator.m"; sourceTree = "<group>"; };
 		300641C11A5EF29C0078BCE9 /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		300641C21A5EF29C0078BCE9 /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		300D1B831A0B93C900D1D9A7 /* HONTimelineMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineMapViewController.h; sourceTree = "<group>"; };
@@ -347,6 +345,11 @@
 		301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cupertino.gpx; sourceTree = "<group>"; };
 		30213E461A6D269500BCBFA6 /* Pods-seflieclub-tests.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-seflieclub-tests.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-seflieclub-tests/Pods-seflieclub-tests.debug.xcconfig"; sourceTree = "<group>"; };
 		30213E481A6D26A900BCBFA6 /* Pods-seflieclub-tests.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-seflieclub-tests.release.xcconfig"; path = "../Pods/Target Support Files/Pods-seflieclub-tests/Pods-seflieclub-tests.release.xcconfig"; sourceTree = "<group>"; };
+		3027CAA31A72ECE000E520F5 /* LYRConversation+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRConversation+Additions.h"; sourceTree = "<group>"; };
+		3027CAA41A72ECE000E520F5 /* LYRConversation+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRConversation+Additions.m"; sourceTree = "<group>"; };
+		3027CAA61A72F79800E520F5 /* NSArray+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Additions.h"; sourceTree = "<group>"; };
+		3027CAA71A72F79800E520F5 /* NSArray+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Additions.m"; sourceTree = "<group>"; };
+		3027CAAC1A7307CE00E520F5 /* Obj-C Stuff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Obj-C Stuff"; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		3030DF571A63344D00406AAF /* HONFlagNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFlagNavButtonView.h; sourceTree = "<group>"; };
@@ -894,10 +897,6 @@
 		4CCA416A181C1BF200FC9863 /* HONUserProfileGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileGridView.m; sourceTree = "<group>"; };
 		4CCE75211843FA9D00FF09F7 /* HONSuggestedFollowViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSuggestedFollowViewCell.h; sourceTree = "<group>"; };
 		4CCE75221843FA9D00FF09F7 /* HONSuggestedFollowViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSuggestedFollowViewCell.m; sourceTree = "<group>"; };
-		4CCED5D5181F7A8000D1D673 /* NSDictionary+NullReplacement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+NullReplacement.h"; sourceTree = "<group>"; };
-		4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+NullReplacement.m"; sourceTree = "<group>"; };
-		4CCED5D8181F7AE900D1D673 /* NSArray+NullReplacement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+NullReplacement.h"; sourceTree = "<group>"; };
-		4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+NullReplacement.m"; sourceTree = "<group>"; };
 		4CD071A619553039003894F4 /* UIView+ReverseSubviews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+ReverseSubviews.h"; sourceTree = "<group>"; };
 		4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+ReverseSubviews.m"; sourceTree = "<group>"; };
 		4CD071A919554431003894F4 /* HONInviteContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONInviteContactsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1217,6 +1216,7 @@
 				3092C5871A6D44F2003A2A84 /* Layer MISC.txt */,
 				3092C5891A6D7E0E003A2A84 /* curl_calls.txt */,
 				30E177931A6EAB79003D46DA /* cert_stuff.txt */,
+				3027CAAC1A7307CE00E520F5 /* Obj-C Stuff */,
 			);
 			name = "_objc-notes";
 			path = "../_objc-notes";
@@ -2327,10 +2327,10 @@
 		4CF84495166503AC00C0CC5B /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				30007CA01A25B47300A333F0 /* NSArray+Iterator.h */,
-				30007CA11A25B47300A333F0 /* NSArray+Iterator.m */,
-				4CCED5D8181F7AE900D1D673 /* NSArray+NullReplacement.h */,
-				4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */,
+				3027CAA31A72ECE000E520F5 /* LYRConversation+Additions.h */,
+				3027CAA41A72ECE000E520F5 /* LYRConversation+Additions.m */,
+				3027CAA61A72F79800E520F5 /* NSArray+Additions.h */,
+				3027CAA71A72F79800E520F5 /* NSArray+Additions.m */,
 				305ED7B719C3FA4500BDCB04 /* NSArray+Random.h */,
 				305ED7B819C3FA4500BDCB04 /* NSArray+Random.m */,
 				4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */,
@@ -2339,8 +2339,6 @@
 				30B7BB881A0A1BC10005C761 /* NSDate+Operations.m */,
 				3010D7881A245AFB0078164F /* NSCharacterSet+AdditionalSets.h */,
 				3010D7891A245AFB0078164F /* NSCharacterSet+AdditionalSets.m */,
-				4CCED5D5181F7A8000D1D673 /* NSDictionary+NullReplacement.h */,
-				4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */,
 				30CA9CAC1A02FD4400A0A703 /* NSDictionary+Replacements.h */,
 				30CA9CAD1A02FD4400A0A703 /* NSDictionary+Replacements.m */,
 				30CA9CB01A02FE0800A0A703 /* NSMutableDictionary+Replacements.h */,
@@ -2522,6 +2520,7 @@
 				303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */,
 				30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */,
 				4C83FD9D190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf in Resources */,
+				3027CAAD1A7307CE00E520F5 /* Obj-C Stuff in Resources */,
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,
 				4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */,
 				4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */,
@@ -2636,15 +2635,12 @@
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				305ED7B919C3FA4500BDCB04 /* NSArray+Random.m in Sources */,
-				30007CA21A25B47300A333F0 /* NSArray+Iterator.m in Sources */,
-				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
 				3010D78A1A245AFB0078164F /* NSCharacterSet+AdditionalSets.m in Sources */,
 				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
 				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
 				3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				30B7BB891A0A1BC10005C761 /* NSDate+Operations.m in Sources */,
-				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
 				30CA9CAE1A02FD4400A0A703 /* NSDictionary+Replacements.m in Sources */,
 				30CA9CB31A02FE4400A0A703 /* NSMutableDictionary+Replacements.m in Sources */,
 				4C3A1D0B19920BA1007A85B8 /* NSString+Base64.m in Sources */,
@@ -2673,6 +2669,7 @@
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */,
 				3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */,
+				3027CAA81A72F79800E520F5 /* NSArray+Additions.m in Sources */,
 				30B2560D1A3BE28700C789E1 /* HONBaseVO.m in Sources */,
 				4CCA4165181C19D400FC9863 /* HONBasicParticipantGridView.m in Sources */,
 				4CEF9201196DFED9007D56BE /* HONCallingCodeViewCell.m in Sources */,
@@ -2704,6 +2701,7 @@
 				3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4CDFB3181889349900E9F33B /* HONFontAllocator.m in Sources */,
+				3027CAA51A72ECE000E520F5 /* LYRConversation+Additions.m in Sources */,
 				301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				3010D7811A24109E0078164F /* HONHomeFeedToggleView.m in Sources */,
@@ -2973,8 +2971,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
-				PROVISIONING_PROFILE = "22704408-4932-4db8-bdfa-763c14137e4e";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "22704408-4932-4db8-bdfa-763c14137e4e";
+				PRODUCT_NAME = DOOD;
+				PROVISIONING_PROFILE = "9f8b2446-a4ed-4b11-99c2-245c4d72dea5";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9f8b2446-a4ed-4b11-99c2-245c4d72dea5";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s x86_64 arm64";
@@ -3014,8 +3013,9 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
-				PROVISIONING_PROFILE = "84fb90de-a06f-4dfd-a4c5-4e28d6ca20f5";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "84fb90de-a06f-4dfd-a4c5-4e28d6ca20f5";
+				PRODUCT_NAME = DOOD;
+				PROVISIONING_PROFILE = "c221a98b-c8a9-4c3c-b795-e0762aca1404";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "c221a98b-c8a9-4c3c-b795-e0762aca1404";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;

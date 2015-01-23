@@ -392,10 +392,9 @@ void Swizzle(Class c, SEL orig, SEL new)
 			[[HONLayerKitAssistant sharedInstance] connectClientToServiceWithCompletion:^(BOOL success, NSError *error) {
 				NSLog(@"connectClientToServiceWithCompletion:success:[%@] error:[%@]", NSStringFromBOOL(success), error);
 				
-				[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] withCompletion:^(id result) {
-					NSLog(@"AUTH RESULT:%@", result);
+				[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] withCompletion:^(BOOL success, NSError *error) {
+					NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
 				}];
-				
 			}];
 
 			
@@ -765,7 +764,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
 	[Flurry logEvent:@"App_Active"];
-
+	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 	
 	if (_isFromBackground) {
 		[Flurry logEvent:@"resume"];
@@ -992,10 +991,10 @@ void Swizzle(Class c, SEL orig, SEL new)
 }
 
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandle {
-//	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandle];
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+//	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandler];
 	
-	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
+	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification - BG] (%@)", self.class, userInfo);
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	// Increment badge count if a message
@@ -1003,20 +1002,20 @@ void Swizzle(Class c, SEL orig, SEL new)
 		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
 		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 	}
-	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo];
+	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandler];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
+	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification - FG] (%@)", self.class, userInfo);
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
-	
-	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo];
 	
 	// Increment badge count if a message
 	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
 		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
 		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 	}
+	
+	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:nil];
 }
 
 

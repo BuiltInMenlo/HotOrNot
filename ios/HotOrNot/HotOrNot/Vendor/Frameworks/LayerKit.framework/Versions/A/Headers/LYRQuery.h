@@ -27,7 +27,7 @@
 /**
  @abstract Returns the unique identifier for the receiver as a URL.
  */
-@property (nonatomic, retain) NSURL *identifier;
+@property (nonatomic, readonly) NSURL *identifier;
 
 @end
 

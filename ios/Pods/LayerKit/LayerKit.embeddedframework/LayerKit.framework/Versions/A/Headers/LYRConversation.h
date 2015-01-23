@@ -22,8 +22,7 @@
  @abstract A unique identifier assigned to every conversation by Layer.
  @discussion The `identifier` property is queryable via the `LYRPredicateOperatorIsEqualTo`, `LYRPredicateOperatorIsNotEqualTo`, `LYRPredicateOperatorIsIn`, and `LYRPredicateOperatorIsNotIn` operators.
  */
-//@property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, retain) NSURL *identifier LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
 /**
  @abstract The set of user identifiers's specifying who is participating in the conversation modeled by the receiver.
  @discussion Layer conversations are addressed using the user identifiers of the host application. These user ID's are transmitted to
@@ -33,35 +32,30 @@
  The `participants` property is queryable via the `LYRPredicateOperatorIsEqualTo`, `LYRPredicateOperatorIsNotEqualTo`, `LYRPredicateOperatorIsIn`, and `LYRPredicateOperatorIsNotIn` operators. For convenience, 
  queries against the `participants` set will always implicitly include the authenticated user.
  */
-//@property (nonatomic, readonly) NSSet *participants LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, retain) NSSet *participants LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) NSSet *participants LYR_QUERYABLE_PROPERTY;
 /**
  @abstract The date and time that the conversation was created.
  @discussion This value specifies the time that receiver was locally created and will vary across devices.
  
  The `createdAt` property is queryable using all predicate operators.
  */
-//@property (nonatomic, readonly) NSDate *createdAt LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, retain) NSDate *createdAt LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) NSDate *createdAt LYR_QUERYABLE_PROPERTY;
 /**
  @abstract Returns the last Message recevied or sent in this Conversation.
  @discussion May be `nil`, if no messages exist in the conversation.
  
  The `lastMessage` property is queryable via the `LYRPredicateOperatorIsEqualTo`, `LYRPredicateOperatorIsNotEqualTo`, `LYRPredicateOperatorIsIn`, and `LYRPredicateOperatorIsNotIn` operators.
  */
-//@property (nonatomic, readonly) LYRMessage *lastMessage LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, retain) LYRMessage *lastMessage LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) LYRMessage *lastMessage LYR_QUERYABLE_PROPERTY;
 /**
  @abstract Returns a Boolean value that indicates if the receiver contains unread messages.
  @discussion The `hasUnreadMessages` property is queryable via the `LYRPredicateOperatorIsEqualTo` and `LYRPredicateOperatorIsNotEqualTo` predicate operators.
  */
-//@property (nonatomic, readonly) BOOL hasUnreadMessages LYR_QUERYABLE_PROPERTY;
-@property (nonatomic) BOOL hasUnreadMessages LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) BOOL hasUnreadMessages LYR_QUERYABLE_PROPERTY;
 /**
  @abstract Returns a Boolean value that indicates if the receiver has been deleted.
  */
-//@property (nonatomic, readonly) BOOL isDeleted;
-@property (nonatomic) BOOL isDeleted;
+@property (nonatomic, readonly) BOOL isDeleted;
 ///-----------------------
 /// @name Sending Messages
 ///-----------------------
@@ -106,8 +100,8 @@
  @abstract Returns the metadata associated with the conversation.
  @discussion Metadata is a free form dictionary of string key-value pairs that allows arbitrary developer supplied information to be associated with the conversation and synchronized among the participants.
  */
-//@property (nonatomic, readonly) NSDictionary *metadata;
-@property (nonatomic, retain) NSDictionary *metadata;
+@property (nonatomic, readonly) NSDictionary *metadata;
+//@property (nonatomic, retain) NSDictionary *metadata;
 
 /**
  @abstract Sets the value for the specified key path in the metadata dictionary.

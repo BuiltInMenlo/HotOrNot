@@ -6,17 +6,23 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <LayerKit/LayerKit.h>
+
+#import "LYRConversation+Additions.h"
 #import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
 #import "NSMutableDictionary+Replacements.h"
 
 #import "HONComposeSubjectViewController.h"
+#import "HONStatusUpdateVO.h"
+#import "HONUserClubVO.h"
 
 @interface HONComposeSubjectViewController () <HONTopicViewCellDelegate>
 @property (nonatomic, strong) UITextField *customTopicTextField;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 @property (nonatomic, strong) NSString *topicName;
+@property (nonatomic, strong) NSArray *participantIDs;
 @end
 
 @implementation HONComposeSubjectViewController
@@ -50,6 +56,22 @@
 	[super _didFinishDataRefresh];
 }
 
+- (void)_buildClubMemberParticipantsWithCompletion:(void (^)(id))completion {
+	__block HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:globalClubVO.clubID withOwnerID:globalClubVO.ownerID completion:^(NSDictionary *result) {
+		globalClubVO = [HONUserClubVO clubWithDictionary:result];
+		
+		__block NSMutableArray *participantIDs = [NSMutableArray array];
+		[globalClubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
+			[participantIDs addObject:NSStringFromInt(trivialUserVO.userID)];
+		}];
+		
+		if (completion)
+			completion([participantIDs copy]);
+	}];
+}
+
 
 - (void)_submitStatusUpdate {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit"
@@ -57,28 +79,66 @@
 	
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
-	[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
 	
-	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
-		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kProgressHUDMinDuration;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = @"Error!";
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-			_progressHUD = nil;
-			
-		} else {
-			[self _orphanSubmitOverlay];
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-			}];
+	[self _buildClubMemberParticipantsWithCompletion:^(NSArray *participants) {
+		NSLog(@"participantIDs:[%@]", participants);
+		
+		NSDictionary *metaData = @{@"creator_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+								   @"creator_name"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+								   @"topic"			: [_submitParams objectForKey:@"topic_name"],
+								   @"subject"		: _selectedTopicVO.topicName};
+		
+		NSError *error;
+		LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:participants]
+																												options:metaData
+																												  error:&error];
+		[conversation setValuesForMetadataKeyPathsWithDictionary:metaData merge:YES];
+		NSLog(@"CONVERSATION: -=-(%@)-=- %@\nmetaData:%@\nPARTICIPANTS:%@", conversation.identifierSuffix, NSStringFromBOOL(error == nil), conversation.metadata, conversation.participants);
+		
+		
+		// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
+		LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain
+																																	   data:[[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName]
+																																			 dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+		NSLog (@"MESSAGE: -=-(%@)-=- %@", [[message.identifier.relativePath componentsSeparatedByString:@"/"] lastObject], NSStringFromBOOL(error == nil));
+		BOOL msgSuccess = [conversation sendMessage:message error:&error];
+		
+		if (!msgSuccess) {
+			NSLog(@"Create message failed!\n%@", error);
 		}
+		
+		[_submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
+		[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
+		
+		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
+		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
+			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kProgressHUDMinDuration;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+				_progressHUD.labelText = @"Error!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+				_progressHUD = nil;
+				
+			} else {
+				[[HONLayerKitAssistant sharedInstance] dropParticipants:participants fromConversation:conversation excludeActiveUser:YES withCompletion:^(BOOL success, NSError *error) {
+					if (!success) {
+						NSLog(@"Drop participants failed!\n%@", error);
+					}
+					
+					NSLog(@"CONVERSATION: -=-(%@)-=- %@\nmetaData:%@\n%@", conversation.identifierSuffix, error, conversation.metadata, conversation.participants);
+				
+					[self _orphanSubmitOverlay];
+					
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					}];
+				}];
+			}
+		}];
 	}];
 }
 

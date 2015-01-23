@@ -14,6 +14,7 @@
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;
+@property (nonatomic, retain) NSString *messageID;
 @property (nonatomic) int parentID;
 @property (nonatomic) int clubID;
 @property (nonatomic) int userID;

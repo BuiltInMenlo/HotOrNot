@@ -12,7 +12,7 @@
 #import "HONStatusUpdateVO.h"
 
 @implementation HONStatusUpdateVO
-@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, appStoreURL, comment, score, replies, layerMessages, addedDate, updatedDate;
+@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, appStoreURL, comment, score, replies, addedDate, updatedDate;
 
 + (HONStatusUpdateVO *)statusUpdateWithDictionary:(NSDictionary *)dictionary {
 	HONStatusUpdateVO *vo = [[HONStatusUpdateVO alloc] init];
@@ -20,7 +20,7 @@
 	
 	vo.statusUpdateID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
-	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"owner_member_id"] intValue];
+	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : ([dictionary objectForKey:@"creator"] != nil) ? [[[dictionary objectForKey:@"creator"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"owner_member_id"] intValue];
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : @"OP";
 	vo.topicName = ([[dictionary objectForKey:@"emotions"] count] > 0) ? [[dictionary objectForKey:@"emotions"] firstObject] : @"";
 	vo.subjectName = [dictionary objectForKey:@"text"];
@@ -54,7 +54,6 @@
 	
 	vo.score = ([dictionary objectForKey:@"net_vote_score"] != [NSNull null]) ? [[dictionary objectForKey:@"net_vote_score"] intValue] : 0;
 	vo.replies = ([dictionary objectForKey:@"replies"] != nil || [dictionary objectForKey:@"replies"] != [NSNull null]) ? [dictionary objectForKey:@"replies"] : @[];
-	vo.layerMessages = [@[] mutableCopy];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"updated"]];
 	
@@ -68,6 +67,7 @@
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".score           : [%d]\n", vo.score];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".addedDate       : [%@]\n", vo.addedDate];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".updatedDate     : [%@]\n", vo.updatedDate];
+	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".replies			: [%@]\n", vo.replies];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".dictionary      : [%@]", vo.dictionary];
 	
 	return (vo);
@@ -81,7 +81,6 @@
 	self.subjectName = nil;
 	self.comment = nil;
 	self.replies = nil;
-	self.layerMessages = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;
 }

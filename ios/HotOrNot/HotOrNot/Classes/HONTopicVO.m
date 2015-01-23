@@ -25,7 +25,7 @@
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	
 	vo.formattedProperties = [NSString stringWithFormat:@".topicID		: [%d]\n", vo.topicID];
-	vo.formattedProperties = [NSString stringWithFormat:@".parentID		: [%d]\n", vo.parentID];
+	vo.formattedProperties = [NSString stringWithFormat:@".parentID	: [%d]\n", vo.parentID];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".topicName	: [%@]\n", vo.topicName];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".iconURL		: [%@]\n", vo.iconURL];
 	vo.formattedProperties = [vo.formattedProperties stringByAppendingFormat:@".score		: [%d]\n", vo.score];

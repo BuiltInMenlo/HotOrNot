@@ -238,7 +238,7 @@ extern NSString *const LYRTypingIndicatorParticipantUserInfoKey;
 /**
  @abstract The app key.
  */
-@property (nonatomic, copy) NSUUID *appID;
+@property (nonatomic, copy, readonly) NSUUID *appID;
 
 ///--------------------------------
 /// @name Managing Connection State

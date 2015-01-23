@@ -92,7 +92,8 @@ typedef NS_ENUM(NSUInteger, LYRPredicateOperator) {
 /**
  @abstract Returns the property whose value the receiver will compare against the reference value.
  */
-@property (nonatomic, copy, retain) NSString *property;
+@property (nonatomic, copy, readonly) NSString *property;
+//@property (nonatomic, copy, retain) NSString *property;
 
 /**
  @abstract Returns the predicate operator that specifies how the property's value will be compared against the reference value.

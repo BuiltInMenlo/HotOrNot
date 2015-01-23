@@ -6,10 +6,13 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSUserDefaults+Replacements.h"
+#import "NSArray+Additions.h"
+#import "NSMutableDictionary+Replacements.h"
 #import "NSString+Formatting.h"
+#import "NSUserDefaults+Replacements.h"
 
 #import "HONLayerKitAssistant.h"
+#import "HONTrivialUserVO.h"
 
 NSString * const kAppID = @"dda6367a-9f7c-11e4-9d57-142b010033d0";
 NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
@@ -43,18 +46,6 @@ static LYRClient *sharedClient = nil;
 	return (s_sharedInstance);
 }
 
-- (LYRClient *)sharedClient {
-	static LYRClient *s_sharedClient = nil;
-	static dispatch_once_t onceToken2;
-	
-	dispatch_once(&onceToken2, ^{
-		s_sharedClient = [LYRClient clientWithAppID:[[NSUUID alloc] initWithUUIDString:kAppID]];
-		s_sharedClient.delegate = self;
-	});
-	
-	return (s_sharedClient);
-}
-
 - (id)init {
 	if ((self = [super init])) {
 	}
@@ -62,35 +53,41 @@ static LYRClient *sharedClient = nil;
 	return (self);
 }
 
+- (LYRClient *)client {
+	return ([self sharedClient]);
+}
 
 
+#pragma mark - Push Notifications
 - (void)notifyClientWithPushToken:(NSData *)deviceToken {
 	NSLog(@"%@ - notifyClientWithPushToken:[%@]", [self description], [[[[deviceToken description] substringFromIndex:1] substringToIndex:[[deviceToken description] length] - 2] stringByReplacingOccurrencesOfString:@" " withString:@""]);
 	[[HONLayerKitAssistant sharedInstance] writePushToken:deviceToken];
 	
-//	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
-//	if ([client authenticatedUserID] != nil) {
-//		NSError *error;
-//		BOOL success = [client updateRemoteNotificationDeviceToken:deviceToken error:&error];
-//		
-//		if (success) {
-//			NSLog(@"Client already authed, now registered for remote notifications");
-//			
-//		} else {
-//			NSLog(@"Error updating Layer device token for push:%@", error);
-//		}
-//	}
+	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
+	if ([client authenticatedUserID] != nil && ![[self mutableLayerDict] hasObjectForKey:@"push_reg"]) {
+		NSError *error;
+		BOOL success = [client updateRemoteNotificationDeviceToken:deviceToken error:&error];
+		
+		if (success) {
+			[self addItemsToLocalDict:@[NSStringFromBOOL(YES)] withKeys:@[@"push_reg"]];
+			NSLog(@"Client already authed, now registered for remote notifications");
+			
+		} else {
+			NSLog(@"Error updating Layer device token for push:%@", error);
+		}
+	}
 	
 	[self addItemsToLocalDict:@[deviceToken] withKeys:@[@"push_token"]];
 }
 
 - (void)notifyClientPushTokenNotAvailibleFromError:(NSError *)error {
 	NSLog(@"%@ - notifyClientPushTokenNotAvailibleFromError:[%@]", [self description], error.description);
+	[self purgeItemsFromLocalDictWithKeys:@[@"push_token", @"push_reg"]];
 }
 
-- (void)notifyClientRemotePushWasReceived:(NSDictionary *)userInfo {
+- (void)notifyClientRemotePushWasReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 	NSLog(@"%@ - notifyClientRemotePushWasReceived:[%@]", [self description], userInfo);
-		
+	
 	// Get the message from userInfo
 	__block LYRMessage *message = [self messageFromRemoteNotification:userInfo];
 	
@@ -102,10 +99,12 @@ static LYRClient *sharedClient = nil;
 		
 		if (changes) {
 			if ([changes count] > 0) {
+				NSLog (@"-=- UIBackgroundFetchResultNewData -=-");
+				
 				// Get the message from userInfo
 				message = [self messageFromRemoteNotification:userInfo];
 				
-				NSString *alertString = [[NSString alloc] initWithData:[message.parts[0] data] encoding:NSUTF8StringEncoding];
+				NSString *alertString = [[userInfo objectForKey:@"aps"] objectForKey:@"alert"];//  [[NSString alloc] initWithData:[message.parts[0] data] encoding:NSUTF8StringEncoding];
 				
 				// Show a local notification
 				UILocalNotification *localNotification = [UILocalNotification new];
@@ -114,48 +113,35 @@ static LYRClient *sharedClient = nil;
 				[[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
 				[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 				
-//				completionHandler(UIBackgroundFetchResultNewData);
-				NSLog (@"app fetch didReceiveRemoteNotification - UIBackgroundFetchResultNewData");
+				if (completionHandler)
+					completionHandler(UIBackgroundFetchResultNewData);
 				
 			} else {
-				NSLog (@"app fetch didReceiveRemoteNotification - UIBackgroundFetchResultNoData");
-//				completionHandler(UIBackgroundFetchResultNoData);
+				NSLog (@"-=- UIBackgroundFetchResultNoData -=-");
+				if (completionHandler)
+					completionHandler(UIBackgroundFetchResultNoData);
 			}
 			
 		} else {
-			NSLog (@"app fetch didReceiveRemoteNotification - UIBackgroundFetchResultFailed");
-//			completionHandler(UIBackgroundFetchResultFailed);
+			NSLog (@"-=- UIBackgroundFetchResultFailed -=-");
+			if (completionHandler)
+				completionHandler(UIBackgroundFetchResultFailed);
 		}
 	}];
-					
+	
 	if (success) {
 		NSLog (@"Application did complete remote notification sync");
-	
+		
 	} else {
 		NSLog (@"Failed processing push notification with error: %@", error);
-//		completionHandler(UIBackgroundFetchResultNoData);
+		if (completionHandler)
+			completionHandler(UIBackgroundFetchResultNoData);
 	}
 }
 
-- (void)notifyClientRemotePushWasReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandle {
-}
 
 
-
-
-- (LYRClient *)client {
-	
-	return ([self sharedClient]);
-	
-	//if ([[self mutableLayerDict] objectForKey:@"client"] == nil)
-	
-	// Initializes a LYRClient object
-	LYRClient *client = [LYRClient clientWithAppID:[[NSUUID alloc] initWithUUIDString:kAppID]];
-	client.delegate = self;
-	
-	return (client);
-}
-
+#pragma mark - Connection
 - (void)connectClientToServiceWithCompletion:(void (^)(BOOL success, NSError * error))completion {
 	NSLog(@"%@ - connectClientToServiceWithCompletion:", [self description]);
 	
@@ -216,106 +202,113 @@ static LYRClient *sharedClient = nil;
 	}];
 }
 
-//- (void)clientWithCompletion:(void (^)(id result))completion {
-//	// Initializes a LYRClient object
-//	
-//	NSUUID *appID = [[NSUUID alloc] initWithUUIDString:kAppID];
-//	__block LYRClient *client = [LYRClient clientWithAppID:appID];
-//	client.delegate = self;
-//	
-//	// Tells LYRClient to establish a connection with the Layer service
-//	[client connectWithCompletion:^(BOOL success, NSError *error) {
-//		
-//		if (!success)
-//			NSLog(@"Client ain't able to connect!! %@", error.description);
-//		
-//		else {
-//			NSLog(@"Client is Connected! %@", [[HONLayerKitAssistant sharedInstance] client]);
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientDidAuthenticateNotification:)
-//														 name:LYRClientDidAuthenticateNotification object:nil];
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientDidDeauthenticateNotification:)
-//														 name:LYRClientDidDeauthenticateNotification object:nil];
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientWillBeginSynchronizationNotification:)
-//														 name:LYRClientWillBeginSynchronizationNotification object:nil];
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientDidFinishSynchronizationNotification:)
-//														 name:LYRClientDidFinishSynchronizationNotification object:nil];
-//			
-//			/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientObjectsDidChangeNotification:)
-//														 name:LYRClientDidAuthenticateNotification object:nil];
-//			/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
-//			
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientWillAttemptToConnectNotification:)
-//														 name:LYRClientWillAttemptToConnectNotification object:nil];
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientDidConnectNotification:)
-//														 name:LYRClientDidConnectNotification object:nil];
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientDidLoseConnectionNotification:)
-//														 name:LYRClientDidLoseConnectionNotification object:nil];
-//			
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRClientDidDisconnectNotification:)
-//														 name:LYRClientDidDisconnectNotification object:nil];
-//			
-//			
-//			/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
-//			[[NSNotificationCenter defaultCenter] addObserver:self
-//													 selector:@selector(_LYRConversationDidReceiveTypingIndicatorNotification:)
-//														 name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
-//			/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
-//		}
-//		
-//		if (completion)
-//			completion(client);
-//	}];
-//}
-
-
-- (void)authenticateUserWithUserID:(int)userID withCompletion:(void (^)(id result))completion {
+- (void)authenticateUserWithUserID:(int)userID withCompletion:(void (^)(BOOL success, NSError * error))completion {
 	NSLog(@"%@ - authenticateUserWithUserID:[%d]", [self description], userID);
 	
 	if ([[[HONLayerKitAssistant sharedInstance] client] authenticatedUserID] != nil) {
+		if ([[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] != nil && ![[self mutableLayerDict] hasObjectForKey:@"push_reg"]) {
+			NSError *error;
+			BOOL success = [[[HONLayerKitAssistant sharedInstance] client] updateRemoteNotificationDeviceToken:[[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] error:&error];
+			
+			if (success) {
+				[self addItemsToLocalDict:@[NSStringFromBOOL(YES)] withKeys:@[@"push_reg"]];
+				NSLog(@"Client already authed, now registered for remote notifications");
+				
+			} else {
+				NSLog(@"Error updating Layer device token for push:%@", error);
+			}
+			
+		}
+		
 		if (completion)
-			completion([[HONLayerKitAssistant sharedInstance] identityTokenForActiveUser]);
+			completion(YES, nil);
 	
 	} else {
 		// Authenticate with Layer
 		// See "Quick Start - Authenticate" for more details
 		// https://developer.layer.com/docs/quick-start/ios#authenticate
 		
-		/*
-		 * 1. Request an authentication Nonce from Layer
-		 */
+		// i). Request an authentication nonce from Layer
 		[[[HONLayerKitAssistant sharedInstance] client] requestAuthenticationNonceWithCompletion:^(NSString *nonce, NSError *error) {
 			if (!nonce) {
-				if (completion) {
-					completion([NSString stringWithFormat:@"ALREADY AUTHED - %@", error]);
-				}
+				if (completion)
+					completion(YES, error);
 			
 			} else {
-				/*
-				 * 2. Acquire identity Token from Layer Identity Service
-				 */
 				
+				// ii). Acquire identity token from Layer identity service
+				NSDictionary *params = @{@"app_id"	: [[[HONLayerKitAssistant sharedInstance] client].appID UUIDString],
+										 @"user_id"	: NSStringFromInt(userID),
+										 @"nonce"	: nonce};
+				
+				SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", kJWTBaseURL, kJWTPostPath, params);
+				[[[HONAPICaller sharedInstance] appendHeaders:@{@"Content-Type"		: kMIMETypeApplicationJSON,
+																@"Accept"			: kMIMETypeApplicationJSON}
+												 toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kJWTBaseURL]]] postPath:kJWTPostPath parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					
+					if (error != nil) {
+						SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+						[[HONAPICaller sharedInstance] showDataErrorHUD];
+						
+						if (completion)
+							completion(NO, error);
+						
+					} else {
+						SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+						[[HONLayerKitAssistant sharedInstance] writeIdentityToken:[result objectForKey:@"identity_token"]];
+						
+						// iii). Submit identity token to Layer for validation
+						[[[HONLayerKitAssistant sharedInstance] client] authenticateWithIdentityToken:[result objectForKey:@"identity_token"] completion:^(NSString *authenticatedUserID, NSError *error) {
+							NSLog(@"authenticateWithIdentityToken:[%@] //—> (authenticatedUserID:[%@] error:[%@])", [result objectForKey:@"identity_token"], authenticatedUserID, error);
+							
+							[[HONLayerKitAssistant sharedInstance] writeIdentityToken:(authenticatedUserID) ? [result objectForKey:@"identity_token"] : nil];
+							
+							if (error != nil) {
+								NSLog(@"Couldn't authenticate identity token!\n%@", error);
+								if (completion)
+									completion(NO, error);
+								
+							} else {
+								if ([[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] != nil) {
+									NSError *error;
+									BOOL success = [[[HONLayerKitAssistant sharedInstance] client] updateRemoteNotificationDeviceToken:[[[HONLayerKitAssistant sharedInstance] mutableLayerDict] objectForKey:@"push_token"] error:&error];
+									if (success) {
+										NSLog(@"Client now authed & registered for push notifications");
+									} else {
+										NSLog(@"Error updating Layer device token for push:%@", error);
+									}
+								}
+							}
+							
+							if (completion)
+								completion((error == nil), nil);
+						}];
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIUsersCheckUsername, [error localizedDescription]);
+					[[HONAPICaller sharedInstance] showDataErrorHUD];
+					
+					[[HONLayerKitAssistant sharedInstance] writeIdentityToken:nil];
+					
+					if (completion)
+						completion(NO, error);
+				}];
+
+				
+				
+				
+				
+				
+				
+				/*
 				NSURL *identityTokenURL = [NSURL URLWithString:@"https://layer-identity-provider.herokuapp.com/identity_tokens"];
 				NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:identityTokenURL];
 				request.HTTPMethod = @"POST";
-				[request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-				[request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+				[request setValue:kMIMETypeApplicationJSON forHTTPHeaderField:@"Content-Type"];
+				[request setValue:kMIMETypeApplicationJSON forHTTPHeaderField:@"Accept"];
 				
 				NSDictionary *parameters = @{ @"app_id": [[[HONLayerKitAssistant sharedInstance] client].appID UUIDString], @"user_id": NSStringFromInt(userID), @"nonce": nonce };
 				NSData *requestBody = [NSJSONSerialization dataWithJSONObject:parameters options:0 error:nil];
@@ -337,11 +330,24 @@ static LYRClient *sharedClient = nil;
 						completion(identityToken);
 						
 						
-						/*
-						 * 3. Submit identity token to Layer for validation
-						 */
+				 
+						 // 3. Submit identity token to Layer for validation
 						[[[HONLayerKitAssistant sharedInstance] client] authenticateWithIdentityToken:identityToken completion:^(NSString *authenticatedUserID, NSError *error) {
 							if (authenticatedUserID) {
+								
+								if ([[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] != nil && ![[self mutableLayerDict] hasObjectForKey:@"push_reg"]) {
+									NSError *error;
+									BOOL success = [[[HONLayerKitAssistant sharedInstance] client] updateRemoteNotificationDeviceToken:[[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] error:&error];
+									
+									if (success) {
+										[self addItemsToLocalDict:@[NSStringFromBOOL(YES)] withKeys:@[@"push_reg"]];
+										NSLog(@"Client already authed, now registered for remote notifications");
+										
+									} else {
+										NSLog(@"Error updating Layer device token for push:%@", error);
+									}
+								}
+								
 								if (completion) {
 									completion(nil);
 								}
@@ -366,7 +372,7 @@ static LYRClient *sharedClient = nil;
 						completion(error);
 					}
 					
-				}] resume];
+				}] resume];*/
 			}
 		}];
 		
@@ -382,8 +388,8 @@ static LYRClient *sharedClient = nil;
 //									 @"nonce"	: nonce};
 //			
 //			SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", kJWTBaseURL, kJWTPostPath, params);
-//			[[[HONAPICaller sharedInstance] appendHeaders:@{@"Content-Type"		: @"application/json",
-//															@"Accept"			: @"application/json"}
+//			[[[HONAPICaller sharedInstance] appendHeaders:@{@"Content-Type"		: kMIMETypeApplicationJSON,
+//															@"Accept"			: kMIMETypeApplicationJSON}
 //											 toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kJWTBaseURL]]] postPath:kJWTPostPath parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 //				NSError *error = nil;
 //				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -433,7 +439,7 @@ static LYRClient *sharedClient = nil;
 //					completion([[HONLayerKitAssistant sharedInstance] identityTokenForActiveUser]);
 //			}];
 //		}];
-		
+	
 	}
 }
 
@@ -459,6 +465,8 @@ static LYRClient *sharedClient = nil;
 	}
 }
 
+
+#pragma mark - Convos / Messages
 - (LYRConversation *)conversationWithParticipants:(NSArray *)participants {
 	LYRConversation *conversation = nil;
 	
@@ -478,12 +486,110 @@ static LYRClient *sharedClient = nil;
 	// Retrieve the last conversation
 	if (conversations.count) {
 		conversation = [conversations lastObject];
-		NSLog(@"Get last conversation object: %@", conversation.identifier);
+		NSLog(@"Get last conversation object: %@", conversation.identifierSuffix);
 	}
 	
 	return (conversation);
 }
 
+- (LYRConversation *)createConversationForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
+	LYRConversation *conversation = nil;
+	NSError *error = nil;
+	
+	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
+	
+	// Creates and returns a new conversation object with a single participant represented by your backend's user identifier for the participant
+	conversation = [client newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(statusUpdateVO.userID)]] options:nil error:&error];
+	[conversation setValue:NSStringFromInt(statusUpdateVO.statusUpdateID) forMetadataAtKeyPath:@"status_update.id"];
+	[conversation setValue:NSStringFromInt(statusUpdateVO.userID) forMetadataAtKeyPath:@"status_update.owner_id"];
+	
+	return (conversation);
+}
+
+- (LYRMessagePart *)createMessagePartAsMIMEType:(NSString *)mimeType withDataContents:(NSData *)contents {
+	return ([LYRMessagePart messagePartWithMIMEType:mimeType data:contents]);
+}
+
+- (void)addParticipants:(NSArray *)participants toConversation:(LYRConversation *)conversation withCompletion:(void (^)(BOOL success, NSError * error))completion {
+	
+	__block NSMutableArray *uniqueParticipants = [NSMutableArray array];
+	[participants enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSString *userID = (NSString *)obj;
+		
+		if (![uniqueParticipants containsObject:userID] && ![conversation.participants containsObject:userID])
+			[uniqueParticipants addObject:userID];
+	}];
+	
+	NSError *error = nil;
+	[conversation addParticipants:[NSSet setWithArray:uniqueParticipants] error:&error];
+	
+	if (completion) {
+		completion((error == nil), error);
+	}
+}
+
+- (void)dropParticipants:(NSArray *)participants fromConversation:(LYRConversation *)conversation excludeActiveUser:(BOOL)excludeUser withCompletion:(void (^)(BOOL success, NSError * error))completion {
+	
+//	NSMutableSet *set = [NSMutableSet setWithSet:conversation.participants];
+//	[set intersectSet:[NSSet setWithArray:participants]];
+//	
+//	__block NSMutableArray *uniqueParticipants = [NSMutableArray array];
+//	[participants enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		NSString *userID = (NSString *)obj;
+//		
+//		if (excludeUser) {
+//			if (![userID isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"id"]] && ![uniqueParticipants containsObject:userID] && [conversation.participants containsObject:userID])
+//				[uniqueParticipants addObject:userID];
+//			
+//		} else {
+//			if (![uniqueParticipants containsObject:userID] && [conversation.participants containsObject:userID])
+//				[uniqueParticipants addObject:userID];
+//		}
+//	}];
+//	
+//	NSLog(@"DROPPING PARTICIPANTS FROM:[%@]\n%@", conversation.identifierSuffix, uniqueParticipants);
+//	
+//	
+//	NSError *error = nil;
+//	[conversation removeParticipants:[NSSet setWithArray:uniqueParticipants] error:&error];
+//	
+//	if (completion) {
+//		completion((error == nil), error);
+//	}
+	
+	if (completion) {
+		completion(YES, nil);
+	}
+}
+
+- (void)addTxtMessage:(NSString *)msg toStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO withCompletion:(void (^)(id))completion {
+	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
+	
+	__block NSMutableArray *participants = [NSMutableArray arrayWithObject:NSStringFromInt(statusUpdateVO.userID)];
+	[statusUpdateVO.replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONCommentVO *vo = (HONCommentVO *)obj;
+		
+		if (![participants containsObject:NSStringFromInt(vo.userID)])
+			[participants addObject:NSStringFromInt(vo.userID)];
+	}];
+	
+	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] conversationWithParticipants:participants];
+	
+	
+	// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
+	NSError *error = nil;
+	LYRMessage *message = [client newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[statusUpdateVO.comment dataUsingEncoding:NSUTF8StringEncoding]]] options:@{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], msg]} error:&error];
+	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
+	
+	BOOL success = [conversation sendMessage:message error:&error];
+	NSLog (@"MESSAGE RESULT:- %@", NSStringFromBOOL(success));
+	
+	if (completion)
+		completion(message);
+}
+
+
+#pragma mark - Local Store
 - (NSString *)identityTokenForActiveUser {
 	return (([[self mutableLayerDict] objectForKey:@"auth_token"] != nil || [[[self mutableLayerDict] objectForKey:@"auth_token"] length] > 0) ? [[self mutableLayerDict] objectForKey:@"auth_token"] : nil);
 }
@@ -494,100 +600,24 @@ static LYRClient *sharedClient = nil;
 	
 	else
 		[self replaceLocalDictItems:@[token] forKeys:@[@"auth_token"]];
-	
-//	[[NSUserDefaults standardUserDefaults] replaceObject:token forKey:@"layer_token"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSData *)pushTokenForActiveUser {
 	return (([[self mutableLayerDict] objectForKey:@"push_token"] != nil || [[[self mutableLayerDict] objectForKey:@"push_token"] length] > 0) ? [[self mutableLayerDict] objectForKey:@"push_token"] : nil);
-//	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"layer_token"] != nil ||[[[NSUserDefaults standardUserDefaults] objectForKey:@"layer_token"] length] > 0) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"layer_token"] : nil);
 }
 
 - (void)writePushToken:(NSData *)token {
 	
-	if (token == nil)
-		[self purgeItemsFromLocalDictWithKeys:@[@"push_token"]];
-	
-	else
-		[self replaceLocalDictItems:@[token] forKeys:@[@"push_token"]];
+	if (token == nil) {
+		[self purgeItemsFromLocalDictWithKeys:@[@"push_token", @"push_reg"]];
 		
-	
-//	[[NSUserDefaults standardUserDefaults] replaceObject:token forKey:@"layer_token"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
+	} else
+		[self replaceLocalDictItems:@[token] forKeys:@[@"push_token"]];
 }
 
 
-- (void)sendTxtMessageToStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO withCompletion:(void (^)(id))completion {
-	static NSString *const MIMETypeTextPlain = @"text/plain";
-	
-	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
-	
-	__block NSMutableArray *participants = [NSMutableArray arrayWithObject:NSStringFromInt(statusUpdateVO.userID)];
-	[statusUpdateVO.replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentVO *vo = (HONCommentVO *)obj;
-		[participants addObject:NSStringFromInt(vo.userID)];
-	}];
-	
-	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] conversationWithParticipants:participants];
-	
 
-	// Creates and returns a new conversation object with a single participant represented by
-	// your backend's user identifier for the participant
-//	LYRConversation *conversation = [client newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(statusUpdateVO.userID)]] options:nil error:&error];
-	
-	// Creates a message part with a text/plain MIMEType
-	NSData *messageData = [statusUpdateVO.comment dataUsingEncoding:NSUTF8StringEncoding];
-	LYRMessagePart *messagePart = [LYRMessagePart messagePartWithMIMEType:MIMETypeTextPlain data:messageData];
-	
-	// Creates and returns a new message object with the given conversation and array of message parts - Sends the specified message
-	NSError *error = nil;
-	LYRMessage *message = [client newMessageWithParts:@[messagePart] options:@{LYRMessageOptionsPushNotificationAlertKey: statusUpdateVO.comment} error:&error];
-	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
-	
-	BOOL success =  [conversation sendMessage:message error:&error];
-	NSLog (@"MESSAGE RESULT:- %@",NSStringFromBOOL(success));
-	
-	
-	[statusUpdateVO.layerMessages addObject:message];
-	
-	
-	if (completion)
-		completion(statusUpdateVO.layerMessages);
-}
 
-//- (void)sendMessage {
-//	// Declares a MIME type string
-//	static NSString *const MIMETypeTextPlain = @"text/plain";
-//	
-//	
-//	
-//	LYRClient *client = [[HONLayerKitAssistant sharedInstance] connectedClient];
-//	
-//	// Creates and returns a new conversation object with a single participant represented by
-//	// your backend's user identifier for the participant
-//	NSError *error = nil;
-//	LYRConversation *conversation = [client newConversationWithParticipants:[NSSet setWithArray:@[[[HONLayerKitAssistant sharedInstance] identityTokenForActiveUser]]] options:nil error:&error];
-//	
-//	// Creates a message part with a text/plain MIMEType
-//	NSData *messageData = [@"Hi, how are you?" dataUsingEncoding:NSUTF8StringEncoding];
-//	LYRMessagePart *messagePart = [LYRMessagePart messagePartWithMIMEType:MIMETypeTextPlain data:messageData];
-//	
-//	// Creates and returns a new message object with the given conversation and array of message parts
-//	LYRMessage *message = [client newMessageWithParts:@[messagePart] options:nil error:&error];
-//	
-//	// Sends the specified message
-//	BOOL success = [conversation sendMessage:message error:&error];
-//	
-//	NSMutableArray *msgs = [[NSMutableArray arrayWithObject:[dict objectForKey:@"msgs"]] mutableCopy];
-//	[msgs addObjectsFromArray:participants];
-//	
-//	
-//	
-//	if (success) {
-//		[[NSUserDefaults standardUserDefaults] replaceObject:[NSArray array]] forKey
-//	}
-//}
 
 
 #pragma mark - Notifications
@@ -707,6 +737,18 @@ static LYRClient *sharedClient = nil;
 
 
 #pragma mark - private helpers
+- (LYRClient *)sharedClient {
+	static LYRClient *s_sharedClient = nil;
+	static dispatch_once_t onceToken2;
+	
+	dispatch_once(&onceToken2, ^{
+		s_sharedClient = [LYRClient clientWithAppID:[[NSUUID alloc] initWithUUIDString:kAppID]];
+		s_sharedClient.delegate = self;
+	});
+	
+	return (s_sharedClient);
+}
+
 - (NSMutableDictionary *)mutableLayerDict {
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"layer"] == nil) ? [@{} mutableCopy] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"layer"] mutableCopy]);
 }

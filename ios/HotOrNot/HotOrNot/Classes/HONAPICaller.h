@@ -92,6 +92,25 @@ extern NSString * const kAPIStatusupdate;
 extern NSString * const kNetErrorNoConnection;
 extern NSString * const kNetErrorStatusCode404;
 
+
+// MIME Types
+extern NSString * const kMIMETypeApplicationJSON;
+extern NSString * const kMIMETypeApplicationOctetStream;
+extern NSString * const kMIMETypeApplicationXFormURLEncoded;
+extern NSString * const kMIMETypeApplicationXML;
+extern NSString * const kMIMETypeApplicationXPlist;
+extern NSString * const kMIMETypeImage;
+extern NSString * const kMIMETypeImageGIF;
+extern NSString * const kMIMETypeImageJPEG;
+extern NSString * const kMIMETypeImagePNG;
+extern NSString * const kMIMETypeMultipartFormData;
+extern NSString * const kMIMETypeTextJavascript;
+extern NSString * const kMIMETypeTextJSON;
+extern NSString * const kMIMETypeTextPlain;
+extern NSString * const kMIMETypeTextXML;
+
+
+
 // network times
 extern const CGFloat kNotifiyDelay;
 

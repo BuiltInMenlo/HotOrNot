@@ -105,6 +105,23 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
+// MIME types
+NSString * const kMIMETypeApplicationJSON = @"application/json";
+NSString * const kMIMETypeApplicationOctetStream = @"application/octet-stream";
+NSString * const kMIMETypeApplicationXFormURLEncoded = @"application/x-www-form-urlencoded";
+NSString * const kMIMETypeApplicationXML = @"application/xml";
+NSString * const kMIMETypeApplicationXPlist = @"application/x-plist";
+NSString * const kMIMETypeImage = @"image/*";
+NSString * const kMIMETypeImageGIF = @"image/gif";
+NSString * const kMIMETypeImageJPEG = @"image/jpeg";
+NSString * const kMIMETypeImagePNG = @"image/png";
+NSString * const kMIMETypeMultipartFormData = @"multipart/form-data";
+NSString * const kMIMETypeTextJavascript = @"text/javascript";
+NSString * const kMIMETypeTextJSON = @"text/json";
+NSString * const kMIMETypeTextPlain = @"text/plain";
+NSString * const kMIMETypeTextXML = @"text/xml";
+
+
 const CGFloat kNotifiyDelay = (float)(2 / 3);
 
 
@@ -167,22 +184,12 @@ static HONAPICaller *sharedInstance = nil;
 - (AFHTTPClient *)getHttpClientWithHMACUsingPHPBasePath {
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] appendHeaders:@{@"HMAC"		: [[HONDeviceIntrinsics sharedInstance] hmacToken],
 																			  @"X-DEVICE"	: [[HONDeviceIntrinsics sharedInstance] modelName]} toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] phpAPIBasePath]]]];
-	
-//	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
-//	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
-//	
-	NSLog(@"OPERATIONS:[%@]", [[httpClient operationQueue] operations]);
 	return (httpClient);
 }
 
 - (AFHTTPClient *)getHttpClientWithHMACUsingPythonBasePath {
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] appendHeaders:@{@"HMAC"		: [[HONDeviceIntrinsics sharedInstance] hmacToken],
 																			  @"X-DEVICE"	: [[HONDeviceIntrinsics sharedInstance] modelName]} toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] pythonAPIBasePath]]]];
-	
-	
-//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[[HONAPICaller sharedInstance] pythonAPIBasePath]]];
-//	[httpClient setDefaultHeader:@"HMAC" value:[[HONDeviceIntrinsics sharedInstance] hmacToken]];
-//	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	
 	return (httpClient);
 }

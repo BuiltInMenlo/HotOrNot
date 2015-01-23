@@ -23,7 +23,7 @@
 /**
  @abstract Returns the query of the receiver.
  */
-@property (nonatomic, strong) LYRQuery *query;
+@property (nonatomic, readonly) LYRQuery *query;
 
 ///---------------------------------
 /// @name Configuring Update Elision
@@ -33,7 +33,8 @@
  @abstract Configures the set of properties on the queried model class for which `LYRQueryControllerChangeTypeUpdate` changes will be emitted. The default value is `nil`, which means that all property changes will generate update notifications to the delegate.
  @discussion The set of updatable properties is used to enhance performance by suppressing the delivery of uninteresting update notifications to the delegate and the subsequent reloading of table or collection view cells. For example, given a collection view that is rendering `LYRMessage` objects but does not include read or delivery receipt status on the cell, the developer may wish to limit the updatable properties to `isSent` and `isUnread` so that the UI does not refresh as delivery and read receipts are synchronized from other participants of the conversation. A value of `nil` indicates that no filtering is to be applied and any update to an object in the collection will generate an update callback. An empty set disables all update notifications.
  */
-@property (nonatomic, strong) NSSet *updatableProperties;
+//@property (nonatomic) NSSet *updatableProperties;
+@property (nonatomic, assign) NSSet *updatableProperties;
 
 ///-------------------------
 /// @name Pagination Support

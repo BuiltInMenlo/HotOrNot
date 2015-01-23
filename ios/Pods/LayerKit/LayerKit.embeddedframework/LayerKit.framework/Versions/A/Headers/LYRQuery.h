@@ -27,7 +27,6 @@
 /**
  @abstract Returns the unique identifier for the receiver as a URL.
  */
-//@property (nonatomic, readonly) NSURL *identifier;
 @property (nonatomic, readonly) NSURL *identifier;
 
 @end
@@ -91,7 +90,7 @@ typedef NS_ENUM(NSUInteger, LYRQueryResultType) {
 /**
  @abstract Returns the queryable class that the receiver is bound to.
  */
-@property (nonatomic, retain) Class<LYRQueryable> queryableClass;
+@property (nonatomic, readonly) Class<LYRQueryable> queryableClass;
 
 ///------------------------
 /// @name Query Constraints
@@ -100,6 +99,7 @@ typedef NS_ENUM(NSUInteger, LYRQueryResultType) {
 /**
  @abstract The predicate of the receiver.
  */
+//@property (nonatomic) LYRPredicate *predicate;
 @property (nonatomic, assign) LYRPredicate *predicate;
 
 /**
@@ -123,6 +123,7 @@ typedef NS_ENUM(NSUInteger, LYRQueryResultType) {
  @discussion The sort descriptors specify how the objects returned when the query is executed should be ordered (for example by creation date or index). The sort descriptors are 
  applied in the order in which they appear in the `sortDescriptors` array. A value of nil (the default) means that no explicit sorting is applied and the results are returned in database row order.
  */
+//@property (nonatomic) NSArray *sortDescriptors;
 @property (nonatomic, assign) NSArray *sortDescriptors;
 
 ///----------------------------------------

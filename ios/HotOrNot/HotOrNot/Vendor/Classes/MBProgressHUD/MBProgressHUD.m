@@ -333,7 +333,7 @@
 		label.textAlignment = NSTextAlignmentCenter;
 		label.opaque = NO;
 		label.backgroundColor = [UIColor clearColor];
-		label.textColor = [UIColor whiteColor];
+		label.textColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 		label.text = self.labelText;
 		
 		// Update HUD size
@@ -374,7 +374,7 @@
 			detailsLabel.textAlignment = NSTextAlignmentCenter;
 			detailsLabel.opaque = NO;
 			detailsLabel.backgroundColor = [UIColor clearColor];
-			detailsLabel.textColor = [UIColor whiteColor];
+			detailsLabel.textColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 			detailsLabel.text = self.detailsLabelText;
 			
 			// Update HUD size

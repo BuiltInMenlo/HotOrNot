@@ -115,7 +115,7 @@
 	
 	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
 	
-	NSLog(@"//-/--/--/ {%@} -(%@)- [%d | %@] /--/--/-//", [vo.updatedDate formattedISO8601String], (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName);
+	NSLog(@"//-/--/--/ {%@} -(%@)- [%d | %@] _(%d)_ /--/--/-//", [vo.updatedDate formattedISO8601String], (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName, vo.totalMembers);
 	return (vo);
 }
 

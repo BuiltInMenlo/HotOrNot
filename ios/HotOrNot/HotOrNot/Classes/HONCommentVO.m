@@ -15,13 +15,14 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, clubID, parentID, userID, username, avatarPrefix, score, textContent, addedDate;
+@synthesize commentID, messageID, clubID, parentID, userID, username, avatarPrefix, score, textContent, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
 	vo.dictionary = dictionary;
 	
 	vo.commentID = [[dictionary objectForKey:@"id"] intValue];
+	vo.messageID = ([dictionary objectForKey:@"msg_id"] != nil) ? [dictionary objectForKey:@"msg_id"] : @"";
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"user_id"] intValue];
@@ -79,6 +80,7 @@
 
 - (void)dealloc {
 	self.dictionary = nil;
+	self.messageID = nil;
 	self.username = nil;
 	self.avatarPrefix = nil;
 	self.textContent = nil;

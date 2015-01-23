@@ -8,6 +8,7 @@
 
 #import <LayerKit/LayerKit.h>
 
+#import "LYRConversation+Additions.h"
 #import "NSCharacterSet+AdditionalSets.h"
 #import "NSDate+Operations.h"
 #import "UIImageView+AFNetworking.h"
@@ -24,8 +25,8 @@
 #import "HONStatusUpdateCreatorView.h"
 
 @interface HONStatusUpdateViewController () <HONStatusUpdateCreatorViewDelegate>
-@property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) LYRConversation *conversation;
+@property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
@@ -44,7 +45,6 @@
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
-
 @end
 
 @implementation HONStatusUpdateViewController
@@ -94,14 +94,89 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveStatusUpdate {
-	
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-		_clubVO = [HONUserClubVO clubWithDictionary:result];
+//	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+//		_clubVO = [HONUserClubVO clubWithDictionary:result];
+//		[self _retrieveRepliesAtPage:1];
+//	}];
+	
+	
+	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
+		NSError *error;
+		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
+		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
 		
-		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
-			[self _retrieveRepliesAtPage:1];
-		}];
+		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation, _conversation.metadata);
+		
+		if (!error) {
+			if ([_conversation.participants containsObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])]) {
+				[[HONLayerKitAssistant sharedInstance] addParticipants:@[NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])] toConversation:_conversation withCompletion:^(BOOL success, NSError *error) {
+					if (!success) {
+						NSLog(@"Couldn't add me self to the convo!");
+					}
+					
+					LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
+					msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
+					msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+					
+					LYRQueryController *queryController = [[[HONLayerKitAssistant sharedInstance] client] queryControllerWithQuery:msgsQuery];
+					BOOL success2 = [queryController execute:&error];
+					if (!success2) {
+						NSLog(@"Query failed with error: %@", error);
+					} else {
+						NSLog(@"Query fetched %tu message objects", [queryController totalNumberOfObjects]);
+//					}
+						
+						for (int i=0; i<queryController.numberOfSections; i++) {
+							for (int j=0; j<[queryController numberOfObjectsInSection:i]; j++) {
+								LYRMessage *message = (LYRMessage *)[queryController objectAtIndexPath:[NSIndexPath indexPathForRow:j inSection:i]];
+								LYRMessagePart *messagePart = [message.parts firstObject];
+								
+								NSDictionary *dict = @{@"id"				: message.identifierSuffix,
+													   @"owner_member"		: @{@"id"	: message.sentByUserID,
+																				@"name"	: message.sentByUserID},
+													   @"img"				: message.identifier,
+													   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
+													   @"net_vote_score"	: @(0),
+													   @"added"				: @"0000-00-00 00:00:00",
+													   @"updated"			: @"0000-00-00 00:00:00"};
+								
+								[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
+							}
+						}
+//
+//
+//					NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
+//					if (!error)
+//						NSLog(@"Query failed with error %@", error);
+//					
+//					else {
+//						NSLog(@"%tu messages in conversation", messages.count);
+//						
+//						[messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//							LYRMessage *message = (LYRMessage *)obj;
+//							LYRMessagePart *messagePart = [message.parts firstObject];
+//							
+//							NSDictionary *dict = @{@"id"	: message.identifierSuffix,
+//												   @"owner_member"		: @{@"id"	: message.sentByUserID,
+//																			@"name"	: message.sentByUserID},
+//												   @"img"				: message.identifier,
+//												   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
+//												   @"net_vote_score"	: @(0),
+//												   @"added"				: message.sentAt,
+//												   @"updated"			: message.sentAt};
+//							
+//							[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
+//						}];
+						
+						_statusUpdateVO.replies = [_replies copy];
+					}
+					
+					[self _didFinishDataRefresh];
+				}];
+			}
+		}
 	}];
 }
 
@@ -118,14 +193,12 @@
 		else {
 			NSLog(@"FINISHED RETRIEVING COMMENTS:[%d]", [_retrievedReplies count]);
 			
-			NSMutableArray *layerMsgs = [NSMutableArray arrayWithCapacity:[_retrievedReplies count]];
 			[[[_retrievedReplies reverseObjectEnumerator] allObjects] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
 				[dict setValue:@(_statusUpdateVO.clubID) forKey:@"club_id"];
 				[dict setValue:@(_statusUpdateVO.statusUpdateID) forKey:@"parent_id"];
 				
 				[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
-				[layerMsgs addObject:[HONStatusUpdateVO statusUpdateWithDictionary:dict]];
 			}];
 			
 			_statusUpdateVO.replies = [_replies copy];
@@ -154,34 +227,21 @@
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
-			
-		} else {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-			if ([_overlayTimer isValid])
-				[_overlayTimer invalidate];
-			
-			if (_overlayTimer != nil);
-			_overlayTimer = nil;
-			
-			if (_overlayView != nil) {
-				[_overlayView removeFromSuperview];
-				_overlayView = nil;
-			}
-			
-			
-			[[HONLayerKitAssistant sharedInstance] sendTxtMessageToStatusUpdate:_statusUpdateVO withCompletion:^(NSArray *layerMessages) {
-				NSLog(@"MESSAGE POPPED @ StatusUpdateVC:%@", [[layerMessages lastObject] identifier]);
-			}];
-			
-			
-			_isSubmitting = NO;
-			[self _goReloadContent];
 		}
 	}];
+	
+	NSDictionary *alertDict = ([[_conversation.metadata objectForKey:@"creator_id"] intValue] != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], _comment]} : nil;
+	
+	// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
+	NSError *error = nil;
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]]] options:alertDict error:&error];
+	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
+	
+	BOOL success = [_conversation sendMessage:message error:&error];
+	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
+	
+	_isSubmitting = NO;
+	[self _goReloadContent];
 }
 
 - (void)_flagStatusUpdate {
@@ -216,29 +276,30 @@
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Status Update - Refresh"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeFriendsTabRefresh];
 	
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
+
 	[self _goReloadContent];
 }
 
 - (void)_goReloadContent {
-	[_commentsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentItemView *view = (HONCommentItemView *)obj;
-		[view removeFromSuperview];
-	}];
+//	[_commentsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONCommentItemView *view = (HONCommentItemView *)obj;
+//		[view removeFromSuperview];
+//	}];
 	
 	_commentsHolderView.frame = CGRectResizeHeight(_commentsHolderView.frame, 0.0);
 	_scrollView.contentSize = CGRectResizeHeight(_scrollView.frame, 0.0).size;
 	
-	if (![_refreshControl isRefreshing])
-		[_refreshControl beginRefreshing];
-	
 	_retrievedReplies = [NSMutableArray array];
-	_replies = [NSMutableArray array];
+//	_replies = [NSMutableArray array];
 	
 	[self _retrieveStatusUpdate];
 }
 
 - (void)_didFinishDataRefresh {
-	[_refreshControl endRefreshing];
+	if ([_refreshControl isRefreshing])
+		[_refreshControl endRefreshing];
 	
 //	__block NSMutableArray *participants = [NSMutableArray arrayWithObject:NSStringFromInt(_statusUpdateVO.userID)];
 //	[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -247,7 +308,37 @@
 //	}];
 //	
 //	_conversation = [[HONLayerKitAssistant sharedInstance] conversationWithParticipants:[participants copy]];
+//
+	
+	
+//	LYRQuery *query2 = [LYRQuery queryWithClass:[LYRConversation class]];
+//	//query2.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:NSStringFromInt(_statusUpdateVO.userID)];
 //	
+//	NSError *error;
+//	NSOrderedSet *conversations = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:query2 error:&error];
+//	if (!error) {
+//		NSLog(@"(%d) %@", conversations.count, conversations);
+//	} else {
+//		NSLog(@"Query failed with error %@", error);
+//	}
+	
+	
+//	NSError *error;
+//	LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+//	query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
+//	_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:query error:&error] firstObject];
+//	
+//	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation, _conversation.metadata);
+//	
+//	if (!error) {
+//		if ([_conversation.participants containsObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])])
+//		[[HONLayerKitAssistant sharedInstance] addParticipants:@[NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])] toConversation:_conversation withCompletion:^(BOOL success, NSError *error) {
+//			if (!success) {
+//				NSLog(@"Couldn't add me self to the convo!");
+//			}
+//		}];
+//	}
+	
 	
 	[_creatorView refreshScore];
 	[self _makeComments];
@@ -379,24 +470,8 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - comment"];
 	
-	if ([_commentTextField isFirstResponder])
-		[_commentTextField resignFirstResponder];
-	
-	NSLog(@"DIST:[%.04f] RADIUS:[%.04f]", _clubVO.distance, _clubVO.postRadius);
-	
 	_comment = _commentTextField.text;
 	_commentTextField.text = @"";
-	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
-	[self.view addSubview:_overlayView];
-	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.taskInProgress = YES;
-	
 	
 	[self _submitCommentReply];
 }
@@ -527,7 +602,7 @@
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
 						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, _scrollView.frame.origin.y - (216.0 + _inputBGImageView.frame.size.height));
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, (_scrollView.contentSize.height < (216.0 + _inputBGImageView.frame.size.height) ? 0.0 : _scrollView.frame.origin.y - (216.0 + _inputBGImageView.frame.size.height)));
 						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - (216.0 + _inputBGImageView.frame.size.height));
 					 } completion:^(BOOL finished) {
 						 [self.view addSubview:_commentCloseButton];
