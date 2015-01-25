@@ -562,6 +562,21 @@ static LYRClient *sharedClient = nil;
 	}
 }
 
+- (void)purgeParticipantsFromConversation:(LYRConversation *)conversation includeOwner:(BOOL)isOwner withCompletion:(void (^)(BOOL success, NSError * error))completion {
+	NSMutableSet *dropParticipants = [NSMutableSet setWithSet:conversation.participants];
+	
+	if (!isOwner)
+		[dropParticipants removeObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])];
+	
+	NSLog(@"DROPPING PARTICIPANTS FROM:[%@]\n%@", conversation.identifierSuffix, dropParticipants);
+	
+	NSError *error = nil;
+	[conversation removeParticipants:dropParticipants error:&error];
+	
+	if (completion)
+		completion((error == nil), error);
+}
+
 - (void)addTxtMessage:(NSString *)msg toStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO withCompletion:(void (^)(id))completion {
 	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
 	

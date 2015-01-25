@@ -93,15 +93,16 @@
 																												options:metaData
 																												  error:&error];
 		[conversation setValuesForMetadataKeyPathsWithDictionary:metaData merge:YES];
-		NSLog(@"CONVERSATION: -=-(%@)-=- %@\nmetaData:%@\nPARTICIPANTS:%@", conversation.identifierSuffix, NSStringFromBOOL(error == nil), conversation.metadata, conversation.participants);
+		NSLog(@"CREATED CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
 		
 		
 		// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
 		LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain
 																																	   data:[[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName]
 																																			 dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-		NSLog (@"MESSAGE: -=-(%@)-=- %@", [[message.identifier.relativePath componentsSeparatedByString:@"/"] lastObject], NSStringFromBOOL(error == nil));
+		NSLog (@"CREATED MESSAGE: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [message toString]);
 		BOOL msgSuccess = [conversation sendMessage:message error:&error];
+		NSLog (@"SENT MESSAGE: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [message toString]);
 		
 		if (!msgSuccess) {
 			NSLog(@"Create message failed!\n%@", error);
@@ -124,13 +125,12 @@
 				_progressHUD = nil;
 				
 			} else {
-				[[HONLayerKitAssistant sharedInstance] dropParticipants:participants fromConversation:conversation excludeActiveUser:YES withCompletion:^(BOOL success, NSError *error) {
+				[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
 					if (!success) {
-						NSLog(@"Drop participants failed!\n%@", error);
+						NSLog(@"Purging participants failed!\n%@", error);
 					}
 					
-					NSLog(@"CONVERSATION: -=-(%@)-=- %@\nmetaData:%@\n%@", conversation.identifierSuffix, error, conversation.metadata, conversation.participants);
-				
+					NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
 					[self _orphanSubmitOverlay];
 					
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {

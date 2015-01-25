@@ -12,7 +12,7 @@ subdomain_api="admin-stage"
 
 #-- parameter flags
 isKillSimulator_flg=true
-isPurgeUser_flg=true
+isPurgeUser_flg=false
 
 #-- check for parameter flags
 while getopts "dklpst:u:" optname # --//> there's a '-d' / '-k' / '-l' / '-p' / '-s' / '-t' / '-u'
@@ -34,8 +34,8 @@ while getopts "dklpst:u:" optname # --//> there's a '-d' / '-k' / '-l' / '-p' / 
 				;;
 
 			p) # )-/> passed in '-p'
-				#-- set to don't purge user
-				isPurgeUser_flg=false
+				#-- set to purge user
+				isPurgeUser_flg=true
 				;;
 			
 			s) # )-/> staging tier 
@@ -76,7 +76,8 @@ done
 if $isKillSimulator_flg; then
 	
 	# store pIDs of the processes
-	simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
+	#-- xcode 5- simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
+	simulator_pid=`ps aux -cj | grep -i "iOS Simulator" | awk '{print $2}'`
 	bridge_pid=`ps aux -cj | grep -i "SimulatorBridge" | awk '{print $2}'`
 	
 	# kill processes gracefully

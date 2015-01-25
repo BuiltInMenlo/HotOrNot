@@ -102,7 +102,7 @@
 	
 	
 	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
-		NSError *error;
+		NSError *error = nil;
 		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
 		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
 		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
@@ -120,58 +120,45 @@
 					msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
 					msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
 					
-					LYRQueryController *queryController = [[[HONLayerKitAssistant sharedInstance] client] queryControllerWithQuery:msgsQuery];
-					BOOL success2 = [queryController execute:&error];
-					if (!success2) {
-						NSLog(@"Query failed with error: %@", error);
-					} else {
-						NSLog(@"Query fetched %tu message objects", [queryController totalNumberOfObjects]);
-//					}
-						
-						for (int i=0; i<queryController.numberOfSections; i++) {
-							for (int j=0; j<[queryController numberOfObjectsInSection:i]; j++) {
-								LYRMessage *message = (LYRMessage *)[queryController objectAtIndexPath:[NSIndexPath indexPathForRow:j inSection:i]];
-								LYRMessagePart *messagePart = [message.parts firstObject];
-								
-								NSDictionary *dict = @{@"id"				: message.identifierSuffix,
-													   @"owner_member"		: @{@"id"	: message.sentByUserID,
-																				@"name"	: message.sentByUserID},
-													   @"img"				: message.identifier,
-													   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
-													   @"net_vote_score"	: @(0),
-													   @"added"				: @"0000-00-00 00:00:00",
-													   @"updated"			: @"0000-00-00 00:00:00"};
-								
-								[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
-							}
-						}
-//
-//
-//					NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
-//					if (!error)
-//						NSLog(@"Query failed with error %@", error);
-//					
-//					else {
-//						NSLog(@"%tu messages in conversation", messages.count);
+					NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
+					NSLog(@"QUERY:[%@] -=- %@\n%@", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", messages);
+					
+					[messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						LYRMessage *message = (LYRMessage *)obj;
+						NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", idx, message.identifierSuffix, [message.sentAt formattedISO8601StringUTC], [message.receivedAt formattedISO8601StringUTC]);
+						[_replies addObject:[HONCommentVO commentWithMessage:message]];
+					}];
+					
+//					LYRQueryController *queryController = [[[HONLayerKitAssistant sharedInstance] client] queryControllerWithQuery:msgsQuery];
+//					BOOL success2 = [queryController execute:&error];
+//					if (!success2) {
+//						NSLog(@"Query failed with error: %@", error);
+//					} else {
+//						NSLog(@"Query fetched %tu message objects", [queryController totalNumberOfObjects]);
 //						
-//						[messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//							LYRMessage *message = (LYRMessage *)obj;
-//							LYRMessagePart *messagePart = [message.parts firstObject];
-//							
-//							NSDictionary *dict = @{@"id"	: message.identifierSuffix,
-//												   @"owner_member"		: @{@"id"	: message.sentByUserID,
-//																			@"name"	: message.sentByUserID},
-//												   @"img"				: message.identifier,
-//												   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
-//												   @"net_vote_score"	: @(0),
-//												   @"added"				: message.sentAt,
-//												   @"updated"			: message.sentAt};
-//							
-//							[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
-//						}];
-						
+//						for (int i=0; i<queryController.numberOfSections; i++) {
+//							for (int j=0; j<[queryController numberOfObjectsInSection:i]; j++) {
+//								[_replies addObject:[HONCommentVO commentWithMessage:(LYRMessage *)[queryController objectAtIndexPath:[NSIndexPath indexPathForRow:j inSection:i]]]];
+					
+								
+//								LYRMessage *message = (LYRMessage *)[queryController objectAtIndexPath:[NSIndexPath indexPathForRow:j inSection:i]];
+//								LYRMessagePart *messagePart = [message.parts firstObject];
+//								
+//								NSDictionary *dict = @{@"id"				: message.identifierSuffix,
+//													   @"owner_member"		: @{@"id"	: message.sentByUserID,
+//																				@"name"	: message.sentByUserID},
+//													   @"img"				: message.identifier,
+//													   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
+//													   @"net_vote_score"	: @(0),
+//													   @"added"				: [message.sentAt formattedISO8601StringUTC],
+//													   @"updated"			: [message.sentAt formattedISO8601StringUTC]};
+//								
+//								[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
+//							}
+//						}
+					
 						_statusUpdateVO.replies = [_replies copy];
-					}
+//					}
 					
 					[self _didFinishDataRefresh];
 				}];
@@ -283,16 +270,16 @@
 }
 
 - (void)_goReloadContent {
-//	[_commentsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONCommentItemView *view = (HONCommentItemView *)obj;
-//		[view removeFromSuperview];
-//	}];
+	[_commentsHolderView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONCommentItemView *view = (HONCommentItemView *)obj;
+		[view removeFromSuperview];
+	}];
 	
 	_commentsHolderView.frame = CGRectResizeHeight(_commentsHolderView.frame, 0.0);
 	_scrollView.contentSize = CGRectResizeHeight(_scrollView.frame, 0.0).size;
 	
 	_retrievedReplies = [NSMutableArray array];
-//	_replies = [NSMutableArray array];
+	_replies = [NSMutableArray array];
 	
 	[self _retrieveStatusUpdate];
 }
@@ -300,45 +287,6 @@
 - (void)_didFinishDataRefresh {
 	if ([_refreshControl isRefreshing])
 		[_refreshControl endRefreshing];
-	
-//	__block NSMutableArray *participants = [NSMutableArray arrayWithObject:NSStringFromInt(_statusUpdateVO.userID)];
-//	[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONCommentVO *vo = (HONCommentVO *)obj;
-//		[participants addObject:NSStringFromInt(vo.userID)];
-//	}];
-//	
-//	_conversation = [[HONLayerKitAssistant sharedInstance] conversationWithParticipants:[participants copy]];
-//
-	
-	
-//	LYRQuery *query2 = [LYRQuery queryWithClass:[LYRConversation class]];
-//	//query2.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:NSStringFromInt(_statusUpdateVO.userID)];
-//	
-//	NSError *error;
-//	NSOrderedSet *conversations = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:query2 error:&error];
-//	if (!error) {
-//		NSLog(@"(%d) %@", conversations.count, conversations);
-//	} else {
-//		NSLog(@"Query failed with error %@", error);
-//	}
-	
-	
-//	NSError *error;
-//	LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-//	query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
-//	_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:query error:&error] firstObject];
-//	
-//	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation, _conversation.metadata);
-//	
-//	if (!error) {
-//		if ([_conversation.participants containsObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])])
-//		[[HONLayerKitAssistant sharedInstance] addParticipants:@[NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])] toConversation:_conversation withCompletion:^(BOOL success, NSError *error) {
-//			if (!success) {
-//				NSLog(@"Couldn't add me self to the convo!");
-//			}
-//		}];
-//	}
-	
 	
 	[_creatorView refreshScore];
 	[self _makeComments];

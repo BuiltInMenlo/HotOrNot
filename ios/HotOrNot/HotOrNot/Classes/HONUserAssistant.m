@@ -7,6 +7,7 @@
 //
 
 #import "NSArray+Random.h"
+#import "NSUserDefaults+Replacements.h"
 
 #import "HONUserAssistant.h"
 
@@ -103,6 +104,36 @@ static HONUserAssistant *sharedInstance = nil;
 		if (completion)
 			completion(@(score));
 	}];
+}
+
+- (NSString *)avatarURLForUserID:(int)userID {
+	NSString *key = [NSString stringWithFormat:@"member_%d", userID];
+	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"users"] mutableCopy];
+	
+	if (![dict hasObjectForKey:key]) {
+		[dict setObject:@{@"id"			: @(userID),
+							@"username"	: @"",
+							@"avatar"	: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
+		[[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"users"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	return ([[dict objectForKey:key] objectForKey:@"avatar"]);
+}
+
+- (NSString *)usernameForUserID:(int)userID {
+	NSString *key = [NSString stringWithFormat:@"member_%d", userID];
+	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"users"] mutableCopy];
+	
+	if (![dict hasObjectForKey:key]) {
+		[dict setObject:@{@"id"			: @(userID),
+						  @"username"	: @"",
+						  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
+		[[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"users"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	return ([[dict objectForKey:key] objectForKey:@"username"]);
 }
 
 

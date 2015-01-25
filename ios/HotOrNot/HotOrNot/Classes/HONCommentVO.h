@@ -6,11 +6,14 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <LayerKit/LayerKit.h>
+
 #import "HONClubPhotoVO.h"
 
 @interface HONCommentVO : NSObject
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary;
 + (HONCommentVO *)commentWithClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
++ (HONCommentVO *)commentWithMessage:(LYRMessage *)message;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;

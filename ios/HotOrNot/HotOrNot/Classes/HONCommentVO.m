@@ -22,8 +22,8 @@
 	vo.dictionary = dictionary;
 	
 	vo.commentID = [[dictionary objectForKey:@"id"] intValue];
-	vo.messageID = ([dictionary objectForKey:@"msg_id"] != nil) ? [dictionary objectForKey:@"msg_id"] : @"";
-	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
+	vo.messageID = ([dictionary objectForKey:@"msg_id"] != nil) ? [dictionary objectForKey:@"msg_id"] : [dictionary objectForKey:@"id"];
+	vo.clubID = ([dictionary objectForKey:@"msg_id"] != nil) ? [[dictionary objectForKey:@"club_id"] intValue] : [[HONClubAssistant sharedInstance] globalClub].clubID;
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"user_id"] intValue];
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
@@ -74,6 +74,22 @@
 						   @"text"		: clubPhotoVO.comment,
 						   @"score"		: @(clubPhotoVO.score),
 						   @"added"		: [clubPhotoVO.addedDate formattedISO8601StringUTC]};
+	
+	return ([HONCommentVO commentWithDictionary:dict]);
+}
+
++ (HONCommentVO *)commentWithMessage:(LYRMessage *)message {
+	LYRMessagePart *messagePart = [message.parts firstObject];
+	
+	NSDictionary *dict = @{@"id"				: message.identifierSuffix,
+						   @"owner_member"		: @{@"id"	: message.sentByUserID,
+													@"name"	: message.sentByUserID},
+						   
+						   @"img"				: message.identifier,
+						   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
+						   @"net_vote_score"	: @(0),
+						   @"added"				: [message.sentAt formattedISO8601StringUTC],
+						   @"updated"			: [message.sentAt formattedISO8601StringUTC]};
 	
 	return ([HONCommentVO commentWithDictionary:dict]);
 }
