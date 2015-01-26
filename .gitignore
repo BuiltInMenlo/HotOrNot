@@ -13,24 +13,19 @@ php/api-shane/test/tumblr.o
 
 #-- bash --#
 bash/purge.log
+ios/_deploy/*
 
 #-- xcode --#
 *.xcuserdata*
 *.xcuserstate
-ios/HotOrNot/Obj-C Notes
-#// ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata
 
-ios/_deploy/*
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-*.xcworkspace
-!default.xcworkspace
-xcuserdata
-profile
-*.moved-aside
+#-- personal skratches / snipps --#
+notes
+ios/HotOrNot/_objc-notes/cert_stuff.txt
+ios/HotOrNot/_objc-notes/curl_calls.txt
+ios/HotOrNot/_objc-notes/infoplist_20140818.131000.txt
+ios/HotOrNot/_objc-notes/Layer MISC.txt
+ios/HotOrNot/_objc-notes/layer_id-token_JWT.json.txt
+ios/HotOrNot/_objc-notes/layer_keys.txt
+ios/HotOrNot/_objc-notes/Obj-C Stuff
+ios/HotOrNot/_objc-notes/RegEx.txt
