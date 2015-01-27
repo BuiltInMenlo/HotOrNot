@@ -1,26 +1,4 @@
 //
-//  NSCharacterSet+AdditionalSets.h
-//  HotOrNot
-//
-//  Created by BIM  on 11/24/14.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
-//
-
-@interface NSCharacterSet (AdditionalSets)
-+ (instancetype)invalidCharacterSet;
-+ (instancetype)invalidCharacterSetWithLetters;
-+ (instancetype)invalidCharacterSetWithNumbers;
-+ (instancetype)invalidCharacterSetWithPunctuation;
-
-+ (instancetype)characterSetCombiningStringChars:(NSString *)appendChars;
-+ (instancetype)characterSetExcludingStringChars:(NSString *)dropChars;
-
-
-- (NSCharacterSet *)addChars:(NSString *)appendChars;
-- (NSCharacterSet *)dropChars:(NSString *)excludeChars;
-
-@end
-//
 //  NSCharacterSet+AdditionalSets.m
 //  HotOrNot
 //
@@ -28,9 +6,9 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSCharacterSet+AdditionalSets.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
 
-@implementation NSCharacterSet (AdditionalSets)
+@implementation NSCharacterSet (BuiltInMenlo)
 
 + (instancetype)invalidCharacterSet {
 	return ([NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]]);

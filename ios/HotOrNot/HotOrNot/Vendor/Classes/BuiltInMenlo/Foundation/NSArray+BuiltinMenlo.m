@@ -1,27 +1,4 @@
 //
-//  NSArray+Additions.h
-//  HotOrNot
-//
-//  Created by BIM  on 1/23/15.
-//  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
-//
-
-@interface NSArray (Additions)
-//+ (instancetype)arrayWithIntersectArray:(NSArray *)array;
-//+ (instancetype)arrayWithUnionArray:(NSArray *)array;
-
-- (NSArray *)arrayWithIntersectArray:(NSArray *)otherArray;
-- (NSArray *)arrayWithUnionArray:(NSArray *)otherArray;
-@end
-
-@interface NSMutableArray (Additions)
-//+ (instancetype)arrayWithIntersectArray:(NSArray *)array;
-//+ (instancetype)arrayWithUnionArray:(NSArray *)array;
-
-- (void)intersectArray:(NSArray *)otherArray;
-- (void)unionArray:(NSArray *)otherArray;
-@end
-//
 //  NSArray+Additions.m
 //  HotOrNot
 //
@@ -29,9 +6,9 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSArray+Additions.h"
+#import "NSArray+BuiltinMenlo.h"
 
-@implementation NSArray (Additions)
+@implementation NSArray (BuiltInMenlo)
 //+ (instancetype)arrayWithIntersectArray:(NSArray *)array {
 //	NSMutableArray *intersectArray = [[NSMutableArray arrayWithArray:self];
 //	return ([intersectArray intersectArray:array]);
@@ -42,37 +19,32 @@
 //}
 
 
-- (NSArray *)arrayWithIntersectArray:(NSArray *)otherArray {
-	NSMutableSet *orgSet = [[NSMutableSet alloc] initWithArray:self];
-	NSSet *otherSet = [[NSSet alloc] initWithArray:otherArray];
-	
-	[orgSet intersectSet:otherSet];
-	
-	for (id symbol in orgSet) {
-		NSLog(@"%@", symbol);
-	}
-	
-	return ([orgSet allObjects]);
-}
+//- (NSArray *)arrayWithIntersectArray:(NSArray *)otherArray {
+//	NSMutableSet *orgSet = [[NSMutableSet alloc] initWithArray:self];
+//	NSSet *otherSet = [[NSSet alloc] initWithArray:otherArray];
+//	
+//	[orgSet intersectSet:otherSet];
+//	
+//	for (id symbol in orgSet) {
+//		NSLog(@"%@", symbol);
+//	}
+//	
+//	return ([orgSet allObjects]);
+//}
+//
+//- (NSArray *)arrayWithUnionArray:(NSArray *)otherArray {
+//	NSMutableSet *orgSet = [[NSMutableSet alloc] initWithArray:self];
+//	NSSet *otherSet = [[NSSet alloc] initWithArray:otherArray];
+//	
+//	[orgSet unionSet:otherSet];
+//	
+//	for (id symbol in orgSet) {
+//		NSLog(@"%@",symbol);
+//	}
+//	
+//	return ([orgSet allObjects]);
+//}
 
-- (NSArray *)arrayWithUnionArray:(NSArray *)otherArray {
-	NSMutableSet *orgSet = [[NSMutableSet alloc] initWithArray:self];
-	NSSet *otherSet = [[NSSet alloc] initWithArray:otherArray];
-	
-	[orgSet unionSet:otherSet];
-	
-	for (id symbol in orgSet) {
-		NSLog(@"%@",symbol);
-	}
-	
-	return ([orgSet allObjects]);
-}
-
-@end
-
-
-
-@implementation NSMutableArray (Additions)
 //+ (instancetype)arrayWithIntersectArray:(NSArray *)array {
 //	
 //}
@@ -90,41 +62,27 @@
 //	
 //}
 
-
-- (void)intersectArray:(NSArray *)otherArray {
-	[[self arrayWithIntersectArray:otherArray] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if (![self containsObject:obj])
-			[self removeObject:obj];
-	}];
+- (id)randomElement {
+	return ([self objectAtIndex:(arc4random() % [self count])]);
 }
 
-- (void)unionArray:(NSArray *)otherArray {
-	[self addObjectsFromArray:[self arrayWithUnionArray:otherArray]];
-}
-
-@end//
-//  NSArray+Random.h
-//  HotOrNot
-//
-//  Created by BIM  on 9/12/14.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
-//
-
-@interface NSArray (Random)
-- (NSArray *)randomize;
-- (id)randomElement;
 @end
-//
-//  NSArray+Random.m
-//  HotOrNot
-//
-//  Created by BIM  on 9/12/14.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
-//
 
-#import "NSArray+Random.h"
 
-@implementation NSArray (Random)
+
+
+@implementation NSMutableArray (BuiltInMenlo)
+//- (void)intersectArray:(NSArray *)otherArray {
+//	[[self arrayWithIntersectArray:otherArray] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		if (![self containsObject:obj])
+//			[self removeObject:obj];
+//	}];
+//}
+//
+//- (void)unionArray:(NSArray *)otherArray {
+//	[self addObjectsFromArray:[self arrayWithUnionArray:otherArray]];
+//}
+
 
 - (NSArray *)randomize {
 	NSMutableArray *rnd = [NSMutableArray arrayWithCapacity:[self count]];

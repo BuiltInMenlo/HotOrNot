@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "grayChatBackground@2x.png"
+      "filename" : "whiteBubble@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "grayChatBackground@2x-1.png"
+      "filename" : "whiteBubble@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "grayChatBackground@2x-2.png"
+      "filename" : "whiteBubble@2x-2.png"
     }
   ],
   "info" : {

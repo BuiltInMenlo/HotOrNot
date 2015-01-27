@@ -9,10 +9,10 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSCharacterSet+AdditionalSets.h"
-#import "NSDate+Operations.h"
-#import "NSMutableDictionary+Replacements.h"
-#import "NSString+Formatting.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "Flurry.h"

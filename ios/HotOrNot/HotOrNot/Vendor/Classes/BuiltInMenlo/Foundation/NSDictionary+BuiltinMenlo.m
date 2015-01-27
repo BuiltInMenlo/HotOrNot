@@ -1,62 +1,4 @@
 //
-//  NSDictionary+Replacements.h
-//  HotOrNot
-//
-//  Created by BIM  on 10/30/14.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
-//
-
-@interface NSDictionary (KeyPath)
-- (id)objectForKeyPathArray:(NSArray *)keyPathArray;
-- (id)objectForKeyPath:(NSString *)keyPath;
-@end
-
-@interface NSDictionary (Replacements)
-- (id)defaultValue:(id)object forKey:(NSString *)key;
-- (BOOL)hasObjectForKey:(NSString *)key;
-- (void)removeObjectForKey:(NSString *)key;
-- (void)replaceObject:(id)object forKey:(NSString *)key;
-- (void)swapObjectForKey:(NSString *)keyA withKey:(NSString *)keyB;
-@end
-
-
-
-@interface NSMutableDictionary (KeyPath)
-- (void)setObject:(id)value forKeyPath:(NSString *)keyPath;
-- (void)setObject:(id)value forKeyPathArray:(NSArray *)keyPathArray;
-@end
-
-@interface NSMutableDictionary (BuiltInMenlo)
-- (id)defaultValue:(id)object forKey:(NSString *)key;
-- (BOOL)hasObjectForKey:(NSString *)key;
-- (id)objectForKeyPath:(NSString *)keyPath;
-- (id)objectForKeyPathArray:(NSArray *)keyPathArray;
-- (void)removeObjectForKey:(NSString *)key;
-- (void)replaceObject:(id)object forKey:(NSString *)key;
-- (void)swapObjectForKey:(NSString *)keyA withObjectForKey:(NSString *)keyB;
-- (void)addObjects:(NSArray *)objects withKeys:(NSArray *)keys;
-- (void)purgeObjectsWithKeys:(NSArray *)keys;
-- (void)replaceObjects:(NSArray *)objects withKeys:(NSArray *)keys;
-@end
-
-
-@interface NSUserDefaults (KeyPath)
-- (void)setObject:(id)value forKeyPath:(NSString *)keyPath;
-- (void)setObject:(id)value forKeyPathArray:(NSArray *)keyPathArray;
-@end
-
-@interface NSUserDefaults (BuiltInMenlo)
-- (id)defaultValue:(id)object forKey:(NSString *)key;
-- (BOOL)hasObjectForKey:(NSString *)key;
-- (void)removeObjectForKey:(NSString *)key;
-- (void)replaceObject:(id)object forKey:(NSString *)key;
-- (void)swapObjectForKey:(NSString *)keyA withObjectForKey:(NSString *)keyB;
-- (void)addObjects:(NSArray *)objects withKeys:(NSArray *)keys;
-- (void)purgeObjectsWithKeys:(NSArray *)keys;
-- (void)replaceObjects:(NSArray *)objects withKeys:(NSArray *)keys;
-@end
-
-//
 //  NSDictionary+Replacements.m
 //  HotOrNot
 //
@@ -64,12 +6,9 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDictionary+Replacements.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
-@implementation NSDictionary (KeyPath)
-@end
-
-@implementation NSDictionary (Replacements)
+@implementation NSDictionary (BuiltInMenlo)
 
 - (id)defaultValue:(id)object forKey:(NSString *)key {
 	if (![self hasObjectForKey:key])
@@ -139,15 +78,9 @@
 	
 	return (currentContainer);
 }
-
 @end
 
-
-
-@implementation NSMutableDictionary (KeyPath)
-@end
-
-@implementation NSMutableDictionary (BuiltinMenlo)
+@implementation NSMutableDictionary (BuiltInMenlo)
 
 - (BOOL)hasObjectForKey:(NSString *)key {
 	return ([self objectForKey:key] != nil);
@@ -167,7 +100,7 @@
 }
 
 - (void)replaceObject:(id)object forKey:(NSString *)key {
-	if ([self hasObjectForKey:key])
+	if ([self hasObjectForKey:key])  
 		[self removeObjectForKey:key];
 	
 	[self setValue:object forKey:key];
@@ -201,16 +134,14 @@
 @end
 
 
-@implementation NSUserDefaults (KeyPath)
-@end
+@implementation NSUserDefaults (BuiltInMenlo)
 
-@implementation NSUserDefaults (Replacements)
-- (BOOL)hasObjectForKeyPath:(NSString *)keyPath {
-	NSArray *keyPaths = [keyPath componentsSeparatedByString:@"."];
-	NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectDictionary];
-	
-	return ([dict objectForKeyPathArray:keyPaths]);
-}
+//- (BOOL)hasObjectForKeyPath:(NSString *)keyPath {
+//	NSArray *keyPaths = [keyPath componentsSeparatedByString:@"."];
+//	NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectDictionary];
+//	
+//	return ([dict objectForKeyPathArray:keyPaths]);
+//}
 
 - (id)defaultValue:(id)object forKey:(NSString *)key {
 	if ([self objectForKey:key] == nil)
@@ -219,7 +150,13 @@
 	return ([self objectForKey:key]);
 }
 
-- (void)removeObjectForKey:(NSString *)key {
+
+- (BOOL)hasObjectForKey:(NSString *)key {
+	return ([self objectForKey:key] != nil);
+}
+
+
+- (void)purgeObjectForKey:(NSString *)key {
 	if ([self objectForKey:key] != nil) {
 		[self removeObjectForKey:key];
 	}

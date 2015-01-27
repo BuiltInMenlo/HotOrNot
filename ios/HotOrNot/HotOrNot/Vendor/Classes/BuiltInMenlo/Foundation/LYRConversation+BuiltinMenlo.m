@@ -1,26 +1,4 @@
 //
-//  LYRConversation+Additions.h
-//  HotOrNot
-//
-//  Created by BIM  on 1/23/15.
-//  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
-//
-
-#import <LayerKit/LayerKit.h>
-
-@interface LYRConversation (Additions)
-- (NSString *)identifierSuffix;
-- (int)creatorID;
-- (NSString *)creatorName;
-- (NSString *)creatorAvatarPrefix;
-- (NSString *)toString;
-@end
-
-@interface LYRMessage (Additions)
-- (NSString *)identifierSuffix;
-- (NSString *)toString;
-@end
-//
 //  LYRConversation+Additions.m
 //  HotOrNot
 //
@@ -28,11 +6,11 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
+#import "NSDate+BuiltInMenlo.h"
 
-#import "LYRConversation+Additions.h"
+#import "LYRConversation+BuiltInMenlo.h"
 
-@implementation LYRConversation (Additions)
+@implementation LYRConversation (BuiltInMenlo)
 
 - (NSString *)identifierSuffix {
 	return ([[self.identifier.absoluteString componentsSeparatedByString:@"/"] lastObject]);
@@ -51,17 +29,17 @@
 }
 
 - (NSString *)toString {
-	NSMutableString *string = [NSMutableString stringWithFormat:@".identifier		: %@", self.identifier];
-	[string appendFormat:@".identifierSuffix	: %@", self.identifierSuffix];
-	[string appendFormat:@".creatorID		: %d", self.creatorID];
-	[string appendFormat:@".creatorName			: %@", self.creatorName];
-	[string appendFormat:@".creatorAvatarPrefix	: %@", self.creatorAvatarPrefix];
-	[string appendFormat:@".participants	: %@", self.participants];
-	[string appendFormat:@".lastMessage		: %@", self.lastMessage];
-	[string appendFormat:@".hasUnreadMessages	: %@", NSStringFromBOOL(self.hasUnreadMessages)];
-	[string appendFormat:@".isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
-	[string appendFormat:@".createdAt		: %@", [self.createdAt formattedISO8601StringUTC]];
-	[string appendFormat:@".metadata		: %@", self.metadata];
+	NSMutableString *string = [NSMutableString stringWithFormat:@"\n.identifier		: %@", self.identifier];
+	[string appendFormat:@"\n.identifierSuffix	: %@", self.identifierSuffix];
+	[string appendFormat:@"\n.creatorID		: %d", self.creatorID];
+	[string appendFormat:@"\n.creatorName			: %@", self.creatorName];
+	[string appendFormat:@"\n.creatorAvatarPrefix	: %@", self.creatorAvatarPrefix];
+	[string appendFormat:@"\n.participants	: %@", self.participants];
+	[string appendFormat:@"\n.lastMessage		: %@", self.lastMessage];
+	[string appendFormat:@"\n.hasUnreadMessages	: %@", NSStringFromBOOL(self.hasUnreadMessages)];
+	[string appendFormat:@"\n.isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
+	[string appendFormat:@"\n.createdAt		: %@", [self.createdAt formattedISO8601StringUTC]];
+	[string appendFormat:@"\n.metadata		: %@", self.metadata];
 	
 	return (string);
 }
@@ -69,7 +47,7 @@
 @end
 
 
-@implementation LYRMessage (Additions)
+@implementation LYRMessage (BuiltInMenlo)
 
 - (NSString *)identifierSuffix {
 	return ([[self.identifier.absoluteString componentsSeparatedByString:@"/"] lastObject]);
@@ -83,138 +61,59 @@
 	return ([[HONUserAssistant sharedInstance] usernameForUserID:[self.sentByUserID intValue]]);
 }
 
-
 - (NSString *)creatorAvatarPrefix {
 	return ([[HONUserAssistant sharedInstance] avatarURLForUserID:[self.sentByUserID intValue]]);
 }
 
 - (NSString *)toString {
-	NSMutableString *string = [NSMutableString stringWithFormat:@".identifier		: %@", self.identifier];
-	[string appendFormat:@".identifierSuffix	: %@", self.identifierSuffix];
-	[string appendFormat:@".conversation		: %@", self.conversation.identifierSuffix];
-	[string appendFormat:@".creatorID			: %d", self.creatorID];
-	[string appendFormat:@".creatorName			: %@", self.creatorName];
-	[string appendFormat:@".creatorAvatarPrefix		: %@", self.creatorAvatarPrefix];
-	[string appendFormat:@".index			: %d", self.index];
-	[string appendFormat:@".parts			: %@", self.parts];
-	[string appendFormat:@".isSent			: %@", NSStringFromBOOL(self.isSent)];
-	[string appendFormat:@".isUnread		: %@", NSStringFromBOOL(self.isUnread)];
-	[string appendFormat:@".isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
-	[string appendFormat:@".sentAt			: %@", [self.sentAt formattedISO8601StringUTC]];
-	[string appendFormat:@".receivedAt		: %@", [self.receivedAt formattedISO8601StringUTC]];
-	[string appendFormat:@".recipientStatusByUserID		: %@", self.recipientStatusByUserID];
+	NSMutableString *string = [NSMutableString stringWithFormat:@"\n.identifier		: %@", self.identifier];
+	[string appendFormat:@"\n.identifierSuffix	: %@", self.identifierSuffix];
+	[string appendFormat:@"\n.conversation		: %@", self.conversation.identifierSuffix];
+	[string appendFormat:@"\n.creatorID			: %d", self.creatorID];
+	[string appendFormat:@"\n.creatorName			: %@", self.creatorName];
+	[string appendFormat:@"\n.creatorAvatarPrefix		: %@", self.creatorAvatarPrefix];
+	[string appendFormat:@"\n.index			: %d", self.index];
+	[string appendFormat:@"\n.parts			: %@", self.parts];
+	[string appendFormat:@"\n.isSent			: %@", NSStringFromBOOL(self.isSent)];
+	[string appendFormat:@"\n.isUnread		: %@", NSStringFromBOOL(self.isUnread)];
+	[string appendFormat:@"\n.isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
+	[string appendFormat:@"\n.sentAt			: %@", [self.sentAt formattedISO8601StringUTC]];
+	[string appendFormat:@"\n.receivedAt		: %@", [self.receivedAt formattedISO8601StringUTC]];
+	[string appendFormat:@"\n.recipientStatusByUserID		: %@", self.recipientStatusByUserID];
 	
 	return (string);
 }
 
 @end
-//
-//  LYRConversation+Additions.h
-//  HotOrNot
-//
-//  Created by BIM  on 1/23/15.
-//  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
-//
 
-#import <LayerKit/LayerKit.h>
 
-@interface LYRConversation (Additions)
-- (NSString *)identifierSuffix;
-- (int)creatorID;
-- (NSString *)creatorName;
-- (NSString *)creatorAvatarPrefix;
-- (NSString *)toString;
-@end
 
-@interface LYRMessage (Additions)
-- (NSString *)identifierSuffix;
-- (NSString *)toString;
-@end
-//
-//  LYRConversation+Additions.m
-//  HotOrNot
-//
-//  Created by BIM  on 1/23/15.
-//  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
-//
-
-#import "NSDate+Operations.h"
-
-#import "LYRConversation+Additions.h"
-
-@implementation LYRConversation (Additions)
-
-- (NSString *)identifierSuffix {
-	return ([[self.identifier.absoluteString componentsSeparatedByString:@"/"] lastObject]);
+@implementation LYRMessagePart (BuiltInMenlo)
+- (NSString *)textContent {
+	return (([self.MIMEType isEqualToString:kMIMETypeTextPlain]) ? [[NSString alloc] initWithData:self.data encoding:NSUTF8StringEncoding] : nil);
 }
 
-- (int)creatorID {
-	return (([self.metadata objectForKey:@"creator_id"] != nil) ? [[self.metadata objectForKey:@"creator_id"] intValue] : 0);
+- (UIImage *)imageContent {
+	return (([self.MIMEType isEqualToString:kMIMETypeImagePNG])? [UIImage imageWithData:self.data] : nil);
 }
 
-- (NSString *)creatorName {
-	return (([self.metadata objectForKey:@"creator_name"] != nil) ? [self.metadata objectForKey:@"creator_name"] : [[HONUserAssistant sharedInstance] usernameForUserID:self.creatorID]);
-}
-
-- (NSString *)creatorAvatarPrefix {
-	return ([[HONUserAssistant sharedInstance] avatarURLForUserID:self.creatorID]);
+- (NSString *)dbIdentifier {
+	NSError *error = nil;
+	NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:self.JSONData options:0 error:&error];
+	
+	return ([dict objectForKey:@"databaseIdentifier"]);
 }
 
 - (NSString *)toString {
-	NSMutableString *string = [NSMutableString stringWithFormat:@".identifier		: %@", self.identifier];
-	[string appendFormat:@".identifierSuffix	: %@", self.identifierSuffix];
-	[string appendFormat:@".creatorID		: %d", self.creatorID];
-	[string appendFormat:@".creatorName			: %@", self.creatorName];
-	[string appendFormat:@".creatorAvatarPrefix	: %@", self.creatorAvatarPrefix];
-	[string appendFormat:@".participants	: %@", self.participants];
-	[string appendFormat:@".lastMessage		: %@", self.lastMessage];
-	[string appendFormat:@".hasUnreadMessages	: %@", NSStringFromBOOL(self.hasUnreadMessages)];
-	[string appendFormat:@".isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
-	[string appendFormat:@".createdAt		: %@", [self.createdAt formattedISO8601StringUTC]];
-	[string appendFormat:@".metadata		: %@", self.metadata];
+	NSMutableString *string = [NSMutableString stringWithFormat:@"\n.MIMEType		: %@", self.MIMEType];
+	[string appendFormat:@"\n.data		: %@", self.data];
+	[string appendFormat:@"\n.base64	: %@", [self.data base64EncodedStringWithOptions:0]];
+	[string appendFormat:@"\n.textContent	: %@", self.textContent];
+	[string appendFormat:@"\n.imageContent	: %@", self.imageContent];
+	[string appendFormat:@"\n.JSONString	: %@", self.JSONString];
 	
 	return (string);
 }
 
 @end
 
-
-@implementation LYRMessage (Additions)
-
-- (NSString *)identifierSuffix {
-	return ([[self.identifier.absoluteString componentsSeparatedByString:@"/"] lastObject]);
-}
-
-- (int)creatorID {
-	return ([self.sentByUserID intValue]);
-}
-
-- (NSString *)creatorName {
-	return ([[HONUserAssistant sharedInstance] usernameForUserID:[self.sentByUserID intValue]]);
-}
-
-
-- (NSString *)creatorAvatarPrefix {
-	return ([[HONUserAssistant sharedInstance] avatarURLForUserID:[self.sentByUserID intValue]]);
-}
-
-- (NSString *)toString {
-	NSMutableString *string = [NSMutableString stringWithFormat:@".identifier		: %@", self.identifier];
-	[string appendFormat:@".identifierSuffix	: %@", self.identifierSuffix];
-	[string appendFormat:@".conversation		: %@", self.conversation.identifierSuffix];
-	[string appendFormat:@".creatorID			: %d", self.creatorID];
-	[string appendFormat:@".creatorName			: %@", self.creatorName];
-	[string appendFormat:@".creatorAvatarPrefix		: %@", self.creatorAvatarPrefix];
-	[string appendFormat:@".index			: %d", self.index];
-	[string appendFormat:@".parts			: %@", self.parts];
-	[string appendFormat:@".isSent			: %@", NSStringFromBOOL(self.isSent)];
-	[string appendFormat:@".isUnread		: %@", NSStringFromBOOL(self.isUnread)];
-	[string appendFormat:@".isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
-	[string appendFormat:@".sentAt			: %@", [self.sentAt formattedISO8601StringUTC]];
-	[string appendFormat:@".receivedAt		: %@", [self.receivedAt formattedISO8601StringUTC]];
-	[string appendFormat:@".recipientStatusByUserID		: %@", self.recipientStatusByUserID];
-	
-	return (string);
-}
-
-@end

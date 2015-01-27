@@ -11,7 +11,7 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "UIImage+fixOrientation.h"
+#import "UIImage+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 
 

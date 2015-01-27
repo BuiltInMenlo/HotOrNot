@@ -6,11 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSCharacterSet+AdditionalSets.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+Operations.h"
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+BoundingRect.h"
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
 
 #import "PicoSticker.h"
 

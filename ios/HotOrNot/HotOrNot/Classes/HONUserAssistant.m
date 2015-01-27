@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSArray+Random.h"
-#import "NSUserDefaults+Replacements.h"
+#import "NSArray+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
 #import "HONUserAssistant.h"
 

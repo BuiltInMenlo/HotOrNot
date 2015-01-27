@@ -6,10 +6,9 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
-#import "UILabel+BoundingRect.h"
-#import "UILabel+FormattedText.h"
+#import "NSDate+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
+#import "UILabel+BuiltinMenlo.h"
 
 #import "HONActivityItemViewCell.h"
 #import "HONImageLoadingView.h"

@@ -8,8 +8,8 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#import "NSDate+Operations.h"
-#import "NSUserDefaults+Replacements.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"

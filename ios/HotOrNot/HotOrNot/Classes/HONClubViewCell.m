@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
+#import "NSDate+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
 
 #import "FLAnimatedImage.h"
 #import "FLAnimatedImageView.h"

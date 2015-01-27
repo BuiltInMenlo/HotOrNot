@@ -7,7 +7,7 @@
 //
 
 #import "MBProgressHUD.h"
-#import "UIImage+ImageEffects.h"
+#import "UIImage+BuiltinMenlo.h"
 
 #import "HONTabBarController.h"
 #import "HONChallengeVO.h"

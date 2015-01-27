@@ -9,12 +9,12 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSCharacterSet+AdditionalSets.h"
-#import "NSDate+Operations.h"
-#import "NSString+Formatting.h"
-#import "UIImage+fixOrientation.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "UIImage+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "ImageFilter.h"
 #import "KeychainItemWrapper.h"

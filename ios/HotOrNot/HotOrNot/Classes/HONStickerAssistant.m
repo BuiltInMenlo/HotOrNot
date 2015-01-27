@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSUserDefaults+Replacements.h"
+#import "NSDictionary+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "NHThreadThis.h"

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSString+Formatting.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "MBProgressHUD.h"
 #import "KeychainItemWrapper.h"

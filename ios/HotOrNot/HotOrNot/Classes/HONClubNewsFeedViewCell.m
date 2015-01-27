@@ -8,11 +8,10 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "NSDate+Operations.h"
+#import "NSDate+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+BoundingRect.m"
-#import "UILabel+FormattedText.h"
-#import "UIView+ReverseSubviews.h"
+#import "UILabel+BuiltinMenlo.h"
+#import "UIView+BuiltinMenlo.h"
 
 #import "HONClubNewsFeedViewCell.h"
 #import "HONImageLoadingView.h"

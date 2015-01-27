@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
-#import "NSString+Formatting.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "HONContactUserVO.h"
 

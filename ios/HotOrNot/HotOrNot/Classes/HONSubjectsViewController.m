@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
-#import "NSMutableDictionary+Replacements.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
 #import "HONSubjectsViewController.h"
 #import "HONSubjectViewCell.h"

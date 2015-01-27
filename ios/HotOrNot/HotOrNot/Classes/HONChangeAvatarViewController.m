@@ -10,8 +10,7 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "UIImage+fixOrientation.h"
-#import "UIImage+ImageEffects.h"
+#import "UIImage+BuiltinMenlo.h"
 
 #import "ImageFilter.h"
 

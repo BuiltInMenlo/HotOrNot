@@ -6,9 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "UIImage+fixOrientation.h"
-#import "UIImage+ImageEffects.h"
-#import "UIImage+Pixels.h"
+#import "UIImage+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "AFImageRequestOperation.h"

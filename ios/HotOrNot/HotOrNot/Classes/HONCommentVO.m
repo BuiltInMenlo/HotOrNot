@@ -6,8 +6,9 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSDate+Operations.h"
-#import "NSUserDefaults+Replacements.h"
+#import "LYRConversation+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
 #import "HONCommentVO.h"
 
@@ -15,7 +16,7 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, messageID, clubID, parentID, userID, username, avatarPrefix, score, textContent, addedDate;
+@synthesize commentID, messageID, clubID, parentID, userID, username, avatarPrefix, commentStatusType, score, textContent, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
@@ -26,6 +27,13 @@
 	vo.clubID = ([dictionary objectForKey:@"msg_id"] != nil) ? [[dictionary objectForKey:@"club_id"] intValue] : [[HONClubAssistant sharedInstance] globalClub].clubID;
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"user_id"] intValue];
+	
+	vo.commentStatusType = HONCommentStatusTypeUnknown;
+	if ([dictionary objectForKey:@"status"] != nil) {
+		LYRRecipientStatus status = (LYRRecipientStatus)[[dictionary objectForKey:@"status"] intValue];
+		vo.commentStatusType = (status == LYRRecipientStatusSent) ? HONCommentStatusTypeSent : (status == LYRRecipientStatusDelivered) ? HONCommentStatusTypeDelivered : (status == LYRRecipientStatusRead) ? HONCommentStatusTypeSeen : HONCommentStatusTypeUnknown;
+	}
+	
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : [[HONUserAssistant sharedInstance] rndAvatarURL];
 	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"N/A";
@@ -81,6 +89,9 @@
 + (HONCommentVO *)commentWithMessage:(LYRMessage *)message {
 	LYRMessagePart *messagePart = [message.parts firstObject];
 	
+//	NSLog(@"commentWithMessage:%@", [message toString]);
+//	NSLog(@"commentWithMessage.part:%@", [messagePart toString]);
+	
 	NSDictionary *dict = @{@"id"				: message.identifierSuffix,
 						   @"owner_member"		: @{@"id"	: message.sentByUserID,
 													@"name"	: message.sentByUserID},
@@ -88,8 +99,11 @@
 						   @"img"				: message.identifier,
 						   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
 						   @"net_vote_score"	: @(0),
-						   @"added"				: [message.sentAt formattedISO8601StringUTC],
-						   @"updated"			: [message.sentAt formattedISO8601StringUTC]};
+						   @"status"			: NSStringFromInt((int)[[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]),
+						   @"added"				: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601],
+						   @"updated"			: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601]};
+	
+	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
 	
 	return ([HONCommentVO commentWithDictionary:dict]);
 }

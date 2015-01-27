@@ -22,11 +22,11 @@
 //#import <Tapjoy/Tapjoy.h>
 #import "Flurry.h"
 
-#import "NSCharacterSet+AdditionalSets.h"
-#import "NSData+Base64.h"
-#import "NSDate+Operations.h"
-#import "NSString+Base64.h"
-#import "NSUserDefaults+Replacements.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
+#import "NSData+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"

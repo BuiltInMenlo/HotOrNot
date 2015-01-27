@@ -7,8 +7,7 @@
 //
 
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+BoundingRect.h"
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
 
 #import "PicoSticker.h"
 

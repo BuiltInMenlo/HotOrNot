@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONInsetOverlayView.h"

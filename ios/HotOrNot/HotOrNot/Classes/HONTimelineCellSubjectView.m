@@ -8,7 +8,7 @@
 
 
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
 
 #import "HONTimelineCellSubjectView.h"
 #import "HONEmotionVO.h"

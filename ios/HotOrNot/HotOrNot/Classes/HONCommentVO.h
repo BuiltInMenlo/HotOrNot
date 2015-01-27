@@ -10,6 +10,16 @@
 
 #import "HONClubPhotoVO.h"
 
+
+typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
+	HONCommentStatusTypeUnknown = 0,
+	HONCommentStatusTypeSent,
+	HONCommentStatusTypeDelivered,
+	HONCommentStatusTypeSeen,
+	HONCommentStatusTypeDeleted
+};
+
+
 @interface HONCommentVO : NSObject
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary;
 + (HONCommentVO *)commentWithClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
@@ -17,6 +27,7 @@
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;
+@property (nonatomic) HONCommentStatusType commentStatusType;
 @property (nonatomic, retain) NSString *messageID;
 @property (nonatomic) int parentID;
 @property (nonatomic) int clubID;

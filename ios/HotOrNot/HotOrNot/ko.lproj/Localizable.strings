@@ -67,6 +67,7 @@
 "flagged_post" = "このポストは削除フラグが立てられています。";
 
 // compose
+"custom_topic" = "Enter custom";
 "say_something" = "何か言う…";
 "pixelate_tool" = "モザイクツールを使えば自分が誰か、何をしているかを隠せます。";
 

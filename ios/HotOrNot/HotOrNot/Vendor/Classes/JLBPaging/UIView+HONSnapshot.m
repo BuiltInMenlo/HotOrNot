@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIImage+BuiltinMenlo.h"
 #import "UIView+HONSnapshot.h"
-#import "UIImage+ImageEffects.h"
 
 @implementation UIView (HONSnapshot)
 

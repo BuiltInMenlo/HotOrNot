@@ -10,7 +10,7 @@
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
-#import "UIImage+ImageEffects.h"
+#import "UIImage+BuiltinMenlo.h"
 
 #import "HONSnapPreviewViewController.h"
 #import "HONImageLoadingView.h"

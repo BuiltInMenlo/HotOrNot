@@ -6,10 +6,11 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSArray+Additions.h"
-#import "NSMutableDictionary+Replacements.h"
-#import "NSString+Formatting.h"
-#import "NSUserDefaults+Replacements.h"
+#import "LYRConversation+BuiltinMenlo.h"
+
+#import "NSArray+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "HONLayerKitAssistant.h"
 #import "HONTrivialUserVO.h"
@@ -173,7 +174,7 @@ static LYRClient *sharedClient = nil;
 			
 			[[NSNotificationCenter defaultCenter] addObserver:self
 													 selector:@selector(_LYRClientObjectsDidChangeNotification:)
-														 name:LYRClientDidAuthenticateNotification object:nil];
+														 name:LYRClientObjectsDidChangeNotification object:nil];
 			
 			[[NSNotificationCenter defaultCenter] addObserver:self
 													 selector:@selector(_LYRClientWillAttemptToConnectNotification:)
@@ -632,7 +633,28 @@ static LYRClient *sharedClient = nil;
 
 
 
-
+- (LYRRecipientStatus)latestRecipientStatusForMessage:(LYRMessage *)message {
+	
+	NSMutableDictionary *dict = [[message recipientStatusByUserID] mutableCopy];
+	if ([message creatorID] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+		[dict removeObjectForKey:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])];
+		
+		
+	NSArray *recipients = [dict keysSortedByValueUsingComparator:^(id obj1, id obj2) {
+		if ([obj1 intValue] > [obj2 intValue])
+			return ((NSComparisonResult)NSOrderedDescending);
+		
+		if ([obj1 intValue] < [obj2 intValue])
+			return ((NSComparisonResult)NSOrderedAscending);
+		
+		return ((NSComparisonResult)NSOrderedSame);
+	}];
+	
+	NSLog(@"LAST RECIPS:%d", (LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
+	return ((LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
+	
+//	return ((LYRRecipientStatus)[message recipientStatusForUserID:[recipients lastObject]]);
+}
 
 
 #pragma mark - Notifications
@@ -713,7 +735,7 @@ static LYRClient *sharedClient = nil;
  @param changes An array of `NSDictionary` objects, each one describing a change.
  */
 - (void)layerClient:(LYRClient *)client didFinishSynchronizationWithChanges:(NSArray *)changes  {
-	NSLog(@"[*:*] layerClient:didFinishSynchronizationWithChanges:[%@])", changes);
+//	NSLog(@"[*:*] layerClient:didFinishSynchronizationWithChanges:[%@])", changes);
 }
 
 /**
@@ -722,7 +744,7 @@ static LYRClient *sharedClient = nil;
  @param error An error describing the nature of the sync failure.
  */
 - (void)layerClient:(LYRClient *)client didFailSynchronizationWithError:(NSError *)error  {
-	NSLog(@"[*:*] layerClient:didFailSynchronizationWithError:[%@])", error);
+//	NSLog(@"[*:*] layerClient:didFailSynchronizationWithError:[%@])", error);
 }
 
 /**
@@ -732,7 +754,7 @@ static LYRClient *sharedClient = nil;
  @see LYRConstants.h
  */
 - (void)layerClient:(LYRClient *)client objectsDidChange:(NSArray *)changes {
-	NSLog(@"[*:*] layerClient:objectsDidChange:[%@])", changes);
+//	NSLog(@"[*:*] layerClient:objectsDidChange:[%@])", changes);
 }
 
 /**
@@ -741,7 +763,7 @@ static LYRClient *sharedClient = nil;
  @param error An error describing the nature of the operation failure.
  */
 - (void)layerClient:(LYRClient *)client didFailOperationWithError:(NSError *)error {
-	NSLog(@"[*:*] layerClient:didFailOperationWithError[%@])", error);
+//	NSLog(@"[*:*] layerClient:didFailOperationWithError[%@])", error);
 }
 
 

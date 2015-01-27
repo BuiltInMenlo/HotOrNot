@@ -67,6 +67,7 @@
 "flagged_post" = "This post has been flagged for removal.";
 
 // compose
+"custom_topic" = "Enter custom";
 "say_something" = "Say something…";
 "pixelate_tool" = "Use the pixelate tool to protect the identity who you are, or what you are doing.";
 

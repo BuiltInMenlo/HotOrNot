@@ -8,10 +8,10 @@
 
 #import <LayerKit/LayerKit.h>
 
-#import "LYRConversation+Additions.h"
-#import "NSCharacterSet+AdditionalSets.h"
-#import "NSDate+Operations.h"
-#import "NSMutableDictionary+Replacements.h"
+#import "LYRConversation+BuiltinMenlo.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
 #import "HONComposeSubjectViewController.h"
 #import "HONStatusUpdateVO.h"
@@ -88,8 +88,13 @@
 								   @"topic"			: [_submitParams objectForKey:@"topic_name"],
 								   @"subject"		: _selectedTopicVO.topicName};
 		
+		
+		NSMutableSet *set = [NSMutableSet setWithArray:participants];
+		[set minusSet:[NSSet setWithObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])]];
+		
+		
 		NSError *error;
-		LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:participants]
+		LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:set
 																												options:metaData
 																												  error:&error];
 		[conversation setValuesForMetadataKeyPathsWithDictionary:metaData merge:YES];
@@ -125,18 +130,18 @@
 				_progressHUD = nil;
 				
 			} else {
-				[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
-					if (!success) {
-						NSLog(@"Purging participants failed!\n%@", error);
-					}
-					
+//				[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
+//					if (!success) {
+//						NSLog(@"Purging participants failed!\n%@", error);
+//					}
+				
 					NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
 					[self _orphanSubmitOverlay];
 					
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 					}];
-				}];
+//				}];
 			}
 		}];
 	}];
@@ -172,7 +177,7 @@
 	[_customTopicTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_customTopicTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_customTopicTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_customTopicTextField.placeholder = NSLocalizedString(@"register_submit", @"Terms");
+	_customTopicTextField.placeholder = NSLocalizedString(@"custom_topic", @"Terms");
 	_customTopicTextField.delegate = self;
 	
 //	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -348,7 +353,7 @@
 	
 	
 	HONTopicViewCell *cell = (HONTopicViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	if ([[_submitParams objectForKey:@"topic_id"] intValue] == 4 && cell.indexPath.row == 0) {
+	if (cell.indexPath.row == 0) {
 		[self _goCustomTopic];
 		
 	} else {

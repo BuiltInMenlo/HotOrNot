@@ -20,7 +20,7 @@
 #include <sys/socket.h>
 #include <sys/sysctl.h>
 
-#import "NSUserDefaults+Replacements.h"
+#import "NSDictionary+BuiltinMenlo.h"
 
 #import "KeychainItemWrapper.h"
 #import "Reachability.h"

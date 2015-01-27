@@ -8,7 +8,7 @@
 
 #import <LayerKit/LayerKit.h>
 
-#import "LYRConversation+Additions.h"
+#import "LYRConversation+BuiltinMenlo.h"
 
 #import "HONStatusUpdateVO.h"
 
@@ -40,6 +40,9 @@
 - (void)addParticipants:(NSArray *)participants toConversation:(LYRConversation *)conversation withCompletion:(void (^)(BOOL success, NSError * error))completion;
 - (void)dropParticipants:(NSArray *)participants fromConversation:(LYRConversation *)conversation excludeActiveUser:(BOOL)excludeUser withCompletion:(void (^)(BOOL success, NSError * error))completion;
 - (void)purgeParticipantsFromConversation:(LYRConversation *)conversation includeOwner:(BOOL)isOwner withCompletion:(void (^)(BOOL success, NSError * error))completion;
+
+
+- (LYRRecipientStatus)latestRecipientStatusForMessage:(LYRMessage *)message;
 
 //- (LYRMessage *)composeTxtMsgWithContent:(NSString *)txtContent attachingRemotePushUserInfo:(NSDictionary *)userInfo;
 //- (LYRMessage *)composeMessageWithParts:(NSArray *)parts andDeliveringPushWithInfo:(NSDictionary *)userInfo;

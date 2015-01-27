@@ -8,7 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "UIImage+ImageEffects.h"
+#import "UIImage+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSelfieCameraPreviewView.h"

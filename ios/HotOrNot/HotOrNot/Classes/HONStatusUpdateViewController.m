@@ -8,12 +8,11 @@
 
 #import <LayerKit/LayerKit.h>
 
-#import "LYRConversation+Additions.h"
-#import "NSCharacterSet+AdditionalSets.h"
-#import "NSDate+Operations.h"
+#import "LYRConversation+BuiltinMenlo.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
-#import "UILabel+BoundingRect.h"
-#import "UILabel+FormattedText.h"
+#import "UILabel+BuiltinMenlo.h"
 
 #import "HONStatusUpdateViewController.h"
 #import "HONReplySubmitViewController.h"
@@ -121,13 +120,16 @@
 					msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
 					
 					NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
-					NSLog(@"QUERY:[%@] -=- %@\n%@", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", messages);
+					NSLog(@"QUERY:[%@] -=- %@\n%d", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", [messages count]);
 					
-					[messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
+					[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 						LYRMessage *message = (LYRMessage *)obj;
 						NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", idx, message.identifierSuffix, [message.sentAt formattedISO8601StringUTC], [message.receivedAt formattedISO8601StringUTC]);
 						[_replies addObject:[HONCommentVO commentWithMessage:message]];
 					}];
+					
+					[_conversation markAllMessagesAsRead:nil];
 					
 //					LYRQueryController *queryController = [[[HONLayerKitAssistant sharedInstance] client] queryControllerWithQuery:msgsQuery];
 //					BOOL success2 = [queryController execute:&error];
@@ -228,7 +230,10 @@
 	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
 	
 	_isSubmitting = NO;
-	[self _goReloadContent];
+	
+	
+//	if (success)
+//		[self _appendComment:[HONCommentVO commentWithMessage:message]];
 }
 
 - (void)_flagStatusUpdate {
@@ -351,7 +356,7 @@
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Disabled"] forState:UIControlStateDisabled];
-	[_submitCommentButton addTarget:self action:@selector(_goCommentToggle) forControlEvents:UIControlEventTouchUpInside];
+	[_submitCommentButton addTarget:self action:@selector(_goCommentFocus) forControlEvents:UIControlEventTouchUpInside];
 	[_inputBGImageView addSubview:_submitCommentButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -375,7 +380,7 @@
 	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_clientObjectsDidChangeNotification:)
-												 name:LYRClientDidAuthenticateNotification object:nil];
+												 name:LYRClientObjectsDidChangeNotification object:nil];
 	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
 	// --=#=--#=--#=-=#=-#=--=#--=#--=#=-- //
 	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
@@ -405,12 +410,9 @@
 }
 
 
-- (void)_goCommentToggle {
+- (void)_goCommentFocus {
 	if (![_commentTextField isFirstResponder])
 		[_commentTextField becomeFirstResponder];
-	
-	else
-		[_commentTextField resignFirstResponder];
 }
 
 - (void)_goCommentSubmit {
@@ -428,6 +430,15 @@
 	_commentTextField.text = @"";
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
+	
+	[UIView animateWithDuration:0.25
+					 animations:^(void) {
+						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight + 84.0);
+						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - 44.0);
+					 } completion:^(BOOL finished) {
+						 [_commentCloseButton removeFromSuperview];
+					 }];
 }
 
 
@@ -472,6 +483,57 @@
 
 - (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
 	NSLog (@"::|>_clientObjectsDidChangeNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
+	
+	NSArray *changes = [notification.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
+	for (NSDictionary *change in changes) {
+		LYRObjectChangeType updateKey = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+		
+		if ([[change objectForKey:LYRObjectChangeObjectKey] isKindOfClass:[LYRConversation class]]) {
+			// Object is a conversation
+		}
+		
+		if ([[change objectForKey:LYRObjectChangeObjectKey]isKindOfClass:[LYRMessage class]]) {
+			LYRMessage *message = (LYRMessage *)[change objectForKey:LYRObjectChangeObjectKey];
+			NSLog(@"Message Update:(%@) -=- %@", (updateKey == LYRObjectChangeTypeCreate) ? @"Create" : (updateKey == LYRObjectChangeTypeUpdate) ? @"Update" : (updateKey == LYRObjectChangeTypeDelete) ? @"Delete" : @"UNKNOWN", message.identifierSuffix);
+			
+			if (updateKey == LYRObjectChangeTypeCreate) {
+				[self _appendComment:[HONCommentVO commentWithMessage:message]];
+				
+			} else if (updateKey == LYRObjectChangeTypeUpdate) {
+				
+				__block int ind = -1;
+				[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					HONCommentVO *vo = (HONCommentVO *)obj;
+					
+					if ([vo.messageID isEqualToString:message.identifierSuffix]) {
+						ind = idx;
+						*stop = YES;
+					}
+				}];
+				
+				
+				if (ind > -1) {
+//					[NSMutableArray arrayWithArray:[[message recipientStatusByUserID]
+//													sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+//
+//
+					LYRRecipientStatus status = [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message];
+					
+					
+					NSLog(@"LAST STATUS:%d", [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]);
+					
+					HONCommentItemView *itemView = (HONCommentItemView *)[_commentsHolderView.subviews objectAtIndex:ind];
+					[itemView updateStatus:(status == LYRRecipientStatusSent) ? HONCommentStatusTypeSent : (status == LYRRecipientStatusDelivered) ? HONCommentStatusTypeDelivered : (status == LYRRecipientStatusRead) ? HONCommentStatusTypeSeen : HONCommentStatusTypeUnknown];
+				}
+					
+				
+				
+			} else if (updateKey == LYRObjectChangeTypeDelete) {
+				
+			}
+		}
+	}
+	
 }
 
 - (void)_conversationDidReceiveTypingIndicatorNotification:(NSNotification *)notification {
@@ -496,8 +558,33 @@
 		}];
 	}];
 	
-	if ([_replies count] > 4)
+	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
 		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
+}
+
+- (void)_appendComment:(HONCommentVO *)vo {
+	[_replies addObject:vo];
+	
+	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, 90.0);
+	_scrollView.contentSize = _commentsHolderView.frame.size;
+	
+//	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
+//		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentOffset.y - 90.0) + _scrollView.contentInset.bottom) animated:YES];
+	
+	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
+		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
+	
+	
+	HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, 33.0 + (90.0 * ([_replies count] - 1)), 320.0, 90.0)];
+	itemView.alpha = 0.0;
+	itemView.commentVO = vo;
+	[_commentsHolderView addSubview:itemView];
+	
+	[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		itemView.alpha = 1.0;
+		itemView.frame = CGRectTranslateY(itemView.frame, 90.0 * ([_replies count] - 1));
+	} completion:^(BOOL finished) {
+	}];
 }
 
 - (void)_orphanSubmitOverlay {
@@ -550,7 +637,7 @@
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
 						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, (_scrollView.contentSize.height < (216.0 + _inputBGImageView.frame.size.height) ? 0.0 : _scrollView.frame.origin.y - (216.0 + _inputBGImageView.frame.size.height)));
+						 _scrollView.frame = (_scrollView.frame.origin.y >= kNavHeaderHeight + 84.0) ? CGRectTranslateY(_scrollView.frame, (_scrollView.contentSize.height < (216.0 + _inputBGImageView.frame.size.height) ? _scrollView.frame.origin.y : _scrollView.frame.origin.y - (216.0 + _inputBGImageView.frame.size.height))) : CGRectTranslateY(_scrollView.frame, 0.0);
 						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - (216.0 + _inputBGImageView.frame.size.height));
 					 } completion:^(BOOL finished) {
 						 [self.view addSubview:_commentCloseButton];
@@ -573,16 +660,9 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
-	[UIView animateWithDuration:0.25
-					 animations:^(void) {
-						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight + 84.0);
-						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - 44.0);
-					 } completion:^(BOOL finished) {
-						 [_commentCloseButton removeFromSuperview];
-						 if (!_isSubmitting && [textField.text length] > 0)
-							 [self _goCommentSubmit];
-					 }];
+	
+	if (!_isSubmitting && [textField.text length] > 0)
+		[self _goCommentSubmit];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {

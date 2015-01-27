@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "NSCharacterSet+AdditionalSets.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
 
 #import "HONSearchBarView.h"
 

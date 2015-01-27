@@ -8,7 +8,7 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "NSMutableDictionary+Replacements.h"
+#import "NSDictionary+BuiltinMenlo.h"
 #import "HONViewController.h"
 #import "HONRefreshControl.h"
 #import "HONTableView.h"

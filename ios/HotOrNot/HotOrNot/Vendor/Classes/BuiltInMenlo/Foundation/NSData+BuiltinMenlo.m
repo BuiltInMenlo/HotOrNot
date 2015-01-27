@@ -21,7 +21,7 @@
 //	 distribution.
 //
 
-#import "NSData+Base64.h"
+#import "NSData+BuiltinMenlo.h"
 
 //
 // Mapping from 6 bit pattern to ASCII character.
@@ -262,7 +262,7 @@ char *NewBase64Encode(
 	return outputBuffer;
 }
 
-@implementation NSData (Base64)
+@implementation NSData (BuiltInMenlo)
 
 //
 // dataFromBase64String:
@@ -301,11 +301,10 @@ char *NewBase64Encode(
 		NewBase64Encode([self bytes], [self length], true, &outputLength);
 	
 	NSString *result =
-		[[[NSString alloc]
+		[[NSString alloc]
 			initWithBytes:outputBuffer
 			length:outputLength
-			encoding:NSASCIIStringEncoding]
-		autorelease];
+			encoding:NSASCIIStringEncoding];
 	free(outputBuffer);
 	return result;
 }
@@ -318,11 +317,10 @@ char *NewBase64Encode(
 	NewBase64Encode([self bytes], [self length], separateLines, &outputLength);
 	
 	NSString *result =
-	[[[NSString alloc]
+	[[NSString alloc]
 	  initWithBytes:outputBuffer
 	  length:outputLength
-	  encoding:NSASCIIStringEncoding]
-	 autorelease];
+	  encoding:NSASCIIStringEncoding];
 	free(outputBuffer);
 	return result;
 }

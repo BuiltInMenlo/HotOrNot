@@ -9,9 +9,9 @@
 #import <AddressBook/AddressBook.h>
 #import <CoreLocation/CoreLocation.h>
 
-#import "NSDate+Operations.h"
-#import "NSString+Formatting.h"
-#import "NSUserDefaults+Replacements.h"
+#import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltInMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "HONClubAssistant.h"
 
@@ -246,7 +246,6 @@ static HONClubAssistant *sharedInstance = nil;
 		NSLog(@"STAFF_CLUB:[%d - %@] -=- (%.03f)", clubVO.clubID, clubVO.clubName, clubVO.distance);
 		[staffClubs addObject:clubVO];
 	}];
-	
 	
 	staffClubs = [[staffClubs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
 		HONUserClubVO *vo1 = (HONUserClubVO *)obj1;

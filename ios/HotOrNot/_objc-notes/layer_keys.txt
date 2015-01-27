@@ -1,0 +1,26 @@
+
+devint Key:
+[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICWgIBAAKBgGagCtwlfdeHPK7G8+zao7CT0os7joxS74czAtdiBWq90yvTfXEz
+DXSd5WNgCT0ywt9PamCxsjwi1ReWxvVujEV6MjFPNYtpb0HhzuYW3wxVy+aUnpeU
+67Q9GThE/AR8zk9tVYP1IDkaIdPSEx4tU1JIw4fjehBGM0qG1lTGudkFAgMBAAEC
+gYBloRZAHyy5NOcGWmYTaA30ft9hHNC07Cji5cRpkVu18lherWkrohgwJXGV8PQV
+U+CiDt5U9YSBgykt3BYZ1ak4npBp7kIaq/IvASRceeZmkOlk2hd5IIMkJWnY2Cw2
+IU2uyZ/IeJikJbwYZ7K6UrZ/O1RRWmxO1q024YNsZJDYwQJBAK+vb58IjPHJltiK
+hxSjtDuzuHswZjXU6WO33Dv8Z6ezpKJHy66kD3/UW52FjvKvJMs7dLV8jyoJdqWM
+M7hF07ECQQCVilT73bTeCMfuneZ29wUpDE/lx8BMob3ZlN2JM49iOumvwG11hrwV
+RDwo0VFHiVf8HICq1IEmRtxWiqo6t5OVAkA19msQrC2urr7YsGQhYM8hb2iA3jLm
+4gj2Cilpe3PTPQial/bmI5pnJzEkxztLK6Tfj9mfTS0kOlfpLZFNTpVhAkB9Vm6Y
+lGEOYOnClFIgkDahCxLEk0IYeNB5WA6++ppJSPupNW4JPZ7TbFfIFnk7rmAyjWlC
+xc5h2K7BUoQPpuJpAkBh3YwZZP83iFQw7H/2FeIHPLya9GDzD6rVOPXjYxCEDc4l
+MIkaOvSKaN8GSlyvMexg5gzt86aCXQMNequHuWFI
+-----END RSA PRIVATE KEY-----
+
+d75c2e0a-a1f7-11e4-8ec0-142b010033d0
+
+[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]
+
+
+

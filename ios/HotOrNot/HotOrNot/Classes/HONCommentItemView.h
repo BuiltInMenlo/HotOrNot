@@ -9,5 +9,8 @@
 #import "HONCommentVO.h"
 
 @interface HONCommentItemView : UIView
+
+- (void)updateStatus:(HONCommentStatusType)statusType;
+
 @property (nonatomic, retain) HONCommentVO *commentVO;
 @end

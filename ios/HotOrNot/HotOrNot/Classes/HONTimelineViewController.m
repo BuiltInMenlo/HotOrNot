@@ -10,7 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "UIImageView+AFNetworking.h"
-#import "UIImage+ImageEffects.h"
+#import "UIImage+BuiltinMenlo.h"
 
 #import "MBProgressHUD.h"
 #import "HONTimelineViewController.h"

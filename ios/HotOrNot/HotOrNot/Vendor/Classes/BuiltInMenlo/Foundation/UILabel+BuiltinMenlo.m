@@ -1,20 +1,4 @@
 //
-//  UILabel+BoundingRect.h
-//  HotOrNot
-//
-//  Created by Matt Holcombe on 06/16/2014.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
-//
-
-#import <UIKit/UIKit.h>
-
-@interface UILabel (BoundingRect)
-- (CGRect)boundingRectForAllCharacters;
-- (CGRect)boundingRectForCharacterRange:(NSRange)range;
-- (CGRect)boundingRectForSubstring:(NSString *)substring;
-- (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize;
-@end
-//
 //  UILabel+BoundingRect.m
 //  HotOrNot
 //
@@ -22,10 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "UILabel+BoundingRect.h"
+#import "UILabel+BuiltInMenlo.h"
 
 
-@implementation UILabel (BoundingRect)
+@implementation UILabel (BuiltInMenlo)
 
 - (CGRect)boundingRectForAllCharacters {
 	return ([self boundingRectForCharacterRange:[self.text rangeOfString:self.text]]);
@@ -67,35 +51,6 @@
 	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MIN(maxSize.width, size.width), self.frame.size.height);
 }
 
-
-@end
-//
-//  UILabel+FormattedText.h
-//  UILabel+FormattedText
-//
-//  Created by Joao Costa on 3/1/13.
-//  Copyright (c) 2013 none. All rights reserved.
-//
-
-#import <UIKit/UIKit.h>
-
-@interface UILabel (FormattedText)
-
-- (void)setTextColor:(UIColor *)textColor range:(NSRange)range;
-- (void)setFont:(UIFont *)font range:(NSRange)range;
-
-@end
-//
-//  UILabel+FormattedText.m
-//  UILabel+FormattedText
-//
-//  Created by Joao Costa on 3/1/13.
-//  Copyright (c) 2013 none. All rights reserved.
-//
-
-#import "UILabel+FormattedText.h"
-
-@implementation UILabel (FormattedText)
 
 - (void)setTextColor:(UIColor *)textColor range:(NSRange)range
 {
