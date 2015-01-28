@@ -13,7 +13,7 @@
 #import "HONCloseNavButtonView.h"
 #import "HONComposeNavButtonView.h"
 #import "HONDoneNavButtonView.h"
-#import "HONFlagNavButtonView.h"
+#import "HONMoreNavButtonView.h"
 #import "HONNextNavButtonView.h"
 
 @interface HONHeaderView()
@@ -112,8 +112,8 @@
 	[self addButton:[[HONDoneNavButtonView alloc] initWithTarget:target action:action]];
 }
 
-- (void)addFlagButtonWithTarget:(id)target action:(SEL)action {
-	[self addButton:[[HONFlagNavButtonView alloc] initWithTarget:target action:action]];
+- (void)addMoreButtonWithTarget:(id)target action:(SEL)action {
+	[self addButton:[[HONMoreNavButtonView alloc] initWithTarget:target action:action]];
 }
 
 - (void)addNextButtonWithTarget:(id)target action:(SEL)action {

@@ -8,13 +8,13 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "HONContactsAssistant.h"
+#import "HONSocialAssistant.h"
 
-@implementation HONContactsAssistant
-static HONContactsAssistant *sharedInstance = nil;
+@implementation HONSocialAssistant
+static HONSocialAssistant *sharedInstance = nil;
 
-+ (HONContactsAssistant *)sharedInstance {
-	static HONContactsAssistant *s_sharedInstance = nil;
++ (HONSocialAssistant *)sharedInstance {
+	static HONSocialAssistant *s_sharedInstance = nil;
 	static dispatch_once_t onceToken;
 	
 	dispatch_once(&onceToken, ^{

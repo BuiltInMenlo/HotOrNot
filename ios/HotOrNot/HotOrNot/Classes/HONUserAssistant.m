@@ -32,6 +32,15 @@ static HONUserAssistant *sharedInstance = nil;
 	return (self);
 }
 
+- (int)activeUserID {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] objectForKey:@"id"] intValue]);
+}
+
+- (NSString *)activeUsername {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] objectForKey:@"username"]);
+}
+
+
 - (NSString *)rndAvatarURL {
 	NSArray *avatars = @[@"bird",
 						 @"football",

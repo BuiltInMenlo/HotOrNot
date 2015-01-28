@@ -198,7 +198,7 @@
 //	_inAppUsers = [NSMutableArray array];
 //	_matchedUserIDs = [NSMutableArray array];
 //	
-	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:YES]) {
+	for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:YES]) {
 		[_allDeviceContacts addObject:vo];
 		[_shownDeviceContacts addObject:vo];
 		

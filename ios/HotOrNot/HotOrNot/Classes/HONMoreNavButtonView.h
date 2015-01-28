@@ -1,5 +1,5 @@
 //
-//  HONFlagNavButtonView.h
+//  HONMoreNavButtonView.h
 //  HotOrNot
 //
 //  Created by BIM  on 1/11/15.
@@ -8,6 +8,5 @@
 
 #import "HONNavButtonView.h"
 
-@interface HONFlagNavButtonView : HONNavButtonView
-
+@interface HONMoreNavButtonView : HONNavButtonView
 @end

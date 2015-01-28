@@ -18,6 +18,9 @@ typedef NS_ENUM(NSUInteger, HONRegexMatchUsernameGroup) {
 @interface HONUserAssistant : NSObject
 + (HONUserAssistant *)sharedInstance;
 
+- (int)activeUserID;
+- (NSString *)activeUsername;
+
 - (NSString *)rndAvatarURL;
 - (NSString *)avatarURLForUserID:(int)userID;
 - (void)retrieveActivityScoreByUserID:(int)userID completion:(void (^)(id result))completion;

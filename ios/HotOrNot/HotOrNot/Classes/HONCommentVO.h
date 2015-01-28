@@ -36,5 +36,6 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSString *textContent;
+@property (nonatomic, retain) UIImage *imageContent;
 @property (nonatomic, retain) NSDate *addedDate;
 @end

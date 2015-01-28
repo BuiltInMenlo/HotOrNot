@@ -13,7 +13,7 @@
 #import "HONAPICaller.h"
 #import "HONAudioMaestro.h"
 #import "HONClubAssistant.h"
-#import "HONContactsAssistant.h"
+#import "HONSocialAssistant.h"
 #import "HONColorAuthority.h"
 #import "HONDateTimeAlloter.h"
 #import "HONDeviceIntrinsics.h"

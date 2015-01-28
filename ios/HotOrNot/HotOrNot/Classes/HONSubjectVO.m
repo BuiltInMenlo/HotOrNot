@@ -19,7 +19,7 @@
 	vo.dictionary = dictionary;
 	vo.subjectID = [[dictionary objectForKey:@"id"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"name"];
-	vo.icoURL = [dictionary objectForKey:@"url"];
+	vo.icoURL = [dictionary objectForKey:@"img"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	

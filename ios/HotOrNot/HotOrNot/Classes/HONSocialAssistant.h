@@ -10,8 +10,8 @@
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
 
-@interface HONContactsAssistant : NSObject
-+ (HONContactsAssistant *)sharedInstance;
+@interface HONSocialAssistant : NSObject
++ (HONSocialAssistant *)sharedInstance;
 
 - (BOOL)hasAdressBookPermission;
 - (NSArray *)deviceContactsSortedByName:(BOOL)isSorted;

@@ -278,6 +278,12 @@
 	chevronImageView.frame = CGRectOffset(chevronImageView.frame, 280.0, 0.0);
 	[_txtFieldBGImageView addSubview:chevronImageView];
 	
+	
+	UIButton *enterButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	enterButton.frame = CGRectMake(280.0, 0.0, 40.0, 44.0);
+	[enterButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[_txtFieldBGImageView addSubview:enterButton];
+	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	termsButton.frame = CGRectMake(60.0, self.view.frame.size.height - 55.0, 200.0, 18.0);
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.80] forState:UIControlStateNormal];

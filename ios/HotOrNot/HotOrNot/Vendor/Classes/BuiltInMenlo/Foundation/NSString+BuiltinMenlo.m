@@ -86,8 +86,15 @@
 			 evaluateWithObject:self]);
 }
 
+- (NSString *)lastComponentByDelimeter:(NSString *)delimiter {
+	if ([self isDelimitedByString:delimiter])
+		return ([[self componentsSeparatedByString:delimiter] lastObject]);
+	
+	else
+		return (self);
+}
+
 - (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring {
-//	NSRange range = NSMakeRange([string length] - [substring length], [substring length]);
 	return (([self rangeOfString:substring].location != NSNotFound) ? [self substringToIndex:[self length] - [substring length]] : self);
 }
 
@@ -97,8 +104,7 @@
 //	
 //	if (range.location != NSNotFound)
 //		[string deleteCharactersInRange:range];
-//	
-//	NSString *news = [super init];
+//
 //	
 //	self = [self init];//[@"" stringByTrimmingFinalSubstring:@", "];
 }

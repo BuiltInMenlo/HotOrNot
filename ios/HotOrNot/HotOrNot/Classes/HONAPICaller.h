@@ -33,6 +33,7 @@ extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 
 extern NSString * const kAPIMemberClubs;
+extern NSString * const kAPIMemberStatusUpdates;
 extern NSString * const kAPIClubStatusUpdates;
 extern NSString * const kAPIStatusUpdate;
 extern NSString * const kAPIStatusUpdateChildren;
@@ -171,6 +172,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(id result))completion;
 - (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)retrieveStatusUpdatesForUserByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion;
 - (void)retrieveTopClubsForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveRecentClubsForUserByUserID:(int)userID afterDate:(NSDate *)date completion:(void (^)(id result))completion;
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(id result))completion;

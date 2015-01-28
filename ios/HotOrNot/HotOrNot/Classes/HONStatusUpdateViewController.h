@@ -7,11 +7,19 @@
 //
 
 #import <MessageUI/MFMailComposeViewController.h>
+#import <MessageUI/MFMessageComposeViewController.h>
+#import <Social/SLComposeViewController.h>
+#import <Social/SLServiceTypes.h>
 
 #import "HONViewController.h"
 #import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"
 
-@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
+typedef NS_ENUM(NSUInteger, HONStatusUpdateActionSheetType) {
+	HONStatusUpdateActionSheetTypeDownloadAvailable = 0,
+	HONStatusUpdateActionSheetTypeDownloadNotAvailable
+};
+
+@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 - (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO;
 @end

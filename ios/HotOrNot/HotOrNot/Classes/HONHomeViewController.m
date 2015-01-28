@@ -130,6 +130,37 @@
 	}];
 }
 
+- (void)_retriveOwnedPhotosAtPage:(int)page {
+	
+	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+	__block int nextPage = page + 1;
+	
+	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] fromPage:page completion:^(NSDictionary *result) {
+		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
+		
+		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
+		
+//		NSLog(@"ON PAGE:[%d]", page);
+//		NSLog(@"RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
+		
+		if ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue])
+			[self _retrieveClubPhotosAtPage:nextPage];
+		
+		else {
+//			NSLog(@"FINISHED RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
+			
+			[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+				[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
+				
+				[_statusUpdates addObject:[HONStatusUpdateVO statusUpdateWithDictionary:dict]];
+			}];
+			
+			[self _didFinishDataRefresh];
+		}
+	}];
+}
+
 - (void)_flagStatusUpdate {
 	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
@@ -184,7 +215,11 @@
 		if (![_refreshControl isRefreshing])
 			[_refreshControl beginRefreshing];
 		
-		[self _retrieveClubPhotosAtPage:1];
+		if (_feedType == HONHomeFeedTypeOwned)
+			[self _retriveOwnedPhotosAtPage:1];
+		
+		else
+			[self _retrieveClubPhotosAtPage:1];
 	
 	} else {
 		_noNetworkView.hidden = NO;
@@ -393,7 +428,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -722,7 +757,7 @@
 	_selectedStatusUpdateVO = cell.statusUpdateVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:^(void) {
+	[self presentViewController:navigationController animated:YES completion:^(void) {
 	}];
 }
 

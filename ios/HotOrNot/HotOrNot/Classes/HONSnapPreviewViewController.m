@@ -397,7 +397,7 @@
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
 	[actionSheet setTag:HONSnapPreviewActionSheetTypeMore];
-	[actionSheet showInView:self.view];
+ 	[actionSheet showInView:self.view];
 }
 
 - (void)_goRemoveTutorial {

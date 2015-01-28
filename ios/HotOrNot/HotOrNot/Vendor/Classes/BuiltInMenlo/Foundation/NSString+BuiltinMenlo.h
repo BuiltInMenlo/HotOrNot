@@ -39,6 +39,7 @@
 - (NSData *)base64DecodedData;
 
 - (BOOL)isValidEmailAddress;
+- (NSString *)lastComponentByDelimeter:(NSString *)delimiter;
 - (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring;
 - (void)trimFinalSubstring:(NSString *)substring;
 - (NSString *)normalizedPhoneNumber;

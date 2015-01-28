@@ -676,7 +676,7 @@ static HONClubAssistant *sharedInstance = nil;
 	HONUserClubVO *vo;
 	
 	NSString *clubName = @"";
-	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO]) {
+	for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:NO]) {
 		if ([vo.email length] == 0)
 			continue;
 		
@@ -730,7 +730,7 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 		
 	} else {
-		for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO]) {
+		for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:NO]) {
 			NSString *name = ([vo.lastName length] > 0) ? vo.lastName : vo.firstName;
 			
 			if (![segmentedKeys containsObject:name]) {
@@ -824,7 +824,7 @@ static HONClubAssistant *sharedInstance = nil;
 	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
 	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
 	
-	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO]) {
+	for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:NO]) {
 		if ([vo.email length] > 0) {
 			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
 			

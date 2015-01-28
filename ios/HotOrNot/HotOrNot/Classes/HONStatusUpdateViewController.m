@@ -11,6 +11,7 @@
 #import "LYRConversation+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BuiltinMenlo.h"
 
@@ -38,7 +39,8 @@
 @property (nonatomic, strong) UIView *commentsHolderView;
 @property (nonatomic, strong) UIImageView *inputBGImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
-@property (nonatomic, strong) UIButton *submitCommentButton;
+@property (nonatomic, strong) UIButton *flagButton;
+@property (nonatomic, strong) UIButton *imageCommentButton;
 @property (nonatomic, strong) NSString *comment;
 
 @property (nonatomic) BOOL isSubmitting;
@@ -94,11 +96,6 @@
 #pragma mark - Data Calls
 - (void)_retrieveStatusUpdate {
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
-//	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-//		_clubVO = [HONUserClubVO clubWithDictionary:result];
-//		[self _retrieveRepliesAtPage:1];
-//	}];
-	
 	
 	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 		NSError *error = nil;
@@ -130,37 +127,7 @@
 					}];
 					
 					[_conversation markAllMessagesAsRead:nil];
-					
-//					LYRQueryController *queryController = [[[HONLayerKitAssistant sharedInstance] client] queryControllerWithQuery:msgsQuery];
-//					BOOL success2 = [queryController execute:&error];
-//					if (!success2) {
-//						NSLog(@"Query failed with error: %@", error);
-//					} else {
-//						NSLog(@"Query fetched %tu message objects", [queryController totalNumberOfObjects]);
-//						
-//						for (int i=0; i<queryController.numberOfSections; i++) {
-//							for (int j=0; j<[queryController numberOfObjectsInSection:i]; j++) {
-//								[_replies addObject:[HONCommentVO commentWithMessage:(LYRMessage *)[queryController objectAtIndexPath:[NSIndexPath indexPathForRow:j inSection:i]]]];
-					
-								
-//								LYRMessage *message = (LYRMessage *)[queryController objectAtIndexPath:[NSIndexPath indexPathForRow:j inSection:i]];
-//								LYRMessagePart *messagePart = [message.parts firstObject];
-//								
-//								NSDictionary *dict = @{@"id"				: message.identifierSuffix,
-//													   @"owner_member"		: @{@"id"	: message.sentByUserID,
-//																				@"name"	: message.sentByUserID},
-//													   @"img"				: message.identifier,
-//													   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
-//													   @"net_vote_score"	: @(0),
-//													   @"added"				: [message.sentAt formattedISO8601StringUTC],
-//													   @"updated"			: [message.sentAt formattedISO8601StringUTC]};
-//								
-//								[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
-//							}
-//						}
-					
-						_statusUpdateVO.replies = [_replies copy];
-//					}
+					_statusUpdateVO.replies = [_replies copy];
 					
 					[self _didFinishDataRefresh];
 				}];
@@ -219,9 +186,8 @@
 		}
 	}];
 	
-	NSDictionary *alertDict = ([[_conversation.metadata objectForKey:@"creator_id"] intValue] != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], _comment]} : nil;
+	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], _comment]} : nil;
 	
-	// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
 	NSError *error = nil;
 	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]]] options:alertDict error:&error];
 	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
@@ -351,13 +317,21 @@
 	_commentTextField.delegate = self;
 	[_inputBGImageView addSubview:_commentTextField];
 	
-	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitCommentButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
-	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
-	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Disabled"] forState:UIControlStateDisabled];
-	[_submitCommentButton addTarget:self action:@selector(_goCommentFocus) forControlEvents:UIControlEventTouchUpInside];
-	[_inputBGImageView addSubview:_submitCommentButton];
+	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_flagButton.frame = CGRectMake(240.0, 5.0, 34.0, 34.0);
+	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Disabled"] forState:UIControlStateDisabled];
+	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	[_inputBGImageView addSubview:_flagButton];
+	
+	_imageCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_imageCommentButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
+	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
+	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
+	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Disabled"] forState:UIControlStateDisabled];
+	[_imageCommentButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
+	[_inputBGImageView addSubview:_imageCommentButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
@@ -365,7 +339,7 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
-	//[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
+	[_headerView addMoreButtonWithTarget:self action:@selector(_goMore)];
 	[self.view addSubview:_headerView];
 
 }
@@ -397,6 +371,30 @@
 	}];
 }
 
+
+- (void)_goMore {
+	UIActionSheet *actionSheet;
+	
+	if ([_statusUpdateVO.appStoreURL length] > 0) {
+		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+												  delegate:self
+										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+									destructiveButtonTitle:nil
+										 otherButtonTitles:@"Download", @"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
+		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadAvailable];
+	
+	} else {
+		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+												  delegate:self
+										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+									destructiveButtonTitle:nil
+										 otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
+		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadNotAvailable];
+	}
+
+	[actionSheet showInView:self.view];
+}
+
 - (void)_goFlag {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flag"];
 	
@@ -410,9 +408,15 @@
 }
 
 
-- (void)_goCommentFocus {
-	if (![_commentTextField isFirstResponder])
-		[_commentTextField becomeFirstResponder];
+- (void)_goImageComment {
+	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], _comment]} : nil;
+	
+	NSError *error = nil;
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActiven "])]] options:alertDict error:&error];
+	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
+	
+	BOOL success = [_conversation sendMessage:message error:&error];
+	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
 }
 
 - (void)_goCommentSubmit {
@@ -478,7 +482,7 @@
 	}
 #endif
 	
-	[_submitCommentButton setEnabled:([_commentTextField.text length] > 0)];
+	[_imageCommentButton setEnabled:([_commentTextField.text length] > 0)];
 }
 
 - (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
@@ -673,10 +677,151 @@
 }
 
 
-#pragma mark - MailCompose Delegates
-- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-	[controller dismissViewControllerAnimated:NO completion:^(void) {
-	}];
+#pragma mark - Actionsheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == HONStatusUpdateActionSheetTypeDownloadAvailable) {
+		if (buttonIndex == 0) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_statusUpdateVO.appStoreURL]];
+		
+		} else if (buttonIndex == 1) {
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"Get DOOD - A live photo feed of who is doing what around you. getdood.com/%@", [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+
+			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
+										message:@""
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+		
+		} else if (buttonIndex == 2) {
+			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
+				};
+				
+				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
+				[twitterComposeViewController addImage:[HONAppDelegate avatarImage]];
+				twitterComposeViewController.completionHandler = completionBlock;
+				
+				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:@"Cannot use Twitter from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 3) {
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
+			[[HONImageBroker sharedInstance] saveForInstagram:[HONAppDelegate avatarImage]
+												 withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
+													   toPath:savePath];
+			
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
+				UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+				documentInteractionController.UTI = @"com.instagram.exclusivegram";
+				documentInteractionController.delegate = self;
+				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
+				[documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
+											message:@"This device isn't allowed or doesn't recognize Instagram!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 5) {
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+				messageComposeViewController.messageComposeDelegate = self;
+				
+				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+		}
+	
+	} else if (actionSheet.tag == HONStatusUpdateActionSheetTypeDownloadNotAvailable) {
+		if (buttonIndex == 0) {
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"Get DOOD - A live photo feed of who is doing what around you. getdood.com/%@", [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+			
+			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
+										message:@""
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else if (buttonIndex == 1) {
+			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
+				};
+				
+				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
+				[twitterComposeViewController addImage:[HONAppDelegate avatarImage]];
+				twitterComposeViewController.completionHandler = completionBlock;
+				
+				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:@"Cannot use Twitter from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 2) {
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
+			[[HONImageBroker sharedInstance] saveForInstagram:[HONAppDelegate avatarImage]
+												 withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
+													   toPath:savePath];
+			
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
+				UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+				documentInteractionController.UTI = @"com.instagram.exclusivegram";
+				documentInteractionController.delegate = self;
+				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
+				[documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
+											message:@"This device isn't allowed or doesn't recognize Instagram!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 3) {
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+				messageComposeViewController.messageComposeDelegate = self;
+				
+				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+		}
+	}
 }
 
 
@@ -689,5 +834,17 @@
 	}
 }
 
+
+#pragma mark - MailCompose Delegates
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+	[controller dismissViewControllerAnimated:NO completion:^(void) {
+	}];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	[controller dismissViewControllerAnimated:YES completion:nil];
+}
 
 @end

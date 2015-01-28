@@ -16,7 +16,7 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, messageID, clubID, parentID, userID, username, avatarPrefix, commentStatusType, score, textContent, addedDate;
+@synthesize commentID, messageID, clubID, parentID, userID, username, avatarPrefix, commentStatusType, score, textContent, imageContent, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
@@ -89,15 +89,16 @@
 + (HONCommentVO *)commentWithMessage:(LYRMessage *)message {
 	LYRMessagePart *messagePart = [message.parts firstObject];
 	
-//	NSLog(@"commentWithMessage:%@", [message toString]);
-//	NSLog(@"commentWithMessage.part:%@", [messagePart toString]);
+	NSLog(@"commentWithMessage:%@", [message toString]);
+	NSLog(@"commentWithMessage.part:%@", [messagePart toString]);
 	
 	NSDictionary *dict = @{@"id"				: message.identifierSuffix,
-						   @"owner_member"		: @{@"id"	: message.sentByUserID,
-													@"name"	: message.sentByUserID},
+						   @"owner_member"		: @{@"id"	: (message.sentByUserID != nil) ? message.sentByUserID : @"",
+													@"name"	: (message.sentByUserID != nil) ? message.sentByUserID : @""},
 						   
 						   @"img"				: message.identifier,
-						   @"text"				: [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding],
+						   @"text"				: ([messagePart.MIMEType isEqualToString:kMIMETypeTextPlain]) ? [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding] : @"",
+						   @"image"				: ([messagePart.MIMEType isEqualToString:kMIMETypeImagePNG]) ? [UIImage imageWithData:messagePart.data] : nil,
 						   @"net_vote_score"	: @(0),
 						   @"status"			: NSStringFromInt((int)[[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]),
 						   @"added"				: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601],
@@ -114,6 +115,7 @@
 	self.username = nil;
 	self.avatarPrefix = nil;
 	self.textContent = nil;
+	self.imageContent = nil;
 	self.addedDate = nil;
 }
 

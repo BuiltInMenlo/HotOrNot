@@ -7,13 +7,14 @@
 //
 
 #import "NSDate+BuiltInMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "LYRConversation+BuiltInMenlo.h"
 
 @implementation LYRConversation (BuiltInMenlo)
 
 - (NSString *)identifierSuffix {
-	return ([[self.identifier.absoluteString componentsSeparatedByString:@"/"] lastObject]);
+	return ([self.identifier.absoluteString lastComponentByDelimeter:@"/"]);
 }
 
 - (int)creatorID {
@@ -50,7 +51,7 @@
 @implementation LYRMessage (BuiltInMenlo)
 
 - (NSString *)identifierSuffix {
-	return ([[self.identifier.absoluteString componentsSeparatedByString:@"/"] lastObject]);
+	return ([self.identifier.absoluteString lastComponentByDelimeter:@"/"]);
 }
 
 - (int)creatorID {

@@ -20,8 +20,8 @@
 	vo.topicID = [[dictionary objectForKey:@"id"] intValue];
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.topicName = [dictionary objectForKey:@"name"];
-	vo.iconURL = [dictionary objectForKey:@"url"];
-	vo.appStoreURL = [dictionary objectForKey:@"app_store"];
+	vo.iconURL = [dictionary objectForKey:@"img"];
+	vo.appStoreURL = [dictionary objectForKey:@"url"];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	
 	vo.formattedProperties = [NSString stringWithFormat:@".topicID		: [%d]\n", vo.topicID];

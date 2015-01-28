@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "toggleTop_Tapped@2x.png"
+      "filename" : "toggleActive_Top.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "toggleTop_Tapped@2x-1.png"
+      "filename" : "toggleActive_Top-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "toggleTop_Tapped@2x-2.png"
+      "filename" : "toggleActive_Top-2.png"
     }
   ],
   "info" : {
