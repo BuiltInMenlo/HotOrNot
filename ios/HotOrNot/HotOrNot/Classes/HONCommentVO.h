@@ -11,6 +11,11 @@
 #import "HONClubPhotoVO.h"
 
 
+typedef NS_ENUM(NSUInteger, HONCommentContentType) {
+	HONCommentContentTypeText = 0,
+	HONCommentContentTypeImage
+};
+
 typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 	HONCommentStatusTypeUnknown = 0,
 	HONCommentStatusTypeSent,
@@ -28,6 +33,7 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;
 @property (nonatomic) HONCommentStatusType commentStatusType;
+@property (nonatomic) HONCommentContentType commentContentType;
 @property (nonatomic, retain) NSString *messageID;
 @property (nonatomic) int parentID;
 @property (nonatomic) int clubID;

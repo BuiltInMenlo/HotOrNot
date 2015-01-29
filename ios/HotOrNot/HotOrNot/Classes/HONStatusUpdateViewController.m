@@ -103,7 +103,7 @@
 		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
 		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
 		
-		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation, _conversation.metadata);
+		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation.metadata);
 		
 		if (!error) {
 			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
@@ -327,9 +327,8 @@
 	
 	_imageCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_imageCommentButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
-	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
-	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Disabled"] forState:UIControlStateDisabled];
+	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"emojiButton_nonActive"] forState:UIControlStateNormal];
+	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"emojiButton_Active"] forState:UIControlStateHighlighted];
 	[_imageCommentButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	[_inputBGImageView addSubview:_imageCommentButton];
 	
@@ -409,10 +408,12 @@
 
 
 - (void)_goImageComment {
-	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment]} : nil;
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
+	
+	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
 	
 	NSError *error = nil;
-	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActiven "])]] options:alertDict error:&error];
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActive"])]] options:alertDict error:&error];
 	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
 	
 	BOOL success = [_conversation sendMessage:message error:&error];
@@ -481,12 +482,10 @@
 		_commentTextField.text = [[[HONDeviceIntrinsics sharedInstance] phoneNumber] substringFromIndex:2];
 	}
 #endif
-	
-	[_imageCommentButton setEnabled:([_commentTextField.text length] > 0)];
 }
 
 - (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
-	NSLog (@"::|>_clientObjectsDidChangeNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
+//	NSLog (@"::|>_clientObjectsDidChangeNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
 	
 	NSArray *changes = [notification.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
 	for (NSDictionary *change in changes) {
@@ -517,16 +516,8 @@
 				
 				
 				if (ind > -1) {
-//					[NSMutableArray arrayWithArray:[[message recipientStatusByUserID]
-//													sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-//
-//
-					LYRRecipientStatus status = [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message];
-					
-					
-					NSLog(@"LAST STATUS:%d", [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]);
-					
 					HONCommentItemView *itemView = (HONCommentItemView *)[_commentsHolderView.subviews objectAtIndex:ind];
+					LYRRecipientStatus status = [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message];
 					[itemView updateStatus:(status == LYRRecipientStatusSent) ? HONCommentStatusTypeSent : (status == LYRRecipientStatusDelivered) ? HONCommentStatusTypeDelivered : (status == LYRRecipientStatusRead) ? HONCommentStatusTypeSeen : HONCommentStatusTypeUnknown];
 				}
 					
@@ -681,9 +672,12 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == HONStatusUpdateActionSheetTypeDownloadAvailable) {
 		if (buttonIndex == 0) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - download"];
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_statusUpdateVO.appStoreURL]];
 		
 		} else if (buttonIndex == 1) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
+			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"Get DOOD - A live photo feed of who is doing what around you. getdood.com/%@", [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
 
@@ -754,6 +748,8 @@
 	
 	} else if (actionSheet.tag == HONStatusUpdateActionSheetTypeDownloadNotAvailable) {
 		if (buttonIndex == 0) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
+			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"Get DOOD - A live photo feed of who is doing what around you. getdood.com/%@", [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
 			

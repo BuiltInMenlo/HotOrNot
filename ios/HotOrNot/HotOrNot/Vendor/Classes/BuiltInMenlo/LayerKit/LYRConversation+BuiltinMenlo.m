@@ -22,7 +22,7 @@
 }
 
 - (NSString *)creatorName {
-	return (([self.metadata objectForKey:@"creator_name"] != nil) ? [self.metadata objectForKey:@"creator_name"] : [[HONUserAssistant sharedInstance] usernameForUserID:self.creatorID]);
+	return (([self.metadata objectForKey:@"creator_name"] != nil) ? [self.metadata objectForKey:@"creator_name"] : @"");
 }
 
 - (NSString *)creatorAvatarPrefix {
@@ -73,6 +73,7 @@
 	[string appendFormat:@"\n.creatorID			: %d", self.creatorID];
 	[string appendFormat:@"\n.creatorName			: %@", self.creatorName];
 	[string appendFormat:@"\n.creatorAvatarPrefix		: %@", self.creatorAvatarPrefix];
+	[string appendFormat:@"\n.sentByUserID	: %@", self.sentByUserID];
 	[string appendFormat:@"\n.index			: %d", self.index];
 	[string appendFormat:@"\n.parts			: %@", self.parts];
 	[string appendFormat:@"\n.isSent			: %@", NSStringFromBOOL(self.isSent)];
@@ -91,11 +92,11 @@
 
 @implementation LYRMessagePart (BuiltInMenlo)
 - (NSString *)textContent {
-	return (([self.MIMEType isEqualToString:kMIMETypeTextPlain]) ? [[NSString alloc] initWithData:self.data encoding:NSUTF8StringEncoding] : nil);
+	return (([self.MIMEType isEqualToString:kMIMETypeTextPlain]) ? [[NSString alloc] initWithData:self.data encoding:NSUTF8StringEncoding] : @"");
 }
 
 - (UIImage *)imageContent {
-	return (([self.MIMEType isEqualToString:kMIMETypeImagePNG])? [UIImage imageWithData:self.data] : nil);
+	return (([self.MIMEType isEqualToString:kMIMETypeImagePNG]) ? [UIImage imageWithData:self.data] : nil);
 }
 
 - (NSString *)dbIdentifier {
@@ -108,7 +109,6 @@
 - (NSString *)toString {
 	NSMutableString *string = [NSMutableString stringWithFormat:@"\n.MIMEType		: %@", self.MIMEType];
 	[string appendFormat:@"\n.data		: %@", self.data];
-	[string appendFormat:@"\n.base64	: %@", [self.data base64EncodedStringWithOptions:0]];
 	[string appendFormat:@"\n.textContent	: %@", self.textContent];
 	[string appendFormat:@"\n.imageContent	: %@", self.imageContent];
 	[string appendFormat:@"\n.JSONString	: %@", self.JSONString];

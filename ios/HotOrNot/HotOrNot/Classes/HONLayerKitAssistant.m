@@ -652,8 +652,6 @@ static LYRClient *sharedClient = nil;
 	
 	NSLog(@"LAST RECIPS:%d", (LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
 	return ((LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
-	
-//	return ((LYRRecipientStatus)[message recipientStatusForUserID:[recipients lastObject]]);
 }
 
 

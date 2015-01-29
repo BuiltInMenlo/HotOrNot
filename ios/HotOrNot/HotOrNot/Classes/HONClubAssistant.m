@@ -217,6 +217,20 @@ static HONClubAssistant *sharedInstance = nil;
 	}];
 }
 
+- (HONTrivialUserVO *)clubMemberWithUserID:(int)userID {
+	__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] globalClub];
+	__block HONTrivialUserVO *userVO = nil;
+	[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		
+		if (vo.userID == userID) {
+			userVO = vo;
+			*stop = YES;
+		}
+	}];
+	
+	return (userVO);
+}
 
 - (NSArray *)staffDesignatedClubsWithThreshold:(int)threshold {
 	NSMutableArray *staffClubs = [NSMutableArray arrayWithArray:@[]];

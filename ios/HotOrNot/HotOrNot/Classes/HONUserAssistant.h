@@ -27,4 +27,6 @@ typedef NS_ENUM(NSUInteger, HONRegexMatchUsernameGroup) {
 - (void)retrieveActivityByUserID:(int)userID fromPage:(int)page completion:(void (^)(id result))completion;
 - (NSString *)usernameWithDigitsStripped:(NSString *)username;
 - (NSString *)usernameForUserID:(int)userID;
+
+- (void)writeClubMemberToUserLookup:(NSDictionary *)userInfo;
 @end

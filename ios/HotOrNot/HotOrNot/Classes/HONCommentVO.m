@@ -24,7 +24,7 @@
 	
 	vo.commentID = [[dictionary objectForKey:@"id"] intValue];
 	vo.messageID = ([dictionary objectForKey:@"msg_id"] != nil) ? [dictionary objectForKey:@"msg_id"] : [dictionary objectForKey:@"id"];
-	vo.clubID = ([dictionary objectForKey:@"msg_id"] != nil) ? [[dictionary objectForKey:@"club_id"] intValue] : [[HONClubAssistant sharedInstance] globalClub].clubID;
+	vo.clubID = ([dictionary objectForKey:@"club_id"] != nil) ? [[dictionary objectForKey:@"club_id"] intValue] : [[HONClubAssistant sharedInstance] globalClub].clubID;
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"user_id"] intValue];
 	
@@ -36,9 +36,11 @@
 	
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : [[HONUserAssistant sharedInstance] rndAvatarURL];
-	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"N/A";
+	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"";
+	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : nil;
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
+	vo.commentContentType = ([vo.textContent length] > 0) ? HONCommentContentTypeText : HONCommentContentTypeImage;
 	
 	__block BOOL isFound = NO;
 	NSString *avatarKey = NSStringFromInt(vo.userID);
@@ -60,14 +62,6 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		vo.avatarPrefix = [[[NSUserDefaults standardUserDefaults] objectForKey:@"avatars"] objectForKey:avatarKey];
-		
-//		vo.avatarPrefix = [[[NSUserDefaults standardUserDefaults] objectForKey:@"avatars"] objectForKey:[@"a_" stringByAppendingString:[dictionary objectForKey:@"id"]]];
-//
-//	} else {
-//		NSMutableDictionary *avatars = [[[NSUserDefaults standardUserDefaults] objectForKey:@"avatars"] mutableCopy];
-//		[avatars setValue:[[HONUserAssistant sharedInstance] rndAvatarURL] forKey:[@"a_" stringByAppendingString:[dictionary objectForKey:@"id"]]];
-//		[[NSUserDefaults standardUserDefaults] setObject:[avatars copy] forKey:@"avatars"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
 	return (vo);
@@ -89,20 +83,25 @@
 + (HONCommentVO *)commentWithMessage:(LYRMessage *)message {
 	LYRMessagePart *messagePart = [message.parts firstObject];
 	
-	NSLog(@"commentWithMessage:%@", [message toString]);
-	NSLog(@"commentWithMessage.part:%@", [messagePart toString]);
+//	NSLog(@"commentWithMessage:%@", [message toString]);
+//	NSLog(@"commentWithMessage.part:%@", [messagePart toString]);
 	
-	NSDictionary *dict = @{@"id"				: message.identifierSuffix,
-						   @"owner_member"		: @{@"id"	: (message.sentByUserID != nil) ? message.sentByUserID : @"",
-													@"name"	: (message.sentByUserID != nil) ? message.sentByUserID : @""},
-						   
-						   @"img"				: message.identifier,
-						   @"text"				: ([messagePart.MIMEType isEqualToString:kMIMETypeTextPlain]) ? [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding] : @"",
-						   @"image"				: ([messagePart.MIMEType isEqualToString:kMIMETypeImagePNG]) ? [UIImage imageWithData:messagePart.data] : nil,
-						   @"net_vote_score"	: @(0),
-						   @"status"			: NSStringFromInt((int)[[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]),
-						   @"added"				: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601],
-						   @"updated"			: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601]};
+	NSMutableDictionary *dict = [@{@"id"				: message.identifierSuffix,
+								   @"msg_id"			: message.identifierSuffix,
+								   
+								   @"owner_member"		: @{@"id"	: (message.sentByUserID != nil) ? message.sentByUserID : @"",
+															@"name"	: (message.sentByUserID != nil) ? message.sentByUserID : @""},
+								   
+								   @"img"				: message.identifier,
+								   @"text"				: messagePart.textContent,
+								   
+								   @"net_vote_score"	: @(0),
+								   @"status"			: NSStringFromInt((int)[[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]),
+								   @"added"				: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601],
+								   @"updated"			: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601]} mutableCopy];
+	
+	if ([messagePart.MIMEType isEqualToString:kMIMETypeImagePNG])
+		[dict setObject:UIImagePNGRepresentation(messagePart.imageContent) forKey:@"image"];
 	
 	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
 	

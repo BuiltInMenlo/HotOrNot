@@ -15,6 +15,7 @@
 @property(nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UILabel *captionLabel;
+@property (nonatomic, strong) UIImageView *captionImageView;
 @property (nonatomic, strong) UIImageView *statusImageView;
 @property (nonatomic, strong) UILabel *timeLabel;
 @end
@@ -46,6 +47,10 @@
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textColor = [UIColor blackColor];
 		[self addSubview:_captionLabel];
+		
+		_captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 15.0, 35.0, 35.0)];
+		_captionImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		[self addSubview:_captionImageView];
 		
 		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 63.0, 160.0, 16.0)];
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
@@ -98,6 +103,11 @@
 	
 	_captionLabel.text = _commentVO.textContent;
 	_captionLabel.numberOfLines = 0;
+	
+	if (_commentVO.commentContentType == HONCommentContentTypeImage) {
+		_captionImageView.image = _commentVO.imageContent;
+		_captionImageView.frame = CGRectResize(_captionImageView.frame, CGSizeMult(_captionImageView.image.size, 0.5));
+	}
 	
 	CGFloat maxWidth = _captionLabel.frame.size.width;
 //	CGSize size = [_commentVO.textContent boundingRectWithSize:_captionLabel.frame.size

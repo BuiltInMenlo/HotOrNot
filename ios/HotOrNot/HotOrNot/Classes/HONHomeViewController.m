@@ -110,7 +110,7 @@
 		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
 			
 //		NSLog(@"ON PAGE:[%d]", page);
-//		NSLog(@"RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
+//		NSLog(@"RETRIEVED:[%@]", [result objectForKey:@"results"]);
 		
 		if ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue])
 			[self _retrieveClubPhotosAtPage:nextPage];
@@ -123,6 +123,10 @@
 				[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
 				
 				[_statusUpdates addObject:[HONStatusUpdateVO statusUpdateWithDictionary:dict]];
+				
+				[[HONUserAssistant sharedInstance] writeClubMemberToUserLookup:@{@"id"			: [[dict objectForKey:@"owner_member"] objectForKey:@"id"],
+																				 @"username"	: [[dict objectForKey:@"owner_member"] objectForKey:@"name"],
+																				 @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]}];
 			}];
 			
 			[self _didFinishDataRefresh];

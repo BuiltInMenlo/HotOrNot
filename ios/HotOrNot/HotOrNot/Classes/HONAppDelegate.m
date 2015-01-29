@@ -1044,6 +1044,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	NSDictionary *userDefaults = @{@"is_deactivated"	: NSStringFromBOOL(NO),
 								   @"votes"				: @{},
 								   @"layer"				: @{},
+								   @"user_lookup"		: @{},
 								   @"avatars"			: @{},
 								   @"purchases"			: @[],
 								   @"home_club"			: @{},

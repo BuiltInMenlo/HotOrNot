@@ -117,13 +117,23 @@ static HONUserAssistant *sharedInstance = nil;
 
 - (NSString *)avatarURLForUserID:(int)userID {
 	NSString *key = [NSString stringWithFormat:@"member_%d", userID];
-	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"users"] mutableCopy];
+	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] mutableCopy];
 	
 	if (![dict hasObjectForKey:key]) {
-		[dict setObject:@{@"id"			: @(userID),
-							@"username"	: @"",
-							@"avatar"	: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
-		[[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"users"];
+		HONTrivialUserVO *vo = [[HONClubAssistant sharedInstance] clubMemberWithUserID:userID];
+		
+		if (vo != nil) {
+			[dict setObject:@{@"id"			: @(vo.userID),
+							  @"username"	: vo.username,
+							  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
+			
+		} else {
+			[dict setObject:@{@"id"			: @(userID),
+							  @"username"	: @"",
+							  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
+		}
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_lookup"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
@@ -132,18 +142,42 @@ static HONUserAssistant *sharedInstance = nil;
 
 - (NSString *)usernameForUserID:(int)userID {
 	NSString *key = [NSString stringWithFormat:@"member_%d", userID];
-	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"users"] mutableCopy];
+	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] mutableCopy];
 	
 	if (![dict hasObjectForKey:key]) {
-		[dict setObject:@{@"id"			: @(userID),
-						  @"username"	: @"",
-						  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
-		[[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"users"];
+		HONTrivialUserVO *vo = [[HONClubAssistant sharedInstance] clubMemberWithUserID:userID];
+		
+		if (vo != nil) {
+			[dict setObject:@{@"id"			: @(vo.userID),
+							  @"username"	: vo.username,
+							  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
+			
+		} else {
+			[dict setObject:@{@"id"			: @(userID),
+							  @"username"	: @"",
+							  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
+		}
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_lookup"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
 	return ([[dict objectForKey:key] objectForKey:@"username"]);
 }
 
+
+- (void)writeClubMemberToUserLookup:(NSDictionary *)userInfo {
+	NSString *key = [NSString stringWithFormat:@"member_%@", [userInfo objectForKey:@"id"]];
+	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] mutableCopy];
+	
+	if (![dict hasObjectForKey:key]) {
+		[dict setObject:@{@"id"			: [userInfo objectForKey:@"id"],
+						  @"username"	: [userInfo objectForKey:@"username"],
+						  @"avatar"		: [userInfo objectForKey:@"avatar"]} forKey:key];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_lookup"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+}
 
 @end
