@@ -164,7 +164,7 @@
 			bgImageView.userInteractionEnabled = YES;
 			[scrollView addSubview:bgImageView];
 			
-			NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""];
+			NSString *clubName = [[[HONUserAssistant sharedInstance] activeUsername] stringByAppendingString:@""];
 			NSString *titleCaption = [clubName stringByAppendingString:NSLocalizedString(@"title_copyURL", @" - copy your url")];
 			UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(31.0, 14.0, 250.0, 16.0)];
 			titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
@@ -177,7 +177,7 @@
 			UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 33.0, 250.0, 16.0)];
 			subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 			subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-			subtitleLabel.text = [NSString stringWithFormat:@"joinselfie.club/%@/%@", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
+			subtitleLabel.text = [NSString stringWithFormat:@"joinselfie.club/%@/%@", [[HONUserAssistant sharedInstance] activeUsername], [[[HONUserAssistant sharedInstance] activeUsername] stringByAppendingString:@""]];
 			[bgImageView addSubview:subtitleLabel];
 			
 			UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];

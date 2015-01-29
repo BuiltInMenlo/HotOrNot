@@ -126,7 +126,7 @@
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									NSStringFromInt(2), @"action",
 									@(_challengeVO.challengeID], @"challengeID),
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]), @"userID",
 									_commentTextField.text, @"text",
 									nil];
 	
@@ -353,7 +353,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
-	return ((vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? nil : indexPath);
+	return ((vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -380,7 +380,7 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
-	return (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+	return (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]);
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {

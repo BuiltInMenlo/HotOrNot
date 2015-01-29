@@ -75,7 +75,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveVerifyList {
-	[[HONAPICaller sharedInstance] retrieveVerifyListForUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveVerifyListForUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSArray *result) {
 		_challenges = [NSMutableArray array];
 		for (NSDictionary *dict in result) {
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
@@ -155,7 +155,7 @@
 	[self.view addSubview:headerView];
 	
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"owned"] count] > 0)
 			_userClubVO = [HONUserClubVO clubWithDictionary:[[result objectForKey:@"owned"] objectAtIndex:0]];
 		

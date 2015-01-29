@@ -386,13 +386,13 @@ void Swizzle(Class c, SEL orig, SEL new)
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_week"
 											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
 			
-			[Flurry setUserID:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
+			[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 			
 			
 			[[HONLayerKitAssistant sharedInstance] connectClientToServiceWithCompletion:^(BOOL success, NSError *error) {
 				NSLog(@"connectClientToServiceWithCompletion:success:[%@] error:[%@]", NSStringFromBOOL(success), error);
 				
-				[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] withCompletion:^(BOOL success, NSError *error) {
+				[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
 					NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
 				}];
 			}];
@@ -435,7 +435,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 }
 
 - (void)_enableNotifications:(BOOL)isEnabled {
-	[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:isEnabled completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:isEnabled completion:^(NSDictionary *result) {
 		if (![result isEqual:[NSNull null]])
 			[HONAppDelegate writeUserInfo:result];
 	}];
@@ -844,7 +844,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 			// already a member
 //			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
 //				for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"]) {
-//					if ([[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+//					if ([[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) {
 //						NSLog(@"OWNER_ID:[%d]", [[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue]);
 //						_selectedClubVO = [HONUserClubVO clubWithDictionary:dict];
 //						break;
@@ -1167,12 +1167,12 @@ void uncaughtExceptionHandler(NSException *exception) {
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONUserAssistant sharedInstance] activeUsername]],
+																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONUserAssistant sharedInstance] activeUsername]],
+																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONUserAssistant sharedInstance] activeUsername]],
 																															@"email"		: @{@"subject"	: [[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject],
-																																				@"body"		: [NSString stringWithFormat:[[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
-																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeClipboard], [[HONAppDelegate infoForUser] objectForKey:@"username"]]},
+																																				@"body"		: [NSString stringWithFormat:[[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject], [[HONUserAssistant sharedInstance] activeUsername]]},
+																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeClipboard], [[HONUserAssistant sharedInstance] activeUsername]]},
 																									@"image"			: [HONAppDelegate avatarImage],
 																									@"url"				: @"",
 																									@"mp_event"			: @"App Root",
@@ -1266,7 +1266,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 		if (buttonIndex == HONShareSheetActionTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
-									withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
+									withUsername:[[HONUserAssistant sharedInstance] activeUsername]
 										  toPath:savePath];
 			
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {

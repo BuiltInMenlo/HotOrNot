@@ -127,7 +127,7 @@
 
 #pragma mark - Navigation {
 - (void)_goProfile {
-	if (_activityItemVO.originUserID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+	if (_activityItemVO.originUserID != [[HONUserAssistant sharedInstance] activeUserID]) {
 		if ([self.delegate respondsToSelector:@selector(activityItemViewCell:showProfileForUser:)])
 			[self.delegate activityItemViewCell:self showProfileForUser:[HONTrivialUserVO userFromActivityItemVO:_activityItemVO]];
 	}

@@ -109,7 +109,7 @@
 															[NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
@@ -158,7 +158,7 @@
 }
 
 - (void)_joinClub:(HONUserClubVO *)userClubVO {
-	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
 		
@@ -266,7 +266,7 @@
 #pragma mark - Navigation
 - (void)_goProfile {
 	//[[HONAnalyticsParams sharedInstance] trackEvent:@"Newsfeed - Activity"];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[HONUserAssistant sharedInstance] activeUserID]] animated:YES];
 }
 
 - (void)_goCreateChallenge {

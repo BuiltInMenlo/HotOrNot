@@ -106,7 +106,7 @@
 
 - (void)_refreshChallengesFromServer
 {
-	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSArray *result) {
 		NSMutableArray *challenges = [NSMutableArray array];
 		for (NSDictionary *challengeData in result) {
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeData];
@@ -400,8 +400,8 @@
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], [challengeVO.subjectNames firstObject], opponentVO.username];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], [challengeVO.subjectNames firstObject], opponentVO.username, [HONAppDelegate shareURL]];
 	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], [challengeVO.subjectNames firstObject], opponentVO.username, [HONAppDelegate shareURL]];
-	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:0], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
-	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:0], [[HONUserAssistant sharedInstance] activeUsername], [HONAppDelegate shareURL]];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"body"], [[HONUserAssistant sharedInstance] activeUsername], [HONAppDelegate shareURL]]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
 																							@"image"			: image,
 																							@"url"				: [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix],

@@ -83,14 +83,14 @@
 	[self _buildClubMemberParticipantsWithCompletion:^(NSArray *participants) {
 		NSLog(@"participantIDs:[%@]", participants);
 		
-		NSDictionary *metaData = @{@"creator_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-								   @"creator_name"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+		NSDictionary *metaData = @{@"creator_id"	: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+								   @"creator_name"	: [[HONUserAssistant sharedInstance] activeUsername],
 								   @"topic"			: [_submitParams objectForKey:@"topic_name"],
 								   @"subject"		: _selectedTopicVO.topicName};
 		
 		
 		NSMutableSet *set = [NSMutableSet setWithArray:participants];
-		[set minusSet:[NSSet setWithObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])]];
+		[set minusSet:[NSSet setWithObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]];
 		
 		
 		NSError *error;

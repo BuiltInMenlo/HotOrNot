@@ -1,17 +1,17 @@
 //
-//  HOnRestrictedViewController.m
+//  HONRestrictedViewController.m
 //  HotOrNot
 //
 //  Created by BIM  on 1/15/15.
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HOnRestrictedViewController.h"
+#import "HONRestrictedViewController.h"
 
-@interface HOnRestrictedViewController ()
+@interface HONRestrictedViewController ()
 @end
 
-@implementation HOnRestrictedViewController
+@implementation HONRestrictedViewController
 
 
 #pragma mark - View lifecycle

@@ -21,7 +21,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_username = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+		_username = [[HONUserAssistant sharedInstance] activeUsername];
 	}
 	
 	return (self);
@@ -55,7 +55,7 @@
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+	_usernameTextField.text = [[HONUserAssistant sharedInstance] activeUsername];
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	

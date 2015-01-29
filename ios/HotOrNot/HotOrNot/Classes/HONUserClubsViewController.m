@@ -85,7 +85,7 @@
 														  @"pending",
 														  @"member"]];
 		
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
@@ -124,7 +124,7 @@
 
 - (void)_deleteClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] deleteClubWithClubID:vo.clubID completion:^(NSObject *result) {
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 //			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 		}];
@@ -135,8 +135,8 @@
 }
 
 - (void)_joinClub:(HONUserClubVO *)vo {
-	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSObject *result) {
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 		}];
@@ -144,8 +144,8 @@
 }
 
 - (void)_leaveClub:(HONUserClubVO *)vo {
-	[[HONAPICaller sharedInstance] leaveClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] leaveClub:vo withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSObject *result) {
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 //			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 		}];
@@ -251,7 +251,7 @@
 #pragma mark - Navigation
 - (void)_goProfile {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Tab - Activity"];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[HONUserAssistant sharedInstance] activeUserID]] animated:YES];
 }
 
 - (void)_goCreateChallenge {

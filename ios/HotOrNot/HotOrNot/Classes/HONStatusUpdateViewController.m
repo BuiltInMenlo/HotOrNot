@@ -106,8 +106,8 @@
 		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation, _conversation.metadata);
 		
 		if (!error) {
-			if ([_conversation.participants containsObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])]) {
-				[[HONLayerKitAssistant sharedInstance] addParticipants:@[NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])] toConversation:_conversation withCompletion:^(BOOL success, NSError *error) {
+			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
+				[[HONLayerKitAssistant sharedInstance] addParticipants:@[NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])] toConversation:_conversation withCompletion:^(BOOL success, NSError *error) {
 					if (!success) {
 						NSLog(@"Couldn't add me self to the convo!");
 					}
@@ -164,7 +164,7 @@
 }
 
 - (void)_submitCommentReply {
-	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_clubVO.clubID),
 						   @"subject"		: _comment,
@@ -186,7 +186,7 @@
 		}
 	}];
 	
-	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], _comment]} : nil;
+	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment]} : nil;
 	
 	NSError *error = nil;
 	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]]] options:alertDict error:&error];
@@ -203,7 +203,7 @@
 }
 
 - (void)_flagStatusUpdate {
-	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_statusUpdateVO.clubID),
 						   @"subject"		: @"__FLAG__",
@@ -409,7 +409,7 @@
 
 
 - (void)_goImageComment {
-	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], _comment]} : nil;
+	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment]} : nil;
 	
 	NSError *error = nil;
 	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActiven "])]] options:alertDict error:&error];
@@ -717,7 +717,7 @@
 		} else if (buttonIndex == 3) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 			[[HONImageBroker sharedInstance] saveForInstagram:[HONAppDelegate avatarImage]
-												 withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
+												 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
 													   toPath:savePath];
 			
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
@@ -787,7 +787,7 @@
 		} else if (buttonIndex == 2) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 			[[HONImageBroker sharedInstance] saveForInstagram:[HONAppDelegate avatarImage]
-												 withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
+												 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
 													   toPath:savePath];
 			
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {

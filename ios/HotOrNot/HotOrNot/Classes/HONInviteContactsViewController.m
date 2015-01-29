@@ -194,7 +194,7 @@
 					if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
 						[self _sendClubInvites];
 					
-					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary * result) {
+					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary * result) {
 						[[HONClubAssistant sharedInstance] writeUserClubs:result];	
 						[self dismissViewControllerAnimated:YES completion:^(void) {}];
 					}];

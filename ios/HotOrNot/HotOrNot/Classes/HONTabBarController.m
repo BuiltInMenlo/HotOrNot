@@ -245,7 +245,7 @@
 					 @"score"		: @(0),
 					 @"comments"	: @(0)};
 	
-//	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+//	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSArray *result) {
 //		int statusChanges = 0;
 //		int voteChanges = 0;
 //		int commentChanges = 0;
@@ -262,7 +262,7 @@
 //		for (HONChallengeVO *vo in challenges) {
 //			[updateChallenges addObject: @{@"id"		: @(vo.challengeID),
 //										   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
-//										   @"score"		: @((vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score),
+//										   @"score"		: @((vo.creatorVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score),
 //										   @"comments"	: @(0)}];
 //		}
 //		

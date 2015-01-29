@@ -99,7 +99,7 @@
 		}];
 	}];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 //		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 //		_joinedTotalClubs = (_joinedTotalClubs == 0) ? (int)[[result objectForKey:@"pending"] count] : _joinedTotalClubs;
@@ -125,7 +125,7 @@
 //					
 ////					NSLog(@"SEEN UPDATES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"]);
 ////					if ([clubVO.updatedDate timeIntervalSinceNow] >= (3600 * 12)) {
-////					if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:NSStringFromInt(clubPhotoVO.challengeID)] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+////					if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] objectForKey:NSStringFromInt(clubPhotoVO.challengeID)] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) {
 ////						[_seenClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 ////					
 ////					} else {
@@ -135,7 +135,7 @@
 //				
 ////			} else if ([key isEqualToString:@"pending"]) {
 ////				for (NSDictionary *dict in [result objectForKey:key]) {
-////					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+////					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 ////						
 ////						if ([[result objectForKey:@"pending"] count] == 0)
 ////							[self _retrieveClubs];
@@ -149,10 +149,10 @@
 		NSLog(@"WITHIN RANGE:[%@]", NSStringFromBOOL([[HONGeoLocator sharedInstance] isWithinOrthodoxClub]));
 //		NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], NSStringFromBOOL([[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]));
 //		if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
-////			[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+////			[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 ////				
 ////				if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-////					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+////					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 ////						[[HONClubAssistant sharedInstance] writeUserClubs:result];
 ////						[self _didFinishDataRefresh];
 ////					}];
@@ -167,7 +167,7 @@
 }
 
 - (void)_retrieveActivityItems {
-	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSString *result) {
+	[[HONAPICaller sharedInstance] retrieveActivityTotalForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSString *result) {
 		NSLog(@"ACTIVITY:[%@]", result);
 //		//int total = MIN(MAX(0, [result count]), 10);
 		[_activityButton setTitle:NSStringFromInt([result intValue]) forState:UIControlStateNormal];
@@ -651,7 +651,7 @@
 	NSLog(@"WITHIN RANGE:[%@]", NSStringFromBOOL([[HONGeoLocator sharedInstance] isWithinOrthodoxClub]));
 //	NSLog(@"MEMBER OF:[%d] =-= (%@)", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue], NSStringFromBOOL([[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]));
 //	if ([[HONGeoLocator sharedInstance] isWithinOrthodoxClub] && ![[HONClubAssistant sharedInstance] isMemberOfClubWithClubID:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"orthodox_club"] objectForKey:@"club_id"] intValue] includePending:YES]) {
-////		[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+////		[[HONAPICaller sharedInstance] joinClub:[[HONClubAssistant sharedInstance] orthodoxMemberClub] withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 ////			
 ////			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
 ////				[self _goReloadTableViewContents];

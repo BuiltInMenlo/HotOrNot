@@ -539,7 +539,7 @@ static LYRClient *sharedClient = nil;
 //		NSString *userID = (NSString *)obj;
 //		
 //		if (excludeUser) {
-//			if (![userID isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"id"]] && ![uniqueParticipants containsObject:userID] && [conversation.participants containsObject:userID])
+//			if (![userID isEqualToString:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])] && ![uniqueParticipants containsObject:userID] && [conversation.participants containsObject:userID])
 //				[uniqueParticipants addObject:userID];
 //			
 //		} else {
@@ -567,7 +567,7 @@ static LYRClient *sharedClient = nil;
 	NSMutableSet *dropParticipants = [NSMutableSet setWithSet:conversation.participants];
 	
 	if (!isOwner)
-		[dropParticipants removeObject:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])];
+		[dropParticipants removeObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 	
 	NSLog(@"DROPPING PARTICIPANTS FROM:[%@]\n%@", conversation.identifierSuffix, dropParticipants);
 	
@@ -594,7 +594,7 @@ static LYRClient *sharedClient = nil;
 	
 	// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
 	NSError *error = nil;
-	LYRMessage *message = [client newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[statusUpdateVO.comment dataUsingEncoding:NSUTF8StringEncoding]]] options:@{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONAppDelegate infoForUser] objectForKey:@"username"], msg]} error:&error];
+	LYRMessage *message = [client newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[statusUpdateVO.comment dataUsingEncoding:NSUTF8StringEncoding]]] options:@{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], msg]} error:&error];
 	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
 	
 	BOOL success = [conversation sendMessage:message error:&error];
@@ -636,8 +636,8 @@ static LYRClient *sharedClient = nil;
 - (LYRRecipientStatus)latestRecipientStatusForMessage:(LYRMessage *)message {
 	
 	NSMutableDictionary *dict = [[message recipientStatusByUserID] mutableCopy];
-	if ([message creatorID] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
-		[dict removeObjectForKey:NSStringFromInt([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])];
+	if ([message creatorID] == [[HONUserAssistant sharedInstance] activeUserID])
+		[dict removeObjectForKey:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 		
 		
 	NSArray *recipients = [dict keysSortedByValueUsingComparator:^(id obj1, id obj2) {

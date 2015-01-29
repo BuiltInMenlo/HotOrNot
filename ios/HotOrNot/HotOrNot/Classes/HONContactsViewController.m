@@ -54,7 +54,7 @@
 - (void)_retrieveClubs {
 	
 	_clubs = [NSMutableArray array];
-//	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 //		NSLog(@":/: retrieveClubsForUserByUserID:[%@] :/:", result);
 //		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 //		
@@ -69,7 +69,7 @@
 //				
 ////			} else if ([key isEqualToString:@"pending"]) {
 ////				for (NSDictionary *dict in [result objectForKey:key]) {
-////					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+////					[[HONAPICaller sharedInstance] joinClub:[HONUserClubVO clubWithDictionary:dict] withMemberID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 ////						
 ////						if ([[result objectForKey:@"pending"] count] == 0)
 ////							[self _retrieveClubs];

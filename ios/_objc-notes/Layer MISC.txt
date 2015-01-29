@@ -1,7 +1,0 @@
-Messages:
-Byte limit is 64KB
-Made up of different media types
-
-MessagePart:
-Items of a Message
-type NSDict

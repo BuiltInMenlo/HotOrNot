@@ -143,7 +143,7 @@
 		mailComposeViewController.mailComposeDelegate = self;
 		[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
 		[mailComposeViewController setSubject:@"Account Suspended"];
-		[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]] isHTML:NO];
+		[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]), [[HONUserAssistant sharedInstance] activeUsername]] isHTML:NO];
 		
 		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 		

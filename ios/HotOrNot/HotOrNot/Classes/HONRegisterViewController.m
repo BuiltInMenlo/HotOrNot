@@ -77,8 +77,8 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-	NSLog(@"_checkUsername -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-	NSLog(@"_checkUsername -- USERNAME:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"_checkUsername -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+	NSLog(@"_checkUsername -- USERNAME:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername]);
 	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
 	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
@@ -130,13 +130,13 @@
 					
 					_submitButton.userInteractionEnabled = NO;
 					
-					NSLog(@"_finalizeUser -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-					NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+					NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+					NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
 					NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 					
 					NSLog(@"\n\n******** FINALIZE W/ API **********");
-					[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																				@"username"		: ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"],
+					[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+																				@"username"		: ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername],
 																				@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
 																					
 						int responseCode = [[result objectForKey:@"result"] intValue];
@@ -148,7 +148,7 @@
 								}
 							}];
 							
-							[[HONAPICaller sharedInstance] updateUsernameForUser:([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONAppDelegate infoForUser] objectForKey:@"username"] completion:^(NSDictionary *result) {
+							[[HONAPICaller sharedInstance] updateUsernameForUser:([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
 								if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 								}
 							}];
@@ -261,7 +261,7 @@
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = NSLocalizedString(@"register_submit", @"Terms");
-	//_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+	//_usernameTextField.text = [[HONUserAssistant sharedInstance] activeUsername];
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
 	[_txtFieldBGImageView addSubview:_usernameTextField];
@@ -294,8 +294,8 @@
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
 	
-	NSLog(@"loadView -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"loadView -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
 	NSLog(@"loadView -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 }
 
@@ -350,7 +350,7 @@
 	
 	[_phoneButton setSelected:NO];
 		
-	HONRegisterErrorType registerErrorType = ((int)([[[HONAppDelegate infoForUser] objectForKey:@"username"] length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_phone length] == 0) * HONRegisterErrorTypePhone);
+	HONRegisterErrorType registerErrorType = ((int)([[[HONUserAssistant sharedInstance] activeUsername] length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_phone length] == 0) * HONRegisterErrorTypePhone);
 	if (registerErrorType == HONRegisterErrorTypeNone) {
 //		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		

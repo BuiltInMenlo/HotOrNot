@@ -98,8 +98,8 @@ static HONAnalyticsReporter *sharedInstance = nil;
 - (NSDictionary *)userProperties {
 	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [NSDate utcNowDate];
 	
-	return(@{@"identifier"	: ([[HONAppDelegate infoForUser] objectForKey:@"id"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"id"] : @"0",
-//			 @"name"		: ([[HONAppDelegate infoForUser] objectForKey:@"username"] != nil) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : @"",
+	return(@{@"identifier"	: (NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) != nil) ? NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) : @"0",
+//			 @"name"		: ([[HONUserAssistant sharedInstance] activeUsername] != nil) ? [[HONUserAssistant sharedInstance] activeUsername] : @"",
 //			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
 			 @"time"		: [[NSDate utcNowDate] formattedISO8601StringUTC],
 			 @"time_zone"	: [[NSDate date] utcHourOffsetFromDeviceLocale],

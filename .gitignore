@@ -20,4 +20,4 @@ ios/_deploy/*
 *.xcuserstate
 
 #-- personal skratches / snipps --#
-notes
+ios/_objc-notes/

@@ -1,5 +1,5 @@
 //
-//  HOnRestrictedViewController.h
+//  HONRestrictedViewController.h
 //  HotOrNot
 //
 //  Created by BIM  on 1/15/15.
@@ -8,6 +8,6 @@
 
 #import "HONViewController.h"
 
-@interface HOnRestrictedViewController : HONViewController
+@interface HONRestrictedViewController : HONViewController
 
 @end

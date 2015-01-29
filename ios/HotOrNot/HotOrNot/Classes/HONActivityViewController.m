@@ -72,7 +72,7 @@
 	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != nil) {
 			_trivialUserVO = [HONTrivialUserVO userFromUserVO:[HONUserVO userWithDictionary:result]];
-			_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _trivialUserVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
+			_userProfileType = ([[HONUserAssistant sharedInstance] activeUserID] == _trivialUserVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
 			[self _retrieveActivityItems];
 			
 		} else {
@@ -90,7 +90,7 @@
 
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSArray *result) {
 		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSDictionary *dict = (NSDictionary *)obj;
 			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
@@ -102,11 +102,11 @@
 //																			   @"club_id"		: @"0",
 //																			   @"club_name"		: @"",
 //																			   @"time"			: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-//																			   @"user"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-//																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+//																			   @"user"			: @{@"id"			: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+//																									@"username"		: [[HONUserAssistant sharedInstance] activeUsername],
 //																									@"avatar_url"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
-//																			   @"recip"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-//																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"]}}]];
+//																			   @"recip"			: @{@"id"			: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+//																									@"username"		: [[HONUserAssistant sharedInstance] activeUsername]}}]];
 		
 		[self _didFinishDataRefresh];
 	}];

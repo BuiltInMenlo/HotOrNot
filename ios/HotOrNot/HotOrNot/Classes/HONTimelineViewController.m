@@ -83,7 +83,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSArray *result) {
 		_challenges = [NSMutableArray array];
 		for (NSDictionary *dict in result) {
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
@@ -264,7 +264,7 @@
 }
 
 - (void)_goProfile {
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[HONUserAssistant sharedInstance] activeUserID]] animated:YES];
 }
 
 - (void)_goMessages {

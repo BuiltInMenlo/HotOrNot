@@ -117,7 +117,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
-	NSString *nameCaption = _trivialUserVO.username;//(_trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	NSString *nameCaption = _trivialUserVO.username;//(_trivialUserVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
 	_titleLabel.text = nameCaption;
 	
 	CGSize size = [_titleLabel.text boundingRectWithSize:_titleLabel.frame.size
@@ -140,8 +140,8 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	
 	[super accVisible:NO];
 	
-	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : _statusUpdateVO.username;
-	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @" are" : @" is"] mutableCopy];
+	NSString *creatorName = _statusUpdateVO.username;//(_statusUpdateVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"You" : _statusUpdateVO.username;
+	__block NSMutableString *titleCaption = [creatorName mutableCopy];//  [[creatorName stringByAppendingString:@" is"] mutableCopy];//(_statusUpdateVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @" are" : @" is"] mutableCopy];
 	
 	NSString *subtitleCaption = @"";
 	NSMutableArray *uniqueParticipants = [NSMutableArray array];

@@ -17,7 +17,7 @@
 
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initAtPos:yPos forChallenges:challenges asPrimaryOpponent:opponentVO])) {
-		_participantGridViewType = (opponentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONParticipantGridViewTypeUsersProfile : HONParticipantGridViewTypeProfile;
+		_participantGridViewType = (opponentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? HONParticipantGridViewTypeUsersProfile : HONParticipantGridViewTypeProfile;
 		
 		[self layoutGrid];
 	}

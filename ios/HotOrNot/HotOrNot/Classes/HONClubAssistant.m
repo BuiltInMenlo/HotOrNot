@@ -99,8 +99,8 @@ static HONClubAssistant *sharedInstance = nil;
 			   @"total_score"		: @"0",
 			   @"total_submissions"	: @"0",
 			   
-			   @"owner"			: ([owner count] == 0) ? @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-														   @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+			   @"owner"			: ([owner count] == 0) ? @{@"id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+														   @"username"	: [[HONUserAssistant sharedInstance] activeUsername],
 														   @"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]} : owner,
 			   
 			   @"members"		: @[],
@@ -134,8 +134,8 @@ static HONClubAssistant *sharedInstance = nil;
 							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC]}];
 	}];
 	
-	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																							 @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+																							 @"username"	: [[HONUserAssistant sharedInstance] activeUsername],
 																							 @"avatar"		: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]}];
 	[dict replaceObject:@(1 + ((int)[members count] + (int)[pending count])) forKey:@"total_members"];
 	[dict replaceObject:[members copy] forKey:@"members"];
@@ -314,8 +314,8 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSMutableDictionary *)emptyClubPhotoDictionary {
 	return ([@{@"challenge_id"	: @"0",
-			  @"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-			  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+			  @"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+			  @"username"		: [[HONUserAssistant sharedInstance] activeUsername],
 			  @"avatar"			: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 			  @"img"			: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 			  @"score"			: @"0",
@@ -415,13 +415,13 @@ static HONClubAssistant *sharedInstance = nil;
 	if (clubVO.clubID == [[HONClubAssistant sharedInstance] currentLocationClub].clubID)
 		return (YES);
 	
-	if (clubVO.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+	if (clubVO.ownerID == [[HONUserAssistant sharedInstance] activeUserID])
 		return (YES);
 	
 	[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 		
-		if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 			isFound = YES;
 			*stop = YES;
 		}
@@ -431,7 +431,7 @@ static HONClubAssistant *sharedInstance = nil;
 		[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
 			
-			if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+			if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 				isFound = YES;
 				*stop = YES;
 			}
@@ -517,13 +517,13 @@ static HONClubAssistant *sharedInstance = nil;
 //		[[HONAPICaller sharedInstance] retrieveStatusUpdateSeenMembersWithStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
 //			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 //				NSDictionary *dict = (NSDictionary *)obj;
-//				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+//				isFound = ([[dict objectForKey:@"member_id"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]);
 //				NSLog(@"--- dict:[%@]", dict);
 //				NSLog(@"--- isFound:[%@]", NSStringFromBOOL(isFound));
 				
 //				if (isFound) {
 //					NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
-//					[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:NSStringFromInt(statusUpdateID)];
+//					[seenClubs setValue:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) forKey:NSStringFromInt(statusUpdateID)];
 //					
 //					[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 //					[[NSUserDefaults standardUserDefaults] synchronize];
@@ -571,8 +571,8 @@ static HONClubAssistant *sharedInstance = nil;
 - (HONUserClubVO *)userSignupClub {
 	__block HONUserClubVO *vo = nil;
 	[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		NSLog(@"MATCHING SIGNUP CLUB:[%@]<=|%d|-=>[%@]", [[[HONAppDelegate infoForUser] objectForKey:@"username"] lowercaseString], ([[[[HONAppDelegate infoForUser] objectForKey:@"username"] lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]), [[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]);
-		if ([[[[HONAppDelegate infoForUser] objectForKey:@"username"] lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]) {
+		NSLog(@"MATCHING SIGNUP CLUB:[%@]<=|%d|-=>[%@]", [[[HONUserAssistant sharedInstance] activeUsername] lowercaseString], ([[[[HONUserAssistant sharedInstance] activeUsername] lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]), [[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]);
+		if ([[[[HONUserAssistant sharedInstance] activeUsername] lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]) {
 			vo = [HONUserClubVO clubWithDictionary:(NSDictionary *)obj];
 			*stop = YES;
 		}
@@ -940,7 +940,7 @@ static HONClubAssistant *sharedInstance = nil;
 	[[NSUserDefaults standardUserDefaults] setObject:@{} forKey:@"seen_updates"];
 	
 	NSMutableDictionary *seenClubs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"seen_updates"] mutableCopy];
-	[seenClubs setValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:NSStringFromInt(statusUpdateID)];
+	[seenClubs setValue:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) forKey:NSStringFromInt(statusUpdateID)];
 	
 	[[NSUserDefaults standardUserDefaults] setValue:[seenClubs copy] forKey:@"seen_updates"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -959,7 +959,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSDictionary *)fetchUserClubs {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] == nil) {
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
 			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		}];
 	}
@@ -1008,7 +1008,7 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	} else {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubPhotoDictionary] mutableCopy];
-		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
+		[dict setValue:[NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
 		clubVO = [HONUserClubVO clubWithDictionary:dict];
 		
@@ -1138,7 +1138,7 @@ static HONClubAssistant *sharedInstance = nil;
 					avail -= (int)(memberClubVO.ownerID == participantVO.userID);
 					
 					for (HONTrivialUserVO *vo in memberClubVO.activeMembers) {
-						if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+						if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID])
 							continue;
 						
 						NSLog(@"MEMBER MATCHING ACTIVE(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
@@ -1182,7 +1182,7 @@ static HONClubAssistant *sharedInstance = nil;
 						
 						if (avail > 0) {
 							for (HONTrivialUserVO *vo in pendingClubVO.pendingMembers) {
-								if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+								if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID])
 									continue;
 								
 								NSLog(@"PENDING MATCHING PENDING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, ((participantVO.userID != 0 && vo.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [vo.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])), vo.username);

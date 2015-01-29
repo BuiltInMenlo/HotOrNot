@@ -55,7 +55,7 @@
 	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
-	[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[HONUserAssistant sharedInstance] activeUserID] usingPINCode:_pin completion:^(NSDictionary *result) {
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;

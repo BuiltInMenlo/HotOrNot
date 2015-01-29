@@ -18,10 +18,10 @@
 #import "HONHomeViewFlowLayout.h"
 #import "HONActivityViewController.h"
 #import "HONRegisterViewController.h"
+#import "HONRestrictedViewController.h"
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
-#import "HOnRestrictedViewController.h"
 #import "HONRefreshControl.h"
 #import "HONHomeFeedToggleView.h"
 #import "HONHomeViewCell.h"
@@ -135,7 +135,7 @@
 	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
 	__block int nextPage = page + 1;
 	
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] fromPage:page completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:page completion:^(NSDictionary *result) {
 		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
 		
 		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
@@ -162,7 +162,7 @@
 }
 
 - (void)_flagStatusUpdate {
-	NSDictionary *dict = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_selectedStatusUpdateVO.clubID),
 						   @"subject"		: @"__FLAG__",
@@ -256,7 +256,7 @@
 	[_refreshControl endRefreshing];
 	
 	[_toggleView toggleEnabled:YES];
-	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSNumber *result){
+	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSNumber *result){
 		NSLog(@"ACTIVITY:[%@]", result);
 		_voteScore = [result intValue];
 		[_headerView updateActivityScore:_voteScore];
@@ -587,7 +587,7 @@
 		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
 			[_locationManager stopUpdatingLocation];
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HOnRestrictedViewController alloc] init]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:^(void) {
 			}];
@@ -632,7 +632,7 @@
 			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
 				[_locationManager stopUpdatingLocation];
 				
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HOnRestrictedViewController alloc] init]];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:NO completion:^(void) {
 				}];
@@ -668,7 +668,7 @@
 		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
 			[_locationManager stopUpdatingLocation];
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HOnRestrictedViewController alloc] init]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:^(void) {
 			}];

@@ -99,7 +99,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	NSLog(@"PicoUser.accountBalance:[%@]", picoUser.accountBalance);
 	
 	if (picoUser.requireAccountCreation || !picoUser.connected)
-		[[PicoManager sharedManager] linkCurrentStoreUserWithClientAppId:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
+		[[PicoManager sharedManager] linkCurrentStoreUserWithClientAppId:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 	
 	[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents];
 }

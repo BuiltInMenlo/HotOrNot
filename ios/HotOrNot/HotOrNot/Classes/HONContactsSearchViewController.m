@@ -269,7 +269,7 @@
 	
 #if __APPSTORE_BUILD__ == 0
 	if ([_phoneTextField.text isEqualToString:@"¡"]) {
-		_phoneTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+		_phoneTextField.text = [[HONUserAssistant sharedInstance] activeUsername];
 		_phoneTextField.text = @"2393709811";
 	}
 #endif
@@ -382,7 +382,7 @@
 //				NSLog(@"CLUB -=- (CREATE) -=-");
 //				
 //				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}];
-//				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
+//				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 //				[dict setValue:[[HONClubAssistant sharedInstance] rndCoverImageURL] forKey:@"img"];
 //				_clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 //				
@@ -424,7 +424,7 @@
 ////			} else {
 //				
 //				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] clubDictionaryWithOwner:@{} activeMembers:@[] pendingMembers:@[[HONTrivialUserVO userFromContactUserVO:_contactUserVO]]];
-//				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
+//				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 //				[dict setValue:[[HONClubAssistant sharedInstance] rndCoverImageURL] forKey:@"img"];
 //				_clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 //				NSLog(@"CLUB -=- (GENERATE) -=-\n%@", _clubVO.dictionary);

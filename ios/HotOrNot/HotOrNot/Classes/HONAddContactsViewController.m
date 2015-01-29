@@ -178,8 +178,8 @@
 		TSTapstream *tracker = [TSTapstream instance];
 		
 		TSEvent *e = [TSEvent eventWithName:@"Invite Friends" oneTimeOnly:YES];
-		[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
+		[e addValue:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) forKey:@"userID"];
+		[e addValue:[[HONUserAssistant sharedInstance] activeUsername] forKey:@"username"];
 		[tracker fireEvent:e];
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

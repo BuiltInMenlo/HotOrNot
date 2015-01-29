@@ -15,7 +15,6 @@
 		300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */; };
 		3010D7811A24109E0078164F /* HONHomeFeedToggleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3010D7801A24109E0078164F /* HONHomeFeedToggleView.m */; };
 		3010D7831A2439090078164F /* HotOrNot.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 3010D7821A2439090078164F /* HotOrNot.entitlements */; };
-		3010D7871A2444190078164F /* HONCommentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3010D7861A2444190078164F /* HONCommentViewCell.m */; };
 		3010D78E1A24BADB0078164F /* HONClubToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C11908178B00512295 /* HONClubToggleViewCell.m */; };
 		3010D78F1A24BAED0078164F /* HONClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */; };
 		3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */; };
@@ -37,7 +36,6 @@
 		3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */; };
 		3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */; };
 		303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0E19D5E78600CB2501 /* fpo_push.caf */; };
-		3042E1051A76C4FD005AFD12 /* LayerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3042E1041A76C4FD005AFD12 /* LayerKit.framework */; };
 		3042E1201A76C594005AFD12 /* NSArray+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E10A1A76C594005AFD12 /* NSArray+BuiltinMenlo.m */; };
 		3042E1211A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E10C1A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.m */; };
 		3042E1221A76C594005AFD12 /* NSData+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E10E1A76C594005AFD12 /* NSData+BuiltinMenlo.m */; };
@@ -53,6 +51,7 @@
 		3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E5A519E4D9A6003FF312 /* HONStoreProductViewCell.m */; };
 		3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */; };
 		3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */; };
+		304CB4711A79B3670042BBE5 /* HONRestrictedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 304CB4701A79B3670042BBE5 /* HONRestrictedViewController.m */; };
 		305001421A5E222800E8F303 /* HONStatusUpdateCreatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 305001411A5E222800E8F303 /* HONStatusUpdateCreatorView.m */; };
 		3051F8921A082B9800CD85F2 /* HONStoreProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8911A082B9800CD85F2 /* HONStoreProductViewController.m */; };
 		3051F8951A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8941A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m */; };
@@ -64,25 +63,15 @@
 		305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */; };
 		307A0B881A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A0B871A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m */; };
 		307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */; };
-		308407441A6C980E009F38E0 /* libPods-HotOrNot-LayerKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3084073F1A6C980E009F38E0 /* libPods-HotOrNot-LayerKit.a */; };
-		308407461A6C980E009F38E0 /* libPods-HotOrNot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308407421A6C980E009F38E0 /* libPods-HotOrNot.a */; };
-		3084074A1A6C9D1D009F38E0 /* libPods-seflieclub-tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308407431A6C980E009F38E0 /* libPods-seflieclub-tests.a */; };
-		3084074C1A6C9D2D009F38E0 /* libPods-HotOrNot-LayerKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3084074B1A6C9D2D009F38E0 /* libPods-HotOrNot-LayerKit.a */; };
-		3084074E1A6C9D78009F38E0 /* LayerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3084074D1A6C9D78009F38E0 /* LayerKit.framework */; };
 		308407511A6C9F95009F38E0 /* HONLayerKitAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 308407501A6C9F95009F38E0 /* HONLayerKitAssistant.m */; };
-		308407571A6CDB94009F38E0 /* infoplist_20140818.131000.txt in Resources */ = {isa = PBXBuildFile; fileRef = 308407541A6CDB94009F38E0 /* infoplist_20140818.131000.txt */; };
-		308407581A6CDB94009F38E0 /* layer_id-token_JWT.json.txt in Resources */ = {isa = PBXBuildFile; fileRef = 308407551A6CDB94009F38E0 /* layer_id-token_JWT.json.txt */; };
-		308407591A6CDB94009F38E0 /* layer_keys.txt in Resources */ = {isa = PBXBuildFile; fileRef = 308407561A6CDB94009F38E0 /* layer_keys.txt */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
 		308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E319E3029E00EE9512 /* libPicoCandySDKCore.a */; };
 		308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361419E337AA00EE9512 /* FLAnimatedImage.m */; };
 		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
-		3092C5861A6D3E55003A2A84 /* RegEx.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3092C5851A6D3E55003A2A84 /* RegEx.txt */; };
-		3092C5881A6D44F2003A2A84 /* Layer MISC.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3092C5871A6D44F2003A2A84 /* Layer MISC.txt */; };
-		3092C58A1A6D7E0E003A2A84 /* curl_calls.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3092C5891A6D7E0E003A2A84 /* curl_calls.txt */; };
 		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
+		30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256061A3BB1F400C789E1 /* HONTopicViewCell.m */; };
 		30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256091A3BB28E00C789E1 /* HONTopicVO.m */; };
 		30B2560D1A3BE28700C789E1 /* HONBaseVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B2560C1A3BE28700C789E1 /* HONBaseVO.m */; };
@@ -102,7 +91,6 @@
 		30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3091819E230A70017ACBF /* CouchbaseLite.framework */; };
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
-		30B7C8671A6862510030A77D /* HOnRestrictedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B7C8661A6862510030A77D /* HOnRestrictedViewController.m */; };
 		30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */; };
@@ -212,7 +200,6 @@
 		4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C80126F176A530500BD795D /* HONImageLoadingView.m */; };
 		4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C810EA017DE65D900F6EAE9 /* CoreImage.framework */; };
 		4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C81A016163367F300AB188B /* AVFoundation.framework */; };
-		4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81D8531972082200BAFDA3 /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */; };
 		4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */; };
 		4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD89190F600700CAEABB /* SearchElements.xcassets */; };
@@ -266,6 +253,7 @@
 		8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B187B197856870085AC03 /* selfie_notification.caf */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */; };
+		F7E6D20B72A5177C54C052C6 /* libPods-HotOrNot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BA555DA71DFCC4E3FF2066 /* libPods-HotOrNot.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -273,6 +261,7 @@
 		07B6E6AE19884AE400DA0805 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_users@2x.png"; sourceTree = "<group>"; };
 		07B6E6B019884AE700DA0805 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
 		07B6E6B419884AEF00DA0805 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_clubs@2x.png"; sourceTree = "<group>"; };
+		2A54C8558A85D50E8CAB2289 /* Pods-HotOrNot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotOrNot.release.xcconfig"; path = "Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot.release.xcconfig"; sourceTree = "<group>"; };
 		300641C11A5EF29C0078BCE9 /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		300641C21A5EF29C0078BCE9 /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		300D1B831A0B93C900D1D9A7 /* HONTimelineMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineMapViewController.h; sourceTree = "<group>"; };
@@ -313,9 +302,6 @@
 		301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UICKeyChainStore.framework; sourceTree = "<group>"; };
 		301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XMLDictionary.framework; sourceTree = "<group>"; };
 		301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cupertino.gpx; sourceTree = "<group>"; };
-		30213E461A6D269500BCBFA6 /* Pods-seflieclub-tests.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-seflieclub-tests.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-seflieclub-tests/Pods-seflieclub-tests.debug.xcconfig"; sourceTree = "<group>"; };
-		30213E481A6D26A900BCBFA6 /* Pods-seflieclub-tests.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-seflieclub-tests.release.xcconfig"; path = "../Pods/Target Support Files/Pods-seflieclub-tests/Pods-seflieclub-tests.release.xcconfig"; sourceTree = "<group>"; };
-		3027CAAC1A7307CE00E520F5 /* Obj-C Stuff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Obj-C Stuff"; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		3030DF571A63344D00406AAF /* HONMoreNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMoreNavButtonView.h; sourceTree = "<group>"; };
@@ -323,7 +309,6 @@
 		3030DF5A1A6348ED00406AAF /* HONTopicsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTopicsViewController.h; sourceTree = "<group>"; };
 		3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTopicsViewController.m; sourceTree = "<group>"; };
 		303BAD0E19D5E78600CB2501 /* fpo_push.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fpo_push.caf; sourceTree = "<group>"; };
-		3042E1041A76C4FD005AFD12 /* LayerKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LayerKit.framework; sourceTree = "<group>"; };
 		3042E1091A76C594005AFD12 /* NSArray+BuiltinMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+BuiltinMenlo.h"; sourceTree = "<group>"; };
 		3042E10A1A76C594005AFD12 /* NSArray+BuiltinMenlo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+BuiltinMenlo.m"; sourceTree = "<group>"; };
 		3042E10B1A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+BuiltinMenlo.h"; sourceTree = "<group>"; };
@@ -356,6 +341,8 @@
 		3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewFlowLayout.m; sourceTree = "<group>"; };
 		3045F9C11A1E624300F4FA88 /* HONHomeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewCell.h; sourceTree = "<group>"; };
 		3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewCell.m; sourceTree = "<group>"; };
+		304CB46F1A79B3670042BBE5 /* HONRestrictedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRestrictedViewController.h; sourceTree = "<group>"; };
+		304CB4701A79B3670042BBE5 /* HONRestrictedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRestrictedViewController.m; sourceTree = "<group>"; };
 		305001401A5E222800E8F303 /* HONStatusUpdateCreatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateCreatorView.h; sourceTree = "<group>"; };
 		305001411A5E222800E8F303 /* HONStatusUpdateCreatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateCreatorView.m; sourceTree = "<group>"; };
 		3051F8901A082B9800CD85F2 /* HONStoreProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductViewController.h; sourceTree = "<group>"; };
@@ -381,16 +368,10 @@
 		307A0B871A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRConversation+BuiltinMenlo.m"; sourceTree = "<group>"; };
 		307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshingLabel.h; sourceTree = "<group>"; };
 		307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRefreshingLabel.m; sourceTree = "<group>"; };
-		3084073F1A6C980E009F38E0 /* libPods-HotOrNot-LayerKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPods-HotOrNot-LayerKit.a"; sourceTree = "<group>"; };
 		308407421A6C980E009F38E0 /* libPods-HotOrNot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPods-HotOrNot.a"; sourceTree = "<group>"; };
 		308407431A6C980E009F38E0 /* libPods-seflieclub-tests.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPods-seflieclub-tests.a"; sourceTree = "<group>"; };
-		3084074B1A6C9D2D009F38E0 /* libPods-HotOrNot-LayerKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-HotOrNot-LayerKit.a"; path = "../../../../../../../Users/BIM/Library/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos/libPods-HotOrNot-LayerKit.a"; sourceTree = "<group>"; };
-		3084074D1A6C9D78009F38E0 /* LayerKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LayerKit.framework; path = HotOrNot/Vendor/Frameworks/LayerKit.framework; sourceTree = "<group>"; };
 		3084074F1A6C9F95009F38E0 /* HONLayerKitAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONLayerKitAssistant.h; sourceTree = "<group>"; };
 		308407501A6C9F95009F38E0 /* HONLayerKitAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLayerKitAssistant.m; sourceTree = "<group>"; };
-		308407541A6CDB94009F38E0 /* infoplist_20140818.131000.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = infoplist_20140818.131000.txt; sourceTree = "<group>"; };
-		308407551A6CDB94009F38E0 /* layer_id-token_JWT.json.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "layer_id-token_JWT.json.txt"; sourceTree = "<group>"; };
-		308407561A6CDB94009F38E0 /* layer_keys.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = layer_keys.txt; sourceTree = "<group>"; };
 		308D455C19D4D4A900E832D7 /* HONAudioMaestro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAudioMaestro.h; sourceTree = "<group>"; };
 		308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAudioMaestro.m; sourceTree = "<group>"; };
 		308F35DE19E301E300EE9512 /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
@@ -447,10 +428,9 @@
 		308F361A19E3389B00EE9512 /* 1lgZ0.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1lgZ0.gif; sourceTree = "<group>"; };
 		3091229F19C501F60081B141 /* HONComposeSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeSubjectViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONComposeSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeSubjectViewController.m; sourceTree = "<group>"; };
-		3092C5851A6D3E55003A2A84 /* RegEx.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RegEx.txt; sourceTree = "<group>"; };
-		3092C5871A6D44F2003A2A84 /* Layer MISC.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Layer MISC.txt"; sourceTree = "<group>"; };
-		3092C5891A6D7E0E003A2A84 /* curl_calls.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = curl_calls.txt; sourceTree = "<group>"; };
 		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
+		30AFF5701A79AB43005F408B /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
+		30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeViewFlowLayout.h; sourceTree = "<group>"; };
 		30B256031A3BB12100C789E1 /* HONComposeViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeViewFlowLayout.m; sourceTree = "<group>"; };
 		30B256051A3BB1F400C789E1 /* HONTopicViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTopicViewCell.h; sourceTree = "<group>"; };
@@ -488,8 +468,6 @@
 		30B3096619E292D80017ACBF /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		30B3096819E292D80017ACBF /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
-		30B7C8651A6862510030A77D /* HOnRestrictedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOnRestrictedViewController.h; sourceTree = "<group>"; };
-		30B7C8661A6862510030A77D /* HOnRestrictedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOnRestrictedViewController.m; sourceTree = "<group>"; };
 		30BFAC431A01B499000CE4FC /* HONStickerButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonView.m; sourceTree = "<group>"; };
 		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
 		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
@@ -513,14 +491,8 @@
 		30D5AD8D19C8C980004EDA22 /* NHGroupThese.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHGroupThese.m; sourceTree = "<group>"; };
 		30D5AD8E19C8C980004EDA22 /* NHThreadThis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NHThreadThis.h; sourceTree = "<group>"; };
 		30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NHThreadThis.m; sourceTree = "<group>"; };
-		30DB24B019CBF64700DCFC49 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		30DB24B619CBF64700DCFC49 /* seflieclub-tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "seflieclub-tests-Info.plist"; sourceTree = "<group>"; };
-		30DB24B819CBF64700DCFC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = seflieclub_tests.m; sourceTree = "<group>"; };
-		30DB24BC19CBF64700DCFC49 /* seflieclub-tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "seflieclub-tests-Prefix.pch"; sourceTree = "<group>"; };
 		30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KakaoOpenSDK.framework; sourceTree = "<group>"; };
 		30DDD7821A2A62880032B898 /* Boca Raton.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Boca Raton.gpx"; sourceTree = "<group>"; };
-		30E177931A6EAB79003D46DA /* cert_stuff.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cert_stuff.txt; sourceTree = "<group>"; };
 		30E177951A6EB4F2003D46DA /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		30E177971A6EB563003D46DA /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateViewController.h; sourceTree = "<group>"; };
@@ -562,6 +534,7 @@
 		30FC8C5819A829E900CDB2BC /* TSUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUtils.h; sourceTree = "<group>"; };
 		30FC8C5919A829E900CDB2BC /* TSUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUtils.m; sourceTree = "<group>"; };
 		30FC8C5A19A829E900CDB2BC /* TSWordOfMouthDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSWordOfMouthDelegate.h; sourceTree = "<group>"; };
+		47BA555DA71DFCC4E3FF2066 /* libPods-HotOrNot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HotOrNot.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCollectionViewCell.h; sourceTree = "<group>"; };
@@ -767,8 +740,6 @@
 		4C80126F176A530500BD795D /* HONImageLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImageLoadingView.m; sourceTree = "<group>"; };
 		4C810EA017DE65D900F6EAE9 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		4C81D8521972082200BAFDA3 /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeychainItemWrapper.h; path = ../../Classes/KeychainItemWrapper.h; sourceTree = "<group>"; };
-		4C81D8531972082200BAFDA3 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KeychainItemWrapper.m; path = ../../Classes/KeychainItemWrapper.m; sourceTree = "<group>"; };
 		4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = BackupS3Elements.xcassets; sourceTree = "<group>"; };
 		4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = RegistrationElements.xcassets; sourceTree = "<group>"; };
 		4C83FD89190F600700CAEABB /* SearchElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SearchElements.xcassets; sourceTree = "<group>"; };
@@ -894,13 +865,12 @@
 		4CF2040418F3647C00EB57B0 /* FPOElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FPOElements.xcassets; sourceTree = "<group>"; };
 		4CFA8B7818918E8C00DCCCB1 /* HONTrivialUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTrivialUserVO.h; sourceTree = "<group>"; };
 		4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTrivialUserVO.m; sourceTree = "<group>"; };
-		75CE900CF98034652EA2E6DA /* Pods-HotOrNot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotOrNot.release.xcconfig"; path = "../Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot.release.xcconfig"; sourceTree = "<group>"; };
+		7A88648FBB09F16A3DFB48DE /* Pods-HotOrNot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotOrNot.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot.debug.xcconfig"; sourceTree = "<group>"; };
 		8F2B187B197856870085AC03 /* selfie_notification.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.caf; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONSearchSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchSubjectVO.h; sourceTree = "<group>"; };
 		B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchSubjectVO.m; sourceTree = "<group>"; };
-		FAF9334CD9A529CBE6DBC013 /* Pods-HotOrNot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotOrNot.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -916,48 +886,43 @@
 				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
 				301DF22D1A1071A500D2BEB9 /* AWSiOSSDKv2.framework in Frameworks */,
 				4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */,
+				301DF2311A10756500D2BEB9 /* Bolts.framework in Frameworks */,
 				4C62675515F96FA800AA7FCE /* CFNetwork.framework in Frameworks */,
-				4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */,
-				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
 				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
-				301DF2381A107A8C00D2BEB9 /* UICKeyChainStore.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
+				4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
+				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
+				30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
 				4C62652C15F96C7100AA7FCE /* Foundation.framework in Frameworks */,
+				30E177981A6EB563003D46DA /* GameKit.framework in Frameworks */,
+				301DF2361A107A8C00D2BEB9 /* GZIP.framework in Frameworks */,
 				30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */,
-				301DF22F1A10755000D2BEB9 /* Mantle.framework in Frameworks */,
-				301DF2371A107A8C00D2BEB9 /* TMCache.framework in Frameworks */,
 				4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */,
 				30DD5A9B1A11CDE300A571DA /* KakaoOpenSDK.framework in Frameworks */,
+				301DF22F1A10755000D2BEB9 /* Mantle.framework in Frameworks */,
 				4C62675A15F96FA800AA7FCE /* MapKit.framework in Frameworks */,
-				301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
-				301DF2311A10756500D2BEB9 /* Bolts.framework in Frameworks */,
-				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
-				3084074E1A6C9D78009F38E0 /* LayerKit.framework in Frameworks */,
-				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
-				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
-				30B3091919E230A70017ACBF /* CouchbaseLite.framework in Frameworks */,
-				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
-				301DF2361A107A8C00D2BEB9 /* GZIP.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
+				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
+				30E177961A6EB4F2003D46DA /* StoreKit.framework in Frameworks */,
+				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
+				301DF2371A107A8C00D2BEB9 /* TMCache.framework in Frameworks */,
+				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
+				301DF2381A107A8C00D2BEB9 /* UICKeyChainStore.framework in Frameworks */,
+				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
+				301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
-				308407461A6C980E009F38E0 /* libPods-HotOrNot.a in Frameworks */,
-				3084074A1A6C9D1D009F38E0 /* libPods-seflieclub-tests.a in Frameworks */,
-				30E177981A6EB563003D46DA /* GameKit.framework in Frameworks */,
-				3084074C1A6C9D2D009F38E0 /* libPods-HotOrNot-LayerKit.a in Frameworks */,
-				308407441A6C980E009F38E0 /* libPods-HotOrNot-LayerKit.a in Frameworks */,
 				30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */,
 				308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */,
 				308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */,
-				3042E1051A76C4FD005AFD12 /* LayerKit.framework in Frameworks */,
-				30E177961A6EB4F2003D46DA /* StoreKit.framework in Frameworks */,
+				F7E6D20B72A5177C54C052C6 /* libPods-HotOrNot.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 			);
@@ -1174,14 +1139,6 @@
 			path = LayerKit;
 			sourceTree = "<group>";
 		};
-		3084073E1A6C980E009F38E0 /* LayerKit */ = {
-			isa = PBXGroup;
-			children = (
-				3084073F1A6C980E009F38E0 /* libPods-HotOrNot-LayerKit.a */,
-			);
-			path = LayerKit;
-			sourceTree = "<group>";
-		};
 		308407411A6C980E009F38E0 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1189,22 +1146,6 @@
 				308407431A6C980E009F38E0 /* libPods-seflieclub-tests.a */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		308407531A6CDB94009F38E0 /* _objc-notes */ = {
-			isa = PBXGroup;
-			children = (
-				308407541A6CDB94009F38E0 /* infoplist_20140818.131000.txt */,
-				308407551A6CDB94009F38E0 /* layer_id-token_JWT.json.txt */,
-				308407561A6CDB94009F38E0 /* layer_keys.txt */,
-				3092C5851A6D3E55003A2A84 /* RegEx.txt */,
-				3092C5871A6D44F2003A2A84 /* Layer MISC.txt */,
-				3092C5891A6D7E0E003A2A84 /* curl_calls.txt */,
-				30E177931A6EAB79003D46DA /* cert_stuff.txt */,
-				3027CAAC1A7307CE00E520F5 /* Obj-C Stuff */,
-			);
-			name = "_objc-notes";
-			path = "../_objc-notes";
 			sourceTree = "<group>";
 		};
 		308F35DD19E301E300EE9512 /* KeenClient */ = {
@@ -1330,6 +1271,15 @@
 			name = Search;
 			sourceTree = "<group>";
 		};
+		30AFF56F1A79AB43005F408B /* KeychainItemWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				30AFF5701A79AB43005F408B /* KeychainItemWrapper.h */,
+				30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */,
+			);
+			path = KeychainItemWrapper;
+			sourceTree = "<group>";
+		};
 		30B308B819E20B510017ACBF /* AFNetworking */ = {
 			isa = PBXGroup;
 			children = (
@@ -1401,25 +1351,6 @@
 				30D5AD8F19C8C980004EDA22 /* NHThreadThis.m */,
 			);
 			path = NHThreadThis;
-			sourceTree = "<group>";
-		};
-		30DB24B419CBF64700DCFC49 /* seflieclub-tests */ = {
-			isa = PBXGroup;
-			children = (
-				30DB24BA19CBF64700DCFC49 /* seflieclub_tests.m */,
-				30DB24B519CBF64700DCFC49 /* Supporting Files */,
-			);
-			path = "seflieclub-tests";
-			sourceTree = "<group>";
-		};
-		30DB24B519CBF64700DCFC49 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				30DB24B619CBF64700DCFC49 /* seflieclub-tests-Info.plist */,
-				30DB24B719CBF64700DCFC49 /* InfoPlist.strings */,
-				30DB24BC19CBF64700DCFC49 /* seflieclub-tests-Prefix.pch */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		30E805151A15183300F0A130 /* Flurry */ = {
@@ -1579,8 +1510,6 @@
 				3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */,
 				3010D77F1A24109E0078164F /* HONHomeFeedToggleView.h */,
 				3010D7801A24109E0078164F /* HONHomeFeedToggleView.m */,
-				30B7C8651A6862510030A77D /* HOnRestrictedViewController.h */,
-				30B7C8661A6862510030A77D /* HOnRestrictedViewController.m */,
 			);
 			name = Home;
 			sourceTree = "<group>";
@@ -1670,15 +1599,6 @@
 			name = Compose;
 			sourceTree = "<group>";
 		};
-		4C386BC019844ABA0023123A /* KeychainItemWrapper */ = {
-			isa = PBXGroup;
-			children = (
-				4C81D8521972082200BAFDA3 /* KeychainItemWrapper.h */,
-				4C81D8531972082200BAFDA3 /* KeychainItemWrapper.m */,
-			);
-			name = KeychainItemWrapper;
-			sourceTree = "<group>";
-		};
 		4C386BCB1984B8E50023123A /* Nav */ = {
 			isa = PBXGroup;
 			children = (
@@ -1732,8 +1652,7 @@
 				308F361219E337AA00EE9512 /* FLAnimatedImage */,
 				4C43276A18E3A9F90035FF06 /* ios-image-filters */,
 				308F35DD19E301E300EE9512 /* KeenClient */,
-				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
-				3084073E1A6C980E009F38E0 /* LayerKit */,
+				30AFF56F1A79AB43005F408B /* KeychainItemWrapper */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
 				308F35E219E3029E00EE9512 /* PicoCandy */,
@@ -1837,7 +1756,6 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3042E1041A76C4FD005AFD12 /* LayerKit.framework */,
 				301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */,
 				301DF2301A10756500D2BEB9 /* Bolts.framework */,
 				30B3091819E230A70017ACBF /* CouchbaseLite.framework */,
@@ -1957,12 +1875,10 @@
 		4C62651A15F96C7100AA7FCE = {
 			isa = PBXGroup;
 			children = (
-				308407531A6CDB94009F38E0 /* _objc-notes */,
 				4C62652F15F96C7100AA7FCE /* HotOrNot */,
-				30DB24B419CBF64700DCFC49 /* seflieclub-tests */,
 				4C62652815F96C7100AA7FCE /* Frameworks */,
 				4C62652615F96C7100AA7FCE /* Products */,
-				E4879EE65AAED60762365A91 /* Pods */,
+				DC5411AE440F7B827FC9B083 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1979,8 +1895,6 @@
 			children = (
 				30E177971A6EB563003D46DA /* GameKit.framework */,
 				30E177951A6EB4F2003D46DA /* StoreKit.framework */,
-				3084074D1A6C9D78009F38E0 /* LayerKit.framework */,
-				3084074B1A6C9D2D009F38E0 /* libPods-HotOrNot-LayerKit.a */,
 				4CEC304217DAD3140016AAE1 /* Accelerate.framework */,
 				4CA8D9F51613933600B7B13C /* Accounts.framework */,
 				4C026019172B2CA8001CC476 /* AddressBook.framework */,
@@ -2012,7 +1926,7 @@
 				4C62652915F96C7100AA7FCE /* UIKit.framework */,
 				4C62674C15F96FA800AA7FCE /* libsqlite3.dylib */,
 				4C62674D15F96FA800AA7FCE /* libz.dylib */,
-				30DB24B019CBF64700DCFC49 /* XCTest.framework */,
+				47BA555DA71DFCC4E3FF2066 /* libPods-HotOrNot.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2285,6 +2199,8 @@
 			children = (
 				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
+				304CB46F1A79B3670042BBE5 /* HONRestrictedViewController.h */,
+				304CB4701A79B3670042BBE5 /* HONRestrictedViewController.m */,
 			);
 			name = Splash;
 			sourceTree = "<group>";
@@ -2319,13 +2235,11 @@
 			name = News;
 			sourceTree = "<group>";
 		};
-		E4879EE65AAED60762365A91 /* Pods */ = {
+		DC5411AE440F7B827FC9B083 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				30213E461A6D269500BCBFA6 /* Pods-seflieclub-tests.debug.xcconfig */,
-				30213E481A6D26A900BCBFA6 /* Pods-seflieclub-tests.release.xcconfig */,
-				FAF9334CD9A529CBE6DBC013 /* Pods-HotOrNot.debug.xcconfig */,
-				75CE900CF98034652EA2E6DA /* Pods-HotOrNot.release.xcconfig */,
+				7A88648FBB09F16A3DFB48DE /* Pods-HotOrNot.debug.xcconfig */,
+				2A54C8558A85D50E8CAB2289 /* Pods-HotOrNot.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -2337,12 +2251,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4C62655715F96C7100AA7FCE /* Build configuration list for PBXNativeTarget "HotOrNot" */;
 			buildPhases = (
-				B2863B61150A6DB40E2E8659 /* Check Pods Manifest.lock */,
+				04EE1641F12152EF11AA0CF3 /* Check Pods Manifest.lock */,
 				4C0F3CC71988E02300703D09 /* ShellScript */,
 				4C62652115F96C7100AA7FCE /* Sources */,
 				4C62652215F96C7100AA7FCE /* Frameworks */,
 				4C62652315F96C7100AA7FCE /* Resources */,
-				A442CCD2ED2686A32D759902 /* Copy Pods Resources */,
+				94ECB21B92D7DC2E7E4F5025 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2420,12 +2334,8 @@
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
-				308407571A6CDB94009F38E0 /* infoplist_20140818.131000.txt in Resources */,
 				301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */,
-				3092C5881A6D44F2003A2A84 /* Layer MISC.txt in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
-				308407591A6CDB94009F38E0 /* layer_keys.txt in Resources */,
-				3092C5861A6D3E55003A2A84 /* RegEx.txt in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
 				4C01BAD3190CAAD1006CD80D /* StatusUpdateElements.xcassets in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
@@ -2442,12 +2352,10 @@
 				4C250E941938031B007CA4E2 /* ComposeElements.xcassets in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
 				3010D7831A2439090078164F /* HotOrNot.entitlements in Resources */,
-				308407581A6CDB94009F38E0 /* layer_id-token_JWT.json.txt in Resources */,
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
 				30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */,
-				3092C58A1A6D7E0E003A2A84 /* curl_calls.txt in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
@@ -2458,6 +2366,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		04EE1641F12152EF11AA0CF3 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		4C0F3CC71988E02300703D09 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2471,7 +2394,7 @@
 			shellPath = /bin/sh;
 			shellScript = "#-- proj attribs\nplist=${INFOPLIST_FILE}\nbuildVersion=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" $plist)\n\n#-- build # in dec\n#-- buildVersion=$((0x$buildVersion))\n\n#-- inc by 1\nbuildVersion=$(($buildVersion + 1))\n\n#-- convert back to hex\n#-- buildVersion=$(printf \"%X\" $buildVersion)\n\n#-- write to file\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildVersion\" $plist\n\n\n#-- terminate w/o error\nexit 0\n";
 		};
-		A442CCD2ED2686A32D759902 /* Copy Pods Resources */ = {
+		94ECB21B92D7DC2E7E4F5025 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2483,21 +2406,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot-resources.sh\"\n";
-		};
-		B2863B61150A6DB40E2E8659 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2508,13 +2418,6 @@
 			files = (
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
-				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
-				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
-				3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */,
-				3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */,
-				301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */,
-				30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */,
-				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONActivityNavButtonView.m in Sources */,
@@ -2522,7 +2425,6 @@
 				4CEC4B0718B9517F00F39C92 /* HONAnalyticsReporter.m in Sources */,
 				30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */,
 				4CE0399E185727150005256F /* HONAPICaller.m in Sources */,
-				3042E12A1A76C594005AFD12 /* UIView+BuiltinMenlo.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */,
 				3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */,
@@ -2539,14 +2441,11 @@
 				4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */,
 				30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */,
 				4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */,
-				3010D7871A2444190078164F /* HONCommentViewCell.m in Sources */,
+				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
-				30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONComposeNavButtonView.m in Sources */,
 				30B2560E1A3C3C0F00C789E1 /* HONComposeSubjectViewController.m in Sources */,
-				30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONComposeTopicViewController.m in Sources */,
-				4C386BBC19842FDA0023123A /* HONSocialAssistant.m in Sources */,
 				300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */,
 				4CBDDBAC1913354E002F9723 /* HONContactsViewController.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
@@ -2556,7 +2455,6 @@
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,
 				3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
-				3042E1321A76D628005AFD12 /* UIImage+AnimatedGIF.m in Sources */,
 				4CDFB3181889349900E9F33B /* HONFontAllocator.m in Sources */,
 				301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
@@ -2570,6 +2468,7 @@
 				30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */,
 				300D1B881A0C30F100D1D9A7 /* HONMapAnnotation.m in Sources */,
 				300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */,
+				3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */,
 				30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */,
 				302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */,
 				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
@@ -2580,6 +2479,7 @@
 				4C7DBBC8195004C200F7A487 /* HONRefreshControl.m in Sources */,
 				307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
+				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
 				3010D7931A24BDDD0078164F /* HONScrollView.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */,
 				B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */,
@@ -2587,6 +2487,7 @@
 				4C46ECDD19566B2C007ABD72 /* HONSelectClubsViewController.m in Sources */,
 				4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
+				4C386BBC19842FDA0023123A /* HONSocialAssistant.m in Sources */,
 				30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */,
 				305001421A5E222800E8F303 /* HONStatusUpdateCreatorView.m in Sources */,
 				30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */,
@@ -2595,14 +2496,12 @@
 				4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */,
 				3051F8981A082C5B00CD85F2 /* HONStoreProductImageViewCell.m in Sources */,
 				3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */,
-				3042E1291A76C594005AFD12 /* UILabel+BuiltinMenlo.m in Sources */,
 				3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */,
 				3051F8921A082B9800CD85F2 /* HONStoreProductViewController.m in Sources */,
 				3051F8951A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m in Sources */,
 				3045E5A419E4D048003FF312 /* HONStoreProductVO.m in Sources */,
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				30B256111A3C61B100C789E1 /* HONSubjectViewCell.m in Sources */,
-				3042E1201A76C594005AFD12 /* NSArray+BuiltinMenlo.m in Sources */,
 				30B256141A3C61D200C789E1 /* HONSubjectVO.m in Sources */,
 				4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */,
 				4C7DBBBE194FF43D00F7A487 /* HONTableView.m in Sources */,
@@ -2610,64 +2509,74 @@
 				4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
 				305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */,
+				301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */,
+				30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */,
+				3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */,
+				30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */,
 				4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */,
 				4CB77BB018BC03200074C625 /* HONUserClubVO.m in Sources */,
+				301C96561A5B67C2002EAF3A /* HONUserAssistant.m in Sources */,
 				4C382FF9178B8AA200C7FA7C /* HONUsernameSearchViewController.m in Sources */,
+				304CB4711A79B3670042BBE5 /* HONRestrictedViewController.m in Sources */,
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				4C386BC6198482130023123A /* HONViewController.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONViewDispensor.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
-				3042E1241A76C594005AFD12 /* NSDictionary+BuiltinMenlo.m in Sources */,
 				308407511A6C9F95009F38E0 /* HONLayerKitAssistant.m in Sources */,
-				3042E1221A76C594005AFD12 /* NSData+BuiltinMenlo.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
+				3042E1201A76C594005AFD12 /* NSArray+BuiltinMenlo.m in Sources */,
+				3042E12A1A76C594005AFD12 /* UIView+BuiltinMenlo.m in Sources */,
+				3042E1291A76C594005AFD12 /* UILabel+BuiltinMenlo.m in Sources */,
+				3042E1241A76C594005AFD12 /* NSDictionary+BuiltinMenlo.m in Sources */,
+				3042E1221A76C594005AFD12 /* NSData+BuiltinMenlo.m in Sources */,
 				3042E1261A76C594005AFD12 /* NSString+BuiltinMenlo.m in Sources */,
-				308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */,
-				308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */,
-				30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */,
-				30B308D219E20B510017ACBF /* AFURLConnectionOperation.m in Sources */,
-				300641C31A5EF29C0078BCE9 /* RegExCategories.m in Sources */,
 				3042E1211A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.m in Sources */,
-				30B308CF19E20B510017ACBF /* AFJSONRequestOperation.m in Sources */,
-				30B308D119E20B510017ACBF /* AFPropertyListRequestOperation.m in Sources */,
-				3042E1281A76C594005AFD12 /* UIImage+BuiltinMenlo.m in Sources */,
-				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
-				30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */,
-				30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */,
-				30B308D019E20B510017ACBF /* AFNetworkActivityIndicatorManager.m in Sources */,
-				4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */,
-				4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */,
-				30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */,
-				4C4328A518E3A9FA0035FF06 /* BlowfishAlgorithm.m in Sources */,
-				4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */,
-				307A0B881A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m in Sources */,
-				30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */,
-				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
-				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
-				30FC8C5D19A829E900CDB2BC /* TSCore.m in Sources */,
-				30FC8C5C19A829E900CDB2BC /* TSConfig.m in Sources */,
-				30FC8C6419A829E900CDB2BC /* TSTapstream.m in Sources */,
-				30FC8C5E19A829E900CDB2BC /* TSCoreListenerImpl.m in Sources */,
-				30FC8C6319A829E900CDB2BC /* TSResponse.m in Sources */,
-				30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */,
-				30FC8C6019A829E900CDB2BC /* TSHit.m in Sources */,
-				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
-				301C96561A5B67C2002EAF3A /* HONUserAssistant.m in Sources */,
-				30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */,
-				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
-				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
-				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,
-				30B7C8671A6862510030A77D /* HOnRestrictedViewController.m in Sources */,
-				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
-				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
-				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
 				3042E1231A76C594005AFD12 /* NSDate+BuiltinMenlo.m in Sources */,
+				3042E1281A76C594005AFD12 /* UIImage+BuiltinMenlo.m in Sources */,
+				307A0B881A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m in Sources */,
+				30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */,
+				30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */,
+				30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */,
+				30B308CF19E20B510017ACBF /* AFJSONRequestOperation.m in Sources */,
+				30B308D019E20B510017ACBF /* AFNetworkActivityIndicatorManager.m in Sources */,
+				30B308D119E20B510017ACBF /* AFPropertyListRequestOperation.m in Sources */,
+				30B308D219E20B510017ACBF /* AFURLConnectionOperation.m in Sources */,
+				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
+				30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */,
+				3042E1321A76D628005AFD12 /* UIImage+AnimatedGIF.m in Sources */,
+				4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */,
+				4C4328A518E3A9FA0035FF06 /* BlowfishAlgorithm.m in Sources */,
+				308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */,
+				308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */,
+				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
+				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
+				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
+				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,
 				4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */,
+				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
+				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
+				30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */,
+				30D5AD9019C8C980004EDA22 /* NHGroupThese.m in Sources */,
+				30D5AD9119C8C980004EDA22 /* NHThreadThis.m in Sources */,
+				4C4328E318E3A9FA0035FF06 /* Reachability.m in Sources */,
+				300641C31A5EF29C0078BCE9 /* RegExCategories.m in Sources */,
+				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
+				30FC8C5B19A829E900CDB2BC /* TSAppEventSourceImpl.m in Sources */,
+				30FC8C5D19A829E900CDB2BC /* TSCore.m in Sources */,
+				30FC8C5E19A829E900CDB2BC /* TSCoreListenerImpl.m in Sources */,
+				30FC8C5C19A829E900CDB2BC /* TSConfig.m in Sources */,
+				30FC8C5F19A829E900CDB2BC /* TSEvent.m in Sources */,
+				30FC8C6019A829E900CDB2BC /* TSHit.m in Sources */,
+				30FC8C6119A829E900CDB2BC /* TSLogging.m in Sources */,
+				30FC8C6219A829E900CDB2BC /* TSPlatformImpl.m in Sources */,
+				30FC8C6319A829E900CDB2BC /* TSResponse.m in Sources */,
+				30FC8C6419A829E900CDB2BC /* TSTapstream.m in Sources */,
+				30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2690,14 +2599,6 @@
 				07B6E6B419884AEF00DA0805 /* ko */,
 			);
 			name = "searchInputBG_clubs@2x.png";
-			sourceTree = "<group>";
-		};
-		30DB24B719CBF64700DCFC49 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				30DB24B819CBF64700DCFC49 /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */ = {
@@ -2822,7 +2723,7 @@
 		};
 		4C62655815F96C7100AA7FCE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FAF9334CD9A529CBE6DBC013 /* Pods-HotOrNot.debug.xcconfig */;
+			baseConfigurationReference = 7A88648FBB09F16A3DFB48DE /* Pods-HotOrNot.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2850,12 +2751,14 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/LayerKit",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "9f8b2446-a4ed-4b11-99c2-245c4d72dea5";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9f8b2446-a4ed-4b11-99c2-245c4d72dea5";
@@ -2867,7 +2770,7 @@
 		};
 		4C62655915F96C7100AA7FCE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75CE900CF98034652EA2E6DA /* Pods-HotOrNot.release.xcconfig */;
+			baseConfigurationReference = 2A54C8558A85D50E8CAB2289 /* Pods-HotOrNot.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2895,12 +2798,14 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/PicoCandy",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/CrittercismSDK",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/LayerKit",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "c221a98b-c8a9-4c3c-b795-e0762aca1404";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "c221a98b-c8a9-4c3c-b795-e0762aca1404";

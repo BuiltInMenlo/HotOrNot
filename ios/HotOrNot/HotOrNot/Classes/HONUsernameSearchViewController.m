@@ -281,7 +281,7 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Entered Username"
 //									 withProperties:@{@"username"	: searchQuery}];
 	
-	if (![searchQuery isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]])
+	if (![searchQuery isEqualToString:[[HONUserAssistant sharedInstance] activeUsername]])
 		  [self _retrieveUsers:searchQuery];
 	
 	else {
@@ -405,7 +405,7 @@
 //			} else {
 				
 				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] clubDictionaryWithOwner:@{} activeMembers:@[] pendingMembers:_selectedUsers];
-				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
+				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 				[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
 				HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 			

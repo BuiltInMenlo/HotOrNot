@@ -88,8 +88,8 @@
 									  failure:imageFailureBlock];
 	
 	
-	_statusImageView.hidden = (_commentVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-	if (_commentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+	_statusImageView.hidden = (_commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]);
+	if (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 		_bgImageView.image = [[UIImage imageNamed:@"greenChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(4.0, 4.0, 4.0, 16.0) resizingMode:UIImageResizingModeStretch];
 		
 		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 265.0, 0.0);
@@ -114,8 +114,8 @@
 
 	
 	_captionLabel.frame = CGRectResizeWidth(_captionLabel.frame, MIN(size.width, maxWidth));
-	_captionLabel.frame = CGRectMake((_commentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? 250.0 - _captionLabel.frame.size.width : _captionLabel.frame.origin.x, _captionLabel.frame.origin.y, MIN(size.width, maxWidth), size.height);
-	_bgImageView.frame = CGRectMake((_commentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? 265.0 - (_captionLabel.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionLabel.frame.size.width + 24.0, size.height + 16.0);
+	_captionLabel.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 250.0 - _captionLabel.frame.size.width : _captionLabel.frame.origin.x, _captionLabel.frame.origin.y, MIN(size.width, maxWidth), size.height);
+	_bgImageView.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 265.0 - (_captionLabel.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionLabel.frame.size.width + 24.0, size.height + 16.0);
 	_statusImageView.frame = CGRectOffset(_statusImageView.frame, 320.0 - (_bgImageView.frame.size.width + 80.0), 16.0 + ((_bgImageView.frame.size.height - _statusImageView.frame.size.height) * 0.5));
 	
 	
