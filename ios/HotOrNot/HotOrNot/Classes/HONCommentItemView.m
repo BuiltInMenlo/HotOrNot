@@ -38,7 +38,7 @@
 		
 		[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"topicMask"]];
 		
-		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"greyChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(4.0, 16.0, 4.0, 4.0) resizingMode:UIImageResizingModeStretch]];
+		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"greyChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(4.0, 16.0, 24.0, 4.0) resizingMode:UIImageResizingModeStretch]];
 		
 		_bgImageView.frame = CGRectMake(57.0, 16.0, 170.0, 34.0);
 		[self addSubview:_bgImageView];
@@ -85,7 +85,7 @@
 		_avatarImageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
 	};
 	
-	NSLog(@"URL:[%@]", _commentVO.avatarPrefix);
+	//NSLog(@"URL:[%@]", _commentVO.avatarPrefix);
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_commentVO.avatarPrefix]
 															   cachePolicy:kOrthodoxURLCachePolicy
 														   timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -96,7 +96,7 @@
 	
 	_statusImageView.hidden = (_commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]);
 	if (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
-		_bgImageView.image = [[UIImage imageNamed:@"greenChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(4.0, 4.0, 4.0, 16.0) resizingMode:UIImageResizingModeStretch];
+		_bgImageView.image = [[UIImage imageNamed:@"greenChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(4.0, 4.0, 24.0, 16.0) resizingMode:UIImageResizingModeStretch];
 		
 		_loadingImageView.frame = CGRectOffsetX(_loadingImageView.frame, 265.0);
 		_avatarImageView.frame = CGRectOffsetX(_avatarImageView.frame, 265.0);
@@ -109,18 +109,18 @@
 	_captionImageView.hidden = (_commentVO.commentContentType != HONCommentContentTypeImage);
 	
 	if (_commentVO.commentContentType == HONCommentContentTypeText) {
-		NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
+		//NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
 		[_captionLabel resizeFrameForMultiline];
 		_captionLabel.frame = CGRectTranslateX(_captionLabel.frame, (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 250.0 - _captionLabel.frame.size.width : _captionLabel.frame.origin.x);
 		_bgImageView.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 265.0 - (_captionLabel.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionLabel.frame.size.width + 24.0, _captionLabel.frame.size.height + 16.0);
-		NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_captionLabel.frame), NSStringFromCGRect(_bgImageView.frame));
+		//NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_captionLabel.frame), NSStringFromCGRect(_bgImageView.frame));
 
 	} else if (_commentVO.commentContentType == HONCommentContentTypeImage) {
 		_captionImageView.image = _commentVO.imageContent;
 		_captionImageView.frame = CGRectResize(_captionImageView.frame, CGSizeMult(_captionImageView.image.size, 0.5));
 		_captionImageView.frame = CGRectTranslateX(_captionImageView.frame, (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 250.0 - _captionImageView.frame.size.width : _captionImageView.frame.origin.x);
 		_bgImageView.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 265.0 - (_captionImageView.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionImageView.frame.size.width + 24.0, _captionImageView.frame.size.height + 16.0);
-		NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_captionImageView.frame), NSStringFromCGRect(_bgImageView.frame));
+		//NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_captionImageView.frame), NSStringFromCGRect(_bgImageView.frame));
 	}
 	
 	_statusImageView.frame = CGRectOffset(_statusImageView.frame, 320.0 - (_bgImageView.frame.size.width + 80.0), 17.0 + ((_bgImageView.frame.size.height - _statusImageView.frame.size.height) * 0.5));
