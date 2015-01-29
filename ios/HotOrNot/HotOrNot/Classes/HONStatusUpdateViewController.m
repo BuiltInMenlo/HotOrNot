@@ -410,7 +410,7 @@
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
 	
-	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
+	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
 	
 	NSError *error = nil;
 	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActive"])]] options:alertDict error:&error];

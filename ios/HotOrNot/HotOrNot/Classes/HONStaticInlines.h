@@ -196,14 +196,14 @@ CGRectTranslate(CGRect rect, CGPoint pos)
 BIM_INLINE CGRect
 CGRectTranslateX(CGRect rect, CGFloat pos)
 {
-	CGRect transRect = CGRectTranslate(rect, CGPointMake(pos, 0.0));
+	CGRect transRect = CGRectTranslate(rect, CGPointMake(pos, rect.origin.y));
 	return (transRect);
 }
 
 BIM_INLINE CGRect
 CGRectTranslateY(CGRect rect, CGFloat pos)
 {
-	CGRect transRect = CGRectTranslate(rect, CGPointMake(0.0, pos));
+	CGRect transRect = CGRectTranslate(rect, CGPointMake(0.0, rect.origin.y));
 	return (transRect);
 }
 

@@ -32,7 +32,7 @@
 		[self addSubview:_loadingImageView];
 		
 		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 15.0, 35.0, 35.0)];
-		_avatarImageView.backgroundColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.90];
+		_avatarImageView.hidden = YES;
 		[self addSubview:_avatarImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"topicMask"]];
@@ -48,8 +48,7 @@
 		_captionLabel.textColor = [UIColor blackColor];
 		[self addSubview:_captionLabel];
 		
-		_captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 15.0, 35.0, 35.0)];
-		_captionImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		_captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 24.0, 35.0, 35.0)];
 		[self addSubview:_captionImageView];
 		
 		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 63.0, 160.0, 16.0)];
@@ -104,32 +103,33 @@
 	_captionLabel.text = _commentVO.textContent;
 	_captionLabel.numberOfLines = 0;
 	
-	if (_commentVO.commentContentType == HONCommentContentTypeImage) {
+	_captionImageView.hidden = (_commentVO.commentContentType != HONCommentContentTypeImage);
+	
+	if (_commentVO.commentContentType == HONCommentContentTypeText) {
+		CGFloat maxWidth = _captionLabel.frame.size.width;
+		CGSize size = [[_commentVO.textContent stringByAppendingString:@"    "] sizeWithFont:_captionLabel.font
+																		   constrainedToSize:CGSizeMake(maxWidth, FLT_MAX)
+																			   lineBreakMode:NSLineBreakByWordWrapping];
+		
+		NSLog(@"SIZE:[%@](%@)", NSStringFromCGSize(size), NSStringFromCGSize(_captionLabel.frame.size));
+		
+		_captionLabel.frame = CGRectResizeWidth(_captionLabel.frame, MIN(size.width, maxWidth));
+		_captionLabel.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 250.0 - _captionLabel.frame.size.width : _captionLabel.frame.origin.x, _captionLabel.frame.origin.y, MIN(size.width, maxWidth), size.height);
+		_bgImageView.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 265.0 - (_captionLabel.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionLabel.frame.size.width + 24.0, size.height + 16.0);
+		_statusImageView.frame = CGRectOffset(_statusImageView.frame, 320.0 - (_bgImageView.frame.size.width + 80.0), 16.0 + ((_bgImageView.frame.size.height - _statusImageView.frame.size.height) * 0.5));
+		
+		
+		NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_captionLabel.frame), NSStringFromCGRect(_bgImageView.frame));
+
+	} else if (_commentVO.commentContentType == HONCommentContentTypeImage) {
 		_captionImageView.image = _commentVO.imageContent;
 		_captionImageView.frame = CGRectResize(_captionImageView.frame, CGSizeMult(_captionImageView.image.size, 0.5));
+		_captionImageView.frame = CGRectTranslateX(_captionImageView.frame, (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 250.0 - _captionImageView.frame.size.width : _captionImageView.frame.origin.x);
+		
+		_bgImageView.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 265.0 - (_captionImageView.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionImageView.frame.size.width + 24.0, _captionImageView.frame.size.height + 16.0);
 	}
 	
-	CGFloat maxWidth = _captionLabel.frame.size.width;
-//	CGSize size = [_commentVO.textContent boundingRectWithSize:_captionLabel.frame.size
-//										options:NSStringDrawingUsesFontLeading
-//									 attributes:@{NSFontAttributeName:_captionLabel.font}
-//										context:nil].size;
-	
-	CGSize size = [[_commentVO.textContent stringByAppendingString:@"    "] sizeWithFont:_captionLabel.font
-																	   constrainedToSize:CGSizeMake(maxWidth, FLT_MAX)
-																		   lineBreakMode:NSLineBreakByWordWrapping];
-	
-	NSLog(@"SIZE:[%@](%@)", NSStringFromCGSize(size), NSStringFromCGSize(_captionLabel.frame.size));
-	
-
-	
-	_captionLabel.frame = CGRectResizeWidth(_captionLabel.frame, MIN(size.width, maxWidth));
-	_captionLabel.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 250.0 - _captionLabel.frame.size.width : _captionLabel.frame.origin.x, _captionLabel.frame.origin.y, MIN(size.width, maxWidth), size.height);
-	_bgImageView.frame = CGRectMake((_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? 265.0 - (_captionLabel.frame.size.width + 24.0) : _bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _captionLabel.frame.size.width + 24.0, size.height + 16.0);
 	_statusImageView.frame = CGRectOffset(_statusImageView.frame, 320.0 - (_bgImageView.frame.size.width + 80.0), 16.0 + ((_bgImageView.frame.size.height - _statusImageView.frame.size.height) * 0.5));
-	
-	
-	NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_captionLabel.frame), NSStringFromCGRect(_bgImageView.frame));
 	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
