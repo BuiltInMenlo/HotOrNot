@@ -12,6 +12,7 @@
 - (UIFont *)cartoGothicBold;
 - (UIFont *)cartoGothicBoldItalic;
 - (UIFont *)cartoGothicBook;
+- (UIFont *)cartoGothicBookItalic;
 - (UIFont *)cartoGothicItalic;
 - (UIFont *)helveticaNeueFontBold;
 - (UIFont *)helveticaNeueFontBoldItalic;

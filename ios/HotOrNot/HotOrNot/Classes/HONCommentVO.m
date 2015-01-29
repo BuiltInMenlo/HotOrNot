@@ -37,7 +37,7 @@
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : [[HONUserAssistant sharedInstance] rndAvatarURL];
 	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"";
-	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : nil;
+	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
 	vo.commentContentType = ([vo.textContent length] > 0) ? HONCommentContentTypeText : HONCommentContentTypeImage;

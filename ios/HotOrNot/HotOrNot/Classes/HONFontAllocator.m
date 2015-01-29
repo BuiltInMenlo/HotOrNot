@@ -42,6 +42,10 @@ static HONFontAllocator *sharedInstance = nil;
 	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
 }
 
+- (UIFont *)cartoGothicBookItalic {
+	return ([UIFont fontWithName:@"CartoGothicStd-BookItalic" size:24.0]);
+}
+
 - (UIFont *)cartoGothicItalic {
 	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
 }

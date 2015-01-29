@@ -8,4 +8,6 @@
 
 @interface UIView (BuiltInMenlo)
 - (void)reverseSubviews;
+
+@property (nonatomic, readonly) UIEdgeInsets frameEdges;
 @end

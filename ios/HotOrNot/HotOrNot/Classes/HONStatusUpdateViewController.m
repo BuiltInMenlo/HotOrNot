@@ -37,6 +37,8 @@
 @property (nonatomic, strong) NSMutableArray *retrievedReplies;
 @property (nonatomic, strong) NSMutableArray *replies;
 @property (nonatomic, strong) UIView *commentsHolderView;
+@property (nonatomic, strong) UIView *footerView;
+@property (nonatomic, strong) UILabel *typingStatusLabel;
 @property (nonatomic, strong) UIImageView *inputBGImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *flagButton;
@@ -123,10 +125,10 @@
 					[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 						LYRMessage *message = (LYRMessage *)obj;
 						NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", idx, message.identifierSuffix, [message.sentAt formattedISO8601StringUTC], [message.receivedAt formattedISO8601StringUTC]);
+						[message markAsRead:nil];
 						[_replies addObject:[HONCommentVO commentWithMessage:message]];
 					}];
 					
-					[_conversation markAllMessagesAsRead:nil];
 					_statusUpdateVO.replies = [_replies copy];
 					
 					[self _didFinishDataRefresh];
@@ -136,38 +138,11 @@
 	}];
 }
 
-- (void)_retrieveRepliesAtPage:(int)page {
-	__block int nextPage = page + 1;
-	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:page completion:^(NSDictionary *result) {
-		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
-		
-		[_retrievedReplies addObjectsFromArray:[result objectForKey:@"results"]];
-		
-		if ([_retrievedReplies count] < [[result objectForKey:@"count"] intValue])
-			[self _retrieveRepliesAtPage:nextPage];
-		
-		else {
-			NSLog(@"FINISHED RETRIEVING COMMENTS:[%d]", [_retrievedReplies count]);
-			
-			[[[_retrievedReplies reverseObjectEnumerator] allObjects] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
-				[dict setValue:@(_statusUpdateVO.clubID) forKey:@"club_id"];
-				[dict setValue:@(_statusUpdateVO.statusUpdateID) forKey:@"parent_id"];
-				
-				[_replies addObject:[HONCommentVO commentWithDictionary:dict]];
-			}];
-			
-			_statusUpdateVO.replies = [_replies copy];
-			[self _didFinishDataRefresh];
-		}
-	}];
-}
-
-- (void)_submitCommentReply {
+- (void)_submitCommentReply:(BOOL)isText {
 	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_clubVO.clubID),
-						   @"subject"		: _comment,
+						   @"subject"		: (isText) ? _comment : @"emoji",
 						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -186,20 +161,18 @@
 		}
 	}];
 	
-	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment]} : nil;
+	
+	NSString *pushContent = (isText) ? [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment] : [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]];
+	LYRMessagePart *messagePart = (isText) ? [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]] : [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"emojiMessage-001"])];
 	
 	NSError *error = nil;
-	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]]] options:alertDict error:&error];
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart] options:((_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: pushContent} : nil) error:&error];
 	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
 	
 	BOOL success = [_conversation sendMessage:message error:&error];
 	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
 	
 	_isSubmitting = NO;
-	
-	
-//	if (success)
-//		[self _appendComment:[HONCommentVO commentWithMessage:message]];
 }
 
 - (void)_flagStatusUpdate {
@@ -252,6 +225,13 @@
 	_retrievedReplies = [NSMutableArray array];
 	_replies = [NSMutableArray array];
 	
+	_typingStatusLabel.text = NSLocalizedString(@"loading_status", @"loading…");
+	[UIView animateWithDuration:0.125
+					 animations:^(void) {
+						 _typingStatusLabel.alpha = 1.0;
+					 } completion:^(BOOL finished) {
+					 }];
+	
 	[self _retrieveStatusUpdate];
 }
 
@@ -261,6 +241,14 @@
 	
 	[_creatorView refreshScore];
 	[self _makeComments];
+	
+	[UIView animateWithDuration:0.125
+					 animations:^(void) {
+						 _typingStatusLabel.alpha = 0.0;
+					 } completion:^(BOOL finished) {
+						 _typingStatusLabel.text = NSLocalizedString(@"typing_status", @"someone is typing…");
+					 }];
+	
 	
 	NSLog(@"%@._didFinishDataRefresh", self.class);
 }
@@ -298,19 +286,29 @@
 	
 	_comment = @"";
 	
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0)];
+	[self.view addSubview:_footerView];
+	
+	_typingStatusLabel = [[UILabel alloc] initWithFrame:CGRectMake(6.0, 0.0, 120.0, 16.0)];
+	_typingStatusLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicItalic] fontWithSize:12];
+	_typingStatusLabel.backgroundColor = [UIColor clearColor];
+	_typingStatusLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
+	_typingStatusLabel.alpha = 0.0;
+	[_footerView addSubview:_typingStatusLabel];
+	
 	_inputBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
-	_inputBGImageView.frame = CGRectOffset(_inputBGImageView.frame, 0.0, self.view.frame.size.height - 44.0);
+	_inputBGImageView.frame = CGRectOffsetY(_inputBGImageView.frame, 20.0);
 	_inputBGImageView.userInteractionEnabled = YES;
-	[self.view addSubview:_inputBGImageView];
+	[_footerView addSubview:_inputBGImageView];
 	
 	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 11.0, 232.0, 22.0)];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_commentTextField setReturnKeyType:UIReturnKeyDone];
+	[_commentTextField setReturnKeyType:UIReturnKeySend];
 	[_commentTextField setTextColor:[UIColor blackColor]];
 	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_commentTextField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:18];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
 	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
 	_commentTextField.text = @"";
@@ -318,7 +316,7 @@
 	[_inputBGImageView addSubview:_commentTextField];
 	
 	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_flagButton.frame = CGRectMake(240.0, 5.0, 34.0, 34.0);
+	_flagButton.frame = CGRectMake(235.0, 5.0, 34.0, 34.0);
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Disabled"] forState:UIControlStateDisabled];
@@ -334,7 +332,7 @@
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
-	[_commentCloseButton addTarget:self action:@selector(_goCancelReply) forControlEvents:UIControlEventTouchUpInside];
+	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
@@ -350,17 +348,13 @@
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[self _goReloadContent];
 	
-	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_clientObjectsDidChangeNotification:)
 												 name:LYRClientObjectsDidChangeNotification object:nil];
-	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
-	// --=#=--#=--#=-=#=-#=--=#--=#--=#=-- //
-	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
+
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_conversationDidReceiveTypingIndicatorNotification:)
 												 name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
-	/* ~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ */
 }
 
 
@@ -410,28 +404,36 @@
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
 	
-	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
-	
-	NSError *error = nil;
-	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActive"])]] options:alertDict error:&error];
-	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
-	
-	BOOL success = [_conversation sendMessage:message error:&error];
-	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
-}
-
-- (void)_goCommentSubmit {
 	_isSubmitting = YES;
 	
+	_commentTextField.text = @"";
+	_comment = _commentTextField.text;
+	
+	[self _submitCommentReply:NO];
+	
+	
+//	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
+//	
+//	NSError *error = nil;
+//	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActive"])]] options:alertDict error:&error];
+//	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
+//	
+//	BOOL success = [_conversation sendMessage:message error:&error];
+//	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
+}
+
+- (void)_goTextComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - comment"];
+	
+	_isSubmitting = YES;
 	
 	_comment = _commentTextField.text;
 	_commentTextField.text = @"";
 	
-	[self _submitCommentReply];
+	[self _submitCommentReply:YES];
 }
 
-- (void)_goCancelReply {
+- (void)_goCancelComment {
 	_commentTextField.text = @"";
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
@@ -440,7 +442,7 @@
 					 animations:^(void) {
 						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
 						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight + 84.0);
-						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - 44.0);
+						 _footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - _footerView.frame.size.height);
 					 } completion:^(BOOL finished) {
 						 [_commentCloseButton removeFromSuperview];
 					 }];
@@ -482,6 +484,8 @@
 		_commentTextField.text = [[[HONDeviceIntrinsics sharedInstance] phoneNumber] substringFromIndex:2];
 	}
 #endif
+	
+	[_conversation sendTypingIndicator:LYRTypingDidBegin];
 }
 
 - (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
@@ -500,6 +504,8 @@
 			NSLog(@"Message Update:(%@) -=- %@", (updateKey == LYRObjectChangeTypeCreate) ? @"Create" : (updateKey == LYRObjectChangeTypeUpdate) ? @"Update" : (updateKey == LYRObjectChangeTypeDelete) ? @"Delete" : @"UNKNOWN", message.identifierSuffix);
 			
 			if (updateKey == LYRObjectChangeTypeCreate) {
+				[message markAsRead:nil];
+				
 				[self _appendComment:[HONCommentVO commentWithMessage:message]];
 				
 			} else if (updateKey == LYRObjectChangeTypeUpdate) {
@@ -532,26 +538,40 @@
 }
 
 - (void)_conversationDidReceiveTypingIndicatorNotification:(NSNotification *)notification {
-	NSLog (@"::|>_conversationDidReceiveTypingIndicatorNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
+	NSLog (@"::|>_conversationDidReceiveTypingIndicatorNotification:%@\n[=-=-=-=-=-=-=-=]\n", [notification userInfo]);
+	
+//	NSString *participantID = [notification.userInfo objectForKey:LYRTypingIndicatorParticipantUserInfoKey];
+	LYRTypingIndicator typingIndicator = [notification.userInfo[LYRTypingIndicatorValueUserInfoKey] unsignedIntegerValue];
+	
+	[UIView animateWithDuration:0.125
+					 animations:^(void) {
+						 _typingStatusLabel.alpha = (typingIndicator == LYRTypingDidBegin);
+					 } completion:^(BOOL finished) {
+					 }];
 }
 
 
 #pragma mark - UI Presentation
 - (void)_makeComments {
-	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, [_replies count] * 90.0);
-	_scrollView.contentSize = _commentsHolderView.frame.size;
+//	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, [_replies count] * 90.0);
 	
+	__block CGFloat lastBottom = _commentsHolderView.frame.size.height;
 	[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0,  90.0 * idx, 320.0, 90.0)];
+		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, lastBottom, 320.0, 90.0)];
 		itemView.alpha = 0.0;
 		itemView.commentVO = (HONCommentVO *)obj;
 		[_commentsHolderView addSubview:itemView];
+		
+		lastBottom += itemView.frame.size.height;
+		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
 		
 		[UIView animateKeyframesWithDuration:0.25 delay:(0.125 * ([_replies count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 			itemView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];
 	}];
+	
+	_scrollView.contentSize = _commentsHolderView.frame.size;
 	
 	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
 		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
@@ -560,24 +580,20 @@
 - (void)_appendComment:(HONCommentVO *)vo {
 	[_replies addObject:vo];
 	
-	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, 90.0);
-	_scrollView.contentSize = _commentsHolderView.frame.size;
-	
-//	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
-//		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentOffset.y - 90.0) + _scrollView.contentInset.bottom) animated:YES];
-	
-	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
-		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
-	
-	
-	HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, 33.0 + (90.0 * ([_replies count] - 1)), 320.0, 90.0)];
+	HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, 33.0 + _commentsHolderView.frame.size.height, 320.0, 90.0)];
 	itemView.alpha = 0.0;
 	itemView.commentVO = vo;
 	[_commentsHolderView addSubview:itemView];
 	
+	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
+	_scrollView.contentSize = _commentsHolderView.frame.size;
+	
+	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
+		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
+	
 	[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		itemView.alpha = 1.0;
-		itemView.frame = CGRectTranslateY(itemView.frame, 90.0 * ([_replies count] - 1));
+		itemView.frame = CGRectOffsetY(itemView.frame, -33.0);
 	} completion:^(BOOL finished) {
 	}];
 }
@@ -632,15 +648,21 @@
 	[UIView animateWithDuration:0.25
 					 animations:^(void) {
 						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
-						 _scrollView.frame = (_scrollView.frame.origin.y >= kNavHeaderHeight + 84.0) ? CGRectTranslateY(_scrollView.frame, (_scrollView.contentSize.height < (216.0 + _inputBGImageView.frame.size.height) ? _scrollView.frame.origin.y : _scrollView.frame.origin.y - (216.0 + _inputBGImageView.frame.size.height))) : CGRectTranslateY(_scrollView.frame, 0.0);
-						 _inputBGImageView.frame = CGRectTranslateY(_inputBGImageView.frame, self.view.frame.size.height - (216.0 + _inputBGImageView.frame.size.height));
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, _scrollView.frame.origin.y - ((_scrollView.contentSize.height > _scrollView.frame.size.height) ? 216.0 : MAX(0.0, _scrollView.contentSize.height - 216.0) + 84.0));
+						 _footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - (216.0 + _footerView.frame.size.height));
 					 } completion:^(BOOL finished) {
+						 if (_scrollView.contentSize.height > _scrollView.frame.size.height)
+							 [_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
+						 
 						 [self.view addSubview:_commentCloseButton];
 					 }];
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
+	[_conversation sendTypingIndicator:LYRTypingDidFinish];
+	if (!_isSubmitting && [textField.text length] > 0)
+		[self _goTextComment];
+	
 	return (YES);
 }
 
@@ -648,23 +670,17 @@
 	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound)
 		return (NO);
 	
-	return ([textField.text length] < 70 || [string isEqualToString:@""]);
+	return ([textField.text length] <= 200 || [string isEqualToString:@""]);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
-	
-	if (!_isSubmitting && [textField.text length] > 0)
-		[self _goCommentSubmit];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
-	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
-	
-	if (!_isSubmitting && [_commentTextField.text length] > 0)
-		[self _goCommentSubmit];
+//	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
 }
 
 

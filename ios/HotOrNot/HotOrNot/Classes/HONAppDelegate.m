@@ -937,7 +937,7 @@ void Swizzle(Class c, SEL orig, SEL new)
 	notification.soundName = UILocalNotificationDefaultSoundName;
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
-	[self _showOKAlert:notification.alertBody withMessage:@"Local Notification"];
+	[self _showOKAlert:nil withMessage:notification.alertBody];
 }
 
 

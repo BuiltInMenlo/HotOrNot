@@ -10,6 +10,10 @@
 
 @implementation UIView (BuiltInMenlo)
 
+- (UIEdgeInsets)frameEdges {
+	return (UIEdgeInsetsMake(self.frame.origin.y, self.frame.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.origin.x + self.frame.size.width));
+}
+
 - (void)reverseSubviews {
 	NSMutableArray *views = [NSMutableArray array];
 	for (UIView *view in self.subviews)

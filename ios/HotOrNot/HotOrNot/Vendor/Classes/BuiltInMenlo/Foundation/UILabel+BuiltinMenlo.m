@@ -8,8 +8,18 @@
 
 #import "UILabel+BuiltInMenlo.h"
 
-
 @implementation UILabel (BuiltInMenlo)
+
+- (CGSize)sizeForText {
+	NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+	paragraph.lineBreakMode = NSLineBreakByWordWrapping;
+	
+	return ([self.text boundingRectWithSize:CGSizeMake(self.frame.size.width, NSUIntegerMax)
+									options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+								 attributes:@{NSFontAttributeName			: self.font,
+											  NSParagraphStyleAttributeName	: paragraph}
+									context:nil].size);
+}
 
 - (CGRect)boundingRectForAllCharacters {
 	return ([self boundingRectForCharacterRange:[self.text rangeOfString:self.text]]);
@@ -45,12 +55,19 @@
 
 - (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize {
 	CGSize size = [caption boundingRectWithSize:maxSize
-														options:NSStringDrawingTruncatesLastVisibleLine
-													 attributes:@{NSFontAttributeName:self.font}
-														context:nil].size;
-	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MIN(maxSize.width, size.width), self.frame.size.height);
+										options:NSStringDrawingTruncatesLastVisibleLine
+									 attributes:@{NSFontAttributeName	: self.font}
+										context:nil].size;
+	self.frame = CGRectResizeWidth(self.frame, MIN(maxSize.width, size.width));
 }
 
+- (int)numberOfLinesNeeded {
+	return ((int)round(MAX(1.0, (int)round([self sizeForText].height) / (int)round(self.font.lineHeight))));
+}
+
+- (void)resizeFrameForMultiline {
+	self.frame = CGRectResize(self.frame, [self sizeForText]);
+}
 
 - (void)setTextColor:(UIColor *)textColor range:(NSRange)range
 {

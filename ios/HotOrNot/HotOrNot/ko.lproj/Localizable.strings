@@ -63,6 +63,8 @@
 
 // details
 "send_comment" = "送信";
+"loading_status" = "loading…";
+"typing_status" = "someone is typing…";
 "enter_comment" = "コメント";
 "flagged_post" = "このポストは削除フラグが立てられています。";
 

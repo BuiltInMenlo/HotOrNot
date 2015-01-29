@@ -63,6 +63,8 @@
 
 // details
 "send_comment" = "Send";
+"loading_status" = "loading…";
+"typing_status" = "someone is typing…";
 "enter_comment" = "Type a message…";
 "flagged_post" = "This post has been flagged for removal.";
 

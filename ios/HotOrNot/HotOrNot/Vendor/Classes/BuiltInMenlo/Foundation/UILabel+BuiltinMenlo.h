@@ -11,7 +11,10 @@
 - (CGRect)boundingRectForAllCharacters;
 - (CGRect)boundingRectForCharacterRange:(NSRange)range;
 - (CGRect)boundingRectForSubstring:(NSString *)substring;
+- (int)numberOfLinesNeeded;
+- (void)resizeFrameForMultiline;
 - (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize;
+- (CGSize)sizeForText;
 
 - (void)setTextColor:(UIColor *)textColor range:(NSRange)range;
 - (void)setFont:(UIFont *)font range:(NSRange)range;
