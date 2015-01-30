@@ -10,6 +10,7 @@
 
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
+#import "UIScrollView+BuiltInMenlo.h"
 
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
@@ -42,6 +43,8 @@
 @property (nonatomic, strong) UIView *emptyFeedView;
 @property (nonatomic, strong) UIView *noNetworkView;
 @property (nonatomic) int voteScore;
+@property (nonatomic) int totStatusUpdates;
+@property (nonatomic) BOOL isLoading;
 @end
 
 @implementation HONHomeViewController
@@ -101,21 +104,23 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClubPhotosAtPage:(int)page {
-	
 	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
 	__block int nextPage = page + 1;
 	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:page completion:^(NSDictionary *result) {
 		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
+		
+		if (page == 1)
+			_totStatusUpdates = [[result objectForKey:@"count"] intValue];
 		
 		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
 			
 //		NSLog(@"ON PAGE:[%d]", page);
 //		NSLog(@"RETRIEVED:[%@]", [result objectForKey:@"results"]);
 		
-		if ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue])
-			[self _retrieveClubPhotosAtPage:nextPage];
-		
-		else {
+//		if ([_retrievedStatusUpdates count] < 20)//[[result objectForKey:@"count"] intValue])
+//			[self _retrieveClubPhotosAtPage:nextPage];
+//		
+//		else {
 //			NSLog(@"FINISHED RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
 			
 			[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -130,27 +135,28 @@
 			}];
 			
 			[self _didFinishDataRefresh];
-		}
+//		}
 	}];
 }
 
 - (void)_retriveOwnedPhotosAtPage:(int)page {
-	
 	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
 	__block int nextPage = page + 1;
 	
 	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:page completion:^(NSDictionary *result) {
 		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
+		if (page == 1)
+			_totStatusUpdates = [[result objectForKey:@"count"] intValue];
 		
 		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
 		
 //		NSLog(@"ON PAGE:[%d]", page);
 //		NSLog(@"RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
 		
-		if ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue])
-			[self _retrieveClubPhotosAtPage:nextPage];
-		
-		else {
+//		if ([_retrievedStatusUpdates count] < [[result objectForKey:@"count"] intValue])
+//			[self _retrieveClubPhotosAtPage:nextPage];
+//		
+//		else {
 //			NSLog(@"FINISHED RETRIEVED:[%d]", [_retrievedStatusUpdates count]);
 			
 			[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -161,7 +167,7 @@
 			}];
 			
 			[self _didFinishDataRefresh];
-		}
+//		}
 	}];
 }
 
@@ -196,6 +202,7 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Refresh"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeHomeTabRefresh];
 	
+	_isLoading = YES;
 	_locationManager.delegate = self;
 	if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse)
 		[_locationManager startUpdatingLocation];
@@ -231,6 +238,8 @@
 }
 
 - (void)_didFinishDataRefresh {
+	
+	_isLoading = NO;
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
@@ -291,7 +300,7 @@
 	[_toggleView toggleEnabled:NO];
 	[_headerView addSubview:_toggleView];
 	
-	
+	_isLoading = YES;
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 44.0, 0.0)];
@@ -352,6 +361,9 @@
 	[super viewDidLoad];
 	
 //	_panGestureRecognizer.enabled = YES;
+	
+	if (!self.view.hidden && ![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
 	
 	UILongPressGestureRecognizer *longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	longPressGestureRecognizer.minimumPressDuration = 0.5;
@@ -616,7 +628,9 @@
 	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, NSStringFromCLAuthorizationStatus(status));
 	NSLog(@"LOCATION:[%@]", NSStringFromCLLocation([[HONDeviceIntrinsics sharedInstance] deviceLocation]));
 	
-	[_refreshControl beginRefreshing];
+	if (![_refreshControl isRefreshing])
+		[_refreshControl beginRefreshing];
+	
 	if (status == kCLAuthorizationStatusNotDetermined) {
 		[_locationManager startUpdatingLocation];
 		
@@ -724,12 +738,12 @@
 	[cell setIndexPath:indexPath];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-	cell.alpha = 0.0;
+//	cell.alpha = 0.0;
 	
 	HONStatusUpdateVO *vo = (HONStatusUpdateVO *)[_statusUpdates objectAtIndex:indexPath.row];
 	cell.statusUpdateVO = vo;
 	cell.delegate = self;
-	
+
 	if (!tableView.decelerating)
 		[cell toggleImageLoading:YES];
 	
@@ -766,11 +780,11 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:(0.0625 * MIN(indexPath.row, 6)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-		cell.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
+//	cell.alpha = 0.0;
+//	[UIView animateKeyframesWithDuration:0.125 delay:(0.0625 * MIN(indexPath.row, 6)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//		cell.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -785,6 +799,23 @@
 		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
 		[cell toggleImageLoading:YES];
 	}];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"OFFSET:[%@]\nSIZE:[%@]\nBOTTOM:[%@]", NSStringFromCGPoint(_tableView.contentOffset), NSStringFromCGSize(_tableView.contentSize), NSStringFromBOOL([_tableView isAtBottom]));
+	
+	if (scrollView.contentSize.height > scrollView.frame.size.height && [scrollView isAtBottom] && [_statusUpdates count] < _totStatusUpdates && !_isLoading) {
+		_isLoading = YES;
+		
+		if (![_refreshControl isRefreshing])
+			[_refreshControl beginRefreshing];
+		
+		if (_feedType == HONHomeFeedTypeOwned)
+			[self _retriveOwnedPhotosAtPage:(int)([_statusUpdates count] / 10)];
+		
+		else
+			[self _retrieveClubPhotosAtPage:(int)([_statusUpdates count] / 10)];
+	}
 }
 
 

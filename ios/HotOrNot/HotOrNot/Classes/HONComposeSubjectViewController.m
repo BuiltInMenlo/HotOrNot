@@ -9,6 +9,7 @@
 #import <LayerKit/LayerKit.h>
 
 #import "LYRConversation+BuiltinMenlo.h"
+#import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
@@ -56,20 +57,22 @@
 	[super _didFinishDataRefresh];
 }
 
-- (void)_buildClubMemberParticipantsWithCompletion:(void (^)(id))completion {
+- (NSArray *)_buildClubMemberParticipants {
 	__block HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:globalClubVO.clubID withOwnerID:globalClubVO.ownerID completion:^(NSDictionary *result) {
-		globalClubVO = [HONUserClubVO clubWithDictionary:result];
-		
+//	[[HONAPICaller sharedInstance] retrieveClubByClubID:globalClubVO.clubID withOwnerID:globalClubVO.ownerID completion:^(NSDictionary *result) {
+//		globalClubVO = [HONUserClubVO clubWithDictionary:result];
+	
 		__block NSMutableArray *participantIDs = [NSMutableArray array];
-		[globalClubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		[[NSArray arrayRandomizedWithArray:globalClubVO.activeMembers withCapacity:25] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
 			[participantIDs addObject:NSStringFromInt(trivialUserVO.userID)];
 		}];
 		
-		if (completion)
-			completion([participantIDs copy]);
-	}];
+//		if (completion)
+//			completion([participantIDs copy]);
+//	}];
+	
+	return ([participantIDs copy]);
 }
 
 
@@ -80,39 +83,17 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
-	[self _buildClubMemberParticipantsWithCompletion:^(NSArray *participants) {
-		NSLog(@"participantIDs:[%@]", participants);
-		
-		NSDictionary *metaData = @{@"creator_id"	: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-								   @"creator_name"	: [[HONUserAssistant sharedInstance] activeUsername],
-								   @"topic"			: [_submitParams objectForKey:@"topic_name"],
-								   @"subject"		: _selectedTopicVO.topicName};
-		
-		
-		NSMutableSet *set = [NSMutableSet setWithArray:participants];
-		[set minusSet:[NSSet setWithObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]];
-		
-		
-		NSError *error;
-		LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:set
-																												options:metaData
-																												  error:&error];
-		[conversation setValuesForMetadataKeyPathsWithDictionary:metaData merge:YES];
-		NSLog(@"CREATED CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
-		
-		
-		// Creates a message part with a text/plain MIMEType and returns a new message object with the given conversation and array of message parts - Sends the specified message
-		LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain
-																																	   data:[[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName]
-																																			 dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-		NSLog (@"CREATED MESSAGE: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [message toString]);
-		BOOL msgSuccess = [conversation sendMessage:message error:&error];
-		NSLog (@"SENT MESSAGE: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [message toString]);
-		
-		if (!msgSuccess) {
-			NSLog(@"Create message failed!\n%@", error);
-		}
-		
+	
+	NSArray *participants = [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
+	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:participants withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
+	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
+	
+//	[conversation sendTypingIndicator:LYRTypingDidBegin];
+
+	if (![[HONLayerKitAssistant sharedInstance] sendMessage:[[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data] toConversation:conversation])
+		NSLog(@"SEND FAILED!!");
+	
+	else {
 		[_submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
 		[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
 		
@@ -128,23 +109,24 @@
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 				_progressHUD = nil;
-				
-			} else {
-//				[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
-//					if (!success) {
-//						NSLog(@"Purging participants failed!\n%@", error);
-//					}
-				
-					NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
-					[self _orphanSubmitOverlay];
 					
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-					}];
-//				}];
-			}
-		}];
-	}];
+			} else {
+				NSError *error = nil;
+	//			NSLog(@"DELETING:%@", NSStringFromBOOL([message delete:LYRDeletionModeAllParticipants error:&error]));
+	//			[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
+	//				if (!success) {
+	//					NSLog(@"Purging participants failed!\n%@", error);
+	//				}
+
+				NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
+				[self _orphanSubmitOverlay];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+				}]; // modal
+			} // api result
+		}]; // api submit
+	}
 }
 
 
@@ -252,7 +234,7 @@
 		
 	} else {
 		_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
+		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.25];
 		[self.view addSubview:_overlayView];
 		
 		if (_progressHUD == nil)

@@ -10,6 +10,7 @@
 
 #import "LYRConversation+BuiltinMenlo.h"
 
+#import "HONUserClubVO.h"
 #import "HONStatusUpdateVO.h"
 
 
@@ -43,6 +44,12 @@
 
 
 - (LYRRecipientStatus)latestRecipientStatusForMessage:(LYRMessage *)message;
+
+- (NSArray *)buildConversationParticipantsForClub:(HONUserClubVO *)clubVO;
+- (LYRConversation *)generateConversationWithParticipants:(NSArray *)participants withTopicName:(NSString *)topic andSubject:(NSString *)subject;
+- (LYRMessage *)generateMessageOfType:(HONMessageType)messageType withContent:(NSData *)dataContent;
+- (BOOL)sendMessage:(LYRMessage *)message toConversation:(LYRConversation *)conversation;
+
 
 //- (LYRMessage *)composeTxtMsgWithContent:(NSString *)txtContent attachingRemotePushUserInfo:(NSDictionary *)userInfo;
 //- (LYRMessage *)composeMessageWithParts:(NSArray *)parts andDeliveringPushWithInfo:(NSDictionary *)userInfo;

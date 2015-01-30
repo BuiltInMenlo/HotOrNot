@@ -128,7 +128,7 @@
 													   options:NSStringDrawingTruncatesLastVisibleLine
 													attributes:@{NSFontAttributeName:_timeLabel.font}
 													   context:nil].size;
-	NSLog(@"(%@) SIZE:%@", _timeLabel.text, NSStringFromCGSize(size));
+//	NSLog(@"(%@) SIZE:%@", _timeLabel.text, NSStringFromCGSize(size));
 	
 	_likesIconImageView.frame = CGRectOffset(_likesIconImageView.frame, size.width - 10.0, 0.0);
 	_scoreLabel.frame = CGRectOffset(_scoreLabel.frame, size.width - 10.0, 0.0);
@@ -164,7 +164,7 @@
 				[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 			};
 			
-			NSLog(@"URL:[%@]", _statusUpdateVO.imagePrefix);
+//			NSLog(@"URL:[%@]", _statusUpdateVO.imagePrefix);
 			[_subjectImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_statusUpdateVO.imagePrefix]
 																   cachePolicy:kOrthodoxURLCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]

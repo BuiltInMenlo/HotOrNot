@@ -74,7 +74,7 @@
 	[string appendFormat:@"\n.creatorName			: %@", self.creatorName];
 	[string appendFormat:@"\n.creatorAvatarPrefix		: %@", self.creatorAvatarPrefix];
 	[string appendFormat:@"\n.sentByUserID	: %@", self.sentByUserID];
-	[string appendFormat:@"\n.index			: %d", self.index];
+	[string appendFormat:@"\n.index			: %d", (int)self.index];
 	[string appendFormat:@"\n.parts			: %@", self.parts];
 	[string appendFormat:@"\n.isSent			: %@", NSStringFromBOOL(self.isSent)];
 	[string appendFormat:@"\n.isUnread		: %@", NSStringFromBOOL(self.isUnread)];

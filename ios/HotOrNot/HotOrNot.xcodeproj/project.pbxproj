@@ -32,6 +32,7 @@
 		301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */; };
 		301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */; };
 		3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONActivityViewController.m */; };
+		3024A5D51A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5D41A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */; };
 		3030DF5C1A6348ED00406AAF /* HONTopicsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONTopicsViewController.m */; };
@@ -302,6 +303,8 @@
 		301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UICKeyChainStore.framework; sourceTree = "<group>"; };
 		301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XMLDictionary.framework; sourceTree = "<group>"; };
 		301F0D811A2A4DAD00A9BE3C /* Cupertino.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cupertino.gpx; sourceTree = "<group>"; };
+		3024A5D31A7B142200231BA5 /* UIScrollView+BuiltInMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+BuiltInMenlo.h"; sourceTree = "<group>"; };
+		3024A5D41A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+BuiltInMenlo.m"; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		3030DF571A63344D00406AAF /* HONMoreNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMoreNavButtonView.h; sourceTree = "<group>"; };
@@ -1090,6 +1093,8 @@
 				3042E11A1A76C594005AFD12 /* UIImage+BuiltinMenlo.m */,
 				3042E11B1A76C594005AFD12 /* UILabel+BuiltinMenlo.h */,
 				3042E11C1A76C594005AFD12 /* UILabel+BuiltinMenlo.m */,
+				3024A5D31A7B142200231BA5 /* UIScrollView+BuiltInMenlo.h */,
+				3024A5D41A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m */,
 				3042E11D1A76C594005AFD12 /* UIView+BuiltinMenlo.h */,
 				3042E11E1A76C594005AFD12 /* UIView+BuiltinMenlo.m */,
 			);
@@ -2535,6 +2540,7 @@
 				3042E1261A76C594005AFD12 /* NSString+BuiltinMenlo.m in Sources */,
 				3042E1211A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.m in Sources */,
 				3042E1231A76C594005AFD12 /* NSDate+BuiltinMenlo.m in Sources */,
+				3024A5D51A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m in Sources */,
 				3042E1281A76C594005AFD12 /* UIImage+BuiltinMenlo.m in Sources */,
 				307A0B881A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m in Sources */,
 				30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */,
@@ -2762,6 +2768,7 @@
 				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "9f8b2446-a4ed-4b11-99c2-245c4d72dea5";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9f8b2446-a4ed-4b11-99c2-245c4d72dea5";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64 arm64";
 				WRAPPER_EXTENSION = app;
@@ -2809,6 +2816,7 @@
 				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "c221a98b-c8a9-4c3c-b795-e0762aca1404";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "c221a98b-c8a9-4c3c-b795-e0762aca1404";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7 armv7s x86_64 arm64";
 				WRAPPER_EXTENSION = app;

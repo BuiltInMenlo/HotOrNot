@@ -931,7 +931,7 @@ static HONClubAssistant *sharedInstance = nil;
 		[clubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSDictionary *dict = (NSDictionary *)obj;
 			if ([[dict objectForKey:@"id"] isEqualToString:[clubDictionary objectForKey:@"id"]]) {
-				ind = idx;
+				ind = (int)idx;
 				isFound = YES;
 			}
 			

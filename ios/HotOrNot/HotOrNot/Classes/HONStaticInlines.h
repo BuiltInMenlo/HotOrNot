@@ -68,6 +68,41 @@ CGAffineTransformMakeNormal()
 }
 
 
+#pragma mark - CGPoint
+
+BIM_INLINE CGPoint
+CGPointAdd(CGPoint point, CGPoint val)
+{
+	CGPoint summatedPoint;
+	summatedPoint = CGPointMake(point.x + val.x, point.y + val.y);
+	return summatedPoint;
+}
+
+BIM_INLINE CGPoint
+CGPointDivide(CGPoint point, CGPoint val)
+{
+	CGPoint summatedPoint;
+	summatedPoint = CGPointMake(point.x / val.x, point.y / val.y);
+	return summatedPoint;
+}
+
+BIM_INLINE CGPoint
+CGPointMultiply(CGPoint point, CGPoint val)
+{
+	CGPoint summatedPoint;
+	summatedPoint = CGPointMake(point.x * val.x, point.y * val.y);
+	return summatedPoint;
+}
+
+BIM_INLINE CGPoint
+CGPointMultiplyFactor(CGPoint point, CGFloat factor)
+{
+	CGPoint summatedPoint;
+	summatedPoint = CGPointMake(point.x * factor, point.y * factor);
+	return summatedPoint;
+}
+
+
 #pragma mark - CGRect
 
 BIM_INLINE CGRect

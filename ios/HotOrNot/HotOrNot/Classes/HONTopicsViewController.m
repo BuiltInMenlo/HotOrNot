@@ -58,7 +58,7 @@
 }
 
 - (void)_didFinishDataRefresh {
-	NSLog(@"%@._didFinishDataRefresh - [%d]", self.class, [_topics count]);
+	NSLog(@"%@._didFinishDataRefresh - [%d]", self.class, (int)[_topics count]);
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];

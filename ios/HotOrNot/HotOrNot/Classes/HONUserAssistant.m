@@ -57,7 +57,7 @@ static HONUserAssistant *sharedInstance = nil;
 	[[HONAPICaller sharedInstance] retrieveActivityForUserByUserID:userID fromPage:page completion:^(NSDictionary *result) {
 		
 		NSLog(@"ON PAGE:[%d]", page);
-		NSLog(@"RETRIEVED:[%d]", [[result objectForKey:@"results"] count]);
+		NSLog(@"RETRIEVED:[%d]", (int)[[result objectForKey:@"results"] count]);
 		
 		if (completion)
 			completion([result objectForKey:@"results"]);
@@ -96,7 +96,7 @@ static HONUserAssistant *sharedInstance = nil;
 			}];
 		}
 		
-		NSLog(@"FINISHED RETRIEVED:[%d]", [activityItems count]);
+		NSLog(@"FINISHED RETRIEVED:[%d]", (int)[activityItems count]);
 		
 		__block int score = 0;
 		[activityItems enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

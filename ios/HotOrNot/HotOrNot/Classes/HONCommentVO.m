@@ -103,7 +103,7 @@
 	if ([messagePart.MIMEType isEqualToString:kMIMETypeImagePNG])
 		[dict setObject:UIImagePNGRepresentation(messagePart.imageContent) forKey:@"image"];
 	
-	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
+//	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
 	
 	return ([HONCommentVO commentWithDictionary:dict]);
 }

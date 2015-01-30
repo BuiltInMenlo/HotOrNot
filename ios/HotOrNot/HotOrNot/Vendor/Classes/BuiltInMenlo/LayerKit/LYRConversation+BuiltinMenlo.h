@@ -8,6 +8,12 @@
 
 #import <LayerKit/LayerKit.h>
 
+typedef NS_ENUM (NSUInteger, HONMessageType) {
+	HONMessageTypeText = 0,
+	HONMessageTypeImage = 1,
+	HONMessageTypeOther
+};
+
 @interface LYRConversation (BuiltInMenlo)
 - (NSString *)identifierSuffix;
 - (int)creatorID;

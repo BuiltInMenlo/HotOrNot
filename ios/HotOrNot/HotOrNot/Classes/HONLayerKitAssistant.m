@@ -15,13 +15,22 @@
 #import "HONLayerKitAssistant.h"
 #import "HONTrivialUserVO.h"
 
+#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
+NSString * const kAppID = @"dda63b70-9f7c-11e4-b4d9-142b010033d0";
+NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
+NSString * const kKeyID = @"4a9e5b5c-a803-11e4-baa8-f3a514007a0e";
+NSString * const kPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgGor9LKTWmeSZEJYJEka5PJmnklPniuopT4GTzEhEjFiD0Rw/Q1P\n1LOdx+qCHZudjIIdF7/9Cu695M90OAmkiJ/3NH9GBe+UJC3q0Fvppf0ZUJr7H7uR\nBVU7LuymAVKmX9YgCSwGib44ElwhHsEjHsP6F0rr9EuKgoNuhtZ6FBY5AgMBAAEC\ngYAjPmIlIUsCVJMZft7UsavMV4o1tctAnOP1eeyx11ONtwpwYr1tvNFTqo2hZ/3i\nGWN6EaQ/pAUMCVc6Ek9DzC1Z1vez30V+Ly9DlZpjmmproOMlBWO1xK2UszkS90Gh\nvYpCxImXxjA2VuwVfXnLbfmn0L/VG84nDXWasr2uhQEQzTQJBAK6pfJ3PlC7WGa1w\nmvU9CarnVn9qTj4D0eh/3c0JSt8DYvc1tEq/UxzCXc/Feg3VdfcmWw3IUlwsjMdC\nXiQsK9MCQQCbnVKF1d7jeEqeVnqEblcA5QPBljTNAZ1LxGnjWjvP2zZAE9kM0cyR\nqvl1viADHLkDehxZ0LfetIyFoes+3CpDAkEAmwHLmHpKdi6IZ0ZSH2bmF4hrWXTM\nr3jQZ1hjTb37dmQZBm/g651Uc2eDvgrxwSk6IfcmQ9sOTMM0xPn/dnbFBQJACsSl\nLDuzc7wkNba4PafA/3/ZdbDmMHV3JAIQbboVv3lk1KRK9bci18WkA4DHiE+ZgeMW\nSSTHRHLr8mdU9wGXLwJADkWkfTZldqyiBBe+n4z6t7HmmszyKuvhsUK9dA/xuSUy\nhtjuuQh7mhPnmK9RRbHru4b+cNt9NJdTHI1GZSkTEQ==\n-----END RSA PRIVATE KEY-----";
+NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";
+NSString * const kJWTPostPath = @"identity_tokens";
+#else
 NSString * const kAppID = @"dda6367a-9f7c-11e4-9d57-142b010033d0";
 NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
 NSString * const kKeyID = @"d75c2e0a-a1f7-11e4-8ec0-142b010033d0";
 NSString * const kPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgGs8+1t5fc+el5Te3KLcpeo3y0Mu4GR3k3ilIOzQYUHnWlzJYHwH\nmszIsGqIGj94JeR9b8uBxlYO8Q3nd3ojq0UG+NaFzPlzgAnzxeuc9wvVkBc7/Wnj\nIPMj+JJNp05dWY+M/lUo8kRB/BVSuhgotY3Y05fKPm1fSOfDg6QEbOBHAgMBAAEC\ngYAuQUN6FVE6+IERaX9pkBrQh/hYpiOLsjgd1bv56XfJ4WyMkR/Y377ZjcbqbIJF\n1iEiCSjrcrKF9DPtd2WFfVUmBgGz+YB+JsTTTjU8rZEAxH6xMFDTVLFjm43xrfo9\nUBrN4sLQGaMM/xCXb7Up17Bi79SR9IABUB5q5vI5spTnYQJBAKjh46ybt/XRLCvc\nFyWldeQ1GnKT6nkxo8WpHqVaR91Aoyt7uCKfkBHeHFg83mzut8CWABu5lJnf8dXt\nwAEfX4sCQQCijotvH0qgUrpl66//pzxrALyIeqviTZBiGZMQoPbnDAJkLzwCx93v\nliS8NqVQK0zDziYuFagex18A61bD9Vm1AkEAm0Alg60XHRRwjdVjNgl4ahTjPkd6\nOnWGv5OsB4gKHnxoQ/YVHUcgMzzDQ96Y/v0o0RNUACjHUfmMIQTSCHYl5wJAB5KW\nYkXV5yQTdN4G4+T5ho6ROdZlHXS5jihc1oB5IAhKMDqXFBYVe6zF51KwXsy1lcWL\nt8fgfhaRkWxlLVnHpQJAELdITlhoAMVSXKZZJxDhjUgJ1HDl7h7IY4N/yRjwvoz5\ns5wp8JiWoS2tZKJdlq+8BKCPH4QU+OLQoDxL+KABNw==\n-----END RSA PRIVATE KEY-----\n";
-
 NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";
 NSString * const kJWTPostPath = @"identity_tokens";
+#endif
+
 
 @interface HONLayerKitAssistant () <LYRClientDelegate, LYRQueryable, LYRQueryControllerDelegate>
 - (LYRClient *)sharedClient;
@@ -493,6 +502,75 @@ static LYRClient *sharedClient = nil;
 	return (conversation);
 }
 
+
+- (NSArray *)buildConversationParticipantsForClub:(HONUserClubVO *)clubVO {
+	__block NSMutableArray *users = [NSMutableArray array];
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		NSDictionary *dict = (NSDictionary *)obj;
+		
+		if ([[dict objectForKey:@"id"] intValue] != 0)
+			[users addObject:NSStringFromInt([[dict objectForKey:@"id"] intValue])];
+	}];
+	
+	NSArray *participants = [NSArray arrayRandomizedWithArray:users withCapacity:MIN(25, [users count] - 1)];
+//	[[NSArray arrayRandomizedWithArray:clubVO.activeMembers withCapacity:25] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
+//		[participants addObject:NSStringFromInt(trivialUserVO.userID)];
+//	}];
+	
+	NSLog(@"clubVO.activeMembers:[%d]\nparticipants:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] count], participants);
+	
+	NSMutableSet *set = [NSMutableSet setWithArray:participants];
+	[set minusSet:[NSSet setWithObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]];
+	
+	return ([set allObjects]);
+}
+
+- (LYRConversation *)generateConversationWithParticipants:(NSArray *)participants withTopicName:(NSString *)topic andSubject:(NSString *)subject {
+	NSDictionary *metaData = @{@"creator_id"	: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+							   @"creator_name"	: [[HONUserAssistant sharedInstance] activeUsername],
+							   @"topic"			: topic,
+							   @"subject"		: subject};
+	
+	
+	NSError *error;
+	LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:participants]
+																											options:metaData
+																											  error:&error];
+	[conversation setValuesForMetadataKeyPathsWithDictionary:metaData merge:YES];
+	NSLog(@"CREATED CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
+	
+	return (conversation);
+}
+
+- (LYRMessage *)generateMessageOfType:(HONMessageType)messageType withContent:(NSData *)dataContent {
+	
+	NSError *error = nil;
+	LYRMessagePart *messagePart = [LYRMessagePart messagePartWithMIMEType:((messageType == HONMessageTypeText) ? kMIMETypeTextPlain : (messageType == HONMessageTypeImage) ? kMIMETypeImagePNG : kMIMETypeTextPlain) data:dataContent];
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart] options:nil error:&error];
+	
+	NSLog (@"CREATED MESSAGE: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), message.identifierSuffix);
+	
+//	[message markAsRead:&error];
+
+	return (message);
+}
+
+- (BOOL)sendMessage:(LYRMessage *)message toConversation:(LYRConversation *)conversation {
+	
+	NSError *error = nil;
+	BOOL success = [conversation sendMessage:message error:&error];
+	NSLog (@"SENT MESSAGE: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), message.identifierSuffix);
+	
+	if (!success) {
+		NSLog(@"Create message failed!\n%@", error);
+	}
+	
+	return (success);
+}
+
+
 - (LYRConversation *)createConversationForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
 	LYRConversation *conversation = nil;
 	NSError *error = nil;
@@ -650,7 +728,7 @@ static LYRClient *sharedClient = nil;
 		return ((NSComparisonResult)NSOrderedSame);
 	}];
 	
-	NSLog(@"LAST RECIPS:%d", (LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
+//	NSLog(@"LAST RECIPS:%d", (LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
 	return ((LYRRecipientStatus)[[[message recipientStatusByUserID] objectForKey:[recipients lastObject]] intValue]);
 }
 
@@ -874,5 +952,23 @@ static LYRClient *sharedClient = nil;
  * YkXV5yQTdN4G4+T5ho6ROdZlHXS5jihc1oB5IAhKMDqXFBYVe6zF51KwXsy1lcWL
  * t8fgfhaRkWxlLVnHpQJAELdITlhoAMVSXKZZJxDhjUgJ1HDl7h7IY4N/yRjwvoz5
  * s5wp8JiWoS2tZKJdlq+8BKCPH4QU+OLQoDxL+KABNw==
+ * -----END RSA PRIVATE KEY-----
+**/
+
+/** prod key -[]- **//**
+ * -----BEGIN RSA PRIVATE KEY-----
+ * MIICWwIBAAKBgGor9LKTWmeSZEJYJEka5PJmnklPniuopT4GTzEhEjFiD0Rw/Q1P
+ * 1LOdx+qCHZudjIIdF7/9Cu695M90OAmkiJ/3NH9GBe+UJC3q0Fvppf0ZUJr7H7uR
+ * BVU7LuymAVKmX9YgCSwGib44ElwhHsEjHsP6F0rr9EuKgoNuhtZ6FBY5AgMBAAEC
+ * gYAjPmIlIUsCVJMZft7UsavMV4o1tctAnOP1eeyx11ONtwpwYr1tvNFTqo2hZ/3i
+ * GWN6EaQ/pAUMCVc6Ek9DzC1Z1vez30V+Ly9DlZpjmmproOMlBWO1xK2UszkS90Gh
+ * vYpCxImXxjA2VuwVfXnLbfmn0L/VG84nDXWasr2uhQEQzTQJBAK6pfJ3PlC7WGa1w
+ * mvU9CarnVn9qTj4D0eh/3c0JSt8DYvc1tEq/UxzCXc/Feg3VdfcmWw3IUlwsjMdC
+ * XiQsK9MCQQCbnVKF1d7jeEqeVnqEblcA5QPBljTNAZ1LxGnjWjvP2zZAE9kM0cyR
+ * qvl1viADHLkDehxZ0LfetIyFoes+3CpDAkEAmwHLmHpKdi6IZ0ZSH2bmF4hrWXTM
+ * r3jQZ1hjTb37dmQZBm/g651Uc2eDvgrxwSk6IfcmQ9sOTMM0xPn/dnbFBQJACsSl
+ * LDuzc7wkNba4PafA/3/ZdbDmMHV3JAIQbboVv3lk1KRK9bci18WkA4DHiE+ZgeMW
+ * SSTHRHLr8mdU9wGXLwJADkWkfTZldqyiBBe+n4z6t7HmmszyKuvhsUK9dA/xuSUy
+ * htjuuQh7mhPnmK9RRbHru4b+cNt9NJdTHI1GZSkTEQ==
  * -----END RSA PRIVATE KEY-----
 **/

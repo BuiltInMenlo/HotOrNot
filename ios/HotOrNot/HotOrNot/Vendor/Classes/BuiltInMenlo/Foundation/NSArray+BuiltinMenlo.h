@@ -13,16 +13,30 @@
 //- (NSArray *)arrayWithIntersectArray:(NSArray *)otherArray;
 //- (NSArray *)arrayWithUnionArray:(NSArray *)otherArray;
 
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array;
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array withCapacity:(NSUInteger)numItems;
+
+- (NSArray *)arrayByRandomizingArray:(NSArray *)array;
+- (NSArray *)arrayByRandomizingArray:(NSArray *)array withCapacity:(NSUInteger)numItems;
+
 - (id)randomElement;
+- (NSInteger)randomIndex;
 @end
 
 @interface NSMutableArray (BuiltInMenlo)
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array;
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array withCapacity:(NSUInteger)numItems;
 //+ (instancetype)arrayWithIntersectArray:(NSArray *)array;
 //+ (instancetype)arrayWithUnionArray:(NSArray *)array;
 
 //- (void)intersectArray:(NSArray *)otherArray;
 //- (void)unionArray:(NSArray *)otherArray;
 
-- (NSArray *)randomize;
+
+- (NSMutableArray *)arrayByRandomizingArray:(NSArray *)array;
+- (NSMutableArray *)arrayByRandomizingArray:(NSArray *)array withCapacity:(NSUInteger)numItems;
+
 - (id)randomElement;
+- (NSInteger)randomIndex;
+- (void)randomize;
 @end

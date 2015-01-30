@@ -105,7 +105,7 @@
 		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
 		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
 		
-		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation.metadata);
+		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation);
 		
 		if (!error) {
 			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
@@ -119,15 +119,17 @@
 					msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
 					
 					NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
-					NSLog(@"QUERY:[%@] -=- %@\n%d", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", [messages count]);
+					NSLog(@"QUERY:[%@] -=- %@\n%d", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", (int)[messages count]);
 					
-					NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
-					[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-						LYRMessage *message = (LYRMessage *)obj;
-						NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", idx, message.identifierSuffix, [message.sentAt formattedISO8601StringUTC], [message.receivedAt formattedISO8601StringUTC]);
-						[message markAsRead:nil];
-						[_replies addObject:[HONCommentVO commentWithMessage:message]];
-					}];
+					if ([messages count] > 1) {
+						NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
+						[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+							LYRMessage *message = (LYRMessage *)obj;
+							NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", (int)idx, message.identifierSuffix, [message.sentAt formattedISO8601StringUTC], [message.receivedAt formattedISO8601StringUTC]);
+							[message markAsRead:nil];
+							[_replies addObject:[HONCommentVO commentWithMessage:message]];
+						}];
+					}
 					
 					_statusUpdateVO.replies = [_replies copy];
 					
@@ -357,6 +359,13 @@
 												 name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRClientObjectsDidChangeNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
+}
+
 
 #pragma mark - Navigation
 - (void)_goBack {
@@ -501,53 +510,58 @@
 		
 		if ([[change objectForKey:LYRObjectChangeObjectKey]isKindOfClass:[LYRMessage class]]) {
 			LYRMessage *message = (LYRMessage *)[change objectForKey:LYRObjectChangeObjectKey];
-			NSLog(@"Message Update:(%@) -=- %@", (updateKey == LYRObjectChangeTypeCreate) ? @"Create" : (updateKey == LYRObjectChangeTypeUpdate) ? @"Update" : (updateKey == LYRObjectChangeTypeDelete) ? @"Delete" : @"UNKNOWN", message.identifierSuffix);
 			
-			if (updateKey == LYRObjectChangeTypeCreate) {
-				[message markAsRead:nil];
+			if ([message.conversation.identifierSuffix isEqualToString:_conversation.identifierSuffix]) {
+				NSLog(@"Message Update:(%@) -=- %@", (updateKey == LYRObjectChangeTypeCreate) ? @"Create" : (updateKey == LYRObjectChangeTypeUpdate) ? @"Update" : (updateKey == LYRObjectChangeTypeDelete) ? @"Delete" : @"UNKNOWN", message.identifierSuffix);
 				
-				[self _appendComment:[HONCommentVO commentWithMessage:message]];
-				
-			} else if (updateKey == LYRObjectChangeTypeUpdate) {
-				
-				__block int ind = -1;
-				[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					HONCommentVO *vo = (HONCommentVO *)obj;
+				if (updateKey == LYRObjectChangeTypeCreate) {
+					[message markAsRead:nil];
 					
-					if ([vo.messageID isEqualToString:message.identifierSuffix]) {
-						ind = idx;
-						*stop = YES;
+					[self _appendComment:[HONCommentVO commentWithMessage:message]];
+					
+				} else if (updateKey == LYRObjectChangeTypeUpdate) {
+					
+					__block int ind = -1;
+					[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						HONCommentVO *vo = (HONCommentVO *)obj;
+						
+						if ([vo.messageID isEqualToString:message.identifierSuffix]) {
+							ind = (int)idx;
+							*stop = YES;
+						}
+					}];
+					
+					
+					if (ind > -1) {
+						HONCommentItemView *itemView = (HONCommentItemView *)[_commentsHolderView.subviews objectAtIndex:ind];
+						LYRRecipientStatus status = [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message];
+						[itemView updateStatus:(status == LYRRecipientStatusSent) ? HONCommentStatusTypeSent : (status == LYRRecipientStatusDelivered) ? HONCommentStatusTypeDelivered : (status == LYRRecipientStatusRead) ? HONCommentStatusTypeSeen : HONCommentStatusTypeUnknown];
 					}
-				}];
-				
-				
-				if (ind > -1) {
-					HONCommentItemView *itemView = (HONCommentItemView *)[_commentsHolderView.subviews objectAtIndex:ind];
-					LYRRecipientStatus status = [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message];
-					[itemView updateStatus:(status == LYRRecipientStatusSent) ? HONCommentStatusTypeSent : (status == LYRRecipientStatusDelivered) ? HONCommentStatusTypeDelivered : (status == LYRRecipientStatusRead) ? HONCommentStatusTypeSeen : HONCommentStatusTypeUnknown];
-				}
+						
 					
-				
-				
-			} else if (updateKey == LYRObjectChangeTypeDelete) {
-				
+				} else if (updateKey == LYRObjectChangeTypeDelete) {
+					
+				}
 			}
 		}
 	}
-	
 }
 
 - (void)_conversationDidReceiveTypingIndicatorNotification:(NSNotification *)notification {
-	NSLog (@"::|>_conversationDidReceiveTypingIndicatorNotification:%@\n[=-=-=-=-=-=-=-=]\n", [notification userInfo]);
+	NSLog (@"::|>_conversationDidReceiveTypingIndicatorNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification.userInfo);
 	
-//	NSString *participantID = [notification.userInfo objectForKey:LYRTypingIndicatorParticipantUserInfoKey];
-	LYRTypingIndicator typingIndicator = [notification.userInfo[LYRTypingIndicatorValueUserInfoKey] unsignedIntegerValue];
-	
-	[UIView animateWithDuration:0.125
-					 animations:^(void) {
-						 _typingStatusLabel.alpha = (typingIndicator == LYRTypingDidBegin);
-					 } completion:^(BOOL finished) {
-					 }];
+	LYRConversation *conversation = (LYRConversation *)[notification object];
+	if ([conversation.identifierSuffix isEqualToString:_conversation.identifierSuffix]) {
+		
+//		NSString *participantID = [notification.userInfo objectForKey:LYRTypingIndicatorParticipantUserInfoKey];
+		LYRTypingIndicator typingIndicator = [notification.userInfo[LYRTypingIndicatorValueUserInfoKey] unsignedIntegerValue];
+		
+		[UIView animateWithDuration:0.125
+						 animations:^(void) {
+							 _typingStatusLabel.alpha = (typingIndicator == LYRTypingDidBegin);
+						 } completion:^(BOOL finished) {
+						 }];
+	}
 }
 
 
@@ -574,7 +588,7 @@
 	_scrollView.contentSize = _commentsHolderView.frame.size;
 	
 	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
-		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
+		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:NO];
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {

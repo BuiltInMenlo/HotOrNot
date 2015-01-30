@@ -9,6 +9,8 @@
 #import "NSArray+BuiltinMenlo.h"
 
 @implementation NSArray (BuiltInMenlo)
+
+
 //+ (instancetype)arrayWithIntersectArray:(NSArray *)array {
 //	NSMutableArray *intersectArray = [[NSMutableArray arrayWithArray:self];
 //	return ([intersectArray intersectArray:array]);
@@ -62,8 +64,30 @@
 //	
 //}
 
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array {
+	return ([NSArray arrayWithArray:[NSMutableArray arrayRandomizedWithArray:array]]);
+}
+
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array withCapacity:(NSUInteger)numItems {
+	numItems = MIN(MAX(0, numItems), [array count]);
+	return ([[NSArray arrayRandomizedWithArray:array] objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, numItems)]]);
+}
+
+- (NSArray *)arrayByRandomizingArray:(NSArray *)array {
+	return ([NSArray arrayRandomizedWithArray:array]);
+}
+
+- (NSArray *)arrayByRandomizingArray:(NSArray *)array withCapacity:(NSUInteger)numItems {
+	return ([NSArray arrayRandomizedWithArray:array withCapacity:numItems]);
+}
+
 - (id)randomElement {
-	return ([self objectAtIndex:(arc4random() % [self count])]);
+	//return ([self objectAtIndex:(arc4random() % [self count])]);
+	return ([self objectAtIndex:[[NSNumber numberWithInt:arc4random_uniform((int)[self count])] integerValue]]);
+}
+
+- (NSInteger)randomIndex {
+	return ([[NSNumber numberWithInt:arc4random_uniform((int)[self count])] integerValue]);
 }
 
 @end
@@ -72,6 +96,18 @@
 
 
 @implementation NSMutableArray (BuiltInMenlo)
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array {
+	NSMutableArray *rnd = [NSMutableArray arrayWithArray:array];
+	[rnd randomize];
+	
+	return (rnd);
+}
+
++ (instancetype)arrayRandomizedWithArray:(NSArray *)array withCapacity:(NSUInteger)numItems {
+	return ([NSMutableArray arrayWithArray:[NSArray arrayRandomizedWithArray:array withCapacity:numItems]]);
+}
+
+
 //- (void)intersectArray:(NSArray *)otherArray {
 //	[[self arrayWithIntersectArray:otherArray] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 //		if (![self containsObject:obj])
@@ -83,19 +119,31 @@
 //	[self addObjectsFromArray:[self arrayWithUnionArray:otherArray]];
 //}
 
+- (NSMutableArray *)arrayByRandomizingArray:(NSArray *)array {
+	return ([NSMutableArray arrayWithArray:[NSArray arrayRandomizedWithArray:array]]);
+}
 
-- (NSArray *)randomize {
-	NSMutableArray *rnd = [NSMutableArray arrayWithCapacity:[self count]];
-	
-	for (int i=(int)[self count]-1; i>=0; i--) {
-		[rnd addObject:[self objectAtIndex:arc4random_uniform(i)]];
-	}
-	
-	return ([[[rnd copy] reverseObjectEnumerator] allObjects]);
+- (NSMutableArray *)arrayByRandomizingArray:(NSArray *)array withCapacity:(NSUInteger)numItems {
+	return ([NSMutableArray arrayWithArray:[NSArray arrayRandomizedWithArray:array withCapacity:numItems]]);
+}
+
+
+- (void)randomize {
+	[self enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSInteger rndIndex = [self randomIndex];
+		id swap = [self objectAtIndex:rndIndex];
+		
+		[self replaceObjectAtIndex:rndIndex withObject:[self objectAtIndex:idx]];
+		[self replaceObjectAtIndex:idx withObject:swap];
+	}];
 }
 
 - (id)randomElement {
-	return ([self objectAtIndex:(arc4random() % [self count])]);
+	return ([self objectAtIndex:[self randomIndex]]);
+}
+
+- (NSInteger)randomIndex {
+	return ([[NSNumber numberWithInt:arc4random_uniform((int)[self count])] integerValue]);
 }
 
 @end
