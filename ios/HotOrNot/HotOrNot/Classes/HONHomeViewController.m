@@ -45,6 +45,8 @@
 @property (nonatomic) int voteScore;
 @property (nonatomic) int totStatusUpdates;
 @property (nonatomic) BOOL isLoading;
+@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) NSTimer *overlayTimer;
 @end
 
 @implementation HONHomeViewController
@@ -105,8 +107,8 @@
 #pragma mark - Data Calls
 - (void)_retrieveClubPhotosAtPage:(int)page {
 	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-	__block int nextPage = page + 1;
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:page completion:^(NSDictionary *result) {
+//	__block int nextPage = page + 1;
+	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:MAX(1, page) completion:^(NSDictionary *result) {
 		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
 		
 		if (page == 1)
@@ -141,9 +143,9 @@
 
 - (void)_retriveOwnedPhotosAtPage:(int)page {
 	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-	__block int nextPage = page + 1;
+//	__block int nextPage = page + 1;
 	
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:page completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:MAX(1, page) completion:^(NSDictionary *result) {
 		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
 		if (page == 1)
 			_totStatusUpdates = [[result objectForKey:@"count"] intValue];
@@ -161,6 +163,13 @@
 			
 			[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+				if ([[[dict objectForKey:@"text"] lowercaseString] isEqualToString:@"#__verifyme__"]) {
+					_totStatusUpdates--;
+					return;
+				}
+				
+				NSLog(@"STATUSUPD:[%@]", dict);
+				
 				[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
 				
 				[_statusUpdates addObject:[HONStatusUpdateVO statusUpdateWithDictionary:dict]];
@@ -240,6 +249,9 @@
 - (void)_didFinishDataRefresh {
 	
 	_isLoading = NO;
+	
+	[self _orphanSubmitOverlay];
+	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
@@ -563,6 +575,32 @@
 }
 
 
+#pragma mark - UI Presentation
+- (void)_orphanSubmitOverlay {
+	NSLog(@"::|> _orphanSubmitOverlay <|::");
+	
+	if ([_overlayTimer isValid])
+		[_overlayTimer invalidate];
+	
+	if (_overlayTimer != nil);
+	_overlayTimer = nil;
+	
+	if (_overlayView != nil) {
+		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			_overlayView.alpha = 0.0;
+			
+		} completion:^(BOOL finished) {
+			[_overlayView removeFromSuperview];
+			_overlayView = nil;
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+		}];
+	}
+}
+
 #pragma mark - HomeFeedToggleView Delegates
 - (void)homeFeedToggleView:(HONHomeFeedToggleView *)toggleView didSelectFeedType:(HONHomeFeedType)feedType {
 	NSLog(@"[*:*] homeFeedToggleView:didSelectFeedType:[%@])", (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN");
@@ -804,17 +842,37 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 //	NSLog(@"OFFSET:[%@]\nSIZE:[%@]\nBOTTOM:[%@]", NSStringFromCGPoint(_tableView.contentOffset), NSStringFromCGSize(_tableView.contentSize), NSStringFromBOOL([_tableView isAtBottom]));
 	
-	if (scrollView.contentSize.height > scrollView.frame.size.height && [scrollView isAtBottom] && [_statusUpdates count] < _totStatusUpdates && !_isLoading) {
+	if (scrollView.contentSize.height > scrollView.frame.size.height && [scrollView isAtContentBottom] && [_statusUpdates count] < _totStatusUpdates && !_isLoading) {
 		_isLoading = YES;
 		
-		if (![_refreshControl isRefreshing])
-			[_refreshControl beginRefreshing];
-		
-		if (_feedType == HONHomeFeedTypeOwned)
-			[self _retriveOwnedPhotosAtPage:(int)([_statusUpdates count] / 10)];
-		
-		else
-			[self _retrieveClubPhotosAtPage:(int)([_statusUpdates count] / 10)];
+		if (_overlayView == nil) {
+			_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+			_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.33];
+			_overlayView.alpha = 0.0;
+			[self.view addSubview:_overlayView];
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:_overlayView animated:YES];
+			_progressHUD.labelText = @"";
+			_progressHUD.mode = MBProgressHUDModeIndeterminate;
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.taskInProgress = YES;
+			
+			[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+				_overlayView.alpha = 1.0;
+				
+			} completion:^(BOOL finished) {
+				_overlayTimer = [NSTimer timerWithTimeInterval:[HONAPICaller timeoutInterval] target:self
+													  selector:@selector(_orphanSubmitOverlay)
+													  userInfo:nil repeats:NO];
+				
+				if (_feedType == HONHomeFeedTypeOwned)
+					[self _retriveOwnedPhotosAtPage:(int)([_statusUpdates count] / 10)];
+				
+				else
+					[self _retrieveClubPhotosAtPage:(int)([_statusUpdates count] / 10)];
+			}];
+		}
 	}
 }
 

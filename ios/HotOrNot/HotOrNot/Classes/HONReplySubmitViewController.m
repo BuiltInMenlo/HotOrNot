@@ -163,7 +163,7 @@
 		_progressHUD.minShowTime = kProgressHUDMinDuration;
 		_progressHUD.taskInProgress = YES;
 		
-		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
+		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAPICaller timeoutInterval] target:self
 											  selector:@selector(_orphanSubmitOverlay)
 											  userInfo:nil repeats:NO];
 		

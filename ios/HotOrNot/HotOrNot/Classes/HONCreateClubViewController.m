@@ -70,7 +70,7 @@
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {
 	NSString *filename = [NSString stringWithFormat:@"%@_%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
-	_clubImagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
+	_clubImagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
 	
 	NSLog(@"FILE PREFIX: %@", _clubImagePrefix);
 	
@@ -549,7 +549,7 @@
 				NSLog(@"Image -- REMOTE LOAD:[%@]", [prefix stringByAppendingString:kSnapMediumSuffix]);
 				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[prefix stringByAppendingString:kSnapMediumSuffix]]
 																   cachePolicy:kOrthodoxURLCachePolicy
-															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+															   timeoutInterval:[HONAPICaller timeoutInterval]]
 								 placeholderImage:nil
 										  success:imageSuccessBlock
 										  failure:imageFailureBlock];

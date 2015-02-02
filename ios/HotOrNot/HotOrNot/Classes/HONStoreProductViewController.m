@@ -157,7 +157,7 @@
 		
 		[_productImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_storeProductVO.imageURL]
 																   cachePolicy:kOrthodoxURLCachePolicy
-															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+															   timeoutInterval:[HONAPICaller timeoutInterval]]
 							  placeholderImage:nil
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];

@@ -523,7 +523,7 @@
 																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONUserAssistant sharedInstance] activeUsername]],
 																															@"email"		: @[[[HONAppDelegate emailShareComment] objectForKey:@"subject"], [NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONUserAssistant sharedInstance] activeUsername]]],//  [[[[HONAppDelegate emailShareComment] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareComment] objectForKey:@"body"], [[HONUserAssistant sharedInstance] activeUsername]]],
 																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate smsShareComment], [[HONUserAssistant sharedInstance] activeUsername]]},
-																									@"image"			: _clubPhotoVO.imagePrefix, //([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																									@"image"			: _clubPhotoVO.imagePrefix, //([[HONUserAssistant sharedInstance] activeUserAvatarURL] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																									@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 																									@"club"				: _clubVO.dictionary,
 																									@"mp_event"			: @"Club Timeline - More Action Sheet _Share",

@@ -17,11 +17,11 @@
 #import "HONComposeSubjectViewController.h"
 #import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"
+#import "HONLoadingOverlayView.h"
 
-@interface HONComposeSubjectViewController () <HONTopicViewCellDelegate>
+@interface HONComposeSubjectViewController () <HONLoadingOverlayViewDelegate, HONTopicViewCellDelegate>
+@property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UITextField *customTopicTextField;
-@property (nonatomic, strong) UIView *overlayView;
-@property (nonatomic, strong) NSTimer *overlayTimer;
 @property (nonatomic, strong) NSString *topicName;
 @property (nonatomic, strong) NSArray *participantIDs;
 @end
@@ -57,75 +57,59 @@
 	[super _didFinishDataRefresh];
 }
 
-- (NSArray *)_buildClubMemberParticipants {
-	__block HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
-//	[[HONAPICaller sharedInstance] retrieveClubByClubID:globalClubVO.clubID withOwnerID:globalClubVO.ownerID completion:^(NSDictionary *result) {
-//		globalClubVO = [HONUserClubVO clubWithDictionary:result];
-	
-		__block NSMutableArray *participantIDs = [NSMutableArray array];
-		[[NSArray arrayRandomizedWithArray:globalClubVO.activeMembers withCapacity:25] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
-			[participantIDs addObject:NSStringFromInt(trivialUserVO.userID)];
-		}];
-		
-//		if (completion)
-//			completion([participantIDs copy]);
-//	}];
-	
-	return ([participantIDs copy]);
-}
-
-
 - (void)_submitStatusUpdate {
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Submit"
-//									   withProperties:[self _trackingProps]];
-	
-	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
-	
-	NSArray *participants = [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
-	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:participants withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
+	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
+	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
 	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
-	
+	LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
 //	[conversation sendTypingIndicator:LYRTypingDidBegin];
 
-	if (![[HONLayerKitAssistant sharedInstance] sendMessage:[[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data] toConversation:conversation])
+	if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
 		NSLog(@"SEND FAILED!!");
 	
 	else {
-		[_submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
-		[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
+		NSLog(@"CONVERSATION:\n%@", [conversation toString]);
 		
-		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
-			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kProgressHUDMinDuration;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = @"Error!";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-				_progressHUD = nil;
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[_submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
+			[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
+			
+			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
+			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					_progressHUD = nil;
 					
-			} else {
-				NSError *error = nil;
-	//			NSLog(@"DELETING:%@", NSStringFromBOOL([message delete:LYRDeletionModeAllParticipants error:&error]));
-	//			[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
-	//				if (!success) {
-	//					NSLog(@"Purging participants failed!\n%@", error);
-	//				}
-
-				NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
-				[self _orphanSubmitOverlay];
-				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-				}]; // modal
-			} // api result
-		}]; // api submit
+				} else {
+//					NSError *error = nil;
+//					NSLog(@"DELETING:%@", NSStringFromBOOL([message delete:LYRDeletionModeAllParticipants error:&error]));
+//					[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
+//						if (!success) {
+//							NSLog(@"Purging participants failed!\n%@", error);
+//						}
+//					}];
+//				
+//					NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
+				} // api result
+			}]; // api submit
+		});
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.875 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+			[_loadingOverlayView outro];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			}]; // modal
+		});
 	}
 }
 
@@ -162,15 +146,7 @@
 	_customTopicTextField.placeholder = NSLocalizedString(@"custom_topic", @"Terms");
 	_customTopicTextField.delegate = self;
 	
-//	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 58.0, 320.0, 58.0);
-//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-//	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:submitButton];
 	[self _goReloadContents];
-	
-	
 }
 
 - (void)viewDidLoad {
@@ -193,27 +169,6 @@
 }
 
 
-- (void)_orphanSubmitOverlay {
-	NSLog(@"::|> _orphanSubmitOverlay <|::");
-	
-	if ([_overlayTimer isValid])
-		[_overlayTimer invalidate];
-	
-	if (_overlayTimer != nil);
-	_overlayTimer = nil;
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
-	if (_overlayView != nil) {
-		[_overlayView removeFromSuperview];
-		_overlayView = nil;
-	}
-}
-
-
 #pragma mark - Navigation
 - (void)_goBack {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Camera Step - Back"];
@@ -225,31 +180,10 @@
 }
 
 - (void)_goSubmit {
-	if (_selectedTopicVO == nil) {
-		[[[UIAlertView alloc] initWithTitle:nil
-									message:@"You must select a subject"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-	} else {
-		_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-		_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.25];
-		[self.view addSubview:_overlayView];
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = @"";
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kProgressHUDMinDuration;
-		_progressHUD.taskInProgress = YES;
-		
-		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
-											  selector:@selector(_orphanSubmitOverlay)
-											  userInfo:nil repeats:NO];
-		
-		[self _submitStatusUpdate];
-	}
+	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+	_loadingOverlayView.delegate = self;
+	
+	[self _submitStatusUpdate];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -292,6 +226,17 @@
 	
 	if ([_customTopicTextField.text length] == 0)
 		[_customTopicTextField resignFirstResponder];
+}
+
+
+#pragma mark - LoadingOverlayView Delegates
+- (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView {
+	NSLog(@"[*:*] loadingOverlayViewDidIntro [*:*]");
+}
+
+- (void)loadingOverlayViewDidOutro:(HONLoadingOverlayView *)loadingOverlayView {
+	NSLog(@"[*:*] loadingOverlayViewDidOutro [*:*]");
+	loadingOverlayView.delegate = nil;
 }
 
 

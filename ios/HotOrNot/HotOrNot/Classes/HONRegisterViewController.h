@@ -10,10 +10,13 @@
 
 #import "HONViewController.h"
 
+typedef NS_ENUM(NSUInteger, HONRegisterAlertTag) {
+	HONRegisterAlertTagTerms = 0
+};
+
 typedef NS_ENUM(NSUInteger, HONRegisterCheckErrorType) {
-	HONRegisterCheckErrorTypeNone		= (0UL << 0),
-	HONRegisterCheckErrorTypeUsername	= (1UL << 0),
-	HONRegisterCheckErrorTypePhone		= (1UL << 1)
+	HONRegisterCheckErrorTypeNone = 0,
+	HONRegisterCheckErrorTypeTerms
 };
 
 typedef NS_ENUM(NSUInteger, HONRegisterErrorType) {

@@ -62,8 +62,8 @@
 						   @"extern_name"	: ([trivialUserVO.username length] > 0) ? trivialUserVO.username : ([lName length] == 0) ? fName : [NSString stringWithFormat:@"%@ %@", fName, lName],
 						   @"email"			: ([trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
 						   @"phone"			: (![trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
-						   @"image"			: UIImageJPEGRepresentation([[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapLargeSize], [HONAppDelegate compressJPEGPercentage]),
-						   @"invited"		: [trivialUserVO.invitedDate formattedISO8601StringUTC]};
+						   @"image"			: UIImageJPEGRepresentation([[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapLargeSize], [HONImageBroker compressJPEGPercentage]),
+						   @"invited"		: [trivialUserVO.invitedDate formattedISO8601String]};
 	
 	return ([HONContactUserVO contactWithDictionary:dict]);
 }

@@ -10,6 +10,22 @@
 
 @implementation UIScrollView (BuiltInMenlo)
 
+- (BOOL)isAtContentBottom {
+	return ([self scrollPosition] >= self.contentSize.height);
+}
+
+- (BOOL)isAtContentLeft {
+	return ([self scrollPosition] <= 0.0);
+}
+
+- (BOOL)isAtContentRight {
+	return ([self scrollPosition] >= self.contentSize.width);
+}
+
+- (BOOL)isAtContentTop {
+	return ([self scrollPosition] <= 0.0);
+}
+
 - (CGFloat)scrollPosition {
 	if (self.contentSize.height > self.frame.size.height)
 		return ((self.contentOffset.y + self.frame.size.height) - (self.contentInset.top + self.contentInset.bottom));
@@ -18,10 +34,6 @@
 		return ((self.contentOffset.x + self.frame.size.width) - (self.contentInset.left + self.contentInset.right));
 	
 	return ((self.frame.size.width > self.frame.size.height) ? self.frame.size.width : self.frame.size.height);
-}
-
-- (BOOL)isAtBottom {
-	return ((self.contentOffset.y + self.frame.size.height) - (self.contentInset.top + self.contentInset.bottom) >= self.contentSize.height);
 }
 
 @end

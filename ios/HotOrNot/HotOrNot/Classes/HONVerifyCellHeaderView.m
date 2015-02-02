@@ -45,7 +45,7 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_creatorVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
 																 cachePolicy:kOrthodoxURLCachePolicy
-															 timeoutInterval:[HONAppDelegate timeoutInterval]]
+															 timeoutInterval:[HONAPICaller timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];

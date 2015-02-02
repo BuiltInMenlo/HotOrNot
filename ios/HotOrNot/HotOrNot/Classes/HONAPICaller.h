@@ -17,77 +17,26 @@
 #import "HONClubPhotoVO.h"
 
 
+typedef NS_ENUM(NSUInteger, HONAmazonS3BucketType) {
+	HONAmazonS3BucketTypeAvatarsSource = 0,
+	HONAmazonS3BucketTypeAvatarsCloudFront,
+	
+	HONAmazonS3BucketTypeBannersSource,
+	HONAmazonS3BucketTypeBannersCloudFront,
+	
+	HONAmazonS3BucketTypeClubsSource,
+	HONAmazonS3BucketTypeClubsCloudFront,
+	
+	HONAmazonS3BucketTypeEmotionsSource,
+	HONAmazonS3BucketTypeEmoticonsCloudFront
+};
+
 typedef NS_ENUM(NSUInteger, HONS3BucketType) {
 	HONS3BucketTypeAvatars = 0,
 	HONS3BucketTypeSelfies,
 	HONS3BucketTypeClubs
 };
 
-
-
-// api endpts
-extern NSString * const kAPIChallenges;
-extern NSString * const kAPIComments;
-extern NSString * const kAPISearch;
-extern NSString * const kAPIUsers;
-extern NSString * const kAPIVotes;
-
-extern NSString * const kAPIMemberClubs;
-extern NSString * const kAPIMemberStatusUpdates;
-extern NSString * const kAPIClubStatusUpdates;
-extern NSString * const kAPIStatusUpdate;
-extern NSString * const kAPIStatusUpdateChildren;
-extern NSString * const kAPIStatusUpdateVoters;
-
-extern NSString * const kAPIGetFriends;
-extern NSString * const kAPIGetSubscribees;
-extern NSString * const kAPIAddFriend;
-extern NSString * const kAPIRemoveFriend;
-extern NSString * const kAPISMSInvites;
-extern NSString * const kAPIEmailInvites;
-extern NSString * const kAPITumblrLogin;
-extern NSString * const kAPIEmailVerify;
-extern NSString * const kAPIPhoneVerify;
-extern NSString * const kAPIEmailContacts;
-extern NSString * const kAPIChallengeObject;
-extern NSString * const kAPIGetPublicChallenges;
-//extern NSString * const kAPIUsersGetUsersClubs;
-extern NSString * const kAPICheckNameAndEmail;
-extern NSString * const kAPIUsersFirstRunComplete;
-extern NSString * const kAPISetUserAgeGroup;
-extern NSString * const kAPICreateChallenge;
-extern NSString * const kAPIJoinChallenge;
-extern NSString * const kAPIGetVerifyList;
-extern NSString * const kAPIProcessChallengeImage;
-extern NSString * const kAPIProcessUserImage;
-extern NSString * const kAPISuspendedAccount;
-extern NSString * const kAPIPurgeUser;
-extern NSString * const kAPIPurgeContent;
-extern NSString * const kAPIGetActivity;
-extern NSString * const kAPIDeleteImage;
-extern NSString * const kAPIVerifyShoutout;
-extern NSString * const kAPIProfileShoutout;
-extern NSString * const kAPIGetMessages;
-extern NSString * const kAPICreateMessage;
-extern NSString * const kAPIChallengesMessageSeen;
-
-extern NSString * const kAPIClubsCreate;
-extern NSString * const kAPIClubsEdit;
-extern NSString * const kAPIClubsInvite;
-extern NSString * const kAPIClubsProcessImage;
-extern NSString * const kAPIClubsDelete;
-extern NSString * const kAPIClubsGet;
-extern NSString * const kAPIClubsJoin;
-extern NSString * const kAPIClubsQuit;
-extern NSString * const kAPIClubsBlock;
-extern NSString * const kAPIClubsUnblock;
-extern NSString * const kAPIClubsFeatured;
-extern NSString * const kAPIUsersGetClubs;
-extern NSString * const kAPIUsersSetDeviceToken;
-extern NSString * const kAPIUsersGetClubInvites;
-extern NSString * const kAPIUsersCheckUsername;
-extern NSString * const kAPIUsersCheckPhone;
-extern NSString * const kAPIStatusupdate;
 
 // network error descriptions
 extern NSString * const kNetErrorNoConnection;
@@ -116,6 +65,9 @@ extern NSString * const kMIMETypeTextXML;
 extern const CGFloat kNotifiyDelay;
 
 
+// network rules
+extern const NSURLRequestCachePolicy kOrthodoxURLCachePolicy;
+
 
 @interface HONAPICaller : NSObject
 + (HONAPICaller *)sharedInstance;
@@ -124,6 +76,11 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Utility
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
++ (NSDictionary *)s3Credentials;
++ (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType;
+
++ (NSTimeInterval)timeoutInterval;
+
 - (NSString *)phpAPIBasePath;
 - (NSString *)pythonAPIBasePath;
 

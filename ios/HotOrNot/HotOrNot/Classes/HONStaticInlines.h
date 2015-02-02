@@ -68,42 +68,87 @@ CGAffineTransformMakeNormal()
 }
 
 
+#pragma mark - CGFloat
+
+BIM_INLINE CGFloat
+CGPointDistance(CGPoint pt1, CGPoint pt2)
+{
+	CGFloat dist = sqrt(pow((pt1.x - pt2.x), 2) + pow((pt1.y - pt2.y), 2));
+	return dist;
+}
+
+
 #pragma mark - CGPoint
 
 BIM_INLINE CGPoint
-CGPointAdd(CGPoint point, CGPoint val)
+CGPointAdd(CGPoint pt1, CGPoint pt2)
 {
 	CGPoint summatedPoint;
-	summatedPoint = CGPointMake(point.x + val.x, point.y + val.y);
+	summatedPoint = CGPointMake(pt1.x + pt2.x, pt1.y + pt2.y);
 	return summatedPoint;
 }
 
 BIM_INLINE CGPoint
-CGPointDivide(CGPoint point, CGPoint val)
+CGPointDivide(CGPoint pt1, CGPoint pt2)
 {
 	CGPoint summatedPoint;
-	summatedPoint = CGPointMake(point.x / val.x, point.y / val.y);
+	summatedPoint = CGPointMake(pt1.x / pt2.x, pt1.y / pt2.y);
 	return summatedPoint;
 }
 
 BIM_INLINE CGPoint
-CGPointMultiply(CGPoint point, CGPoint val)
+CGPointMultiply(CGPoint pt1, CGPoint pt2)
 {
 	CGPoint summatedPoint;
-	summatedPoint = CGPointMake(point.x * val.x, point.y * val.y);
+	summatedPoint = CGPointMake(pt1.x * pt2.x, pt1.y * pt2.y);
 	return summatedPoint;
 }
 
 BIM_INLINE CGPoint
-CGPointMultiplyFactor(CGPoint point, CGFloat factor)
+CGPointMultiplyFactor(CGPoint pt1, CGFloat factor)
 {
 	CGPoint summatedPoint;
-	summatedPoint = CGPointMake(point.x * factor, point.y * factor);
+	summatedPoint = CGPointMake(pt1.x * factor, pt1.y * factor);
 	return summatedPoint;
+}
+
+BIM_INLINE CGPoint
+CGPointRotatedAroundPoint(CGPoint point, CGPoint pivot, CGFloat degrees)
+{
+	CGAffineTransform translation, rotation;
+	translation	= CGAffineTransformMakeTranslation(-pivot.x, -pivot.y);
+	point		= CGPointApplyAffineTransform(point, translation);
+	rotation	= CGAffineTransformMakeRotation(degrees * (M_PI / 180.0));
+	point		= CGPointApplyAffineTransform(point, rotation);
+	translation	= CGAffineTransformMakeTranslation(pivot.x, pivot.y);
+	point		= CGPointApplyAffineTransform(point, translation);
+	return point;
 }
 
 
 #pragma mark - CGRect
+
+
+BIM_INLINE CGPoint
+CGRectBottomLeftPoint(CGRect rect)
+{
+	return CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect));
+}
+
+BIM_INLINE CGPoint
+CGRectBottomRightPoint(CGRect rect)
+{
+	return CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect));
+}
+
+BIM_INLINE CGPoint
+CGRectCenterPoint(CGRect rect)
+{
+	CGPoint centerPoint = CGPointZero;
+	centerPoint.x = CGRectGetMidX(rect);
+	centerPoint.y = CGRectGetMidY(rect);
+	return centerPoint;
+}
 
 BIM_INLINE CGRect
 CGRectExtendSize(CGRect rect, CGSize size)
@@ -214,6 +259,18 @@ CGRectResizeWidth(CGRect rect, CGFloat newWidth)
 {
 	CGRect resizeRect = CGRectResize(rect, CGSizeMake(newWidth, rect.size.height));
 	return resizeRect;
+}
+
+BIM_INLINE CGPoint
+CGRectTopLeftPoint(CGRect rect)
+{
+	return CGPointMake(CGRectGetMinX(rect), CGRectGetMinY(rect));
+}
+
+BIM_INLINE CGPoint
+CGRectTopRightPoint(CGRect rect)
+{
+	return CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
 }
 
 BIM_INLINE CGRect

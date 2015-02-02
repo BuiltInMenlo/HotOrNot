@@ -88,7 +88,7 @@
 	//NSLog(@"URL:[%@]", _commentVO.avatarPrefix);
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_commentVO.avatarPrefix]
 															   cachePolicy:kOrthodoxURLCachePolicy
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
+														   timeoutInterval:[HONAPICaller timeoutInterval]]
 							 placeholderImage:[UIImage imageNamed:@"loadingDots_50"]
 									  success:imageSuccessBlock
 									  failure:imageFailureBlock];

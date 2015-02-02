@@ -191,7 +191,7 @@
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
 														   cachePolicy:kOrthodoxURLCachePolicy
-													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+													   timeoutInterval:[HONAPICaller timeoutInterval]]
 						 placeholderImage:nil
 								  success:imageSuccessBlock
 								  failure:imageFailureBlock];
@@ -290,7 +290,7 @@
 			
 			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:((HONEmotionVO *)[_emotionVOs objectAtIndex:view.tag]).smallImageURL]
 															   cachePolicy:kOrthodoxURLCachePolicy
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
+														   timeoutInterval:[HONAPICaller timeoutInterval]]
 							 placeholderImage:nil
 									  success:imageSuccessBlock
 									  failure:imageFailureBlock];

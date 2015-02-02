@@ -141,22 +141,22 @@ static HONStateMitigator *sharedInstance = nil;
 }
 
 - (void)writeAppInstallTimestamp {
-	[[NSUserDefaults standardUserDefaults] replaceObject:[[NSDate date] formattedISO8601StringUTC] forKey:kStateMitigatorInstallTimestampKey];
+	[[NSUserDefaults standardUserDefaults] replaceObject:[[NSDate date] formattedISO8601String] forKey:kStateMitigatorInstallTimestampKey];
 }
 
 - (void)updateLastTrackingCallTimestamp:(NSDate *)date {
 //	[[NSUserDefaults standardUserDefaults] setValue:date] forKey:kStateMitigatorTrackingTimestampKey];
-	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601StringUTC] forKey:kStateMitigatorTrackingTimestampKey];
+	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601String] forKey:kStateMitigatorTrackingTimestampKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)updateAppEntryTimestamp:(NSDate *)date {
-	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601StringUTC] forKey:kStateMitigatorEntryTimestampKey];
+	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601String] forKey:kStateMitigatorEntryTimestampKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)updateAppExitTimestamp:(NSDate *)date {
-	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601StringUTC] forKey:kStateMitigatorExitTimestampKey];
+	[[NSUserDefaults standardUserDefaults] setValue:[date formattedISO8601String] forKey:kStateMitigatorExitTimestampKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 

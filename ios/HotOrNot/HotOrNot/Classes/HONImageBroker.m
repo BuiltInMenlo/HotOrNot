@@ -6,8 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDictionary+BuiltinMenlo.h"
 #import "UIImage+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
+#import "UIView+BuiltinMenlo.h"
 
 #import "AFImageRequestOperation.h"
 
@@ -41,6 +43,9 @@ static HONImageBroker *sharedInstance = nil;
 	return (self);
 }
 
++ (CGFloat)compressJPEGPercentage {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
+}
 
 - (UIImage *)createImageFromView:(UIView *)view {
 	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0f);
@@ -191,42 +196,21 @@ static HONImageBroker *sharedInstance = nil;
 - (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	
-	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]
+																			  imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		image = (image != nil) ? image : [UIImage imageNamed:key];
-		[[HONImageBroker sharedInstance] writeImage:image toUserDefaulsWithKey:key];
+		[[HONImageBroker sharedInstance] writeImage:image toUserDefaultsWithKey:key];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: Failed Request - %@", [[self class] description], [error localizedDescription]);
-		[[HONImageBroker sharedInstance] writeImage:[UIImage imageNamed:key] toUserDefaulsWithKey:key];
+		[[HONImageBroker sharedInstance] writeImage:[UIImage imageNamed:key] toUserDefaultsWithKey:key];
 	}];
 	
 	[operation start];
 }
 
-- (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
-	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
-	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(size)];
-	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		imageView.image = (image != nil) ? image : [UIImage imageNamed:key];
-		[[HONImageBroker sharedInstance] writeImage:imageView.image toUserDefaulsWithKey:key];
-		
-	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], url, [error localizedDescription]);
-		[[HONImageBroker sharedInstance] writeImage:[UIImage imageNamed:key] toUserDefaulsWithKey:key];
-	}];
-	
-	[operation start];
-}
-
-- (void)writeImage:(UIImage *)image toUserDefaulsWithKey:(NSString *)key {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-	
-	NSData *data = UIImagePNGRepresentation(image);
-//	NSLog(@"WRITING IMAGE:(%@)\nFOR KEY:(%@)", [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength], key);
-	
-	[[NSUserDefaults standardUserDefaults] setObject:data forKey:key];
+- (void)writeImage:(UIImage *)image toUserDefaultsWithKey:(NSString *)key {
+	[[NSUserDefaults standardUserDefaults] replaceObject:UIImagePNGRepresentation(image) forKey:key];	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -428,18 +412,23 @@ static HONImageBroker *sharedInstance = nil;
 }
 
 - (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path {
-	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
-	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
+	UIView *matteView = [UIView viewAtSize:kInstagramSize withBGColor:[UIColor blackColor]];
+	[matteView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeInstagram]]];
+	[UIImageJPEGRepresentation([matteView createImageFromView], 1.0f) writeToFile:path atomically:YES];
 	
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kInstagramSize)];
-	canvasView.backgroundColor = [UIColor blackColor];
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
-	imageView.image = processedImage;
-	[canvasView addSubview:imageView];
-	[canvasView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeInstagram]]];
+//	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
+//	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
 	
-	[UIImageJPEGRepresentation([[HONImageBroker sharedInstance] createImageFromView:canvasView], 1.0f) writeToFile:path atomically:YES];
+//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kInstagramSize)];
+//	canvasView.backgroundColor = [UIColor blackColor];
+//	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
+//	imageView.image = processedImage;
+//	[canvasView addSubview:imageView];
+//	[canvasView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeInstagram]]];
+//	
+//	[UIImageJPEGRepresentation([[HONImageBroker sharedInstance] createImageFromView:canvasView], 1.0f) writeToFile:path atomically:YES];
 }
 
 

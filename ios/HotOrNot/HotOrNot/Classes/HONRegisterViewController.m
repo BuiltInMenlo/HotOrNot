@@ -20,25 +20,18 @@
 #import "KeychainItemWrapper.h"
 
 #import "HONRegisterViewController.h"
-#import "HONCallingCodesViewController.h"
 #import "HONEnterPINViewController.h"
 #import "HONTermsViewController.h"
 #import "HONNextNavButtonView.h"
+#import "HONLoadingOverlayView.h"
 
-@interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
+@interface HONRegisterViewController () <HONLoadingOverlayViewDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
-@property (nonatomic, strong) NSString *callingCode;
+@property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) UITextField *usernameTextField;
-@property (nonatomic, strong) UITextField *phoneTextField;
-@property (nonatomic, strong) UIButton *usernameButton;
-@property (nonatomic, strong) UIButton *callCodeButton;
-@property (nonatomic, strong) UIButton *phoneButton;
+@property (nonatomic, strong) UIButton *termsCheckButton;
 @property (nonatomic, strong) UIButton *submitButton;
-@property (nonatomic, strong) UIImageView *phoneCheckImageView;
-@property (nonatomic, strong) UIView *overlayView;
-@property (nonatomic, strong) NSTimer *overlayTimer;
 @property (nonatomic, strong) UIImageView *brandingImageView;
 @property (nonatomic, strong) UIImageView *txtFieldBGImageView;
 @end
@@ -49,7 +42,6 @@
 	if ((self = [super init])) {
 		_totalType = HONStateMitigatorTotalTypeRegistration;
 		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
-		_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter"];
 	}
@@ -58,34 +50,21 @@
 }
 
 - (void)dealloc {
-	_phoneTextField.delegate = nil;
 }
 
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	
-	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.75];
-	[self.view addSubview:_overlayView];
-	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"";//NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.taskInProgress = YES;
-	
-	
 	NSLog(@"_checkUsername -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
-	NSLog(@"_checkUsername -- USERNAME:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername]);
+	NSLog(@"_checkUsername -- USERNAME:[%@]", _username);
 	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
 	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:_usernameTextField.text completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username completion:^(NSDictionary *result) {
 		NSLog(@"RESULT:[%@]", result);
 		
 		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+			[_loadingOverlayView outro];
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -98,127 +77,86 @@
 			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
 			_progressHUD = nil;
 			
-			[self _orphanSubmitOverlay];
 			[_usernameTextField becomeFirstResponder];
 			
 		} else {
-			[[HONAPICaller sharedInstance] checkForAvailablePhone:_phone completion:^(NSDictionary *result) {
-				if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				[[HONAPICaller sharedInstance] checkForAvailablePhone:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] completion:^(NSDictionary *result) {
+					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue])
+						NSLog(@"\n\n!¡!¡!¡ FAILED API NAME/PHONE CHECK !¡!¡!¡");
+					
+					else
+						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
+				}];
+			});
+			
+			
+			_submitButton.userInteractionEnabled = NO;
+			
+			NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+			NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONUserAssistant sharedInstance] activeUsername]);
+			NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+			
+			NSLog(@"\n\n******** FINALIZE W/ API **********");
+			[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+																		@"username"		: _username,
+																		@"phone"		: [[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
+				
+																			
+				NSLog(@"~*~*~*~*~*~* FINALIZE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n%@", result);
+				int responseCode = [[result objectForKey:@"result"] intValue];
+				if (result != nil && responseCode == 0) {
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+					[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
+					
+					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
+					[_loadingOverlayView outro];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+						KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+						[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
+						
+						dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+							[[HONAPICaller sharedInstance] updateUsernameForUser:_username completion:^(NSDictionary *result) {
+								NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+								
+								if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+									[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+								
+								[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
+									NSLog(@"~*~*~*~*~*~* AVATAR UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+									
+									if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+										[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+									
+									[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+										NSLog(@"~*~*~*~*~*~* PHONE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n");
+										
+										if (!((BOOL)[[result objectForKey:@"result"] intValue]))
+											NSLog(@"!¡!¡!¡!¡!¡!¡!¡ PHONE UPDATE FAILED !¡!¡!¡!¡!¡!¡!¡!");
+									}];
+								}];
+							}];
+						});
+						
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+					}];
+					
+				} else {
+					[_loadingOverlayView outro];
+					_submitButton.userInteractionEnabled = YES;
 					
 					if (_progressHUD == nil)
 						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 					[_progressHUD setYOffset:-80.0];
-					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.minShowTime = kProgressHUDErrorDuration;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-					_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
+					_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration + 0.75];
 					_progressHUD = nil;
-					
-					_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-					_phoneCheckImageView.alpha = 1.0;
-					
-					_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-					_phoneTextField.text = @"";
-					_phoneTextField.text = @"";
-					_phoneTextField.text = @"";
-					[_phoneTextField becomeFirstResponder];
-					
-				} else {
-					NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-					
-					_submitButton.userInteractionEnabled = NO;
-					
-					NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
-					NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
-					NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
-					
-					NSLog(@"\n\n******** FINALIZE W/ API **********");
-					[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-																				@"username"		: ([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername],
-																				@"phone"		: [_phone stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
-																					
-						int responseCode = [[result objectForKey:@"result"] intValue];
-						if (result != nil && responseCode == 0) {
-							
-							[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
-								if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-									[HONAppDelegate writeUserInfo:result];
-								}
-							}];
-							
-							[[HONAPICaller sharedInstance] updateUsernameForUser:([_usernameTextField.text length] > 0) ? _usernameTextField.text : [[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
-								if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-								}
-							}];
-							
-								
-							_phoneCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
-							_phoneCheckImageView.alpha = 1.0;
-							
-							[HONAppDelegate writeUserInfo:result];
-							[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
-							
-							[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-								if (_progressHUD != nil) {
-									[_progressHUD hide:YES];
-									_progressHUD = nil;
-								}
-								
-								[_overlayView removeFromSuperview];
-								_overlayView = nil;
-								
-								if ([_overlayTimer isValid])
-									[_overlayTimer invalidate];
-								
-								[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
-								
-								[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-									KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-									[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
-									
-									[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
-								}];
-							}];
-							
-							
-						} else {
-							_submitButton.userInteractionEnabled = YES;
-							
-							if (_progressHUD == nil)
-								_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-							
-							[_progressHUD setYOffset:-80.0];
-							_progressHUD.minShowTime = kProgressHUDErrorDuration;
-							_progressHUD.mode = MBProgressHUDModeCustomView;
-							_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-							_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
-							[_progressHUD show:NO];
-							[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration + 0.75];
-							_progressHUD = nil;
-							
-							if (responseCode == 1) {
-								_phoneCheckImageView.image = [UIImage imageNamed:@"checkMarkIcon"];
-								
-							} else if (responseCode == 2) {
-								_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-								
-								_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-								_phoneTextField.text = @"";
-								[_phoneTextField becomeFirstResponder];
-							}
-							
-							else {
-								_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-								_phoneTextField.text = @"";
-							}
-							
-							_phoneCheckImageView.alpha = 1.0;
-						}
-					}];
 				}
-			}];
+			}]; // finalize
 		}
 	}];
 }
@@ -229,21 +167,11 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	//[self.view addSubview:_headerView];
+	_username = [[HONUserAssistant sharedInstance] activeUsername];
 	
 	_brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signupBranding"]];
 	_brandingImageView.frame = CGRectOffset(_brandingImageView.frame, 0.0, 97.0);
 	[self.view addSubview:_brandingImageView];
-	
-	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateHighlighted];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateSelected];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateSelected|UIControlStateHighlighted)];
-//	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:_usernameButton];
 	
 	_txtFieldBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0)];
 	_txtFieldBGImageView.image = [UIImage imageNamed:@"signupButtonBG_normal"];
@@ -261,31 +189,31 @@
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = NSLocalizedString(@"register_submit", @"Terms");
-	//_usernameTextField.text = [[HONUserAssistant sharedInstance] activeUsername];
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
 	[_txtFieldBGImageView addSubview:_usernameTextField];
 	
 	
-//	UILabel *submitLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 9.0, 200.0, 26.0)];
-//	submitLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-//	submitLabel.textColor =  [UIColor blackColor];
-//	submitLabel.backgroundColor = [UIColor clearColor];
-//	submitLabel.text = NSLocalizedString(@"register_submit", @"Terms");
-//	[submitButton addSubview:submitLabel];
-	
 	UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
 	chevronImageView.frame = CGRectOffset(chevronImageView.frame, 280.0, 0.0);
 	[_txtFieldBGImageView addSubview:chevronImageView];
-	
 	
 	UIButton *enterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	enterButton.frame = CGRectMake(280.0, 0.0, 40.0, 44.0);
 	[enterButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_txtFieldBGImageView addSubview:enterButton];
 	
+	_termsCheckButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_termsCheckButton.frame = CGRectMake(60.0, self.view.frame.size.height - 68.0, 44.0, 44.0);
+	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_normal"] forState:UIControlStateNormal];
+//	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_normal"] forState:(UIControlStateNormal|UIControlStateHighlighted)];
+	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_selected"] forState:(UIControlStateSelected)];
+	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_selected"] forState:(UIControlStateSelected|UIControlStateHighlighted)];
+	[_termsCheckButton addTarget:self action:@selector(_goToggleTerms) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_termsCheckButton];
+	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	termsButton.frame = CGRectMake(60.0, self.view.frame.size.height - 55.0, 200.0, 18.0);
+	termsButton.frame = CGRectMake(100.0, self.view.frame.size.height - 55.0, 200.0, 18.0);
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.80] forState:UIControlStateNormal];
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor] forState:UIControlStateHighlighted];
 	termsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
@@ -296,7 +224,7 @@
 	
 	NSLog(@"loadView -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
 	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
-	NSLog(@"loadView -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+	NSLog(@"loadView -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 }
 
 - (void)viewDidLoad {
@@ -316,23 +244,24 @@
 
 
 #pragma mark - Navigation
-- (void)_goCallingCodes {
-	HONCallingCodesViewController *callingCodesViewController = [[HONCallingCodesViewController alloc] init];
-	callingCodesViewController.delegate = self;
+- (void)_goToggleTerms {
+	[_termsCheckButton setSelected:!_termsCheckButton.selected];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:callingCodesViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	if (!_termsCheckButton.selected) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"register_alert", @"You must agree to the terms of service to sign up!")
+															message:nil
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_agree", nil), nil];
+		[alertView setTag:HONRegisterAlertTagTerms];
+		[alertView show];
+	}
 }
 
 - (void)_goTerms {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_goPhone {
-	[_phoneTextField becomeFirstResponder];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -348,49 +277,28 @@
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
 	
-	[_phoneButton setSelected:NO];
-		
-	HONRegisterErrorType registerErrorType = ((int)([[[HONUserAssistant sharedInstance] activeUsername] length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_phone length] == 0) * HONRegisterErrorTypePhone);
-	if (registerErrorType == HONRegisterErrorTypeNone) {
-//		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
-		
-		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
-											  selector:@selector(_orphanSubmitOverlay)
-											  userInfo:nil repeats:NO];
-		
+	
+	if (!_termsCheckButton.selected) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"register_alert", @"You must agree to the terms of service to sign up!")
+															message:nil
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_agree", nil), nil];
+		[alertView setTag:HONRegisterAlertTagTerms];
+		[alertView show];
+	
+	} else {
 		_isPushing = YES;
+		
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+		[self.view addSubview:_loadingOverlayView];
+		
+		_username = ([_usernameTextField.text length] > 0) ? _usernameTextField.text : _username;
+		
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+		_loadingOverlayView.delegate = self;
+		
 		[self _checkUsername];
-	
-	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
-		[[[UIAlertView alloc] initWithTitle:nil
-									message: NSLocalizedString(@"no_user_msg", @"You need to enter a username to use Selfieclub")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	
-	} else if (registerErrorType == HONRegisterErrorTypePhone) {
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.alpha = 1.0;
-		
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_phone", @"No Phone!")
-									message: NSLocalizedString(@"no_phone_msg", @"You need a phone # to use Selfieclub.")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		_phone = [NSString stringWithFormat:@"+1%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-		_phoneTextField.text = @"";
-		[_phoneTextField becomeFirstResponder];
-	
-	} else if (registerErrorType == (HONRegisterErrorTypeUsername | HONRegisterErrorTypePhone)) {
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.alpha = 1.0;
-		
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_userphone", @"No Username & Phone!")
-									message: NSLocalizedString(@"no_userphone_msg", @"You need to enter a username and phone # to use Selfieclub")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
 	}
 }
 
@@ -408,43 +316,17 @@
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
-	
-#if __APPSTORE_BUILD__ == 0
-	if ([_phoneTextField.text isEqualToString:@"¡"]) {
-		_phoneTextField.text = [[[HONDeviceIntrinsics sharedInstance] phoneNumber] substringFromIndex:2];
-	}
-#endif
-}
-
-- (void)_orphanSubmitOverlay {
-	NSLog(@"::|> _orphanSubmitOverlay <|::");
-	
-	if ([_overlayTimer isValid])
-		[_overlayTimer invalidate];
-	
-	if (_overlayTimer != nil);
-	_overlayTimer = nil;
-	
-	if (_overlayView != nil) {
-		[_overlayView removeFromSuperview];
-		_overlayView = nil;
-	}
 }
 
 
-#pragma mark - CallingCodesViewController Delegates
-- (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
-	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@{@"code"	: countryVO.callingCode,
-													   @"name"	: countryVO.countryName} forKey:@"country_code"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Registration - Country Selector Choosen"
-//									 withProperties:@{@"code"	: [@"+" stringByAppendingString:countryVO.callingCode]}];
-	
-	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateNormal];
-	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateHighlighted];
+#pragma mark - LoadingOverlayView Delegates
+- (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView {
+	NSLog(@"[*:*] loadingOverlayViewDidIntro [*:*]");
+}
+
+- (void)loadingOverlayViewDidOutro:(HONLoadingOverlayView *)loadingOverlayView {
+	NSLog(@"[*:*] loadingOverlayViewDidOutro [*:*]");
+	loadingOverlayView.delegate = nil;
 }
 
 
@@ -457,6 +339,9 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - nickname"];
+	
+	_usernameTextField.text = _username;
+	[_usernameTextField selectAll:nil];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
@@ -489,7 +374,7 @@
 	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound)
 		return (NO);
 	
-	return ([textField.text length] < 25 || [string isEqualToString:@""]);
+	return ([textField.text length] < 50 || [string isEqualToString:@""]);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
@@ -503,7 +388,18 @@
 
 #pragma mark - AlertView Deleagtes
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
+	if (alertView.tag == HONRegisterAlertTagTerms) {
+		if (buttonIndex == 1) {
+			[_termsCheckButton setSelected:YES];
+		}
+	}
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == HONRegisterAlertTagTerms) {
+		if (buttonIndex == 1) {
+			[self _goSubmit];
+		}
 	}
 }
 

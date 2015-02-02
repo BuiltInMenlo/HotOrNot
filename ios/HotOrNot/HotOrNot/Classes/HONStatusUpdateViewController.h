@@ -6,11 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <MessageUI/MFMailComposeViewController.h>
-#import <MessageUI/MFMessageComposeViewController.h>
-#import <Social/SLComposeViewController.h>
-#import <Social/SLServiceTypes.h>
-
 #import "HONViewController.h"
 #import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"

@@ -296,7 +296,7 @@ const CGFloat kEmotionOutroForce = 0.250;
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
 														   cachePolicy:kOrthodoxURLCachePolicy
-													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+													   timeoutInterval:[HONAPICaller timeoutInterval]]
 						 placeholderImage:nil
 								  success:imageSuccessBlock
 								  failure:imageFailureBlock];

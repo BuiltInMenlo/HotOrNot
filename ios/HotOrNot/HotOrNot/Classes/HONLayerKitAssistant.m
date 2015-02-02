@@ -98,10 +98,15 @@ static LYRClient *sharedClient = nil;
 - (void)notifyClientRemotePushWasReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 	NSLog(@"%@ - notifyClientRemotePushWasReceived:[%@]", [self description], userInfo);
 	
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 	// Get the message from userInfo
 	__block LYRMessage *message = [self messageFromRemoteNotification:userInfo];
 	
-	NSError *error;
+	
+//	LYRMessage *message = conversation.lastMessage;
+	
+	
 	
 	LYRClient *client = [[HONLayerKitAssistant sharedInstance] client];
 	BOOL success = false;
@@ -143,10 +148,11 @@ static LYRClient *sharedClient = nil;
 		NSLog (@"Application did complete remote notification sync");
 		
 	} else {
-		NSLog (@"Failed processing push notification with error: %@", error);
+//		NSLog (@"Failed processing push notification with error: %@", error);
 		if (completionHandler)
 			completionHandler(UIBackgroundFetchResultNoData);
 	}
+		});
 }
 
 
@@ -298,7 +304,7 @@ static LYRClient *sharedClient = nil;
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIUsersCheckUsername, [error localizedDescription]);
+					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], kJWTBaseURL, kJWTPostPath, [error localizedDescription]);
 					[[HONAPICaller sharedInstance] showDataErrorHUD];
 					
 					[[HONLayerKitAssistant sharedInstance] writeIdentityToken:nil];
@@ -306,150 +312,8 @@ static LYRClient *sharedClient = nil;
 					if (completion)
 						completion(NO, error);
 				}];
-
-				
-				
-				
-				
-				
-				
-				/*
-				NSURL *identityTokenURL = [NSURL URLWithString:@"https://layer-identity-provider.herokuapp.com/identity_tokens"];
-				NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:identityTokenURL];
-				request.HTTPMethod = @"POST";
-				[request setValue:kMIMETypeApplicationJSON forHTTPHeaderField:@"Content-Type"];
-				[request setValue:kMIMETypeApplicationJSON forHTTPHeaderField:@"Accept"];
-				
-				NSDictionary *parameters = @{ @"app_id": [[[HONLayerKitAssistant sharedInstance] client].appID UUIDString], @"user_id": NSStringFromInt(userID), @"nonce": nonce };
-				NSData *requestBody = [NSJSONSerialization dataWithJSONObject:parameters options:0 error:nil];
-				request.HTTPBody = requestBody;
-				
-				NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-				NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-				[[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-					if (error) {
-						completion(error);
-						return;
-					}
-					
-					// Deserialize the response
-					NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-					if(![responseObject valueForKey:@"error"])
-					{
-						NSString *identityToken = responseObject[@"identity_token"];
-						completion(identityToken);
-						
-						
-				 
-						 // 3. Submit identity token to Layer for validation
-						[[[HONLayerKitAssistant sharedInstance] client] authenticateWithIdentityToken:identityToken completion:^(NSString *authenticatedUserID, NSError *error) {
-							if (authenticatedUserID) {
-								
-								if ([[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] != nil && ![[self mutableLayerDict] hasObjectForKey:@"push_reg"]) {
-									NSError *error;
-									BOOL success = [[[HONLayerKitAssistant sharedInstance] client] updateRemoteNotificationDeviceToken:[[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] error:&error];
-									
-									if (success) {
-										[self addItemsToLocalDict:@[NSStringFromBOOL(YES)] withKeys:@[@"push_reg"]];
-										NSLog(@"Client already authed, now registered for remote notifications");
-										
-									} else {
-										NSLog(@"Error updating Layer device token for push:%@", error);
-									}
-								}
-								
-								if (completion) {
-									completion(nil);
-								}
-								NSLog(@"Layer Authenticated as User: %@", authenticatedUserID);
-							} else {
-								completion(error);
-							}
-						}];
-						
-					}
-					else
-					{
-						NSString *domain = @"layer-identity-provider.herokuapp.com";
-						NSInteger code = [responseObject[@"status"] integerValue];
-						NSDictionary *userInfo =
-						@{
-						  NSLocalizedDescriptionKey: @"Layer Identity Provider Returned an Error.",
-						  NSLocalizedRecoverySuggestionErrorKey: @"There may be a problem with your APPID."
-						  };
-						
-						NSError *error = [[NSError alloc] initWithDomain:domain code:code userInfo:userInfo];
-						completion(error);
-					}
-					
-				}] resume];*/
 			}
 		}];
-		
-		
-//		
-//		[[[HONLayerKitAssistant sharedInstance] client] requestAuthenticationNonceWithCompletion:^(NSString *nonce, NSError *error) {
-//			NSLog(@"requestAuthenticationNonceWithCompletion:[%@] nonce:[%@] error:[%@]", [[[HONLayerKitAssistant sharedInstance] client].appID UUIDString], nonce, error);
-//			
-//			
-//			// ii). Acquire identity Token from Layer Identity Service
-//			NSDictionary *params = @{@"app_id"	: [[[HONLayerKitAssistant sharedInstance] client].appID UUIDString],
-//									 @"user_id"	: NSStringFromInt(userID),
-//									 @"nonce"	: nonce};
-//			
-//			SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", kJWTBaseURL, kJWTPostPath, params);
-//			[[[HONAPICaller sharedInstance] appendHeaders:@{@"Content-Type"		: kMIMETypeApplicationJSON,
-//															@"Accept"			: kMIMETypeApplicationJSON}
-//											 toHTTPCLient:[[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kJWTBaseURL]]] postPath:kJWTPostPath parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//				NSError *error = nil;
-//				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//				
-//				if (error != nil) {
-//					SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-//					[[HONAPICaller sharedInstance] showDataErrorHUD];
-//					
-//				} else {
-//					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//					[[HONLayerKitAssistant sharedInstance] writeIdentityToken:[result objectForKey:@"identity_token"]];
-//					
-//					// iii). Submit identity token to Layer for validation
-//					[[[HONLayerKitAssistant sharedInstance] client] authenticateWithIdentityToken:[result objectForKey:@"identity_token"] completion:^(NSString *authenticatedUserID, NSError *error) {
-//						NSLog(@"authenticateWithIdentityToken:[%@] //—> (authenticatedUserID:[%@] error:[%@])", [result objectForKey:@"identity_token"], authenticatedUserID, error);
-//						
-//						[[HONLayerKitAssistant sharedInstance] writeIdentityToken:(authenticatedUserID) ? [result objectForKey:@"identity_token"] : nil];
-//						
-//						if (error != nil) {
-//							NSLog(@"Couldn't authenticate identity token!\n%@", error);
-//							
-//							
-//						} else {
-//							if ([[HONLayerKitAssistant sharedInstance] pushTokenForActiveUser] != nil) {
-//								NSError *error;
-//								BOOL success = [[[HONLayerKitAssistant sharedInstance] client] updateRemoteNotificationDeviceToken:[[[HONLayerKitAssistant sharedInstance] mutableLayerDict] objectForKey:@"push_token"] error:&error];
-//								if (success) {
-//									NSLog(@"Client now authed & registered for push notifications");
-//								} else {
-//									NSLog(@"Error updating Layer device token for push:%@", error);
-//								}
-//							}
-//						}
-//						
-//						if (completion)
-//							completion([[HONLayerKitAssistant sharedInstance] identityTokenForActiveUser]);
-//					}];
-//				}
-//				
-//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIUsersCheckUsername, [error localizedDescription]);
-//				[[HONAPICaller sharedInstance] showDataErrorHUD];
-//				
-//				[[HONLayerKitAssistant sharedInstance] writeIdentityToken:nil];
-//				
-//				if (completion)
-//					completion([[HONLayerKitAssistant sharedInstance] identityTokenForActiveUser]);
-//			}];
-//		}];
-	
 	}
 }
 
@@ -868,10 +732,12 @@ static LYRClient *sharedClient = nil;
 
 - (LYRMessage *)messageFromRemoteNotification:(NSDictionary *)remoteNotification {
 	// Fetch message object from LayerKit
-	NSURL *identifier = [NSURL URLWithString:[remoteNotification valueForKeyPath:@"layer.message_identifier"]];
+	//NSURL *identifier = [NSURL URLWithString:[remoteNotification valueForKeyPath:@"layer.message_identifier"]];
+	
+	
 	
 	LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-	query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:identifier];
+	query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[[remoteNotification objectForKey:@"layer"] objectForKey:@"message_identifier"]];
 	
 	NSError *error;
 	NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:query error:&error];
@@ -879,8 +745,31 @@ static LYRClient *sharedClient = nil;
 	if (!error) {
 		NSLog(@"Query contains %lu messages", (unsigned long)messages.count);
 		LYRMessage *message = messages.firstObject;
+		NSLog(@"Message sent by %@", message.sentByUserID);
 		LYRMessagePart *messagePart = [message.parts firstObject];
 		NSLog(@"Pushed Message Contents: %@", [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding]);
+		messagePart = [message.parts lastObject];
+		NSLog(@"Pushed Message Contents: %@", [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding]);
+		
+		//LYRMessagePart *messagePart = [message.parts lastObject];
+		NSString *orgConversationID = messagePart.textContent;
+		NSLog(@"%@ -=- ORG CONVO-ID:[%@]", error, orgConversationID);
+		
+		NSError *error = nil;
+		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[[remoteNotification objectForKey:@"layer"] objectForKey:@"conversation_identifier"]];////@"layer:///conversations/84b4e146-b051-4aeb-a84f-cb2cd4aa2f41"];
+		LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+		
+		//	NSError *error = nil;
+		
+		LYRQuery *convoQuery2 = [LYRQuery queryWithClass:[LYRConversation class]];
+		convoQuery2.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:orgConversationID];
+		LYRConversation *conversation2 = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery2 error:&error] firstObject];
+		
+		NSLog(@"%@ -=- ORG CONVO:[%@]", error, conversation2);
+		[conversation2 addParticipants:conversation.participants error:&error];
+		NSLog(@"%@ -=- ORG CONVO ADDED:(%@)[%@]", error, [conversation.participants allObjects], [conversation2 toString]);
+		
 		
 	} else {
 		NSLog(@"Query failed with error %@", error);

@@ -16,7 +16,6 @@
 + (HONTrivialUserVO *)userFromActivityItemVO:(HONActivityItemVO *)activityItemVO;
 + (HONTrivialUserVO *)userFromContactUserVO:(HONContactUserVO *)contactUserVO;
 + (HONTrivialUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO;
-+ (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

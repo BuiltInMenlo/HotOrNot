@@ -66,7 +66,7 @@
 //		
 //		[emoticonImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.urlLarge]
 //																   cachePolicy:kOrthodoxURLCachePolicy
-//															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+//															   timeoutInterval:[HONAPICaller timeoutInterval]]
 //								 placeholderImage:nil
 //										  success:successBlock
 //										  failure:failureBlock];

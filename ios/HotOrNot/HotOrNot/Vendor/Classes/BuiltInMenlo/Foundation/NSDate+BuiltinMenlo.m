@@ -63,11 +63,7 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 }
 
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate {
-	return ([NSDate dateFromOrthodoxFormattedString:stringDate isUTC:YES]);
-}
-
-+ (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC {
-	return ([[NSDateFormatter dateFormatterOrthodox:isUTC] dateFromString:stringDate]);
+	return ([[NSDateFormatter dateFormatterOrthodox:YES] dateFromString:stringDate]);
 }
 
 + (instancetype)dateToUTCDate:(NSDate *)date {
@@ -83,7 +79,7 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 }
 
 + (NSString *)utcStringFormattedISO8601 {
-	return ([[NSDate utcNowDate] formattedISO8601StringUTC]);
+	return ([[NSDate utcNowDate] formattedISO8601String]);
 }
 
 + (int)elapsedDaysSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
@@ -115,6 +111,26 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 	return ([date timeIntervalSinceDate:self] > 0);
 }
 
+- (int)elapsedDaysSincenDate:(NSDate *)date {
+	return ([self elapsedSecondsSinceDate:date] / 86400);
+}
+
+- (int)elapsedHoursSinceDate:(NSDate *)date {
+	return ([self elapsedSecondsSinceDate:date] / 3600);
+}
+
+- (int)elapsedMinutesSinceDate:(NSDate *)date {
+	return ([self elapsedSecondsSinceDate:date] / 60);
+}
+
+- (int)elapsedSecondsSinceDate:(NSDate *)date {
+	return ((int)[self timeIntervalSinceDate:date]);
+}
+
+- (NSString *)elapsedTimeSinceDate:(NSDate *)date {
+	return ([NSString stringWithFormat:@"%02d:%02d:%02d", [self elapsedHoursSinceDate:date], [self elapsedMinutesSinceDate:date], [self elapsedSecondsSinceDate:date]]);
+}
+
 
 - (int)dayOfYear {
 	return ((int)[[[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:self] day]);
@@ -138,10 +154,6 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 
 
 - (NSString *)formattedISO8601String {
-	return ([[NSDateFormatter dateFormatterISO8601] stringFromDate:self]);
-}
-
-- (NSString *)formattedISO8601StringUTC {
 	return ([[NSDateFormatter dateFormatterISO8601] stringFromDate:self]);
 }
 

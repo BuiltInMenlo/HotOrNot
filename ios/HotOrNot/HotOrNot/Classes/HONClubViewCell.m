@@ -341,7 +341,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 				NSString *imgURL = ([_emotionVOs count] > 0) ? emotionVO.smallImageURL : [_clubVO.coverImagePrefix stringByAppendingString:kSnapLargeSuffix];
 				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]
 																   cachePolicy:kOrthodoxURLCachePolicy
-															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+															   timeoutInterval:[HONAPICaller timeoutInterval]]
 								 placeholderImage:nil
 										  success:imageSuccessBlock
 										  failure:imageFailureBlock];

@@ -182,7 +182,7 @@
 												 encoding:NSUTF8StringEncoding];
 	
 	NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
-								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
+								   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
 								   @"club_id"		: @(_userClubVO.clubID),
 								   @"challenge_id"	: @(0),
 								   @"topic_id"		: @(_selectedTopicVO.topicID),

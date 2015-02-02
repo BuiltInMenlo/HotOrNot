@@ -212,7 +212,7 @@ const CGSize kStickerImgPaddingSize = {11.0f, 9.0f};
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:vo.largeImageURL]
 														   cachePolicy:kOrthodoxURLCachePolicy
-													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+													   timeoutInterval:[HONAPICaller timeoutInterval]]
 						 placeholderImage:nil
 								  success:imageSuccessBlock
 								  failure:imageFailureBlock];

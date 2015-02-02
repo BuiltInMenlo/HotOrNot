@@ -735,7 +735,7 @@
 	
 	HONOpponentVO *opponent = _challenge.creatorVO;
 	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];
-	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:kOrthodoxURLCachePolicy timeoutInterval:[HONAppDelegate timeoutInterval]];
+	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:kOrthodoxURLCachePolicy timeoutInterval:[HONAPICaller timeoutInterval]];
 	
 	
 	

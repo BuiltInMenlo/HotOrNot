@@ -20,19 +20,29 @@
 //	return ([[NSArray alloc] initWithArray:[self arrayWithUnionArray:array]]);
 //}
 
+- (NSArray *)arrayCombinedWithArray:(NSArray *)otherArray {
+	NSMutableArray *joined = [NSMutableArray arrayWithArray:self];
+	[joined addObjectsFromArray:otherArray];
+	return ([NSArray arrayWithArray:joined]);
+}
 
-//- (NSArray *)arrayWithIntersectArray:(NSArray *)otherArray {
-//	NSMutableSet *orgSet = [[NSMutableSet alloc] initWithArray:self];
-//	NSSet *otherSet = [[NSSet alloc] initWithArray:otherArray];
-//	
-//	[orgSet intersectSet:otherSet];
-//	
-//	for (id symbol in orgSet) {
-//		NSLog(@"%@", symbol);
-//	}
-//	
-//	return ([orgSet allObjects]);
-//}
+- (NSArray *)arrayWithIntersectArray:(NSArray *)otherArray {
+	NSMutableSet *intersection = [NSMutableSet setWithArray:self];
+	[intersection intersectSet:[NSSet setWithArray:otherArray]];
+	
+	return ([intersection allObjects]);
+}
+
+- (NSArray *)arrayWithUnionArray:(NSArray *)otherArray {
+	NSSet *otherSet = [NSSet setWithArray:otherArray];
+	
+	NSMutableSet *resultSet = [NSMutableSet setWithSet:[NSSet setWithArray:self]];
+	[resultSet unionSet:otherSet];
+	
+	return ([resultSet allObjects]);
+}
+
+
 //
 //- (NSArray *)arrayWithUnionArray:(NSArray *)otherArray {
 //	NSMutableSet *orgSet = [[NSMutableSet alloc] initWithArray:self];
@@ -81,6 +91,18 @@
 	return ([NSArray arrayRandomizedWithArray:array withCapacity:numItems]);
 }
 
+
+- (BOOL)containsDuplicates {
+	for (NSUInteger i=0; i<[self count]; i++) {
+		for (NSUInteger j=i+1; j<[self count]; j++) {
+			if (i != j && [[self objectAtIndex:i] isEqual:[self objectAtIndex:j]])
+				return (YES);
+		}
+	}
+	
+	return (NO);
+}
+
 - (id)randomElement {
 	//return ([self objectAtIndex:(arc4random() % [self count])]);
 	return ([self objectAtIndex:[[NSNumber numberWithInt:arc4random_uniform((int)[self count])] integerValue]]);
@@ -105,6 +127,10 @@
 
 + (instancetype)arrayRandomizedWithArray:(NSArray *)array withCapacity:(NSUInteger)numItems {
 	return ([NSMutableArray arrayWithArray:[NSArray arrayRandomizedWithArray:array withCapacity:numItems]]);
+}
+
+- (NSMutableArray *)arrayWithIntersectArray:(NSArray *)otherArray {
+	return ([NSMutableArray arrayWithArray:[[NSArray arrayWithArray:self] arrayWithIntersectArray:otherArray]]);
 }
 
 

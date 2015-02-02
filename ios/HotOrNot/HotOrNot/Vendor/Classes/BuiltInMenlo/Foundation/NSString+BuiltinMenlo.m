@@ -31,7 +31,9 @@
 //
 
 
+#import "NSArray+BuiltinMenlo.h"
 #import "NSData+BuiltInMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
 
 
@@ -79,6 +81,78 @@
 	return [NSData dataFromBase64String:self];
 }
 
+
+- (NSString *)stringWithInt:(int)integer {
+	return ([NSString stringWithFormat:@"%d", integer]);
+}
+
++ (id)initWithInteger:(int)integer {
+	return ([NSString stringWithFormat:@"%d", integer]);
+}
+
+
+
++ (instancetype)randomStringWithLength:(NSUInteger)length {
+	static const NSString *chars = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 !@#$%^&*()_-/?;:+=[]|~<>";
+	
+	NSArray *rndChars;
+	NSMutableString *rnd = [NSMutableString string];
+	
+	for (NSInteger i=0; i<length; i++) {
+		if ([rnd length] % [chars length] == 0)
+			rndChars = [NSArray arrayRandomizedWithArray:[chars componentsSeparatedByString:@""]];
+		
+		[rnd appendString:[rndChars objectAtIndex:[rndChars randomIndex]]];
+	}
+	
+	
+	return (rnd);
+}
+
+
+- (NSInteger)indexOfFirstOccurrenceOfSubstring:(NSString *)substring {
+	NSAssert(substring != nil || self != nil, @"Seems you are trying to pass nil as a parameter");
+	NSAssert(![substring isEqualToString:@""], @"Needle should be valid");
+	NSAssert(![self isEqualToString:@""], @"Haystack should be valid");
+	NSAssert([substring length] <= [self length], @"Needle should be less or equal in compare with haystack");
+	
+	NSInteger ind = -1;
+	NSInteger j = 0;
+	
+	for (NSInteger i=0; i<[self length]; i++) {
+		if ([self characterAtIndex:i] == [substring characterAtIndex:j]) {
+			if (j == 0)
+				ind = i;
+			
+			if (j == [substring length] - 1)
+				return ind;
+			
+			j++;
+		
+		} else if ([self characterAtIndex:i] != [substring characterAtIndex:j] && j > 0) {
+			i--;
+			j = 0;
+			ind = -1;
+		}
+	}
+	
+	return (ind);
+}
+
+- (NSInteger)indexOfLastOccurrenceOfSubstring:(NSString *)substring {
+	NSInteger firstIndex = [[self reversedString] indexOfFirstOccurrenceOfSubstring:[substring reversedString]];
+	NSInteger ind = 0;
+	
+	if (firstIndex >= 0)
+		ind = [self length] - [substring length] - firstIndex;
+		
+	else
+		ind = -1;
+	
+	
+	return (ind);
+}
+
 - (BOOL)isValidEmailAddress {
 	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
 	
@@ -92,6 +166,10 @@
 	
 	else
 		return (self);
+}
+
+- (NSString *)randomizedString {
+	return ([[NSArray arrayRandomizedWithArray:[self componentsSeparatedByString:@""]] componentsJoinedByString:@""]);
 }
 
 - (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring {
@@ -109,6 +187,10 @@
 //	self = [self init];//[@"" stringByTrimmingFinalSubstring:@", "];
 }
 
+- (NSString *)normalizedISO8601Timestamp {
+	return ([[NSDate dateFromOrthodoxFormattedString:self] formattedISO8601String]);
+}
+
 - (NSString *)normalizedPhoneNumber {
 	if ([self length] > 0) {
 		NSString *phoneNumber = [[self componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
@@ -124,6 +206,42 @@
 	return ([[self componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""]);
 }
 
+- (NSUInteger)numberOfWordsInString {
+	const char *str = [self UTF8String];
+	BOOL state = NO;
+	NSUInteger cnt = 0;
+	
+	while (*str) {
+		if (*str == ' ' || *str == '\n' || *str == '\t')
+			state = NO;
+			
+		else if (state == NO) {
+			state = YES;
+			++cnt;
+		}
+		
+		++str;
+	}
+	
+	return (cnt);
+}
+
+- (NSUInteger)occurancesOfSubstring:(NSString *)substring {
+	NSUInteger cnt = 0;
+	NSUInteger len = [self length];
+	NSRange range = NSMakeRange(0, len);
+	
+	while (range.location != NSNotFound) {
+		range = [self rangeOfString:substring options:0 range:range];
+		if (range.location != NSNotFound) {
+			range = NSMakeRange(range.location + range.length, len - (range.location + range.length));
+			cnt++;
+		}
+	}
+	
+	return (cnt);
+}
+
 - (NSDictionary *)parseAsQueryString {
 	NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
 	for (NSString *pair in [self componentsSeparatedByString:@"&"]) {
@@ -133,6 +251,14 @@
 	}
 	
 	return (params);
+}
+
+- (NSString *)reversedString {
+	NSMutableString *result = [[NSMutableString alloc] init];
+	for (NSInteger i=[self length]-1; i>=0; i--)
+		[result appendString:[NSString stringWithFormat:@"%C", [self characterAtIndex:i]]];
+	
+	return ([result copy]);
 }
 
 
@@ -147,5 +273,6 @@
 	
 	return (pushToken);
 }
+
 
 @end

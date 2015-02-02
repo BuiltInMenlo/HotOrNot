@@ -22,7 +22,6 @@
 + (instancetype)dateFromUnixTimestamp:(CGFloat)timestamp;
 + (instancetype)dateFromISO9601FormattedString:(NSString *)stringDate;
 + (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate;
-+ (instancetype)dateFromOrthodoxFormattedString:(NSString *)stringDate isUTC:(BOOL)isUTC;
 + (instancetype)dateToUTCDate:(NSDate *)date;
 + (instancetype)utcNowDate;
 
@@ -44,10 +43,16 @@
 - (int)weekOfYear;
 - (int)year;
 
+- (int)elapsedDaysSincenDate:(NSDate *)date;
+- (int)elapsedHoursSinceDate:(NSDate *)date;
+- (int)elapsedMinutesSinceDate:(NSDate *)date;
+- (int)elapsedSecondsSinceDate:(NSDate *)date;
+- (NSString *)elapsedTimeSinceDate:(NSDate *)date;
+
+
 - (int)unixEpochTimestamp;
 
 - (NSString *)formattedISO8601String;
-- (NSString *)formattedISO8601StringUTC;
 
 - (NSString *)utcHourOffsetFromDeviceLocale;
 - (NSString *)timezoneFromDeviceLocale;

@@ -28,13 +28,13 @@ typedef NS_ENUM(NSUInteger, HONImageBrokerImageFormat) {
 @interface HONImageBroker : NSObject
 + (HONImageBroker *)sharedInstance;
 
-- (UIImage *)createImageFromView:(UIView *)view;
++ (CGFloat)compressJPEGPercentage;
+
 - (UIImage *)createImageFromScreen;
 - (UIImage *)createBlurredScreenShot;
 
 - (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key;
-- (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key;
-- (void)writeImage:(UIImage *)image toUserDefaulsWithKey:(NSString *)key;
+- (void)writeImage:(UIImage *)image toUserDefaultsWithKey:(NSString *)key;
 
 - (UIImage *)shareTemplateImageForType:(HONImageBrokerShareTemplateType)shareTemplateType;
 - (UIImage *)defaultAvatarImageAtSize:(CGSize)size;

@@ -63,7 +63,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 //			  @"adid"			: [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO],
 //			  @"push_token"		: [[HONDeviceIntrinsics sharedInstance] pushToken],
 //			  @"locale"			: [[[HONDeviceIntrinsics sharedInstance] locale] uppercaseString],
-//			  @"time"			: [[NSDate utcNowDate] formattedISO8601StringUTC],
+//			  @"time"			: [[NSDate utcNowDate] formattedISO8601String],
 //			  @"tz"				: [[NSDate date] utcHourOffsetFromDeviceLocale],
 //			  @"latitude"		: [NSString stringWithFormat:@"%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude],
 //			  @"longitude"		: [NSString stringWithFormat:@"%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
@@ -96,14 +96,14 @@ static HONAnalyticsReporter *sharedInstance = nil;
 }
 
 - (NSDictionary *)userProperties {
-	NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [NSDate utcNowDate];
+	NSDate *cohortDate = [[HONUserAssistant sharedInstance] activeUserSignupDate];
 	
 	return(@{@"identifier"	: (NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) != nil) ? NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) : @"0",
 //			 @"name"		: ([[HONUserAssistant sharedInstance] activeUsername] != nil) ? [[HONUserAssistant sharedInstance] activeUsername] : @"",
 //			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
-			 @"time"		: [[NSDate utcNowDate] formattedISO8601StringUTC],
+			 @"time"		: [[NSDate utcNowDate] formattedISO8601String],
 			 @"time_zone"	: [[NSDate date] utcHourOffsetFromDeviceLocale],
-			 @"cohort_date"	: [[[cohortDate formattedISO8601StringUTC] componentsSeparatedByString:@"T"] firstObject],
+			 @"cohort_date"	: [[[cohortDate formattedISO8601String] componentsSeparatedByString:@"T"] firstObject],
 			 @"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]});
 }
 
@@ -154,7 +154,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	return (@{@"club"	: @{@"id"		: @(vo.clubID),
 							@"name"		: vo.clubName,
 							@"owner_id"	: @(vo.ownerID),
-							@"created"	: [vo.addedDate formattedISO8601StringUTC]}});
+							@"created"	: [vo.addedDate formattedISO8601String]}});
 }
 
 

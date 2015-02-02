@@ -108,7 +108,7 @@
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			
-			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 			}];

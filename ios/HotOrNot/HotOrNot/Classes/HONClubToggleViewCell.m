@@ -96,7 +96,7 @@
 //	NSLog(@"CLUB COVER:[%@]", [_userClubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]);
 	[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userClubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]]
 															 cachePolicy:kOrthodoxURLCachePolicy
-														 timeoutInterval:[HONAppDelegate timeoutInterval]]
+														 timeoutInterval:[HONAPICaller timeoutInterval]]
 						   placeholderImage:nil
 									success:imageSuccessBlock
 									failure:imageFailureBlock];

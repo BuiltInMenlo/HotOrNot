@@ -6,8 +6,13 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "RegExCategories.h"
+
 #import "NSArray+BuiltinMenlo.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
+#import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
+#import "NSString+BuiltinMenlo.h"
 
 #import "HONUserAssistant.h"
 
@@ -32,12 +37,65 @@ static HONUserAssistant *sharedInstance = nil;
 	return (self);
 }
 
+- (UIImage *)activeUserAvatar {
+	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"avatar"]) ? [UIImage imageWithData:[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"avatar"]] : [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"default_avatar"]]);
+}
+
+- (NSString *)activeUserAvatarURL {
+	return ([[HONUserAssistant sharedInstance] avatarURLForUserID:[[HONUserAssistant sharedInstance] activeUserID]]);
+}
+
 - (int)activeUserID {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] objectForKey:@"id"] intValue]);
+	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"id"]) ? [[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"id"] intValue] : -1);
 }
 
 - (NSString *)activeUsername {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] objectForKey:@"username"]);
+	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"username"]) ? [[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"username"] : nil);
+}
+
+- (NSDate *)activeUserLoginDate {
+	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"last_login"]) ? [NSDate dateFromISO9601FormattedString:[[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"last_login"] normalizedISO8601Timestamp]] : [NSDate utcNowDate]);
+}
+
+- (BOOL)activeUserNotificationsEnabled {
+	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"notifications"]) ? [[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"notifications"] isEqualToString:@"Y"] : NO);
+}
+
+- (NSDate *)activeUserSignupDate {
+	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"added"]) ? [NSDate dateFromISO9601FormattedString:[[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"added"] normalizedISO8601Timestamp]] : [NSDate utcNowDate]);
+}
+
+- (NSDictionary *)activeUserInfo {
+	return (([[NSUserDefaults standardUserDefaults] hasObjectForKey:@"user_info"]) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] : nil);
+}
+
+- (void)writeActiveUserAvatarFromURL:(NSString *)url {
+	[[HONImageBroker sharedInstance] writeImageFromWeb:url withUserDefaultsKey:@"avatar_image"];
+}
+
+- (void)writeActiveUserInfo:(NSDictionary *)userInfo {
+	NSDate *signupDate = [NSDate dateFromISO9601FormattedString:[[userInfo objectForKey:@"added"] normalizedISO8601Timestamp]];
+	
+	
+	if (![[[NSRegularExpression alloc] initWithPattern:@"\\d+{10}"] isMatch:[userInfo objectForKey:@"username"]]) {
+		
+	}
+	
+	
+	NSString *username = [[[NSRegularExpression alloc] initWithPattern:@"\\d{10}\\.[a-f0-9]{14}$"] replace:[userInfo objectForKey:@"username"]
+																									  with:NSStringFromInt([signupDate unixEpochTimestamp])];
+	
+	if (![[HONUserAssistant sharedInstance] activeUserAvatar] || ![[userInfo objectForKey:@"avatar_url"] isEqualToString:[[HONUserAssistant sharedInstance] activeUserAvatarURL]])
+		[[HONUserAssistant sharedInstance] writeActiveUserAvatarFromURL:[userInfo objectForKey:@"avatar_url"]];
+	
+	NSMutableDictionary *dict = [userInfo mutableCopy];
+	[dict replaceObject:username forKey:@"username"];
+	if ([[userInfo objectForKey:@"email"] length] == 0 || [[[HONDeviceIntrinsics sharedInstance] phoneNumber] length] == 0)
+		[dict replaceObject:[NSString stringWithFormat:@"+1%d", [signupDate unixEpochTimestamp]] forKey:@"email"];
+	
+	[[NSUserDefaults standardUserDefaults] replaceObject:[dict copy] forKey:@"user_info"];
+	
+	NSLog(@"WROTE USER-INFO:[%@]", [[HONUserAssistant sharedInstance] activeUserInfo]);
 }
 
 
@@ -49,7 +107,7 @@ static HONUserAssistant *sharedInstance = nil;
 						 @"tree",
 						 @"watermelon"];
 	
-	return ([NSString stringWithFormat:@"%@/%@.png", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], [avatars randomElement]]);
+	return ([NSString stringWithFormat:@"%@/%@.png", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], [avatars randomElement]]);
 }
 
 
@@ -154,7 +212,7 @@ static HONUserAssistant *sharedInstance = nil;
 			
 		} else {
 			[dict setObject:@{@"id"			: @(userID),
-							  @"username"	: @"",
+							  @"username"	: [NSString stringWithFormat:@"Anonymous_%d", [NSDate elapsedUTCSecondsSinceUnixEpoch]],
 							  @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]} forKey:key];
 		}
 		

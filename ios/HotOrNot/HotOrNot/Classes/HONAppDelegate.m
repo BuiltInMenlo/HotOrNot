@@ -20,7 +20,9 @@
 
 #import <HockeySDK/HockeySDK.h>
 //#import <Tapjoy/Tapjoy.h>
+
 #import "Flurry.h"
+#import <TalkChain/TalkChain.h>
 
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSData+BuiltinMenlo.h"
@@ -39,23 +41,17 @@
 #import "PicoSticker.h"
 //#import "Reachability.h"
 #import "TSTapstream.h"
+#import "UIImageDebugger.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
 #import "HONStoreTransactionObserver.h"
-#import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONHomeViewController.h"
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONComposeTopicViewController.h"
 
-
-#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kAPIHost = @"data_api";
-#else
-NSString * const kAPIHost = @"data_api-stage";
-#endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
 NSString * const kBlowfishIV = @"„7ì”~ís";
@@ -85,9 +81,6 @@ const CGFloat kNavHeaderHeight = 64.0;
 const CGFloat kSearchHeaderHeight = 43.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
-// ui
-const CGSize kTabSize = {80.0, 50.0};
-
 // animation params
 const CGFloat kProfileTime = 0.25f;
 const CGFloat kButtonSelectDelay = 0.0625;
@@ -104,13 +97,11 @@ NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
 NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
-const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheDataElseLoad;
-//const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReloadIgnoringCacheData;
 NSString * const kTwilioSMS = @"6475577873";
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, TalkChainDelegate>
 #else
 @interface HONAppDelegate()
 #endif
@@ -133,171 +124,53 @@ NSString * const kTwilioSMS = @"6475577873";
 @synthesize window = _window;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
-@synthesize httpRequestOperations = _httpRequestOperations;
+@synthesize navController = _navController;
 
-
-void Swizzle(Class c, SEL orig, SEL new)
-{
-	Method origMethod = class_getInstanceMethod(c, orig);
-	Method newMethod = class_getInstanceMethod(c, new);
-	
-	if(class_addMethod(c, orig, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))
-		class_replaceMethod(c, new, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));
-	
-	else
-		method_exchangeImplementations(origMethod, newMethod);
-}
-
-//+ (NSSet *)httpRequests {
-//	return ([HONAppDelegate h])
-//}
 
 
 + (NSString *)customerServiceURLForKey:(NSString *)key {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"support_urls"] objectForKey:key]);
 }
 
-+ (NSString *)shareURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"share_url"]);
-}
-
-+ (NSDictionary *)s3Credentials {
-//	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAIHUQ42RE7R7CIMEA", @"key", @"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ", @"secret", nil]);
-	return (@{@"key"		: @"AKIAIHUQ42RE7R7CIMEA",
-			  @"secret"		: @"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"});
-}
-
-+ (NSDictionary *)orthodoxClubVO {
-	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"	: [[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"owner_id"]}];
-	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"global_club"] objectForKey:@"club_id"] forKey:@"id"];
-	
-	return ([dict copy]);
-}
-
-+ (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:(insetType == HONInsetOverlayViewTypeAppReview) ? @"review" : (insetType == HONInsetOverlayViewTypeSuggestions) ? @"contacts" : @"unlock"]);
-}
-
-+ (NSTimeInterval)timeoutInterval {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeout_interval"] doubleValue]);
-}
-
-+ (NSString *)shareMessageForType:(HONShareMessageType)messageType {
-	if (messageType == HONShareMessageTypeClipboard) {
-		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"clipboard"]);
-	
-	} else if (messageType == HONShareMessageTypeEmail) {
-		return ([NSString stringWithFormat:@"%@|%@", [[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectForKey:@"subject"], [[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectForKey:@"body"]]);
-	
-	} else if (messageType == HONShareMessageTypeFacebook) {
-		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"facebook"]);
-		
-	} else if (messageType == HONShareMessageTypeInstagram) {
-		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"]);
-		
-	} else if (messageType == HONShareMessageTypeSMS) {
-		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"sms"]);
-		
-	} else if (messageType == HONShareMessageTypeTwitter) {
-		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"]);
-	}
-	
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"default"]);
-}
-
-+ (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
-	NSString *key = @"";
-	
-	NSDictionary *dict = @{@"avatars"	: @[@"http://hotornot-avatars.s3.amazonaws.com",
-											@"http://d3j8du2hyvd35p.cloudfront.net"],
-						   @"banners"	: @[@"http://hotornot-banners.s3.amazonaws.com",
-											@"http://hotornot-banners.s3.amazonaws.com"],
-						   @"clubs"		: @[@"http://hotornot-challenges.s3.amazonaws.com",
-											@"http://d1fqnfrnudpaz6.cloudfront.net"],
-						   @"emoticons"	: @[@"http://hotornot-emotions.s3.amazonaws.com",
-											@"http://hotornot-banners.s3.amazonaws.com"]};
-	
-	if (s3BucketType == HONAmazonS3BucketTypeAvatarsSource || s3BucketType == HONAmazonS3BucketTypeAvatarsCloudFront)
-		key = @"avatars";
-	
-	else if (s3BucketType == HONAmazonS3BucketTypeBannersSource || s3BucketType == HONAmazonS3BucketTypeBannersCloudFront)
-		key = @"banners";
-	
-	else if (s3BucketType == HONAmazonS3BucketTypeClubsSource || s3BucketType == HONAmazonS3BucketTypeClubsCloudFront)
-		key = @"clubs";
-	
-	else if (s3BucketType == HONAmazonS3BucketTypeEmotionsSource || s3BucketType == HONAmazonS3BucketTypeEmoticonsCloudFront)
-		key = @"emoticons";
-	
-	return ([[dict objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
-	
-//	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
-}
-
 + (BOOL)switchEnabledForKey:(NSString *)key {
 	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"switches"] objectForKey:key] uppercaseString] isEqualToString:@"YES"]);
 }
 
-
-+ (NSString *)kikCardURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
++ (UIViewController *)appNavController {
+	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
 }
 
-+ (void)writeUserInfo:(NSDictionary *)userInfo {
-	[[NSUserDefaults standardUserDefaults] replaceObject:userInfo forKey:@"user_info"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	NSMutableDictionary *dict = [userInfo mutableCopy];
-	[dict setValue:[NSString stringWithFormat:@"%@_%@_%d", [[userInfo objectForKey:@"username"] stringByTrimmingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] addChars:@"."]], [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES], [[NSDate dateFromISO9601FormattedString:[userInfo objectForKey:@"added"]] unixEpochTimestamp]] forKey:@"username"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
++ (UINavigationController *)rootNavController {
+	return ([[UIApplication sharedApplication] keyWindow].rootViewController.navigationController);
 }
 
-+ (void)writeUserAvatar:(UIImage *)image {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"avatar_image"];
++ (UIViewController *)topViewControllerWithRootViewController:(UIViewController *)rootViewController {
 	
-	[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:@"avatar_image"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (NSDictionary *)infoForUser {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"]);
-}
-
-+ (UIImage *)avatarImage {
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"])
-		return ([UIImage imageNamed:@"defaultAvatarLarge_640x1136"]);
-	
-	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
-}
-
-
-+ (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag {
-//	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
-	
-	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) { };
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {};
-	
-	for (int i=0; i<range.length - range.location; i++) {
-//		NSLog(@"s+ArT_l0Ad. --> (#%02d) \"%@\"", (range.location + i), [urls objectAtIndex:i]);
+	// Handling UITabBarController
+	if ([rootViewController isKindOfClass:[UITabBarController class]]) {
+		UITabBarController* tabBarController = (UITabBarController*)rootViewController;
+		return [self topViewControllerWithRootViewController:tabBarController.selectedViewController];
 		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-		[imageView setTag:range.location + i];
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i]
-														   cachePolicy:kOrthodoxURLCachePolicy
-													   timeoutInterval:[HONAppDelegate timeoutInterval]]
-						 placeholderImage:nil
-								  success:successBlock
-								  failure:failureBlock];
+	} else if ([rootViewController isKindOfClass:[UINavigationController class]]) { // Handling UINavigationController
+		UINavigationController* navigationController = (UINavigationController*)rootViewController;
+		return [self topViewControllerWithRootViewController:navigationController.visibleViewController];
+		
+	} else if (rootViewController.presentedViewController) { // Handling Modal views
+		UIViewController* presentedViewController = rootViewController.presentedViewController;
+		return [self topViewControllerWithRootViewController:presentedViewController];
+		
+	} else { // Handling UIViewController's added as subviews to some other views.
+		for (UIView *view in [rootViewController.view subviews]) {
+			id subViewController = [view nextResponder];    // Key property which most of us are unaware of / rarely use.
+			if (subViewController && [subViewController isKindOfClass:[UIViewController class]])
+				return [self topViewControllerWithRootViewController:subViewController];
+		}
+		
+		return (rootViewController);
 	}
 }
 
 
-+ (CGFloat)compressJPEGPercentage {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
-}
 
 
 #pragma mark - Data Calls
@@ -339,7 +212,6 @@ void Swizzle(Class c, SEL orig, SEL new)
 		
 		[self _initThirdPartySDKs];
 		[self _writeShareTemplates];
-		[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
 		[self _registerUser];
 		
 		if (_isFromBackground) {
@@ -372,16 +244,14 @@ void Swizzle(Class c, SEL orig, SEL new)
 - (void)_registerUser {
 	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
-			[HONAppDelegate writeUserInfo:result];
+			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 			
-			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			
-			NSDate *cohortDate = ([[HONAppDelegate infoForUser] objectForKey:@"added"] != nil) ? [NSDate dateFromOrthodoxFormattedString:[[HONAppDelegate infoForUser] objectForKey:@"added"]] : [NSDate utcNowDate];
+			NSDate *cohortDate = [[HONUserAssistant sharedInstance] activeUserSignupDate];
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - day"
 											   withProperties:@{@"day"	: [NSDate utcNowDate]}];
 			
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_date"
-											   withProperties:@{@"cohort_date"	: [[[cohortDate formattedISO8601StringUTC] componentsSeparatedByString:@"T"] firstObject]}];
+											   withProperties:@{@"cohort_date"	: [[[cohortDate formattedISO8601String] componentsSeparatedByString:@"T"] firstObject]}];
 			
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_week"
 											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
@@ -399,46 +269,19 @@ void Swizzle(Class c, SEL orig, SEL new)
 			});
 
 			
-			
-//			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-//			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
-//			}
-			
-			
-			
-			if ([[result objectForKey:@"added"] isEqualToString:[result objectForKey:@"last_login"]]) {
+			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
-				NSLog(@"HONAppDelegate infoForUser:[%@]", [HONAppDelegate infoForUser]);
-				
-				if (self.window.rootViewController == nil) {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
-					[navigationController setNavigationBarHidden:YES];
-					
-					self.window.rootViewController = navigationController;
-					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-				}
 			
-			} else {
-				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
+			if (self.window.rootViewController == nil) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
 				
-				NSLog(@"HONAppDelegate infoForUser:[%@]", [HONAppDelegate infoForUser]);
+				self.window.rootViewController = navigationController;
+				self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 				
-				if (self.window.rootViewController == nil) {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
-					[navigationController setNavigationBarHidden:YES];
-					
-					self.window.rootViewController = navigationController;
-					self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-				}
+				self.navController = navigationController;
 			}
 		}
-	}];
-}
-
-- (void)_enableNotifications:(BOOL)isEnabled {
-	[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:isEnabled completion:^(NSDictionary *result) {
-		if (![result isEqual:[NSNull null]])
-			[HONAppDelegate writeUserInfo:result];
 	}];
 }
 
@@ -682,6 +525,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 #ifdef FONTS
 	[self _showFonts];
 #endif
+	
+	//[UIImageDebugger startDebugging];
 	
 	return (YES);
 }
@@ -951,13 +796,12 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
 	[[HONLayerKitAssistant sharedInstance] notifyClientWithPushToken:deviceToken];
 	
-	if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:pushToken]) {
-		//			NSError * __autoreleasing tmp = e;
-		//	BOOL OK = [myObject performOperationWithError:&tmp];
-		//		- (void)notifyClientWithPushToken:(NSData *)deviceToken error:(NSError *)error
-
+	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[self _enableNotifications:YES];
+			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
+				if (![result isEqual:[NSNull null]])
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+			}];
 		}];
 	}
 	
@@ -974,13 +818,12 @@ void Swizzle(Class c, SEL orig, SEL new)
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
 	[[HONLayerKitAssistant sharedInstance] notifyClientPushTokenNotAvailibleFromError:error];
 	
-	if (![[[HONAppDelegate infoForUser] objectForKey:@"device_token"] isEqualToString:@""]) {
-//		NSError * __strong e;
-//			NSError * __autoreleasing tmp = e;
-		//	BOOL OK = [myObject performOperationWithError:&tmp];
-//		- (void)notifyClientWithPushToken:(NSData *)deviceToken error:(NSError *)error
+	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[self _enableNotifications:NO];
+			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
+				if (![result isEqual:[NSNull null]])
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+			}];
 		}];
 	}
 	
@@ -1003,6 +846,13 @@ void Swizzle(Class c, SEL orig, SEL new)
 		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
 		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 	}
+	
+//	[[[UIAlertView alloc] initWithTitle:nil
+//							   message:[NSString stringWithFormat:@"%@\n%@\n%@", [[userInfo objectForKey:@"layer"] objectForKey:@"conversation_identifier"], [[userInfo objectForKey:@"layer"] objectForKey:@"event_url"], [[userInfo objectForKey:@"layer"] objectForKey:@"message_identifier"]]
+//							  delegate:nil
+//					 cancelButtonTitle:@"OK"
+//					 otherButtonTitles:nil] show];
+	
 	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandler];
 }
 
@@ -1015,6 +865,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
 		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 	}
+	
+	
 	
 	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:nil];
 }
@@ -1100,8 +952,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 //					   secretKey:kTapjoyAppSecretKey
 //						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 
-	AWSStaticCredentialsProvider *credentialsProvider = [AWSStaticCredentialsProvider credentialsWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"]
-																									 secretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	AWSStaticCredentialsProvider *credentialsProvider = [AWSStaticCredentialsProvider credentialsWithAccessKey:[[HONAPICaller s3Credentials] objectForKey:@"key"]
+																									 secretKey:[[HONAPICaller s3Credentials] objectForKey:@"secret"]];
 	
 	AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionUSEast1
 																		  credentialsProvider:credentialsProvider];
@@ -1116,6 +968,8 @@ void Swizzle(Class c, SEL orig, SEL new)
 //	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"
 //								  addAppButton:YES];
+	
+	[TalkChain initWithAPIKey:@"7c557447f19801db054a509df8056cb8" token:nil credentials:nil delegate:self];
 }
 
 - (void)_writeShareTemplates {
@@ -1169,13 +1023,13 @@ void uncaughtExceptionHandler(NSException *exception) {
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:[@"App - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONUserAssistant sharedInstance] activeUsername]],
-																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONUserAssistant sharedInstance] activeUsername]],
-																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONUserAssistant sharedInstance] activeUsername]],
-																															@"email"		: @{@"subject"	: [[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject],
-																																				@"body"		: [NSString stringWithFormat:[[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject], [[HONUserAssistant sharedInstance] activeUsername]]},
-																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeClipboard], [[HONUserAssistant sharedInstance] activeUsername]]},
-																									@"image"			: [HONAppDelegate avatarImage],
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [[HONUserAssistant sharedInstance] activeUsername]],
+																															@"twitter"		: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [[HONUserAssistant sharedInstance] activeUsername]],
+																															@"sms"			: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [[HONUserAssistant sharedInstance] activeUsername]],
+																															@"email"		: @{@"subject"	: [[[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeEmail] componentsSeparatedByString:@"|"] firstObject],
+																																				@"body"		: [NSString stringWithFormat:[[[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeEmail] componentsSeparatedByString:@"|"] firstObject], [[HONUserAssistant sharedInstance] activeUsername]]},
+																															@"clipboard"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeClipboard], [[HONUserAssistant sharedInstance] activeUsername]]},
+																									@"image"			: [[HONUserAssistant sharedInstance] activeUserInfo],
 																									@"url"				: @"",
 																									@"mp_event"			: @"App Root",
 																									@"view_controller"	: self.window.rootViewController}];
@@ -1265,7 +1119,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 //			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 //			
 //
-		if (buttonIndex == HONShareSheetActionTypeInstagram) {
+		if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
 									withUsername:[[HONUserAssistant sharedInstance] activeUsername]
@@ -1286,7 +1140,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 								  otherButtonTitles:nil] show];
 			}
 		
-		} else if (buttonIndex == HONShareSheetActionTypeTwitter) {
+		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
@@ -1307,7 +1161,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 								  otherButtonTitles:nil] show];
 			}
 		
-		} else if (buttonIndex == HONShareSheetActionTypeSMS) {
+		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 				messageComposeViewController.body = [[_shareInfo objectForKey:@"captions"] objectForKey:@"sms"];
@@ -1323,7 +1177,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 								  otherButtonTitles:nil] show];
 			}
 		
-		} else if (buttonIndex == HONShareSheetActionTypeEmail) {
+		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeEmail) {
 			if ([MFMailComposeViewController canSendMail]) {
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"captions"] objectForKey:@"email"] objectForKey:@"subject"]];
@@ -1342,7 +1196,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 								  otherButtonTitles:nil] show];
 			}
 		
-		} else if (buttonIndex == HONShareSheetActionTypeClipboard) {
+		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeClipboard) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = @"Get DOOD - A live photo feed of who is doing what around you. getdood.com";
 			
@@ -1453,7 +1307,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 
 - (void)_writeRandomContacts:(int)amt {
 	for (int i=0; i<amt; i++) {
-		[[HONSocialAssistant sharedInstance] writeTrivialUserToDeviceContacts:nil];
+		[[HONSocialCoordinator sharedInstance] writeTrivialUserToDeviceContacts:nil];
 	}
 }
 

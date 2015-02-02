@@ -8,6 +8,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSDate+BuiltinMenlo.h"
+
 #import "HONActivityViewController.h"
 #import "HONRefreshControl.h"
 #import "HONActivityItemViewCell.h"
@@ -71,7 +73,7 @@
 	
 	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != nil) {
-			_trivialUserVO = [HONTrivialUserVO userFromUserVO:[HONUserVO userWithDictionary:result]];
+			_trivialUserVO = [HONTrivialUserVO userWithDictionary:result];
 			_userProfileType = ([[HONUserAssistant sharedInstance] activeUserID] == _trivialUserVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
 			[self _retrieveActivityItems];
 			
@@ -101,7 +103,7 @@
 //																			   @"challengeID"	: @"0",
 //																			   @"club_id"		: @"0",
 //																			   @"club_name"		: @"",
-//																			   @"time"			: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+//																			   @"time"			: [[[HONUserAssistant sharedInstance] activeUserSignupDate] formattedISO8601String],
 //																			   @"user"			: @{@"id"			: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 //																									@"username"		: [[HONUserAssistant sharedInstance] activeUsername],
 //																									@"avatar_url"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},

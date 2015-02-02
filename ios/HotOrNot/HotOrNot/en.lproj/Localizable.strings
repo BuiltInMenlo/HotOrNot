@@ -38,7 +38,7 @@
 "alert_no" = "No";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
-"alert_invite" = "Invite Friends";
+"alert_agree" = "Agree";
 "not_now" = "Not Now";
 "are_you_sure" = "Are you sure?";
 
@@ -54,7 +54,8 @@
 "header_support" = "Support / Report Abuse";
 
 // register
-"register_footer" = "Terms of service";
+"register_alert" = "You must agree to the terms of service to sign up!";
+"register_footer" = "I Agree, terms of service";
 "register_submit" = "Enter Nickname";
 
 // home

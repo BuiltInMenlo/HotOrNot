@@ -35,7 +35,7 @@
 	}
 	
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : [[HONUserAssistant sharedInstance] rndAvatarURL];
+	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONUserAssistant sharedInstance] activeUserAvatarURL] : [[HONUserAssistant sharedInstance] rndAvatarURL];
 	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"";
 	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
@@ -75,7 +75,7 @@
 						   @"username"	: clubPhotoVO.username,
 						   @"text"		: clubPhotoVO.comment,
 						   @"score"		: @(clubPhotoVO.score),
-						   @"added"		: [clubPhotoVO.addedDate formattedISO8601StringUTC]};
+						   @"added"		: [clubPhotoVO.addedDate formattedISO8601String]};
 	
 	return ([HONCommentVO commentWithDictionary:dict]);
 }
@@ -97,8 +97,8 @@
 								   
 								   @"net_vote_score"	: @(0),
 								   @"status"			: NSStringFromInt((int)[[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message]),
-								   @"added"				: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601],
-								   @"updated"			: (message.sentAt != nil) ? [message.sentAt formattedISO8601StringUTC] : [NSDate stringFormattedISO8601]} mutableCopy];
+								   @"added"				: (message.sentAt != nil) ? [message.sentAt formattedISO8601String] : [NSDate stringFormattedISO8601],
+								   @"updated"			: (message.sentAt != nil) ? [message.sentAt formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
 	
 	if ([messagePart.MIMEType isEqualToString:kMIMETypeImagePNG])
 		[dict setObject:UIImagePNGRepresentation(messagePart.imageContent) forKey:@"image"];

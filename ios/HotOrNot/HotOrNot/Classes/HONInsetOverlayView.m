@@ -47,7 +47,7 @@
 		NSLog(@"BG:[%@] (%@)", [[contents objectForKey:@"bg"] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
 		[_framingImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[contents objectForKey:@"bg"] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
 																   cachePolicy:kOrthodoxURLCachePolicy
-															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+															   timeoutInterval:[HONAPICaller timeoutInterval]]
 								 placeholderImage:[UIImage imageNamed:(insetType == HONInsetOverlayViewTypeAppReview || insetType == HONInsetOverlayViewTypeInvite || insetType == HONInsetOverlayViewTypeSuggestions) ? @"inset1BG" : @"inset2BG"]
 										  success:framingSuccessBlock
 										  failure:framingFailureBlock];
@@ -82,7 +82,7 @@
 			
 			[contentImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:contentURL]
 																	   cachePolicy:kOrthodoxURLCachePolicy
-																   timeoutInterval:[HONAppDelegate timeoutInterval]]
+																   timeoutInterval:[HONAPICaller timeoutInterval]]
 									 placeholderImage:nil
 											 success:contentSuccessBlock
 											  failure:contentFailureBlock];
@@ -107,7 +107,7 @@
 			
 			[contentImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:contentURL]
 																	  cachePolicy:kOrthodoxURLCachePolicy
-																  timeoutInterval:[HONAppDelegate timeoutInterval]]
+																  timeoutInterval:[HONAPICaller timeoutInterval]]
 									placeholderImage:nil
 											 success:contentSuccessBlock
 											 failure:contentFailureBlock];
@@ -143,7 +143,7 @@
 				
 				[stickerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:contentURL]
 																		  cachePolicy:kOrthodoxURLCachePolicy
-																	  timeoutInterval:[HONAppDelegate timeoutInterval]]
+																	  timeoutInterval:[HONAPICaller timeoutInterval]]
 										placeholderImage:nil
 												 success:contentSuccessBlock
 												 failure:contentFailureBlock];

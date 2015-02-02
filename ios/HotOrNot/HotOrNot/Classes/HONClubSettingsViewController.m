@@ -116,7 +116,7 @@
 		
 		[_clubCoverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubImagePrefix stringByAppendingString:kSnapThumbSuffix]]
 																	 cachePolicy:kOrthodoxURLCachePolicy
-																 timeoutInterval:[HONAppDelegate timeoutInterval]]
+																 timeoutInterval:[HONAPICaller timeoutInterval]]
 								   placeholderImage:[UIImage imageNamed:@"avatarPlaceholder"]
 											success:imageSuccessBlock
 											failure:imageFailureBlock];

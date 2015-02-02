@@ -8,6 +8,9 @@
 
 
 @interface UIScrollView (BuiltInMenlo)
+- (BOOL)isAtContentBottom;
+- (BOOL)isAtContentLeft;
+- (BOOL)isAtContentRight;
+- (BOOL)isAtContentTop;
 - (CGFloat)scrollPosition;
-- (BOOL)isAtBottom;
 @end

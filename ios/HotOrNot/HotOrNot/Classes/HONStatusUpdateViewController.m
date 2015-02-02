@@ -9,6 +9,7 @@
 #import <LayerKit/LayerKit.h>
 
 #import "LYRConversation+BuiltinMenlo.h"
+#import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
@@ -46,6 +47,7 @@
 @property (nonatomic, strong) NSString *comment;
 
 @property (nonatomic) BOOL isSubmitting;
+@property (nonatomic) int cnt;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
 @end
@@ -107,13 +109,36 @@
 		
 		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation);
 		
+		if (_conversation == nil) {
+			NSError *error = nil;
+			LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(_statusUpdateVO.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+			LYRMessagePart *messagePart1 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])];
+			LYRMessagePart *messagePart2 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]];
+			LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart1, messagePart2] options:nil error:&error];
+			
+			NSLog(@"MESSAGE RESULT -=- CREATOR:[%@]%@", error, message.identifierSuffix);
+			BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
+			NSLog(@"MESSAGE SENT -=- CREATOR:[%@]", NSStringFromBOOL(success));
+			
+			[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
+				[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					NSDictionary *dict = (NSDictionary *)obj;
+					
+					NSError *error = nil;
+					LYRConversation *conversation2 = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+					LYRMessagePart *messagePart2 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])];
+					LYRMessagePart *messagePart3 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]];
+					LYRMessage *message2 = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart2, messagePart3] options:nil error:&error];
+					
+					NSLog(@"MESSAGE RESULT:(%d) -=- [%@]%@", idx, error, message2.identifierSuffix);
+					BOOL success2 = [[HONLayerKitAssistant sharedInstance] sendMessage:message2 toConversation:conversation2];
+					NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
+				}];
+			}];
+		}
+		
 		if (!error) {
 			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
-				[[HONLayerKitAssistant sharedInstance] addParticipants:@[NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])] toConversation:_conversation withCompletion:^(BOOL success, NSError *error) {
-					if (!success) {
-						NSLog(@"Couldn't add me self to the convo!");
-					}
-					
 					LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
 					msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
 					msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
@@ -125,7 +150,7 @@
 						NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
 						[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 							LYRMessage *message = (LYRMessage *)obj;
-							NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", (int)idx, message.identifierSuffix, [message.sentAt formattedISO8601StringUTC], [message.receivedAt formattedISO8601StringUTC]);
+							NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", (int)idx, message.identifierSuffix, [message.sentAt formattedISO8601String], [message.receivedAt formattedISO8601String]);
 							[message markAsRead:nil];
 							[_replies addObject:[HONCommentVO commentWithMessage:message]];
 						}];
@@ -134,7 +159,7 @@
 					_statusUpdateVO.replies = [_replies copy];
 					
 					[self _didFinishDataRefresh];
-				}];
+				//}];
 			}
 		}
 	}];
@@ -287,7 +312,7 @@
 	
 	
 	_comment = @"";
-	
+	_cnt = 0;
 	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0)];
 	[self.view addSubview:_footerView];
 	
@@ -340,7 +365,6 @@
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	[_headerView addMoreButtonWithTarget:self action:@selector(_goMore)];
 	[self.view addSubview:_headerView];
-
 }
 
 - (void)viewDidLoad {
@@ -375,26 +399,29 @@
 
 
 - (void)_goMore {
-	UIActionSheet *actionSheet;
+	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithDownload:([_statusUpdateVO.appStoreURL length] > 0) withMetaData:@{@"url"	: _statusUpdateVO.appStoreURL}];
 	
-	if ([_statusUpdateVO.appStoreURL length] > 0) {
-		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-												  delegate:self
-										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-									destructiveButtonTitle:nil
-										 otherButtonTitles:@"Download", @"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
-		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadAvailable];
 	
-	} else {
-		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-												  delegate:self
-										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-									destructiveButtonTitle:nil
-										 otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
-		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadNotAvailable];
-	}
-
-	[actionSheet showInView:self.view];
+//	UIActionSheet *actionSheet;
+//	
+//	if ([_statusUpdateVO.appStoreURL length] > 0) {
+//		actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+//												  delegate:self
+//										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//									destructiveButtonTitle:nil
+//										 otherButtonTitles:@"Download", @"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
+//		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadAvailable];
+//	
+//	} else {
+//		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+//												  delegate:self
+//										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//									destructiveButtonTitle:nil
+//										 otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
+//		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadNotAvailable];
+//	}
+//
+//	[actionSheet showInView:self.view];
 }
 
 - (void)_goFlag {
@@ -413,12 +440,37 @@
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
 	
+//	if (++_cnt % 2 == 0) {
+//		NSError *error = nil;
+//		NSString *participant = [[[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]] randomElement];
+//		
+//		NSLog(@"PRE-PARTICIPANTS:[%@] -(%d)", _conversation.participants, [_conversation.participants count]);
+//		NSLog(@"ADDING:[%@] -=- %@", participant, [[HONUserAssistant sharedInstance] usernameForUserID:[participant intValue]]);
+//		[_conversation addParticipants:[NSSet setWithArray:@[participant]] error:&error];
+//		NSLog(@"ADD -> %@\n%@", NSStringFromBOOL((error == nil)), error);
+//		
+//	} else {
+//		NSError *error = nil;
+//		NSString *participant = [[_conversation.participants allObjects] randomElement];
+//		
+//		NSLog(@"PRE-PARTICIPANTS:(%d)\n[%@]", [_conversation.participants count], _conversation.participants);
+//		NSLog(@"DROPPING:[%@] -=- %@", participant, [[HONUserAssistant sharedInstance] usernameForUserID:[participant intValue]]);
+//		[_conversation removeParticipants:[NSSet setWithArray:@[participant]] error:&error];
+//		NSLog(@"REMOVE -> %@\n%@", NSStringFromBOOL((error == nil)), error);
+//	}
+	
+	
+	
 	_isSubmitting = YES;
 	
 	_commentTextField.text = @"";
 	_comment = _commentTextField.text;
 	
 	[self _submitCommentReply:NO];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+		NSLog(@"\n\n\n\nPOST-PARTICIPANTS:(%d)\n[%@]\n\n\n\n", [_conversation.participants count], _conversation.participants);
+	});
 	
 	
 //	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
@@ -705,7 +757,7 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - download"];
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_statusUpdateVO.appStoreURL]];
 		
-		} else if (buttonIndex == 1) {
+		} else if (buttonIndex == HONSocialPlatformShareTypeClipboard) {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -717,15 +769,15 @@
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		
-		} else if (buttonIndex == 2) {
+		} else if (buttonIndex == HONSocialPlatformShareTypeTwitter) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
-				[twitterComposeViewController addImage:[HONAppDelegate avatarImage]];
+				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
+				[twitterComposeViewController addImage:[[HONUserAssistant sharedInstance] activeUserAvatar]];
 				twitterComposeViewController.completionHandler = completionBlock;
 				
 				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
@@ -738,9 +790,9 @@
 								  otherButtonTitles:nil] show];
 			}
 			
-		} else if (buttonIndex == 3) {
+		} else if (buttonIndex == HONSocialPlatformShareTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
-			[[HONImageBroker sharedInstance] saveForInstagram:[HONAppDelegate avatarImage]
+			[[HONImageBroker sharedInstance] saveForInstagram:[[HONUserAssistant sharedInstance] activeUserAvatar]
 												 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
 													   toPath:savePath];
 			
@@ -748,7 +800,7 @@
 				UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				documentInteractionController.UTI = @"com.instagram.exclusivegram";
 				documentInteractionController.delegate = self;
-				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
+				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
 				[documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
 				
 			} else {
@@ -759,10 +811,10 @@
 								  otherButtonTitles:nil] show];
 			}
 			
-		} else if (buttonIndex == 5) {
+		} else if (buttonIndex == HONSocialPlatformShareTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+				messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
 				messageComposeViewController.messageComposeDelegate = self;
 				
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
@@ -796,8 +848,8 @@
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
-				[twitterComposeViewController addImage:[HONAppDelegate avatarImage]];
+				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
+				[twitterComposeViewController addImage:[[HONUserAssistant sharedInstance] activeUserAvatar]];
 				twitterComposeViewController.completionHandler = completionBlock;
 				
 				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
@@ -812,7 +864,7 @@
 			
 		} else if (buttonIndex == 2) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
-			[[HONImageBroker sharedInstance] saveForInstagram:[HONAppDelegate avatarImage]
+			[[HONImageBroker sharedInstance] saveForInstagram:[[HONUserAssistant sharedInstance] activeUserAvatar]
 												 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
 													   toPath:savePath];
 			
@@ -820,7 +872,7 @@
 				UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				documentInteractionController.UTI = @"com.instagram.exclusivegram";
 				documentInteractionController.delegate = self;
-				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
+				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
 				[documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
 				
 			} else {
@@ -834,7 +886,7 @@
 		} else if (buttonIndex == 3) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+				messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
 				messageComposeViewController.messageComposeDelegate = self;
 				
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];

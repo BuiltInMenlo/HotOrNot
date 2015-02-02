@@ -65,16 +65,16 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (NSArray *)clubCoverPhotoAlbumPrefixes {
-	return (@[[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-007"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-008"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-009"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-010"]]);
+	return (@[[NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-007"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-008"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-009"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-010"]]);
 }
 
 - (NSString *)rndCoverImageURL {
@@ -101,7 +101,7 @@ static HONClubAssistant *sharedInstance = nil;
 			   
 			   @"owner"			: ([owner count] == 0) ? @{@"id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 														   @"username"	: [[HONUserAssistant sharedInstance] activeUsername],
-														   @"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]} : owner,
+														   @"avatar"	: [[HONUserAssistant sharedInstance] activeUserAvatar]} : owner,
 			   
 			   @"members"		: @[],
 			   @"pending"		: @[],
@@ -118,8 +118,8 @@ static HONClubAssistant *sharedInstance = nil;
 		[members addObject:@{@"id"			: @(vo.userID),
 							 @"username"	: vo.username,
 							 @"avatar"		: vo.avatarPrefix,
-							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC],
-							 @"joined"		: [vo.joinedDate formattedISO8601StringUTC]}];
+							 @"invited"		: [vo.invitedDate formattedISO8601String],
+							 @"joined"		: [vo.joinedDate formattedISO8601String]}];
 	}];
 	
 	NSMutableArray *pending = [NSMutableArray array];
@@ -131,12 +131,12 @@ static HONClubAssistant *sharedInstance = nil;
 							 @"extern_name"	: ([vo.altID length] > 0) ? vo.username : @"",
 							 @"phone"		: vo.altID,
 							 @"email"		: vo.altID,
-							 @"invited"		: [vo.invitedDate formattedISO8601StringUTC]}];
+							 @"invited"		: [vo.invitedDate formattedISO8601String]}];
 	}];
 	
 	NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 																							 @"username"	: [[HONUserAssistant sharedInstance] activeUsername],
-																							 @"avatar"		: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]}];
+																							 @"avatar"		: [[HONUserAssistant sharedInstance] activeUserAvatarURL]}];
 	[dict replaceObject:@(1 + ((int)[members count] + (int)[pending count])) forKey:@"total_members"];
 	[dict replaceObject:[members copy] forKey:@"members"];
 	[dict replaceObject:[pending copy] forKey:@"pending"];
@@ -169,7 +169,7 @@ static HONClubAssistant *sharedInstance = nil;
 																											@"lon"	: [result objectForKey:@"lon"]} forKey:@"coords"];
 			[result setValue:@{@"id"		: [result objectForKey:@"owner"],
 							   @"username"	: @"",
-							   @"avatar"	: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]} forKey:@"owner"];
+							   @"avatar"	: [[HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]} forKey:@"owner"];
 			
 			
 			if (locationClubVO.clubID != [[result objectForKey:@"id"] intValue]) {
@@ -211,9 +211,28 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (void)joinGlobalClubWithCompletion:(void (^)(id result))completion {
 	__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] globalClub];
-	[[HONAPICaller sharedInstance] joinClub:clubVO completion:^(NSDictionary *result) {
-		if (completion)
-			completion(clubVO);
+	
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:clubVO.clubID withOwnerID:clubVO.ownerID completion:^(NSDictionary *result) {
+		clubVO = [HONUserClubVO clubWithDictionary:result];
+		
+		[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+			[[HONUserAssistant sharedInstance]writeClubMemberToUserLookup:@{@"id"		: @(vo.userID),
+																			@"username"	: vo.username,
+																			@"avatar"	: vo.avatarPrefix}];
+		}];
+		
+		
+		if (![[HONClubAssistant sharedInstance] isMemberOfClub:clubVO]) {
+			[[HONAPICaller sharedInstance] joinClub:clubVO completion:^(NSDictionary *result) {
+				if (completion)
+					completion(clubVO);
+			}];
+		
+		} else {
+			if (completion)
+				completion(clubVO);
+		}
 	}];
 }
 
@@ -247,7 +266,7 @@ static HONClubAssistant *sharedInstance = nil;
 		[dict setValue:[dict objectForKey:@"club_id"] forKey:@"id"];
 		[dict setObject:@{@"id"			: [dict objectForKey:@"owner_id"],
 						  @"username"	: @"",
-						  @"avatar"		: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]} forKey:@"owner"];
+						  @"avatar"		: [[HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]} forKey:@"owner"];
 		[dict setValue:@(distance) forKey:@"distance"];
 		
 //		if (distance <= [[dict objectForKey:@"radius"] floatValue]) {
@@ -330,7 +349,7 @@ static HONClubAssistant *sharedInstance = nil;
 	return ([@{@"challenge_id"	: @"0",
 			  @"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 			  @"username"		: [[HONUserAssistant sharedInstance] activeUsername],
-			  @"avatar"			: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+			  @"avatar"			: [[HONUserAssistant sharedInstance] activeUserAvatarURL],
 			  @"img"			: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 			  @"score"			: @"0",
 			  @"subjects"		: @[],
@@ -690,7 +709,7 @@ static HONClubAssistant *sharedInstance = nil;
 	HONUserClubVO *vo;
 	
 	NSString *clubName = @"";
-	for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:NO]) {
+	for (HONContactUserVO *vo in [[HONSocialCoordinator sharedInstance] deviceContactsSortedByName:NO]) {
 		if ([vo.email length] == 0)
 			continue;
 		
@@ -744,7 +763,7 @@ static HONClubAssistant *sharedInstance = nil;
 		}
 		
 	} else {
-		for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:NO]) {
+		for (HONContactUserVO *vo in [[HONSocialCoordinator sharedInstance] deviceContactsSortedByName:NO]) {
 			NSString *name = ([vo.lastName length] > 0) ? vo.lastName : vo.firstName;
 			
 			if (![segmentedKeys containsObject:name]) {
@@ -838,7 +857,7 @@ static HONClubAssistant *sharedInstance = nil;
 	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
 	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
 	
-	for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:NO]) {
+	for (HONContactUserVO *vo in [[HONSocialCoordinator sharedInstance] deviceContactsSortedByName:NO]) {
 		if ([vo.email length] > 0) {
 			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
 			

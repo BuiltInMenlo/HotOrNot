@@ -73,7 +73,7 @@
 	
 	[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_topicVO.iconURL]
 															cachePolicy:kOrthodoxURLCachePolicy
-														timeoutInterval:[HONAppDelegate timeoutInterval]]
+														timeoutInterval:[HONAPICaller timeoutInterval]]
 						  placeholderImage:nil
 								   success:imageSuccessBlock
 								   failure:imageFailureBlock];
@@ -95,7 +95,7 @@
 //		
 //		[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_topicVO.iconURL]
 //																cachePolicy:kOrthodoxURLCachePolicy
-//															timeoutInterval:[HONAppDelegate timeoutInterval]]
+//															timeoutInterval:[HONAPICaller timeoutInterval]]
 //							  placeholderImage:nil
 //									   success:imageSuccessBlock
 //									   failure:imageFailureBlock];

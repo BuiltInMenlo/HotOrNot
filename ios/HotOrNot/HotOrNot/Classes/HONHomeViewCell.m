@@ -38,7 +38,7 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isLoading = NO;
 		
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
+		self.backgroundView = nil;
 		
 		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingDots_50"]];
 		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 11.0, 17.0);
@@ -75,15 +75,15 @@
 		
 		_likesIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likesIcon"]];
 		_likesIconImageView.frame = CGRectOffset(timeIconImageView.frame, 32.0, 0.0);
-//		[self.contentView addSubview:_likesIconImageView];
+		[self.contentView addSubview:_likesIconImageView];
 		
 		
 		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(120.0, 57.0, 48.0, 16.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance]  percentGreyscaleColor:0.75];
+		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-//		[self.contentView addSubview:_scoreLabel];
+		[self.contentView addSubview:_scoreLabel];
 		
 		_selectButton = [UIButton buttonWithType:UIButtonTypeCustom];	
 		_selectButton.frame = self.frame;
@@ -167,7 +167,7 @@
 //			NSLog(@"URL:[%@]", _statusUpdateVO.imagePrefix);
 			[_subjectImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_statusUpdateVO.imagePrefix]
 																   cachePolicy:kOrthodoxURLCachePolicy
-															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+															   timeoutInterval:[HONAPICaller timeoutInterval]]
 							  placeholderImage:[UIImage imageNamed:@"loadingDots_50"]
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];

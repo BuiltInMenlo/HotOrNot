@@ -1,3 +1,12 @@
+//
+//  NSString+Operations.m.h
+//  HotOrNot
+//
+//  Created by BIM  on 11/4/14.
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
+
+
+#import "RegExCategories.h"
 
 @interface NSString (BuiltInMenlo)
 + (NSString *)stringWithBase64EncodedString:(NSString *)string;
@@ -6,12 +15,23 @@
 - (NSString *)base64DecodedString;
 - (NSData *)base64DecodedData;
 
+- (NSString *)stringWithInt:(int)integer;
++ (id)initWithInteger:(int)integer;
++ (instancetype)randomStringWithLength:(NSUInteger)length;
+
+- (NSInteger)indexOfFirstOccurrenceOfSubstring:(NSString *)substring;
+- (NSInteger)indexOfLastOccurrenceOfSubstring:(NSString *)substring;
+- (BOOL)isDelimitedByString:(NSString *)delimiter;
 - (BOOL)isValidEmailAddress;
 - (NSString *)lastComponentByDelimeter:(NSString *)delimiter;
-- (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring;
-- (void)trimFinalSubstring:(NSString *)substring;
 - (NSString *)normalizedPhoneNumber;
+- (NSString *)normalizedISO8601Timestamp;
+- (NSUInteger)numberOfWordsInString;
+- (NSUInteger)occurancesOfSubstring:(NSString *)substring;
 - (NSDictionary *)parseAsQueryString;
-- (BOOL)isDelimitedByString:(NSString *)delimiter;
+- (NSString *)randomizedString;
+- (NSString *)reversedString;
+- (NSString *)stringByTrimmingFinalSubstring:(NSString *)substring;
 - (NSString *)stringFromAPNSToken:(NSData *)remoteToken;
+- (void)trimFinalSubstring:(NSString *)substring;
 @end

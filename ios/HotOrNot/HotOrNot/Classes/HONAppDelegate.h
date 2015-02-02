@@ -11,8 +11,6 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
-#import "AFHTTPRequestOperation.h"
-
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 #define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
@@ -43,24 +41,6 @@ typedef NS_ENUM(NSUInteger, HONPushType) {
 	HONPushTypeShowChallengeDetailsIgnoringPushes	/** Brings up the challenge details modal, ignoring next pushes **/
 };
 
-// share sheet actions
-typedef NS_ENUM(NSUInteger, HONShareSheetActionType) {
-	HONShareSheetActionTypeInstagram = 0,
-	HONShareSheetActionTypeTwitter,
-	HONShareSheetActionTypeSMS,
-	HONShareSheetActionTypeEmail,
-	HONShareSheetActionTypeClipboard
-};
-
-typedef NS_ENUM(NSUInteger, HONShareMessageType) {
-	HONShareMessageTypeClipboard = 0,
-	HONShareMessageTypeInstagram,
-	HONShareMessageTypeSMS,
-	HONShareMessageTypeEmail,
-	HONShareMessageTypeTwitter,
-	HONShareMessageTypeFacebook
-};
-
 typedef NS_ENUM(NSUInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeExit = 0,
 	HONAppDelegateAlertTypeVerifiedNotification,
@@ -76,28 +56,6 @@ typedef NS_ENUM(NSUInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeAllowContactsAccess
 };
 
-
-typedef NS_ENUM(NSUInteger, HONAmazonS3BucketType) {
-	HONAmazonS3BucketTypeAvatarsSource = 0,
-	HONAmazonS3BucketTypeAvatarsCloudFront,
-	
-	HONAmazonS3BucketTypeBannersSource,
-	HONAmazonS3BucketTypeBannersCloudFront,
-	
-	HONAmazonS3BucketTypeClubsSource,
-	HONAmazonS3BucketTypeClubsCloudFront,
-	
-	HONAmazonS3BucketTypeEmotionsSource,
-	HONAmazonS3BucketTypeEmoticonsCloudFront
-};
-
-typedef NS_ENUM(NSUInteger, HONInsetOverlayViewType) {
-	HONInsetOverlayViewTypeUnlock = 0,
-	HONInsetOverlayViewTypeSuggestions,
-	HONInsetOverlayViewTypeAppReview,
-	HONInsetOverlayViewTypeInvite
-};
-
 typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 	HONAppDelegateBitTesting0	= (0UL << 0),
 	HONAppDelegateBitTesting1	= (1UL << 0),
@@ -107,20 +65,10 @@ typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 };
 
 
-// api endpts
-extern NSString * const kAPIHost;
-
-extern NSString * const kBlowfishKey;
-extern NSString * const kBlowfishBase64IV;
-
-
 // view heights
 extern const CGFloat kNavHeaderHeight;
 extern const CGFloat kSearchHeaderHeight;
 extern const CGFloat kDetailsHeroImageHeight;
-
-// ui
-extern const CGSize kTabSize;
 
 // animation params
 extern const CGFloat kProfileTime;
@@ -139,44 +87,23 @@ extern NSString * const kSnapMediumSuffix;
 extern NSString * const kSnapTabSuffix;
 extern NSString * const kSnapLargeSuffix;
 
-extern const NSURLRequestCachePolicy kOrthodoxURLCachePolicy;
-extern NSString * const kTwilioSMS;
-
-
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
+
++ (UIViewController *)topViewControllerWithRootViewController:(UIViewController *)rootViewController;
++ (UINavigationController *)rootNavController;
++ (UIViewController *)appNavController;
+
 + (NSString *)customerServiceURLForKey:(NSString *)key;
-+ (NSString *)kikCardURL;
-+ (NSString *)shareURL;
-
-+ (NSDictionary *)s3Credentials;
-+ (NSTimeInterval)timeoutInterval;
-
-+ (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType;
-
-+ (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
 
-
-+ (NSString *)shareMessageForType:(HONShareMessageType)messageType;
-
-+ (void)writeUserInfo:(NSDictionary *)userInfo;
-+ (NSDictionary *)infoForUser;
-+ (UIImage *)avatarImage;
-
-+ (CGFloat)compressJPEGPercentage;
-
-void Swizzle(Class c, SEL orig, SEL new);
 void uncaughtExceptionHandler(NSException *exception);
 
+@property (nonatomic, retain) UINavigationController *navController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) NSSet *httpRequestOperations;
-
-
 @end
 
 

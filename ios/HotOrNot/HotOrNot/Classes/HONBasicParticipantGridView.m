@@ -99,7 +99,7 @@
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
 													   cachePolicy:kOrthodoxURLCachePolicy
-												   timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]
+												   timeoutInterval:[HONAPICaller timeoutInterval] * 50.0]
 							placeholderImage:nil
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];

@@ -12,7 +12,6 @@ typedef NS_ENUM(NSUInteger, HONRegexMatchUsernameGroup) {
 	HONRegexMatchSuffixGroup
 };
 
-#import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 
 @interface HONUserAssistant : NSObject
@@ -20,6 +19,15 @@ typedef NS_ENUM(NSUInteger, HONRegexMatchUsernameGroup) {
 
 - (int)activeUserID;
 - (NSString *)activeUsername;
+- (UIImage *)activeUserAvatar;
+- (NSString *)activeUserAvatarURL;
+- (NSDate *)activeUserLoginDate;
+- (BOOL)activeUserNotificationsEnabled;
+- (NSDate *)activeUserSignupDate;
+
+- (NSDictionary *)activeUserInfo;
+- (void)writeActiveUserInfo:(NSDictionary *)userInfo;
+- (void)writeActiveUserAvatarFromURL:(NSString *)url;
 
 - (NSString *)rndAvatarURL;
 - (NSString *)avatarURLForUserID:(int)userID;

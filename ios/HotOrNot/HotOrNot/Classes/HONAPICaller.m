@@ -122,8 +122,10 @@ NSString * const kMIMETypeTextJSON = @"text/json";
 NSString * const kMIMETypeTextPlain = @"text/plain";
 NSString * const kMIMETypeTextXML = @"text/xml";
 
-
+// netowrk rules
 const CGFloat kNotifiyDelay = (float)(2 / 3);
+const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+//const NSURLRequestCachePolicy kOrthodoxURLCachePolicy = NSURLRequestReloadIgnoringCacheData;
 
 
 //void (^failureBlock)(AFHTTPRequestOperation *operation, NSError *error);
@@ -166,6 +168,44 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Utility
++ (NSDictionary *)s3Credentials {
+	return (@{@"key"		: @"AKIAIHUQ42RE7R7CIMEA",
+			  @"secret"		: @"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"});
+}
+
++ (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
+	NSString *key = @"";
+	
+	NSDictionary *dict = @{@"avatars"	: @[@"https://hotornot-avatars.s3.amazonaws.com",
+											@"https://d3j8du2hyvd35p.cloudfront.net"],
+						   @"banners"	: @[@"https://hotornot-banners.s3.amazonaws.com",
+											@"https://hotornot-banners.s3.amazonaws.com"],
+						   @"clubs"		: @[@"https://hotornot-challenges.s3.amazonaws.com",
+											@"https://d1fqnfrnudpaz6.cloudfront.net"],
+						   @"emoticons"	: @[@"https://hotornot-emotions.s3.amazonaws.com",
+											@"https://hotornot-banners.s3.amazonaws.com"]};
+	
+	if (s3BucketType == HONAmazonS3BucketTypeAvatarsSource || s3BucketType == HONAmazonS3BucketTypeAvatarsCloudFront)
+		key = @"avatars";
+	
+	else if (s3BucketType == HONAmazonS3BucketTypeBannersSource || s3BucketType == HONAmazonS3BucketTypeBannersCloudFront)
+		key = @"banners";
+	
+	else if (s3BucketType == HONAmazonS3BucketTypeClubsSource || s3BucketType == HONAmazonS3BucketTypeClubsCloudFront)
+		key = @"clubs";
+	
+	else if (s3BucketType == HONAmazonS3BucketTypeEmotionsSource || s3BucketType == HONAmazonS3BucketTypeEmoticonsCloudFront)
+		key = @"emoticons";
+	
+	return ([[dict objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
+}
+
+
++ (NSTimeInterval)timeoutInterval {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeout_interval"] doubleValue]);
+}
+
+
 - (NSString *)phpAPIBasePath {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"server_apis"] objectForKey:kAPIHostKey] objectForKey:@"php"]);
 }
@@ -367,7 +407,7 @@ static HONAPICaller *sharedInstance = nil;
 //	por2.delegate = self;
 //	
 //	_awsUploadCounter = 0;
-//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAPICaller s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAPICaller s3Credentials] objectForKey:@"secret"]];
 //	
 //	@try {
 //		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:bucketName]];
@@ -387,7 +427,7 @@ static HONAPICaller *sharedInstance = nil;
 //		_progressHUD = nil;
 //		
 //		if ([bucketName rangeOfString:@"hotornot-challenges"].location != NSNotFound)
-//			[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+//			[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 //	}
 //	
 //	if (completion)
@@ -424,8 +464,8 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)checkForAvailablePhone:(NSString *)phone completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"userID"	: @"192505",//NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-							 @"phone"	: @"+12223335555",
+	NSDictionary *params = @{@"userID"	: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+							 @"phone"	: phone,
 							 @"sku"		: [[[[NSBundle mainBundle] bundleIdentifier] componentsSeparatedByString:@"."] lastObject]};//phone};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIUsersCheckPhone, params);
@@ -1016,7 +1056,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [NSString stringWithFormat:@"%@ \"%@\"", [[self class] description], @"updateAvatarWithImagePrefix"], [[operation request] URL], result);
 			
 			if (completion)
 				completion(result);
@@ -1071,7 +1111,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [NSString stringWithFormat:@"%@ \"%@\"", [[self class] description], @"updateUsernameForUser"], [[operation request] URL], result);
 			
 			if (completion)
 				completion(result);
@@ -1098,7 +1138,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [NSString stringWithFormat:@"%@ \"%@\"", [[self class] description], @"updatePhoneNumberForUserWithCompletion"], [[operation request] URL], result);
 			
 			if (completion)
 				completion(result);
@@ -2137,7 +2177,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)submitStatusUpdateWithDictionary:(NSDictionary *)dict completion:(void (^)(id))completion {
 	NSDictionary *params = @{@"userID"		: ([dict objectForKey:@"user_id"] != nil) ? @([[dict objectForKey:@"user_id"] intValue]) : @([[HONUserAssistant sharedInstance] activeUserID]),
-							 @"imgURL"		: ([dict objectForKey:@"img_url"] != nil) ? [dict objectForKey:@"img_url"] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
+							 @"imgURL"		: ([dict objectForKey:@"img_url"] != nil) ? [dict objectForKey:@"img_url"] : [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
 							 @"challengeID"	: ([dict objectForKey:@"img_url"] != nil) ? @([[dict objectForKey:@"challenge_id"] intValue]) : @(0),
 							 @"clubID"		: ([dict objectForKey:@"club_id"] != nil) ? @([[dict objectForKey:@"club_id"] intValue]) : @(0),
 							 @"subject"		: ([dict objectForKey:@"subject"] != nil) ? [dict objectForKey:@"subject"] : @"",
@@ -2169,7 +2209,7 @@ static HONAPICaller *sharedInstance = nil;
 
 //- (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
 //	NSDictionary *params = @{@"userID"		: ([dict objectForKey:@"user_id"] != nil) ? @([[dict objectForKey:@"user_id"] intValue]) : @([[HONUserAssistant sharedInstance] activeUserID]),
-//							 @"imgURL"		: ([dict objectForKey:@"img_url"] != nil) ? [dict objectForKey:@"img_url"] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultClubPhotoURL]],
+//							 @"imgURL"		: ([dict objectForKey:@"img_url"] != nil) ? [dict objectForKey:@"img_url"] : [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultClubPhotoURL]],
 //							 @"challengeID"	: ([dict objectForKey:@"img_url"] != nil) ? @([[dict objectForKey:@"challenge_id"] intValue]) : @(0),
 //							 @"clubID"		: ([dict objectForKey:@"club_id"] != nil) ? @([[dict objectForKey:@"club_id"] intValue]) : @(0),
 //							 @"subject"		: ([dict objectForKey:@"subject"] != nil) ? [dict objectForKey:@"subject"] : @"",
@@ -2376,7 +2416,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)submitEmailAddressForUserMatching:(NSString *)email completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-							 @"code"	: [[HONAppDelegate infoForUser] objectForKey:@"sms_code"],
+							 @"code"	: [[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"sms_code"],
 							 @"email"	: email};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIEmailVerify, params);
@@ -2404,7 +2444,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)submitPhoneNumberForUserMatching:(NSString *)phoneNumber completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-							 @"code"	: [[HONAppDelegate infoForUser] objectForKey:@"sms_code"],
+							 @"code"	: [[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"sms_code"],
 							 @"phone"	: phoneNumber};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", [[HONAPICaller sharedInstance] phpAPIBasePath], kAPIPhoneVerify, params);

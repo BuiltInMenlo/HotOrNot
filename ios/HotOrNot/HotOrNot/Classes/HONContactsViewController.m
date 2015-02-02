@@ -106,7 +106,7 @@
 			
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapThumbSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapThumbSuffix]}];
 			
 			[_inAppUsers addObject:vo];
 		}
@@ -137,7 +137,7 @@
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"alt_id"		: [[dict objectForKey:@"phone"] normalizedPhoneNumber],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
 				[_matchedUserIDs addObject:vo.altID];
 				[_inAppUsers addObject:vo];
 		}
@@ -172,7 +172,7 @@
 				HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																			  @"username"	: [dict objectForKey:@"username"],
 																			  @"alt_id"		: [[dict objectForKey:@"phone"] normalizedPhoneNumber],
-																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
+																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
 				[_matchedUserIDs addObject:vo.altID];
 				[_inAppUsers addObject:vo];
 			}
@@ -198,7 +198,7 @@
 //	_inAppUsers = [NSMutableArray array];
 //	_matchedUserIDs = [NSMutableArray array];
 //	
-	for (HONContactUserVO *vo in [[HONSocialAssistant sharedInstance] deviceContactsSortedByName:YES]) {
+	for (HONContactUserVO *vo in [[HONSocialCoordinator sharedInstance] deviceContactsSortedByName:YES]) {
 		[_allDeviceContacts addObject:vo];
 		[_shownDeviceContacts addObject:vo];
 		
@@ -266,7 +266,7 @@
 	if (!_emptyContactsBGView.hidden || !_accessContactsBGView.hidden) {
 		_accessContactsBGView.frame = CGRectMake(_accessContactsBGView.frame.origin.x, _tableView.contentSize.height + 5.0, _accessContactsBGView.frame.size.width, _accessContactsBGView.frame.size.height);
 		_emptyContactsBGView.frame = _accessContactsBGView.frame;
-		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, kOrthodoxTableCellHeight + kTabSize.height, _tableView.contentInset.right)];
+		[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, kOrthodoxTableCellHeight, _tableView.contentInset.right)];
 	}
 }
 

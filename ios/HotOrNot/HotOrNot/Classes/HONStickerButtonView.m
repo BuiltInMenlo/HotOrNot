@@ -156,7 +156,7 @@ const CGRect kActiveFrame = {-8.0f, -8.0f, 80.0f, 80.0f};
 	
 	[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.largeImageURL]
 															cachePolicy:kOrthodoxURLCachePolicy
-														timeoutInterval:[HONAppDelegate timeoutInterval]]
+														timeoutInterval:[HONAPICaller timeoutInterval]]
 						  placeholderImage:nil
 								   success:imageSuccessBlock
 								   failure:imageFailureBlock];

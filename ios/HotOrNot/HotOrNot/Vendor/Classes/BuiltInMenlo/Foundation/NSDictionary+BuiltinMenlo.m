@@ -28,10 +28,18 @@
 }
 
 - (void)replaceObject:(id)object forKey:(NSString *)key {
-	if ([self objectForKey:key] != nil)
-		[self removeObjectForKey:key];
-		
-	[self setValue:object forKey:key];
+	NSMutableDictionary *dict = [self mutableCopy];
+	if ([dict hasObjectForKey:key]) {
+		[dict removeObjectForKey:key];
+	}
+	
+	[dict setObject:object forKey:key];
+	[self dictionaryWithValuesForKeys:@[]];
+	
+//	if ([self objectForKey:key] != nil)
+//		[self removeObjectForKey:key];
+//		
+//	[self setValue:object forKey:key];
 }
 
 - (void)swapObjectForKey:(NSString *)keyA withKey:(NSString *)keyB {
@@ -157,9 +165,10 @@
 
 
 - (void)purgeObjectForKey:(NSString *)key {
-	if ([self objectForKey:key] != nil) {
+	if ([self objectForKey:key] != nil)
 		[self removeObjectForKey:key];
-	}
+	
+	[self synchronize];
 }
 
 - (void)replaceObject:(id)object forKey:(NSString *)key {
@@ -167,12 +176,14 @@
 		[self removeObjectForKey:key];
 	
 	[self setValue:object forKey:key];
+	[self synchronize];
 }
 
 - (void)swapObjectForKey:(NSString *)keyA withObjectForKey:(NSString *)keyB {
 	id obj = [self objectForKey:keyA];
 	[self replaceObject:[self objectForKey:keyB] forKey:keyA];
 	[self replaceObject:[self objectForKey:obj] forKey:keyB];
+	[self synchronize];
 	obj = nil;
 }
 
@@ -180,17 +191,20 @@
 	[keys enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		[self setObject:[objects objectAtIndex:idx] forKey:(NSString *)obj];
 	}];
+	[self synchronize];
 }
 
 - (void)purgeObjectsWithKeys:(NSArray *)keys {
 	[keys enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		[self removeObjectForKey:(NSString *)obj];
 	}];
+	[self synchronize];
 }
 
 - (void)replaceObjects:(NSArray *)objects withKeys:(NSArray *)keys {
 	[keys enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		[self replaceObject:[objects objectAtIndex:idx] forKey:(NSString *)obj];
 	}];
+	[self synchronize];
 }
 @end

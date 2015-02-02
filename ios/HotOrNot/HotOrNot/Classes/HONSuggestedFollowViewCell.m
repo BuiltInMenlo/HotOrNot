@@ -108,7 +108,7 @@
 	
 	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_trivialUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 															 cachePolicy:kOrthodoxURLCachePolicy
-														 timeoutInterval:[HONAppDelegate timeoutInterval]]
+														 timeoutInterval:[HONAPICaller timeoutInterval]]
 						   placeholderImage:nil
 									success:imageSuccessBlock
 									failure:imageFailureBlock];

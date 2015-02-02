@@ -97,7 +97,7 @@
 	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
 															cachePolicy:kOrthodoxURLCachePolicy
-														timeoutInterval:[HONAppDelegate timeoutInterval]]
+														timeoutInterval:[HONAPICaller timeoutInterval]]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -150,7 +150,7 @@
 		
 		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://s3.amazonaws.com/hotornot-banners/banner_timeline.png"]
 																 cachePolicy:kOrthodoxURLCachePolicy
-															 timeoutInterval:[HONAppDelegate timeoutInterval]]
+															 timeoutInterval:[HONAPICaller timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];

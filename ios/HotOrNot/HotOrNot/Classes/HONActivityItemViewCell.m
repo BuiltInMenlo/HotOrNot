@@ -74,7 +74,7 @@
 //	} else {
 //		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.originAvatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 //																  cachePolicy:kOrthodoxURLCachePolicy
-//															  timeoutInterval:[HONAppDelegate timeoutInterval]]
+//															  timeoutInterval:[HONAPICaller timeoutInterval]]
 //								placeholderImage:[UIImage imageNamed:@"activityAvatarBG"]
 //										 success:successBlock
 //										 failure:failureBlock];

@@ -53,15 +53,6 @@
 												  @"alt_id"		: [[[[HONAPICaller sharedInstance] normalizePrefixForImageURL:[opponentVO.dictionary objectForKey:@"avatar"]] componentsSeparatedByString:@"/"] lastObject]}]);
 }
 
-+ (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO {
-	return ([HONTrivialUserVO userWithDictionary:@{@"id"			: [userVO.dictionary objectForKey:@"id"],
-												  @"username"		: [userVO.dictionary objectForKey:@"username"],
-												  @"img_url"		: [userVO.dictionary objectForKey:@"avatar_url"],
-												  @"alt_id"			: [userVO.dictionary objectForKey:@"device_token"],
-												  @"total_votes"	: @(userVO.voteScore),
-												  @"is_verified"	: NSStringFromBOOL(userVO.isVerified)}]);
-}
-
 
 - (void)dealloc {
 	self.dictionary = nil;

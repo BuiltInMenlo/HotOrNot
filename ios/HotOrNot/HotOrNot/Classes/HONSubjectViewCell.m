@@ -75,7 +75,7 @@
 		
 		[_iconImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_subjectVO.icoURL]
 																cachePolicy:kOrthodoxURLCachePolicy
-															timeoutInterval:[HONAppDelegate timeoutInterval]]
+															timeoutInterval:[HONAPICaller timeoutInterval]]
 							  placeholderImage:nil
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];

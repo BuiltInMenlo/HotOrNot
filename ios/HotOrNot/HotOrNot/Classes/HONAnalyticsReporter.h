@@ -19,7 +19,6 @@
 #import "HONOpponentVO.h"
 #import "HONStoreProductVO.h"
 #import "HONTrivialUserVO.h"
-#import "HONUserVO.h"
 #import "HONUserClubVO.h"
 
 @interface HONAnalyticsReporter : NSObject

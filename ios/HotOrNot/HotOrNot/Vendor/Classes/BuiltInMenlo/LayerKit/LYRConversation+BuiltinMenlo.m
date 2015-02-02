@@ -39,7 +39,7 @@
 	[string appendFormat:@"\n.lastMessage		: %@", self.lastMessage];
 	[string appendFormat:@"\n.hasUnreadMessages	: %@", NSStringFromBOOL(self.hasUnreadMessages)];
 	[string appendFormat:@"\n.isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
-	[string appendFormat:@"\n.createdAt		: %@", [self.createdAt formattedISO8601StringUTC]];
+	[string appendFormat:@"\n.createdAt		: %@", [self.createdAt formattedISO8601String]];
 	[string appendFormat:@"\n.metadata		: %@", self.metadata];
 	
 	return (string);
@@ -79,8 +79,8 @@
 	[string appendFormat:@"\n.isSent			: %@", NSStringFromBOOL(self.isSent)];
 	[string appendFormat:@"\n.isUnread		: %@", NSStringFromBOOL(self.isUnread)];
 	[string appendFormat:@"\n.isDeleted		: %@", NSStringFromBOOL(self.isDeleted)];
-	[string appendFormat:@"\n.sentAt			: %@", [self.sentAt formattedISO8601StringUTC]];
-	[string appendFormat:@"\n.receivedAt		: %@", [self.receivedAt formattedISO8601StringUTC]];
+	[string appendFormat:@"\n.sentAt			: %@", [self.sentAt formattedISO8601String]];
+	[string appendFormat:@"\n.receivedAt		: %@", [self.receivedAt formattedISO8601String]];
 	[string appendFormat:@"\n.recipientStatusByUserID		: %@", self.recipientStatusByUserID];
 	
 	return (string);

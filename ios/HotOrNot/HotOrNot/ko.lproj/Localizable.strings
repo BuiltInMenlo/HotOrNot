@@ -38,7 +38,7 @@
 "alert_no" = "아니요";
 "alert_ok" = "OK";
 "alert_cancel" = "취소";
-"alert_invite" = "친구 초대하기";
+"alert_agree" = "Agree";
 "not_now" = "아직";
 "are_you_sure" = "확실합니까";
 
@@ -54,6 +54,7 @@
 "header_support" = "Support / Report Abuse";
 
 // register
+"register_alert" = "You must agree to the terms of service to sign up!";
 "register_footer" = "サービス利用規約";
 "register_submit" = "サインアップ不要";
 

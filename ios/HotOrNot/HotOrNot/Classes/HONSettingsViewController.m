@@ -49,7 +49,7 @@
 		_staffClubs = [NSMutableArray array];// [[HONClubAssistant sharedInstance] staffDesignatedClubsWithThreshold:5];
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
-		_notificationSwitch.on = ([HONAppDelegate infoForUser] != nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"] : YES;
+		_notificationSwitch.on = [[HONUserAssistant sharedInstance] activeUserNotificationsEnabled];
 	}
 	
 	
@@ -177,7 +177,7 @@
 	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
-	_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
+	_overlayTimer = [NSTimer timerWithTimeInterval:[HONAPICaller timeoutInterval] target:self
 										  selector:@selector(_orphanReloadOverlay)
 										  userInfo:nil repeats:NO];
 	
@@ -251,7 +251,7 @@
 	
 	if (indexPath.section == 0) {
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
-		[cell setCaption:@"Global"];
+		[cell setCaption:@"Worldwide"];
 //		[cell setCaption:[NSString stringWithFormat:@"%@, %@", [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"], [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"state"]]];
 		
 		HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
@@ -260,9 +260,9 @@
 		NSLog(@"HOME CLUB:[%d - %@]%@ CURRENT_CLUB:[%d - %@]%@ DISTANCE:[%.04f]", homeClubVO.clubID, homeClubVO.clubName, NSStringFromCLLocation(homeClubVO.location), locationClubVO.clubID, locationClubVO.clubName, locationClubVO.location, [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:locationClubVO.location]);
 		if (![[HONClubAssistant sharedInstance] isStaffClub:[[HONClubAssistant sharedInstance] currentLocationClub]]) {
 			[cell hideChevron];
-			UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
-			checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (3.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
-			[cell.contentView addSubview:checkMarkImageView];
+//			UIImageView *checkMarkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMark"]];
+//			checkMarkImageView.frame = CGRectOffset(checkMarkImageView.frame, cell.frame.size.width - (3.0 + checkMarkImageView.frame.size.width), MAX(0.0, (cell.frame.size.height - checkMarkImageView.frame.size.height) * 0.5));
+//			[cell.contentView addSubview:checkMarkImageView];
 		
 		} else {
 			CGFloat distance = [[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:[[HONClubAssistant sharedInstance] currentLocationClub].location];
@@ -361,7 +361,7 @@
 		_progressHUD.minShowTime = kProgressHUDMinDuration;
 		_progressHUD.taskInProgress = YES;
 		
-		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAppDelegate timeoutInterval] target:self
+		_overlayTimer = [NSTimer timerWithTimeInterval:[HONAPICaller timeoutInterval] target:self
 											  selector:@selector(_orphanReloadOverlay)
 											  userInfo:nil repeats:NO];
 		
@@ -373,23 +373,12 @@
 	
 	} else if (indexPath.section == 1) {
 		if (cell.indexPath.row == 0) {
-			NSString *caption = @"Get DOOD - A live photo feed of who is doing what around you. getdood.com";
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"captions"			: @{@"instagram"	: caption,//[NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeInstagram], [[HONUserAssistant sharedInstance] activeUsername]],
-																															@"twitter"		: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeTwitter], [[HONUserAssistant sharedInstance] activeUsername]],
-																															@"sms"			: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeSMS], [[HONUserAssistant sharedInstance] activeUsername]],
-																															@"email"		: @{@"subject"	: [[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] firstObject],
-																																				@"body"		: [NSString stringWithFormat:[[[HONAppDelegate shareMessageForType:HONShareMessageTypeEmail] componentsSeparatedByString:@"|"] lastObject], [[HONUserAssistant sharedInstance] activeUsername]]},
-																															@"clipboard"	: [NSString stringWithFormat:[HONAppDelegate shareMessageForType:HONShareMessageTypeClipboard], [[HONUserAssistant sharedInstance] activeUsername]]},
-																									@"image"			: [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																									@"url"				: @"",
-																									@"club"				: [[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:nil],
-																									@"mp_event"			: @"Settings Tab - Share",
-																									@"view_controller"	: self}];
+			
 			
 		} else {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];
 			
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/dood/id%@?ls=1&mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		}
 	}
 	
@@ -516,7 +505,7 @@
 		else {
 			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:_notificationSwitch.on completion:^(NSDictionary *result) {
 				if ([result objectForKey:@"id"] != [NSNull null])
-					[HONAppDelegate writeUserInfo:result];
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 			}];
 		}
 		
