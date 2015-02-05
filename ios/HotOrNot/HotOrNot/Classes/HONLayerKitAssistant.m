@@ -15,21 +15,21 @@
 #import "HONLayerKitAssistant.h"
 #import "HONTrivialUserVO.h"
 
-#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kAppID = @"dda63b70-9f7c-11e4-b4d9-142b010033d0";
-NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
-NSString * const kKeyID = @"4a9e5b5c-a803-11e4-baa8-f3a514007a0e";
-NSString * const kPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgGor9LKTWmeSZEJYJEka5PJmnklPniuopT4GTzEhEjFiD0Rw/Q1P\n1LOdx+qCHZudjIIdF7/9Cu695M90OAmkiJ/3NH9GBe+UJC3q0Fvppf0ZUJr7H7uR\nBVU7LuymAVKmX9YgCSwGib44ElwhHsEjHsP6F0rr9EuKgoNuhtZ6FBY5AgMBAAEC\ngYAjPmIlIUsCVJMZft7UsavMV4o1tctAnOP1eeyx11ONtwpwYr1tvNFTqo2hZ/3i\nGWN6EaQ/pAUMCVc6Ek9DzC1Z1vez30V+Ly9DlZpjmmproOMlBWO1xK2UszkS90Gh\nvYpCxImXxjA2VuwVfXnLbfmn0L/VG84nDXWasr2uhQEQzTQJBAK6pfJ3PlC7WGa1w\nmvU9CarnVn9qTj4D0eh/3c0JSt8DYvc1tEq/UxzCXc/Feg3VdfcmWw3IUlwsjMdC\nXiQsK9MCQQCbnVKF1d7jeEqeVnqEblcA5QPBljTNAZ1LxGnjWjvP2zZAE9kM0cyR\nqvl1viADHLkDehxZ0LfetIyFoes+3CpDAkEAmwHLmHpKdi6IZ0ZSH2bmF4hrWXTM\nr3jQZ1hjTb37dmQZBm/g651Uc2eDvgrxwSk6IfcmQ9sOTMM0xPn/dnbFBQJACsSl\nLDuzc7wkNba4PafA/3/ZdbDmMHV3JAIQbboVv3lk1KRK9bci18WkA4DHiE+ZgeMW\nSSTHRHLr8mdU9wGXLwJADkWkfTZldqyiBBe+n4z6t7HmmszyKuvhsUK9dA/xuSUy\nhtjuuQh7mhPnmK9RRbHru4b+cNt9NJdTHI1GZSkTEQ==\n-----END RSA PRIVATE KEY-----";
-NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";
-NSString * const kJWTPostPath = @"identity_tokens";
-#else
+//#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
+//NSString * const kAppID = @"dda63b70-9f7c-11e4-b4d9-142b010033d0";
+//NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
+//NSString * const kKeyID = @"4a9e5b5c-a803-11e4-baa8-f3a514007a0e";
+//NSString * const kPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgGor9LKTWmeSZEJYJEka5PJmnklPniuopT4GTzEhEjFiD0Rw/Q1P\n1LOdx+qCHZudjIIdF7/9Cu695M90OAmkiJ/3NH9GBe+UJC3q0Fvppf0ZUJr7H7uR\nBVU7LuymAVKmX9YgCSwGib44ElwhHsEjHsP6F0rr9EuKgoNuhtZ6FBY5AgMBAAEC\ngYAjPmIlIUsCVJMZft7UsavMV4o1tctAnOP1eeyx11ONtwpwYr1tvNFTqo2hZ/3i\nGWN6EaQ/pAUMCVc6Ek9DzC1Z1vez30V+Ly9DlZpjmmproOMlBWO1xK2UszkS90Gh\nvYpCxImXxjA2VuwVfXnLbfmn0L/VG84nDXWasr2uhQEQzTQJBAK6pfJ3PlC7WGa1w\nmvU9CarnVn9qTj4D0eh/3c0JSt8DYvc1tEq/UxzCXc/Feg3VdfcmWw3IUlwsjMdC\nXiQsK9MCQQCbnVKF1d7jeEqeVnqEblcA5QPBljTNAZ1LxGnjWjvP2zZAE9kM0cyR\nqvl1viADHLkDehxZ0LfetIyFoes+3CpDAkEAmwHLmHpKdi6IZ0ZSH2bmF4hrWXTM\nr3jQZ1hjTb37dmQZBm/g651Uc2eDvgrxwSk6IfcmQ9sOTMM0xPn/dnbFBQJACsSl\nLDuzc7wkNba4PafA/3/ZdbDmMHV3JAIQbboVv3lk1KRK9bci18WkA4DHiE+ZgeMW\nSSTHRHLr8mdU9wGXLwJADkWkfTZldqyiBBe+n4z6t7HmmszyKuvhsUK9dA/xuSUy\nhtjuuQh7mhPnmK9RRbHru4b+cNt9NJdTHI1GZSkTEQ==\n-----END RSA PRIVATE KEY-----";
+//NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";
+//NSString * const kJWTPostPath = @"identity_tokens";
+//#else
 NSString * const kAppID = @"dda6367a-9f7c-11e4-9d57-142b010033d0";
 NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
 NSString * const kKeyID = @"d75c2e0a-a1f7-11e4-8ec0-142b010033d0";
 NSString * const kPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgGs8+1t5fc+el5Te3KLcpeo3y0Mu4GR3k3ilIOzQYUHnWlzJYHwH\nmszIsGqIGj94JeR9b8uBxlYO8Q3nd3ojq0UG+NaFzPlzgAnzxeuc9wvVkBc7/Wnj\nIPMj+JJNp05dWY+M/lUo8kRB/BVSuhgotY3Y05fKPm1fSOfDg6QEbOBHAgMBAAEC\ngYAuQUN6FVE6+IERaX9pkBrQh/hYpiOLsjgd1bv56XfJ4WyMkR/Y377ZjcbqbIJF\n1iEiCSjrcrKF9DPtd2WFfVUmBgGz+YB+JsTTTjU8rZEAxH6xMFDTVLFjm43xrfo9\nUBrN4sLQGaMM/xCXb7Up17Bi79SR9IABUB5q5vI5spTnYQJBAKjh46ybt/XRLCvc\nFyWldeQ1GnKT6nkxo8WpHqVaR91Aoyt7uCKfkBHeHFg83mzut8CWABu5lJnf8dXt\nwAEfX4sCQQCijotvH0qgUrpl66//pzxrALyIeqviTZBiGZMQoPbnDAJkLzwCx93v\nliS8NqVQK0zDziYuFagex18A61bD9Vm1AkEAm0Alg60XHRRwjdVjNgl4ahTjPkd6\nOnWGv5OsB4gKHnxoQ/YVHUcgMzzDQ96Y/v0o0RNUACjHUfmMIQTSCHYl5wJAB5KW\nYkXV5yQTdN4G4+T5ho6ROdZlHXS5jihc1oB5IAhKMDqXFBYVe6zF51KwXsy1lcWL\nt8fgfhaRkWxlLVnHpQJAELdITlhoAMVSXKZZJxDhjUgJ1HDl7h7IY4N/yRjwvoz5\ns5wp8JiWoS2tZKJdlq+8BKCPH4QU+OLQoDxL+KABNw==\n-----END RSA PRIVATE KEY-----\n";
 NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";
 NSString * const kJWTPostPath = @"identity_tokens";
-#endif
+//#endif
 
 
 @interface HONLayerKitAssistant () <LYRClientDelegate, LYRQueryable, LYRQueryControllerDelegate>
@@ -735,7 +735,6 @@ static LYRClient *sharedClient = nil;
 	//NSURL *identifier = [NSURL URLWithString:[remoteNotification valueForKeyPath:@"layer.message_identifier"]];
 	
 	
-	
 	LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
 	query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[[remoteNotification objectForKey:@"layer"] objectForKey:@"message_identifier"]];
 	
@@ -743,33 +742,47 @@ static LYRClient *sharedClient = nil;
 	NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:query error:&error];
 	
 	if (!error) {
-		NSLog(@"Query contains %lu messages", (unsigned long)messages.count);
-		LYRMessage *message = messages.firstObject;
-		NSLog(@"Message sent by %@", message.sentByUserID);
-		LYRMessagePart *messagePart = [message.parts firstObject];
-		NSLog(@"Pushed Message Contents: %@", [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding]);
-		messagePart = [message.parts lastObject];
-		NSLog(@"Pushed Message Contents: %@", [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding]);
+//		[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
+//			NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
 		
-		//LYRMessagePart *messagePart = [message.parts lastObject];
-		NSString *orgConversationID = messagePart.textContent;
-		NSLog(@"%@ -=- ORG CONVO-ID:[%@]", error, orgConversationID);
-		
-		NSError *error = nil;
-		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
-		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[[remoteNotification objectForKey:@"layer"] objectForKey:@"conversation_identifier"]];////@"layer:///conversations/84b4e146-b051-4aeb-a84f-cb2cd4aa2f41"];
-		LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
-		
-		//	NSError *error = nil;
-		
-		LYRQuery *convoQuery2 = [LYRQuery queryWithClass:[LYRConversation class]];
-		convoQuery2.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:orgConversationID];
-		LYRConversation *conversation2 = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery2 error:&error] firstObject];
-		
-		NSLog(@"%@ -=- ORG CONVO:[%@]", error, conversation2);
-		[conversation2 addParticipants:conversation.participants error:&error];
-		NSLog(@"%@ -=- ORG CONVO ADDED:(%@)[%@]", error, [conversation.participants allObjects], [conversation2 toString]);
-		
+			if ([messages count] > 0) {
+				if ([[remoteNotification valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
+					NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+					[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
+				}
+				
+				NSLog(@"Query contains %lu messages", (unsigned long)messages.count);
+				LYRMessage *message = messages.firstObject;
+				NSLog(@"Message sent by %@", message.sentByUserID);
+				LYRMessagePart *messagePart = [message.parts firstObject];
+				NSLog(@"Pushed Message Contents: %@", [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding]);
+				messagePart = [message.parts lastObject];
+				NSLog(@"Pushed Message Contents: %@", [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding]);
+				
+				//LYRMessagePart *messagePart = [message.parts lastObject];
+				
+				
+				NSError *error = nil;
+				NSString *requestedConversationID = messagePart.textContent;
+				NSLog(@"%@ -=- REQUESTED CONVO-ID:[%@]", error, requestedConversationID);
+				LYRQuery *convoRequestQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+				convoRequestQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:requestedConversationID];
+				LYRConversation *conversationRquest = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoRequestQuery error:&error] firstObject];
+				
+//				LYRQuery *convoDMQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+//				convoDMQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[[remoteNotification objectForKey:@"layer"] objectForKey:@"conversation_identifier"]];////@"layer:///conversations/84b4e146-b051-4aeb-a84f-cb2cd4aa2f41"];
+//				LYRConversation *conversationDM = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoDMQuery error:&error] firstObject];
+				
+				NSLog(@"%@ -=- REQUESTED CONVO:[%@]", error, conversationRquest);
+//				[conversationRquest addParticipants:conversationDM.participants error:&error];
+				[conversationRquest addParticipants:[NSSet setWithArray:@[message.sentByUserID]] error:&error];
+				NSLog(@"%@ -=- REQUESTED CONVO RESULT:(%@)[%@]", error, [conversationRquest.participants allObjects], [conversationRquest toString]);
+			}
+			
+			
+//		[conversation delete:LYRDeletionModeAllParticipants error:nil];
+			
+//		}];
 		
 	} else {
 		NSLog(@"Query failed with error %@", error);

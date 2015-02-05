@@ -1,0 +1,13 @@
+//
+//  HONDownloadNavButton.h
+//  HotOrNot
+//
+//  Created by BIM  on 2/3/15.
+//  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
+//
+
+#import "HONNavButtonView.h"
+
+@interface HONDownloadNavButton : HONNavButtonView
+
+@end

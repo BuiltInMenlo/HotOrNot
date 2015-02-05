@@ -12,6 +12,7 @@
 #import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
+#import "NSDictionary+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BuiltinMenlo.h"
@@ -42,14 +43,12 @@
 @property (nonatomic, strong) UILabel *typingStatusLabel;
 @property (nonatomic, strong) UIImageView *inputBGImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
-@property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic, strong) UIButton *imageCommentButton;
 @property (nonatomic, strong) NSString *comment;
+@property (nonatomic, strong) NSTimer *refreshTimer;
 
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) int cnt;
-@property (nonatomic, strong) UIView *overlayView;
-@property (nonatomic, strong) NSTimer *overlayTimer;
 @end
 
 @implementation HONStatusUpdateViewController
@@ -100,8 +99,11 @@
 #pragma mark - Data Calls
 - (void)_retrieveStatusUpdate {
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
-	
 	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
+		
+		if (++_cnt < 5)
+			 [self _sendInviteDMConversation];
+		
 		NSError *error = nil;
 		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
 		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
@@ -110,34 +112,16 @@
 		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation);
 		
 		if (_conversation == nil) {
-			NSError *error = nil;
-			LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(_statusUpdateVO.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-			LYRMessagePart *messagePart1 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])];
-			LYRMessagePart *messagePart2 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]];
-			LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart1, messagePart2] options:nil error:&error];
-			
-			NSLog(@"MESSAGE RESULT -=- CREATOR:[%@]%@", error, message.identifierSuffix);
-			BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
-			NSLog(@"MESSAGE SENT -=- CREATOR:[%@]", NSStringFromBOOL(success));
-			
-			[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
-				[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					NSDictionary *dict = (NSDictionary *)obj;
-					
-					NSError *error = nil;
-					LYRConversation *conversation2 = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-					LYRMessagePart *messagePart2 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])];
-					LYRMessagePart *messagePart3 = [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]];
-					LYRMessage *message2 = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart2, messagePart3] options:nil error:&error];
-					
-					NSLog(@"MESSAGE RESULT:(%d) -=- [%@]%@", idx, error, message2.identifierSuffix);
-					BOOL success2 = [[HONLayerKitAssistant sharedInstance] sendMessage:message2 toConversation:conversation2];
-					NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
-				}];
-			}];
+			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC);
+			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+				[self _retrieveStatusUpdate];
+			});
 		}
 		
 		if (!error) {
+			[_refreshTimer invalidate];
+			_refreshTimer = nil;
+			
 			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
 					LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
 					msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
@@ -163,6 +147,31 @@
 			}
 		}
 	}];
+}
+
+- (void)_sendInviteDMConversation {
+	NSError *error = nil;
+	//LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(_statusUpdateVO.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+	LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+	
+	NSLog(@"MESSAGE RESULT -=- CREATOR:[%@]%@", error, message.identifierSuffix);
+	BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
+	NSLog(@"MESSAGE SENT -=- CREATOR:[%@]", NSStringFromBOOL(success));
+	
+//	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
+//		[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			NSDictionary *dict = (NSDictionary *)obj;
+//			
+//			NSError *error = nil;
+//			LYRConversation *conversationRequest = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+//			LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+//			
+//			NSLog(@"MESSAGE RESULT:(%d) -=- [%@]%@", idx, error, messageRequest.identifierSuffix);
+//			BOOL success2 = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:conversationRequest];
+//			NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
+//		}];
+//	}];
 }
 
 - (void)_submitCommentReply:(BOOL)isText {
@@ -342,14 +351,6 @@
 	_commentTextField.delegate = self;
 	[_inputBGImageView addSubview:_commentTextField];
 	
-	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_flagButton.frame = CGRectMake(235.0, 5.0, 34.0, 34.0);
-	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Disabled"] forState:UIControlStateDisabled];
-	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-	[_inputBGImageView addSubview:_flagButton];
-	
 	_imageCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_imageCommentButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
 	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"emojiButton_nonActive"] forState:UIControlStateNormal];
@@ -363,7 +364,9 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
 	[_headerView addMoreButtonWithTarget:self action:@selector(_goMore)];
+	[_headerView addDownloadButtonWithTarget:self action:@selector(_goDownload)];
 	[self.view addSubview:_headerView];
 }
 
@@ -386,6 +389,11 @@
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	
+	if (_refreshTimer != nil) {
+		[_refreshTimer invalidate];
+		_refreshTimer = nil;
+	}
+	
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRClientObjectsDidChangeNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
 }
@@ -394,34 +402,22 @@
 #pragma mark - Navigation
 - (void)_goBack {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
+		if (_refreshTimer != nil) {
+			[_refreshTimer invalidate];
+			_refreshTimer = nil;
+		}
 	}];
 }
 
 
 - (void)_goMore {
-	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithDownload:([_statusUpdateVO.appStoreURL length] > 0) withMetaData:@{@"url"	: _statusUpdateVO.appStoreURL}];
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"share"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"share"];
 	
+	[[NSUserDefaults standardUserDefaults] setObject:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%@/%d", _statusUpdateVO.topicName, _statusUpdateVO.statusUpdateID]} forKey:@"share"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-//	UIActionSheet *actionSheet;
-//	
-//	if ([_statusUpdateVO.appStoreURL length] > 0) {
-//		actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-//												  delegate:self
-//										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//									destructiveButtonTitle:nil
-//										 otherButtonTitles:@"Download", @"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
-//		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadAvailable];
-//	
-//	} else {
-//		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-//												  delegate:self
-//										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//									destructiveButtonTitle:nil
-//										 otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", nil];
-//		[actionSheet setTag:HONStatusUpdateActionSheetTypeDownloadNotAvailable];
-//	}
-//
-//	[actionSheet showInView:self.view];
+	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%@/%d", _statusUpdateVO.topicName, _statusUpdateVO.statusUpdateID]}];
 }
 
 - (void)_goFlag {
@@ -436,29 +432,13 @@
 	[alertView show];
 }
 
+- (void)_goDownload {
+	
+}
+
 
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
-	
-//	if (++_cnt % 2 == 0) {
-//		NSError *error = nil;
-//		NSString *participant = [[[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]] randomElement];
-//		
-//		NSLog(@"PRE-PARTICIPANTS:[%@] -(%d)", _conversation.participants, [_conversation.participants count]);
-//		NSLog(@"ADDING:[%@] -=- %@", participant, [[HONUserAssistant sharedInstance] usernameForUserID:[participant intValue]]);
-//		[_conversation addParticipants:[NSSet setWithArray:@[participant]] error:&error];
-//		NSLog(@"ADD -> %@\n%@", NSStringFromBOOL((error == nil)), error);
-//		
-//	} else {
-//		NSError *error = nil;
-//		NSString *participant = [[_conversation.participants allObjects] randomElement];
-//		
-//		NSLog(@"PRE-PARTICIPANTS:(%d)\n[%@]", [_conversation.participants count], _conversation.participants);
-//		NSLog(@"DROPPING:[%@] -=- %@", participant, [[HONUserAssistant sharedInstance] usernameForUserID:[participant intValue]]);
-//		[_conversation removeParticipants:[NSSet setWithArray:@[participant]] error:&error];
-//		NSLog(@"REMOVE -> %@\n%@", NSStringFromBOOL((error == nil)), error);
-//	}
-	
 	
 	
 	_isSubmitting = YES;
@@ -467,12 +447,6 @@
 	_comment = _commentTextField.text;
 	
 	[self _submitCommentReply:NO];
-	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-		NSLog(@"\n\n\n\nPOST-PARTICIPANTS:(%d)\n[%@]\n\n\n\n", [_conversation.participants count], _conversation.participants);
-	});
-	
-	
 //	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
 //	
 //	NSError *error = nil;
@@ -528,7 +502,7 @@
 - (void)_refreshStatusUpdate:(NSNotification *)notification {
 	NSLog(@"::|> _refreshStatusUpdate <|::");
 	
-	[self _goReloadContent];
+
 }
 
 - (void)_tareStatusUpdate:(NSNotification *)notification {
@@ -662,26 +636,6 @@
 		itemView.frame = CGRectOffsetY(itemView.frame, -33.0);
 	} completion:^(BOOL finished) {
 	}];
-}
-
-- (void)_orphanSubmitOverlay {
-	NSLog(@"::|> _orphanSubmitOverlay <|::");
-	
-	if ([_overlayTimer isValid])
-		[_overlayTimer invalidate];
-	
-	if (_overlayTimer != nil);
-	_overlayTimer = nil;
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
-	if (_overlayView != nil) {
-		[_overlayView removeFromSuperview];
-		_overlayView = nil;
-	}
 }
 
 

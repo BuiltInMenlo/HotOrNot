@@ -115,7 +115,7 @@
 		[self addSubview:timeLabel];
 		
 		_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_upVoteButton.frame = CGRectMake(276.0, 0.0, 44.0, 44.0);
+		_upVoteButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
 		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
 		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
 		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
@@ -123,7 +123,7 @@
 		[self addSubview:_upVoteButton];
 		
 		_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_downVoteButton.frame = CGRectMake(276.0, 40.0, 44.0, 44.0);
+		_downVoteButton.frame = CGRectMake(272.0, 40.0, 44.0, 44.0);
 		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
 		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
 		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
@@ -136,7 +136,7 @@
 			[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
 		}
 		
-		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(276.0, 33.0, 44.0, 20.0)];
+		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(272.0, 33.0, 44.0, 20.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		_scoreLabel.textAlignment = NSTextAlignmentCenter;

@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "rowBackground.png"
+      "filename" : "homeDefaultRowBackground@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "rowBackground@2x.png"
+      "filename" : "homeDefaultRowBackground@2x-1.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "homeDefaultRowBackground@2x-2.png"
     }
   ],
   "info" : {

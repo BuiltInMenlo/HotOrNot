@@ -23,13 +23,7 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareType) {
 	HONSocialPlatformShareTypeEmail,
 	HONSocialPlatformShareTypeTwitter,
 	HONSocialPlatformShareTypeFacebook,
-	HONSocialPlatformShareTypeKik,
-	HONSocialPlatformShareTypeDownload
-};
-
-typedef NS_ENUM(NSUInteger, HONSocialPlatformActionSheetType) {
-	HONSocialPlatformActionSheetTypeDownloadAvailable = 0,
-	HONSocialPlatformActionSheetTypeDownloadNotAvailable
+	HONSocialPlatformShareTypeKik
 };
 
 typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
@@ -37,8 +31,7 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
 	HONSocialPlatformShareActionSheetTypeTwitter,
 	HONSocialPlatformShareActionSheetTypeInstagram,
 	HONSocialPlatformShareActionSheetTypeSMS,
-	HONSocialPlatformShareActionSheetTypeEmail,
-	HONSocialPlatformShareActionSheetTypeDownload = 0
+	HONSocialPlatformShareActionSheetTypeEmail
 };
 
 @interface HONSocialCoordinator : NSObject <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
@@ -46,8 +39,8 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
 
 + (NSString *)shareMessageForSocialPlatform:(HONSocialPlatformShareType)shareType;
 + (UIImage *)shareImageForSocialPlatform:(HONSocialPlatformShareType)shareType;
-- (void)presentActionSheetForSharingWithDownload:(BOOL)includeDownload withMetaData:(NSDictionary *)metaData;
-+ (void)presentSocialPlatformForSharing:(HONSocialPlatformShareType)shareType withMetaData:(NSDictionary *)metaData;
+- (void)presentActionSheetForSharingWithMetaData:(NSDictionary *)metaData;
+- (void)presentSocialPlatformForSharing:(HONSocialPlatformShareType)shareType withMetaData:(NSDictionary *)metaData;
 
 + (NSString *)kikCardURL;
 + (NSString *)shareURL;

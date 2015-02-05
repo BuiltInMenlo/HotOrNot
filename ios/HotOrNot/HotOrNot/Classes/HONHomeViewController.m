@@ -7,7 +7,9 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
+#import <LayerKit/LayerKit.h>
 
+#import "LYRConversation+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 #import "UIScrollView+BuiltInMenlo.h"
@@ -23,6 +25,7 @@
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONLoadingOverlayView.h"
 #import "HONRefreshControl.h"
 #import "HONHomeFeedToggleView.h"
 #import "HONHomeViewCell.h"
@@ -31,7 +34,7 @@
 #import "HONClubPhotoVO.h"
 #import "HONCommentVO.h"
 
-@interface HONHomeViewController () <HONHomeFeedToggleViewDelegate, HONHomeViewCellDelegate>
+@interface HONHomeViewController () <HONHomeFeedToggleViewDelegate, HONHomeViewCellDelegate, HONLoadingOverlayViewDelegate>
 @property (nonatomic, assign) HONHomeFeedType feedType;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) HONTableView *tableView;
@@ -40,6 +43,7 @@
 @property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONHomeFeedToggleView *toggleView;
+@property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UIView *emptyFeedView;
 @property (nonatomic, strong) UIView *noNetworkView;
 @property (nonatomic) int voteScore;
@@ -47,6 +51,7 @@
 @property (nonatomic) BOOL isLoading;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
+@property (nonatomic) int cnt;
 @end
 
 @implementation HONHomeViewController
@@ -205,6 +210,58 @@
 	}];
 }
 
+- (void)_retrieveStatusUpdate {
+	NSError *error = nil;
+	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_selectedStatusUpdateVO.dictionary objectForKey:@"img"]];
+	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+	
+	if (++_cnt < 5)
+		[self _sendInviteDMConversation];
+	
+	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_selectedStatusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
+	
+	if (conversation == nil) {
+		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC);
+		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+			[self _retrieveStatusUpdate];
+		});
+	
+	} else {
+		[_loadingOverlayView outro];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:^(void) {
+		}];
+	}
+}
+
+- (void)_sendInviteDMConversation {
+	NSError *error = nil;
+	//LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(_statusUpdateVO.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+	LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_selectedStatusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+	
+	NSLog(@"MESSAGE RESULT -=- CREATOR:[%@]%@", error, message.identifierSuffix);
+	BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
+	NSLog(@"MESSAGE SENT -=- CREATOR:[%@]", NSStringFromBOOL(success));
+	
+	//	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
+	//		[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	//			NSDictionary *dict = (NSDictionary *)obj;
+	//
+	//			NSError *error = nil;
+	//			LYRConversation *conversationRequest = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+	//			LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+	//
+	//			NSLog(@"MESSAGE RESULT:(%d) -=- [%@]%@", idx, error, messageRequest.identifierSuffix);
+	//			BOOL success2 = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:conversationRequest];
+	//			NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
+	//		}];
+	//	}];
+}
+
+
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
@@ -301,6 +358,8 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	_cnt = 0;
+	
 	self.view.hidden = ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0);
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
@@ -315,7 +374,7 @@
 	_isLoading = YES;
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 44.0, 0.0)];
+	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.alwaysBounceVertical = YES;
@@ -328,14 +387,14 @@
 	[_tableView addSubview: _refreshControl];
 	
 	UIButton *composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	composeButton.frame = CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0);
+	composeButton.frame = CGRectMake(123.0, self.view.frame.size.height - 99.0, 74.0, 74.0);
 	[composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
 	[composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
 	[composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:composeButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(self.view.frame.size.width - 36.0, self.view.frame.size.height - 43.0, 44.0, 44.0);
+	settingsButton.frame = CGRectMake(self.view.frame.size.width - 36.0, self.view.frame.size.height - 44.0, 44.0, 44.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
@@ -550,6 +609,9 @@
 - (void)_refreshHomeTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshHomeTab <|::");
 	
+	[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
+		NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
+	}];
 	[self _goReloadContents];
 }
 
@@ -624,6 +686,16 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:[[HONAnimationOverseer sharedInstance] isSegueAnimationEnabledForModalViewController:navigationController.presentingViewController] completion:^(void) {
 	}];
+}
+
+
+#pragma mark - LoadingOverlayView Delegates
+- (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView {
+	
+}
+
+- (void)loadingOverlayViewDidOutro:(HONLoadingOverlayView *)loadingOverlayView {
+	
 }
 
 
@@ -791,7 +863,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (85.0);
+	return (84.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -808,13 +880,29 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
+	_selectedStatusUpdateVO = cell.statusUpdateVO;
+	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - row_select"];
 	
-	_selectedStatusUpdateVO = cell.statusUpdateVO;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
+	NSError *error = nil;
+	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[cell.statusUpdateVO.dictionary objectForKey:@"img"]];
+	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+	
+	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [cell.statusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
+	
+	if (conversation == nil) {
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+		_loadingOverlayView.delegate = self;
+		
+		[self _retrieveStatusUpdate];
+	
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:^(void) {
+		}];
+	}
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

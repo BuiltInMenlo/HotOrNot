@@ -65,9 +65,6 @@ static HONSocialCoordinator *sharedInstance = nil;
 		
 	} else if (shareType == HONSocialPlatformShareTypeKik) {
 		key = kSocialPlatformKikKey;
-		
-	} else if (shareType == HONSocialPlatformShareTypeDownload) {
-		key = kSocialPlatformDownloadKey;
 	}
 	
 	NSDictionary *shareFormats = [[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"];
@@ -103,36 +100,22 @@ static HONSocialCoordinator *sharedInstance = nil;
 }
 
 
-- (void)presentActionSheetForSharingWithDownload:(BOOL)includeDownload withMetaData:(NSDictionary *)metaData {
-	UIActionSheet *actionSheet;
-	
-	if (includeDownload) {
-		actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-												  delegate:self
-										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-									destructiveButtonTitle:nil
-										 otherButtonTitles:@"Download", @"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", @"Share on Email", nil];
-		[actionSheet setTag:HONSocialPlatformActionSheetTypeDownloadAvailable];
-		
-	} else {
-		actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-												  delegate:self
-										 cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-									destructiveButtonTitle:nil
-										 otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", @"Share on Email", nil];
-		[actionSheet setTag:HONSocialPlatformActionSheetTypeDownloadNotAvailable];
-	}
-	
+- (void)presentActionSheetForSharingWithMetaData:(NSDictionary *)metaData {
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", @"Share on Email", nil];
 	[actionSheet showInView:[[UIApplication sharedApplication].windows firstObject]];
 }
 
-+ (void)presentSocialPlatformForSharing:(HONSocialPlatformShareType)shareType withMetaData:(NSDictionary *)metaData {
+- (void)presentSocialPlatformForSharing:(HONSocialPlatformShareType)shareType withMetaData:(NSDictionary *)metaData {
 	UIViewController *rootViewController = [HONAppDelegate topViewControllerWithRootViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
 	if (shareType == HONSocialPlatformShareTypeClipboard) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeClipboard], [[HONUserAssistant sharedInstance] activeUsername]];
+		pasteboard.string = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeClipboard], [metaData objectForKey:@"deeplink"]];
 		
 		[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 									message:@""
@@ -140,15 +123,12 @@ static HONSocialCoordinator *sharedInstance = nil;
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
-	} else if (shareType == HONSocialPlatformShareTypeDownload) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - download"];
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[metaData objectForKey:@"url"]]];
-
 	} else if (shareType == HONSocialPlatformShareTypeEmail) {
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+			mailComposeViewController.delegate = (id<UINavigationControllerDelegate>)self;
 			[mailComposeViewController setSubject:[[[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeEmail] componentsSeparatedByString:@"|"] firstObject]];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[[[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeEmail] componentsSeparatedByString:@"|"] firstObject], [[HONUserAssistant sharedInstance] activeUsername]] isHTML:NO];
+			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[[[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeEmail] componentsSeparatedByString:@"|"] lastObject], [metaData objectForKey:@"deeplink"]] isHTML:NO];
 			mailComposeViewController.mailComposeDelegate = (id<MFMailComposeViewControllerDelegate>)self;
 			
 //			HONAppDelegate *appDelegate = ((HONAppDelegate *)[UIApplication sharedApplication].delegate);
@@ -180,7 +160,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 			UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 			documentInteractionController.UTI = @"com.instagram.exclusivegram";
 			documentInteractionController.delegate = (id<UIDocumentInteractionControllerDelegate>)self;
-			documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [[HONUserAssistant sharedInstance] activeUsername]]};
+			documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [metaData objectForKey:@"deeplink"]]};
 			
 			[documentInteractionController presentOpenInMenuFromRect:CGRectZero
 															  inView:rootViewController.view animated:YES];
@@ -196,7 +176,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	} else if (shareType == HONSocialPlatformShareTypeSMS) {
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [[HONUserAssistant sharedInstance] activeUsername]];
+			messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [metaData objectForKey:@"deeplink"]];
 			messageComposeViewController.messageComposeDelegate = (id<MFMessageComposeViewControllerDelegate>)self;
 			
 			[rootViewController presentViewController:messageComposeViewController
@@ -218,7 +198,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 				[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 			};
 			
-			[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [[HONUserAssistant sharedInstance] activeUsername]]];
+			[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [metaData objectForKey:@"deeplink"]]];
 			[twitterComposeViewController addImage:[[HONUserAssistant sharedInstance] activeUserAvatar]];
 			twitterComposeViewController.completionHandler = completionBlock;
 			
@@ -611,49 +591,25 @@ static HONSocialCoordinator *sharedInstance = nil;
 
 
 #pragma mark - Actionsheet Delegates
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	NSLog(@"[*:*] actionSheet:clickedButtonAtIndex:[%d][%d] [*:*]", actionSheet.tag, buttonIndex);
 	
-	if (actionSheet.tag == HONSocialPlatformActionSheetTypeDownloadAvailable) {
+	NSDictionary *metaData = ([[NSUserDefaults standardUserDefaults] objectForKey:@"share"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"share"] : nil;
+	
+	if (buttonIndex == HONSocialPlatformShareActionSheetTypeClipboard) {
+		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeClipboard withMetaData:metaData];
 		
-		if (buttonIndex == HONSocialPlatformShareActionSheetTypeDownload) {
-			[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeDownload withMetaData:@{@"url"	: @"http://www.google.com"}];
-			
-		} else {
-			buttonIndex--;
-			if (buttonIndex == HONSocialPlatformShareActionSheetTypeClipboard) {
-				[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeClipboard withMetaData:@{}];
-				
-			} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
-				[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeTwitter withMetaData:@{}];
-				
-			} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
-				[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeInstagram withMetaData:@{}];
-				
-			} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeSMS) {
-				[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeSMS withMetaData:@{}];
-				
-			} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeEmail) {
-				[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeEmail withMetaData:@{}];
-			}
-		}
+	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
+		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeTwitter withMetaData:metaData];
 		
-	} else if (actionSheet.tag == HONSocialPlatformActionSheetTypeDownloadNotAvailable) {
-		if (actionSheet.tag == HONSocialPlatformShareActionSheetTypeClipboard) {
-			[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeClipboard withMetaData:@{}];
-			
-		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
-			[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeTwitter withMetaData:@{}];
-			
-		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
-			[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeInstagram withMetaData:@{}];
-			
-		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeSMS) {
-			[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeSMS withMetaData:@{}];
-			
-		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeEmail) {
-			[HONSocialCoordinator presentSocialPlatformForSharing:HONSocialPlatformShareTypeEmail withMetaData:@{}];
-		}
+	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
+		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeInstagram withMetaData:metaData];
+		
+	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeSMS) {
+		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeSMS withMetaData:metaData];
+		
+	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeEmail) {
+		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeEmail withMetaData:metaData];
 	}
 }
 

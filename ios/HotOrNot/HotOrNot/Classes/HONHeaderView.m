@@ -13,6 +13,8 @@
 #import "HONCloseNavButtonView.h"
 #import "HONComposeNavButtonView.h"
 #import "HONDoneNavButtonView.h"
+#import "HONDownloadNavButton.h"
+#import "HONFlagNavButtonView.h"
 #import "HONMoreNavButtonView.h"
 #import "HONNextNavButtonView.h"
 
@@ -110,6 +112,14 @@
 
 - (void)addDoneButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONDoneNavButtonView alloc] initWithTarget:target action:action]];
+}
+
+- (void)addDownloadButtonWithTarget:(id)target action:(SEL)action {
+	[self addButton:[[HONDownloadNavButton alloc] initWithTarget:target action:action]];
+}
+
+- (void)addFlagButtonWithTarget:(id)target action:(SEL)action {
+	[self addButton:[[HONFlagNavButtonView alloc] initWithTarget:target action:action]];
 }
 
 - (void)addMoreButtonWithTarget:(id)target action:(SEL)action {

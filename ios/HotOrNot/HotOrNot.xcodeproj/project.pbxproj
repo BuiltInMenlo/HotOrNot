@@ -137,6 +137,8 @@
 		30FC8C6319A829E900CDB2BC /* TSResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5519A829E900CDB2BC /* TSResponse.m */; };
 		30FC8C6419A829E900CDB2BC /* TSTapstream.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5719A829E900CDB2BC /* TSTapstream.m */; };
 		30FC8C6519A829E900CDB2BC /* TSUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C5919A829E900CDB2BC /* TSUtils.m */; };
+		30FE37161A81D6AF00BAB7C9 /* HONDownloadNavButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FE37151A81D6AF00BAB7C9 /* HONDownloadNavButton.m */; };
+		30FE37191A81D6D800BAB7C9 /* HONFlagNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FE37181A81D6D800BAB7C9 /* HONFlagNavButtonView.m */; };
 		4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */; };
 		4C01BAD3190CAAD1006CD80D /* StatusUpdateElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C01BAD2190CAAD1006CD80D /* StatusUpdateElements.xcassets */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
@@ -573,6 +575,10 @@
 		30FC8C5819A829E900CDB2BC /* TSUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUtils.h; sourceTree = "<group>"; };
 		30FC8C5919A829E900CDB2BC /* TSUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUtils.m; sourceTree = "<group>"; };
 		30FC8C5A19A829E900CDB2BC /* TSWordOfMouthDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSWordOfMouthDelegate.h; sourceTree = "<group>"; };
+		30FE37141A81D6AF00BAB7C9 /* HONDownloadNavButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDownloadNavButton.h; sourceTree = "<group>"; };
+		30FE37151A81D6AF00BAB7C9 /* HONDownloadNavButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDownloadNavButton.m; sourceTree = "<group>"; };
+		30FE37171A81D6D800BAB7C9 /* HONFlagNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFlagNavButtonView.h; sourceTree = "<group>"; };
+		30FE37181A81D6D800BAB7C9 /* HONFlagNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFlagNavButtonView.m; sourceTree = "<group>"; };
 		47BA555DA71DFCC4E3FF2066 /* libPods-HotOrNot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HotOrNot.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
@@ -2189,6 +2195,10 @@
 				4C225CC317B8593B00330EB3 /* HONComposeNavButtonView.m */,
 				3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */,
 				3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */,
+				30FE37141A81D6AF00BAB7C9 /* HONDownloadNavButton.h */,
+				30FE37151A81D6AF00BAB7C9 /* HONDownloadNavButton.m */,
+				30FE37171A81D6D800BAB7C9 /* HONFlagNavButtonView.h */,
+				30FE37181A81D6D800BAB7C9 /* HONFlagNavButtonView.m */,
 				3030DF571A63344D00406AAF /* HONMoreNavButtonView.h */,
 				3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */,
 				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
@@ -2549,6 +2559,7 @@
 				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONComposeNavButtonView.m in Sources */,
+				30FE37191A81D6D800BAB7C9 /* HONFlagNavButtonView.m in Sources */,
 				30B2560E1A3C3C0F00C789E1 /* HONComposeSubjectViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONComposeTopicViewController.m in Sources */,
 				300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */,
@@ -2594,6 +2605,7 @@
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C386BBC19842FDA0023123A /* HONSocialCoordinator.m in Sources */,
 				30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */,
+				30FE37161A81D6AF00BAB7C9 /* HONDownloadNavButton.m in Sources */,
 				305001421A5E222800E8F303 /* HONStatusUpdateCreatorView.m in Sources */,
 				30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */,
 				30B256171A3CBA9C00C789E1 /* HONStatusUpdateVO.m in Sources */,

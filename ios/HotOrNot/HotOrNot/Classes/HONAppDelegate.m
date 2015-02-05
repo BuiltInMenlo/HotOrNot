@@ -22,7 +22,6 @@
 //#import <Tapjoy/Tapjoy.h>
 
 #import "Flurry.h"
-#import <TalkChain/TalkChain.h>
 
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSData+BuiltinMenlo.h"
@@ -51,6 +50,7 @@
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONComposeTopicViewController.h"
+#import "HONLoadingOverlayView.h"
 
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
@@ -101,9 +101,9 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, TalkChainDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONLoadingOverlayViewDelegate>
 #else
-@interface HONAppDelegate()
+@interface HONAppDelegate() <HONLoadingOverlayView>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -117,6 +117,7 @@ NSString * const kTwilioSMS = @"6475577873";
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
+@property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @end
 
 
@@ -675,6 +676,72 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (!url)
 		return (NO);
 	
+	
+	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
+	if ([protocol isEqualToString:@"dood"]) {
+		
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - create"];
+		
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+		_loadingOverlayView.delegate = self;
+		
+		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
+		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
+		
+		
+		NSString *subjectName = [path lastObject];
+		
+		NSLog(@"PATH:[%@]", subjectName);
+		
+		NSError *error;
+		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@"using"] options:0 error:&error]
+													 encoding:NSUTF8StringEncoding];
+		
+		NSMutableDictionary *submitParams = [@{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+											   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
+											   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
+											   @"challenge_id"	: @(0),
+											   @"topic_id"		: @(11),
+											   @"topic_name"	: @"using",
+											   @"subjects"		: jsonString} mutableCopy];
+		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+		
+		LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[] withTopicName:[submitParams objectForKey:@"topic_name"] andSubject:subjectName];
+		NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [submitParams objectForKey:@"topic_name"], subjectName] dataUsingEncoding:NSUTF8StringEncoding];
+		LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
+		
+		if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
+			NSLog(@"SEND FAILED!!");
+		
+		else {
+			NSLog(@"CONVERSATION:\n%@", [conversation toString]);
+			
+//			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				[submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
+				[submitParams setValue:[NSString stringWithFormat:@"%@|%@", [submitParams objectForKey:@"topic_name"], subjectName] forKey:@"subject"];
+				
+				NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
+				[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+					if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+						if (_progressHUD == nil)
+							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+						_progressHUD.minShowTime = kProgressHUDMinDuration;
+						_progressHUD.mode = MBProgressHUDModeCustomView;
+						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+						_progressHUD.labelText = @"Error!";
+						[_progressHUD show:NO];
+						[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+						_progressHUD = nil;
+						
+					} else {
+						[_loadingOverlayView outro];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					}
+				}];
+//			});
+		}
+	}
+	
 //	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
 //	if ([protocol isEqualToString:@"selfieclub"]) {
 //		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
@@ -842,10 +909,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	// Increment badge count if a message
-	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
-		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
-		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
-	}
+//	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
+//		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+//		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
+//	}
 	
 //	[[[UIAlertView alloc] initWithTitle:nil
 //							   message:[NSString stringWithFormat:@"%@\n%@\n%@", [[userInfo objectForKey:@"layer"] objectForKey:@"conversation_identifier"], [[userInfo objectForKey:@"layer"] objectForKey:@"event_url"], [[userInfo objectForKey:@"layer"] objectForKey:@"message_identifier"]]
@@ -860,11 +927,11 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification - FG] (%@)", self.class, userInfo);
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
-	// Increment badge count if a message
-	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
-		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
-		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
-	}
+//	// Increment badge count if a message
+//	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
+//		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+//		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
+//	}
 	
 	
 	
@@ -968,8 +1035,6 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"
 //								  addAppButton:YES];
-	
-	[TalkChain initWithAPIKey:@"7c557447f19801db054a509df8056cb8" token:nil credentials:nil delegate:self];
 }
 
 - (void)_writeShareTemplates {
@@ -1109,6 +1174,15 @@ void uncaughtExceptionHandler(NSException *exception) {
 	}
 }
 
+
+#pragma mark - LoadingOverlayView Delegates
+- (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView {
+	
+}
+
+- (void)loadingOverlayViewDidOutro:(HONLoadingOverlayView *)loadingOverlayView {
+	
+}
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

@@ -60,8 +60,8 @@
 - (void)_submitStatusUpdate {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
-	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
-	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
+//	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
+	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010"] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
 	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
 	LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
 //	[conversation sendTypingIndicator:LYRTypingDidBegin];
