@@ -633,7 +633,8 @@ NSString * const kTwilioSMS = @"6475577873";
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
 			} else
-				NSLog(@"APP ACTIVE |||| GO GET BOOT & -> FIND USER |||||"); //				[self _retrieveConfigJSON];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHECK_INVITES" object:nil];
+//				NSLog(@"APP ACTIVE |||| GO GET BOOT & -> FIND USER |||||"); //				[self _retrieveConfigJSON];
 		
 		} else {
 			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
@@ -968,6 +969,7 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"avatars"			: @{},
 								   @"purchases"			: @[],
 								   @"home_club"			: @{},
+								   @"invites"			: @[],
 								   @"location_club"		: @{},
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},

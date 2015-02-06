@@ -76,6 +76,10 @@
 													 name:@"REFRESH_HOME_TAB" object:nil];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_checkInvites:)
+													 name:@"CHECK_INVITES" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_refreshHomeTab:)
 													 name:@"REFRESH_ALL_TABS" object:nil];
 		
@@ -227,6 +231,82 @@
 			[self _retrieveStatusUpdate];
 		});
 	
+	} else {
+		[_loadingOverlayView outro];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:^(void) {
+		}];
+	}
+}
+
+- (void)_inviteCheck {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1 completion:^(NSDictionary *result) {
+			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:(NSDictionary *)obj];
+				
+				NSError *error = nil;
+				LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+				convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[vo.dictionary objectForKey:@"img"]];
+				__block LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+				[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:vo.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
+					
+					__block NSString *names = @"";
+					[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						NSDictionary *dict = (NSDictionary *)obj;
+						
+						if ([[[dict objectForKey:@"text"] uppercaseString] isEqualToString:@"__OPEN_SESAME__"]) {
+							__block BOOL isFound = NO;
+							[[[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+								if ([(NSString *)obj isEqualToString:[[dict objectForKey:@"owner_member"] objectForKey:@"name"]]) {
+									isFound = YES;
+									*stop = YES;
+								}
+							}];
+							
+							if (!isFound) {
+								names = [names stringByAppendingFormat:@", %@", [[dict objectForKey:@"owner_member"] objectForKey:@"name"]];
+								NSError *error = nil;
+								[conversation addParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] error:&error];
+								
+								NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] mutableCopy];
+								[invites addObject:[[dict objectForKey:@"owner_member"] objectForKey:@"name"]];
+								[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"invites"];
+								[[NSUserDefaults standardUserDefaults] synchronize];
+							}
+						}
+					}];
+					
+					NSError *error = nil;
+					LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[names stringByAppendingString:@" joined the conversation"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+					BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:conversation];
+					
+				}];
+			}];
+		}];
+		
+//		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC);
+//		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+//			[self _inviteCheck];
+//		});
+	});
+}
+
+- (void)_convoChecker {
+	NSError *error = nil;
+	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_selectedStatusUpdateVO.dictionary objectForKey:@"img"]];
+	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+	
+	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_selectedStatusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
+	
+	if (conversation == nil) {
+		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.5 * NSEC_PER_SEC);
+		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+			[self _convoChecker];
+		});
+		
 	} else {
 		[_loadingOverlayView outro];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
@@ -465,6 +545,7 @@
 		[_locationManager startUpdatingLocation];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
+		[self _inviteCheck];
 		
 	} else {
 		[self _goRegistration];
@@ -480,6 +561,11 @@
 	
 //	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
+	[super viewDidAppear:animated];
 }
 
 
@@ -609,10 +695,15 @@
 - (void)_refreshHomeTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshHomeTab <|::");
 	
-	[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
-		NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
-	}];
+//	[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
+//		NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
+//	}];
 	[self _goReloadContents];
+}
+
+- (void)_checkInvites:(NSNotification *)notification {
+	NSLog(@"::|> _checkInvites <|::");
+	[self _inviteCheck];
 }
 
 - (void)_tareHomeTab:(NSNotification *)notification {
@@ -895,9 +986,32 @@
 		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 		_loadingOverlayView.delegate = self;
 		
-		[self _retrieveStatusUpdate];
-	
+		NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+							   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+							   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
+							   @"subject"		: @"__OPEN_SESAME__",
+							   @"challenge_id"	: @(_selectedStatusUpdateVO.statusUpdateID)};
+		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
+		
+		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
+		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
+			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kProgressHUDMinDuration;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+				_progressHUD = nil;
+			}
+			
+			[self _convoChecker];
+		}];
+		
 	} else {
+		[self _inviteCheck];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:^(void) {

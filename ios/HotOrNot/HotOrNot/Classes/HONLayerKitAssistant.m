@@ -23,8 +23,8 @@
 //NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";
 //NSString * const kJWTPostPath = @"identity_tokens";
 //#else
-NSString * const kAppID = @"dda6367a-9f7c-11e4-9d57-142b010033d0";
-NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
+NSString * const kAppID = @"f1dd72a6-9a9b-11e4-8fe1-fcf042002b3c";//dda6367a-9f7c-11e4-9d57-142b010033d0";
+NSString * const kProviderID = @"f1db7d52-9a9b-11e4-b72d-fcf042002b3c";//f1db7d52-9a9b-11e4-b72d-fcf042002b3c";
 NSString * const kKeyID = @"d75c2e0a-a1f7-11e4-8ec0-142b010033d0";
 NSString * const kPrivateKey = @"-----BEGIN RSA PRIVATE KEY-----\nMIICWwIBAAKBgGs8+1t5fc+el5Te3KLcpeo3y0Mu4GR3k3ilIOzQYUHnWlzJYHwH\nmszIsGqIGj94JeR9b8uBxlYO8Q3nd3ojq0UG+NaFzPlzgAnzxeuc9wvVkBc7/Wnj\nIPMj+JJNp05dWY+M/lUo8kRB/BVSuhgotY3Y05fKPm1fSOfDg6QEbOBHAgMBAAEC\ngYAuQUN6FVE6+IERaX9pkBrQh/hYpiOLsjgd1bv56XfJ4WyMkR/Y377ZjcbqbIJF\n1iEiCSjrcrKF9DPtd2WFfVUmBgGz+YB+JsTTTjU8rZEAxH6xMFDTVLFjm43xrfo9\nUBrN4sLQGaMM/xCXb7Up17Bi79SR9IABUB5q5vI5spTnYQJBAKjh46ybt/XRLCvc\nFyWldeQ1GnKT6nkxo8WpHqVaR91Aoyt7uCKfkBHeHFg83mzut8CWABu5lJnf8dXt\nwAEfX4sCQQCijotvH0qgUrpl66//pzxrALyIeqviTZBiGZMQoPbnDAJkLzwCx93v\nliS8NqVQK0zDziYuFagex18A61bD9Vm1AkEAm0Alg60XHRRwjdVjNgl4ahTjPkd6\nOnWGv5OsB4gKHnxoQ/YVHUcgMzzDQ96Y/v0o0RNUACjHUfmMIQTSCHYl5wJAB5KW\nYkXV5yQTdN4G4+T5ho6ROdZlHXS5jihc1oB5IAhKMDqXFBYVe6zF51KwXsy1lcWL\nt8fgfhaRkWxlLVnHpQJAELdITlhoAMVSXKZZJxDhjUgJ1HDl7h7IY4N/yRjwvoz5\ns5wp8JiWoS2tZKJdlq+8BKCPH4QU+OLQoDxL+KABNw==\n-----END RSA PRIVATE KEY-----\n";
 NSString * const kJWTBaseURL = @"https://layer-identity-provider.herokuapp.com";

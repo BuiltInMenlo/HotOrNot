@@ -122,6 +122,8 @@
 			[_refreshTimer invalidate];
 			_refreshTimer = nil;
 			
+			[self _inviteCheck];
+			
 			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
 					LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
 					msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
@@ -172,6 +174,27 @@
 //			NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
 //		}];
 //	}];
+}
+
+- (void)_inviteCheck {
+	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
+		
+		__block NSString *names = @"";
+		[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSDictionary *dict = (NSDictionary *)obj;
+			
+			if ([[[dict objectForKey:@"text"] uppercaseString] isEqualToString:@"__OPEN_SESAME__"]) {
+				names = [names stringByAppendingFormat:@", %@", [[dict objectForKey:@"owner_member"] objectForKey:@"name"]];
+				NSError *error = nil;
+				[_conversation addParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] error:&error];
+			}
+		}];
+		
+		NSError *error = nil;
+		LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[names stringByAppendingString:@" joined the conversation"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+		BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:_conversation];
+
+	}];
 }
 
 - (void)_submitCommentReply:(BOOL)isText {
