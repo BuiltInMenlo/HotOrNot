@@ -55,7 +55,7 @@
 
 // register
 "register_alert" = "You must agree to the terms of service to sign up!";
-"register_footer" = "サービス利用規約";
+"register_footer" = "Agree to the terms of service";
 "register_submit" = "サインアップ不要";
 
 // home

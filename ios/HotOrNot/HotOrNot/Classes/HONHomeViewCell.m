@@ -182,8 +182,8 @@
 
 #pragma mark - Navigation
 - (void)_goSelect {
-	//if ([self.delegate respondsToSelector:@selector(homeViewCell:didSelectStatusUpdate:)])
-	//	[self.delegate homeViewCell:self didSelectStatusUpdate:_statusUpdateVO];
+	if ([self.delegate respondsToSelector:@selector(homeViewCell:didSelectStatusUpdate:)])
+		[self.delegate homeViewCell:self didSelectStatusUpdate:_statusUpdateVO];
 }
 
 @end

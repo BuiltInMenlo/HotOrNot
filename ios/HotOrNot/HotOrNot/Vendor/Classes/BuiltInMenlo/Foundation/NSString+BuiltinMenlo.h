@@ -22,6 +22,7 @@
 - (NSInteger)indexOfFirstOccurrenceOfSubstring:(NSString *)substring;
 - (NSInteger)indexOfLastOccurrenceOfSubstring:(NSString *)substring;
 - (BOOL)isDelimitedByString:(NSString *)delimiter;
+- (BOOL)isNumeric;
 - (BOOL)isValidEmailAddress;
 - (NSString *)lastComponentByDelimeter:(NSString *)delimiter;
 - (NSString *)normalizedPhoneNumber;

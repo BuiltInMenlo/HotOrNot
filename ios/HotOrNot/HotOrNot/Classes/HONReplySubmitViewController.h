@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONSubjectsViewController.h"
+#import "HONReplySubjectsViewController.h"
 
-@interface HONReplySubmitViewController : HONSubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONReplySubmitViewController : HONReplySubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @end

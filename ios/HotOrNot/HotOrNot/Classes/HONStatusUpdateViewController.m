@@ -122,7 +122,7 @@
 			[_refreshTimer invalidate];
 			_refreshTimer = nil;
 			
-			[self _inviteCheck];
+			//[self _inviteCheck];
 			
 			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
 					LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
@@ -424,11 +424,13 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	if (_refreshTimer != nil) {
+		[_refreshTimer invalidate];
+		_refreshTimer = nil;
+	}
+
 	[self dismissViewControllerAnimated:NO completion:^(void) {
-		if (_refreshTimer != nil) {
-			[_refreshTimer invalidate];
-			_refreshTimer = nil;
-		}
+//		[self.navigationController popToRootViewControllerAnimated:NO];
 	}];
 }
 

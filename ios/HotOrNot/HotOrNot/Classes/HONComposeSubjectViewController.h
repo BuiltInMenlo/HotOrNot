@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONTopicsViewController.h"
+#import "HONSubjectsViewController.h"
 
-@interface HONComposeSubjectViewController : HONTopicsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface HONComposeSubjectViewController : HONSubjectsViewController <UIAlertViewDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 @end

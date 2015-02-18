@@ -7,19 +7,21 @@
 //
 
 #import "HONTableViewCell.h"
-#import "HONSubjectVO.h"
+#import "HONTopicVO.h"
 
 @class HONSubjectViewCell;
 @protocol HONSubjectViewCellDeleagte <HONTableViewCellDelegate>
 @optional
-- (void)subjectViewCell:(HONSubjectViewCell *)viewCell didSelectSubject:(HONSubjectVO *)subjectVO;
+- (void)subjectViewCell:(HONSubjectViewCell *)viewCell didSelectSubject:(HONTopicVO *)topicVO;
 @end
 
 @interface HONSubjectViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)toggleImageLoading:(BOOL)isLoading;
 
-@property (nonatomic, retain) HONSubjectVO *subjectVO;
+@property (nonatomic, retain) HONTopicVO *topicVO;
+@property (nonatomic, retain) HONTopicVO *lTopicVO;
+@property (nonatomic, retain) HONTopicVO *rTopicVO;
 @property (nonatomic, assign) id <HONSubjectViewCellDeleagte> delegate;
 
 @end

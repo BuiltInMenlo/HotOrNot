@@ -23,6 +23,7 @@
 #import "HONTopicViewCell.h"
 #import "HONTopicVO.h"
 #import "HONComposeSubjectViewController.h"
+#import "HONCloseNavButtonView.h"
 
 @interface HONComposeTopicViewController () <HONTopicViewCellDelegate>
 @property (nonatomic, strong) HONTableView *tableView;
@@ -125,16 +126,32 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
-	
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"What are you doing?")];
-	[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
-	[self.view addSubview:_headerView];
+	self.view.backgroundColor = [UIColor clearColor];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 24.0)];
+	headerLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
+	headerLabel.textColor = [UIColor whiteColor];
+	headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	headerLabel.textAlignment = NSTextAlignmentCenter;
+	headerLabel.text = @"WHAT'S UP?";
+	[self.view addSubview:headerLabel];
+	
+	HONCloseNavButtonView *closeNavButtonView = [[HONCloseNavButtonView alloc] initWithTarget:self action:@selector(_goClose)];
+	closeNavButtonView.frame = CGRectOffsetY(closeNavButtonView.frame, 20.0);
+	[self.view addSubview:closeNavButtonView];
+	
+	//_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"What are you doing?")];
+	//[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
+	//_headerView.alpha = 0.5;
+	//[self.view addSubview:_headerView];
+	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 75.0, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.backgroundColor = [UIColor clearColor];
+	//_tableView.alpha = 0.5;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.alwaysBounceVertical = YES;
@@ -153,12 +170,18 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
+//	self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+//	self.modalPresentationStyle = UIModalPresentationCurrentContext;
+//	self.modalPresentationStyle = UIModalPresentationFormSheet;
+//
 //	_panGestureRecognizer.enabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
+	
+	_tableView.alpha = 1.0;
 }
 
 
@@ -190,6 +213,8 @@
 								   @"subjects"		: jsonString};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
 	
+//	[self presentViewController:[[HONComposeSubjectViewController alloc] initWithSubmitParameters:submitParams] animated:YES completion:nil];
+	[self.navigationController setNavigationBarHidden:YES];
 	[self.navigationController pushViewController:[[HONComposeSubjectViewController alloc] initWithSubmitParameters:submitParams] animated:YES];
 }
 
@@ -227,14 +252,17 @@
 #pragma mark - UI Presentation
 
 
-#pragma mark - ComposeTopicViewCell Delegates
-- (void)composeViewCell:(HONTopicViewCell *)viewCell didSelectComposeTopic:(HONTopicVO *)composeTopicVO {
-	NSLog(@"[_] composeViewCell:didSelectComposeTopic:[%@]", [composeTopicVO toString]);
-	
+#pragma mark - TopicViewCell Delegates
+- (void)topicViewCell:(HONTopicViewCell *)viewCell didSelectTopic:(HONTopicVO *)topicVO {
+	NSLog(@"[_] topicViewCell:didSelectTopic:[%@]", [topicVO toString]);
 	_selectedTopicVO = viewCell.topicVO;
 	NSLog(@"COMPOSE TOPIC:[%@]", [_selectedTopicVO toString]);
-	
 	[self _goNext];
+	
+	[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		_tableView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+	}];
 }
 
 
@@ -260,7 +288,7 @@
 	
 	[cell setIndexPath:indexPath];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	cell.alpha = 0.0;
 	
 	HONTopicVO *vo = (HONTopicVO *)[_topics objectAtIndex:indexPath.row];
@@ -276,7 +304,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (59.0);
+	return (120.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -284,7 +312,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

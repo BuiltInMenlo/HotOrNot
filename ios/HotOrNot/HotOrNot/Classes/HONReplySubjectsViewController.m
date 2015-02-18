@@ -1,20 +1,21 @@
 //
-//  HONTopicsViewController.m
+//  HONSubjectsViewController.m
 //  HotOrNot
 //
-//  Created by BIM  on 1/11/15.
-//  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
+//  Created by BIM  on 12/31/14.
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 
-#import "HONTopicsViewController.h"
+#import "HONReplySubjectsViewController.h"
+#import "HONSubjectViewCell.h"
 
-@interface HONTopicsViewController () <HONTopicViewCellDelegate>
+@interface HONReplySubjectsViewController () <HONSubjectViewCellDeleagte>
 @end
 
-@implementation HONTopicsViewController
+@implementation HONReplySubjectsViewController
 
 - (id)init {
 	if ((self = [super init])) {
@@ -31,9 +32,13 @@
 	return (self);
 }
 
+- (void)dealloc {
+	[self destroy];
+}
+
 - (void)destroy {
 	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTopicViewCell *cell = (HONTopicViewCell *)obj;
+		HONSubjectViewCell *cell = (HONSubjectViewCell *)obj;
 		cell.delegate = nil;
 	}];
 	
@@ -53,30 +58,29 @@
 	if (![_refreshControl isRefreshing])
 		[_refreshControl beginRefreshing];
 	
-	_topics = [NSMutableArray array];
+	_subjects = [NSMutableArray array];
 	[_tableView reloadData];
 }
 
 - (void)_didFinishDataRefresh {
-	NSLog(@"%@._didFinishDataRefresh - [%d]", self.class, (int)[_topics count]);
+	NSLog(@"%@._didFinishDataRefresh - [%d]", self.class, (int)[_subjects count]);
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
 }
-
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	_topics = [NSMutableArray array];
+	_subjects = [NSMutableArray array];
 	
 	_headerView = [[HONHeaderView alloc] init];
 	[self.view addSubview:_headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
-	//	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 58.0, 0.0)];
+//	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 58.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
@@ -94,11 +98,11 @@
 }
 
 
-#pragma mark - TopicViewCell Delegates
-- (void)topicViewCell:(HONTopicViewCell *)viewCell didSelectTopic:(HONTopicVO *)topicVO {
-	NSLog(@"[*:*] topicViewCell:didSelectTopic:[%@]", [topicVO toString]);
+#pragma mark - SubjectViewCell Delegates
+- (void)subjectViewCell:(HONSubjectViewCell *)viewCell didSelectSubject:(HONSubjectVO *)subjectVO {
+	NSLog(@"[*:*] subjectViewCell:didSelectSubject:[%@]", [subjectVO toString]);
 	
-	_selectedTopicVO = topicVO;
+	_selectedSubjectVO = subjectVO;
 }
 
 
@@ -108,7 +112,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_topics count]);
+	return ([_subjects count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -116,15 +120,16 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONTopicViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONTopicViewCell alloc] init];
+		cell = [[HONSubjectViewCell alloc] init];
 	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setIndexPath:indexPath];
+	cell.alpha = 0.0;
 	
-	cell.topicVO = (HONTopicVO *)[_topics objectAtIndex:indexPath.row];
+	//cell.subjectVO = (HONSubjectVO *)[_subjects objectAtIndex:indexPath.row];
 	cell.delegate = self;
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -151,33 +156,25 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONTopicViewCell *cell = (HONTopicViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	//HONSubjectViewCell *cell = (HONSubjectViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	NSLog(@"[[- topicVO:[%@]", [cell.topicVO toString]);
+	//NSLog(@"[[- cell.subjectVO:[%@]", [cell.subjectVO toString]);
 	
-	_selectedTopicVO = cell.topicVO;
+	//_selectedSubjectVO = cell.subjectVO;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	cell.alpha = 0.0;
-	[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+	[UIView animateKeyframesWithDuration:0.125 delay:0.050 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 		cell.alpha = 1.0;
 	} completion:^(BOOL finished) {
 	}];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONTopicViewCell *viewCell = (HONTopicViewCell *)cell;
+	HONSubjectViewCell *viewCell = (HONSubjectViewCell *)cell;
+	
+	viewCell.alpha = 0.0;
 	[viewCell toggleImageLoading:NO];
-}
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTopicViewCell *cell = (HONTopicViewCell *)obj;
-		[cell toggleImageLoading:YES];
-	}];
 }
 
 

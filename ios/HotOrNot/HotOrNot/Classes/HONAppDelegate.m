@@ -23,6 +23,7 @@
 
 #import "Flurry.h"
 
+#import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSData+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
@@ -50,6 +51,7 @@
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONComposeTopicViewController.h"
+#import "HONStatusUpdateViewController.h"
 #import "HONLoadingOverlayView.h"
 
 
@@ -265,6 +267,99 @@ NSString * const kTwilioSMS = @"6475577873";
 					
 					[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
 						NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
+						
+						for (int i=0; i<10; i++) {
+							NSDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] randomElement];
+							while ([[dict objectForKey:@"parent_id"] intValue] != 0)
+								dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] randomElement];
+							
+							
+							HONTopicVO *topicVO = [HONTopicVO topicWithDictionary:dict];
+							NSMutableArray *subjects = [NSMutableArray array];
+							[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+								HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
+								if (vo.parentID == topicVO.topicID)
+									[subjects addObject:vo];
+							}];
+							
+							HONTopicVO *subjectVO = [subjects randomElement];
+							while ([subjectVO.topicName rangeOfString:@"Add"].location != NSNotFound)
+								subjectVO = [subjects randomElement];
+							
+							NSError *error;
+							NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[topicVO.topicName] options:0 error:&error]
+																		 encoding:NSUTF8StringEncoding];
+							
+							NSMutableDictionary *submitParams = [@{@"user_id"		: @(arc4random_uniform(100) + 192010),
+																   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
+																   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
+																   @"challenge_id"	: @(0),
+																   @"topic_id"		: @(topicVO.topicID),
+																   @"subject"		: [NSString stringWithFormat:@"%@|%@", topicVO.topicName, subjectVO.topicName],
+																   @"subjects"		: jsonString} mutableCopy];
+							NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+							
+							LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010", @"193016"] withTopicName:@"WHATEVER" andSubject:@"SUX"];
+							NSData *data = [[NSString stringWithFormat:@"- is %@ %@", topicVO.topicName, subjectVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
+							LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
+							
+							if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
+								NSLog(@"SEND FAILED!!");
+							
+							else {
+								NSLog(@"CONVERSATION:\n%@", [conversation toString]);
+								[submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
+								
+								[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+									if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+										if (_progressHUD == nil)
+											_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+										_progressHUD.minShowTime = kProgressHUDMinDuration;
+										_progressHUD.mode = MBProgressHUDModeCustomView;
+										_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+										_progressHUD.labelText = @"Error!";
+										[_progressHUD show:NO];
+										[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+										_progressHUD = nil;
+										
+									} else {
+//										HONTrivialUserVO *trivialUserVO = [HONTrivialUserVO userWithDictionary:@{@"id"			: @(193016),
+//																												 @"username"	: @"jasoniphone6",
+//																												 @"img_url"		: @""}];
+//										
+//										HONContactUserVO *contactUserVO = [HONContactUserVO contactWithDictionary:@{@"f_name"	: @"Jason",
+//																													@"l_name"	: @"Festa",
+//																													//@"phone"	: @"+16506031708",
+//																													@"phone"	: @"+12393709811",
+//																													@"email"	: @""}];
+//										
+//										[[HONAPICaller sharedInstance] inviteNonAppUsers:@[contactUserVO] toClubWithID:[[HONClubAssistant sharedInstance] globalClub].clubID withClubOwnerID:2394 completion:^(NSDictionary *result) {
+//										}];
+//										
+//										[[HONAPICaller sharedInstance] inviteInAppUsers:@[trivialUserVO] toClubWithID:[[HONClubAssistant sharedInstance] globalClub].clubID withClubOwnerID:2394 completion:^(NSDictionary *result) {
+//										}];
+									}
+								}];
+							}
+						}
+						
+						
+//						HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] globalClub];
+//						[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:1 completion:^(NSDictionary *result) {
+//							[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//								NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+//								[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
+//								
+//								HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:dict];
+//								
+//								NSError *error = nil;
+//								LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010), NSStringFromInt(vo.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+//								LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[vo.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+//								
+//								NSLog(@"STATUSUPD:[%@]\n[%@]", conversation, message);
+//								BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
+//							}];
+//						}];
 					}];
 				}];
 			});
@@ -633,8 +728,7 @@ NSString * const kTwilioSMS = @"6475577873";
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
 			} else
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHECK_INVITES" object:nil];
-//				NSLog(@"APP ACTIVE |||| GO GET BOOT & -> FIND USER |||||"); //				[self _retrieveConfigJSON];
+				NSLog(@"APP ACTIVE |||| GO GET BOOT & -> FIND USER |||||"); //				[self _retrieveConfigJSON];
 		
 		} else {
 			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
@@ -680,44 +774,59 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
 	if ([protocol isEqualToString:@"dood"]) {
-		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - create"];
-		
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
-		_loadingOverlayView.delegate = self;
-		
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		
 		
-		NSString *subjectName = [path lastObject];
+		NSLog(@"isNumeric:[%@] -=- %@", [path lastObject], NSStringFromBOOL([[path lastObject] isNumeric]));
 		
-		NSLog(@"PATH:[%@]", subjectName);
-		
-		NSError *error;
-		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@"using"] options:0 error:&error]
-													 encoding:NSUTF8StringEncoding];
-		
-		NSMutableDictionary *submitParams = [@{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
-											   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
-											   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
-											   @"challenge_id"	: @(0),
-											   @"topic_id"		: @(11),
-											   @"topic_name"	: @"using",
-											   @"subjects"		: jsonString} mutableCopy];
-		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
-		
-		LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[] withTopicName:[submitParams objectForKey:@"topic_name"] andSubject:subjectName];
-		NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [submitParams objectForKey:@"topic_name"], subjectName] dataUsingEncoding:NSUTF8StringEncoding];
-		LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
-		
-		if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
-			NSLog(@"SEND FAILED!!");
-		
-		else {
-			NSLog(@"CONVERSATION:\n%@", [conversation toString]);
+		if ([[path lastObject] isNumeric]) {
+			[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
+//			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
+//				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+				if ([result count] > 0) {
+					HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+					
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+					[navigationController setNavigationBarHidden:YES];
+					[self.navController presentViewController:navigationController animated:YES completion:^(void) {
+					}];
+				}
+			}];
 			
-//			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		} else {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - create"];
+			
+			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+			_loadingOverlayView.delegate = self;
+			
+			NSString *subjectName = [path lastObject];
+			
+			NSLog(@"PATH:[%@]", subjectName);
+			
+			NSError *error;
+			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@"using"] options:0 error:&error]
+														 encoding:NSUTF8StringEncoding];
+			
+			NSMutableDictionary *submitParams = [@{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+												   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
+												   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
+												   @"challenge_id"	: @(0),
+												   @"topic_id"		: @(11),
+												   @"topic_name"	: @"using",
+												   @"subjects"		: jsonString} mutableCopy];
+			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+			
+			LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[] withTopicName:[submitParams objectForKey:@"topic_name"] andSubject:subjectName];
+			NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [submitParams objectForKey:@"topic_name"], subjectName] dataUsingEncoding:NSUTF8StringEncoding];
+			LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
+			
+			if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
+				NSLog(@"SEND FAILED!!");
+			
+			else {
+				NSLog(@"CONVERSATION:\n%@", [conversation toString]);
+				
 				[submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
 				[submitParams setValue:[NSString stringWithFormat:@"%@|%@", [submitParams objectForKey:@"topic_name"], subjectName] forKey:@"subject"];
 				
@@ -739,107 +848,9 @@ NSString * const kTwilioSMS = @"6475577873";
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 					}
 				}];
-//			});
+			}
 		}
 	}
-	
-//	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
-//	if ([protocol isEqualToString:@"selfieclub"]) {
-//		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
-//		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
-//		NSLog(@"PATH:[%@]", path);
-//		
-//		if ([path count] == 2) {
-//			NSString *username = [[path firstObject] lowercaseString];
-//			NSString *clubName = [[path lastObject] lowercaseString];
-//			
-//			[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeDeepLink];
-//			
-			// already a member
-//			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
-//				for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"]) {
-//					if ([[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) {
-//						NSLog(@"OWNER_ID:[%d]", [[[dict objectForKey:@"owner"] objectForKey:@"id"] intValue]);
-//						_selectedClubVO = [HONUserClubVO clubWithDictionary:dict];
-//						break;
-//					}
-//				}
-//				
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of"), _selectedClubVO.clubName]
-//																	message:NSLocalizedString(@"alert_enterClub", @"Want to go there now?")
-//																   delegate:self
-//														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-//														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-//				[alertView setTag:HONAppDelegateAlertTypeEnterClub];
-//				[alertView show];
-//				
-//			} else { // search for this user
-//				[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
-//					int userID = 0;
-//					if ([result count] == 0) {
-//						[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
-//													message:@""
-//												   delegate:nil
-//										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//										  otherButtonTitles:nil] show];
-//						
-//					} else { // user found
-//						for (NSDictionary *user in result) {
-//							if ([username isEqualToString:[[user objectForKey:@"username"] lowercaseString]]) {
-//								userID = [[user objectForKey:@"id"] intValue];
-//								break;
-//							}
-//						}
-//						
-//						NSLog(@"userID:[%d]", userID);
-//						if (userID == 0) { // didn't find the user
-//							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"hud_usernameNotFound", @"Username Not Found!")
-//														message:@""
-//													   delegate:nil
-//											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//											  otherButtonTitles:nil] show];
-//							
-//						} else { // found the user
-//							[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
-//								int clubID = 0;
-//								for (NSDictionary *club in [result objectForKey:@"owned"]) {
-//									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubName	]) {
-//										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-//										clubID = [[club objectForKey:@"id"] intValue];
-//										break;
-//									}
-//								}
-//								
-//								if (clubID > 0) { // user is the owner, prompt for join
-//									[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:userID completion:^(NSDictionary *result) {
-//										_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-//										
-//										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", @"Would you like to join the %@ Selfieclub?"), _selectedClubVO.clubName]
-//																						   delegate:self
-//																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-//										[alertView setTag:HONAppDelegateAlertTypeJoinCLub];
-//										[alertView show];
-//									}];
-//																	
-//								} else { // user isn't the owner
-//									_clubName = clubName;
-//									UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"club_notfound", @"Club Not Found!")
-//																						message: NSLocalizedString(@"alert_create_it", @"Would you like to create it?")
-//																					   delegate:self
-//																			  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-//																			  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-//									[alertView setTag:HONAppDelegateAlertTypeCreateClub];
-//									[alertView show];
-//								}
-//							}]; // clubs for owner
-//						} // found club owner
-//					} // user found
-//				}]; // username search
-//			} // two fields
-//		} // path split
-//	}
 	
 	return (YES);
 }

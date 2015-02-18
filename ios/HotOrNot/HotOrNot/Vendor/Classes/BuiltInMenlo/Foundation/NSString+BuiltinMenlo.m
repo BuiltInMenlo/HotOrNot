@@ -153,6 +153,10 @@
 	return (ind);
 }
 
+- (BOOL)isNumeric {
+	return (([self integerValue] > 0 || [self isEqualToString:@"0"]));
+}
+
 - (BOOL)isValidEmailAddress {
 	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
 	

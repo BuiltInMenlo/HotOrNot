@@ -28,22 +28,29 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[self hideChevron];
+		
+		self.backgroundView = nil;
+		self.backgroundColor = [UIColor clearColor];
+		
 		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"imageLoadingDots_compose"]];
-		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 12.0, 12.0);
+		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 143.0, 0.0);
 		[self.contentView addSubview:_loadingImageView];
 		
-		_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 35.0, 35.0)];
+		_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(121.0, 0.0, 78.0, 78.0)];
 		[self.contentView addSubview:_iconImageView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 14.0, 200.0, 26.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_captionLabel.textColor =  [UIColor blackColor];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 91.0, 160.0, 18.0)];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:14];
+		_captionLabel.textColor =  [UIColor whiteColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
+		_captionLabel.textAlignment = NSTextAlignmentCenter;
 		[self.contentView addSubview:_captionLabel];
 		
 		_selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_selectButton.frame = CGRectFromSize(self.frame.size);
-//		[self.contentView addSubview:_selectButton];
+		_selectButton.frame = _iconImageView.frame;
+		[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:_selectButton];
 	}
 	
 	return (self);
@@ -61,7 +68,7 @@
 - (void)setTopicVO:(HONTopicVO *)topicVO {
 	_topicVO = topicVO;
 	
-	_captionLabel.text = _topicVO.topicName;
+	_captionLabel.text = [_topicVO.topicName uppercaseString];
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		NSLog(@"!!!!!! FAILED:[%@]", request.URL.absoluteURL);

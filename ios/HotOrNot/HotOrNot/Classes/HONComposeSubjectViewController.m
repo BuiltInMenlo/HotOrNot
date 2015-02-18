@@ -15,15 +15,20 @@
 #import "NSDictionary+BuiltinMenlo.h"
 
 #import "HONComposeSubjectViewController.h"
+#import "HONSubjectViewCell.h"
 #import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"
 #import "HONLoadingOverlayView.h"
+#import "HONBackNavButtonView.h"
 
-@interface HONComposeSubjectViewController () <HONLoadingOverlayViewDelegate, HONTopicViewCellDelegate>
+@interface HONComposeSubjectViewController () <HONLoadingOverlayViewDelegate, HONSubjectViewCellDeleagte>
 @property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UITextField *customTopicTextField;
 @property (nonatomic, strong) NSString *topicName;
 @property (nonatomic, strong) NSArray *participantIDs;
+
+@property (nonatomic, strong) NSMutableArray *lTopics;
+@property (nonatomic, strong) NSMutableArray *rTopics;
 @end
 
 @implementation HONComposeSubjectViewController
@@ -50,8 +55,15 @@
 - (void)_retrieveSubjects {
 	[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
-		if (vo.parentID == [[_submitParams objectForKey:@"topic_id"] intValue])
+		if (vo.parentID == [[_submitParams objectForKey:@"topic_id"] intValue]) {
 			[_topics addObject:vo];
+			
+			if (idx % 2 == 0)
+				[_lTopics addObject:vo];
+			
+			else
+				[_rTopics addObject:vo];
+		}
 	}];
 	
 	[super _didFinishDataRefresh];
@@ -61,7 +73,7 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
 //	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
-	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010"] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
+	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010", @"193020", @"193021", @"193022", @"193023", @"193024", @"193025", @"193026"] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
 	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
 	LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
 //	[conversation sendTypingIndicator:LYRTypingDidBegin];
@@ -107,7 +119,7 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 			[_loadingOverlayView outro];
 			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 			}]; // modal
 		});
 	}
@@ -125,13 +137,29 @@
 	[self _retrieveSubjects];
 }
 
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	[_headerView setTitle:[_submitParams objectForKey:@"topic_name"]];
-	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	//self.navigationController.delegate = self;
+	
+//	[_headerView setTitle:[_submitParams objectForKey:@"topic_name"]];
+//	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+//	_headerView.alpha = 0.5;
+	
+	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 24.0)];
+	headerLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
+	headerLabel.textColor = [UIColor whiteColor];
+	headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	headerLabel.textAlignment = NSTextAlignmentCenter;
+	headerLabel.text = [_submitParams objectForKey:@"topic_name"];
+	[self.view addSubview:headerLabel];
+	
+	HONBackNavButtonView *backNavButtonView = [[HONBackNavButtonView alloc] initWithTarget:self action:@selector(_goBack)];
+	backNavButtonView.frame = CGRectOffsetY(backNavButtonView.frame, 20.0);
+	[self.view addSubview:backNavButtonView];
 	
 	_customTopicTextField = [[UITextField alloc] initWithFrame:CGRectMake(60.0, 78.0, 220.0, 26.0)];
 	[_customTopicTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -152,6 +180,8 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	//[self.navigationController setNavigationBarHidden:YES];
 	
 //	_panGestureRecognizer.enabled = YES;
 }
@@ -240,17 +270,16 @@
 }
 
 
-#pragma mark - TopicViewCell Delegates
-- (void)topicViewCell:(HONTopicViewCell *)viewCell didSelectTopic:(HONTopicVO *)topicVO {
-	NSLog(@"[*:*] topicViewCell:didSelectTopic:[%@]", [topicVO toString]);
+#pragma mark - SubjectViewCell Delegates
+- (void)subjectViewCell:(HONSubjectViewCell *)viewCell didSelectSubject:(HONTopicVO *)topicVO {
+	NSLog(@"[*:*] subjectViewCell:didSelectTopic:[%@]", [topicVO toString]);
 	
-	
-	if ([[_submitParams objectForKey:@"topic_id"] intValue] == 4 && viewCell.indexPath.row == 0) {
+	if (viewCell.indexPath.row == 0) {
 		[self _goCustomTopic];
-	
+		
 	} else {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
-		[super topicViewCell:viewCell didSelectTopic:topicVO];
+		_selectedTopicVO = topicVO;
 		[self _goSubmit];
 	}
 }
@@ -262,17 +291,43 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([super tableView:tableView numberOfRowsInSection:section]);
+	//return (([_topics count] / 2) + ([_topics count] % 2));
+	return ([_topics count]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ([super tableView:tableView cellForRowAtIndexPath:indexPath]);
+	HONSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil)
+		cell = [[HONSubjectViewCell alloc] init];
+	
+	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	[cell setIndexPath:indexPath];
+	
+	//int ind = indexPath.row / 2;
+	cell.topicVO = [_topics objectAtIndex:indexPath.row];
+//	cell.lTopicVO = (HONTopicVO *)[_topics objectAtIndex:(indexPath.row / 2) * 2];
+//	cell.rTopicVO = (HONTopicVO *)[_topics objectAtIndex:MAX([_topics count] - 1, ((indexPath.row / 2) * 2) + 1)];
+	cell.delegate = self;
+	
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	
+	if (!tableView.decelerating)
+		[cell toggleImageLoading:YES];
+	
+	return (cell);
+	
+//	return ([super tableView:tableView cellForRowAtIndexPath:indexPath]);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ([super tableView:tableView heightForRowAtIndexPath:indexPath]);
+	return (120.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -341,5 +396,13 @@
 		}
 	}
 }
+
+
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.hidden = YES;
+}
+
+
 
 @end
