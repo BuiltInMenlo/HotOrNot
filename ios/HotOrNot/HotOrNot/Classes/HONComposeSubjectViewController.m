@@ -72,20 +72,43 @@
 - (void)_submitStatusUpdate {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
+	NSString *channelName = [NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];
+	[PubNub subscribeOnChannel:channel];
+	
+	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
+		switch (state) {
+			case PNSubscriptionProcessSubscribedState:
+				NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
+				[PubNub sendMessage:@"Hello Everybody!" toChannel:channel];
+				break;
+			case PNSubscriptionProcessNotSubscribedState:
+				NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
+				break;
+			case PNSubscriptionProcessWillRestoreState:
+				NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
+				break;
+			case PNSubscriptionProcessRestoredState:
+				NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
+				break;
+		}
+	}];
+	
+	
 //	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
-	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010", @"193020", @"193021", @"193022", @"193023", @"193024", @"193025", @"193026"] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
-	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
-	LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
+//	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010", @"193020", @"193021", @"193022", @"193023", @"193024", @"193025", @"193026"] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
+//	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
+//	LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
 //	[conversation sendTypingIndicator:LYRTypingDidBegin];
 
-	if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
-		NSLog(@"SEND FAILED!!");
+//	if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
+//		NSLog(@"SEND FAILED!!");
+//	
+//	else {
+//		NSLog(@"CONVERSATION:\n%@", [conversation toString]);
 	
-	else {
-		NSLog(@"CONVERSATION:\n%@", [conversation toString]);
-		
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[_submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
+			[_submitParams setValue:channelName forKey:@"img_url"];
 			[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
 			
 			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
@@ -122,7 +145,7 @@
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 			}]; // modal
 		});
-	}
+//	}
 }
 
 

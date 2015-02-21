@@ -1,10 +1,13 @@
 PODS:
   - LayerKit (0.9.6)
+  - PubNub (3.7.1)
 
 DEPENDENCIES:
   - LayerKit
+  - PubNub (= 3.7.1)
 
 SPEC CHECKSUMS:
   LayerKit: 0e07ecf202c88c5eb17fa4f52301e0dea89afe7f
+  PubNub: c5e3299f43038f008f060b3519606d68ea5b059d
 
 COCOAPODS: 0.35.0

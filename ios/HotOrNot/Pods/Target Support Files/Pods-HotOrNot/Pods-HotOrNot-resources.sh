@@ -77,6 +77,7 @@ install_resource()
                     install_resource "LayerKit/LayerKit.embeddedframework/LayerKit.framework/Versions/A/Resources/layer-client-messaging-schema.bundle/20141110114425514_remote_keyed_values.sql"
                     install_resource "LayerKit/LayerKit.embeddedframework/LayerKit.framework/Versions/A/Resources/layer-client-messaging-schema.bundle/layer-client-messaging-schema.sql"
                     install_resource "LayerKit/LayerKit.embeddedframework/LayerKit.framework/Versions/A/Resources/layer-client-messaging-schema.bundle"
+                    install_resource "PubNub/iOS/iPadDemoApp/pubnub/libs/PubNub/Resources/PNLoggerSymbols.plist"
           
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 if [[ "${ACTION}" == "install" ]]; then

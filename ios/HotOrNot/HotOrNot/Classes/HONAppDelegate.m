@@ -103,9 +103,9 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONLoadingOverlayViewDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
 #else
-@interface HONAppDelegate() <HONLoadingOverlayView>
+@interface HONAppDelegate() <HONLoadingOverlayView, PNDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -261,6 +261,125 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 			
+			
+			// #1 Define client configuration
+			PNConfiguration *myConfig = [PNConfiguration configurationForOrigin:@"pubsub.pubnub.com"
+																	 publishKey:@"demo"
+																   subscribeKey:@"demo"
+																	  secretKey:nil];
+			// #2 make the configuration active
+			[PubNub setConfiguration:myConfig];
+			
+			PNChannel *my_channel = [PNChannel channelWithName:@"derp" shouldObservePresence:YES];
+			
+			[PubNub connectWithSuccessBlock:^(NSString *origin) {
+				PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
+				// wait 1 second
+				int64_t delayInSeconds = 1.0;
+				dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+				dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+					
+					// then subscribe on channel a
+					//[PubNub subscribeOnChannel:[PNChannel channelWithName:@"a" shouldObservePresence:YES]];
+					[PubNub subscribeOnChannel:my_channel];
+				});
+				
+//				[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
+//					NSLog(@"OBSERVER: Channel: %@, Message: %@", message.channel.name, message.message);
+//				}];
+				
+				[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error){
+					
+					switch (state) {
+						case PNSubscriptionProcessSubscribedState:
+							NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
+							// #2 Send a welcome message on subscribe
+							[PubNub sendMessage:[NSString stringWithFormat:@"Hello Everybody!" ] toChannel:my_channel ];
+							break;
+						case PNSubscriptionProcessNotSubscribedState:
+							NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
+							break;
+						case PNSubscriptionProcessWillRestoreState:
+							NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
+							break;
+						case PNSubscriptionProcessRestoredState:
+							NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
+							break;
+					}
+				}];
+				
+				[[PNObservationCenter defaultCenter] addClientChannelUnsubscriptionObserver:self withCallbackBlock:^(NSArray *channel, PNError *error) {
+					if ( error == nil )
+					{
+						NSLog(@"OBSERVER: Unsubscribed from Channel: %@", channel[0]);
+						[PubNub subscribeOnChannel:my_channel];
+					}
+					else
+					{
+						NSLog(@"OBSERVER: Unsubscribed from Channel: %@, Error: %@", channel[0], error);
+					}
+				}];
+				// Observer looks for message received events
+				[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
+					NSLog(@"OBSERVER: Channel: %@, Message: %@", message.channel.name, message.message);
+					
+					// Look for a message that matches "**************"
+					if ( [[[NSString stringWithFormat:@"%@", message.message] substringWithRange:NSMakeRange(1,14)] isEqualToString: @"**************" ])
+					{
+						// Send a goodbye message
+						[PubNub sendMessage:[NSString stringWithFormat:@"Thank you, GOODBYE!"] toChannel:my_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+							if (messageState == PNMessageSent) {
+								NSLog(@"OBSERVER: Sent Goodbye Message!");
+								//Unsubscribe once the message has been sent.
+								[PubNub unsubscribeFromChannel:my_channel ];
+							}
+						}];
+					}
+				}];
+				// #3 Add observer to catch message send events.
+				[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data){
+					
+					switch (state) {
+						case PNMessageSent:
+							NSLog(@"OBSERVER: Message Sent.");
+							break;
+						case PNMessageSending:
+							NSLog(@"OBSERVER: Sending Message...");
+							break;
+						case PNMessageSendingError:
+							NSLog(@"OBSERVER: ERROR: Failed to Send Message.");
+							break;
+						default:
+							break;
+					}
+				}];
+				
+				// In case of error you always can pull out error code and identify what happened and what you can do
+					// additional information is stored inside error's localizedDescription, localizedFailureReason and
+					// localizedRecoverySuggestion)
+			} errorBlock:^(PNError *connectionError) {
+						if (connectionError.code == kPNClientConnectionFailedOnInternetFailureError) {
+							// wait 1 second
+							int64_t delayInSeconds = 1.0;
+							dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+							dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+								PNLog(PNLogGeneralLevel, self, @"Connection will be established as soon as internet connection will be restored");
+							});
+						}
+				
+				UIAlertView *connectionErrorAlert = [UIAlertView new];
+				connectionErrorAlert.title = [NSString stringWithFormat:@"%@(%@)",
+											  [connectionError localizedDescription],
+											  NSStringFromClass([self class])];
+				connectionErrorAlert.message = [NSString stringWithFormat:@"Reason:\n%@\n\nSuggestion:\n%@",
+												[connectionError localizedFailureReason],
+												[connectionError localizedRecoverySuggestion]];
+				[connectionErrorAlert addButtonWithTitle:@"OK"];
+				
+				[connectionErrorAlert show];
+			}];
+			
+			/*
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 				[[HONLayerKitAssistant sharedInstance] connectClientToServiceWithCompletion:^(BOOL success, NSError *error) {
 					NSLog(@"connectClientToServiceWithCompletion:success:[%@] error:[%@]", NSStringFromBOOL(success), error);
@@ -363,7 +482,7 @@ NSString * const kTwilioSMS = @"6475577873";
 					}];
 				}];
 			});
-
+*/
 			
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -1040,7 +1159,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
 
-	
+	[PubNub setDelegate:self];
 	
 //	[Crittercism enableWithAppID:kCritersismAppID
 //					 andDelegate:self];
@@ -1065,6 +1184,16 @@ void uncaughtExceptionHandler(NSException *exception) {
 	[Flurry logError:@"Uncaught"
 			 message:message
 		   exception:exception];
+}
+
+
+#pragma mark - PubNub Delegates
+- (void)pubnubClient:(PubNub *)client didSubscribeOnChannels:(NSArray *)channels {
+	NSLog(@"DELEGATE: Subscribed to channel:%@", channels);
+}
+
+- (void)pubnubClient:(PubNub *)client didReceiveMessage:(PNMessage *)message {
+	NSLog(@"DELEGATE: Message received.");
 }
 
 #pragma mark - AlertView delegates
