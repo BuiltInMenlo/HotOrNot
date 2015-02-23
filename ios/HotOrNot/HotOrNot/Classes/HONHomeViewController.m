@@ -9,7 +9,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <LayerKit/LayerKit.h>
 
-#import "LYRConversation+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 #import "UIScrollView+BuiltInMenlo.h"
@@ -726,35 +725,35 @@
 	_selectedStatusUpdateVO = statusUpdateVO;
 	
 	
-	NSError *error = nil;
-	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
-	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_selectedStatusUpdateVO.dictionary objectForKey:@"img"]];
-	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
-	
-	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_selectedStatusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
-	
-	if (conversation == nil) {
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
-		_loadingOverlayView.delegate = self;
-		
-		
-		NSDictionary *dict = [_convos objectForKey:NSStringFromInt(_selectedStatusUpdateVO.statusUpdateID)];
-		LYRConversation *convo = [dict objectForKey:@"convo"];
-		LYRMessage *message = [dict objectForKey:@"msg"];
-		
-		NSLog(@"STORED CONVO:[%@]\nSTORED MSG:[%@]", convo, message);
-		
-		BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:convo];
-		
-		[self _retrieveStatusUpdate];
-	} else {
+//	NSError *error = nil;
+//	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+//	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_selectedStatusUpdateVO.dictionary objectForKey:@"img"]];
+//	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+//	
+//	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_selectedStatusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
+//	
+//	if (conversation == nil) {
+//		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+//		_loadingOverlayView.delegate = self;
+//		
+//		
+//		NSDictionary *dict = [_convos objectForKey:NSStringFromInt(_selectedStatusUpdateVO.statusUpdateID)];
+//		LYRConversation *convo = [dict objectForKey:@"convo"];
+//		LYRMessage *message = [dict objectForKey:@"msg"];
+//		
+//		NSLog(@"STORED CONVO:[%@]\nSTORED MSG:[%@]", convo, message);
+//		
+//		BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:convo];
+//		
+//		[self _retrieveStatusUpdate];
+//	} else {
 //		[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:NO];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:^(void) {
 		}];
-	}
+//	}
 }
 
 
@@ -953,34 +952,34 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - row_select"];
 	
-	NSError *error = nil;
-	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
-	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[cell.statusUpdateVO.dictionary objectForKey:@"img"]];
-	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
-	
-	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [cell.statusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
-	
-	if (conversation == nil) {
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
-		_loadingOverlayView.delegate = self;
-		
-		NSDictionary *dict = [_convos objectForKey:NSStringFromInt(_selectedStatusUpdateVO.statusUpdateID)];
-		LYRConversation *convo = [dict objectForKey:@"convo"];
-		LYRMessage *message = [dict objectForKey:@"msg"];
-		
-		NSLog(@"STORED CONVO:[%@]\nSTORED MSG:[%@]", convo, message);
-		
-		BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:convo];
-		
-		[self _retrieveStatusUpdate];
-		
-	} else {
+//	NSError *error = nil;
+//	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+//	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[cell.statusUpdateVO.dictionary objectForKey:@"img"]];
+//	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+//	
+//	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [cell.statusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
+//	
+//	if (conversation == nil) {
+//		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+//		_loadingOverlayView.delegate = self;
+//		
+//		NSDictionary *dict = [_convos objectForKey:NSStringFromInt(_selectedStatusUpdateVO.statusUpdateID)];
+//		LYRConversation *convo = [dict objectForKey:@"convo"];
+//		LYRMessage *message = [dict objectForKey:@"msg"];
+//		
+//		NSLog(@"STORED CONVO:[%@]\nSTORED MSG:[%@]", convo, message);
+//		
+//		BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:convo];
+//		
+//		[self _retrieveStatusUpdate];
+//		
+//	} else {
 //		[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:NO];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:^(void) {
 		}];
-	}
+//	}
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

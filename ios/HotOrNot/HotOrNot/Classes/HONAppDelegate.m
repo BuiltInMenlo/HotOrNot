@@ -284,17 +284,13 @@ NSString * const kTwilioSMS = @"6475577873";
 					[PubNub subscribeOnChannel:my_channel];
 				});
 				
-//				[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
-//					NSLog(@"OBSERVER: Channel: %@, Message: %@", message.channel.name, message.message);
-//				}];
-				
-				[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error){
+ 				[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error){
 					
 					switch (state) {
 						case PNSubscriptionProcessSubscribedState:
 							NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
 							// #2 Send a welcome message on subscribe
-							[PubNub sendMessage:[NSString stringWithFormat:@"Hello Everybody!" ] toChannel:my_channel ];
+//							[PubNub sendMessage:[NSString stringWithFormat:@"Hello Everybody!" ] toChannel:my_channel ];
 							break;
 						case PNSubscriptionProcessNotSubscribedState:
 							NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
@@ -323,18 +319,18 @@ NSString * const kTwilioSMS = @"6475577873";
 				[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
 					NSLog(@"OBSERVER: Channel: %@, Message: %@", message.channel.name, message.message);
 					
-					// Look for a message that matches "**************"
-					if ( [[[NSString stringWithFormat:@"%@", message.message] substringWithRange:NSMakeRange(1,14)] isEqualToString: @"**************" ])
-					{
-						// Send a goodbye message
-						[PubNub sendMessage:[NSString stringWithFormat:@"Thank you, GOODBYE!"] toChannel:my_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-							if (messageState == PNMessageSent) {
-								NSLog(@"OBSERVER: Sent Goodbye Message!");
-								//Unsubscribe once the message has been sent.
-								[PubNub unsubscribeFromChannel:my_channel ];
-							}
-						}];
-					}
+//					// Look for a message that matches "**************"
+//					if ( [[[NSString stringWithFormat:@"%@", message.message] substringWithRange:NSMakeRange(1,14)] isEqualToString: @"**************" ])
+//					{
+//						// Send a goodbye message
+//						[PubNub sendMessage:[NSString stringWithFormat:@"Thank you, GOODBYE!"] toChannel:my_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//							if (messageState == PNMessageSent) {
+//								NSLog(@"OBSERVER: Sent Goodbye Message!");
+//								//Unsubscribe once the message has been sent.
+//								[PubNub unsubscribeFromChannel:my_channel ];
+//							}
+//						}];
+//					}
 				}];
 				// #3 Add observer to catch message send events.
 				[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data){
@@ -1189,12 +1185,13 @@ void uncaughtExceptionHandler(NSException *exception) {
 
 #pragma mark - PubNub Delegates
 - (void)pubnubClient:(PubNub *)client didSubscribeOnChannels:(NSArray *)channels {
-	NSLog(@"DELEGATE: Subscribed to channel:%@", channels);
+//	NSLog(@"DELEGATE: Subscribed to channel:%@", channels);
 }
 
 - (void)pubnubClient:(PubNub *)client didReceiveMessage:(PNMessage *)message {
-	NSLog(@"DELEGATE: Message received.");
+//	NSLog(@"DELEGATE: Message received.");
 }
+
 
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

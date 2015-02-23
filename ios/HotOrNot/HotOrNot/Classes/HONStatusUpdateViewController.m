@@ -8,7 +8,6 @@
 
 #import <LayerKit/LayerKit.h>
 
-#import "LYRConversation+BuiltinMenlo.h"
 #import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
@@ -101,99 +100,116 @@
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 		
-		if (++_cnt < 5)
-			 [self _sendInviteDMConversation];
+		PNChannel *channel = [PNChannel channelWithName:_statusUpdateVO.imagePrefix shouldObservePresence:YES];
 		
-		NSError *error = nil;
-		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
-		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
-		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
-		
-		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation);
-		
-		if (_conversation == nil) {
-			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC);
-			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
-				[self _retrieveStatusUpdate];
-			});
-		}
-		
-		if (!error) {
-			[_refreshTimer invalidate];
-			_refreshTimer = nil;
+		[PubNub subscribeOnChannel:channel];
+		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error){
 			
-			//[self _inviteCheck];
-			
-			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
-					LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
-					msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
-					msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+			switch (state) {
+				case PNSubscriptionProcessSubscribedState:
+					NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
+					break;
 					
-					NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
-					NSLog(@"QUERY:[%@] -=- %@\n%d", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", (int)[messages count]);
+				case PNSubscriptionProcessNotSubscribedState:
+					NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
+					break;
 					
-					if ([messages count] > 1) {
-						NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
-						[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-							LYRMessage *message = (LYRMessage *)obj;
-							NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", (int)idx, message.identifierSuffix, [message.sentAt formattedISO8601String], [message.receivedAt formattedISO8601String]);
-							[message markAsRead:nil];
-							[_replies addObject:[HONCommentVO commentWithMessage:message]];
-						}];
-					}
+				case PNSubscriptionProcessWillRestoreState:
+					NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
+					break;
 					
-					_statusUpdateVO.replies = [_replies copy];
-					
-					[self _didFinishDataRefresh];
-				//}];
-			}
-		}
-	}];
-}
-
-- (void)_sendInviteDMConversation {
-	NSError *error = nil;
-	//LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(_statusUpdateVO.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-	LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-	
-	NSLog(@"MESSAGE RESULT -=- CREATOR:[%@]%@", error, message.identifierSuffix);
-	BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
-	NSLog(@"MESSAGE SENT -=- CREATOR:[%@]", NSStringFromBOOL(success));
-	
-//	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
-//		[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//			NSDictionary *dict = (NSDictionary *)obj;
-//			
-//			NSError *error = nil;
-//			LYRConversation *conversationRequest = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-//			LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-//			
-//			NSLog(@"MESSAGE RESULT:(%d) -=- [%@]%@", idx, error, messageRequest.identifierSuffix);
-//			BOOL success2 = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:conversationRequest];
-//			NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
-//		}];
-//	}];
-}
-
-- (void)_inviteCheck {
-	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
-		
-		__block NSString *names = @"";
-		[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSDictionary *dict = (NSDictionary *)obj;
-			
-			if ([[[dict objectForKey:@"text"] uppercaseString] isEqualToString:@"__OPEN_SESAME__"]) {
-				names = [names stringByAppendingFormat:@", %@", [[dict objectForKey:@"owner_member"] objectForKey:@"name"]];
-				NSError *error = nil;
-				[_conversation addParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] error:&error];
+				case PNSubscriptionProcessRestoredState:
+					NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
+					break;
 			}
 		}];
 		
-		NSError *error = nil;
-		LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[names stringByAppendingString:@" joined the conversation"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-		BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:_conversation];
-
+		// Observer looks for message received events
+		[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
+			NSLog(@"OBSERVER: Channel: %@, Message: %@", message.channel.name, message.message);
+			
+			NSMutableDictionary *dict = [@{@"id"				: message.message,
+										   @"msg_id"			: message.message,
+										   
+										   @"owner_member"		: @{@"id"	: @([[HONUserAssistant sharedInstance] activeUserID]),
+																	@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
+										   
+										   @"img"				: message.message,
+										   @"text"				: message.message,
+										   
+										   @"net_vote_score"	: @(0),
+										   @"status"			: NSStringFromInt(0),
+										   @"added"				: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601],
+										   @"updated"			: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
+			
+			
+			[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+		}];
+		
+		[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data){
+			
+			switch (state) {
+				case PNMessageSent:
+					NSLog(@"OBSERVER: Message Sent.");
+					break;
+					
+				case PNMessageSending:
+					NSLog(@"OBSERVER: Sending Message...");
+					break;
+					
+				case PNMessageSendingError:
+					NSLog(@"OBSERVER: ERROR: Failed to Send Message.");
+					break;
+					
+				default:
+					break;
+			}
+		}];
+		
+		
+//		NSError *error = nil;
+//		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
+//		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
+//		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
+//		
+//		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation);
+//		
+//		if (_conversation == nil) {
+//			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC);
+//			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+//				[self _retrieveStatusUpdate];
+//			});
+//		}
+//		
+//		if (!error) {
+//			[_refreshTimer invalidate];
+//			_refreshTimer = nil;
+//			
+//			//[self _inviteCheck];
+//			
+//			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
+//				LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
+//				msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
+//				msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+//				
+//				NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
+//				NSLog(@"QUERY:[%@] -=- %@\n%d", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", (int)[messages count]);
+//				
+//				if ([messages count] > 1) {
+//					NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
+//					[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//						LYRMessage *message = (LYRMessage *)obj;
+//						NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", (int)idx, message.identifierSuffix, [message.sentAt formattedISO8601String], [message.receivedAt formattedISO8601String]);
+//						[message markAsRead:nil];
+//						[_replies addObject:[HONCommentVO commentWithMessage:message]];
+//					}];
+//				}
+//				
+				_statusUpdateVO.replies = [_replies copy];
+				
+				[self _didFinishDataRefresh];
+//			}
+//		}
 	}];
 }
 
@@ -220,16 +236,23 @@
 		}
 	}];
 	
+	PNChannel *channel = [PNChannel channelWithName:_statusUpdateVO.imagePrefix shouldObservePresence:YES];
 	
-	NSString *pushContent = (isText) ? [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment] : [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]];
-	LYRMessagePart *messagePart = (isText) ? [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]] : [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"emojiMessage-001"])];
+	// Send a goodbye message
+	[PubNub sendMessage:_comment toChannel:channel withCompletionBlock:^(PNMessageState messageState, id data) {
+		if (messageState == PNMessageSent) {
+		}
+	}];
 	
-	NSError *error = nil;
-	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart] options:((_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: pushContent} : nil) error:&error];
-	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
-	
-	BOOL success = [_conversation sendMessage:message error:&error];
-	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
+//	NSString *pushContent = (isText) ? [NSString stringWithFormat:@"%@ says “%@”", [[HONUserAssistant sharedInstance] activeUsername], _comment] : [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]];
+//	LYRMessagePart *messagePart = (isText) ? [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[_comment dataUsingEncoding:NSUTF8StringEncoding]] : [LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"emojiMessage-001"])];
+//	
+//	NSError *error = nil;
+//	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[messagePart] options:((_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: pushContent} : nil) error:&error];
+//	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
+//	
+//	BOOL success = [_conversation sendMessage:message error:&error];
+//	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
 	
 	_isSubmitting = NO;
 }
