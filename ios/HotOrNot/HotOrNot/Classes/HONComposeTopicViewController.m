@@ -129,8 +129,6 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor clearColor];
-	
 	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 24.0)];
 	headerLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
 	headerLabel.textColor = [UIColor whiteColor];
@@ -139,19 +137,10 @@
 	headerLabel.text = @"WHAT'S UP?";
 	[self.view addSubview:headerLabel];
 	
-	HONCloseNavButtonView *closeNavButtonView = [[HONCloseNavButtonView alloc] initWithTarget:self action:@selector(_goClose)];
-	closeNavButtonView.frame = CGRectOffsetY(closeNavButtonView.frame, 20.0);
-	[self.view addSubview:closeNavButtonView];
-	
-	//_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_compose", @"What are you doing?")];
-	//[_headerView addCloseButtonWithTarget:self action:@selector(_goClose)];
-	//_headerView.alpha = 0.5;
-	//[self.view addSubview:_headerView];
-	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 75.0, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.backgroundColor = [UIColor clearColor];
-	//_tableView.alpha = 0.5;
+	[_tableView setContentInset:UIEdgeInsetsMake(75.0, 0.0, 0.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.alwaysBounceVertical = YES;
@@ -162,6 +151,10 @@
 	_refreshControl = [[HONRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	HONCloseNavButtonView *closeNavButtonView = [[HONCloseNavButtonView alloc] initWithTarget:self action:@selector(_goClose)];
+	closeNavButtonView.frame = CGRectOffsetY(closeNavButtonView.frame, 20.0);
+	[self.view addSubview:closeNavButtonView];
 	
 	[self _goReloadContents];
 }
@@ -190,11 +183,13 @@
 	NSLog(@"[*:*] _goClose");
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - exit_button"];
 	
-	[_headerView tappedTitle];
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-		}];
-	});
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+	}];
+	
+//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kButtonSelectDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//		[self dismissViewControllerAnimated:NO completion:^(void) {
+//		}];
+//	});
 }
 
 - (void)_goNext {

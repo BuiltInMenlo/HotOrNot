@@ -103,7 +103,7 @@
 		PNChannel *channel = [PNChannel channelWithName:_statusUpdateVO.imagePrefix shouldObservePresence:YES];
 		
 		[PubNub subscribeOnChannel:channel];
-		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error){
+		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 			
 			switch (state) {
 				case PNSubscriptionProcessSubscribedState:
@@ -146,8 +146,7 @@
 			[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
 		}];
 		
-		[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data){
-			
+		[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
 			switch (state) {
 				case PNMessageSent:
 					NSLog(@"OBSERVER: Message Sent.");
@@ -240,6 +239,7 @@
 	
 	// Send a goodbye message
 	[PubNub sendMessage:_comment toChannel:channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//	[PubNub sendMessage:[NSString stringWithFormat:@"%@|%d", _comment, [[HONUserAssistant sharedInstance] activeUserID]] toChannel:channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		if (messageState == PNMessageSent) {
 		}
 	}];
@@ -307,12 +307,12 @@
 	_retrievedReplies = [NSMutableArray array];
 	_replies = [NSMutableArray array];
 	
-	_typingStatusLabel.text = NSLocalizedString(@"loading_status", @"loading…");
-	[UIView animateWithDuration:0.125
-					 animations:^(void) {
-						 _typingStatusLabel.alpha = 1.0;
-					 } completion:^(BOOL finished) {
-					 }];
+//	_typingStatusLabel.text = NSLocalizedString(@"loading_status", @"loading…");
+//	[UIView animateWithDuration:0.125
+//					 animations:^(void) {
+//						 _typingStatusLabel.alpha = 1.0;
+//					 } completion:^(BOOL finished) {
+//					 }];
 	
 	[self _retrieveStatusUpdate];
 }
@@ -404,6 +404,14 @@
 	[_imageCommentButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	[_inputBGImageView addSubview:_imageCommentButton];
 	
+	_commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_commentButton.frame = _imageCommentButton.frame;
+	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
+	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
+	[_commentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
+	_commentButton.hidden = YES;
+	[_inputBGImageView addSubview:_commentButton];
+	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
@@ -492,7 +500,7 @@
 	_isSubmitting = YES;
 	
 	_commentTextField.text = @"";
-	_comment = _commentTextField.text;
+	_comment = @"0123456789";
 	
 	[self _submitCommentReply:NO];
 //	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
@@ -568,6 +576,8 @@
 	}
 #endif
 	
+	_imageCommentButton.hidden = ([_commentTextField.text length] > 0);
+	_commentButton.hidden = ([_commentTextField.text length] == 0);
 	[_conversation sendTypingIndicator:LYRTypingDidBegin];
 }
 
@@ -666,6 +676,14 @@
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {
+	
+	if ([vo.textContent isEqualToString:@"0123456789"]) {
+		vo.commentContentType = HONCommentContentTypeImage;
+		vo.imageContent = [UIImage imageNamed:@"fpo_emotionButton_nonActive"];
+		vo.textContent = @"";
+	}
+	
+	
 	[_replies addObject:vo];
 	
 	HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, 33.0 + _commentsHolderView.frame.size.height, 320.0, 90.0)];

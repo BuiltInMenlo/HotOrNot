@@ -70,15 +70,13 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor clearColor];
-	
 	_topics = [NSMutableArray array];
 	
 //	_headerView = [[HONHeaderView alloc] init];
 //	[self.view addSubview:_headerView];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 75.0, 320.0, self.view.frame.size.height - (kNavHeaderHeight))];
-//	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 58.0, 0.0)];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
+	[_tableView setContentInset:UIEdgeInsetsMake(75.0, 0.0, 0.0, 0.0)];
 	_tableView.backgroundColor = [UIColor clearColor];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;

@@ -42,7 +42,7 @@
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 91.0, 160.0, 18.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:14];
-		_captionLabel.textColor =  [UIColor whiteColor];
+		_captionLabel.textColor =  [UIColor blackColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textAlignment = NSTextAlignmentCenter;
 		[self.contentView addSubview:_captionLabel];

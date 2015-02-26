@@ -80,19 +80,23 @@
 		switch (state) {
 			case PNSubscriptionProcessSubscribedState:
 				NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
-				[PubNub sendMessage:@"Hello Everybody!" toChannel:channel];
 				break;
+				
 			case PNSubscriptionProcessNotSubscribedState:
 				NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
 				break;
+				
 			case PNSubscriptionProcessWillRestoreState:
 				NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
 				break;
+				
 			case PNSubscriptionProcessRestoredState:
 				NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
 				break;
 		}
 	}];
+	
+	
 	
 	
 //	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
@@ -107,7 +111,7 @@
 //	else {
 //		NSLog(@"CONVERSATION:\n%@", [conversation toString]);
 	
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			[_submitParams setValue:channelName forKey:@"img_url"];
 			[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
 			
@@ -125,6 +129,19 @@
 					_progressHUD = nil;
 					
 				} else {
+					
+					[[[UIAlertView alloc] initWithTitle:nil
+												message:[NSString stringWithFormat:@"Your Derp URL is derpch.at/%d", [[result objectForKey:@"id"] intValue]]
+											   delegate:nil
+									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+									  otherButtonTitles:nil] show];
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					[_loadingOverlayView outro];
+					
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+					}]; // modal
+					
 //					NSError *error = nil;
 //					NSLog(@"DELETING:%@", NSStringFromBOOL([message delete:LYRDeletionModeAllParticipants error:&error]));
 //					[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
@@ -136,15 +153,15 @@
 //					NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
 				} // api result
 			}]; // api submit
-		});
-		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.875 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-			[_loadingOverlayView outro];
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-			}]; // modal
-		});
+//		});
+	
+//		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.875 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+//			[_loadingOverlayView outro];
+//			
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+//			}]; // modal
+//		});
 //	}
 }
 
@@ -233,6 +250,9 @@
 }
 
 - (void)_goSubmit {
+	
+	
+	
 	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 	_loadingOverlayView.delegate = self;
 	

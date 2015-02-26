@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "toggleActive_Me.png"
+      "filename" : "toggleMe@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "toggleActive_Me-1.png"
+      "filename" : "toggleMe@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "toggleActive_Me-2.png"
+      "filename" : "meToggle@3x.png"
     }
   ],
   "info" : {

@@ -139,15 +139,15 @@
 				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:dict];
 				[_statusUpdates addObject:vo];
 				
-				NSError *error = nil;
-				LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010), NSStringFromInt(vo.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-				LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[vo.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-				
-				NSLog(@"STATUSUPD:[%@]\n[%@]", conversation, message);
-				
-				[_convos setObject:@{@"convo"	: conversation,
-									 @"msg"		: message} forKey:NSStringFromInt(vo.statusUpdateID)];
-				
+//				NSError *error = nil;
+//				LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010), NSStringFromInt(vo.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+//				LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[vo.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+//				
+//				NSLog(@"STATUSUPD:[%@]\n[%@]", conversation, message);
+//				
+//				[_convos setObject:@{@"convo"	: conversation,
+//									 @"msg"		: message} forKey:NSStringFromInt(vo.statusUpdateID)];
+//				
 				[[HONUserAssistant sharedInstance] writeClubMemberToUserLookup:@{@"id"			: [[dict objectForKey:@"owner_member"] objectForKey:@"id"],
 																				 @"username"	: [[dict objectForKey:@"owner_member"] objectForKey:@"name"],
 																				 @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]}];
@@ -192,14 +192,14 @@
 				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:dict];
 				[_statusUpdates addObject:vo];
 				
-				NSError *error = nil;
-				LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010), NSStringFromInt(vo.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-				LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[vo.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-				
-				NSLog(@"STATUSUPD:[%@]\n[%@]", conversation, message);
-				
-				[_convos setObject:@{@"convo"	: conversation,
-									 @"msg"		: message} forKey:NSStringFromInt(vo.statusUpdateID)];
+//				NSError *error = nil;
+//				LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010), NSStringFromInt(vo.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
+//				LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[vo.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
+//				
+//				NSLog(@"STATUSUPD:[%@]\n[%@]", conversation, message);
+//				
+//				[_convos setObject:@{@"convo"	: conversation,
+//									 @"msg"		: message} forKey:NSStringFromInt(vo.statusUpdateID)];
 				
 			}];
 			
@@ -508,6 +508,22 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
+	
+	[[HONAPICaller sharedInstance] createClubWithTitle:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])
+									   withDescription:@""
+									   withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]
+											atLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation]
+											completion:^(NSDictionary *result) {
+												NSDictionary *dict = [result mutableCopy];
+												
+												[dict setValue:@(0.0) forKey:@"distance"];
+												[dict setValue:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) forKey:@"radius"];
+												[dict setValue:@{@"lat"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
+																 @"lon"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude)} forKey:@"coords"];
+												
+												HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
+												NSLog(@"CREATED CLUB:[%@]", NSStringFromNSDictionary(clubVO.dictionary));
+											}];
 }
 
 
@@ -533,22 +549,22 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 	//									 withProperties:@{@"src"	: @"header"}];
 	
-	HONComposeTopicViewController *composeTopicViewController = [[HONComposeTopicViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:composeTopicViewController];
-	[navigationController setNavigationBarHidden:YES];
-	navigationController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[navigationController setTransitioningDelegate:_transitionController];
-	navigationController.modalPresentationStyle = UIModalPresentationCustom;
-	[self presentViewController:navigationController animated:YES completion:nil];
-//	[self presentViewController:composeTopicViewController animated:YES completion:nil];
-	
-		
-//	[composeTopicViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+//	HONComposeTopicViewController *composeTopicViewController = [[HONComposeTopicViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:composeTopicViewController];
-//	navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
 //	[navigationController setNavigationBarHidden:YES];
+//	navigationController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+//	[navigationController setTransitioningDelegate:_transitionController];
+//	navigationController.modalPresentationStyle = UIModalPresentationCustom;
+//	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 //	[self presentViewController:navigationController animated:YES completion:nil];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Deep Link", @"Open", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
 }
 
 - (void)_goSettings {
@@ -1046,7 +1062,58 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
 		if (buttonIndex == 0) {
-			[self _flagStatusUpdate];
+			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+			_loadingOverlayView.delegate = self;
+			
+			NSString *channelName = [NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+			PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];
+			[PubNub subscribeOnChannel:channel];
+			
+			NSError *error;
+			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[channelName] options:0 error:&error]
+														 encoding:NSUTF8StringEncoding];
+			
+			NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"img_url"		: channelName,
+										   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"challenge_id"	: @(0),
+										   @"topic_id"		: @(0),
+										   @"subject"		: channelName,
+										   @"subjects"		: jsonString};
+			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+			
+			
+			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
+			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					_progressHUD = nil;
+					
+				} else {
+				} // api result
+				
+				[_loadingOverlayView outro];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+				
+				[[[UIAlertView alloc] initWithTitle:nil
+											message:[NSString stringWithFormat:@"Your Derp URL is derpch.at/%d", [[result objectForKey:@"id"] intValue]]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			}]; // api submit
+		
+		} else if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONComposeTopicViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }
