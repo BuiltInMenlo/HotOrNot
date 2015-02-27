@@ -934,6 +934,7 @@
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 //	cell.alpha = 0.0;
 	
+	[cell hideChevron];
 	HONStatusUpdateVO *vo = (HONStatusUpdateVO *)[_statusUpdates objectAtIndex:indexPath.row];
 	cell.statusUpdateVO = vo;
 	cell.delegate = self;

@@ -25,7 +25,7 @@
 
 - (id)initWithTypes:(NSArray *)types {
 //	if ((self = [super initWithFrame:CGRectMake(62.0, 0.0, 196.0, 44.0)])) {
-	if ((self = [super initWithFrame:CGRectMake(93.0, 0.0, 134.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(100.0, 7.0, 134.0, 44.0)])) {
 	
 		_supportedTypes = types;
 		

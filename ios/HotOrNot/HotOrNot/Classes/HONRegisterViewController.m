@@ -170,7 +170,7 @@
 	_username = [[HONUserAssistant sharedInstance] activeUsername];
 	
 	_brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signupBranding"]];
-	_brandingImageView.frame = CGRectOffset(_brandingImageView.frame, 0.0, 88.0);
+	_brandingImageView.frame = CGRectOffset(_brandingImageView.frame, 0.0, 114.0);
 	[self.view addSubview:_brandingImageView];
 	
 	_txtFieldBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 136.0, 320.0, 44.0)];
@@ -204,7 +204,7 @@
 	[_txtFieldBGImageView addSubview:enterButton];
 	
 	_termsCheckButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_termsCheckButton.frame = CGRectMake(33.0, self.view.frame.size.height - 68.0, 44.0, 44.0);
+	_termsCheckButton.frame = CGRectMake(80.0, self.view.frame.size.height - 54.0, 20.0, 20.0);
 	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_normal"] forState:UIControlStateNormal];
 //	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_normal"] forState:(UIControlStateNormal|UIControlStateHighlighted)];
 	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_selected"] forState:(UIControlStateSelected)];
@@ -213,10 +213,10 @@
 	[self.view addSubview:_termsCheckButton];
 	
 	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	termsButton.frame = CGRectMake(70.0, self.view.frame.size.height - 55.0, 200.0, 18.0);
-	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.80] forState:UIControlStateNormal];
+	termsButton.frame = CGRectMake(77.0, self.view.frame.size.height - 56.0, 200.0, 18.0);
+	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58] forState:UIControlStateNormal];
 	[termsButton setTitleColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor] forState:UIControlStateHighlighted];
-	termsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	termsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	[termsButton setTitle:NSLocalizedString(@"register_footer", @"Terms") forState:UIControlStateNormal];
 	[termsButton setTitle:NSLocalizedString(@"register_footer", @"Terms") forState:UIControlStateHighlighted];
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];

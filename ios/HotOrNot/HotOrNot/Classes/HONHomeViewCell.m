@@ -51,13 +51,13 @@
 		
 		[[HONViewDispensor sharedInstance] maskView:_subjectImageView withMask:[UIImage imageNamed:@"topicMask"]];
 		
-		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 12.0, 220.0, 16.0)];
+		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(77.0, 20.0, 220.0, 16.0)];
 		_usernameLabel.backgroundColor = [UIColor clearColor];
 		_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
-		_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:14];
+		_usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		[self.contentView addSubview:_usernameLabel];
 		
-		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 32.0, 220.0, 20.0)];
+		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(77.0, 43.0, 220.0, 20.0)];
 		_subjectLabel.backgroundColor = [UIColor clearColor];
 		_subjectLabel.textColor = [UIColor blackColor];
 		_subjectLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:16];
@@ -65,25 +65,25 @@
 		
 		UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeIcon"]];
 		timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 57.0);
-		[self.contentView addSubview:timeIconImageView];
+		//[self.contentView addSubview:timeIconImageView];
 		
-		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(88.0, 57.0, 48.0, 16.0)];
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(267.0, 9.0, 40.0, 16.0)];
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
+		_timeLabel.textAlignment = NSTextAlignmentRight;
 		[self.contentView addSubview:_timeLabel];
 		
 		_likesIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likesIcon"]];
 		_likesIconImageView.frame = CGRectOffset(timeIconImageView.frame, 32.0, 0.0);
-		[self.contentView addSubview:_likesIconImageView];
-		
+//		[self.contentView addSubview:_likesIconImageView];
 		
 		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(120.0, 57.0, 48.0, 16.0)];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance]  percentGreyscaleColor:0.75];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		[_scoreLabel setText:NSStringFromInt(_statusUpdateVO.score)];
-		[self.contentView addSubview:_scoreLabel];
+//		[self.contentView addSubview:_scoreLabel];
 		
 		_selectButton = [UIButton buttonWithType:UIButtonTypeCustom];	
 		_selectButton.frame = self.frame;
@@ -113,7 +113,7 @@
 #pragma mark - Public APIs
 - (void)setStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
 	_statusUpdateVO = statusUpdateVO;
-	NSString *actionCaption = [NSString stringWithFormat:@"- is %@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];
+	NSString *actionCaption = [NSString stringWithFormat:@"%@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];
 	
 	_usernameLabel.text = _statusUpdateVO.username;
 	_subjectLabel.text = actionCaption;
