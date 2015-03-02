@@ -77,12 +77,12 @@
 // settings
 "settings_mylocation" = "MY LOCATION";
 "settings_nearby" = "NEARBY";
-"settings_share" = "Share";
-"settings_rate" = "Rate";
+"settings_share" = "Share Derp";
+"settings_rate" = "Rate Derp";
 "settings_notifications" = "Notifications";
 "settings_support" = "Support";
-"settings_terms" = "Terms of service";
-"settings_privacy" = "Privacy policy";
+"settings_terms" = "Terms";
+"settings_privacy" = "Privacy";
 "settings_version" = "Version ";
 
 // activity

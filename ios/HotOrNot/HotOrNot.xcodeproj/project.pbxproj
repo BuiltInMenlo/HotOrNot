@@ -80,14 +80,7 @@
 		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
 		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
-		30AE76481A7C499100CD2050 /* AdColony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76431A7C499100CD2050 /* AdColony.framework */; };
 		30AE76491A7C499100CD2050 /* FBAudienceNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76441A7C499100CD2050 /* FBAudienceNetwork.framework */; };
-		30AE764A1A7C499100CD2050 /* SharethroughSDK+DFP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76451A7C499100CD2050 /* SharethroughSDK+DFP.framework */; };
-		30AE764B1A7C499100CD2050 /* TalkChain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76461A7C499100CD2050 /* TalkChain.framework */; };
-		30AE764C1A7C499100CD2050 /* TapIt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76471A7C499100CD2050 /* TapIt.framework */; };
-		30AE76511A7C4A4C00CD2050 /* libGoogleAdMobAds.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE764E1A7C4A4C00CD2050 /* libGoogleAdMobAds.a */; };
-		30AE76521A7C4A4C00CD2050 /* libInMobi-4.5.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE764F1A7C4A4C00CD2050 /* libInMobi-4.5.1.a */; };
-		30AE76531A7C4A4C00CD2050 /* libLocalyticsAMP_x64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76501A7C4A4C00CD2050 /* libLocalyticsAMP_x64.a */; };
 		30AE76571A7C4A7A00CD2050 /* TalkChain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30AE76551A7C4A7A00CD2050 /* TalkChain.bundle */; };
 		30AE76581A7C4A7A00CD2050 /* TapIt.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30AE76561A7C4A7A00CD2050 /* TapIt.bundle */; };
 		30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -465,14 +458,7 @@
 		3091229F19C501F60081B141 /* HONComposeSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeSubjectViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONComposeSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeSubjectViewController.m; sourceTree = "<group>"; };
 		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
-		30AE76431A7C499100CD2050 /* AdColony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AdColony.framework; sourceTree = "<group>"; };
 		30AE76441A7C499100CD2050 /* FBAudienceNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBAudienceNetwork.framework; sourceTree = "<group>"; };
-		30AE76451A7C499100CD2050 /* SharethroughSDK+DFP.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "SharethroughSDK+DFP.framework"; sourceTree = "<group>"; };
-		30AE76461A7C499100CD2050 /* TalkChain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TalkChain.framework; sourceTree = "<group>"; };
-		30AE76471A7C499100CD2050 /* TapIt.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TapIt.framework; sourceTree = "<group>"; };
-		30AE764E1A7C4A4C00CD2050 /* libGoogleAdMobAds.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAdMobAds.a; sourceTree = "<group>"; };
-		30AE764F1A7C4A4C00CD2050 /* libInMobi-4.5.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libInMobi-4.5.1.a"; sourceTree = "<group>"; };
-		30AE76501A7C4A4C00CD2050 /* libLocalyticsAMP_x64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libLocalyticsAMP_x64.a; sourceTree = "<group>"; };
 		30AE76551A7C4A7A00CD2050 /* TalkChain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TalkChain.bundle; sourceTree = "<group>"; };
 		30AE76561A7C4A7A00CD2050 /* TapIt.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapIt.bundle; sourceTree = "<group>"; };
 		30AFF5701A79AB43005F408B /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
@@ -922,7 +908,6 @@
 				300BA8B41A7C50FC0087DFE0 /* libz.1.2.5.dylib in Frameworks */,
 				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
 				4CA8D9F61613933600B7B13C /* Accounts.framework in Frameworks */,
-				30AE76481A7C499100CD2050 /* AdColony.framework in Frameworks */,
 				4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */,
 				4CA8D9F41613932500B7B13C /* AdSupport.framework in Frameworks */,
 				4C08ECEF1956B36D006E83B1 /* AssetsLibrary.framework in Frameworks */,
@@ -954,20 +939,14 @@
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
-				30AE764A1A7C499100CD2050 /* SharethroughSDK+DFP.framework in Frameworks */,
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
 				30E177961A6EB4F2003D46DA /* StoreKit.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
-				30AE764B1A7C499100CD2050 /* TalkChain.framework in Frameworks */,
-				30AE764C1A7C499100CD2050 /* TapIt.framework in Frameworks */,
 				301DF2371A107A8C00D2BEB9 /* TMCache.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				301DF2381A107A8C00D2BEB9 /* UICKeyChainStore.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				301DF2391A107A8C00D2BEB9 /* XMLDictionary.framework in Frameworks */,
-				30AE76511A7C4A4C00CD2050 /* libGoogleAdMobAds.a in Frameworks */,
-				30AE76521A7C4A4C00CD2050 /* libInMobi-4.5.1.a in Frameworks */,
-				30AE76531A7C4A4C00CD2050 /* libLocalyticsAMP_x64.a in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */,
 				308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */,
@@ -1352,16 +1331,6 @@
 			name = Search;
 			sourceTree = "<group>";
 		};
-		30AE764D1A7C4A4C00CD2050 /* Libraries */ = {
-			isa = PBXGroup;
-			children = (
-				30AE764E1A7C4A4C00CD2050 /* libGoogleAdMobAds.a */,
-				30AE764F1A7C4A4C00CD2050 /* libInMobi-4.5.1.a */,
-				30AE76501A7C4A4C00CD2050 /* libLocalyticsAMP_x64.a */,
-			);
-			path = Libraries;
-			sourceTree = "<group>";
-		};
 		30AE76541A7C4A7A00CD2050 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1726,7 +1695,6 @@
 			children = (
 				4C4325A518E3A9F80035FF06 /* Classes */,
 				4C4327FA18E3A9FA0035FF06 /* Frameworks */,
-				30AE764D1A7C4A4C00CD2050 /* Libraries */,
 				30AE76541A7C4A7A00CD2050 /* Resources */,
 			);
 			path = Vendor;
@@ -1850,7 +1818,6 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				30AE76431A7C499100CD2050 /* AdColony.framework */,
 				301DF22C1A1071A500D2BEB9 /* AWSiOSSDKv2.framework */,
 				301DF2301A10756500D2BEB9 /* Bolts.framework */,
 				30B3091819E230A70017ACBF /* CouchbaseLite.framework */,
@@ -1859,9 +1826,6 @@
 				30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */,
 				30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */,
 				301DF22E1A10755000D2BEB9 /* Mantle.framework */,
-				30AE76451A7C499100CD2050 /* SharethroughSDK+DFP.framework */,
-				30AE76461A7C499100CD2050 /* TalkChain.framework */,
-				30AE76471A7C499100CD2050 /* TapIt.framework */,
 				301DF2331A107A8C00D2BEB9 /* TMCache.framework */,
 				301DF2341A107A8C00D2BEB9 /* UICKeyChainStore.framework */,
 				301DF2351A107A8C00D2BEB9 /* XMLDictionary.framework */,
@@ -2858,7 +2822,6 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Libraries",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2908,7 +2871,6 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
-					"$(PROJECT_DIR)/HotOrNot/Vendor/Libraries",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (

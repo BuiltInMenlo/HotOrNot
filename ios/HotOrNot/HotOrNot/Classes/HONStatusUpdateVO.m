@@ -21,7 +21,7 @@
 	vo.statusUpdateID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : ([dictionary objectForKey:@"creator"] != nil) ? [[[dictionary objectForKey:@"creator"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"owner_member_id"] intValue];
-	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : @"OP";
+	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : ([dictionary objectForKey:@"creator"] != nil) ? [[dictionary objectForKey:@"creator"] objectForKey:@"username"] : @"OP";
 	vo.topicName = ([[dictionary objectForKey:@"emotions"] count] > 0) ? [[dictionary objectForKey:@"emotions"] firstObject] : @"";
 	vo.subjectName = [dictionary objectForKey:@"text"];
 	vo.appStoreURL = ([dictionary objectForKey:@"app_store"] != nil) ? [dictionary objectForKey:@"app_store"] : @"";//@"https://itunes.apple.com/us/app/crossy-road-endless-arcade/id924373886?mt=8";

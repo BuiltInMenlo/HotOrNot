@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "flagButtonDetails_Active@2x.png"
+      "filename" : "flagButton_Active@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "flagButtonDetails_Active@2x-1.png"
+      "filename" : "flagButton_Active@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "flagButtonDetails_Active@2x-2.png"
+      "filename" : "flagButton_Active@3x.png"
     }
   ],
   "info" : {

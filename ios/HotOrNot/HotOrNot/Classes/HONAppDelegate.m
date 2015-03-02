@@ -904,7 +904,7 @@ NSString * const kTwilioSMS = @"6475577873";
 					
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 					[navigationController setNavigationBarHidden:YES];
-					[self.navController presentViewController:navigationController animated:YES completion:^(void) {
+					[self.navController presentViewController:navigationController animated:NO completion:^(void) {
 					}];
 				}
 			}];
@@ -1095,6 +1095,7 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"avatars"			: @{},
 								   @"purchases"			: @[],
 								   @"home_club"			: @{},
+								   @"back_chat"			: NSStringFromBOOL(NO),
 								   @"invites"			: @[],
 								   @"location_club"		: @{},
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
@@ -1332,28 +1333,29 @@ void uncaughtExceptionHandler(NSException *exception) {
 //			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 //			
 //
-		if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
-			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
-									withUsername:[[HONUserAssistant sharedInstance] activeUsername]
-										  toPath:savePath];
-			
-			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
-				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-				_documentInteractionController.UTI = @"com.instagram.exclusivegram";
-				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"captions"] objectForKey:@"instagram"] forKey:@"InstagramCaption"];
-				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize Instagram!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-		
-		} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
+//		if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
+//			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
+//			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
+//									withUsername:[[HONUserAssistant sharedInstance] activeUsername]
+//										  toPath:savePath];
+//			
+//			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
+//				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+//				_documentInteractionController.UTI = @"com.instagram.exclusivegram";
+//				_documentInteractionController.delegate = self;
+//				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"captions"] objectForKey:@"instagram"] forKey:@"InstagramCaption"];
+//				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
+//				
+//			} else {
+//				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
+//											message:@"This device isn't allowed or doesn't recognize Instagram!"
+//										   delegate:nil
+//								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//								  otherButtonTitles:nil] show];
+//			}
+//		
+//		} else
+		if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {

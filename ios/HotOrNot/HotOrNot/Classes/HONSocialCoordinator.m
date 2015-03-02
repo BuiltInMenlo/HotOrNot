@@ -105,7 +105,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on instagram", @"Share on SMS", @"Share on Email", nil];
+													otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on SMS", @"Share on Email", nil];
 	[actionSheet showInView:[[UIApplication sharedApplication].windows firstObject]];
 }
 
@@ -602,8 +602,8 @@ static HONSocialCoordinator *sharedInstance = nil;
 	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeTwitter) {
 		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeTwitter withMetaData:metaData];
 		
-	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
-		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeInstagram withMetaData:metaData];
+//	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeInstagram) {
+//		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeInstagram withMetaData:metaData];
 		
 	} else if (buttonIndex == HONSocialPlatformShareActionSheetTypeSMS) {
 		[[HONSocialCoordinator sharedInstance] presentSocialPlatformForSharing:HONSocialPlatformShareTypeSMS withMetaData:metaData];

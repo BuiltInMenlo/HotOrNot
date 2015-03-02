@@ -129,18 +129,10 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 24.0)];
-	headerLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
-	headerLabel.textColor = [UIColor whiteColor];
-	headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	headerLabel.textAlignment = NSTextAlignmentCenter;
-	headerLabel.text = @"WHAT'S UP?";
-	[self.view addSubview:headerLabel];
-	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.backgroundColor = [UIColor clearColor];
-	[_tableView setContentInset:UIEdgeInsetsMake(75.0, 0.0, 0.0, 0.0)];
+	[_tableView setContentInset:UIEdgeInsetsMake(kNavHeaderHeight - 20.0, 0.0, 0.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.alwaysBounceVertical = YES;
@@ -151,6 +143,17 @@
 	_refreshControl = [[HONRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	_headerView = [[HONHeaderView alloc] init];
+	[self.view addSubview:_headerView];
+	
+	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 22.0)];
+	headerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	headerLabel.textColor = [UIColor blackColor];
+	headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	headerLabel.textAlignment = NSTextAlignmentCenter;
+	headerLabel.text = @"What's up?";
+	[self.view addSubview:headerLabel];
 	
 	HONCloseNavButtonView *closeNavButtonView = [[HONCloseNavButtonView alloc] initWithTarget:self action:@selector(_goClose)];
 	closeNavButtonView.frame = CGRectOffsetY(closeNavButtonView.frame, 20.0);
@@ -283,7 +286,7 @@
 	
 	[cell setIndexPath:indexPath];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	cell.alpha = 0.0;
 	
 	HONTopicVO *vo = (HONTopicVO *)[_topics objectAtIndex:indexPath.row];
@@ -299,7 +302,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (120.0);
+	return (54.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -307,7 +310,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

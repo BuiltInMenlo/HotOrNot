@@ -12,7 +12,7 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithTarget:target action:action])) {
-		[self setFrame:CGRectOffset(self.frame, 245.0, 0.0)];
+		[self setFrame:CGRectOffset(self.frame, 278.0, 0.0)];
 		
 		_button.frame = CGRectFromSize(CGSizeMake(44.0, 44.0));
 		[_button setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];

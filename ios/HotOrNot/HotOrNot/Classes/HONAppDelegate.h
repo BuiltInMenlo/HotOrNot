@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <LayerKit/LayerKit.h>
-
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
@@ -16,7 +14,7 @@
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
-#define __FORCE_REGISTER__ 1
+#define __FORCE_REGISTER__ 0
 //]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[//
 #define __FORCE_NEW_USER__ 0
 #define __RESET_TOTALS__ 0

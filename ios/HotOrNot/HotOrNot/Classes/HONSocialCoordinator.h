@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareType) {
 typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
 	HONSocialPlatformShareActionSheetTypeClipboard = 0,
 	HONSocialPlatformShareActionSheetTypeTwitter,
-	HONSocialPlatformShareActionSheetTypeInstagram,
+//	HONSocialPlatformShareActionSheetTypeInstagram,
 	HONSocialPlatformShareActionSheetTypeSMS,
 	HONSocialPlatformShareActionSheetTypeEmail
 };

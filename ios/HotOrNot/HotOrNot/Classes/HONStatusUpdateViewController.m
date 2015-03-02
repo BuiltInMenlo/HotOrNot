@@ -100,8 +100,7 @@
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 		
-		PNChannel *channel = [PNChannel channelWithName:_statusUpdateVO.imagePrefix shouldObservePresence:YES];
-		
+		PNChannel *channel = [PNChannel channelWithName:NSStringFromInt(_statusUpdateVO.statusUpdateID) shouldObservePresence:YES];
 		[PubNub subscribeOnChannel:channel];
 		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 			
@@ -235,7 +234,7 @@
 		}
 	}];
 	
-	PNChannel *channel = [PNChannel channelWithName:_statusUpdateVO.imagePrefix shouldObservePresence:YES];
+	PNChannel *channel = [PNChannel channelWithName:NSStringFromInt(_statusUpdateVO.statusUpdateID) shouldObservePresence:YES];
 	
 	// Send a goodbye message
 	[PubNub sendMessage:_comment toChannel:channel withCompletionBlock:^(PNMessageState messageState, id data) {
@@ -405,7 +404,7 @@
 	[_inputBGImageView addSubview:_imageCommentButton];
 	
 	_commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_commentButton.frame = _imageCommentButton.frame;
+	_commentButton.frame = CGRectMake(260.0, 0.0, 64.0, 44.0);
 	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
 	[_commentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
@@ -416,11 +415,10 @@
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Conversation"];
+	_headerView = [[HONHeaderView alloc] init];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
 	[_headerView addMoreButtonWithTarget:self action:@selector(_goMore)];
-	[_headerView addDownloadButtonWithTarget:self action:@selector(_goDownload)];
 	[self.view addSubview:_headerView];
 }
 
@@ -459,10 +457,39 @@
 		[_refreshTimer invalidate];
 		_refreshTimer = nil;
 	}
-
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-//		[self.navigationController popToRootViewControllerAnimated:NO];
-	}];
+	
+	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"back_chat"] isEqualToString:@"YES"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"This will delete your conversation."
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+		[alertView setTag:1];
+		[alertView show];
+	
+	} else {
+		UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
+		matteView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
+		[_headerView addSubview:matteView];
+		
+		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
+		[activityIndicatorView startAnimating];
+		[_headerView addSubview:activityIndicatorView];
+		
+		UILabel *backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 11.0, 120.0, 20.0)];
+		backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+		backLabel.backgroundColor = [UIColor clearColor];
+		backLabel.textColor = [UIColor whiteColor];
+		backLabel.text = @"Deleting…";
+		[_headerView addSubview:backLabel];
+		
+		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
+		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+			[self dismissViewControllerAnimated:NO completion:^(void) {
+			}];
+		});
+	}
 }
 
 
@@ -470,10 +497,10 @@
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"share"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"share"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%@/%d", _statusUpdateVO.topicName, _statusUpdateVO.statusUpdateID]} forKey:@"share"];
+	[[NSUserDefaults standardUserDefaults] setObject:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]} forKey:@"share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%@/%d", _statusUpdateVO.topicName, _statusUpdateVO.statusUpdateID]}];
+	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]}];
 }
 
 - (void)_goFlag {
@@ -928,6 +955,34 @@
 	if (alertView.tag == 0) {
 		if (buttonIndex == 1) {
 			[self _flagStatusUpdate];
+		}
+	
+	} else if (alertView.tag == 1) {
+		if (buttonIndex == 1) {
+			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(YES) forKey:@"back_chat"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
+			matteView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
+			[_headerView addSubview:matteView];
+			
+			UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+			activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
+			[activityIndicatorView startAnimating];
+			[_headerView addSubview:activityIndicatorView];
+			
+			UILabel *backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 11.0, 120.0, 20.0)];
+			backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+			backLabel.backgroundColor = [UIColor clearColor];
+			backLabel.textColor = [UIColor whiteColor];
+			backLabel.text = @"Deleting…";
+			[_headerView addSubview:backLabel];
+			
+			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
+			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+				[self dismissViewControllerAnimated:NO completion:^(void) {
+				}];
+			});
 		}
 	}
 }

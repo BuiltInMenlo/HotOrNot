@@ -30,5 +30,8 @@
 	_button.frame = CGRectMake(_button.frame.origin.x, _button.frame.origin.y, _size.width, _size.height);
 }
 
+- (void)toggleVisible:(BOOL)isVisible {
+	_button.hidden = !isVisible;
+}
 
 @end

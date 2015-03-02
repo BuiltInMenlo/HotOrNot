@@ -57,7 +57,6 @@
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
-		_timeLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:_timeLabel];
 		
 		_statusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"statusUpdate_sent"]];
@@ -76,6 +75,7 @@
 - (void)setCommentVO:(HONCommentVO *)commentVO {
 	_commentVO = commentVO;
 	
+	/*
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.image = image;
 	};
@@ -92,6 +92,17 @@
 							 placeholderImage:[UIImage imageNamed:@"loadingDots_50"]
 									  success:imageSuccessBlock
 									  failure:imageFailureBlock];
+	*/
+	
+	_avatarImageView.image = (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [UIImage imageNamed:@"greenAvatar"] : [UIImage imageNamed:@"greyAvatar"];
+	
+	UILabel *initialLabel = [[UILabel alloc] initWithFrame:CGRectFromSize(_avatarImageView.frame.size)];
+	initialLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	initialLabel.backgroundColor = [UIColor clearColor];
+	initialLabel.textColor = [UIColor blackColor];
+	initialLabel.text = [[_commentVO.username substringToIndex:1] uppercaseString];
+	initialLabel.textAlignment = NSTextAlignmentCenter;
+	[_avatarImageView addSubview:initialLabel];
 	
 	
 	_statusImageView.hidden = (_commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]);
@@ -100,6 +111,8 @@
 		
 		_loadingImageView.frame = CGRectOffsetX(_loadingImageView.frame, 265.0);
 		_avatarImageView.frame = CGRectOffsetX(_avatarImageView.frame, 265.0);
+		_timeLabel.frame = CGRectOffset(_timeLabel.frame, 20.0, 0.0);
+		_timeLabel.textAlignment = NSTextAlignmentRight;
 	}
 	
 	_captionLabel.text = _commentVO.textContent;

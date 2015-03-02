@@ -14,4 +14,5 @@
 }
 
 - (id)initWithTarget:(id)target action:(SEL)action;
+- (void)toggleVisible:(BOOL)isVisible;
 @end

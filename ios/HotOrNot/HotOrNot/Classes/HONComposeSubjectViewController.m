@@ -72,97 +72,63 @@
 - (void)_submitStatusUpdate {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
-	NSString *channelName = [NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];
-	[PubNub subscribeOnChannel:channel];
 	
-	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
-		switch (state) {
-			case PNSubscriptionProcessSubscribedState:
-				NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
-				break;
-				
-			case PNSubscriptionProcessNotSubscribedState:
-				NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
-				break;
-				
-			case PNSubscriptionProcessWillRestoreState:
-				NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
-				break;
-				
-			case PNSubscriptionProcessRestoredState:
-				NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
-				break;
+//	[_submitParams setValue:channelName forKey:@"img_url"];
+	[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
+	
+	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = @"Error!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
+			
+		} else {
+			PNChannel *channel = [PNChannel channelWithName:[result objectForKey:@"id"] shouldObservePresence:YES];
+			[PubNub subscribeOnChannel:channel];
+			
+			[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
+				switch (state) {
+					case PNSubscriptionProcessSubscribedState:
+						NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
+						break;
+						
+					case PNSubscriptionProcessNotSubscribedState:
+						NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
+						break;
+						
+					case PNSubscriptionProcessWillRestoreState:
+						NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
+						break;
+						
+					case PNSubscriptionProcessRestoredState:
+						NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
+						break;
+				}
+			}];
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", [[result objectForKey:@"id"] intValue]];
+			
+			[[[UIAlertView alloc] initWithTitle:@"Your Derp chat link has been copied to your clipboard!"
+										message:[NSString stringWithFormat:@"Share your Derp chat link with friends for them to join. Derpch.at/%d", [[result objectForKey:@"id"] intValue]]
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+			[_loadingOverlayView outro];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+			}]; // modal
 		}
 	}];
-	
-	
-	
-	
-//	NSArray *participants = @[@"192975", @"192981", @"192975", @"192972", @"192991", @"192961", @"192988", @"192981"];// [[HONLayerKitAssistant sharedInstance] buildConversationParticipantsForClub:[[HONClubAssistant sharedInstance] globalClub]];
-//	LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010", @"193020", @"193021", @"193022", @"193023", @"193024", @"193025", @"193026"] withTopicName:[_submitParams objectForKey:@"topic_name"] andSubject:_selectedTopicVO.topicName];
-//	NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
-//	LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
-//	[conversation sendTypingIndicator:LYRTypingDidBegin];
-
-//	if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
-//		NSLog(@"SEND FAILED!!");
-//	
-//	else {
-//		NSLog(@"CONVERSATION:\n%@", [conversation toString]);
-	
-//		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[_submitParams setValue:channelName forKey:@"img_url"];
-			[_submitParams setValue:[NSString stringWithFormat:@"%@|%@", [_submitParams objectForKey:@"topic_name"], _selectedTopicVO.topicName] forKey:@"subject"];
-			
-			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", _submitParams);
-			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:_submitParams completion:^(NSDictionary *result) {
-				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-					if (_progressHUD == nil)
-						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-					_progressHUD.minShowTime = kProgressHUDMinDuration;
-					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-					_progressHUD.labelText = @"Error!";
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-					_progressHUD = nil;
-					
-				} else {
-					
-					[[[UIAlertView alloc] initWithTitle:nil
-												message:[NSString stringWithFormat:@"Your Derp URL is derpch.at/%d", [[result objectForKey:@"id"] intValue]]
-											   delegate:nil
-									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									  otherButtonTitles:nil] show];
-					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-					[_loadingOverlayView outro];
-					
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-					}]; // modal
-					
-//					NSError *error = nil;
-//					NSLog(@"DELETING:%@", NSStringFromBOOL([message delete:LYRDeletionModeAllParticipants error:&error]));
-//					[[HONLayerKitAssistant sharedInstance] purgeParticipantsFromConversation:conversation includeOwner:NO withCompletion:^(BOOL success, NSError *error) {
-//						if (!success) {
-//							NSLog(@"Purging participants failed!\n%@", error);
-//						}
-//					}];
-//				
-//					NSLog(@"CONVERSATION: -=-(%@)-=-\n%@", NSStringFromBOOL(error == nil), [conversation toString]);
-				} // api result
-			}]; // api submit
-//		});
-	
-//		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.875 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-//			[_loadingOverlayView outro];
-//			
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-//			}]; // modal
-//		});
-//	}
 }
 
 
@@ -186,20 +152,16 @@
 	//self.navigationController.delegate = self;
 	
 //	[_headerView setTitle:[_submitParams objectForKey:@"topic_name"]];
-//	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 //	_headerView.alpha = 0.5;
 	
-	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 24.0)];
-	headerLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:18];
-	headerLabel.textColor = [UIColor whiteColor];
+	UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 31.0, 210.0, 22.0)];
+	headerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	headerLabel.textColor = [UIColor blackColor];
 	headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 	headerLabel.textAlignment = NSTextAlignmentCenter;
-	headerLabel.text = [_submitParams objectForKey:@"topic_name"];
+	headerLabel.text = @"Select";//[_submitParams objectForKey:@"topic_name"];
 	[self.view addSubview:headerLabel];
-	
-	HONBackNavButtonView *backNavButtonView = [[HONBackNavButtonView alloc] initWithTarget:self action:@selector(_goBack)];
-	backNavButtonView.frame = CGRectOffsetY(backNavButtonView.frame, 20.0);
-	[self.view addSubview:backNavButtonView];
 	
 	_customTopicTextField = [[UITextField alloc] initWithFrame:CGRectMake(60.0, 78.0, 220.0, 26.0)];
 	[_customTopicTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -353,7 +315,7 @@
 //	cell.rTopicVO = (HONTopicVO *)[_topics objectAtIndex:MAX([_topics count] - 1, ((indexPath.row / 2) * 2) + 1)];
 	cell.delegate = self;
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	if (!tableView.decelerating)
 		[cell toggleImageLoading:YES];
@@ -366,11 +328,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (120.0);
+	return (54.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

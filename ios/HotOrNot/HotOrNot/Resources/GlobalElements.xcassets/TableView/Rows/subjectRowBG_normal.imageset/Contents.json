@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "commonRowBackground@2x.png"
+      "filename" : "composeRowBackground@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "commonRowBackground@2x-1.png"
+      "filename" : "composeRowBackground@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "commonRowBackground@2x-2.png"
+      "filename" : "composeRowBackground@3x.png"
     }
   ],
   "info" : {

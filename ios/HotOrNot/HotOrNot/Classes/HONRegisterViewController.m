@@ -204,7 +204,7 @@
 	[_txtFieldBGImageView addSubview:enterButton];
 	
 	_termsCheckButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_termsCheckButton.frame = CGRectMake(80.0, self.view.frame.size.height - 54.0, 20.0, 20.0);
+	_termsCheckButton.frame = CGRectMake(80.0, self.view.frame.size.height - 56.0, 20.0, 20.0);
 	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_normal"] forState:UIControlStateNormal];
 //	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_normal"] forState:(UIControlStateNormal|UIControlStateHighlighted)];
 	[_termsCheckButton setBackgroundImage:[UIImage imageNamed:@"termsCheckbox_selected"] forState:(UIControlStateSelected)];
@@ -349,7 +349,7 @@
 											   object:textField];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"registrationBranding"]];
-	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 77.0);
+	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 102.0);
 	bgImageView.alpha= 0.0;
 	[self.view addSubview:bgImageView];
 	

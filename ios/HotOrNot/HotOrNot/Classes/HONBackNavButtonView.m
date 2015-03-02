@@ -15,9 +15,9 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithTarget:target action:action])) {
-		[self setFrame:CGRectOffset(self.frame, -9.0, 0.0)];
+		[self setFrame:CGRectOffset(self.frame, 9.0, 0.0)];
 		
-		_button.frame = CGRectFromSize(CGSizeMake(44.0, 44.0));
+		_button.frame = CGRectFromSize(CGSizeMake(64.0, 44.0));
 		[_button setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[_button setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	}

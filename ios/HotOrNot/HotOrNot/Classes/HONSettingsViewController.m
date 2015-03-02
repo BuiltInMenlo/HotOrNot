@@ -229,11 +229,11 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 1) ? 2 : (section == 3) ? 3 : 1);
+	return ((section == 0) ? 2 : (section == 2) ? 3 : 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (5);
+	return (4);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -245,12 +245,12 @@
 	
 	if (cell == nil)
 		cell = [[HONSettingsViewCell alloc] init];
+	cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(indexPath.row == 0) ? @"settingsRowBG-f_normal" : @"subjectRowBG_normal"]];
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	[cell setIndexPath:indexPath];
 	[cell setRowIndex:[self _previousCellTotalForTableView:tableView priorToIndexPath:indexPath]];
-	
-	if (indexPath.section == 0) {
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
+/*
+//	if (indexPath.section == 0) {
 		[cell setCaption:@"Worldwide"];
 //		[cell setCaption:[NSString stringWithFormat:@"%@, %@", [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"], [[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"state"]]];
 		
@@ -271,24 +271,19 @@
 			}
 		}
 		
-	} else if (indexPath.section == 1) {
-		if (indexPath.row == 1)
-			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
-			[cell setCaption:(indexPath.row == 0) ? NSLocalizedString(@"settings_share", @"Share") : NSLocalizedString(@"settings_rate", @"Rate")];
+//	} else*/
+	if (indexPath.section == 0) {
+		[cell setCaption:(indexPath.row == 0) ? NSLocalizedString(@"settings_share", @"Share") : NSLocalizedString(@"settings_rate", @"Rate")];
 		
-	} else if (indexPath.section == 2) {
+	} else if (indexPath.section == 1) {
 		[cell hideChevron];
 		[cell setCaption:NSLocalizedString(@"settings_notifications", @"Notifications")];
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
 		cell.accessoryView = _notificationSwitch;
 		
-	} else if (indexPath.section == 3) {
-		if (indexPath.row == 2)
-			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG-f_normal"]];
-		
+	} else if (indexPath.section == 2) {
 		[cell setCaption:(indexPath.row == 0) ? NSLocalizedString(@"settings_support", @"Support") : (indexPath.row == 1) ? NSLocalizedString(@"settings_terms", @"Terms of service") : NSLocalizedString(@"settings_privacy", @"Privacy policy")];
 	
-	} else if (indexPath.section == 4) {
+	} else if (indexPath.section == 3) {
 		[cell hideChevron];
 		cell.backgroundView = nil;
 		
@@ -306,7 +301,7 @@
 	}
 	
 	
-	[cell setSelectionStyle:(indexPath.section == 3 || indexPath.section == 5) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:(indexPath.section == 1 || indexPath.section == 3) ? UITableViewCellSelectionStyleNone : UITableViewCellSelectionStyleGray];
 	
 	return (cell);
 }
@@ -327,7 +322,7 @@
 //		return ((distance < [[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) ? nil : indexPath);
 //	}
 	
-	return ((indexPath.section == 0 || indexPath.section == 2 || indexPath.section == 4) ? nil : indexPath);
+	return ((indexPath.section == 1 || indexPath.section == 3) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -337,6 +332,7 @@
 	HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
 	HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
 	
+	/*
 	if (indexPath.section == 0) {
 		if (![[HONClubAssistant sharedInstance] isStaffClub:locationClubVO]) {
 			[[HONClubAssistant sharedInstance] writeCurrentLocationClub:locationClubVO];
@@ -371,9 +367,10 @@
 		
 		[self performSelector:@selector(_reloadContents) withObject:nil afterDelay:1.125];
 	
-	} else if (indexPath.section == 1) {
+	} else*/
+	if (indexPath.section == 0) {
 		if (cell.indexPath.row == 0) {
-			
+			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:nil];
 			
 		} else {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];
@@ -382,7 +379,7 @@
 		}
 	}
 	
-	if (indexPath.section == 3) {
+	else if (indexPath.section == 2) {
 		if (cell.indexPath.row == 0) {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Terms of Service"];
 			

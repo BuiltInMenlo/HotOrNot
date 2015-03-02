@@ -103,7 +103,7 @@
 		cell.delegate = nil;
 	}];
 	
-	_locationManager.delegate = nil;
+//	_locationManager.delegate = nil;
 	_tableView.dataSource = nil;
 	_tableView.delegate = nil;
 	
@@ -292,17 +292,17 @@
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeHomeTabRefresh];
 	
 	_isLoading = YES;
-	_locationManager.delegate = self;
-	if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse)
-		[_locationManager startUpdatingLocation];
+//	_locationManager.delegate = self;
+//	if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse)
+//		[_locationManager startUpdatingLocation];
 	
-	else
+//	else
 		[self _goReloadContents];
 }
 
 - (void)_goReloadContents {
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
-		_locationManager.delegate = nil;
+//		_locationManager.delegate = nil;
 		
 		_noNetworkView.hidden = YES;
 		[_toggleView toggleEnabled:NO];
@@ -311,15 +311,18 @@
 		_statusUpdates = [NSMutableArray array];
 		[_tableView reloadData];
 		
-		[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
-		if (![_refreshControl isRefreshing])
-			[_refreshControl beginRefreshing];
+		[self _didFinishDataRefresh];
 		
-		if (_feedType == HONHomeFeedTypeOwned)
-			[self _retriveOwnedPhotosAtPage:1];
 		
-		else
-			[self _retrieveClubPhotosAtPage:1];
+//		[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
+//		if (![_refreshControl isRefreshing])
+//			[_refreshControl beginRefreshing];
+//		
+//		if (_feedType == HONHomeFeedTypeOwned)
+//			[self _retriveOwnedPhotosAtPage:1];
+//		
+//		else
+//			[self _retrieveClubPhotosAtPage:1];
 	
 	} else {
 		_noNetworkView.hidden = NO;
@@ -392,7 +395,7 @@
 	_toggleView = [[HONHomeFeedToggleView alloc] initWithTypes:@[@(HONHomeFeedTypeRecent), @(HONHomeFeedTypeTop)]];
 	_toggleView.delegate = self;
 	[_toggleView toggleEnabled:NO];
-	[_headerView addSubview:_toggleView];
+	//[_headerView addSubview:_toggleView];
 	
 	_isLoading = YES;
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
@@ -447,7 +450,7 @@
 	emptyLabel.backgroundColor = [UIColor clearColor];
 	emptyLabel.textAlignment = NSTextAlignmentCenter;
 	emptyLabel.text = NSLocalizedString(@"no_results", @"");
-	[_emptyFeedView addSubview:emptyLabel];
+	//[_emptyFeedView addSubview:emptyLabel];
 }
 
 - (void)viewDidLoad {
@@ -480,12 +483,43 @@
 		} else
 			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
 		
-		_locationManager = [[CLLocationManager alloc] init];
-		_locationManager.delegate = self;
-		_locationManager.distanceFilter = 1000;
-		if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
-			[_locationManager requestWhenInUseAuthorization];
-		[_locationManager startUpdatingLocation];
+//		_locationManager = [[CLLocationManager alloc] init];
+//		_locationManager.delegate = self;
+//		_locationManager.distanceFilter = 1000;
+//		if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+//			[_locationManager requestWhenInUseAuthorization];
+//		[_locationManager startUpdatingLocation];
+		
+		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
+			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
+			
+			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
+																	@"state"	: [result objectForKey:@"state"]}];
+			
+			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+//				[_locationManager stopUpdatingLocation];
+				
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:NO completion:^(void) {
+				}];
+				
+			} else {
+				[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
+					[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+					
+					HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+					HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+					NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+					if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+						[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+					}
+					
+					[self _goReloadContents];
+				}];
+			}
+		}];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
 		
@@ -508,22 +542,6 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
-	
-	[[HONAPICaller sharedInstance] createClubWithTitle:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])
-									   withDescription:@""
-									   withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]
-											atLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation]
-											completion:^(NSDictionary *result) {
-												NSDictionary *dict = [result mutableCopy];
-												
-												[dict setValue:@(0.0) forKey:@"distance"];
-												[dict setValue:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) forKey:@"radius"];
-												[dict setValue:@{@"lat"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
-																 @"lon"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude)} forKey:@"coords"];
-												
-												HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
-												NSLog(@"CREATED CLUB:[%@]", NSStringFromNSDictionary(clubVO.dictionary));
-											}];
 }
 
 
@@ -558,13 +576,21 @@
 //	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Deep Link", @"Open", nil];
-	[actionSheet setTag:0];
-	[actionSheet showInView:self.view];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Tap below to generate a Derp chat link"
+														message:nil
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											  otherButtonTitles:@"Create Derp (only people with link can chat)", nil];
+	[alertView setTag:1];
+	[alertView show];
+	
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Select the type of Derp you want to create:"
+//															 delegate:self
+//													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//											   destructiveButtonTitle:nil
+//													otherButtonTitles:@"Deep link (only people with the link can see)", @"Open (people on Derp can see)", nil];
+//	[actionSheet setTag:0];
+//	[actionSheet showInView:self.view];
 }
 
 - (void)_goSettings {
@@ -628,6 +654,23 @@
 	NSLog(@"::|> _completedFirstRun <|::");
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
+	
+	[[HONAPICaller sharedInstance] createClubWithTitle:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])
+									   withDescription:@""
+									   withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]
+											atLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation]
+											completion:^(NSDictionary *result) {
+												NSDictionary *dict = [result mutableCopy];
+												
+												[dict setValue:@(0.0) forKey:@"distance"];
+												[dict setValue:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) forKey:@"radius"];
+												[dict setValue:@{@"lat"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
+																 @"lon"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude)} forKey:@"coords"];
+												
+												HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
+												NSLog(@"CREATED CLUB:[%@]", NSStringFromNSDictionary(clubVO.dictionary));
+											}];
+	
 	self.view.hidden = NO;
 	
 	if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
@@ -637,13 +680,44 @@
 	} else
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
 	
-	_locationManager = [[CLLocationManager alloc] init];
-	_locationManager.delegate = self;
-	_locationManager.distanceFilter = 100;
+//	_locationManager = [[CLLocationManager alloc] init];
+//	_locationManager.delegate = self;
+//	_locationManager.distanceFilter = 100;
+//	
+//	if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+//		[_locationManager requestWhenInUseAuthorization];
+//	[_locationManager startUpdatingLocation];
 	
-	if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
-		[_locationManager requestWhenInUseAuthorization];
-	[_locationManager startUpdatingLocation];
+	[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
+		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
+		
+		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
+																@"state"	: [result objectForKey:@"state"]}];
+		
+		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+			[_locationManager stopUpdatingLocation];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:^(void) {
+			}];
+			
+		} else {
+			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
+				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+				
+				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+				}
+				
+				[self _goReloadContents];
+			}];
+		}
+	}];
 	
 	NSLog(@"%@._completedFirstRun - CLAuthorizationStatus = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 	
@@ -764,7 +838,7 @@
 //		[self _retrieveStatusUpdate];
 //	} else {
 //		[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:NO];
-		
+	
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:^(void) {
@@ -795,7 +869,7 @@
 		
 		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-			[_locationManager stopUpdatingLocation];
+//			[_locationManager stopUpdatingLocation];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
@@ -842,7 +916,7 @@
 			
 			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-				[_locationManager stopUpdatingLocation];
+//				[_locationManager stopUpdatingLocation];
 				
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
@@ -869,8 +943,8 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
 	NSLog(@"**_[%@ locationManager:didUpdateLocations:(%@)]_**", self.class, locations);
-	[_locationManager stopUpdatingLocation];
-	_locationManager.delegate = nil;
+//	[_locationManager stopUpdatingLocation];
+//	_locationManager.delegate = nil;
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
@@ -878,7 +952,7 @@
 	HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
 		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-			[_locationManager stopUpdatingLocation];
+//			[_locationManager stopUpdatingLocation];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
@@ -1066,20 +1140,16 @@
 			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 			_loadingOverlayView.delegate = self;
 			
-			NSString *channelName = [NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-			PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];
-			[PubNub subscribeOnChannel:channel];
-			
 			NSError *error;
-			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[channelName] options:0 error:&error]
+			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
 														 encoding:NSUTF8StringEncoding];
 			
 			NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
-										   @"img_url"		: channelName,
+										   @"img_url"		: @"",
 										   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
 										   @"challenge_id"	: @(0),
 										   @"topic_id"		: @(0),
-										   @"subject"		: channelName,
+										   @"subject"		: @"using|Derp",
 										   @"subjects"		: jsonString};
 			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
 			
@@ -1100,11 +1170,14 @@
 				} else {
 				} // api result
 				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", [[result objectForKey:@"id"] intValue]];
+				
 				[_loadingOverlayView outro];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 				
-				[[[UIAlertView alloc] initWithTitle:nil
-											message:[NSString stringWithFormat:@"Your Derp URL is derpch.at/%d", [[result objectForKey:@"id"] intValue]]
+				[[[UIAlertView alloc] initWithTitle:@"Your Derp chat link has been copied to your clipboard!"
+											message:[NSString stringWithFormat:@"Share your Derp chat link with friends for them to join. Derpch.at/%d", [[result objectForKey:@"id"] intValue]]
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
@@ -1125,6 +1198,68 @@
 	if (alertView.tag == 0) {
 		if (buttonIndex == 1) {
 			[self _flagStatusUpdate];
+		}
+	
+	} else if (alertView.tag == 1) {
+		if (buttonIndex == 1) {
+			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+			_loadingOverlayView.delegate = self;
+			
+			NSError *error;
+			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
+														 encoding:NSUTF8StringEncoding];
+			
+			NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"img_url"		: @"",
+										   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"challenge_id"	: @(0),
+										   @"topic_id"		: @(0),
+										   @"subject"		: @"using|Derp",
+										   @"subjects"		: jsonString};
+			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+			
+			
+			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
+			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					_progressHUD = nil;
+					
+				} else {
+				} // api result
+				
+				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:NO completion:^(void) {
+					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+					pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", [[result objectForKey:@"id"] intValue]];
+					
+					[_loadingOverlayView outro];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Derp link generated"
+																		message:[NSString stringWithFormat:@"Derpch.at/%d has been copied to your clipboard.", [[result objectForKey:@"id"] intValue]]
+																	   delegate:self
+															  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+															  otherButtonTitles:@"Share", nil];
+					[alertView setTag:2];
+					[alertView show];
+				}];
+				
+			}]; // api submit
+		}
+	
+	} else if (alertView.tag == 2) {
+		if (buttonIndex == 1) {
+			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _selectedStatusUpdateVO.statusUpdateID]}];
 		}
 	}
 }

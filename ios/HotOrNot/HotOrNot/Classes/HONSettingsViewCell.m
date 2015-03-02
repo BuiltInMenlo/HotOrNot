@@ -28,9 +28,9 @@
 	if ((self = [super init])) {
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settingsRowBG_normal"]];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, .0, 260.0, 24.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-		_captionLabel.textColor = [[HONColorAuthority sharedInstance]  percentGreyscaleColor:0.75];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 10.0, 260.0, 24.0)];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+		_captionLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_captionLabel];
 	}

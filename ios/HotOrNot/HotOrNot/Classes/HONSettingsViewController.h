@@ -14,17 +14,14 @@
 
 
 typedef NS_OPTIONS(NSUInteger, HONSettingsSectionType) {
-	HONSettingsSectionTypeLocations			= 0 << 0,	//>> 0
-	HONSettingsSectionTypeSocial			= 1 << 0,	//>> 1
-	HONSettingsSectionTypeNotifications		= 1 << 1,	//>> 2
-	HONSettingsSectionTypeLegal				= 1 << 2,	//>> 4
-	HONSettingsSectionTypeAppInfo			= 1 << 3	//>> 8
+	HONSettingsSectionTypeSocial			= 0 << 0,	//>> 1
+	HONSettingsSectionTypeNotifications		= 1 << 0,	//>> 2
+	HONSettingsSectionTypeLegal				= 1 << 1,	//>> 4
+	HONSettingsSectionTypeAppInfo			= 1 << 2	//>> 8
 };
 
 typedef NS_ENUM(NSUInteger, HONSettingsCellType) {
-	HONSettingsCellTypeLocation	= 0,
-	
-	HONSettingsCellTypeShare,
+	HONSettingsCellTypeShare = 0,
 	HONSettingsCellTypeRate,
 	
 	HONSettingsCellTypeNotifications,

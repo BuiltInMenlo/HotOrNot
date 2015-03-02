@@ -40,16 +40,17 @@
 - (id)init {
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
 		UIView *statusBarBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, 320.0, 20.0)];
-		statusBarBGView.backgroundColor = [UIColor whiteColor];
+		statusBarBGView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
 		[self addSubview:statusBarBGView];
 		
 		self.frame = CGRectOffset(self.frame, 0.0, 20.0);
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
+		_bgImageView.frame = CGRectOffset(_bgImageView.frame, 0.0, -20.0);
 		[self addSubview:_bgImageView];
 		
 		_title = @"";
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 10.0, 210.0, 24.0)];
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 10.0, 210.0, 22.0)];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 		_titleLabel.textColor = [UIColor blackColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -136,6 +137,7 @@
 	[_titleButton addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:_titleButton];
 }
+
 
 - (void)setTitle:(NSString *)title {
 	_title = title;

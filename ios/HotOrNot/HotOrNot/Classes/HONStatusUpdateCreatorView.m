@@ -68,13 +68,10 @@
 								   success:imageSuccessBlock
 								   failure:imageFailureBlock];
 		
-		
-		
-		
-		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 12.0, 200.0, 16.0)];
+		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(77.0, 20.0, 220.0, 16.0)];
 		_usernameLabel.backgroundColor = [UIColor clearColor];
 		_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
-		_usernameLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:14];
+		_usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		_usernameLabel.text = _statusUpdateVO.username;
 		[self addSubview:_usernameLabel];
 		
@@ -83,8 +80,8 @@
 		NSLog(@"SUBJECT:[%@]", _statusUpdateVO.subjectName);;
 		
 		
-		NSString *actionCaption = [NSString stringWithFormat:@"- is %@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];
-		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 32.0, 220.0, 20.0)];
+		NSString *actionCaption = [NSString stringWithFormat:@"%@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];
+		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(77.0, 43.0, 220.0, 20.0)];
 		_subjectLabel.backgroundColor = [UIColor clearColor];
 		_subjectLabel.textColor = [UIColor blackColor];
 		_subjectLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:16];
@@ -105,12 +102,13 @@
 		
 		UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeIcon"]];
 		timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 57.0);
-		[self addSubview:timeIconImageView];
+//		[self addSubview:timeIconImageView];
 		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(88.0, 57.0, 208.0, 16.0)];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(267.0, 9.0, 40.0, 16.0)];
 		timeLabel.backgroundColor = [UIColor clearColor];
 		timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
+		timeLabel.textAlignment = NSTextAlignmentRight;
 		timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
 		[self addSubview:timeLabel];
 		
@@ -142,7 +140,7 @@
 		_scoreLabel.textAlignment = NSTextAlignmentCenter;
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
-		[self addSubview:_scoreLabel];
+//		[self addSubview:_scoreLabel];
 	}
 	
 	return (self);
