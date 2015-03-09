@@ -27,6 +27,7 @@
 
 @interface HONStatusUpdateViewController () <HONStatusUpdateCreatorViewDelegate>
 @property (nonatomic, strong) LYRConversation *conversation;
+@property (nonatomic, strong) PNChannel *channel;
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
@@ -44,10 +45,14 @@
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *imageCommentButton;
 @property (nonatomic, strong) NSString *comment;
-@property (nonatomic, strong) NSTimer *refreshTimer;
+@property (nonatomic, strong) UIView *emptyCommentsView;
+@property (nonatomic, strong) NSTimer *expireTimer;
+@property (nonatomic, strong) UILabel *expireLabel;
 
 @property (nonatomic) BOOL isSubmitting;
-@property (nonatomic) int cnt;
+@property (nonatomic) BOOL isActive;
+@property (nonatomic) int expireSeconds;
+
 @end
 
 @implementation HONStatusUpdateViewController
@@ -64,6 +69,14 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_tareStatusUpdate:)
 													 name:@"TARE_STATUS_UPDATE" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_appEnteringBackground:)
+													 name:@"APP_ENTERING_BACKGROUND" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_appLeavingBackground:)
+													 name:@"APP_LEAVING_BACKGROUND" object:nil];
 	}
 	
 	return (self);
@@ -100,8 +113,19 @@
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 		
-		PNChannel *channel = [PNChannel channelWithName:NSStringFromInt(_statusUpdateVO.statusUpdateID) shouldObservePresence:YES];
-		[PubNub subscribeOnChannel:channel];
+		_channel = [PNChannel channelWithName:[NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID] shouldObservePresence:YES];
+		[PubNub subscribeOnChannel:_channel];
+		
+		NSLog(@"PARTICIPANTS:[%lu]", (unsigned long)_channel.participantsCount);
+		
+		if (_channel.participantsCount < 2) {
+			_emptyCommentsView.hidden = NO;
+			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+															target:self selector:@selector(_updateExpireTime)
+														  userInfo:nil
+														   repeats:YES];
+		}
+		
 		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 			
 			switch (state) {
@@ -164,50 +188,9 @@
 			}
 		}];
 		
-		
-//		NSError *error = nil;
-//		LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
-//		convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_statusUpdateVO.dictionary objectForKey:@"img"]];
-//		_conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
-//		
-//		NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_statusUpdateVO.dictionary objectForKey:@"img"], _conversation.identifier, _conversation);
-//		
-//		if (_conversation == nil) {
-//			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC);
-//			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
-//				[self _retrieveStatusUpdate];
-//			});
-//		}
-//		
-//		if (!error) {
-//			[_refreshTimer invalidate];
-//			_refreshTimer = nil;
-//			
-//			//[self _inviteCheck];
-//			
-//			if ([_conversation.participants containsObject:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])]) {
-//				LYRQuery *msgsQuery = [LYRQuery queryWithClass:[LYRMessage class]];
-//				msgsQuery.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:_conversation];
-//				msgsQuery.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
-//				
-//				NSOrderedSet *messages = [[[HONLayerKitAssistant sharedInstance] client] executeQuery:msgsQuery error:&error];
-//				NSLog(@"QUERY:[%@] -=- %@\n%d", NSStringFromBOOL(error == nil), (error != nil) ? error : @"", (int)[messages count]);
-//				
-//				if ([messages count] > 1) {
-//					NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(MIN(1, [messages count] - 1), [messages count] - 1)];
-//					[messages enumerateObjectsAtIndexes:indexSet options:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//						LYRMessage *message = (LYRMessage *)obj;
-//						NSLog(@"MESSAGE(%d) : [%@] -=- {%@}/{%@}", (int)idx, message.identifierSuffix, [message.sentAt formattedISO8601String], [message.receivedAt formattedISO8601String]);
-//						[message markAsRead:nil];
-//						[_replies addObject:[HONCommentVO commentWithMessage:message]];
-//					}];
-//				}
-//				
-				_statusUpdateVO.replies = [_replies copy];
-				
-				[self _didFinishDataRefresh];
-//			}
-//		}
+		_statusUpdateVO.replies = [_replies copy];
+		[self _didFinishDataRefresh];
+
 	}];
 }
 
@@ -234,11 +217,8 @@
 		}
 	}];
 	
-	PNChannel *channel = [PNChannel channelWithName:NSStringFromInt(_statusUpdateVO.statusUpdateID) shouldObservePresence:YES];
-	
 	// Send a goodbye message
-	[PubNub sendMessage:_comment toChannel:channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//	[PubNub sendMessage:[NSString stringWithFormat:@"%@|%d", _comment, [[HONUserAssistant sharedInstance] activeUserID]] toChannel:channel withCompletionBlock:^(PNMessageState messageState, id data) {
+	[PubNub sendMessage:_comment toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		if (messageState == PNMessageSent) {
 		}
 	}];
@@ -364,9 +344,35 @@
 	_creatorView.delegate = self;
 	[self.view addSubview:_creatorView];
 	
+	_emptyCommentsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 148.0, 320.0, 500.0)];
+	_emptyCommentsView.hidden = YES;
+	[self.view addSubview:_emptyCommentsView];
 	
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 70.0, 260.0, 40.0)];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	_expireLabel.backgroundColor = [UIColor clearColor];
+	_expireLabel.textColor = [UIColor blackColor];
+	_expireLabel.numberOfLines = 2;
+	_expireLabel.textAlignment = NSTextAlignmentCenter;
+	_expireLabel.text = @"";
+	[_emptyCommentsView addSubview:_expireLabel];
+	
+	UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	copyButton.frame = CGRectMake(60.0, 180.0, 160.0, 44.0);
+	copyButton.backgroundColor = [UIColor redColor];
+	[copyButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:copyButton];
+	
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = CGRectMake(60.0, 220.0, 160.0, 44.0);
+	shareButton.backgroundColor = [UIColor greenColor];
+	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:shareButton];
+	
+	
+	_isActive = YES;
 	_comment = @"";
-	_cnt = 0;
+	_expireSeconds = 600;
 	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0)];
 	[self.view addSubview:_footerView];
 	
@@ -417,7 +423,7 @@
 	
 	_headerView = [[HONHeaderView alloc] init];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
-	[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
+//	[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
 	[_headerView addMoreButtonWithTarget:self action:@selector(_goMore)];
 	[self.view addSubview:_headerView];
 }
@@ -438,13 +444,14 @@
 												 name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
+	[super viewDidAppear:animated];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidDisappear:animated];
-	
-	if (_refreshTimer != nil) {
-		[_refreshTimer invalidate];
-		_refreshTimer = nil;
-	}
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRClientObjectsDidChangeNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
@@ -453,9 +460,9 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	if (_refreshTimer != nil) {
-		[_refreshTimer invalidate];
-		_refreshTimer = nil;
+	if (_expireTimer != nil) {
+		[_expireTimer invalidate];
+		_expireTimer = nil;
 	}
 	
 	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"back_chat"] isEqualToString:@"YES"]) {
@@ -468,6 +475,8 @@
 		[alertView show];
 	
 	} else {
+		[[UIApplication sharedApplication] cancelAllLocalNotifications];
+		
 		UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
 		matteView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
 		[_headerView addSubview:matteView];
@@ -483,6 +492,32 @@
 		backLabel.textColor = [UIColor whiteColor];
 		backLabel.text = @"Deleting…";
 		[_headerView addSubview:backLabel];
+		
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+								   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+								   @"club_id"		: @(_statusUpdateVO.clubID),
+								   @"subject"		: @"__DELETE__",
+								   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+			
+			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					_progressHUD = nil;
+					
+				} else {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+					[self _goReloadContent];
+				}
+			}];
+		});
 		
 		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
 		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
@@ -515,6 +550,18 @@
 	[alertView show];
 }
 
+- (void)_goCopyDeeplink {
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"Get Derp - A live photo feed of who is doing what around you. getdood.com/%d", _statusUpdateVO.statusUpdateID];
+}
+
+- (void)_goShare {
+	[[NSUserDefaults standardUserDefaults] setObject:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]} forKey:@"share"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]}];
+}
+
 - (void)_goDownload {
 	
 }
@@ -523,32 +570,46 @@
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
 	
-	
-	_isSubmitting = YES;
-	
-	_commentTextField.text = @"";
-	_comment = @"0123456789";
-	
-	[self _submitCommentReply:NO];
-//	NSDictionary *alertDict = (_conversation.creatorID != [[HONUserAssistant sharedInstance] activeUserID]) ? @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@ posted an image", [[HONUserAssistant sharedInstance] activeUsername]]} : nil;
-//	
-//	NSError *error = nil;
-//	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionButton_nonActive"])]] options:alertDict error:&error];
-//	NSLog (@"MESSAGE OBJ:[%@]", message.identifier);
-//	
-//	BOOL success = [_conversation sendMessage:message error:&error];
-//	NSLog (@"MESSAGE RESULT:- %@ -=- %@", NSStringFromBOOL(success), error);
+	if (_channel.participantsCount >= 10) {
+		_isSubmitting = YES;
+		
+		_commentTextField.text = @"";
+		_comment = @"0123456789";
+		
+		[self _submitCommentReply:NO];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Emoji board unlocked when chat has more than 10 friends"
+															message:nil
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:nil, nil];
+		[alertView setTag:3];
+		[alertView show];
+	}
 }
 
 - (void)_goTextComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - comment"];
 	
-	_isSubmitting = YES;
+	if (_channel.participantsCount > 1) {
+		_isSubmitting = YES;
+		[_commentButton setEnabled:NO];
+		
+		_comment = _commentTextField.text;
+		_commentTextField.text = @"";
+		
+		[self _submitCommentReply:YES];
 	
-	_comment = _commentTextField.text;
-	_commentTextField.text = @"";
-	
-	[self _submitCommentReply:YES];
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need some users in chat before you can type"
+															message:nil
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												  otherButtonTitles:@"Share", nil];
+		[alertView setTag:2];
+		[alertView show];
+	}
 }
 
 - (void)_goCancelComment {
@@ -594,6 +655,15 @@
 	[_scrollView setContentOffset:CGPointZero animated:YES];
 }
 
+- (void)_appEnteringBackground:(NSNotification *)notification {
+	_isActive = NO;
+}
+
+- (void)_appLeavingBackground:(NSNotification *)notification {
+	_isActive = YES;
+}
+
+
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
@@ -604,8 +674,11 @@
 #endif
 	
 	_imageCommentButton.hidden = ([_commentTextField.text length] > 0);
+	[_imageCommentButton setEnabled:(_channel.participantsCount >= 10)];
+	
 	_commentButton.hidden = ([_commentTextField.text length] == 0);
-	[_conversation sendTypingIndicator:LYRTypingDidBegin];
+	[_commentButton setEnabled:([_commentTextField.text length] > 0)];
+//	[_conversation sendTypingIndicator:LYRTypingDidBegin];
 }
 
 - (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
@@ -729,6 +802,99 @@
 		itemView.frame = CGRectOffsetY(itemView.frame, -33.0);
 	} completion:^(BOOL finished) {
 	}];
+}
+
+- (void)_updateExpireTime {
+	NSLog(@"_updateExpireTime:[%d]", _expireSeconds);
+	
+	_emptyCommentsView.hidden = (_channel.participantsCount >= 2);
+	[_imageCommentButton setEnabled:(_channel.participantsCount >= 10)];
+	
+	if (_channel.participantsCount < 2) {
+		if (_expireSeconds >= 0) {
+			_expireSeconds--;
+			
+			if (_expireSeconds % 120 == 0 && !_isActive) {
+				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+				localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:0];
+				localNotification.timeZone = [NSTimeZone systemTimeZone];
+				localNotification.alertAction = @"View";
+				localNotification.alertBody = @"Get more people";
+				localNotification.soundName = @"selfie_notification.caf";
+				localNotification.userInfo = @{};
+				
+				[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			}
+			
+			
+			int mins = _expireSeconds / 60;
+			int secs = _expireSeconds % 60;
+			
+			_expireLabel.text = [NSString stringWithFormat:@"This chat will expire in %d:%02d\nif no one joins", mins, secs];
+			
+		} else {
+			if (_expireTimer != nil) {
+				[_expireTimer invalidate];
+				_expireTimer = nil;
+			}
+			
+			UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
+			matteView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
+			[_headerView addSubview:matteView];
+			
+			UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+			activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
+			[activityIndicatorView startAnimating];
+			[_headerView addSubview:activityIndicatorView];
+			
+			UILabel *backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 11.0, 120.0, 20.0)];
+			backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+			backLabel.backgroundColor = [UIColor clearColor];
+			backLabel.textColor = [UIColor whiteColor];
+			backLabel.text = @"Deleting…";
+			[_headerView addSubview:backLabel];
+			
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+									   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+									   @"club_id"		: @(_statusUpdateVO.clubID),
+									   @"subject"		: @"__DELETE__",
+									   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+				
+				[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
+					if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+						if (_progressHUD == nil)
+							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+						_progressHUD.minShowTime = kProgressHUDMinDuration;
+						_progressHUD.mode = MBProgressHUDModeCustomView;
+						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+						_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
+						[_progressHUD show:NO];
+						[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+						_progressHUD = nil;
+						
+					} else {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+						[self _goReloadContent];
+					}
+				}];
+			});
+			
+			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
+			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+				[self dismissViewControllerAnimated:NO completion:^(void) {
+				}];
+			});
+		}
+		
+	} else {
+		_expireLabel.text = @"";
+		
+		if (_expireTimer != nil) {
+			[_expireTimer invalidate];
+			_expireTimer = nil;
+		}
+	}
 }
 
 
@@ -880,7 +1046,7 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"Get DOOD - A live photo feed of who is doing what around you. getdood.com/%@", [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+			pasteboard.string = [NSString stringWithFormat:@"Get Derp - A live photo feed of who is doing what around you. getdood.com/%d", _statusUpdateVO.statusUpdateID];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -983,6 +1149,11 @@
 				[self dismissViewControllerAnimated:NO completion:^(void) {
 				}];
 			});
+		}
+	
+	} else if (alertView.tag == 2) {
+		if (buttonIndex == 1) {
+			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]}];
 		}
 	}
 }

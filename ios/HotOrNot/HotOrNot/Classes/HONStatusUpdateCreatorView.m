@@ -77,7 +77,7 @@
 		
 		
 		NSLog(@"TOPIC:[%@]", _statusUpdateVO.topicName);
-		NSLog(@"SUBJECT:[%@]", _statusUpdateVO.subjectName);;
+		NSLog(@"SUBJECT:[%@]", _statusUpdateVO.subjectName);
 		
 		
 		NSString *actionCaption = [NSString stringWithFormat:@"%@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];

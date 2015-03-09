@@ -795,6 +795,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
 	[[HONStateMitigator sharedInstance] updateAppEntryPoint:HONStateMitigatorAppEntryTypeSpringboard];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_LEAVING_BACKGROUND" object:nil];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Leaving Background"
 //									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),

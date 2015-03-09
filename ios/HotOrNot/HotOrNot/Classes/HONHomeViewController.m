@@ -9,6 +9,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <LayerKit/LayerKit.h>
 
+#import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 #import "UIScrollView+BuiltInMenlo.h"
@@ -26,6 +27,8 @@
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONLoadingOverlayView.h"
+#import "HONPaginationView.h"
+#import "HONScrollView.h"
 #import "HONRefreshControl.h"
 #import "HONHomeFeedToggleView.h"
 #import "HONHomeViewCell.h"
@@ -38,6 +41,10 @@
 @property (nonatomic, assign) HONHomeFeedType feedType;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) HONTableView *tableView;
+@property (nonatomic, strong) HONScrollView *scrollView;
+@property (nonatomic, strong) HONPaginationView *paginationView;
+@property (nonatomic, strong) UITextField *textField;
+@property (nonatomic, strong) UIButton *composeButton;
 @property (nonatomic, strong) NSMutableArray *retrievedStatusUpdates;
 @property (nonatomic, strong) NSMutableArray *statusUpdates;
 @property (nonatomic, strong) NSMutableDictionary *convos;
@@ -52,6 +59,8 @@
 @property (nonatomic) BOOL isLoading;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSTimer *overlayTimer;
+@property (nonatomic, strong) NSString *composeSubject;
+@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic) int cnt;
 @property (nonatomic, strong) TransitionDelegate *transitionController;
 @end
@@ -397,6 +406,53 @@
 	[_toggleView toggleEnabled:NO];
 	//[_headerView addSubview:_toggleView];
 	
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
+	_scrollView.alwaysBounceHorizontal = YES;
+	_scrollView.pagingEnabled = YES;
+	_scrollView.delegate = self;
+	[self.view addSubview:_scrollView];
+	
+	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
+	tutorial1ImageView.frame = CGRectTranslateY(tutorial1ImageView.frame, kNavHeaderHeight - 24.0);
+	[_scrollView addSubview:tutorial1ImageView];
+	
+	UILabel *tutorial1Label = [[UILabel alloc] initWithFrame:CGRectMake(20.0, _scrollView.frame.size.height - 107.0, 280.0, 30.0)];
+	tutorial1Label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20.0];
+	tutorial1Label.textColor = [UIColor blackColor];
+	tutorial1Label.backgroundColor = [UIColor clearColor];
+	tutorial1Label.textAlignment = NSTextAlignmentCenter;
+	tutorial1Label.text = @"create one time chats";
+	[_scrollView addSubview:tutorial1Label];
+	
+	UIImageView *tutorial2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_02"]];
+	tutorial2ImageView.frame = CGRectOffset(tutorial2ImageView.frame, _scrollView.frame.size.width, kNavHeaderHeight - 24.0);
+	[_scrollView addSubview:tutorial2ImageView];
+	
+	UILabel *tutorial2Label = [[UILabel alloc] initWithFrame:CGRectMake(350.0, _scrollView.frame.size.height - 107.0, 280.0, 30.0)];
+	tutorial2Label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20.0];
+	tutorial2Label.textColor = [UIColor blackColor];
+	tutorial2Label.backgroundColor = [UIColor clearColor];
+	tutorial2Label.textAlignment = NSTextAlignmentCenter;
+	tutorial2Label.text = @"with anyone about anything";
+	[_scrollView addSubview:tutorial2Label];
+	
+	UIImageView *tutorial3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_03"]];
+	tutorial3ImageView.frame = CGRectOffset(tutorial3ImageView.frame, _scrollView.frame.size.width * 2.0, kNavHeaderHeight - 24.0);
+	[_scrollView addSubview:tutorial3ImageView];
+	
+	UILabel *tutorial3Label = [[UILabel alloc] initWithFrame:CGRectMake(660.0, _scrollView.frame.size.height - 107.0, 280.0, 30.0)];
+	tutorial3Label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20.0];
+	tutorial3Label.textColor = [UIColor blackColor];
+	tutorial3Label.backgroundColor = [UIColor clearColor];
+	tutorial3Label.textAlignment = NSTextAlignmentCenter;
+	tutorial3Label.text = @"disappears when you leave";
+	[_scrollView addSubview:tutorial3Label];
+	
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, self.view.frame.size.height - 43.0) withTotalPages:4 usingDiameter:4.0 andPadding:5.0];
+	[_paginationView updateToPage:0];
+	[self.view addSubview:_paginationView];
+	
 	_isLoading = YES;
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -406,30 +462,16 @@
 	_tableView.alwaysBounceVertical = YES;
 	_tableView.showsVerticalScrollIndicator = NO;
 	_tableView.scrollsToTop = NO;
-	[self.view addSubview:_tableView];
+//	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[HONRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	UIButton *composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	composeButton.frame = CGRectMake(123.0, self.view.frame.size.height - 99.0, 74.0, 74.0);
-	[composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
-	[composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
-	[composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:composeButton];
-	
-	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(self.view.frame.size.width - 36.0, self.view.frame.size.height - 44.0, 44.0, 44.0);
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
-	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:settingsButton];
-	
 	_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
 	_noNetworkView.hidden = YES;
 	[_noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
-	[self.view addSubview:_noNetworkView];
+	[_scrollView addSubview:_noNetworkView];
 	
 	UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
 	noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
@@ -442,15 +484,34 @@
 	_emptyFeedView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 280.0)];
 	_emptyFeedView.hidden = YES;
 	[_emptyFeedView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emptyFeedBG"]]];
-	[self.view addSubview:_emptyFeedView];
-
-	UILabel *emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 260.0, 220.0, 20.0)];
-	emptyLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
-	emptyLabel.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
-	emptyLabel.backgroundColor = [UIColor clearColor];
-	emptyLabel.textAlignment = NSTextAlignmentCenter;
-	emptyLabel.text = NSLocalizedString(@"no_results", @"");
-	//[_emptyFeedView addSubview:emptyLabel];
+	//[_scrollView addSubview:_emptyFeedView];
+	
+	_composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_composeButton.frame = CGRectMake(123.0, self.view.frame.size.height, 74.0, 74.0);
+	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
+	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
+	[_composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_composeButton];
+	
+	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	settingsButton.frame = CGRectMake(self.view.frame.size.width - 36.0, self.view.frame.size.height - 44.0, 44.0, 44.0);
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
+	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:settingsButton];
+	
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake(1025.0, 120.0, 220.0, 26.0)];
+	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_textField setReturnKeyType:UIReturnKeyDone];
+	[_textField setTextColor:[UIColor blackColor]];
+	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	_textField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+	_textField.keyboardType = UIKeyboardTypeAlphabet;
+	_textField.placeholder = @"what are you doing?";
+	_textField.delegate = self;
+	[_scrollView addSubview:_textField];
 }
 
 - (void)viewDidLoad {
@@ -476,12 +537,7 @@
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
 		[[HONLayerKitAssistant sharedInstance] writePushToken:nil];
 		
-		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-			[[UIApplication sharedApplication] registerForRemoteNotifications];
-			
-		} else
-			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
+		
 		
 //		_locationManager = [[CLLocationManager alloc] init];
 //		_locationManager.delegate = self;
@@ -496,16 +552,16 @@
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																	@"state"	: [result objectForKey:@"state"]}];
 			
-			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
-			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-//				[_locationManager stopUpdatingLocation];
-				
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:NO completion:^(void) {
-				}];
-				
-			} else {
+//			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+//			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+////				[_locationManager stopUpdatingLocation];
+//				
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedViewController alloc] init]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:NO completion:^(void) {
+//				}];
+//				
+//			} else {
 				[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
 					[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
 					
@@ -518,7 +574,7 @@
 					
 					[self _goReloadContents];
 				}];
-			}
+//			}
 		}];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
@@ -547,9 +603,108 @@
 
 #pragma mark - Navigation
 - (void)_goRegistration {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:^(void) {
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:NO completion:^(void) {
+//	}];
+	
+	NSLog(@"_checkUsername -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+	NSLog(@"_checkUsername -- USERNAME:[%@]", [[HONUserAssistant sharedInstance] activeUsername]);
+	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+	
+	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
+		NSLog(@"RESULT:[%@]", result);
+		
+		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+//			[_loadingOverlayView outro];
+//
+//			if (_progressHUD == nil)
+//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//			[_progressHUD setYOffset:-80.0];
+//			_progressHUD.minShowTime = kProgressHUDMinDuration;
+//			_progressHUD.mode = MBProgressHUDModeCustomView;
+//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//			_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
+//			[_progressHUD show:NO];
+//			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//			_progressHUD = nil;
+//
+		} else {
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				[[HONAPICaller sharedInstance] checkForAvailablePhone:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] completion:^(NSDictionary *result) {
+					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue])
+						NSLog(@"\n\n!¡!¡!¡ FAILED API NAME/PHONE CHECK !¡!¡!¡");
+					
+					else
+						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
+				}];
+			});
+			
+			NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+			NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
+			NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+			
+			NSLog(@"\n\n******** FINALIZE W/ API **********");
+			[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+																		@"username"		: [[HONUserAssistant sharedInstance] activeUsername],
+																		@"phone"		: [[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
+																			
+																			
+																			NSLog(@"~*~*~*~*~*~* FINALIZE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n%@", result);
+																			int responseCode = [[result objectForKey:@"result"] intValue];
+																			if (result != nil && responseCode == 0) {
+																				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+																				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
+																				
+																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
+																				[_loadingOverlayView outro];
+//																				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+																					KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+																					[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
+																					
+																					dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+																						[[HONAPICaller sharedInstance] updateUsernameForUser:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
+																							NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+																							
+																							if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+																								[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+																							
+																							[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
+																								NSLog(@"~*~*~*~*~*~* AVATAR UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+																								
+																								if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+																									[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+																								
+																								[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+																									NSLog(@"~*~*~*~*~*~* PHONE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n");
+																									
+																									if (!((BOOL)[[result objectForKey:@"result"] intValue]))
+																										NSLog(@"!¡!¡!¡!¡!¡!¡!¡ PHONE UPDATE FAILED !¡!¡!¡!¡!¡!¡!¡!");
+																								}];
+																							}];
+																						}];
+																					});
+																					
+																					[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+//																				}];
+																				
+																			} else {
+																				[_loadingOverlayView outro];
+																				
+																				if (_progressHUD == nil)
+																					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+																				[_progressHUD setYOffset:-80.0];
+																				_progressHUD.minShowTime = kProgressHUDErrorDuration;
+																				_progressHUD.mode = MBProgressHUDModeCustomView;
+																				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+																				_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
+																				[_progressHUD show:NO];
+																				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration + 0.75];
+																				_progressHUD = nil;
+																			}
+																		}]; // finalize
+		}
 	}];
 }
 
@@ -576,11 +731,11 @@
 //	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Tap below to generate a Derp chat link"
-														message:nil
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation"
+														message:_textField.text
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-											  otherButtonTitles:@"Create Derp (only people with link can chat)", nil];
+											  otherButtonTitles:@"Create Chat", nil];
 	[alertView setTag:1];
 	[alertView show];
 	
@@ -673,13 +828,6 @@
 	
 	self.view.hidden = NO;
 	
-	if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-		[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-		[[UIApplication sharedApplication] registerForRemoteNotifications];
-		
-	} else
-		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
-	
 //	_locationManager = [[CLLocationManager alloc] init];
 //	_locationManager.delegate = self;
 //	_locationManager.distanceFilter = 100;
@@ -694,16 +842,16 @@
 		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																@"state"	: [result objectForKey:@"state"]}];
 		
-		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
-		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-			[_locationManager stopUpdatingLocation];
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:^(void) {
-			}];
-			
-		} else {
+//		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+//		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+//			[_locationManager stopUpdatingLocation];
+//			
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:NO completion:^(void) {
+//			}];
+//			
+//		} else {
 			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
 				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
 				
@@ -716,7 +864,7 @@
 				
 				[self _goReloadContents];
 			}];
-		}
+//		}
 	}];
 	
 	NSLog(@"%@._completedFirstRun - CLAuthorizationStatus = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
@@ -767,6 +915,14 @@
 //	}];
 }
 
+- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	UITextField *textField = (UITextField *)[notification object];
+	
+	if ([textField.text length] == 0)
+		[textField resignFirstResponder];
+}
+
 
 #pragma mark - UI Presentation
 - (void)_orphanSubmitOverlay {
@@ -779,7 +935,7 @@
 	_overlayTimer = nil;
 	
 	if (_overlayView != nil) {
-		[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+		[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 			_overlayView.alpha = 0.0;
 			
 		} completion:^(BOOL finished) {
@@ -867,16 +1023,16 @@
 		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																@"state"	: [result objectForKey:@"state"]}];
 		
-		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
-		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-//			[_locationManager stopUpdatingLocation];
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:^(void) {
-			}];
-			
-		} else {
+//		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+//		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+////			[_locationManager stopUpdatingLocation];
+//			
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:NO completion:^(void) {
+//			}];
+//			
+//		} else {
 			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
 				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
 				
@@ -889,8 +1045,9 @@
 				
 				[self _goReloadContents];
 			}];
-		}
-	}];}
+//		}
+	}];
+}
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
 	NSLog(@"**_[%@ locationManager:didChangeAuthorizationStatus:(%@)]_**", self.class, NSStringFromCLAuthorizationStatus(status));
@@ -914,16 +1071,16 @@
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																	@"state"	: [result objectForKey:@"state"]}];
 			
-			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
-			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-//				[_locationManager stopUpdatingLocation];
-				
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:NO completion:^(void) {
-				}];
-				
-			} else {
+//			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+//			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+////				[_locationManager stopUpdatingLocation];
+//				
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedViewController alloc] init]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:NO completion:^(void) {
+//				}];
+//				
+//			} else {
 				[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
 					[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
 					
@@ -936,7 +1093,7 @@
 					
 					[self _goReloadContents];
 				}];
-			}
+//			}
 		}];
 	}
 }
@@ -949,17 +1106,17 @@
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_AF"];
 	[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[locations firstObject]];
 	
-	HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
+//	HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
-		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
-//			[_locationManager stopUpdatingLocation];
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:^(void) {
-			}];
-			
-		} else {
+//		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
+////			[_locationManager stopUpdatingLocation];
+//			
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:NO completion:^(void) {
+//			}];
+//			
+//		} else {
 			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
 				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
 				
@@ -972,7 +1129,7 @@
 				
 				[self _goReloadContents];
 			}];
-		}
+//		}
 	
 	} else {
 		_noNetworkView.hidden = NO;
@@ -1087,50 +1244,119 @@
 }
 
 
-#pragma mark - ScrollView Delegates
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
-		[cell toggleImageLoading:YES];
-	}];
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
+	
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height, 320.0, 44.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_submitButton];
+	
+	[UIView animateWithDuration:0.25
+					 animations:^(void) {
+						 _submitButton.frame = CGRectOffsetY(_submitButton.frame, -(216.0 + 44.0));
+					 } completion:^(BOOL finished) {
+					 }];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"OFFSET:[%@]\nSIZE:[%@]\nBOTTOM:[%@]", NSStringFromCGPoint(_tableView.contentOffset), NSStringFromCGSize(_tableView.contentSize), NSStringFromBOOL([_tableView isAtBottom]));
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+//	[_conversation sendTypingIndicator:LYRTypingDidFinish];
+	if ([textField.text length] > 0)
+		[self _goCompose];
 	
-	if (scrollView.contentSize.height > scrollView.frame.size.height && [scrollView isAtContentBottom] && [_statusUpdates count] < _totStatusUpdates && !_isLoading) {
-		_isLoading = YES;
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if ([string rangeOfCharacterFromSet:[NSCharacterSet invalidCharacterSet]].location != NSNotFound)
+		return (NO);
+	
+	return ([textField.text length] <= 200 || [string isEqualToString:@""]);
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:@"UITextFieldTextDidChangeNotification"
+												  object:textField];
+	
+	[_submitButton removeFromSuperview];
+	[_submitButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton = nil;
+}
+
+- (void)_onTextEditingDidEnd:(id)sender {
+	//	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
+}
+
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+//	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
+//		[cell toggleImageLoading:YES];
+//	}];
+	
+	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
+	
+	NSLog(@"OFFSET:[%@]", NSStringFromCGPoint(_scrollView.contentOffset));
+	if (scrollView.contentOffset.x == 960) {
+		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+			[[UIApplication sharedApplication] registerForRemoteNotifications];
+			
+		} else
+			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
 		
-		if (_overlayView == nil) {
-			_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-			_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.33];
-			_overlayView.alpha = 0.0;
-			[self.view addSubview:_overlayView];
+		[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height - 99.0);
 			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:_overlayView animated:YES];
-			_progressHUD.labelText = @"";
-			_progressHUD.mode = MBProgressHUDModeIndeterminate;
-			_progressHUD.minShowTime = kProgressHUDMinDuration;
-			_progressHUD.taskInProgress = YES;
-			
-			[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-				_overlayView.alpha = 1.0;
-				
-			} completion:^(BOOL finished) {
-				_overlayTimer = [NSTimer timerWithTimeInterval:[HONAPICaller timeoutInterval] target:self
-													  selector:@selector(_orphanSubmitOverlay)
-													  userInfo:nil repeats:NO];
-				
-				if (_feedType == HONHomeFeedTypeOwned)
-					[self _retriveOwnedPhotosAtPage:(int)([_statusUpdates count] / 10)];
-				
-				else
-					[self _retrieveClubPhotosAtPage:(int)([_statusUpdates count] / 10)];
-			}];
-		}
+		} completion:^(BOOL finished) {
+		}];
 	}
 }
+
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+////	NSLog(@"OFFSET:[%@]\nSIZE:[%@]\nBOTTOM:[%@]", NSStringFromCGPoint(_tableView.contentOffset), NSStringFromCGSize(_tableView.contentSize), NSStringFromBOOL([_tableView isAtBottom]));
+//	
+//	if (scrollView.contentSize.height > scrollView.frame.size.height && [scrollView isAtContentBottom] && [_statusUpdates count] < _totStatusUpdates && !_isLoading) {
+//		_isLoading = YES;
+//		
+//		if (_overlayView == nil) {
+//			_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+//			_overlayView.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.33];
+//			_overlayView.alpha = 0.0;
+//			[self.view addSubview:_overlayView];
+//			
+//			if (_progressHUD == nil)
+//				_progressHUD = [MBProgressHUD showHUDAddedTo:_overlayView animated:YES];
+//			_progressHUD.labelText = @"";
+//			_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//			_progressHUD.minShowTime = kProgressHUDMinDuration;
+//			_progressHUD.taskInProgress = YES;
+//			
+//			[UIView animateKeyframesWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+//				_overlayView.alpha = 1.0;
+//				
+//			} completion:^(BOOL finished) {
+//				_overlayTimer = [NSTimer timerWithTimeInterval:[HONAPICaller timeoutInterval] target:self
+//													  selector:@selector(_orphanSubmitOverlay)
+//													  userInfo:nil repeats:NO];
+//				
+//				if (_feedType == HONHomeFeedTypeOwned)
+//					[self _retriveOwnedPhotosAtPage:(int)([_statusUpdates count] / 10)];
+//				
+//				else
+//					[self _retrieveClubPhotosAtPage:(int)([_statusUpdates count] / 10)];
+//			}];
+//		}
+//	}
+//}
 
 
 #pragma mark - ActionSheet Delegates
@@ -1176,11 +1402,11 @@
 				[_loadingOverlayView outro];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 				
-				[[[UIAlertView alloc] initWithTitle:@"Your Derp chat link has been copied to your clipboard!"
-											message:[NSString stringWithFormat:@"Share your Derp chat link with friends for them to join. Derpch.at/%d", [[result objectForKey:@"id"] intValue]]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
+//				[[[UIAlertView alloc] initWithTitle:@"Your Derp chat link has been copied to your clipboard!"
+//											message:[NSString stringWithFormat:@"Share your Derp chat link with friends for them to join. Derpch.at/%d", [[result objectForKey:@"id"] intValue]]
+//										   delegate:nil
+//								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//								  otherButtonTitles:nil] show];
 				
 			}]; // api submit
 		
@@ -1245,13 +1471,13 @@
 					[_loadingOverlayView outro];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 					
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Derp link generated"
-																		message:[NSString stringWithFormat:@"Derpch.at/%d has been copied to your clipboard.", [[result objectForKey:@"id"] intValue]]
-																	   delegate:self
-															  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-															  otherButtonTitles:@"Share", nil];
-					[alertView setTag:2];
-					[alertView show];
+//					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Derp link generated"
+//																		message:[NSString stringWithFormat:@"Derpch.at/%d has been copied to your clipboard.", [[result objectForKey:@"id"] intValue]]
+//																	   delegate:self
+//															  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//															  otherButtonTitles:@"Share", nil];
+//					[alertView setTag:2];
+//					[alertView show];
 				}];
 				
 			}]; // api submit
