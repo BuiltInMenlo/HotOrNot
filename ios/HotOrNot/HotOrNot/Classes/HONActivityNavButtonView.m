@@ -17,22 +17,23 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithTarget:target action:action])) {
-		[self setFrame:CGRectOffset(self.frame, 2.0, 0.0)];
+		[self setFrame:CGRectOffset(self.frame, 12.0, 0.0)];
 		
-		_button.frame = CGRectFromSize(CGSizeMake(44.0, 44.0));
-		[_button setTitleColor:[[HONColorAuthority sharedInstance] honGreenTextColor] forState:UIControlStateNormal];
-		[_button setTitleColor:[[HONColorAuthority sharedInstance] honGreenTextColor] forState:UIControlStateHighlighted];
+		_button.frame = CGRectFromSize(CGSizeMake(128.0, 44.0));
+		[_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[_button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 		_button.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-		[_button setTitle:@"0" forState:UIControlStateNormal];
-		[_button setTitle:@"0" forState:UIControlStateHighlighted];
+		_button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+		[_button setTitle:[NSString stringWithFormat:@"Score: %d", 0] forState:UIControlStateNormal];
+		[_button setTitle:[NSString stringWithFormat:@"Score: %d", 0] forState:UIControlStateHighlighted];
 	}
 	
 	return (self);
 }
 
 - (void)updateBadgeWithScore:(int)score {
-	[_button setTitle:NSStringFromInt(score) forState:UIControlStateNormal];
-	[_button setTitle:NSStringFromInt(score) forState:UIControlStateHighlighted];
+	[_button setTitle:[NSString stringWithFormat:@"Score: %d", score] forState:UIControlStateNormal];
+	[_button setTitle:[NSString stringWithFormat:@"Score: %d", score] forState:UIControlStateHighlighted];
 }
 
 @end

@@ -44,6 +44,7 @@
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic, strong) UITextField *textField;
+@property (nonatomic, strong) UIImageView *cursorImageView;
 @property (nonatomic, strong) UIButton *composeButton;
 @property (nonatomic, strong) NSMutableArray *retrievedStatusUpdates;
 @property (nonatomic, strong) NSMutableArray *statusUpdates;
@@ -268,32 +269,6 @@
 	}
 }
 
-- (void)_sendInviteDMConversation {
-	NSError *error = nil;
-	//LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(_statusUpdateVO.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-	LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-	LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_selectedStatusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-	
-	NSLog(@"MESSAGE RESULT -=- CREATOR:[%@]%@", error, message.identifierSuffix);
-	BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
-	NSLog(@"MESSAGE SENT -=- CREATOR:[%@]", NSStringFromBOOL(success));
-	
-//	[[HONAPICaller sharedInstance] retrieveRepliesForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID fromPage:1 completion:^(NSDictionary *result) {
-//		[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//			NSDictionary *dict = (NSDictionary *)obj;
-//
-//			NSError *error = nil;
-//			LYRConversation *conversationRequest = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt([[[dict objectForKey:@"owner_member"] objectForKey:@"id"] intValue])]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-//			LYRMessage *messageRequest = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[_statusUpdateVO.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-//
-//			NSLog(@"MESSAGE RESULT:(%d) -=- [%@]%@", idx, error, messageRequest.identifierSuffix);
-//			BOOL success2 = [[HONLayerKitAssistant sharedInstance] sendMessage:messageRequest toConversation:conversationRequest];
-//			NSLog(@"MESSAGE SENT:(%d) -=- [%@]", idx, NSStringFromBOOL(success2));
-//		}];
-//	}];
-}
-
-
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
@@ -322,17 +297,6 @@
 		
 		[self _didFinishDataRefresh];
 		
-		
-//		[_tableView setContentOffset:CGPointMake(0.0, -95.0) animated:YES];
-//		if (![_refreshControl isRefreshing])
-//			[_refreshControl beginRefreshing];
-//		
-//		if (_feedType == HONHomeFeedTypeOwned)
-//			[self _retriveOwnedPhotosAtPage:1];
-//		
-//		else
-//			[self _retrieveClubPhotosAtPage:1];
-	
 	} else {
 		_noNetworkView.hidden = NO;
 	}
@@ -487,10 +451,10 @@
 	//[_scrollView addSubview:_emptyFeedView];
 	
 	_composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_composeButton.frame = CGRectMake(123.0, self.view.frame.size.height, 74.0, 74.0);
+	_composeButton.frame = CGRectMake(105.0, self.view.frame.size.height, 111.0, 111.0);
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
-	[_composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+	[_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_composeButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -500,7 +464,15 @@
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:settingsButton];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake(1025.0, 120.0, 220.0, 26.0)];
+	
+	_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1020.0, 151.0, 1.0, 34.0)];
+	_cursorImageView.animationImages = @[[UIImage imageNamed:@"composeCursor-02"],
+										 [UIImage imageNamed:@"composeCursor-01"]];
+	_cursorImageView.animationDuration = 1.0;
+	_cursorImageView.animationRepeatCount = 0;
+	[_scrollView addSubview:_cursorImageView];
+	
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake(1035.0, 153.0, 220.0, 26.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -598,6 +570,9 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
+	
+	if (![_cursorImageView isAnimating])
+		[_cursorImageView startAnimating];
 }
 
 
@@ -617,19 +592,6 @@
 		NSLog(@"RESULT:[%@]", result);
 		
 		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-//			[_loadingOverlayView outro];
-//
-//			if (_progressHUD == nil)
-//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//			[_progressHUD setYOffset:-80.0];
-//			_progressHUD.minShowTime = kProgressHUDMinDuration;
-//			_progressHUD.mode = MBProgressHUDModeCustomView;
-//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-//			_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
-//			[_progressHUD show:NO];
-//			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-//			_progressHUD = nil;
-//
 		} else {
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 				[[HONAPICaller sharedInstance] checkForAvailablePhone:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] completion:^(NSDictionary *result) {
@@ -716,6 +678,11 @@
 							   delegate:nil
 					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 					  otherButtonTitles:nil] show];
+}
+
+- (void)_goTextField {
+	if (![_textField isFirstResponder])
+		[_textField becomeFirstResponder];
 }
 
 - (void)_goCompose {
@@ -1250,11 +1217,18 @@
 											 selector:@selector(_textFieldTextDidChangeChange:)
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
+	if ([_cursorImageView isAnimating])
+		[_cursorImageView stopAnimating];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, self.view.frame.size.height, 320.0, 44.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[_submitButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+	_submitButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	[_submitButton setTitle:@"Start Chat" forState:UIControlStateNormal];
+	[_submitButton setTitle:@"Start Chat" forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_submitButton];
 	
@@ -1269,6 +1243,11 @@
 //	[_conversation sendTypingIndicator:LYRTypingDidFinish];
 	if ([textField.text length] > 0)
 		[self _goCompose];
+	
+	else {
+		if (![_cursorImageView isAnimating])
+			[_cursorImageView startAnimating];
+	}
 	
 	return (YES);
 }
@@ -1296,6 +1275,19 @@
 
 
 #pragma mark - ScrollView Delegates
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	if (scrollView.contentOffset.x < 960) {
+		if ([_textField isFirstResponder])
+			[_textField resignFirstResponder];
+		
+		[UIView animateWithDuration:0.25 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			_composeButton.alpha = 0.0;
+			_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height);
+		} completion:^(BOOL finished) {
+		}];
+	}
+}
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 //	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 //		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
@@ -1304,7 +1296,6 @@
 	
 	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
 	
-	NSLog(@"OFFSET:[%@]", NSStringFromCGPoint(_scrollView.contentOffset));
 	if (scrollView.contentOffset.x == 960) {
 		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
@@ -1313,9 +1304,14 @@
 		} else
 			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
 		
-		[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height - 99.0);
-			
+		if (![_cursorImageView isAnimating])
+			[_cursorImageView startAnimating];
+		
+		_composeButton.alpha = 0.0;
+		_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height);
+		[UIView animateWithDuration:0.25 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+			_composeButton.alpha = 1.0;
+			_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height - 176.0);
 		} completion:^(BOOL finished) {
 		}];
 	}
@@ -1402,12 +1398,6 @@
 				[_loadingOverlayView outro];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 				
-//				[[[UIAlertView alloc] initWithTitle:@"Your Derp chat link has been copied to your clipboard!"
-//											message:[NSString stringWithFormat:@"Share your Derp chat link with friends for them to join. Derpch.at/%d", [[result objectForKey:@"id"] intValue]]
-//										   delegate:nil
-//								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//								  otherButtonTitles:nil] show];
-				
 			}]; // api submit
 		
 		} else if (buttonIndex == 1) {
@@ -1462,24 +1452,25 @@
 				} // api result
 				
 				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:NO completion:^(void) {
-					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-					pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", [[result objectForKey:@"id"] intValue]];
-					
-					[_loadingOverlayView outro];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-					
-//					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Derp link generated"
-//																		message:[NSString stringWithFormat:@"Derpch.at/%d has been copied to your clipboard.", [[result objectForKey:@"id"] intValue]]
-//																	   delegate:self
-//															  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//															  otherButtonTitles:@"Share", nil];
-//					[alertView setTag:2];
-//					[alertView show];
-				}];
 				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", _selectedStatusUpdateVO.statusUpdateID];
+				
+				_textField.text = @"";
+				if ([_textField isFirstResponder])
+					[_textField resignFirstResponder];
+				
+				[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+				[_loadingOverlayView outro];
+				
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:NO completion:^(void) {
+//					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//					pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", [[result objectForKey:@"id"] intValue]];
+//					
+//					[_loadingOverlayView outro];
+//				}];
 			}]; // api submit
 		}
 	

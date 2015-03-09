@@ -102,7 +102,7 @@
 	initialLabel.textColor = [UIColor blackColor];
 	initialLabel.text = [[_commentVO.username substringToIndex:1] uppercaseString];
 	initialLabel.textAlignment = NSTextAlignmentCenter;
-	[_avatarImageView addSubview:initialLabel];
+	//[_avatarImageView addSubview:initialLabel];
 	
 	
 	_statusImageView.hidden = (_commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]);

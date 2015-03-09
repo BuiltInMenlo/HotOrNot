@@ -73,7 +73,7 @@
 		_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
 		_usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		_usernameLabel.text = _statusUpdateVO.username;
-		[self addSubview:_usernameLabel];
+		//[self addSubview:_usernameLabel];
 		
 		
 		NSLog(@"TOPIC:[%@]", _statusUpdateVO.topicName);
@@ -86,7 +86,7 @@
 		_subjectLabel.textColor = [UIColor blackColor];
 		_subjectLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:16];
 		_subjectLabel.text = actionCaption;
-		[self addSubview:_subjectLabel];
+		//[self addSubview:_subjectLabel];
 		
 		if ([actionCaption rangeOfString:_statusUpdateVO.subjectName].location != NSNotFound) {
 			[_subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectName]];

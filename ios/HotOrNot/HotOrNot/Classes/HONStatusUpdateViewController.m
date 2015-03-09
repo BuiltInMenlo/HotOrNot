@@ -361,13 +361,13 @@
 	copyButton.frame = CGRectMake(60.0, 180.0, 160.0, 44.0);
 	copyButton.backgroundColor = [UIColor redColor];
 	[copyButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:copyButton];
+	//[_emptyCommentsView addSubview:copyButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareButton.frame = CGRectMake(60.0, 220.0, 160.0, 44.0);
 	shareButton.backgroundColor = [UIColor greenColor];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:shareButton];
+	//[_emptyCommentsView addSubview:shareButton];
 	
 	
 	_isActive = YES;
@@ -521,8 +521,9 @@
 		
 		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
 		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
-			[self dismissViewControllerAnimated:NO completion:^(void) {
-			}];
+			[self.navigationController popViewControllerAnimated:YES];
+//			[self dismissViewControllerAnimated:NO completion:^(void) {
+//			}];
 		});
 	}
 }
