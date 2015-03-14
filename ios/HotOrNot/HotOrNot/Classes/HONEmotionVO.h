@@ -9,9 +9,6 @@
 #import "FLAnimatedImage.h"
 #import "FLAnimatedImageView.h"
 
-#import "PCContent.h"
-#import "PicoSticker.h"
-
 typedef NS_ENUM(NSUInteger, HONEmotionImageType) {
 	HONEmotionImageTypePNG = 0,
 	HONEmotionImageTypeGIF = 1
@@ -30,8 +27,6 @@ typedef NS_ENUM(NSUInteger, HONEmotionImageType) {
 @property (nonatomic, retain) NSString *largeImageURL;
 @property (nonatomic, retain) NSString *mediumImageURL;
 @property (nonatomic, retain) NSString *smallImageURL;
-@property (nonatomic, retain) PCContent *pcContent;
-@property (nonatomic, retain) PicoSticker *picoSticker;
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, strong) FLAnimatedImageView *animatedImageView;
 @property (nonatomic) CGFloat price;

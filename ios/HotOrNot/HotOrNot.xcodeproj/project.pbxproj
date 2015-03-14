@@ -55,27 +55,18 @@
 		3042E1291A76C594005AFD12 /* UILabel+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E11C1A76C594005AFD12 /* UILabel+BuiltinMenlo.m */; };
 		3042E12A1A76C594005AFD12 /* UIView+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E11E1A76C594005AFD12 /* UIView+BuiltinMenlo.m */; };
 		3042E1321A76D628005AFD12 /* UIImage+AnimatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E1311A76D628005AFD12 /* UIImage+AnimatedGIF.m */; };
-		3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E59D19E4CF65003FF312 /* HONStoreProductsViewController.m */; };
-		3045E5A419E4D048003FF312 /* HONStoreProductVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E5A319E4D048003FF312 /* HONStoreProductVO.m */; };
-		3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045E5A519E4D9A6003FF312 /* HONStoreProductViewCell.m */; };
 		3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */; };
 		3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */; };
 		304CB4711A79B3670042BBE5 /* HONRestrictedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 304CB4701A79B3670042BBE5 /* HONRestrictedViewController.m */; };
 		305001421A5E222800E8F303 /* HONStatusUpdateCreatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 305001411A5E222800E8F303 /* HONStatusUpdateCreatorView.m */; };
-		3051F8921A082B9800CD85F2 /* HONStoreProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8911A082B9800CD85F2 /* HONStoreProductViewController.m */; };
-		3051F8951A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8941A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m */; };
-		3051F8981A082C5B00CD85F2 /* HONStoreProductImageViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8971A082C5B00CD85F2 /* HONStoreProductImageViewCell.m */; };
 		3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8A61A08AC0000CD85F2 /* HONBackNavButtonView.m */; };
 		3051F8AA1A08AE8D00CD85F2 /* HONNextNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */; };
 		3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */; };
 		3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */; };
-		307A0B881A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A0B871A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m */; };
 		307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */; };
-		308407511A6C9F95009F38E0 /* HONLayerKitAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 308407501A6C9F95009F38E0 /* HONLayerKitAssistant.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
-		308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E319E3029E00EE9512 /* libPicoCandySDKCore.a */; };
 		308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361419E337AA00EE9512 /* FLAnimatedImage.m */; };
 		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
@@ -159,7 +150,6 @@
 		4C382FFC178B8AD700C7FA7C /* HONSearchUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */; };
 		4C386BBC19842FDA0023123A /* HONSocialCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BBB19842FDA0023123A /* HONSocialCoordinator.m */; };
 		4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BBE19844AA80023123A /* HONStoreAssistant.m */; };
-		4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BC219844C090023123A /* HONStickerAssistant.m */; };
 		4C386BC6198482130023123A /* HONViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BC5198482130023123A /* HONViewController.m */; };
 		4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */; };
 		4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C41A09118F25686007C103D /* CameraElements.xcassets */; };
@@ -395,8 +385,6 @@
 		305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleLEDViewCell.m; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
 		3075E02E19D66107007B3346 /* HONCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraOverlayView.m; sourceTree = "<group>"; };
-		307A0B861A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRConversation+BuiltinMenlo.h"; sourceTree = "<group>"; };
-		307A0B871A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRConversation+BuiltinMenlo.m"; sourceTree = "<group>"; };
 		307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshingLabel.h; sourceTree = "<group>"; };
 		307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRefreshingLabel.m; sourceTree = "<group>"; };
 		308407421A6C980E009F38E0 /* libPods-HotOrNot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPods-HotOrNot.a"; sourceTree = "<group>"; };
@@ -408,50 +396,6 @@
 		308F35DE19E301E300EE9512 /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
 		308F35DF19E301E300EE9512 /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
 		308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
-		308F35E319E3029E00EE9512 /* libPicoCandySDKCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPicoCandySDKCore.a; sourceTree = "<group>"; };
-		308F35E519E3029E00EE9512 /* CandyBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBox.h; sourceTree = "<group>"; };
-		308F35E619E3029E00EE9512 /* CandyBoxClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBoxClient.h; sourceTree = "<group>"; };
-		308F35E719E3029E00EE9512 /* CandyBoxService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyBoxService.h; sourceTree = "<group>"; };
-		308F35E819E3029E00EE9512 /* CandyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyStore.h; sourceTree = "<group>"; };
-		308F35E919E3029E00EE9512 /* CandyStoreClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CandyStoreClient.h; sourceTree = "<group>"; };
-		308F35EA19E3029E00EE9512 /* PCCandyStoreCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategory.h; sourceTree = "<group>"; };
-		308F35EB19E3029E00EE9512 /* PCCandyStoreCategoryDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategoryDataController.h; sourceTree = "<group>"; };
-		308F35EC19E3029E00EE9512 /* PCCandyStoreCategorySearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreCategorySearchResult.h; sourceTree = "<group>"; };
-		308F35ED19E3029E00EE9512 /* PCCandyStoreEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreEvent.h; sourceTree = "<group>"; };
-		308F35EE19E3029E00EE9512 /* PCCandyStoreEventDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreEventDataController.h; sourceTree = "<group>"; };
-		308F35EF19E3029E00EE9512 /* PCCandyStorePurchaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStorePurchaseController.h; sourceTree = "<group>"; };
-		308F35F019E3029E00EE9512 /* PCCandyStoreSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreSearchController.h; sourceTree = "<group>"; };
-		308F35F119E3029E00EE9512 /* PCCandyStoreSearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreSearchResult.h; sourceTree = "<group>"; };
-		308F35F219E3029E00EE9512 /* PCCandyStoreTagResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCandyStoreTagResult.h; sourceTree = "<group>"; };
-		308F35F319E3029E00EE9512 /* PCContentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentManager.h; sourceTree = "<group>"; };
-		308F35F519E3029E00EE9512 /* NSObject+PCObjectMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+PCObjectMap.h"; sourceTree = "<group>"; };
-		308F35F619E3029E00EE9512 /* NSString+PCStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+PCStringAdditions.h"; sourceTree = "<group>"; };
-		308F35F719E3029E00EE9512 /* PCBrand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCBrand.h; sourceTree = "<group>"; };
-		308F35F819E3029E00EE9512 /* PCContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContent.h; sourceTree = "<group>"; };
-		308F35F919E3029E00EE9512 /* PCContentGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentGroup.h; sourceTree = "<group>"; };
-		308F35FA19E3029E00EE9512 /* PCContentPrice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentPrice.h; sourceTree = "<group>"; };
-		308F35FB19E3029E00EE9512 /* PCContentTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCContentTag.h; sourceTree = "<group>"; };
-		308F35FC19E3029E00EE9512 /* PCCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCCurrency.h; sourceTree = "<group>"; };
-		308F35FD19E3029E00EE9512 /* PCEssentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCEssentials.h; sourceTree = "<group>"; };
-		308F35FE19E3029E00EE9512 /* PCModelObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCModelObject.h; sourceTree = "<group>"; };
-		308F35FF19E3029E00EE9512 /* PCPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCPublisher.h; sourceTree = "<group>"; };
-		308F360019E3029E00EE9512 /* PCStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStore.h; sourceTree = "<group>"; };
-		308F360119E3029E00EE9512 /* PCStoreCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreCurrency.h; sourceTree = "<group>"; };
-		308F360219E3029E00EE9512 /* PCStoreUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreUser.h; sourceTree = "<group>"; };
-		308F360319E3029E00EE9512 /* PCUserAccountMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCUserAccountMeta.h; sourceTree = "<group>"; };
-		308F360419E3029E00EE9512 /* PCWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCWallet.h; sourceTree = "<group>"; };
-		308F360519E3029F00EE9512 /* PCEventBannerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCEventBannerInfo.h; sourceTree = "<group>"; };
-		308F360619E3029F00EE9512 /* PCStoreKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreKitManager.h; sourceTree = "<group>"; };
-		308F360719E3029F00EE9512 /* PCStoreKitProductInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCStoreKitProductInfo.h; sourceTree = "<group>"; };
-		308F360819E3029F00EE9512 /* PCURLSchemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCURLSchemeManager.h; sourceTree = "<group>"; };
-		308F360919E3029F00EE9512 /* PicoDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoDownloadManager.h; sourceTree = "<group>"; };
-		308F360A19E3029F00EE9512 /* PicoFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoFileManager.h; sourceTree = "<group>"; };
-		308F360B19E3029F00EE9512 /* PicoHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoHTTPClient.h; sourceTree = "<group>"; };
-		308F360C19E3029F00EE9512 /* PicoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoManager.h; sourceTree = "<group>"; };
-		308F360D19E3029F00EE9512 /* PicoSticker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoSticker.h; sourceTree = "<group>"; };
-		308F360E19E3029F00EE9512 /* PicoUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUser.h; sourceTree = "<group>"; };
-		308F360F19E3029F00EE9512 /* PicoUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PicoUserDefaults.h; sourceTree = "<group>"; };
-		308F361019E3029F00EE9512 /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
 		308F361319E337AA00EE9512 /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
 		308F361419E337AA00EE9512 /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
 		308F361519E337AA00EE9512 /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
@@ -644,8 +588,6 @@
 		4C386BBB19842FDA0023123A /* HONSocialCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSocialCoordinator.m; sourceTree = "<group>"; };
 		4C386BBD19844AA80023123A /* HONStoreAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreAssistant.h; sourceTree = "<group>"; };
 		4C386BBE19844AA80023123A /* HONStoreAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreAssistant.m; sourceTree = "<group>"; };
-		4C386BC119844C090023123A /* HONStickerAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerAssistant.h; sourceTree = "<group>"; };
-		4C386BC219844C090023123A /* HONStickerAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerAssistant.m; sourceTree = "<group>"; };
 		4C386BC4198482130023123A /* HONViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONViewController.h; sourceTree = "<group>"; };
 		4C386BC5198482130023123A /* HONViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONViewController.m; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONSelfieCameraPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraPreviewView.h; sourceTree = "<group>"; };
@@ -956,7 +898,6 @@
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */,
 				308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */,
-				308F361119E3029F00EE9512 /* libPicoCandySDKCore.a in Frameworks */,
 				F7E6D20B72A5177C54C052C6 /* libPods-HotOrNot.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
@@ -1196,15 +1137,6 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
-		307A0B851A7996B6001C1F3F /* LayerKit */ = {
-			isa = PBXGroup;
-			children = (
-				307A0B861A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.h */,
-				307A0B871A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m */,
-			);
-			path = LayerKit;
-			sourceTree = "<group>";
-		};
 		308407411A6C980E009F38E0 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1222,73 +1154,6 @@
 				308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */,
 			);
 			path = KeenClient;
-			sourceTree = "<group>";
-		};
-		308F35E219E3029E00EE9512 /* PicoCandy */ = {
-			isa = PBXGroup;
-			children = (
-				308F35E319E3029E00EE9512 /* libPicoCandySDKCore.a */,
-				308F35E419E3029E00EE9512 /* PicoCandySDK */,
-			);
-			path = PicoCandy;
-			sourceTree = "<group>";
-		};
-		308F35E419E3029E00EE9512 /* PicoCandySDK */ = {
-			isa = PBXGroup;
-			children = (
-				308F35E519E3029E00EE9512 /* CandyBox.h */,
-				308F35E619E3029E00EE9512 /* CandyBoxClient.h */,
-				308F35E719E3029E00EE9512 /* CandyBoxService.h */,
-				308F35E819E3029E00EE9512 /* CandyStore.h */,
-				308F35E919E3029E00EE9512 /* CandyStoreClient.h */,
-				308F35EA19E3029E00EE9512 /* PCCandyStoreCategory.h */,
-				308F35EB19E3029E00EE9512 /* PCCandyStoreCategoryDataController.h */,
-				308F35EC19E3029E00EE9512 /* PCCandyStoreCategorySearchResult.h */,
-				308F35ED19E3029E00EE9512 /* PCCandyStoreEvent.h */,
-				308F35EE19E3029E00EE9512 /* PCCandyStoreEventDataController.h */,
-				308F35EF19E3029E00EE9512 /* PCCandyStorePurchaseController.h */,
-				308F35F019E3029E00EE9512 /* PCCandyStoreSearchController.h */,
-				308F35F119E3029E00EE9512 /* PCCandyStoreSearchResult.h */,
-				308F35F219E3029E00EE9512 /* PCCandyStoreTagResult.h */,
-				308F35F319E3029E00EE9512 /* PCContentManager.h */,
-				308F35F419E3029E00EE9512 /* PCEssentials */,
-				308F360519E3029F00EE9512 /* PCEventBannerInfo.h */,
-				308F360619E3029F00EE9512 /* PCStoreKitManager.h */,
-				308F360719E3029F00EE9512 /* PCStoreKitProductInfo.h */,
-				308F360819E3029F00EE9512 /* PCURLSchemeManager.h */,
-				308F360919E3029F00EE9512 /* PicoDownloadManager.h */,
-				308F360A19E3029F00EE9512 /* PicoFileManager.h */,
-				308F360B19E3029F00EE9512 /* PicoHTTPClient.h */,
-				308F360C19E3029F00EE9512 /* PicoManager.h */,
-				308F360D19E3029F00EE9512 /* PicoSticker.h */,
-				308F360E19E3029F00EE9512 /* PicoUser.h */,
-				308F360F19E3029F00EE9512 /* PicoUserDefaults.h */,
-				308F361019E3029F00EE9512 /* Version.h */,
-			);
-			path = PicoCandySDK;
-			sourceTree = "<group>";
-		};
-		308F35F419E3029E00EE9512 /* PCEssentials */ = {
-			isa = PBXGroup;
-			children = (
-				308F35F519E3029E00EE9512 /* NSObject+PCObjectMap.h */,
-				308F35F619E3029E00EE9512 /* NSString+PCStringAdditions.h */,
-				308F35F719E3029E00EE9512 /* PCBrand.h */,
-				308F35F819E3029E00EE9512 /* PCContent.h */,
-				308F35F919E3029E00EE9512 /* PCContentGroup.h */,
-				308F35FA19E3029E00EE9512 /* PCContentPrice.h */,
-				308F35FB19E3029E00EE9512 /* PCContentTag.h */,
-				308F35FC19E3029E00EE9512 /* PCCurrency.h */,
-				308F35FD19E3029E00EE9512 /* PCEssentials.h */,
-				308F35FE19E3029E00EE9512 /* PCModelObject.h */,
-				308F35FF19E3029E00EE9512 /* PCPublisher.h */,
-				308F360019E3029E00EE9512 /* PCStore.h */,
-				308F360119E3029E00EE9512 /* PCStoreCurrency.h */,
-				308F360219E3029E00EE9512 /* PCStoreUser.h */,
-				308F360319E3029E00EE9512 /* PCUserAccountMeta.h */,
-				308F360419E3029E00EE9512 /* PCWallet.h */,
-			);
-			path = PCEssentials;
 			sourceTree = "<group>";
 		};
 		308F361219E337AA00EE9512 /* FLAnimatedImage */ = {
@@ -1404,7 +1269,6 @@
 			children = (
 				3024A5DA1A7B1F6200231BA5 /* Ancillary */,
 				3042E1061A76C594005AFD12 /* Foundation */,
-				307A0B851A7996B6001C1F3F /* LayerKit */,
 			);
 			path = BuiltInMenlo;
 			sourceTree = "<group>";
@@ -1540,8 +1404,8 @@
 		4C148F7917815B9F00EBD245 /* ¡-obsolete_! */ = {
 			isa = PBXGroup;
 			children = (
-				B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */,
-				B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */,
+				3084074F1A6C9F95009F38E0 /* HONLayerKitAssistant.h */,
+				308407501A6C9F95009F38E0 /* HONLayerKitAssistant.m */,
 				3010D78B1A24B7CF0078164F /* Map */,
 				4CD16D1D199702760035A8D3 /* Banner */,
 				3010D7841A243A7E0078164F /* Status Update */,
@@ -1622,8 +1486,6 @@
 				4CCA415A181BE4D100FC9863 /* HONEmotionVO.m */,
 				30B256151A3CBA9C00C789E1 /* HONStatusUpdateVO.h */,
 				30B256161A3CBA9C00C789E1 /* HONStatusUpdateVO.m */,
-				3045E5A219E4D048003FF312 /* HONStoreProductVO.h */,
-				3045E5A319E4D048003FF312 /* HONStoreProductVO.m */,
 				30B256121A3C61D200C789E1 /* HONSubjectVO.h */,
 				30B256131A3C61D200C789E1 /* HONSubjectVO.m */,
 				30B256081A3BB28E00C789E1 /* HONTopicVO.h */,
@@ -1722,7 +1584,6 @@
 				30AFF56F1A79AB43005F408B /* KeychainItemWrapper */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
 				30D5AD8B19C8C980004EDA22 /* NHThreadThis */,
-				308F35E219E3029E00EE9512 /* PicoCandy */,
 				308407411A6C980E009F38E0 /* Pods */,
 				300641C01A5EF29C0078BCE9 /* RegExCategories */,
 				4C4327D618E3A9F90035FF06 /* Reachability */,
@@ -1842,6 +1703,10 @@
 		4C45910A18918ABC0014FA7E /* VO */ = {
 			isa = PBXGroup;
 			children = (
+				B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */,
+				B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */,
+				3045E5A219E4D048003FF312 /* HONStoreProductVO.h */,
+				3045E5A319E4D048003FF312 /* HONStoreProductVO.m */,
 				4CC94FF31908025200347A34 /* HONProtoChallengeVO.h */,
 				4CC94FF41908025200347A34 /* HONProtoChallengeVO.m */,
 				4C32B99D15FA75BC0023A0EE /* HONChallengeVO.h */,
@@ -1904,15 +1769,11 @@
 				301DF22A1A10228B00D2BEB9 /* HONGeoLocator.m */,
 				4CC13E6F198543F5000B41C2 /* HONImageBroker.h */,
 				4CC13E70198543F5000B41C2 /* HONImageBroker.m */,
-				3084074F1A6C9F95009F38E0 /* HONLayerKitAssistant.h */,
-				308407501A6C9F95009F38E0 /* HONLayerKitAssistant.m */,
 				4C386BBA19842FDA0023123A /* HONSocialCoordinator.h */,
 				4C386BBB19842FDA0023123A /* HONSocialCoordinator.m */,
 				30CA9CA01A0258DA00A0A703 /* HONStateMitigatorEnums.h */,
 				30CA9C971A02182800A0A703 /* HONStateMitigator.h */,
 				30CA9C981A02182800A0A703 /* HONStateMitigator.m */,
-				4C386BC119844C090023123A /* HONStickerAssistant.h */,
-				4C386BC219844C090023123A /* HONStickerAssistant.m */,
 				4C386BBD19844AA80023123A /* HONStoreAssistant.h */,
 				4C386BBE19844AA80023123A /* HONStoreAssistant.m */,
 				301C96541A5B67C2002EAF3A /* HONUserAssistant.h */,
@@ -2565,15 +2426,8 @@
 				305001421A5E222800E8F303 /* HONStatusUpdateCreatorView.m in Sources */,
 				30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */,
 				30B256171A3CBA9C00C789E1 /* HONStatusUpdateVO.m in Sources */,
-				4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */,
 				4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */,
-				3051F8981A082C5B00CD85F2 /* HONStoreProductImageViewCell.m in Sources */,
-				3045E59E19E4CF65003FF312 /* HONStoreProductsViewController.m in Sources */,
-				3045E5A619E4D9A6003FF312 /* HONStoreProductViewCell.m in Sources */,
 				3024A5D91A7B1EF800231BA5 /* JRSwizzle.m in Sources */,
-				3051F8921A082B9800CD85F2 /* HONStoreProductViewController.m in Sources */,
-				3051F8951A082BE300CD85F2 /* HONStoreProductViewFlowLayout.m in Sources */,
-				3045E5A419E4D048003FF312 /* HONStoreProductVO.m in Sources */,
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				30B256111A3C61B100C789E1 /* HONSubjectViewCell.m in Sources */,
 				30B256141A3C61D200C789E1 /* HONSubjectVO.m in Sources */,
@@ -2600,7 +2454,6 @@
 				4C386BC6198482130023123A /* HONViewController.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONViewDispensor.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
-				308407511A6C9F95009F38E0 /* HONLayerKitAssistant.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
@@ -2616,7 +2469,6 @@
 				3024A5D51A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m in Sources */,
 				3042E1281A76C594005AFD12 /* UIImage+BuiltinMenlo.m in Sources */,
 				3024A5E01A7B32C800231BA5 /* NSNumber+BuiltInMenlo.m in Sources */,
-				307A0B881A7996B6001C1F3F /* LYRConversation+BuiltinMenlo.m in Sources */,
 				30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */,
 				30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */,
 				30B308CE19E20B510017ACBF /* AFImageRequestOperation.m in Sources */,

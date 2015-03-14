@@ -8,7 +8,6 @@
 
 #import <LayerKit/LayerKit.h>
 
-#import "LYRConversation+BuiltinMenlo.h"
 #import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"

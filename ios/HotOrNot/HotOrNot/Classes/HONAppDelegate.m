@@ -38,7 +38,6 @@
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
 #import "NHThreadThis.h"
-#import "PicoSticker.h"
 //#import "Reachability.h"
 #import "TSTapstream.h"
 #import "UIImageDebugger.h"
@@ -107,7 +106,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
 #else
 @interface HONAppDelegate() <HONLoadingOverlayViewDelegate, PNDelegate>
 #endif
@@ -796,7 +795,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
-	[[HONLayerKitAssistant sharedInstance] notifyClientWithPushToken:deviceToken];
 	
 	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
@@ -818,7 +816,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
-	[[HONLayerKitAssistant sharedInstance] notifyClientPushTokenNotAvailibleFromError:error];
 	
 	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
@@ -854,8 +851,6 @@ NSString * const kTwilioSMS = @"6475577873";
 //							  delegate:nil
 //					 cancelButtonTitle:@"OK"
 //					 otherButtonTitles:nil] show];
-	
-	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandler];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -867,10 +862,6 @@ NSString * const kTwilioSMS = @"6475577873";
 //		NSInteger badgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber];
 //		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 //	}
-	
-	
-	
-	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:nil];
 }
 
 
@@ -1388,34 +1379,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 	return ([[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
 	return (nil);
-}
-#endif
-
-#if __APPSTORE_BUILD__ == 0
-- (void)_picoCandyTest {
-	NSLog(@"CandyStore:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchStickerStoreInfo]);
-	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
-	NSLog(@"CandyBox:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents]);
-	
-	[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
-}
-
-- (void)_picoCandyTest2 {
-	__block int idx = 0;
-	[[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		PicoSticker *sticker = (PicoSticker *)obj;
-		sticker.frame = CGRectMake((idx % 5) * 60.0, (idx / 5) * 60.0, 50.0, 50.0);
-		sticker.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5];
-		sticker.userInteractionEnabled = YES;
-		sticker.delegate = self;
-		[sticker setTag:idx];
-		
-		idx++;
-	}];
-}
-
-- (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
-	NSLog(@"sticker.tag:[%ld] (%@)", (long)((PicoSticker *)sticker).tag, contentId);
 }
 #endif
 

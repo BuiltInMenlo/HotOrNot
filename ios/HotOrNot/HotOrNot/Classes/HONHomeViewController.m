@@ -245,32 +245,6 @@
 	}];
 }
 
-- (void)_retrieveStatusUpdate {
-	NSError *error = nil;
-	LYRQuery *convoQuery = [LYRQuery queryWithClass:[LYRConversation class]];
-	convoQuery.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:[_selectedStatusUpdateVO.dictionary objectForKey:@"img"]];
-	LYRConversation *conversation = [[[[HONLayerKitAssistant sharedInstance] client] executeQuery:convoQuery error:&error] firstObject];
-	
-//	if (++_cnt < 5)
-//		[self _sendInviteDMConversation];
-	
-	NSLog(@"CONVO: -=- (%@) -=- [%@]\n%@", [_selectedStatusUpdateVO.dictionary objectForKey:@"img"], conversation.identifier, conversation);
-	
-	if (conversation == nil) {
-		dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 3.33 * NSEC_PER_SEC);
-		dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
-			[self _retrieveStatusUpdate];
-		});
-		
-	} else {
-		[_loadingOverlayView outro];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:^(void) {
-		}];
-	}
-}
-
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(HONRefreshControl *)sender {
@@ -502,10 +476,6 @@
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
-		[[HONLayerKitAssistant sharedInstance] writePushToken:nil];
-		
-		
-		
 //		_locationManager = [[CLLocationManager alloc] init];
 //		_locationManager.delegate = self;
 //		_locationManager.distanceFilter = 1000;

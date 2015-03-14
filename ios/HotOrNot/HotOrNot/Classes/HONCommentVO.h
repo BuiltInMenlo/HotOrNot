@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <LayerKit/LayerKit.h>
+#import <PubNub/PubNub.h>
 
 #import "HONClubPhotoVO.h"
 
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @interface HONCommentVO : NSObject
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary;
 + (HONCommentVO *)commentWithClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-+ (HONCommentVO *)commentWithMessage:(LYRMessage *)message;
++ (HONCommentVO *)commentWithMessage:(PNMessage *)message;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;

@@ -268,8 +268,8 @@
 											   @"msg_id"			: @"0",
 											   @"content_type"		: @"NOTIFY",
 											   
-											   @"owner_member"		: @{@"id"	: @([[HONUserAssistant sharedInstance] activeUserID]),
-																		@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
+											   @"owner_member"		: @{@"id"	: @(0),
+																		@"name"	: @""},
 											   
 											   @"text"				: @"a user has joined this |DOOD CHAT|",
 											   
@@ -297,8 +297,8 @@
 											   @"msg_id"			: @"0",
 											   @"content_type"		: @"NOTIFY",
 											   
-											   @"owner_member"		: @{@"id"	: @([[HONUserAssistant sharedInstance] activeUserID]),
-																		@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
+											   @"owner_member"		: @{@"id"	: @(0),
+																		@"name"	: @""},
 											   
 											   @"text"				: @"a user has left this |DOOD CHAT|",
 											   
@@ -334,7 +334,7 @@
 									   @"msg_id"			: @"0",
 									   
 									   @"owner_member"		: @{@"id"	: @([[message.message firstComponentByDelimeter:@"|"] intValue]),
-																@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
+																@"name"	: [message.message firstComponentByDelimeter:@"|"]},
 									   
 									   @"img"				: @"",
 									   @"text"				: [message.message lastComponentByDelimeter:@"|"],
@@ -652,15 +652,7 @@
 	[super viewDidLoad];
 	
 	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
-	[self _goReloadContent];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(_clientObjectsDidChangeNotification:)
-												 name:LYRClientObjectsDidChangeNotification object:nil];
-
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(_conversationDidReceiveTypingIndicatorNotification:)
-												 name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
+	[self _goReloadContent];	
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -927,73 +919,6 @@
 	_commentButton.hidden = ([_commentTextField.text length] == 0);
 	[_commentButton setEnabled:([_commentTextField.text length] > 0)];
 //	[_conversation sendTypingIndicator:LYRTypingDidBegin];
-}
-
-- (void)_clientObjectsDidChangeNotification:(NSNotification *)notification {
-//	NSLog (@"::|>_clientObjectsDidChangeNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification);
-	
-	NSArray *changes = [notification.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
-	for (NSDictionary *change in changes) {
-		LYRObjectChangeType updateKey = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-		
-		if ([[change objectForKey:LYRObjectChangeObjectKey] isKindOfClass:[LYRConversation class]]) {
-			// Object is a conversation
-		}
-		
-		if ([[change objectForKey:LYRObjectChangeObjectKey]isKindOfClass:[LYRMessage class]]) {
-			LYRMessage *message = (LYRMessage *)[change objectForKey:LYRObjectChangeObjectKey];
-			
-			if ([message.conversation.identifierSuffix isEqualToString:_conversation.identifierSuffix]) {
-				NSLog(@"Message Update:(%@) -=- %@", (updateKey == LYRObjectChangeTypeCreate) ? @"Create" : (updateKey == LYRObjectChangeTypeUpdate) ? @"Update" : (updateKey == LYRObjectChangeTypeDelete) ? @"Delete" : @"UNKNOWN", message.identifierSuffix);
-				
-				if (updateKey == LYRObjectChangeTypeCreate) {
-					[message markAsRead:nil];
-					
-					[self _appendComment:[HONCommentVO commentWithMessage:message]];
-					
-				} else if (updateKey == LYRObjectChangeTypeUpdate) {
-					
-					__block int ind = -1;
-					[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-						HONCommentVO *vo = (HONCommentVO *)obj;
-						
-						if ([vo.messageID isEqualToString:message.identifierSuffix]) {
-							ind = (int)idx;
-							*stop = YES;
-						}
-					}];
-					
-					
-					if (ind > -1) {
-						HONCommentItemView *itemView = (HONCommentItemView *)[_commentsHolderView.subviews objectAtIndex:ind];
-						LYRRecipientStatus status = [[HONLayerKitAssistant sharedInstance] latestRecipientStatusForMessage:message];
-						[itemView updateStatus:(status == LYRRecipientStatusSent) ? HONCommentStatusTypeSent : (status == LYRRecipientStatusDelivered) ? HONCommentStatusTypeDelivered : (status == LYRRecipientStatusRead) ? HONCommentStatusTypeSeen : HONCommentStatusTypeUnknown];
-					}
-						
-					
-				} else if (updateKey == LYRObjectChangeTypeDelete) {
-					
-				}
-			}
-		}
-	}
-}
-
-- (void)_conversationDidReceiveTypingIndicatorNotification:(NSNotification *)notification {
-	NSLog (@"::|>_conversationDidReceiveTypingIndicatorNotification:%@\n[=-=-=-=-=-=-=-=]\n", notification.userInfo);
-	
-	LYRConversation *conversation = (LYRConversation *)[notification object];
-	if ([conversation.identifierSuffix isEqualToString:_conversation.identifierSuffix]) {
-		
-//		NSString *participantID = [notification.userInfo objectForKey:LYRTypingIndicatorParticipantUserInfoKey];
-		LYRTypingIndicator typingIndicator = [notification.userInfo[LYRTypingIndicatorValueUserInfoKey] unsignedIntegerValue];
-		
-		[UIView animateWithDuration:0.125
-						 animations:^(void) {
-							 _typingStatusLabel.alpha = (typingIndicator == LYRTypingDidBegin);
-						 } completion:^(BOOL finished) {
-						 }];
-	}
 }
 
 
