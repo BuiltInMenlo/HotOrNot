@@ -18,7 +18,8 @@
 
 @interface HONStatusUpdateCreatorView : UIView
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO;
-- (void)refreshScore;
+- (void)updateParticipantTotal:(int)participants;
 
+@property (nonatomic, retain) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, assign) id <HONStatusUpdateCreatorViewDelegate> delegate;
 @end

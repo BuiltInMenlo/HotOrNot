@@ -47,7 +47,7 @@ typedef struct
 {
 	CurveChannel channel;
 	CGPoint *points;
-	int length;
+	NSInteger length;
 } CurveEquation;
 
 
@@ -112,7 +112,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context);
     }
     
 	CFDataRef m_DataRef = CGDataProviderCopyData(CGImageGetDataProvider(inImage));  
-	int length = CFDataGetLength(m_DataRef);
+	CFIndex length = CFDataGetLength(m_DataRef);
 	CFMutableDataRef m_DataRefEdit = CFDataCreateMutableCopy(NULL,length,m_DataRef);
 	CFRelease(m_DataRef);
     UInt8 * m_PixelBuf = (UInt8 *) CFDataGetMutableBytePtr(m_DataRefEdit);
@@ -454,14 +454,14 @@ void filterNoise(UInt8 *pixelBuf, UInt32 offset, void *context)
     }
     
 	CFDataRef m_DataRef = CGDataProviderCopyData(CGImageGetDataProvider(inImage));  
-	int length = CFDataGetLength(m_DataRef);
+	CFIndex length = CFDataGetLength(m_DataRef);
 	CFMutableDataRef m_DataRefEdit = CFDataCreateMutableCopy(NULL,length,m_DataRef);
     CFRelease(m_DataRef);
     UInt8 * m_PixelBuf = (UInt8 *) CFDataGetMutableBytePtr(m_DataRefEdit);
 	
 	CGImageRef otherImage = other.CGImage;
 	CFDataRef m_OtherDataRef = CGDataProviderCopyData(CGImageGetDataProvider(otherImage));  
-	int otherLength = CFDataGetLength(m_OtherDataRef);
+	CFIndex otherLength = CFDataGetLength(m_OtherDataRef);
 	CFMutableDataRef m_OtherDataRefEdit = CFDataCreateMutableCopy(NULL,otherLength,m_OtherDataRef);
 	CFRelease(m_OtherDataRef);
 	UInt8 * m_OtherPixelBuf = (UInt8 *) CFDataGetBytePtr(m_OtherDataRef);  	
@@ -592,9 +592,9 @@ void filterMerge(UInt8 *pixelBuf, UInt8 *pixedBlendBuf, UInt32 offset, void *con
 #pragma mark C Implementation
 typedef struct
 {
-	int blackPoint;
-	int whitePoint;
-	int midPoint;
+	NSInteger blackPoint;
+	NSInteger whitePoint;
+	NSInteger midPoint;
 } LevelsOptions;
 
 int calcLevelColor(int color, int black, int mid, int white)
@@ -624,9 +624,9 @@ void filterLevels(UInt8 *pixelBuf, UInt32 offset, void *context)
 	int green = pixelBuf[g];
 	int blue = pixelBuf[b];
 	
-	pixelBuf[r] = SAFECOLOR(calcLevelColor(red, val.blackPoint, val.midPoint, val.whitePoint));
-	pixelBuf[g] = SAFECOLOR(calcLevelColor(green, val.blackPoint, val.midPoint, val.whitePoint));
-	pixelBuf[b] = SAFECOLOR(calcLevelColor(blue, val.blackPoint, val.midPoint, val.whitePoint));
+	pixelBuf[r] = SAFECOLOR(calcLevelColor(red, (int)val.blackPoint, (int)val.midPoint, (int)val.whitePoint));
+	pixelBuf[g] = SAFECOLOR(calcLevelColor(green, (int)val.blackPoint, (int)val.midPoint, (int)val.whitePoint));
+	pixelBuf[b] = SAFECOLOR(calcLevelColor(blue, (int)val.blackPoint, (int)val.midPoint, (int)val.whitePoint));
 }
 
 
@@ -800,26 +800,26 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 	CFDataRef m_DataRef = CGDataProviderCopyData(CGImageGetDataProvider(inImage));  
 	CFDataRef m_OutDataRef = CGDataProviderCopyData(CGImageGetDataProvider(inImage));  
 
-	int length = CFDataGetLength(m_DataRef);
+	NSInteger length = CFDataGetLength(m_DataRef);
 	CFMutableDataRef m_DataRefEdit = CFDataCreateMutableCopy(NULL,length,m_DataRef);
 	CFRelease(m_DataRef);
     UInt8 * m_PixelBuf = (UInt8 *) CFDataGetMutableBytePtr(m_DataRefEdit);
 
-    int outputLength = CFDataGetLength(m_OutDataRef);
+    NSInteger outputLength = CFDataGetLength(m_OutDataRef);
 	CFMutableDataRef m_OutDataRefEdit = CFDataCreateMutableCopy(NULL,outputLength,m_DataRef);
     CFRelease(m_OutDataRef);
     UInt8 * m_OutPixelBuf = (UInt8 *) CFDataGetMutableBytePtr(m_OutDataRefEdit);
 	
-	int h = CGImageGetHeight(inImage);
-	int w = CGImageGetWidth(inImage);
+	NSInteger h = CGImageGetHeight(inImage);
+	NSInteger w = CGImageGetWidth(inImage);
 	
-	int kh = [kernel count] / 2;
-	int kw = [[kernel objectAtIndex:0] count] / 2;
-	int i = 0, j = 0, n = 0, m = 0;
+	NSInteger kh = [kernel count] / 2;
+	NSInteger kw = [[kernel objectAtIndex:0] count] / 2;
+	NSInteger i = 0, j = 0, n = 0, m = 0;
 	
 	for (i = 0; i < h; i++) {
 		for (j = 0; j < w; j++) {
-			int outIndex = (i*w*4) + (j*4);
+			NSInteger outIndex = (i*w*4) + (j*4);
 			double r = 0, g = 0, b = 0;
 			for (n = -kh; n <= kh; n++) {
 				for (m = -kw; m <= kw; m++) {
@@ -827,7 +827,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 						if (j + m >= 0 && j + m < w) {
 							double f = [[[kernel objectAtIndex:(n + kh)] objectAtIndex:(m + kw)] doubleValue];
 							if (f == 0) {continue;}
-							int inIndex = ((i+n)*w*4) + ((j+m)*4);
+							NSInteger inIndex = ((i+n)*w*4) + ((j+m)*4);
 							r += m_PixelBuf[inIndex] * f;
 							g += m_PixelBuf[inIndex + 1] * f;
 							b += m_PixelBuf[inIndex + 2] * f;
@@ -953,7 +953,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 //		}
 //		[kernel addObject:row];
 //	}
-	return [self applyConvolve:[UIImage makeKernel:((radius*2)+1)]];
+	return [self applyConvolve:[UIImage makeKernel:(((int)radius*2)+1)]];
 }
 
 #pragma mark -
@@ -990,7 +990,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 {
 	CGImageRef inImage = self.CGImage;
 	CFDataRef m_DataRef = CGDataProviderCopyData(CGImageGetDataProvider(inImage));  
-	int length = CFDataGetLength(m_DataRef);
+	CFIndex length = CFDataGetLength(m_DataRef);
 	CFMutableDataRef m_DataRefEdit = CFDataCreateMutableCopy(NULL,length,m_DataRef);
 	CFRelease(m_DataRef);
     UInt8 * m_PixelBuf = (UInt8 *) CFDataGetMutableBytePtr(m_DataRefEdit);
@@ -1030,7 +1030,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 {
 	CGImageRef inImage = self.CGImage;
 	CFDataRef m_DataRef = CGDataProviderCopyData(CGImageGetDataProvider(inImage));  
-	int length = CFDataGetLength(m_DataRef);
+	CFIndex length = CFDataGetLength(m_DataRef);
 	CFMutableDataRef m_DataRefEdit = CFDataCreateMutableCopy(NULL,length,m_DataRef);
 	CFRelease(m_DataRef);	
     UInt8 * m_PixelBuf = (UInt8 *) CFDataGetMutableBytePtr(m_DataRefEdit);

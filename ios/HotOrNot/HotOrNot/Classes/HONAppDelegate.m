@@ -73,7 +73,11 @@ NSString * const kKeenIOWriteKey = @"3765f6e50fdb595882038fb5c336dd31cbe55a2977a
 
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
-NSString * const kTapStreamSecretKey = @"8Q6fJ5eKTbSOHxzGGrX8pA";
+NSString * const kPubNubConfigDomain = @"pubsub.pubnub.com";
+NSString * const kPubNubPublishKey = @"pub-c-a4abb7b2-2e28-43c4-b8f1-b2de162a79c3";
+NSString * const kPubNubSubscribeKey = @"sub-c-ed10ba66-c9b8-11e4-bf07-0619f8945a4f";
+NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkwYzRlN2NkNDgy";
+NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 NSString * const kFlurryAPIKey = @"R84M6PFVNH2Z5Q8JW88C";
@@ -105,12 +109,13 @@ NSString * const kTwilioSMS = @"6475577873";
 #if __APPSTORE_BUILD__ == 0
 @interface HONAppDelegate() <BITHockeyManagerDelegate, PicoStickerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
 #else
-@interface HONAppDelegate() <HONLoadingOverlayView, PNDelegate>
+@interface HONAppDelegate() <HONLoadingOverlayViewDelegate, PNDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *noNetworkView;
 @property (nonatomic, strong) NSDictionary *shareInfo;
+@property (nonatomic, strong) UIImageView *taskImageView;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic) int challengeID;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
@@ -262,223 +267,35 @@ NSString * const kTwilioSMS = @"6475577873";
 			[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 			
 			
-			// #1 Define client configuration
-			PNConfiguration *myConfig = [PNConfiguration configurationForOrigin:@"pubsub.pubnub.com"
-																	 publishKey:@"demo"
-																   subscribeKey:@"demo"
-																	  secretKey:nil];
-			// #2 make the configuration active
-			[PubNub setConfiguration:myConfig];
-			
-			PNChannel *my_channel = [PNChannel channelWithName:@"derp" shouldObservePresence:YES];
+			[PubNub setConfiguration:[PNConfiguration configurationForOrigin:kPubNubConfigDomain
+																  publishKey:@"demo"//kPubNubPublishKey
+																subscribeKey:@"demo"//kPubNubSubscribeKey
+																   secretKey:nil]];//]kPubNubSecretKey]];
 			
 			[PubNub connectWithSuccessBlock:^(NSString *origin) {
 				PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
-				// wait 1 second
-				int64_t delayInSeconds = 1.0;
-				dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-				dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-					
-					// then subscribe on channel a
-					//[PubNub subscribeOnChannel:[PNChannel channelWithName:@"a" shouldObservePresence:YES]];
-					[PubNub subscribeOnChannel:my_channel];
-				});
+				NSLog(@"PubNub CONNECT:[%@]", origin);
 				
- 				[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error){
-					
-					switch (state) {
-						case PNSubscriptionProcessSubscribedState:
-							NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
-							// #2 Send a welcome message on subscribe
-//							[PubNub sendMessage:[NSString stringWithFormat:@"Hello Everybody!" ] toChannel:my_channel ];
-							break;
-						case PNSubscriptionProcessNotSubscribedState:
-							NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
-							break;
-						case PNSubscriptionProcessWillRestoreState:
-							NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
-							break;
-						case PNSubscriptionProcessRestoredState:
-							NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
-							break;
-					}
-				}];
-				
-				[[PNObservationCenter defaultCenter] addClientChannelUnsubscriptionObserver:self withCallbackBlock:^(NSArray *channel, PNError *error) {
-					if ( error == nil )
-					{
-						NSLog(@"OBSERVER: Unsubscribed from Channel: %@", channel[0]);
-						[PubNub subscribeOnChannel:my_channel];
-					}
-					else
-					{
-						NSLog(@"OBSERVER: Unsubscribed from Channel: %@, Error: %@", channel[0], error);
-					}
-				}];
-				// Observer looks for message received events
-				[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
-					NSLog(@"OBSERVER: Channel: %@, Message: %@", message.channel.name, message.message);
-					
-//					// Look for a message that matches "**************"
-//					if ( [[[NSString stringWithFormat:@"%@", message.message] substringWithRange:NSMakeRange(1,14)] isEqualToString: @"**************" ])
-//					{
-//						// Send a goodbye message
-//						[PubNub sendMessage:[NSString stringWithFormat:@"Thank you, GOODBYE!"] toChannel:my_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//							if (messageState == PNMessageSent) {
-//								NSLog(@"OBSERVER: Sent Goodbye Message!");
-//								//Unsubscribe once the message has been sent.
-//								[PubNub unsubscribeFromChannel:my_channel ];
-//							}
-//						}];
-//					}
-				}];
-				// #3 Add observer to catch message send events.
-				[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data){
-					
-					switch (state) {
-						case PNMessageSent:
-							NSLog(@"OBSERVER: Message Sent.");
-							break;
-						case PNMessageSending:
-							NSLog(@"OBSERVER: Sending Message...");
-							break;
-						case PNMessageSendingError:
-							NSLog(@"OBSERVER: ERROR: Failed to Send Message.");
-							break;
-						default:
-							break;
-					}
-				}];
-				
-				// In case of error you always can pull out error code and identify what happened and what you can do
-					// additional information is stored inside error's localizedDescription, localizedFailureReason and
-					// localizedRecoverySuggestion)
 			} errorBlock:^(PNError *connectionError) {
-						if (connectionError.code == kPNClientConnectionFailedOnInternetFailureError) {
-							// wait 1 second
-							int64_t delayInSeconds = 1.0;
-							dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-							dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-								PNLog(PNLogGeneralLevel, self, @"Connection will be established as soon as internet connection will be restored");
-							});
-						}
+				NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
 				
-				UIAlertView *connectionErrorAlert = [UIAlertView new];
-				connectionErrorAlert.title = [NSString stringWithFormat:@"%@(%@)",
-											  [connectionError localizedDescription],
-											  NSStringFromClass([self class])];
-				connectionErrorAlert.message = [NSString stringWithFormat:@"Reason:\n%@\n\nSuggestion:\n%@",
-												[connectionError localizedFailureReason],
-												[connectionError localizedRecoverySuggestion]];
-				[connectionErrorAlert addButtonWithTitle:@"OK"];
+				if (connectionError.code == kPNClientConnectionFailedOnInternetFailureError) {
+					
+					// wait 1 second
+					int64_t delayInSeconds = 1.0;
+					dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+					dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+						PNLog(PNLogGeneralLevel, self, @"Connection will be established as soon as internet connection will be restored");
+					});
+				}
 				
-				[connectionErrorAlert show];
+				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)", [connectionError localizedDescription], NSStringFromClass([self class])]
+											message:[NSString stringWithFormat:@"Reason:\n%@\n\nSuggestion:\n%@", [connectionError localizedFailureReason], [connectionError localizedRecoverySuggestion]]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
 			}];
 			
-			/*
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				[[HONLayerKitAssistant sharedInstance] connectClientToServiceWithCompletion:^(BOOL success, NSError *error) {
-					NSLog(@"connectClientToServiceWithCompletion:success:[%@] error:[%@]", NSStringFromBOOL(success), error);
-					
-					[[HONLayerKitAssistant sharedInstance] authenticateUserWithUserID:[[HONUserAssistant sharedInstance] activeUserID] withCompletion:^(BOOL success, NSError *error) {
-						NSLog(@"AUTH RESULT:%@ -=- %@", NSStringFromBOOL(success), error);
-						
-						for (int i=0; i<10; i++) {
-							NSDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] randomElement];
-							while ([[dict objectForKey:@"parent_id"] intValue] != 0)
-								dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] randomElement];
-							
-							
-							HONTopicVO *topicVO = [HONTopicVO topicWithDictionary:dict];
-							NSMutableArray *subjects = [NSMutableArray array];
-							[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-								HONTopicVO *vo = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
-								if (vo.parentID == topicVO.topicID)
-									[subjects addObject:vo];
-							}];
-							
-							HONTopicVO *subjectVO = [subjects randomElement];
-							while ([subjectVO.topicName rangeOfString:@"Add"].location != NSNotFound)
-								subjectVO = [subjects randomElement];
-							
-							NSError *error;
-							NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[topicVO.topicName] options:0 error:&error]
-																		 encoding:NSUTF8StringEncoding];
-							
-							NSMutableDictionary *submitParams = [@{@"user_id"		: @(arc4random_uniform(100) + 192010),
-																   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
-																   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
-																   @"challenge_id"	: @(0),
-																   @"topic_id"		: @(topicVO.topicID),
-																   @"subject"		: [NSString stringWithFormat:@"%@|%@", topicVO.topicName, subjectVO.topicName],
-																   @"subjects"		: jsonString} mutableCopy];
-							NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
-							
-							LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[@"193010", @"193016"] withTopicName:@"WHATEVER" andSubject:@"SUX"];
-							NSData *data = [[NSString stringWithFormat:@"- is %@ %@", topicVO.topicName, subjectVO.topicName] dataUsingEncoding:NSUTF8StringEncoding];
-							LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
-							
-							if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
-								NSLog(@"SEND FAILED!!");
-							
-							else {
-								NSLog(@"CONVERSATION:\n%@", [conversation toString]);
-								[submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
-								
-								[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
-									if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-										if (_progressHUD == nil)
-											_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-										_progressHUD.minShowTime = kProgressHUDMinDuration;
-										_progressHUD.mode = MBProgressHUDModeCustomView;
-										_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-										_progressHUD.labelText = @"Error!";
-										[_progressHUD show:NO];
-										[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-										_progressHUD = nil;
-										
-									} else {
-//										HONTrivialUserVO *trivialUserVO = [HONTrivialUserVO userWithDictionary:@{@"id"			: @(193016),
-//																												 @"username"	: @"jasoniphone6",
-//																												 @"img_url"		: @""}];
-//										
-//										HONContactUserVO *contactUserVO = [HONContactUserVO contactWithDictionary:@{@"f_name"	: @"Jason",
-//																													@"l_name"	: @"Festa",
-//																													//@"phone"	: @"+16506031708",
-//																													@"phone"	: @"+12393709811",
-//																													@"email"	: @""}];
-//										
-//										[[HONAPICaller sharedInstance] inviteNonAppUsers:@[contactUserVO] toClubWithID:[[HONClubAssistant sharedInstance] globalClub].clubID withClubOwnerID:2394 completion:^(NSDictionary *result) {
-//										}];
-//										
-//										[[HONAPICaller sharedInstance] inviteInAppUsers:@[trivialUserVO] toClubWithID:[[HONClubAssistant sharedInstance] globalClub].clubID withClubOwnerID:2394 completion:^(NSDictionary *result) {
-//										}];
-									}
-								}];
-							}
-						}
-						
-						
-//						HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] globalClub];
-//						[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:1 completion:^(NSDictionary *result) {
-//							[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//								NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
-//								[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
-//								
-//								HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:dict];
-//								
-//								NSError *error = nil;
-//								LYRConversation *conversation = [[[HONLayerKitAssistant sharedInstance] client] newConversationWithParticipants:[NSSet setWithArray:@[NSStringFromInt(193010), NSStringFromInt(vo.userID)]] options:@{@"user_id"	: @([[HONUserAssistant sharedInstance] activeUserID])} error:&error];
-//								LYRMessage *message = [[[HONLayerKitAssistant sharedInstance] client] newMessageWithParts:@[[LYRMessagePart messagePartWithMIMEType:kMIMETypeImagePNG data:UIImagePNGRepresentation([UIImage imageNamed:@"fpo_emotionIcon-SM"])], [LYRMessagePart messagePartWithMIMEType:kMIMETypeTextPlain data:[[vo.dictionary objectForKey:@"img"] dataUsingEncoding:NSUTF8StringEncoding]]] options:nil error:&error];
-//								
-//								NSLog(@"STATUSUPD:[%@]\n[%@]", conversation, message);
-//								BOOL success = [[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation];
-//							}];
-//						}];
-					}];
-				}];
-			});
-*/
 			
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -653,6 +470,8 @@ NSString * const kTwilioSMS = @"6475577873";
 //	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
 	
 	
+	_taskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appTaskBG"]];
+	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.window.backgroundColor = [UIColor colorWithRed:0.937 green:0.937 blue:0.957 alpha:1.000];
@@ -743,7 +562,15 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-	//NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
+	NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
+	
+	_taskImageView.alpha = 0.0;
+	[self.window addSubview:_taskImageView];
+	[UIView animateWithDuration:0.333 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		_taskImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -788,7 +615,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"local_reg"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
-
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -806,6 +632,14 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
+	
+	if (_taskImageView != nil) {
+		[UIView animateWithDuration:0.125 delay:0.00 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
+			_taskImageView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_taskImageView removeFromSuperview];
+		}];
+	}
 	
 //	[FBAppEvents activateApp];
 	
@@ -843,9 +677,10 @@ NSString * const kTwilioSMS = @"6475577873";
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
-			} else
-				NSLog(@"APP ACTIVE |||| GO GET BOOT & -> FIND USER |||||"); //				[self _retrieveConfigJSON];
-		
+			} else {
+//					[self _retrieveConfigJSON];
+			}
+			
 		} else {
 			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
 			
@@ -893,78 +728,50 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		
+		NSLog(@"isNumeric:[%@][%@] -=- %@/%@", [path firstObject], [path lastObject], NSStringFromBOOL([[path firstObject] isNumeric]), NSStringFromBOOL([[path lastObject] isNumeric]));
 		
-		NSLog(@"isNumeric:[%@] -=- %@", [path lastObject], NSStringFromBOOL([[path lastObject] isNumeric]));
-		
-		if ([[path lastObject] isNumeric]) {
-			[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
-//			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
-//				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-				if ([result count] > 0) {
+		if ([[path firstObject] isNumeric]) {
+			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path firstObject] intValue] completion:^(NSDictionary *result) {
+				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
 					HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-					
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]]];
-					[navigationController setNavigationBarHidden:YES];
-					[self.navController presentViewController:navigationController animated:NO completion:^(void) {
-					}];
+					[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+				
+				} else {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
+																		message:@"Would you like to start a new chat?"
+																	   delegate:self
+															  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+															  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+					[alertView setTag:HONAppDelegateAlertTypeCreateChat];
+					[alertView show];
+				}
+			}];
+			
+		} else if ([[path lastObject] isNumeric]) {
+			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
+				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+					HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+					[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+				
+				} else {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
+																		message:@"Would you like to start a new chat?"
+																	   delegate:self
+															  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+															  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+					[alertView setTag:HONAppDelegateAlertTypeCreateChat];
+					[alertView show];
 				}
 			}];
 			
 		} else {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - create"];
-			
-			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
-			_loadingOverlayView.delegate = self;
-			
-			NSString *subjectName = [path lastObject];
-			
-			NSLog(@"PATH:[%@]", subjectName);
-			
-			NSError *error;
-			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@"using"] options:0 error:&error]
-														 encoding:NSUTF8StringEncoding];
-			
-			NSMutableDictionary *submitParams = [@{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
-												   @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]],
-												   @"club_id"		: @([[HONClubAssistant sharedInstance] globalClub].clubID),
-												   @"challenge_id"	: @(0),
-												   @"topic_id"		: @(11),
-												   @"topic_name"	: @"using",
-												   @"subjects"		: jsonString} mutableCopy];
-			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
-			
-			LYRConversation *conversation = [[HONLayerKitAssistant sharedInstance] generateConversationWithParticipants:@[] withTopicName:[submitParams objectForKey:@"topic_name"] andSubject:subjectName];
-			NSData *data = [[NSString stringWithFormat:@"- is %@ %@", [submitParams objectForKey:@"topic_name"], subjectName] dataUsingEncoding:NSUTF8StringEncoding];
-			LYRMessage *message = [[HONLayerKitAssistant sharedInstance] generateMessageOfType:HONMessageTypeText withContent:data];
-			
-			if (![[HONLayerKitAssistant sharedInstance] sendMessage:message toConversation:conversation])
-				NSLog(@"SEND FAILED!!");
-			
-			else {
-				NSLog(@"CONVERSATION:\n%@", [conversation toString]);
-				
-				[submitParams setValue:conversation.identifier.absoluteString forKey:@"img_url"];
-				[submitParams setValue:[NSString stringWithFormat:@"%@|%@", [submitParams objectForKey:@"topic_name"], subjectName] forKey:@"subject"];
-				
-				NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
-				[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
-					if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-						if (_progressHUD == nil)
-							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-						_progressHUD.minShowTime = kProgressHUDMinDuration;
-						_progressHUD.mode = MBProgressHUDModeCustomView;
-						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-						_progressHUD.labelText = @"Error!";
-						[_progressHUD show:NO];
-						[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-						_progressHUD = nil;
-						
-					} else {
-						[_loadingOverlayView outro];
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-					}
-				}];
-			}
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
+																message:@"Would you like to start a new chat?"
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+			[alertView setTag:HONAppDelegateAlertTypeCreateChat];
+			[alertView show];
 		}
 	}
 	
@@ -1275,6 +1082,53 @@ void uncaughtExceptionHandler(NSException *exception) {
 				} else {
 				}
 			}
+		}
+		
+	} else if (alertView.tag == HONAppDelegateAlertTypeCreateChat) {
+		if (buttonIndex == 1) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - compose"];
+			
+			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+			_loadingOverlayView.delegate = self;
+			
+			NSError *error;
+			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
+														 encoding:NSUTF8StringEncoding];
+			
+			NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"img_url"		: @"",
+										   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"challenge_id"	: @(0),
+										   @"topic_id"		: @(0),
+										   @"subject"		: @"using|",
+										   @"subjects"		: jsonString};
+			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+			
+			
+			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
+			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kProgressHUDMinDuration;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+					_progressHUD = nil;
+					
+				} else {
+				} // api result
+				[_loadingOverlayView outro];
+				
+				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", vo.statusUpdateID];
+				
+				[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+			}]; // api submit
 		}
 	}
 }

@@ -109,8 +109,8 @@
     {
         if (plainTextData.length > 0)
         {
-            NSData *encryptedData = [self crypt_ECB:(unsigned char*)plainTextData.bytes inputLength:plainTextData.length decrypt:NO];
-            [cipherText appendString:[BitHelper bytesToHex:(unsigned char*)encryptedData.bytes length:encryptedData.length]];
+            NSData *encryptedData = [self crypt_ECB:(unsigned char*)plainTextData.bytes inputLength:(int)plainTextData.length decrypt:NO];
+            [cipherText appendString:[BitHelper bytesToHex:(unsigned char*)encryptedData.bytes length:(int)encryptedData.length]];
         }
     }
     else if (self.Mode == BlowfishModeCBC)
@@ -121,10 +121,10 @@
             {
                 //InitVector is appended to front in CBC mode
                 NSData *ivData = [self.InitVector dataUsingEncoding:NSASCIIStringEncoding];
-                [cipherText appendString:[BitHelper bytesToHex:(unsigned char*)ivData.bytes length:ivData.length]];
+                [cipherText appendString:[BitHelper bytesToHex:(unsigned char*)ivData.bytes length:(int)ivData.length]];
                 
-                NSData *encryptedData  = [self crypt_CBC:(unsigned char*)plainTextData.bytes inputLength:plainTextData.length decrypt:NO];
-                [cipherText appendString:[BitHelper bytesToHex:(unsigned char*)encryptedData.bytes length:encryptedData.length]];
+                NSData *encryptedData  = [self crypt_CBC:(unsigned char*)plainTextData.bytes inputLength:(int)plainTextData.length decrypt:NO];
+                [cipherText appendString:[BitHelper bytesToHex:(unsigned char*)encryptedData.bytes length:(int)encryptedData.length]];
             }
         }
         else
@@ -145,7 +145,7 @@
         if (cipherText.length > 0)
         {
             NSData *cipherData = [BitHelper hexToBytes:cipherText];
-            decryptedData = [self crypt_ECB:(unsigned char*)cipherData.bytes inputLength:cipherData.length decrypt:YES];
+            decryptedData = [self crypt_ECB:(unsigned char*)cipherData.bytes inputLength:(int)cipherData.length decrypt:YES];
         }
     }
     else if (self.Mode == BlowfishModeCBC)
@@ -163,7 +163,7 @@
                 //decrypt remaining cipher-text
                 cipherText = [cipherText substringFromIndex:16];
                 NSData *cipherData = [BitHelper hexToBytes:cipherText];
-                decryptedData = [self crypt_CBC:(unsigned char*)cipherData.bytes inputLength:cipherData.length decrypt:YES];
+                decryptedData = [self crypt_CBC:(unsigned char*)cipherData.bytes inputLength:(int)cipherData.length decrypt:YES];
             }
         }
     }

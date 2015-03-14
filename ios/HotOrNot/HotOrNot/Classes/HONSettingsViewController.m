@@ -329,10 +329,10 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
+	/*
 	HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
 	HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
 	
-	/*
 	if (indexPath.section == 0) {
 		if (![[HONClubAssistant sharedInstance] isStaffClub:locationClubVO]) {
 			[[HONClubAssistant sharedInstance] writeCurrentLocationClub:locationClubVO];

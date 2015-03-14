@@ -17,6 +17,7 @@
 #import "HONFlagNavButtonView.h"
 #import "HONMoreNavButtonView.h"
 #import "HONNextNavButtonView.h"
+#import "HONSettingsNavButtonView.h"
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -129,6 +130,10 @@
 
 - (void)addNextButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONNextNavButtonView alloc] initWithTarget:target action:action]];
+}
+
+- (void)addSettingsButtonWithTarget:(id)target action:(SEL)action {
+	[self addButton:[[HONSettingsNavButtonView alloc] initWithTarget:target action:action]];
 }
 
 - (void)addTitleButtonWithTarget:(id)target action:(SEL)action {

@@ -7,6 +7,9 @@
 //
 
 @interface NSNumber (BuiltInMenlo)
+
++ (instancetype)randomIntegerWithinRange:(NSRange)range;
+
 - (NSUInteger)factorial;
 - (NSUInteger)gcfWithNumber:(NSInteger)number;
 - (BOOL)isEven;

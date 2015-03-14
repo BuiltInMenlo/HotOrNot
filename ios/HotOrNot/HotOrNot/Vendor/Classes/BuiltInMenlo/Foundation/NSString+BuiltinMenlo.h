@@ -17,8 +17,9 @@
 
 - (NSString *)stringWithInt:(int)integer;
 + (id)initWithInteger:(int)integer;
-+ (instancetype)randomStringWithLength:(NSUInteger)length;
++ (instancetype)stringWithRandomizedCharactersLength:(NSUInteger)length;
 
+- (NSString *)firstComponentByDelimeter:(NSString *)delimiter;
 - (NSInteger)indexOfFirstOccurrenceOfSubstring:(NSString *)substring;
 - (NSInteger)indexOfLastOccurrenceOfSubstring:(NSString *)substring;
 - (BOOL)isDelimitedByString:(NSString *)delimiter;

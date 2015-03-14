@@ -13,7 +13,8 @@
 
 typedef NS_ENUM(NSUInteger, HONCommentContentType) {
 	HONCommentContentTypeText = 0,
-	HONCommentContentTypeImage
+	HONCommentContentTypeImage,
+	HONCommentContentTypeNotify
 };
 
 typedef NS_ENUM(NSUInteger, HONCommentStatusType) {

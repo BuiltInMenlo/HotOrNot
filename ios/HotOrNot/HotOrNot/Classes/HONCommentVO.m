@@ -40,7 +40,7 @@
 	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
-	vo.commentContentType = ([vo.textContent length] > 0) ? HONCommentContentTypeText : HONCommentContentTypeImage;
+	vo.commentContentType = ([vo.textContent length] > 0) ? ([dictionary objectForKey:@"content_type"] != nil) ? HONCommentContentTypeNotify : HONCommentContentTypeText : HONCommentContentTypeImage;
 	
 	__block BOOL isFound = NO;
 	NSString *avatarKey = NSStringFromInt(vo.userID);

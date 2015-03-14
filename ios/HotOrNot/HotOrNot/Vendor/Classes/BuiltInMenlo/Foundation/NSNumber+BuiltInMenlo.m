@@ -10,6 +10,12 @@
 
 @implementation NSNumber (BuiltInMenlo)
 
++ (instancetype)randomIntegerWithinRange:(NSRange)range {
+	NSNumber *rnd = [NSNumber numberWithInt:(arc4random_uniform((int)range.length) + (int)range.location)];
+	return (rnd);
+}
+
+
 - (NSUInteger)factorial {
 	NSUInteger val = [self unsignedIntegerValue];
 	for (NSUInteger i=[self unsignedIntegerValue]; i>=1; i--)

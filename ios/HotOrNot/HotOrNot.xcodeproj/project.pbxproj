@@ -108,6 +108,8 @@
 		30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */; };
 		30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */; };
 		30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30CAD5001A2FBC06002E61D4 /* Texas State.gpx */; };
+		30CBEABA1AB3637B002EA86C /* HONSettingsNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CBEAB91AB3637B002EA86C /* HONSettingsNavButtonView.m */; };
+		30CBEABD1AB3A70A002EA86C /* HONCommentNotifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CBEABC1AB3A70A002EA86C /* HONCommentNotifyView.m */; };
 		30CFAD411A54881100FD25CF /* HONReplySubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CFAD401A54881100FD25CF /* HONReplySubjectsViewController.m */; };
 		30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CFAD431A54905E00FD25CF /* HONReplySubmitViewController.m */; };
 		30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CFAD461A549C6600FD25CF /* HONCommentItemView.m */; };
@@ -513,6 +515,10 @@
 		30CA9CC71A033C1800A0A703 /* HONNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavButtonView.h; sourceTree = "<group>"; };
 		30CA9CC81A033C1800A0A703 /* HONNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavButtonView.m; sourceTree = "<group>"; };
 		30CAD5001A2FBC06002E61D4 /* Texas State.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Texas State.gpx"; sourceTree = "<group>"; };
+		30CBEAB81AB3637B002EA86C /* HONSettingsNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSettingsNavButtonView.h; sourceTree = "<group>"; };
+		30CBEAB91AB3637B002EA86C /* HONSettingsNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsNavButtonView.m; sourceTree = "<group>"; };
+		30CBEABB1AB3A70A002EA86C /* HONCommentNotifyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentNotifyView.h; sourceTree = "<group>"; };
+		30CBEABC1AB3A70A002EA86C /* HONCommentNotifyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentNotifyView.m; sourceTree = "<group>"; };
 		30CFAD3F1A54881100FD25CF /* HONReplySubjectsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONReplySubjectsViewController.h; sourceTree = "<group>"; };
 		30CFAD401A54881100FD25CF /* HONReplySubjectsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONReplySubjectsViewController.m; sourceTree = "<group>"; };
 		30CFAD421A54905E00FD25CF /* HONReplySubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONReplySubmitViewController.h; sourceTree = "<group>"; };
@@ -1859,6 +1865,8 @@
 				3010D7861A2444190078164F /* HONCommentViewCell.m */,
 				30CFAD451A549C6600FD25CF /* HONCommentItemView.h */,
 				30CFAD461A549C6600FD25CF /* HONCommentItemView.m */,
+				30CBEABB1AB3A70A002EA86C /* HONCommentNotifyView.h */,
+				30CBEABC1AB3A70A002EA86C /* HONCommentNotifyView.m */,
 				30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */,
 				30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */,
 				30CFAD421A54905E00FD25CF /* HONReplySubmitViewController.h */,
@@ -2161,6 +2169,8 @@
 				3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */,
 				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
 				3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */,
+				30CBEAB81AB3637B002EA86C /* HONSettingsNavButtonView.h */,
+				30CBEAB91AB3637B002EA86C /* HONSettingsNavButtonView.m */,
 			);
 			name = Nav;
 			sourceTree = "<group>";
@@ -2523,6 +2533,7 @@
 				3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */,
 				3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
+				30CBEABD1AB3A70A002EA86C /* HONCommentNotifyView.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
@@ -2573,6 +2584,7 @@
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
 				302C9AB91A86AE5C009E7DD6 /* AnimatedTransitioning.m in Sources */,
 				305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */,
+				30CBEABA1AB3637B002EA86C /* HONSettingsNavButtonView.m in Sources */,
 				3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */,
 				301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */,
 				30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */,

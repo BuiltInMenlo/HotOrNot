@@ -51,7 +51,8 @@ typedef NS_ENUM(NSUInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeInviteContacts,
 	HONAppDelegateAlertTypeCreateClub,
 	HONAppDelegateAlertTypeEnterClub,
-	HONAppDelegateAlertTypeAllowContactsAccess
+	HONAppDelegateAlertTypeAllowContactsAccess,
+	HONAppDelegateAlertTypeCreateChat
 };
 
 typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {

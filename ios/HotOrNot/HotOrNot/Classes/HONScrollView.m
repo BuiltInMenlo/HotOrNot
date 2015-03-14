@@ -8,8 +8,9 @@
 
 #import "HONScrollView.h"
 
-@implementation HONScrollView
+const UIEdgeInsets kOrthodoxScrollViewEdgeInsets = {0.0, 0.0, 44.0, 0.0};
 
+@implementation HONScrollView
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		self.contentSize = self.frame.size;

@@ -592,7 +592,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 
 #pragma mark - Actionsheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	NSLog(@"[*:*] actionSheet:clickedButtonAtIndex:[%d][%d] [*:*]", actionSheet.tag, buttonIndex);
+	NSLog(@"[*:*] actionSheet:clickedButtonAtIndex:[%d][%d] [*:*]", (int)actionSheet.tag, (int)buttonIndex);
 	
 	NSDictionary *metaData = ([[NSUserDefaults standardUserDefaults] objectForKey:@"share"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"share"] : nil;
 	

@@ -14,17 +14,15 @@
 #import "HONRefreshingLabel.h"
 
 @interface HONStatusUpdateCreatorView()
-@property (nonatomic, strong) UIImageView *imageLoadingView;
-@property (nonatomic, strong) UIImageView *imageView;
-@property (nonatomic, strong) UILabel *usernameLabel;
+@property (nonatomic, strong) UILabel *participantsLabel;
 @property (nonatomic, strong) UILabel *subjectLabel;
 @property (nonatomic, strong) UIButton *upVoteButton;
 @property (nonatomic, strong) UIButton *downVoteButton;
 @property (nonatomic, strong) HONRefreshingLabel *scoreLabel;
-@property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @end
 
 @implementation HONStatusUpdateCreatorView
+@synthesize statusUpdateVO = _statusUpdateVO;
 @synthesize delegate = _delegate;
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
@@ -33,114 +31,21 @@
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"statusUpdateCreatorBG"]]];
 		
-		_imageLoadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingDots_50"]];
-		_imageLoadingView.frame = CGRectOffset(_imageLoadingView.frame, 11.0, 17.0);
-		[self addSubview:_imageLoadingView];
-		
-		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 17.0, 50.0, 50.0)];
-		[self addSubview:_imageView];
-		[[HONViewDispensor sharedInstance] maskView:_imageView withMask:[UIImage imageNamed:@"topicMask"]];
-		
-		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			_imageView.image = image;
-			
-			[_imageLoadingView stopAnimating];
-			[_imageLoadingView removeFromSuperview];
-			_imageLoadingView = nil;
-		};
-		
-		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[_imageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL] stringByAppendingString:kSnapLargeSuffix]]];
-			
-			[_imageLoadingView stopAnimating];
-			[_imageLoadingView removeFromSuperview];
-			_imageLoadingView = nil;
-		};
-		
-		
-		
-		NSString *url = _statusUpdateVO.imagePrefix;
-		NSLog(@"URL:[%@]", url);
-		[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
-															cachePolicy:kOrthodoxURLCachePolicy
-														timeoutInterval:[HONAPICaller timeoutInterval]]
-						  placeholderImage:nil
-								   success:imageSuccessBlock
-								   failure:imageFailureBlock];
-		
-		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(77.0, 20.0, 220.0, 16.0)];
-		_usernameLabel.backgroundColor = [UIColor clearColor];
-		_usernameLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.58];
-		_usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		_usernameLabel.text = _statusUpdateVO.username;
-		//[self addSubview:_usernameLabel];
-		
-		
-		NSLog(@"TOPIC:[%@]", _statusUpdateVO.topicName);
-		NSLog(@"SUBJECT:[%@]", _statusUpdateVO.subjectName);
-		
-		
-		NSString *actionCaption = [NSString stringWithFormat:@"%@ %@", [_statusUpdateVO.topicName lowercaseString], _statusUpdateVO.subjectName];
-		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(77.0, 43.0, 220.0, 20.0)];
+		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 18.0, 280.0, 20.0)];
 		_subjectLabel.backgroundColor = [UIColor clearColor];
 		_subjectLabel.textColor = [UIColor blackColor];
-		_subjectLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:16];
-		_subjectLabel.text = actionCaption;
-		//[self addSubview:_subjectLabel];
+		_subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+		_subjectLabel.textAlignment = NSTextAlignmentCenter;
+		_subjectLabel.text = [NSString stringWithFormat:@"“%@”", _statusUpdateVO.topicName];
+		[self addSubview:_subjectLabel];
 		
-		if ([actionCaption rangeOfString:_statusUpdateVO.subjectName].location != NSNotFound) {
-			[_subjectLabel setFont:[[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:16] range:[actionCaption rangeOfString:_statusUpdateVO.subjectName]];
-			
-			if ([_statusUpdateVO.appStoreURL length] > 0) {
-				UIButton *linkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				linkButton.frame = [_subjectLabel boundingRectForSubstring:_statusUpdateVO.subjectName];
-				[linkButton addTarget:self action:@selector(_goAppStoreURL) forControlEvents:UIControlEventTouchUpInside];
-				[self addSubview:linkButton];
-			}
-		}
-		
-		
-		UIImageView *timeIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeIcon"]];
-		timeIconImageView.frame = CGRectOffset(timeIconImageView.frame, 72.0, 57.0);
-//		[self addSubview:timeIconImageView];
-		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(267.0, 9.0, 40.0, 16.0)];
-		timeLabel.backgroundColor = [UIColor clearColor];
-		timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
-		timeLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
-		timeLabel.textAlignment = NSTextAlignmentRight;
-		timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_statusUpdateVO.addedDate];
-		[self addSubview:timeLabel];
-		
-		_upVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_upVoteButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateDisabled];
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_nonActive"] forState:UIControlStateNormal];
-		[_upVoteButton setBackgroundImage:[UIImage imageNamed:@"upvoteButton_Active"] forState:UIControlStateHighlighted];
-		[_upVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO])];
-		//[self addSubview:_upVoteButton];
-		
-		_downVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_downVoteButton.frame = CGRectMake(272.0, 40.0, 44.0, 44.0);
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateDisabled];
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_nonActive"] forState:UIControlStateNormal];
-		[_downVoteButton setBackgroundImage:[UIImage imageNamed:@"downvoteButton_Active"] forState:UIControlStateHighlighted];
-		[_downVoteButton setEnabled:(![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO])];
-		//[self addSubview:_downVoteButton];
-		
-		NSLog(@"HAS VOTED:[%@]", NSStringFromBOOL([[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO]));
-		if (![[HONClubAssistant sharedInstance] hasVotedForStatusUpdate:_statusUpdateVO]) {
-			[_upVoteButton addTarget:self action:@selector(_goUpVote) forControlEvents:UIControlEventTouchUpInside];
-			[_downVoteButton addTarget:self action:@selector(_goDownVote) forControlEvents:UIControlEventTouchUpInside];
-		}
-		
-		_scoreLabel = [[HONRefreshingLabel alloc] initWithFrame:CGRectMake(272.0, 33.0, 44.0, 20.0)];
-		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:12];
-		_scoreLabel.textAlignment = NSTextAlignmentCenter;
-		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
-		_scoreLabel.text = NSStringFromInt(_statusUpdateVO.score);
-//		[self addSubview:_scoreLabel];
+		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 46.0, 220.0, 18.0)];
+		_participantsLabel.backgroundColor = [UIColor clearColor];
+		_participantsLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
+		_participantsLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:14];
+		_participantsLabel.textAlignment = NSTextAlignmentCenter;
+		_participantsLabel.text = @"0 people here";
+		[self addSubview:_participantsLabel];
 	}
 	
 	return (self);
@@ -148,6 +53,15 @@
 
 
 #pragma mark - Public APIs
+- (void)setStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
+	_statusUpdateVO = statusUpdateVO;
+	_subjectLabel.text = [NSString stringWithFormat:@"“%@”", _statusUpdateVO.topicName];
+}
+
+- (void)updateParticipantTotal:(int)participants {
+	_participantsLabel.text = [NSString stringWithFormat:@"%d %@ here", participants, (participants == 1) ? @"person" : @"people"];
+}
+
 - (void)refreshScore {
 	[_scoreLabel toggleLoading:YES];
 	[[HONAPICaller sharedInstance] retrieveVoteTotalForStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSNumber *result) {

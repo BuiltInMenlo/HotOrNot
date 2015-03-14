@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+extern const UIEdgeInsets kOrthodoxScrollViewEdgeInsets;
 
 @interface HONScrollView : UIScrollView
-
 @end

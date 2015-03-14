@@ -32,6 +32,7 @@
 
 
 #import "NSArray+BuiltinMenlo.h"
+#import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSData+BuiltInMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
@@ -92,23 +93,27 @@
 
 
 
-+ (instancetype)randomStringWithLength:(NSUInteger)length {
-	static const NSString *chars = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 !@#$%^&*()_-/?;:+=[]|~<>";
++ (instancetype)stringWithRandomizedCharactersLength:(NSUInteger)length {
+	NSMutableCharacterSet *characterSet = [NSMutableCharacterSet uppercaseLetterCharacterSet];
+	[characterSet formUnionWithCharacterSet:[NSCharacterSet lowercaseLetterCharacterSet]];
+	[characterSet formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
 	
-	NSArray *rndChars;
-	NSMutableString *rnd = [NSMutableString string];
+	NSArray *chars = [@"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz" componentsSeparatedByString:@""];
+	NSString *rnd = @"";
 	
 	for (NSInteger i=0; i<length; i++) {
-		if ([rnd length] % [chars length] == 0)
-			rndChars = [NSArray arrayRandomizedWithArray:[chars componentsSeparatedByString:@""]];
-		
-		[rnd appendString:[rndChars objectAtIndex:[rndChars randomIndex]]];
+		NSString *rndChar = [chars randomElement];
+		NSLog(@"CHAR:[%@] (%@)\n", rndChar, rnd);
+		rnd = [rnd stringByAppendingString:rndChar];
 	}
-	
 	
 	return (rnd);
 }
 
+
+- (NSString *)firstComponentByDelimeter:(NSString *)delimiter {
+	return (([self isDelimitedByString:delimiter]) ? [[self componentsSeparatedByString:delimiter] firstObject] : self);
+}
 
 - (NSInteger)indexOfFirstOccurrenceOfSubstring:(NSString *)substring {
 	NSAssert(substring != nil || self != nil, @"Seems you are trying to pass nil as a parameter");
@@ -165,11 +170,7 @@
 }
 
 - (NSString *)lastComponentByDelimeter:(NSString *)delimiter {
-	if ([self isDelimitedByString:delimiter])
-		return ([[self componentsSeparatedByString:delimiter] lastObject]);
-	
-	else
-		return (self);
+	return (([self isDelimitedByString:delimiter]) ? [[self componentsSeparatedByString:delimiter] lastObject] : self);
 }
 
 - (NSString *)randomizedString {

@@ -304,7 +304,9 @@ static HONAPICaller *sharedInstance = nil;
 			else {
 				NSDictionary *location = @{@"location"	: [[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] doubleValue] longitude:[[result objectForKey:@"lon"] doubleValue]],
 										   @"city"		: [result objectForKey:@"city"],
-										   @"state"		: [result objectForKey:@"region"]};
+										   @"country"	: [result objectForKey:@"country"],
+										   @"state"		: [result objectForKey:@"region"],
+										   @"region"	: [result objectForKey:@"regionName"]};
 				
 				if (completion)
 					completion(location);
@@ -621,7 +623,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (completion)
 				completion(result);
@@ -695,9 +697,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			[[result objectForKey:@"results"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSDictionary *dict = (NSDictionary *)obj;
@@ -1381,7 +1381,10 @@ static HONAPICaller *sharedInstance = nil;
 		
 		if (error != nil) {
 			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
+//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+			if (completion)
+				completion(@{});
 			
 		} else {
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
@@ -1776,18 +1779,20 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)retrieveStatusUpdateByStatusUpdateID:(int)statusUpdateID completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"page"	: @(1),
-							 @"format"	: @"json"};
+	NSDictionary *params = @{@"format"	: @"json"};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"GET", [[HONAPICaller sharedInstance] pythonAPIBasePath], [NSString stringWithFormat:kAPIStatusUpdate, statusUpdateID], params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingPythonBasePath];
 	[httpClient getPath:[NSString stringWithFormat:kAPIStatusUpdate, statusUpdateID] parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
 			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			//[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+			if (completion)
+				completion(@{@"detail"	: @"Not found"});
 			
 		} else {
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);

@@ -19,4 +19,7 @@
 - (NSCharacterSet *)addChars:(NSString *)appendChars;
 - (NSCharacterSet *)dropChars:(NSString *)excludeChars;
 
+- (NSArray *)arrayFromCharacterSet;
+- (NSString *)stringFromCharacterSet;
+
 @end

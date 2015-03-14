@@ -91,7 +91,7 @@
 			
 		} else {
 			PNChannel *channel = [PNChannel channelWithName:[result objectForKey:@"id"] shouldObservePresence:YES];
-			[PubNub subscribeOnChannel:channel];
+			[PubNub subscribeOn:@[channel]];
 			
 			[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 				switch (state) {
@@ -114,10 +114,10 @@
 			}];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"Derpch.at/%d", [[result objectForKey:@"id"] intValue]];
+			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", [[result objectForKey:@"id"] intValue]];
 			
-			[[[UIAlertView alloc] initWithTitle:@"Your Derp chat link has been copied to your clipboard!"
-										message:[NSString stringWithFormat:@"Share your Derp chat link with friends for them to join. Derpch.at/%d", [[result objectForKey:@"id"] intValue]]
+			[[[UIAlertView alloc] initWithTitle:@"Your DOOD chat link has been copied to your clipboard!"
+										message:[NSString stringWithFormat:@"Share your DOOD chat link with friends for them to join. doodch.at/%d/", [[result objectForKey:@"id"] intValue]]
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
