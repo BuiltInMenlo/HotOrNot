@@ -31,7 +31,7 @@
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"statusUpdateCreatorBG"]]];
 		
-		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 18.0, 280.0, 20.0)];
+		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 33.0, 280.0, 20.0)];
 		_subjectLabel.backgroundColor = [UIColor clearColor];
 		_subjectLabel.textColor = [UIColor blackColor];
 		_subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
@@ -45,7 +45,7 @@
 		_participantsLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:14];
 		_participantsLabel.textAlignment = NSTextAlignmentCenter;
 		_participantsLabel.text = @"0 people here";
-		[self addSubview:_participantsLabel];
+//		[self addSubview:_participantsLabel];
 	}
 	
 	return (self);

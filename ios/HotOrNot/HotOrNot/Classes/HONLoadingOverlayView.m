@@ -78,25 +78,31 @@
 
 #pragma mark - Public APIs
 - (void)outro {
-	[self _decompose];
-}
-
-
-#pragma mark - UI Presentation
-- (void)_goTimeout {
-	[self _decompose];
-}
-
-- (void)_decompose {
-	NSLog(@"::|> _decompose <|::");
-	
 	if ([_timer isValid])
 		[_timer invalidate];
 	
 	if (_timer != nil);
 	_timer = nil;
 	
-	[UIView animateKeyframesWithDuration:((int)_isAnimated) * 0.125
+	[self _decompose];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_goTimeout {
+	if ([_timer isValid])
+		[_timer invalidate];
+	
+	if (_timer != nil);
+	_timer = nil;
+	
+	[self _decompose];
+}
+
+- (void)_decompose {
+	NSLog(@"::|> _decompose <|::");
+	
+	[UIView animateKeyframesWithDuration:(((int)_isAnimated) * 0.125) * ((int)(self.alpha > 0.0))
 								   delay:0.000
 								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
 							   animations:^(void) {

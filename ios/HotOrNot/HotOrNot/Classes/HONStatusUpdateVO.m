@@ -12,7 +12,7 @@
 #import "HONStatusUpdateVO.h"
 
 @implementation HONStatusUpdateVO
-@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, appStoreURL, comment, score, replies, addedDate, updatedDate;
+@synthesize statusUpdateID, clubID, userID, username, imagePrefix, topicName, subjectName, location, appStoreURL, comment, score, replies, addedDate, updatedDate;
 
 + (HONStatusUpdateVO *)statusUpdateWithDictionary:(NSDictionary *)dictionary {
 	HONStatusUpdateVO *vo = [[HONStatusUpdateVO alloc] init];
@@ -41,6 +41,7 @@
 	}
 	
 	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : [vo.topicName stringByReplacingOccurrencesOfString:@" " withString:@"%20"]] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
+	vo.location = [[CLLocation alloc] initWithLatitude:[[[[[[dictionary objectForKey:@"img"] componentsSeparatedByString:@"//"] lastObject] componentsSeparatedByString:@"_"] firstObject] floatValue] longitude:[[[[[[dictionary objectForKey:@"img"] componentsSeparatedByString:@"//"] lastObject] componentsSeparatedByString:@"_"] lastObject] floatValue]];
 	
 	if ([vo.topicName isEqualToString:@"Feeling"]) {
 		__block BOOL isFound = NO;
@@ -84,6 +85,7 @@
 	self.imagePrefix = nil;
 	self.topicName = nil;
 	self.subjectName = nil;
+	self.location = nil;
 	self.comment = nil;
 	self.replies = nil;
 	self.addedDate = nil;

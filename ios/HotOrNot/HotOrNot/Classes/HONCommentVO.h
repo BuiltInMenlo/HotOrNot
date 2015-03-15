@@ -6,15 +6,21 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+
+#import <CoreLocation/CoreLocation.h>
+
 #import <PubNub/PubNub.h>
 
 #import "HONClubPhotoVO.h"
 
 
 typedef NS_ENUM(NSUInteger, HONCommentContentType) {
-	HONCommentContentTypeText = 0,
-	HONCommentContentTypeImage,
-	HONCommentContentTypeNotify
+	HONCommentContentTypeUnknown = 0,
+	HONCommentContentTypeSYN,
+	HONCommentContentTypeACK,
+	HONCommentContentTypeBYE,
+	HONCommentContentTypeText,
+	HONCommentContentTypeImage
 };
 
 typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
@@ -39,6 +45,7 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @property (nonatomic) int parentID;
 @property (nonatomic) int clubID;
 @property (nonatomic) int userID;
+@property (nonatomic, retain) CLLocation *location;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic) int score;

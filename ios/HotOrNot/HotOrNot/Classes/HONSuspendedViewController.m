@@ -141,7 +141,7 @@
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 		mailComposeViewController.mailComposeDelegate = self;
-		[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
+		[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@trydood.com"]];
 		[mailComposeViewController setSubject:@"Account Suspended"];
 		[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]), [[HONUserAssistant sharedInstance] activeUsername]] isHTML:NO];
 		

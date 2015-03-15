@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
+
 #import "HONBaseVO.h"
 #import "HONTopicVO.h"
 #import "HONSubjectVO.h"
@@ -23,6 +25,7 @@
 @property (nonatomic, retain) NSString *appStoreURL;
 @property (nonatomic, retain) NSArray *replies;
 @property (nonatomic, retain) NSString *comment;
+@property (nonatomic, retain) CLLocation *location;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *updatedDate;

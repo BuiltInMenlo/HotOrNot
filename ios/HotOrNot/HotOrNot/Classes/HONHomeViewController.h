@@ -9,5 +9,17 @@
 
 #import "HONViewController.h"
 
+typedef NS_ENUM(NSUInteger, HONHomeAlertViewType) {
+	HONHomeAlertViewTypeFlag = 0,
+	HONHomeAlertViewTypeCompose,
+	HONHomeAlertViewTypeJoin,
+	HONHomeAlertViewTypeShare,
+	HONHomeAlertViewTypeShowTerms,
+	HONHomeAlertViewTypeTermsAgreement
+};
+
+
+
+
 @interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 @end

@@ -166,12 +166,15 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (void)updateDeviceLocation:(CLLocation *)location {
 	NSLog(@"DEVICE LOCATION UPDATE:[%@]", NSStringFromCLLocation(location));
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"coords"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"coords"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+//	
+	[[NSUserDefaults standardUserDefaults] replaceObject:@{@"lat"	:[NSNumber numberWithDouble:location.coordinate.latitude],
+														   @"lon"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
 	
-	[[NSUserDefaults standardUserDefaults] setValue:@{@"lat"	:[NSNumber numberWithDouble:location.coordinate.latitude],
-													  @"lon"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	[[NSUserDefaults standardUserDefaults] setValue:@{@"lat"	:[NSNumber numberWithDouble:location.coordinate.latitude],
+//													  @"lon"	:[NSNumber numberWithDouble:location.coordinate.longitude]} forKey:@"coords"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSDictionary *)geoLocale {
@@ -180,7 +183,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (void)updateGeoLocale:(NSDictionary *)locale {
 	[[NSUserDefaults standardUserDefaults] replaceObject:locale forKey:@"device_locale"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (BOOL)hasNetwork {

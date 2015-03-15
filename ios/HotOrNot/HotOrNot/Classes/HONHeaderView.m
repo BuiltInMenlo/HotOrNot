@@ -40,7 +40,7 @@
 
 - (id)init {
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
-		UIView *statusBarBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, 320.0, 20.0)];
+		UIView *statusBarBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, [UIScreen mainScreen].bounds.size.width, 20.0)];
 		statusBarBGView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
 		[self addSubview:statusBarBGView];
 		

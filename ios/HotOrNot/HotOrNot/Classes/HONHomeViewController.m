@@ -7,7 +7,6 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
-#import <LayerKit/LayerKit.h>
 
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
@@ -28,6 +27,7 @@
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONTermsViewController.h"
 #import "HONLoadingOverlayView.h"
 #import "HONPaginationView.h"
 #import "HONScrollView.h"
@@ -60,8 +60,6 @@
 @property (nonatomic) int voteScore;
 @property (nonatomic) int totStatusUpdates;
 @property (nonatomic) BOOL isLoading;
-@property (nonatomic, strong) UIView *overlayView;
-@property (nonatomic, strong) NSTimer *overlayTimer;
 @property (nonatomic, strong) NSString *composeSubject;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic) int cnt;
@@ -280,9 +278,9 @@
 
 - (void)_didFinishDataRefresh {
 	
-	_isLoading = NO;
+	[_loadingOverlayView outro];
 	
-	[self _orphanSubmitOverlay];
+	_isLoading = NO;
 	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
@@ -325,6 +323,19 @@
 	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 }
 
+- (void)_registerPushNotifications {
+	if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+		if (![[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+			[[UIApplication sharedApplication] registerForRemoteNotifications];
+		}
+		
+	} else {
+		if ([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone)
+			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
+	}
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -347,8 +358,9 @@
 	[_toggleView toggleEnabled:NO];
 	//[_headerView addSubview:_toggleView];
 	
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight - [[UIApplication sharedApplication] statusBarFrame].size.height))];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
+	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceHorizontal = YES;
 	_scrollView.pagingEnabled = YES;
 	_scrollView.delegate = self;
@@ -398,8 +410,8 @@
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)];
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
+	_tableView.delegate = nil;
+	_tableView.dataSource = nil;
 	_tableView.alwaysBounceVertical = YES;
 	_tableView.showsVerticalScrollIndicator = NO;
 	_tableView.scrollsToTop = NO;
@@ -428,10 +440,11 @@
 	//[_scrollView addSubview:_emptyFeedView];
 	
 	_composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_composeButton.frame = CGRectMake(105.0, self.view.frame.size.height, 111.0, 111.0);
+	_composeButton.frame = CGRectMake(105.0, _scrollView.frame.size.height, 111.0, 111.0);
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
 	[_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
+	_composeButton.alpha = 0.0;
 	[self.view addSubview:_composeButton];
 	
 	_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1020.0, 151.0, 1.0, 34.0)];
@@ -453,6 +466,7 @@
 	_textField.placeholder = @"what are you doing?";
 	_textField.delegate = self;
 	[_scrollView addSubview:_textField];
+	
 }
 
 - (void)viewDidLoad {
@@ -474,7 +488,6 @@
 	[self.tableView addGestureRecognizer:longPressGestureRecognizer];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
 //		_locationManager = [[CLLocationManager alloc] init];
 //		_locationManager.delegate = self;
@@ -484,14 +497,12 @@
 //		[_locationManager startUpdatingLocation];
 		
 		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
-			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
-			
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																	@"state"	: [result objectForKey:@"state"],
 																	@"region"	: [result objectForKeyedSubscript:@"region"]}];
 			
 			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] floatValue] longitude:[[result objectForKey:@"lon"] floatValue]]];
-			
+
 //			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 //			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
 ////				[_locationManager stopUpdatingLocation];
@@ -518,6 +529,7 @@
 		}];
 		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
+//		[_scrollView setContentOffset:CGPointMake(_scrollView.contentSize.width - _scrollView.frame.size.width, 0.0) animated:YES];
 		
 	} else {
 		[self _goRegistration];
@@ -666,21 +678,41 @@
 //	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation"
-														message:_textField.text
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-											  otherButtonTitles:@"Create Chat", nil];
-	[alertView setTag:1];
-	[alertView show];
+	NSLog(@"(*)(*)(*)(*)(*)(*) IS NUMERIC:[%@] -(%@)- %@", _textField.text, NSStringFromBOOL([_textField.text isNumeric]), NSStringFromInt([[_textField.text stringByReplacingOccurrencesOfString:@".." withString:@""] intValue]));
 	
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Select the type of DOOD you want to create:"
-//															 delegate:self
-//													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//											   destructiveButtonTitle:nil
-//													otherButtonTitles:@"Deep link (only people with the link can see)", @"Open (people on DOOD can see)", nil];
-//	[actionSheet setTag:0];
-//	[actionSheet showInView:self.view];
+	
+	int statusUpdateID = [[_textField.text stringByReplacingOccurrencesOfString:@".." withString:@""] intValue];
+	if (statusUpdateID > 0) {
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+		_loadingOverlayView.delegate = self;
+		
+		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+			[_loadingOverlayView outro];
+			
+			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+				if ([_textField isFirstResponder])
+					[_textField resignFirstResponder];
+				
+				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+				[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+				
+			} else {
+				_textField.text = @"";
+				
+				if (![_textField isFirstResponder])
+					[_textField becomeFirstResponder];
+			}
+		}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation"
+															message:_textField.text
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												  otherButtonTitles:@"Create Chat", nil];
+		[alertView setTag:HONHomeAlertViewTypeCompose];
+		[alertView show];
+	}
 }
 
 - (void)_goSettings {
@@ -710,7 +742,7 @@
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-			[alertView setTag:0];
+			[alertView setTag:HONHomeAlertViewTypeFlag];
 			[alertView show];
 			
 		} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
@@ -745,22 +777,6 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
 	
-	[[HONAPICaller sharedInstance] createClubWithTitle:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])
-									   withDescription:@""
-									   withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]
-											atLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation]
-											completion:^(NSDictionary *result) {
-												NSDictionary *dict = [result mutableCopy];
-												
-												[dict setValue:@(0.0) forKey:@"distance"];
-												[dict setValue:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) forKey:@"radius"];
-												[dict setValue:@{@"lat"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
-																 @"lon"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude)} forKey:@"coords"];
-												
-												HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:dict];
-												NSLog(@"CREATED CLUB:[%@]", NSStringFromNSDictionary(clubVO.dictionary));
-											}];
-	
 	self.view.hidden = NO;
 	
 //	_locationManager = [[CLLocationManager alloc] init];
@@ -772,10 +788,11 @@
 //	[_locationManager startUpdatingLocation];
 	
 	[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
-		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
-		
 		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
-																@"state"	: [result objectForKey:@"state"]}];
+																@"state"	: [result objectForKey:@"state"],
+																@"region"	: [result objectForKeyedSubscript:@"region"]}];
+		
+		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] floatValue] longitude:[[result objectForKey:@"lon"] floatValue]]];
 		
 //		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 //		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
@@ -860,31 +877,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_orphanSubmitOverlay {
-	NSLog(@"::|> _orphanSubmitOverlay <|::");
-	
-	if ([_overlayTimer isValid])
-		[_overlayTimer invalidate];
-	
-	if (_overlayTimer != nil);
-	_overlayTimer = nil;
-	
-	if (_overlayView != nil) {
-		[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			_overlayView.alpha = 0.0;
-			
-		} completion:^(BOOL finished) {
-			[_overlayView removeFromSuperview];
-			_overlayView = nil;
-			
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-		}];
-	}
-}
-
 #pragma mark - HomeFeedToggleView Delegates
 - (void)homeFeedToggleView:(HONHomeFeedToggleView *)toggleView didSelectFeedType:(HONHomeFeedType)feedType {
 	NSLog(@"[*:*] homeFeedToggleView:didSelectFeedType:[%@])", (feedType == HONHomeFeedTypeRecent) ? @"Recent" : (feedType == HONHomeFeedTypeTop) ? @"Top" : (feedType == HONHomeFeedTypeOwned) ? @"Owned" : @"UNKNOWN");
@@ -953,10 +945,11 @@
 	NSLog(@"**_[%@ locationManager:didFailWithError:(%@)]_**", self.class, error.description);
 	
 	[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
-		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
-		
 		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
-																@"state"	: [result objectForKey:@"state"]}];
+																@"state"	: [result objectForKey:@"state"],
+																@"region"	: [result objectForKeyedSubscript:@"region"]}];
+		
+		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] floatValue] longitude:[[result objectForKey:@"lon"] floatValue]]];
 		
 //		HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 //		if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
@@ -1001,10 +994,11 @@
 	} else if (status == kCLAuthorizationStatusDenied) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - location_cancel"];
 		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
-			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[result objectForKey:@"location"]];
-			
 			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
-																	@"state"	: [result objectForKey:@"state"]}];
+																	@"state"	: [result objectForKey:@"state"],
+																	@"region"	: [result objectForKeyedSubscript:@"region"]}];
+			
+			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] floatValue] longitude:[[result objectForKey:@"lon"] floatValue]]];
 			
 //			HONUserClubVO *globalClubVO = [[HONClubAssistant sharedInstance] globalClub];
 //			if ([[HONGeoLocator sharedInstance] milesBetweenLocation:[[HONDeviceIntrinsics sharedInstance] deviceLocation] andOtherLocation:globalClubVO.location] < globalClubVO.joinRadius) {
@@ -1244,61 +1238,93 @@
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	if (scrollView.contentOffset.x < 960) {
-		if ([_textField isFirstResponder])
-			[_textField resignFirstResponder];
-		
-		[UIView animateWithDuration:0.25 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			_composeButton.alpha = 0.0;
-			_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height);
-		} completion:^(BOOL finished) {
-		}];
-	}
+//	NSLog(@"[*:*] scrollViewDidScroll:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-//	[[_tableView visibleCells] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONHomeViewCell *cell = (HONHomeViewCell *)obj;
-//		[cell toggleImageLoading:YES];
-//	}];
+//	NSLog(@"[*:*] scrollViewDidEndDecelerating:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
 	
 	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
+	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
+//		[self _registerPushNotifications];
+		
+		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
+			[UIView animateWithDuration:0.25 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+				_composeButton.alpha = 1.0;
+				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - 112.0);
+				
+			} completion:^(BOOL finished) {
+//				if (![_textField isFirstResponder])
+//					[_textField becomeFirstResponder];
+			}];
+		}
+		
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+																message:@"You agree to the following terms."
+															   delegate:self
+													  cancelButtonTitle:@"View Terms"
+													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+			[alertView show];
+		}
+		
+	} else if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
+		if ([_textField isFirstResponder])
+			[_textField resignFirstResponder];
+		
+		if (_composeButton.frame.origin.y == scrollView.frame.size.height - 112.0) {
+			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+				_composeButton.alpha = 0.0;
+				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height);
+			} completion:^(BOOL finished) {
+			}];
+		}
+	}
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+//	NSLog(@"[*:*] scrollViewDidEndScrollingAnimation:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
 	
-	if (scrollView.contentOffset.x == 960) {
-		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-			[[UIApplication sharedApplication] registerForRemoteNotifications];
-			
-		} else
-			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
+	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
+	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
+//		[self _registerPushNotifications];
 		
-		if (![_cursorImageView isAnimating])
-			[_cursorImageView startAnimating];
+		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
+			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+				_composeButton.alpha = 1.0;
+				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - 112.0);
+				
+			} completion:^(BOOL finished) {
+//				if (![_textField isFirstResponder])
+//					[_textField becomeFirstResponder];
+			}];
+		}
 		
-		_composeButton.alpha = 0.0;
-		_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height);
-		[UIView animateWithDuration:0.25 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-			_composeButton.alpha = 1.0;
-			_composeButton.frame = CGRectTranslateY(_composeButton.frame, self.view.frame.size.height - 176.0);
-			
-		} completion:^(BOOL finished) {
-			if (![_textField isFirstResponder])
-				[_textField becomeFirstResponder];
-		}];
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+																message:@"You agree to the following terms."
+															   delegate:self
+													  cancelButtonTitle:@"View Terms"
+													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+			[alertView show];
+		}
 	}
 }
 
 
 #pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		if (buttonIndex == 1) {
-			[self _flagStatusUpdate];
-		}
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	NSLog(@"[*:*] alertView:[%ld] clickedButtonAtIndex:[%ld]", (long)alertView.tag, (long)buttonIndex);
 	
-	} else if (alertView.tag == 1) {
+	if (alertView.tag == HONHomeAlertViewTypeFlag) {
+	} else if (alertView.tag == HONHomeAlertViewTypeCompose) {
 		if (buttonIndex == 1) {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
+			
+			if ([_textField isFirstResponder])
+				[_textField resignFirstResponder];
 			
 			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 			_loadingOverlayView.delegate = self;
@@ -1346,10 +1372,62 @@
 				[_loadingOverlayView outro];
 			}]; // api submit
 		}
+		
+	} else if (alertView.tag == HONHomeAlertViewTypeJoin) {
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+		_loadingOverlayView.delegate = self;
+		
+		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[_textField.text intValue] completion:^(NSDictionary *result) {
+			[_loadingOverlayView outro];
+			
+			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+				if ([_textField isFirstResponder])
+					[_textField resignFirstResponder];
+				
+				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+				[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+				
+			} else {
+				_textField.text = @"";
+				
+				if (![_textField isFirstResponder])
+					[_textField becomeFirstResponder];
+			}
+		}];
+		
+	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
+	} else if (alertView.tag == HONHomeAlertViewTypeTermsAgreement) {
+		if (buttonIndex == 1) {
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"terms"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
+	}
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	NSLog(@"[*:*] alertView:[%d] didDismissWithButtonIndex:[%d]", (int)alertView.tag, (int)buttonIndex);
 	
-	} else if (alertView.tag == 2) {
+	if (alertView.tag == HONHomeAlertViewTypeFlag) {
+		if (buttonIndex == 1) {
+			[self _flagStatusUpdate];
+		}
+	
+	} else if (alertView.tag == HONHomeAlertViewTypeCompose) {
+	} else if (alertView.tag == HONHomeAlertViewTypeJoin) {
+		
+	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
 		if (buttonIndex == 1) {
 			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _selectedStatusUpdateVO.statusUpdateID]}];
+		}
+		
+	} else if (alertView.tag == HONHomeAlertViewTypeShowTerms) {
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:^(void) {
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"terms"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}];
 		}
 	}
 }

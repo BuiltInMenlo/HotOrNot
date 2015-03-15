@@ -24,11 +24,11 @@ const UIEdgeInsets kOrthodoxScrollViewEdgeInsets = {0.0, 0.0, 44.0, 0.0};
 
 #pragma mark - Overrides
 - (void)setContentInset:(UIEdgeInsets)contentInset {
-	if (self.tracking) {
-		CGPoint translation = [self.panGestureRecognizer translationInView:self];
-		translation.y -= ((contentInset.top - self.contentInset.top) * 1.5);
-		[self.panGestureRecognizer setTranslation:translation inView:self];
-	}
+//	if (self.tracking) {
+//		CGPoint translation = [self.panGestureRecognizer translationInView:self];
+//		translation.y -= ((contentInset.top - self.contentInset.top) * 1.5);
+//		[self.panGestureRecognizer setTranslation:translation inView:self];
+//	}
 	
 	[super setContentInset:contentInset];
 }

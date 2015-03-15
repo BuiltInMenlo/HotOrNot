@@ -15,6 +15,7 @@
 #import "NSString+BuiltinMenlo.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BuiltinMenlo.h"
+#import "UIView+BuiltinMenlo.h"
 
 #import "HONStatusUpdateViewController.h"
 #import "HONReplySubmitViewController.h"
@@ -91,6 +92,9 @@
 	if ((self = [self init])) {
 		_statusUpdateVO = statusUpdateVO;
 		_clubVO = clubVO;
+		
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
 	}
 	
 	return (self);
@@ -119,20 +123,25 @@
 		_expireTimer = nil;
 	}
 	
-	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
 	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 //	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 		
 		_statusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 		
-		if (_channel == nil || [[_channel.name lastComponentByDelimeter:@"_"] intValue] != _statusUpdateVO.statusUpdateID)
+		if (_channel == nil || [[_channel.name lastComponentByDelimeter:@"_"] intValue] != _statusUpdateVO.statusUpdateID) {
 			_channel = [self _channelSetupForStatusUpdate];
 		
-		if (_channel.participantsCount < 2) {
-			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
-															target:self selector:@selector(_updateExpireTime)
-														  userInfo:nil
-														   repeats:YES];
+		} else {
+			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+				if (messageState == PNMessageSent) {
+					NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+					[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+					}];
+					
+					[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
+					[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
+				}
+			}];
 		}
 		
 		_statusUpdateVO.replies = [_replies copy];
@@ -142,9 +151,9 @@
 
 - (void)_submitCommentReply:(BOOL)isText {
 	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 						   @"club_id"		: @(_clubVO.clubID),
-						   @"subject"		: [NSString stringWithFormat:@"%d|%@", [[HONUserAssistant sharedInstance] activeUserID], (isText) ? _comment : @"emoji"],
+						   @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+						   @"subject"		: [NSString stringWithFormat:@"%d|%.04f_%.04f|%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, (isText) ? _comment : @"emoji"],
 						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -163,9 +172,8 @@
 		}
 	}];
 	
-	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%@", [[HONUserAssistant sharedInstance] activeUserID], (isText) ? _comment : @"emoji"] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-		if (messageState == PNMessageSent) {
-		}
+	[PubNub sendMessage:[dict objectForKey:@"subject"] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+		//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 	}];
 	
 	_isSubmitting = NO;
@@ -178,27 +186,21 @@
 	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 		PNChannel *channel = [channels firstObject];
 		
-		NSLog(@"::: SUBSCRIPTION OBSERVER - [%@](%d) :::", channel.name, (int)state);
-		NSLog(@"PARTICIPANTS:[%d]", (int)channel.participantsCount);
+		NSLog(@"\n::: SUBSCRIPTION OBSERVER - [%@](%@)\n", (state == PNSubscriptionProcessSubscribedState) ? @"Subscribed" : (state == PNSubscriptionProcessRestoredState) ? @"Restored" : (state == PNSubscriptionProcessNotSubscribedState) ? @"NotSubscribed" : (state == PNSubscriptionProcessWillRestoreState) ? @"WillRestore" : @"UNKNOWN", channel.name);
 		
-		if (state == PNSubscriptionProcessSubscribedState) {
-			NSLog(@"SUBSCRIPTION OBSERVER: Subscribed to Channel: %@", channel.name);
-			
+		if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
 			_channel = channel;
-			[_creatorView updateParticipantTotal:(int)_channel.participantsCount];
+			_participants = 1;
 			
-			_emptyCommentsView.hidden = (_channel.participantsCount > 1);
-			_commentsHolderView.hidden = (_channel.participantsCount < 2);
-			_footerView.hidden = (_channel.participantsCount < 2);
-			[_imageCommentButton setEnabled:(_channel.participantsCount >= 10)];
+			[_creatorView updateParticipantTotal:_participants];
 			
 			NSMutableDictionary *dict = [@{@"id"				: @"0",
 										   @"msg_id"			: @"0",
-										   @"content_type"		: @"NOTIFY",
+										   @"content_type"		: @((int)HONCommentContentTypeSYN),
 										   
 										   @"owner_member"		: @{@"id"	: @([[HONUserAssistant sharedInstance] activeUserID]),
 																	@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
-										   
+										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
 										   @"text"				: @"you have joined this |DOOD CHAT|",
 										   
 										   @"net_vote_score"	: @(0),
@@ -208,43 +210,85 @@
 			
 			
 			[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+			
+			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+			}];
 			
 		} else if (state == PNSubscriptionProcessNotSubscribedState) {
-			NSLog(@"SUBSCRIPTION OBSERVER: Not subscribed to Channel: %@, Error: %@", channel.name, error);
-			
 		} else if (state == PNSubscriptionProcessWillRestoreState) {
-			NSLog(@"SUBSCRIPTION OBSERVER: Will re-subscribe to Channel: %@", channel.name);
-			
-		} else if (state == PNSubscriptionProcessRestoredState) {
-			NSLog(@"SUBSCRIPTION OBSERVER: Re-subscribed to Channel: %@", channel.name);
-			
-			_channel = channel;
-			[_creatorView updateParticipantTotal:(int)_channel.participantsCount];
-			
-			_emptyCommentsView.hidden = (_channel.participantsCount > 1);
-			_commentsHolderView.hidden = (_channel.participantsCount < 2);
-			_footerView.hidden = (_channel.participantsCount < 2);
-			[_imageCommentButton setEnabled:(_channel.participantsCount >= 10)];
-			
-			NSMutableDictionary *dict = [@{@"id"				: @"0",
-										   @"msg_id"			: @"0",
-										   @"content_type"		: @"NOTIFY",
-										   
-										   @"owner_member"		: @{@"id"	: @([[HONUserAssistant sharedInstance] activeUserID]),
-																	@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
-										   
-										   @"text"				: @"you have joined this |DOOD CHAT|",
-										   
-										   @"net_vote_score"	: @(0),
-										   @"status"			: NSStringFromInt(0),
-										   @"added"				: [NSDate stringFormattedISO8601],
-										   @"updated"			: [NSDate stringFormattedISO8601]} mutableCopy];
-			
-			
-			[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
 		}
 	}];
 	
+	// Observer looks for message received events
+	[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
+		NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
+		
+		HONCommentVO *commentVO = [HONCommentVO commentWithMessage:message];
+		NSLog(@"CommentType:[%@]\n", (commentVO.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (commentVO.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (commentVO.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (commentVO.commentContentType == HONCommentContentTypeText) ? @"Text" : @"UNKNOWN");
+		NSLog(@"commentVO.userID:[%d]", commentVO.userID);
+		
+		if (commentVO.commentContentType == HONCommentContentTypeSYN) {
+			if (commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]) {
+				_participants++;
+				
+				commentVO.textContent = @"a user has joined this |DOOD CHAT|";
+				[self _appendComment:commentVO];
+				
+				[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|%d__ACK__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, commentVO.userID] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+					//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+				}];
+			}
+			
+		} else if (commentVO.commentContentType == HONCommentContentTypeACK) {
+			if ([commentVO.textContent intValue] == [[HONUserAssistant sharedInstance] activeUserID])
+				_participants++;
+		
+		} else if (commentVO.commentContentType == HONCommentContentTypeBYE) {
+			_participants = MAX(0, --_participants);
+			
+			if (commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]) {
+				commentVO.textContent = @"a user has left this |DOOD CHAT|";
+				[self _appendComment:commentVO];
+			}
+		
+		} else if (commentVO.commentContentType == HONCommentContentTypeText) {
+			[self _appendComment:commentVO];
+		}
+		
+		if (_expireTimer != nil) {
+			[_expireTimer invalidate];
+			_expireTimer = nil;
+		}
+		
+		_emptyCommentsView.hidden = (_participants > 1);
+		_commentsHolderView.hidden = (_participants < 2);
+		_footerView.hidden = (_participants < 2);
+		
+		[_creatorView updateParticipantTotal:_participants];
+		[_imageCommentButton setEnabled:(_participants >= 10)];
+		
+		if (_participants < 2) {
+			_expireSeconds = 600;
+			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+															target:self selector:@selector(_updateExpireTime)
+														  userInfo:nil
+														   repeats:YES];
+		} else {
+			
+		}
+	}];
+	
+	
+//	[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
+//		NSLog(@"\n::: MESSAGE PROC OBSERVER - [%@](%@)\n", (state == PNMessageSent) ? @"MessageSent" : (state == PNMessageSending) ? @"MessageSending" : (state == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//	}];
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	
+	/*
 	[[PNObservationCenter defaultCenter] addPresenceEventObserver:self withBlock:^(PNPresenceEvent *event) {
 		NSLog(@"::: PRESENCE OBSERVER - [%@] :::", event);
 		NSLog(@"PARTICIPANTS:[%d]", (int)event.channel.participantsCount);
@@ -256,6 +300,8 @@
 			NSLog(@"PRESENCE OBSERVER: Join Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 			
 			_channel = event.channel;
+			_participants++;
+			
 			[_creatorView updateParticipantTotal:(int)_channel.participantsCount];
 			
 			_emptyCommentsView.hidden = (_channel.participantsCount > 1);
@@ -266,11 +312,12 @@
 			if (_channel.participantsCount > 1) {
 				NSMutableDictionary *dict = [@{@"id"				: @"0",
 											   @"msg_id"			: @"0",
-											   @"content_type"		: @"NOTIFY",
+											   @"content_type"		: @((int)HONCommentContentTypeNotify),
 											   
 											   @"owner_member"		: @{@"id"	: @(0),
 																		@"name"	: @""},
 											   
+											   @"image"				: @"coords://",
 											   @"text"				: @"a user has joined this |DOOD CHAT|",
 											   
 											   @"net_vote_score"	: @(0),
@@ -295,11 +342,12 @@
 			if (_channel.participantsCount > 1) {
 				NSMutableDictionary *dict = [@{@"id"				: @"0",
 											   @"msg_id"			: @"0",
-											   @"content_type"		: @"NOTIFY",
+											   @"content_type"		: @((int)HONCommentContentTypeJoin),
 											   
 											   @"owner_member"		: @{@"id"	: @(0),
 																		@"name"	: @""},
 											   
+											   @"image"				: @"coords://",
 											   @"text"				: @"a user has left this |DOOD CHAT|",
 											   
 											   @"net_vote_score"	: @(0),
@@ -325,43 +373,7 @@
 			NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 		}
 	}];
-	
-	// Observer looks for message received events
-	[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
-		NSLog(@"::: MESSAGE REC OBSERVER: Channel: %@, Message: %@ :::", message.channel.name, message.message);
-		
-		NSMutableDictionary *dict = [@{@"id"				: @"0",
-									   @"msg_id"			: @"0",
-									   
-									   @"owner_member"		: @{@"id"	: @([[message.message firstComponentByDelimeter:@"|"] intValue]),
-																@"name"	: [message.message firstComponentByDelimeter:@"|"]},
-									   
-									   @"img"				: @"",
-									   @"text"				: [message.message lastComponentByDelimeter:@"|"],
-									   
-									   @"net_vote_score"	: @(0),
-									   @"status"			: NSStringFromInt(0),
-									   @"added"				: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601],
-									   @"updated"			: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
-		
-		
-		[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-	}];
-	
-	[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
-		NSLog(@"::: MESSAGE PROC OBSERVER - [%d](%@) :::", (int)state, data);
-		
-		if (state == PNMessageSent) {
-			NSLog(@"MESSAGE PROC OBSERVER: Message Sent.");
-			
-		} else if (state == PNMessageSending) {
-			NSLog(@"MESSAGE PROC OBSERVER: Sending Message...");
-			
-		} else if (state == PNMessageSendingError) {
-			NSLog(@"MESSAGE PROC OBSERVER: ERROR: Failed to Send Message.");
-			
-		}
-	}];
+	*/
 	
 	return (channel);
 }
@@ -430,24 +442,20 @@
 	if ([_refreshControl isRefreshing])
 		[_refreshControl endRefreshing];
 	
-	[self _makeComments];
-	
-	[UIView animateWithDuration:0.125
-					 animations:^(void) {
-						 _typingStatusLabel.alpha = 0.0;
-					 } completion:^(BOOL finished) {
-						 _typingStatusLabel.text = NSLocalizedString(@"typing_status", @"someone is typing…");
-					 }];
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_typingStatusLabel.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_typingStatusLabel.text = NSLocalizedString(@"typing_status", @"someone is typing…");
+	}];
 	
 	_creatorView.statusUpdateVO = _statusUpdateVO;
 	NSLog(@"%@._didFinishDataRefresh", self.class);
 }
 
 - (void)_updateExpireTime {
-//	NSLog(@"_updateExpireTime:[%d] // (%d)", _expireSeconds, (int)_channel.participantsCount);
+	//NSLog(@"_updateExpireTime:[%d] // (%d)", _expireSeconds, _participants);
 	
-	_participants = 1;
-	if (_channel.participantsCount < 2) {
+	if (_participants < 2) {
 		if (--_expireSeconds >= 0) {
 			
 			if (_expireSeconds % 120 == 0 && !_isActive) {
@@ -491,13 +499,18 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
 	
-	_participants = 0;
+	_isActive = YES;
 	_isSubmitting = NO;
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 128.0))];
+	
+	_comment = @"";
+	_expireSeconds = 600;
+	_participants = 0;
+	
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (8.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height)];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
+	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceVertical = YES;
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
@@ -506,92 +519,17 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_scrollView addSubview: _refreshControl];
 	
-	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 0.0)];
+	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
+	_commentsHolderView.hidden = YES;
 	[_scrollView addSubview:_commentsHolderView];
 	
 	
 	_creatorView = [[HONStatusUpdateCreatorView alloc] initWithStatusUpdateVO:_statusUpdateVO];
+	[_creatorView updateParticipantTotal:1];
 	_creatorView.delegate = self;
 	[self.view addSubview:_creatorView];
 	
-	_emptyCommentsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 148.0, 320.0, self.view.frame.size.height - 148.0)];
-	_emptyCommentsView.hidden = YES;
-	[self.view addSubview:_emptyCommentsView];
-	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 50.0, 260.0, 85.0)];
-	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:19];
-	_expireLabel.backgroundColor = [UIColor clearColor];
-	_expireLabel.textColor = [UIColor blackColor];
-	_expireLabel.numberOfLines = 2;
-	_expireLabel.textAlignment = NSTextAlignmentCenter;
-	_expireLabel.text = @"";
-	[_emptyCommentsView addSubview:_expireLabel];
-	
-	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	kikButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 220.0, 320.0, 44.0);
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	kikButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateNormal];
-	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateHighlighted];
-	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:kikButton];
-	
-	UIButton *lineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	lineButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 176.0, 320.0, 44.0);
-	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	lineButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateNormal];
-	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateHighlighted];
-	[lineButton addTarget:self action:@selector(_goShareLine) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:lineButton];
-	
-	UIButton *kakaoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	kakaoButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 132.0, 320.0, 44.0);
-	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	kakaoButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateNormal];
-	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateHighlighted];
-	[kakaoButton addTarget:self action:@selector(_goShareKakao) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:kakaoButton];
-	
-	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	smsButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 88.0, 320.0, 44.0);
-	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	smsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateNormal];
-	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateHighlighted];
-	[smsButton addTarget:self action:@selector(_goShareSMS) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:smsButton];
-	
-	UIButton *copyLinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	copyLinkButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 44.0, 320.0, 44.0);
-	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	copyLinkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateNormal];
-	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateHighlighted];
-	[copyLinkButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:copyLinkButton];
-	
-	_isActive = YES;
-	_comment = @"";
-	_expireSeconds = 600;
-	
-	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 64.0, 320.0, 64.0)];
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 64.0, self.view.frame.size.width, 64.0)];
 	_footerView.hidden = YES;
 	[self.view addSubview:_footerView];
 	
@@ -626,6 +564,7 @@
 	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"emojiButton_nonActive"] forState:UIControlStateNormal];
 	[_imageCommentButton setBackgroundImage:[UIImage imageNamed:@"emojiButton_Active"] forState:UIControlStateHighlighted];
 	[_imageCommentButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
+	[_imageCommentButton setEnabled:NO];
 //	[_inputBGImageView addSubview:_imageCommentButton];
 	
 	_commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -635,6 +574,78 @@
 	[_commentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
 	[_commentButton setEnabled:NO];
 	[_inputBGImageView addSubview:_commentButton];
+	
+	_emptyCommentsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, _creatorView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - _creatorView.frameEdges.bottom)];
+	[self.view addSubview:_emptyCommentsView];
+	
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 50.0, 260.0, 85.0)];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:19];
+	_expireLabel.backgroundColor = [UIColor clearColor];
+	_expireLabel.textColor = [UIColor blackColor];
+	_expireLabel.numberOfLines = 2;
+	_expireLabel.textAlignment = NSTextAlignmentCenter;
+	_expireLabel.text = @"";
+	[_emptyCommentsView addSubview:_expireLabel];
+	
+	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	kikButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 220.0, _emptyCommentsView.frame.size.width, 44.0);
+	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+	kikButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateNormal];
+	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateHighlighted];
+	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:kikButton];
+	
+	UIButton *lineButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	lineButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 176.0, _emptyCommentsView.frame.size.width, 44.0);
+	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+	lineButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateNormal];
+	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateHighlighted];
+	[lineButton addTarget:self action:@selector(_goShareLine) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:lineButton];
+	
+	UIButton *kakaoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	kakaoButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 132.0, _emptyCommentsView.frame.size.width, 44.0);
+	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+	kakaoButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateNormal];
+	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateHighlighted];
+	[kakaoButton addTarget:self action:@selector(_goShareKakao) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:kakaoButton];
+	
+	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	smsButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 88.0, _emptyCommentsView.frame.size.width, 44.0);
+	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+	smsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateNormal];
+	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateHighlighted];
+	[smsButton addTarget:self action:@selector(_goShareSMS) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:smsButton];
+	
+	UIButton *copyLinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	copyLinkButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 44.0, _emptyCommentsView.frame.size.width, 44.0);
+	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+	copyLinkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateNormal];
+	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateHighlighted];
+	[copyLinkButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyCommentsView addSubview:copyLinkButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
@@ -713,7 +724,8 @@
 }
 
 - (void)_goShareKik {
-	[self _goCopyDeeplink];
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
 	
 	NSString *urlSchema = @"kik://";
 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
@@ -735,7 +747,8 @@
 }
 
 - (void)_goShareLine {
-	[self _goCopyDeeplink];
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
 	
 	NSString *urlSchema = @"line://";
 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
@@ -757,9 +770,10 @@
 }
 
 - (void)_goShareKakao {
-	[self _goCopyDeeplink];
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
 	
-	NSString *urlSchema = @"kakao://";
+	NSString *urlSchema = @"kakaolink://";
 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
 		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
 									message:@"You will now be redirected to share"
@@ -779,7 +793,8 @@
 }
 
 - (void)_goShareSMS {
-	[self _goCopyDeeplink];
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
 	
 	if ([MFMessageComposeViewController canSendText]) {
 		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
@@ -803,53 +818,47 @@
 }
 
 - (void)_goCopyDeeplink {
+	NSLog(@"_goCOpyDeepLink");
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+	
+	[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
+								message:nil
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+					  otherButtonTitles:nil] show];
 }
 
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
 	
-	if (_channel.participantsCount >= 10) {
+	if (_participants >= 10) {
 		_isSubmitting = YES;
 		
 		_commentTextField.text = @"";
-		_comment = @"0123456789";
+		_comment = @"EMOJI";
 		
 		[self _submitCommentReply:NO];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Emoji board unlocked when chat has more than 10 friends"
-															message:nil
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-												  otherButtonTitles:nil, nil];
-		[alertView setTag:3];
-		[alertView show];
+		[[[UIAlertView alloc] initWithTitle:@"Emoji board unlocked when chat has more than 10 friends"
+									message:nil
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil, nil] show];
 	}
 }
 
 - (void)_goTextComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - comment"];
 	
-	if (_channel.participantsCount > 1) {
-		_isSubmitting = YES;
-		[_commentButton setEnabled:NO];
-		
-		_comment = _commentTextField.text;
-		_commentTextField.text = @"";
-		
-		[self _submitCommentReply:YES];
+	_isSubmitting = YES;
+	[_commentButton setEnabled:NO];
 	
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need some users in chat before you can type"
-															message:nil
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-												  otherButtonTitles:@"Share", nil];
-		[alertView setTag:2];
-		[alertView show];
-	}
+	_comment = _commentTextField.text;
+	_commentTextField.text = @"";
+	
+	[self _submitCommentReply:YES];
 }
 
 - (void)_goCancelComment {
@@ -857,14 +866,17 @@
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
 	
-	[UIView animateWithDuration:0.25
-					 animations:^(void) {
-						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight + 84.0);
-						 _footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - _footerView.frame.size.height);
-					 } completion:^(BOOL finished) {
-						 [_commentCloseButton removeFromSuperview];
-					 }];
+	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (8.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height);
+	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
+		_scrollView.frame = CGRectTranslateY(_scrollView.frame, _creatorView.frameEdges.bottom);
+		_footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - _footerView.frame.size.height);
+		
+	} completion:^(BOOL finished) {
+		[_commentCloseButton removeFromSuperview];
+	}];
 }
 
 
@@ -914,7 +926,7 @@
 #endif
 	
 	_imageCommentButton.hidden = ([_commentTextField.text length] > 0);
-	[_imageCommentButton setEnabled:(_channel.participantsCount >= 10)];
+	[_imageCommentButton setEnabled:(_participants >= 10)];
 	
 	_commentButton.hidden = ([_commentTextField.text length] == 0);
 	[_commentButton setEnabled:([_commentTextField.text length] > 0)];
@@ -923,51 +935,37 @@
 
 
 #pragma mark - UI Presentation
-- (void)_makeComments {
-//	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, [_replies count] * 90.0);
-	
-	__block CGFloat lastBottom = _commentsHolderView.frame.size.height;
-	[_replies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, lastBottom, 320.0, 90.0)];
-		itemView.alpha = 0.0;
-		itemView.commentVO = (HONCommentVO *)obj;
-		[_commentsHolderView addSubview:itemView];
-		
-		lastBottom += itemView.frame.size.height;
-		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
-		
-		[UIView animateKeyframesWithDuration:0.25 delay:(0.125 * ([_replies count] - idx)) options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			itemView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-	}];
-	
-	_scrollView.contentSize = _commentsHolderView.frame.size;
-	
-	if (_scrollView.contentSize.height > _scrollView.frame.size.height)
-		[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:NO];
-}
-
 - (void)_appendComment:(HONCommentVO *)vo {
-	if ([vo.textContent isEqualToString:@"0123456789"]) {
-		vo.commentContentType = HONCommentContentTypeImage;
-		vo.imageContent = [UIImage imageNamed:@"fpo_emotionButton_nonActive"];
-		vo.textContent = @"";
-	}
-	
-	
+	NSLog(@"_appendComment:[%@]", (vo.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (vo.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (vo.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (vo.commentContentType == HONCommentContentTypeText) ? @"Text" : @"UNKNOWN");
 	[_replies addObject:vo];
 	
-	if (vo.commentContentType == HONCommentContentTypeNotify) {
+	if (vo.commentContentType == HONCommentContentTypeSYN) {
 		HONCommentNotifyView *notifyView = [[HONCommentNotifyView alloc] initWithFrame:CGRectMake(0.0, _commentsHolderView.frame.size.height, 320.0, 50.0)];
-		[notifyView setCaption:vo.textContent];
-		[notifyView setLocality:[[[HONDeviceIntrinsics sharedInstance] geoLocale] objectForKey:@"city"]];
 		notifyView.alpha = 0.0;
+		notifyView.commentVO = vo;
+		[_commentsHolderView addSubview:notifyView];
+		
+		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, notifyView.frame.size.height);
+
+		[UIView animateKeyframesWithDuration:0.125 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			notifyView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
+		
+	} else if (vo.commentContentType == HONCommentContentTypeBYE) {
+		HONCommentNotifyView *notifyView = [[HONCommentNotifyView alloc] initWithFrame:CGRectMake(0.0, _commentsHolderView.frame.size.height, 320.0, 50.0)];
+		notifyView.alpha = 0.0;
+		notifyView.commentVO = vo;
 		[_commentsHolderView addSubview:notifyView];
 		
 		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, notifyView.frame.size.height);
 		
-	} else {
+		[UIView animateKeyframesWithDuration:0.125 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			notifyView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
+	
+	} else if (vo.commentContentType == HONCommentContentTypeText) {
 		CGFloat offset = 33.0;
 		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, 320.0, 90.0)];
 		itemView.alpha = 0.0;
@@ -975,9 +973,6 @@
 		[_commentsHolderView addSubview:itemView];
 		
 		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
-		
-//		if (_scrollView.contentSize.height > _scrollView.frame.size.height)
-//			[_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
 		
 		[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 			itemView.alpha = 1.0;
@@ -987,11 +982,7 @@
 	}
 	
 	_scrollView.contentSize = _commentsHolderView.frame.size;
-	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
-}
-
-- (void)_appendNotify {
-	
+	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:NO];
 }
 
 - (void)_popBack {
@@ -1001,8 +992,6 @@
 		[_expireTimer invalidate];
 		_expireTimer = nil;
 	}
-	
-	[PubNub unsubscribeFrom:@[_channel]];
 	
 	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
 	matteView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
@@ -1020,8 +1009,18 @@
 	backLabel.text = @"Deleting…";
 	[_headerView addSubview:backLabel];
 	
-	[PubNub disablePresenceObservationFor:@[_channel]];
-	[PubNub unsubscribeFrom:@[_channel]];
+	
+	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+		if (messageState == PNMessageSent) {
+			NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+			[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+			}];
+			
+			[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
+			[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
+		}
+	}];
+	
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
@@ -1070,17 +1069,19 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
-	[UIView animateWithDuration:0.25
-					 animations:^(void) {
-						 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, _scrollView.frame.origin.y - ((_scrollView.contentSize.height > _scrollView.frame.size.height) ? 216.0 : MAX(0.0, _scrollView.contentSize.height - 216.0)));
-						 _footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - (216.0 + _footerView.frame.size.height));
-					 } completion:^(BOOL finished) {
-						 if (_scrollView.contentSize.height > _scrollView.frame.size.height)
-							 [_scrollView setContentOffset:CGPointMake(0.0, (_scrollView.contentSize.height - _scrollView.frame.size.height) + _scrollView.contentInset.bottom) animated:YES];
-						 
-						 [self.view addSubview:_commentCloseButton];
-					 }];
+	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (8.0 + kNavHeaderHeight + _footerView.frame.size.height + 216.0) + [[UIApplication sharedApplication] statusBarFrame].size.height);
+	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
+		 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight);
+		
+		 _footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - (_footerView.frame.size.height + 216.0));
+	 } completion:^(BOOL finished) {
+		 
+		 _commentCloseButton.frame = _scrollView.frame;
+		 [self.view addSubview:_commentCloseButton];
+	 }];
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -1275,11 +1276,6 @@
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			[self _popBack];
-		}
-	
-	} else if (alertView.tag == 2) {
-		if (buttonIndex == 1) {
-			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]}];
 		}
 	}
 }

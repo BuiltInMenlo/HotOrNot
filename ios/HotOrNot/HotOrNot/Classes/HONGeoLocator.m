@@ -44,7 +44,6 @@ static HONGeoLocator *sharedInstance = nil;
 }
 
 - (void)addressForLocation:(CLLocation *)location onCompletion:(void (^)(id result))completion {
-	
 	[[[CLGeocoder alloc] init] reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
 		CLPlacemark *placemark = (CLPlacemark *)[placemarks firstObject];
 		NSDictionary *result = @{@"address"	: [NSString stringWithFormat:@"%@ %@", placemark.subThoroughfare, placemark.thoroughfare],

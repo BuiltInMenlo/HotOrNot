@@ -16,7 +16,7 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, messageID, clubID, parentID, userID, username, avatarPrefix, commentStatusType, score, textContent, imageContent, addedDate;
+@synthesize commentID, messageID, clubID, parentID, userID, location, username, avatarPrefix, commentStatusType, score, textContent, imageContent, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
@@ -32,10 +32,15 @@
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONUserAssistant sharedInstance] activeUserAvatarURL] : [[HONUserAssistant sharedInstance] rndAvatarURL];
 	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"";
-	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];
+//	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];
+	vo.imageContent = [[UIImage alloc] init];
+	
+	NSString *coordComp = [[[dictionary objectForKey:@"image"] componentsSeparatedByString:@"//"] lastObject];
+	vo.location = [[CLLocation alloc] initWithLatitude:[[[coordComp componentsSeparatedByString:@"_"] firstObject] doubleValue] longitude:[[[coordComp componentsSeparatedByString:@"_"] lastObject] doubleValue]];
+	
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [NSDate dateFromISO9601FormattedString:[dictionary objectForKey:@"added"]];
-	vo.commentContentType = ([vo.textContent length] > 0) ? ([dictionary objectForKey:@"content_type"] != nil) ? HONCommentContentTypeNotify : HONCommentContentTypeText : HONCommentContentTypeImage;
+	vo.commentContentType = ([dictionary objectForKey:@"content_type"] != nil) ? (HONCommentContentType)[[dictionary objectForKey:@"content_type"] intValue] : HONCommentContentTypeUnknown;
 	
 	__block BOOL isFound = NO;
 	NSString *avatarKey = NSStringFromInt(vo.userID);
@@ -76,17 +81,17 @@
 }
 
 + (HONCommentVO *)commentWithMessage:(PNMessage *)message {
-//	NSLog(@"commentWithMessage:%@", [message toString]);
-//	NSLog(@"commentWithMessage.part:%@", [messagePart toString]);
+	NSLog(@"commentWithMessage:%@", message.message);
 	
-	NSMutableDictionary *dict = [@{@"id"				: @"",
-								   @"msg_id"			: @"",
+	NSMutableDictionary *dict = [@{@"id"				: @"0",
+								   @"msg_id"			: @"0",
+								   @"content_type"		: ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__SYN__"]) ? @((int)HONCommentContentTypeSYN) : ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__BYE__"]) ? @((int)HONCommentContentTypeBYE) : ([[[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__" withString:@""] isNumeric]) ? @((int)HONCommentContentTypeACK) : @((int)HONCommentContentTypeText),
 								   
 								   @"owner_member"		: @{@"id"	: @([[message.message firstComponentByDelimeter:@"|"] intValue]),
 															@"name"	: [message.message firstComponentByDelimeter:@"|"]},
 								   
-								   @"img"				: [[message.message componentsSeparatedByString:@"|"] objectAtIndex:1],
-								   @"text"				: message.message,
+								   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] firstObject] floatValue], [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] lastObject] floatValue]],
+								   @"text"				: [[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__" withString:@""],
 								   
 								   @"net_vote_score"	: @(0),
 								   @"status"			: NSStringFromInt(0),
@@ -101,6 +106,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.messageID = nil;
+	self.location = nil;
 	self.username = nil;
 	self.avatarPrefix = nil;
 	self.textContent = nil;

@@ -19,7 +19,7 @@
 + (HONClubAssistant *)sharedInstance;
 
 //- (void)generateSelfieclubOwnedClubWithName:(NSString *)clubName andBlurb:(NSString *)blurb;
-//- (NSArray *)clubTypeKeys;
+- (NSArray *)clubTypeKeys;
 - (NSMutableDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)active pendingMembers:(NSArray *)pending;
 - (void)createLocationClubWithCompletion:(void (^)(id result))completion;

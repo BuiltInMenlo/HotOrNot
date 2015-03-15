@@ -159,7 +159,8 @@
 }
 
 - (BOOL)isNumeric {
-	return (([self integerValue] > 0 || [self isEqualToString:@"0"]));
+	NSString *normalized = self;//[self stringByReplacingOccurrencesOfString:@"." withString:@""];
+	return (([normalized integerValue] > 0 || [normalized isEqualToString:@"0"]));
 }
 
 - (BOOL)isValidEmailAddress {

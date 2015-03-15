@@ -199,8 +199,9 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_topics"] forKey:@"compose_topics"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
-														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_formats"] forKey:@"invite_formats"];
+//		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
+//														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"default"	: [[result objectForKey:@"share_formats"] objectForKey:@"default"],
@@ -267,13 +268,15 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			
 			[PubNub setConfiguration:[PNConfiguration configurationForOrigin:kPubNubConfigDomain
-																  publishKey:@"demo"//kPubNubPublishKey
-																subscribeKey:@"demo"//kPubNubSubscribeKey
-																   secretKey:nil]];//]kPubNubSecretKey]];
+																  publishKey:kPubNubPublishKey //@"demo"//
+																subscribeKey:kPubNubSubscribeKey //@"demo"//
+																   secretKey:kPubNubSecretKey]]; //nil]];//
 			
 			[PubNub connectWithSuccessBlock:^(NSString *origin) {
 				PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
 				NSLog(@"PubNub CONNECT:[%@]", origin);
+				
+				[PubNub setClientIdentifier:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) shouldCatchup:YES];
 				
 			} errorBlock:^(PNError *connectionError) {
 				NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
@@ -899,27 +902,23 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"location_club"		: @{},
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},
+								   @"terms"				: @"",
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
 	for (NSString *key in [userDefaults allKeys]) {
-//		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
 		if (![[NSUserDefaults standardUserDefaults] hasObjectForKey:key])
 			[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
 	}
 	
 	for (NSString *key in [[[HONStateMitigator sharedInstance] _totalKeyPrefixesForTypes] allKeys]) {
 		NSString *keyName = [key stringByAppendingString:kStateMitigatorTotalCounterKeySuffix];
-//		if ([[NSUserDefaults standardUserDefaults] objectForKey:keyName] == nil)
 		if (![[NSUserDefaults standardUserDefaults] hasObjectForKey:keyName])
 			[[HONStateMitigator sharedInstance] resetTotalCounterForType:(HONStateMitigatorTotalType)[[[HONStateMitigator sharedInstance] _totalKeyPrefixesForTypes] objectForKey:keyName] withValue:-1];
 	}
 	
 #if __FORCE_REGISTER__ == 1
-	for (NSString *key in [userDefaults allKeys]) {
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-	}
+	for (NSString *key in [userDefaults allKeys])
+		[[NSUserDefaults standardUserDefaults] replaceObject:[userDefaults objectForKey:key] forKey:key];
 	
 	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
 #endif

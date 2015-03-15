@@ -370,7 +370,15 @@
 	} else*/
 	if (indexPath.section == 0) {
 		if (cell.indexPath.row == 0) {
-			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:nil];
+			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																	 delegate:self
+															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+													   destructiveButtonTitle:nil
+															otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on SMS", @"Share on Email", nil];
+			[actionSheet setTag:1];
+			[actionSheet showInView:[[UIApplication sharedApplication].windows firstObject]];
+			
+//			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:nil];
 			
 		} else {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];
@@ -387,7 +395,7 @@
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				mailComposeViewController.mailComposeDelegate = self;
 				[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-				[mailComposeViewController setToRecipients:@[@"support@getdood.com"]];
+				[mailComposeViewController setToRecipients:@[@"support@trydood.com"]];
 				[mailComposeViewController setSubject: NSLocalizedString(@"header_support", @"Report Abuse / Bug")];
 				[mailComposeViewController setMessageBody:@"" isHTML:NO];
 				
@@ -573,6 +581,79 @@
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameSearchViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	
+	} else if (actionSheet.tag == 1) {
+		NSDictionary *inviteFormats = [[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"];
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = [inviteFormats objectForKey:@"clipboard"];
+		
+		if (buttonIndex == 1) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"SETTINGS - copy_clipboard"];
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [inviteFormats objectForKey:@"clipboard"];
+			
+			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
+										message:@""
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else if (buttonIndex == 2) {
+			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
+				};
+				
+				[twitterComposeViewController setInitialText:[inviteFormats objectForKey:@"twitter"]];
+//				[twitterComposeViewController addImage:[[HONUserAssistant sharedInstance] activeUserAvatar]];
+				twitterComposeViewController.completionHandler = completionBlock;
+				
+				[self presentViewController:twitterComposeViewController
+												 animated:YES
+											   completion:nil];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:@"Cannot use Twitter from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+		
+		} else if (buttonIndex == 3) {
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.body = [inviteFormats objectForKey:@"sms"];
+				messageComposeViewController.messageComposeDelegate = (id<MFMessageComposeViewControllerDelegate>)self;
+				
+				[self presentViewController:messageComposeViewController
+												 animated:YES
+											   completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 4) {
+			if ([MFMailComposeViewController canSendMail]) {
+				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+				mailComposeViewController.delegate = (id<UINavigationControllerDelegate>)self;
+//				[mailComposeViewController setSubject:[[[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeEmail] componentsSeparatedByString:@"|"] firstObject]];
+				[mailComposeViewController setSubject:[[inviteFormats objectForKey:@"email"] objectForKey:@"subject"]];
+				[mailComposeViewController setMessageBody:[[inviteFormats objectForKey:@"email"] objectForKey:@"body"] isHTML:NO];
+				mailComposeViewController.mailComposeDelegate = (id<MFMailComposeViewControllerDelegate>)self;
+				
+				[self presentViewController:mailComposeViewController
+								   animated:YES
+								 completion:^(void) {}];
+			}
 		}
 	}
 }

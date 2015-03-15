@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONCommentVO.h"
 
 @interface HONCommentNotifyView : UIView
-@property (nonatomic, retain) NSString *caption;
-@property (nonatomic, retain) NSString *locality;
+@property (nonatomic, retain) HONCommentVO *commentVO;
 @end

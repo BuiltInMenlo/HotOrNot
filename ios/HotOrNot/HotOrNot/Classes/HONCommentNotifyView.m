@@ -14,12 +14,11 @@
 @end
 
 @implementation HONCommentNotifyView
-@synthesize caption = _caption;
-@synthesize locality = _locality;
+@synthesize commentVO = _commentVO;
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor whiteColor];
+		self.backgroundColor = [UIColor clearColor];
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 14.0, 280.0, 18.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
@@ -27,25 +26,24 @@
 		_captionLabel.textColor = [UIColor blackColor];
 		[self addSubview:_captionLabel];
 		
-		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 34.0, 280.0, 16.0)];
+		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 34.0, 280.0, 16.0)];
 		_localityLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 		_localityLabel.backgroundColor = [UIColor clearColor];
 		_localityLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
+		_localityLabel.text = @"…";
 		[self addSubview:_localityLabel];
 	}
 	
 	return (self);
 }
 
-- (void)setCaption:(NSString *)caption {
-	_caption = caption;
-	_captionLabel.text = _caption;
+- (void)setCommentVO:(HONCommentVO *)commentVO {
+	_commentVO = commentVO;
+	_captionLabel.text = _commentVO.textContent;
+	
+	[[HONGeoLocator sharedInstance] addressForLocation:_commentVO.location onCompletion:^(NSDictionary *result) {
+		_localityLabel.text = [result objectForKey:@"city"];
+	}];
 }
-
-- (void)setLocality:(NSString *)locality {
-	_locality = locality;
-	_localityLabel.text = _locality;
-}
-
 
 @end

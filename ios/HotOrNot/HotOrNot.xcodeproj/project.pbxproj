@@ -72,8 +72,6 @@
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
 		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
 		30AE76491A7C499100CD2050 /* FBAudienceNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AE76441A7C499100CD2050 /* FBAudienceNetwork.framework */; };
-		30AE76571A7C4A7A00CD2050 /* TalkChain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30AE76551A7C4A7A00CD2050 /* TalkChain.bundle */; };
-		30AE76581A7C4A7A00CD2050 /* TapIt.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30AE76561A7C4A7A00CD2050 /* TapIt.bundle */; };
 		30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256061A3BB1F400C789E1 /* HONTopicViewCell.m */; };
 		30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256091A3BB28E00C789E1 /* HONTopicVO.m */; };
@@ -405,8 +403,6 @@
 		309122A019C501F60081B141 /* HONComposeSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeSubjectViewController.m; sourceTree = "<group>"; };
 		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
 		30AE76441A7C499100CD2050 /* FBAudienceNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBAudienceNetwork.framework; sourceTree = "<group>"; };
-		30AE76551A7C4A7A00CD2050 /* TalkChain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TalkChain.bundle; sourceTree = "<group>"; };
-		30AE76561A7C4A7A00CD2050 /* TapIt.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapIt.bundle; sourceTree = "<group>"; };
 		30AFF5701A79AB43005F408B /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
 		30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeViewFlowLayout.h; sourceTree = "<group>"; };
@@ -1205,8 +1201,6 @@
 		30AE76541A7C4A7A00CD2050 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				30AE76551A7C4A7A00CD2050 /* TalkChain.bundle */,
-				30AE76561A7C4A7A00CD2050 /* TapIt.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -2252,7 +2246,6 @@
 			files = (
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
-				30AE76581A7C4A7A00CD2050 /* TapIt.bundle in Resources */,
 				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */,
@@ -2290,7 +2283,6 @@
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
-				30AE76571A7C4A7A00CD2050 /* TalkChain.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

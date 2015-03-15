@@ -334,7 +334,7 @@ static HONClubAssistant *sharedInstance = nil;
 		
 		[dict setValue:@(0.0) forKey:@"distance"];
 		[dict setValue:@([[[NSUserDefaults standardUserDefaults] objectForKey:@"join_radius"] floatValue]) forKey:@"radius"];
-		[dict setValue:@{@"lat"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
+		[dict setValue:@{@"lat"	:  @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude),
 						 @"lon"	: @([[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude)} forKey:@"coords"];
 		
 		clubVO = [HONUserClubVO clubWithDictionary:dict];
