@@ -10,7 +10,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __DEV_BUILD__ 1
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 

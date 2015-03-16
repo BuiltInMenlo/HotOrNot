@@ -45,6 +45,8 @@
 		3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */; };
 		3030DF5C1A6348ED00406AAF /* HONSubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONSubjectsViewController.m */; };
 		303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0E19D5E78600CB2501 /* fpo_push.caf */; };
+		3042D9111AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042D9101AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.m */; };
+		3042D9141AB659A400F2D0B8 /* HONChannelInviteButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */; };
 		3042E1201A76C594005AFD12 /* NSArray+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E10A1A76C594005AFD12 /* NSArray+BuiltinMenlo.m */; };
 		3042E1211A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E10C1A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.m */; };
 		3042E1221A76C594005AFD12 /* NSData+BuiltinMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E10E1A76C594005AFD12 /* NSData+BuiltinMenlo.m */; };
@@ -328,6 +330,10 @@
 		3030DF5A1A6348ED00406AAF /* HONSubjectsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubjectsViewController.h; sourceTree = "<group>"; };
 		3030DF5B1A6348ED00406AAF /* HONSubjectsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubjectsViewController.m; sourceTree = "<group>"; };
 		303BAD0E19D5E78600CB2501 /* fpo_push.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fpo_push.caf; sourceTree = "<group>"; };
+		3042D90F1AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+BuiltinMeno.h"; sourceTree = "<group>"; };
+		3042D9101AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+BuiltinMeno.m"; sourceTree = "<group>"; };
+		3042D9121AB659A400F2D0B8 /* HONChannelInviteButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChannelInviteButtonView.h; sourceTree = "<group>"; };
+		3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChannelInviteButtonView.m; sourceTree = "<group>"; };
 		3042E1091A76C594005AFD12 /* NSArray+BuiltinMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+BuiltinMenlo.h"; sourceTree = "<group>"; };
 		3042E10A1A76C594005AFD12 /* NSArray+BuiltinMenlo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+BuiltinMenlo.m"; sourceTree = "<group>"; };
 		3042E10B1A76C594005AFD12 /* NSCharacterSet+BuiltinMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+BuiltinMenlo.h"; sourceTree = "<group>"; };
@@ -1097,6 +1103,8 @@
 				3024A5D41A7B142200231BA5 /* UIScrollView+BuiltInMenlo.m */,
 				3042E11D1A76C594005AFD12 /* UIView+BuiltinMenlo.h */,
 				3042E11E1A76C594005AFD12 /* UIView+BuiltinMenlo.m */,
+				3042D90F1AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.h */,
+				3042D9101AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.m */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -1732,6 +1740,8 @@
 				30CFAD431A54905E00FD25CF /* HONReplySubmitViewController.m */,
 				305001401A5E222800E8F303 /* HONStatusUpdateCreatorView.h */,
 				305001411A5E222800E8F303 /* HONStatusUpdateCreatorView.m */,
+				3042D9121AB659A400F2D0B8 /* HONChannelInviteButtonView.h */,
+				3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */,
 			);
 			name = Details;
 			sourceTree = "<group>";
@@ -2434,6 +2444,7 @@
 				3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */,
 				301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */,
 				30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */,
+				3042D9141AB659A400F2D0B8 /* HONChannelInviteButtonView.m in Sources */,
 				3030DF5C1A6348ED00406AAF /* HONSubjectsViewController.m in Sources */,
 				30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */,
 				4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */,
@@ -2478,6 +2489,7 @@
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
+				3042D9111AB5DB0B00F2D0B8 /* UIViewController+BuiltinMeno.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
 				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,

@@ -119,6 +119,9 @@
 - (void)viewDidDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidDisappear:animated];
+	
+	 [[NSNotificationCenter defaultCenter] postNotificationName:@"ViewControllerChangeNotification" object:nil
+													   userInfo:@{@"viewController"	: self}];
 }
 
 

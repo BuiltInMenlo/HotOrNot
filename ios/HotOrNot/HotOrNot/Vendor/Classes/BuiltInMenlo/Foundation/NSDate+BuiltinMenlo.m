@@ -86,12 +86,24 @@ NSString * const kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 	return ([NSDate elapsedSecondsSinceDate:date isUTC:isUTC] / 86400);
 }
 
++ (int)elapsedDaysFromSeconds:(int)seconds {
+	return (seconds / 86400);
+}
+
 + (int)elapsedHoursSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
 	return ([NSDate elapsedSecondsSinceDate:date isUTC:isUTC] / 3600);
 }
 
++ (int)elapsedHoursFromSeconds:(int)seconds {
+	return (seconds / 3600);
+}
+
 + (int)elapsedMinutesSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {
 	return ([NSDate elapsedSecondsSinceDate:date isUTC:isUTC] / 60);
+}
+
++ (int)elapsedMinutesFromSeconds:(int)seconds {
+	return (seconds / 60);
 }
 
 + (int)elapsedSecondsSinceDate:(NSDate *)date isUTC:(BOOL)isUTC {

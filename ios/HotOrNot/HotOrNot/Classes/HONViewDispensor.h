@@ -8,6 +8,10 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "UIViewController+BuiltinMeno.h"
+
+#import "HONViewController.h"
+
 @interface HONViewDispensor : NSObject
 + (HONViewDispensor *)sharedInstance;
 
@@ -22,4 +26,7 @@
 - (void)tintView:(UIView *)view withColor:(UIColor *)color;
 - (CGAffineTransform)affineTransformView:(UIView *)view byPercentage:(CGFloat)percent;
 - (CGAffineTransform)affineTransformView:(UIView *)view toSize:(CGSize)size;
+
+- (void)updateCurrentViewController:(HONViewController *)viewController;
++ (HONViewController *)currentViewController;
 @end

@@ -34,17 +34,17 @@
 		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 15.0, 15.0);
 //		[self addSubview:_loadingImageView];
 		
-		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 16.0, 35.0, 35.0)];
+		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(19.0, 11.0, 34.0, 34.0)];
 		[self addSubview:_avatarImageView];
 		
 		[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"topicMask"]];
 		
-		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"greyChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(19.0, 26.0, 19.0, 19.0) resizingMode:UIImageResizingModeStretch]];
-		_bgImageView.frame = CGRectMake(59.0, 16.0, 214.0, 36.0);
+		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"greyChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(17.0, 27.0, 17.0, 17.0) resizingMode:UIImageResizingModeStretch]];
+		_bgImageView.frame = CGRectMake(57.0, 11.0, 214.0, 36.0);
 		[self addSubview:_bgImageView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(82.0, 23.0, 175.0, 18.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0, 18.0, 175.0, 18.0)];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textColor = [UIColor blackColor];
 		_captionLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -54,13 +54,13 @@
 		[self addSubview:_captionImageView];
 		
 		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 19.0, 80.0, 14.0)];
-		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
 		_timeLabel.backgroundColor = [UIColor clearColor];
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		[self addSubview:_timeLabel];
 		
-		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(_captionLabel.frameEdges.left, _bgImageView.frameEdges.bottom + 6.0, 180.0, 14.0)];
-		_localityLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(_captionLabel.frameEdges.left, _bgImageView.frameEdges.bottom, 180.0, 14.0)];
+		_localityLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:11];
 		_localityLabel.backgroundColor = [UIColor clearColor];
 		_localityLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		_localityLabel.text = @"…";
@@ -112,21 +112,21 @@
 	_bgImageView.frame = CGRectResizeHeight(_bgImageView.frame, (_captionLabel.frame.size.height > _bgImageView.frame.size.height) ? _captionLabel.frame.size.height + 18.0 : _bgImageView.frame.size.height);
 	
 	_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
-	_timeLabel.frame = CGRectTranslate(_timeLabel.frame, CGPointMake(_bgImageView.frameEdges.right + 10.0, 0.0 + (_bgImageView.frameEdges.top + (_bgImageView.frame.size.height - _timeLabel.frame.size.height) * 0.5)));
+	_timeLabel.frame = CGRectTranslate(_timeLabel.frame, CGPointMake(_bgImageView.frameEdges.right + 8.0, 0.0 + (_bgImageView.frameEdges.top + (_bgImageView.frame.size.height - _timeLabel.frame.size.height) * 0.5)));
 	
 	[[HONGeoLocator sharedInstance] addressForLocation:_commentVO.location onCompletion:^(NSDictionary *result) {
 		_localityLabel.text = [result objectForKey:@"city"];
 	}];
 	
 	_avatarImageView.frame = CGRectTranslateY(_avatarImageView.frame, _bgImageView.frameEdges.bottom - _avatarImageView.frame.size.height);
-	_localityLabel.frame = CGRectTranslateY(_localityLabel.frame, _bgImageView.frameEdges.bottom + 6.0);
+	_localityLabel.frame = CGRectTranslateY(_localityLabel.frame, _bgImageView.frameEdges.bottom + 8);
 	
 	_bgImageView.hidden = (_commentVO.commentContentType == HONCommentContentTypeImage);
 	_captionImageView.hidden = (_commentVO.commentContentType != HONCommentContentTypeImage);
 	_statusImageView.hidden = (_commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]);
 	
 	if (_commentVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
-		_bgImageView.image = [[UIImage imageNamed:@"greenChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(19.0, 19.0, 19.0, 26.0) resizingMode:UIImageResizingModeStretch];
+		_bgImageView.image = [[UIImage imageNamed:@"greenChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(17.0, 17.0, 17.0, 27.0) resizingMode:UIImageResizingModeStretch];
 		_captionLabel.textAlignment = NSTextAlignmentRight;
 		_timeLabel.textAlignment = NSTextAlignmentRight;
 		_localityLabel.textAlignment = NSTextAlignmentRight;
@@ -136,7 +136,7 @@
 		_avatarImageView.frame = CGRectTranslateY(_avatarImageView.frame, _bgImageView.frameEdges.top);
 		
 		_captionLabel.frame = CGRectTranslateX(_captionLabel.frame, (self.frame.size.width - 83.0) - _captionLabel.frame.size.width);
-		_bgImageView.frame = CGRectTranslateX(_bgImageView.frame, _captionLabel.frameEdges.left - _bgImageView.frame.size.width);
+		_bgImageView.frame = CGRectTranslateX(_bgImageView.frame, (self.frame.size.width - 60.0) - _bgImageView.frame.size.width);
 		_timeLabel.frame = CGRectTranslateX(_timeLabel.frame, (self.frame.size.width - 60.0) - (_bgImageView.frame.size.width + 10.0) - _timeLabel.frame.size.width);
 		_localityLabel.frame = CGRectTranslateX(_localityLabel.frame, _captionLabel.frameEdges.right - _localityLabel.frame.size.width);
 	}
@@ -156,7 +156,7 @@
 	} else
 		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_unknown"];
 	
-	self.frame = CGRectResizeHeight(self.frame, _localityLabel.frameEdges.bottom);
+	self.frame = CGRectResizeHeight(self.frame, _localityLabel.frameEdges.bottom + 5.0);
 }
 
 

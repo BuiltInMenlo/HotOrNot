@@ -29,6 +29,7 @@
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
+#import "UIViewController+BuiltinMeno.h"
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
@@ -190,6 +191,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invalid_chars"] forKey:@"invalid_chars"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"occupancy_timeout"] forKey:@"occupancy_timeout"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"expire_interval"] forKey:@"expire_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
@@ -199,6 +202,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"staff_clubs"] forKey:@"staff_clubs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_topics"] forKey:@"compose_topics"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"alert_formats"] forKey:@"alert_formats"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_formats"] forKey:@"invite_formats"];
 //		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 //														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
@@ -213,6 +217,44 @@ NSString * const kTwilioSMS = @"6475577873";
 														   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		
+		[[[NSUserDefaults standardUserDefaults] objectForKey:@"alert_formats"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			NSDictionary *dict = (NSDictionary *)obj;
+			
+			NSString *token = @"";
+			NSString *replacement = @"";
+			
+			NSLog(@"alert_format:[%@]", dict);
+			
+			if ([(NSString *)key isEqualToString:@"participant_push"]) {
+				
+				int secs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"occupancy_timeout"] intValue];
+				int mins = [NSDate elapsedMinutesFromSeconds:secs];
+				int hours = [NSDate elapsedHoursFromSeconds:secs];
+				
+				NSLog(@"timeout:[%02d:%02d:%02d]", hours, mins, secs);
+				
+				token = @"__{OCCUPANCY_TIMEOUT}__";
+				replacement = (hours > 0) ? [NSString stringWithFormat:@"%d hour%@", hours, (hours == 1) ? @"" : @"s"] : (mins > 0) ? [NSString stringWithFormat:@"%d minute%@", mins, (mins == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%d second%@", secs, (secs == 1) ? @"" : @"s"];
+			}
+			
+			NSLog(@"TOKEN:[%@] REPLACE:[%@]", token, replacement);
+			NSLog(@"TITLE:[%@] MSG:[%@]", [[dict objectForKey:@"title"] stringByReplacingOccurrencesOfString:token withString:replacement], [[dict objectForKey:@"msg"] stringByReplacingOccurrencesOfString:token withString:replacement]);
+			
+			if ([token length] > 0) {
+				NSMutableDictionary *alertsDict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"alert_formats"] mutableCopy];
+				[alertsDict replaceObject:@{@"title"	: [[dict objectForKey:@"title"] stringByReplacingOccurrencesOfString:token withString:replacement],
+											@"msg"	: [[dict objectForKey:@"msg"] stringByReplacingOccurrencesOfString:token withString:replacement]} forKey:(NSString *)key];
+				
+				[[NSUserDefaults standardUserDefaults] replaceObject:[alertsDict copy] forKey:@"alertDict"];
+			}
+			
+			NSLog(@"alert_format:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"alert_formats"] objectForKey:@"alert_format"]);
+		}];
+
+		
+		
 		NSLog(@"API BASE PATHS:\nPHP\t\t: [%@]\nPYTHON\t: [%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [[HONAPICaller sharedInstance] phpAPIBasePath], [[HONAPICaller sharedInstance] pythonAPIBasePath]);
 		
 		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
@@ -731,6 +773,11 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		
 		NSLog(@"isNumeric:[%@][%@] -=- %@/%@", [path firstObject], [path lastObject], NSStringFromBOOL([[path firstObject] isNumeric]), NSStringFromBOOL([[path lastObject] isNumeric]));
+		NSLog(@"currentViewController:[%@]", [UIViewController currentViewController].class);
+		
+		if ([NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+			[((HONStatusUpdateViewController *)[UIViewController currentViewController]) leaveActiveChat];
+		}
 		
 		if ([[path firstObject] isNumeric]) {
 			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path firstObject] intValue] completion:^(NSDictionary *result) {

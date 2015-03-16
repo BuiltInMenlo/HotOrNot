@@ -31,7 +31,7 @@
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"statusUpdateCreatorBG"]]];
 		
-		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 33.0, 280.0, 20.0)];
+		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 31.0, 280.0, 20.0)];
 		_subjectLabel.backgroundColor = [UIColor clearColor];
 		_subjectLabel.textColor = [UIColor blackColor];
 		_subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];

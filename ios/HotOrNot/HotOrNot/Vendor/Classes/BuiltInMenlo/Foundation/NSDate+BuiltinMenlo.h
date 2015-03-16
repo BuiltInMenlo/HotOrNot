@@ -44,8 +44,11 @@
 - (int)year;
 
 - (int)elapsedDaysSincenDate:(NSDate *)date;
++ (int)elapsedDaysFromSeconds:(int)seconds;
 - (int)elapsedHoursSinceDate:(NSDate *)date;
++ (int)elapsedHoursFromSeconds:(int)seconds;
 - (int)elapsedMinutesSinceDate:(NSDate *)date;
++ (int)elapsedMinutesFromSeconds:(int)seconds;
 - (int)elapsedSecondsSinceDate:(NSDate *)date;
 - (NSString *)elapsedTimeSinceDate:(NSDate *)date;
 

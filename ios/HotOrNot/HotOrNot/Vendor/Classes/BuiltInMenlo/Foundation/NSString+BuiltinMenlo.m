@@ -158,9 +158,28 @@
 	return (ind);
 }
 
+- (BOOL)isCircumfixedByString:(NSString *)affix {
+	return ([[self stringByAppendingString:self] containsString:affix]);
+}
+
 - (BOOL)isNumeric {
 	NSString *normalized = self;//[self stringByReplacingOccurrencesOfString:@"." withString:@""];
 	return (([normalized integerValue] > 0 || [normalized isEqualToString:@"0"]));
+}
+- (BOOL)isPrefixedByString:(NSString *)affix {
+	NSLog(@"PREFIX:[%@]", [self substringToIndex:[affix length]]);
+	
+	return ([[self substringToIndex:[affix length]] isEqualToString:affix]);
+}
+
+- (BOOL)isPrefixedOrSubffixedByString:(NSString *)affix {
+	return ([self isPrefixedByString:affix] || [self isSubfixedByString:affix]);
+}
+
+- (BOOL)isSubfixedByString:(NSString *)affix {
+	NSLog(@"SUFFIX:[%@]", [self substringFromIndex:([self length] - [affix length])]);
+	
+	return ([[self substringFromIndex:([self length] - [affix length])] isEqualToString:affix]);
 }
 
 - (BOOL)isValidEmailAddress {

@@ -6,10 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDictionary+BuiltinMenlo.h"
+
 #import "HONViewDispensor.h"
 
 @implementation HONViewDispensor
 static HONViewDispensor *sharedInstance = nil;
+static HONViewController *currentViewController = nil;
 
 + (HONViewDispensor *)sharedInstance {
 	static HONViewDispensor *s_sharedInstance = nil;
@@ -22,16 +25,38 @@ static HONViewDispensor *sharedInstance = nil;
 	return (s_sharedInstance);
 }
 
+- (void)updateCurrentViewController:(HONViewController *)viewController {
+	static HONViewController *s_viewController = nil;
+	
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		s_viewController = viewController;
+	});
+}
+
++ (HONViewController *)currentViewController {
+	return ([self currentViewController]);
+}
+
 - (id)init {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_viewControllerChangeNotification:) name:@"ViewControllerChangeNotification" object:nil];
 	}
 	
 	return (self);
 }
 
+- (void)_viewControllerChangeNotification:(NSNotification *)notification {
+	NSString *key = @"viewController";
+	if ([[notification userInfo] hasObjectForKey:key])
+		[[HONViewDispensor sharedInstance] updateCurrentViewController:[[notification userInfo] objectForKey:key]];
+}
+
 - (void)appWindowAdoptsView:(UIView *)view {
 	[[[UIApplication sharedApplication] delegate].window addSubview:view];
 }
+
+
 
 - (UIView *)matteViewWithSize:(CGSize)size usingColor:(UIColor *)color {
 	UIView *view = [[UIView alloc] initWithFrame:CGRectFromSize(size)]; //CGRectMake(0.0, 0.0, size.width, size.height)];

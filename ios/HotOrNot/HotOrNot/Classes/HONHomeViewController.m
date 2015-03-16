@@ -277,7 +277,7 @@
 }
 
 - (void)_didFinishDataRefresh {
-	
+
 	[_loadingOverlayView outro];
 	
 	_isLoading = NO;
@@ -311,11 +311,19 @@
 	[_refreshControl endRefreshing];
 	
 	[_toggleView toggleEnabled:YES];
-	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSNumber *result){
-		NSLog(@"ACTIVITY:[%@]", result);
-		_voteScore = [result intValue];
+	
+	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
+		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
+		_voteScore = [[result objectForKey:@"count"] intValue];
 		[_headerView updateActivityScore:_voteScore];
 	}];
+	
+	
+//	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSNumber *result){
+//		NSLog(@"ACTIVITY:[%@]", result);
+//		_voteScore = [result intValue];
+//		[_headerView updateActivityScore:_voteScore];
+//	}];
 	
 //	[_tableView setContentOffset:CGPointZero animated:NO];
 	[_tableView reloadData];
@@ -678,10 +686,10 @@
 //	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 	
-	NSLog(@"(*)(*)(*)(*)(*)(*) IS NUMERIC:[%@] -(%@)- %@", _textField.text, NSStringFromBOOL([_textField.text isNumeric]), NSStringFromInt([[_textField.text stringByReplacingOccurrencesOfString:@".." withString:@""] intValue]));
+	NSString *statusUpdateAffix = @"//";
+	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // IS NUMERIC:[%@] -=- PREFIXED:[%@] SUFFIXED:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromBOOL([_textField.text isSubfixedByString:statusUpdateAffix]), NSStringFromBOOL([[_textField.text substringFromIndex:2] isNumeric]));
 	
-	
-	int statusUpdateID = [[_textField.text stringByReplacingOccurrencesOfString:@".." withString:@""] intValue];
+	int statusUpdateID = ([_textField.text isPrefixedOrSubffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
 	if (statusUpdateID > 0) {
 		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 		_loadingOverlayView.delegate = self;
@@ -695,6 +703,7 @@
 				
 				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+				_textField.text = @"";
 				
 			} else {
 				_textField.text = @"";

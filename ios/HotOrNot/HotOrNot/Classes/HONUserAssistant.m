@@ -145,13 +145,16 @@ static HONUserAssistant *sharedInstance = nil;
 	__block NSMutableArray *activityItems = [NSMutableArray array];
 	
 	[[HONAPICaller sharedInstance] retrieveActivityForUserByUserID:userID fromPage:1 completion:^(NSDictionary *result) {
-		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
-		
 		[activityItems addObjectsFromArray:[result objectForKey:@"results"]];
+		
+		NSLog(@"TOTAL:[%d] RETRIEVED:[%lu]", [[result objectForKey:@"count"] intValue], (unsigned long)[activityItems count]);
 		while ([activityItems count] < [[result objectForKey:@"count"] intValue]) {
-			[[HONAPICaller sharedInstance] retrieveActivityForUserByUserID:userID fromPage:++page completion:^(NSDictionary *result) {;
-				[activityItems addObjectsFromArray:[result objectForKey:@"results"]];
-			}];
+//			dispatch_after( dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.333 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+				[[HONAPICaller sharedInstance] retrieveActivityForUserByUserID:userID fromPage:++page completion:^(NSDictionary *result) {;
+					[activityItems addObjectsFromArray:[result objectForKey:@"results"]];
+					NSLog(@"TOTAL:[%d] RETRIEVED:[%lu]", [[result objectForKey:@"count"] intValue], (unsigned long)[activityItems count]);
+				}];
+//			});
 		}
 		
 		NSLog(@"FINISHED RETRIEVED:[%d]", (int)[activityItems count]);
@@ -167,6 +170,7 @@ static HONUserAssistant *sharedInstance = nil;
 			else if ([[[dict objectForKey:@"event_type"] uppercaseString] isEqualToString:@"STATUS_DOWNVOTED"])
 				score--;
 		}];
+		
 		
 		if (completion)
 			completion(@(score));

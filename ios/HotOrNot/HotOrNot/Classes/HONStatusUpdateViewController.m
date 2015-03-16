@@ -26,8 +26,9 @@
 #import "HONScrollView.h"
 #import "HONRefreshingLabel.h"
 #import "HONStatusUpdateCreatorView.h"
+#import "HONChannelInviteButtonView.h"
 
-@interface HONStatusUpdateViewController () <HONStatusUpdateCreatorViewDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONStatusUpdateCreatorViewDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) LYRConversation *conversation;
@@ -113,6 +114,10 @@
 	}];
 	
 	[super destroy];
+}
+
+- (void)leaveActiveChat {
+	[self _popBack];
 }
 
 
@@ -269,6 +274,10 @@
 		[_imageCommentButton setEnabled:(_participants >= 10)];
 		
 		if (_participants < 2) {
+			
+			if ([_commentTextField isFirstResponder])
+				[self _goCancelComment];
+				
 			_expireSeconds = 600;
 			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
 															target:self selector:@selector(_updateExpireTime)
@@ -479,7 +488,7 @@
 			int mins = _expireSeconds / 60;
 			int secs = _expireSeconds % 60;
 			
-			_expireLabel.attributedText = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Share chat link now.\nThis chat will expire in %d:%02d", mins, secs] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+			_expireLabel.attributedText = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_interval"], mins, secs] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 			[_expireLabel setTextColor:[UIColor redColor] range:NSMakeRange([_expireLabel.text length] - 4, 4)];
 			
 		} else
@@ -508,7 +517,7 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (8.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height)];
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (0.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height)];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceVertical = YES;
@@ -545,14 +554,14 @@
 	_inputBGImageView.userInteractionEnabled = YES;
 	[_footerView addSubview:_inputBGImageView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 11.0, 232.0, 22.0)];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(11.0, 13.0, 232.0, 20.0)];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_commentTextField setReturnKeyType:UIReturnKeySend];
 	[_commentTextField setTextColor:[UIColor blackColor]];
 	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_commentTextField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:18];
+	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
 	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
 	_commentTextField.text = @"";
@@ -568,7 +577,7 @@
 //	[_inputBGImageView addSubview:_imageCommentButton];
 	
 	_commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_commentButton.frame = CGRectMake(260.0, 0.0, 64.0, 44.0);
+	_commentButton.frame = CGRectMake(257.0, 0.0, 64.0, 44.0);
 	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_commentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
 	[_commentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
@@ -587,65 +596,72 @@
 	_expireLabel.text = @"";
 	[_emptyCommentsView addSubview:_expireLabel];
 	
-	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	kikButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 220.0, _emptyCommentsView.frame.size.width, 44.0);
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	kikButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateNormal];
-	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateHighlighted];
-	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:kikButton];
 	
-	UIButton *lineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	lineButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 176.0, _emptyCommentsView.frame.size.width, 44.0);
-	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	lineButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateNormal];
-	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateHighlighted];
-	[lineButton addTarget:self action:@selector(_goShareLine) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:lineButton];
+	for (int i=0; i<5; i++) {
+		HONChannelInviteButtonView *inviteButtonView = [[HONChannelInviteButtonView alloc] initWithFrame:CGRectMake(0.0, _emptyCommentsView.frame.size.height - ((5.0 - i) * 44.0), _emptyCommentsView.frame.size.width, 44.0) asButtonType:(HONChannelInviteButtonType)i];
+		inviteButtonView.delegate = self;
+		[_emptyCommentsView addSubview:inviteButtonView];
+	}
 	
-	UIButton *kakaoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	kakaoButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 132.0, _emptyCommentsView.frame.size.width, 44.0);
-	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	kakaoButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateNormal];
-	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateHighlighted];
-	[kakaoButton addTarget:self action:@selector(_goShareKakao) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:kakaoButton];
-	
-	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	smsButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 88.0, _emptyCommentsView.frame.size.width, 44.0);
-	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	smsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateNormal];
-	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateHighlighted];
-	[smsButton addTarget:self action:@selector(_goShareSMS) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:smsButton];
-	
-	UIButton *copyLinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	copyLinkButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 44.0, _emptyCommentsView.frame.size.width, 44.0);
-	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-	copyLinkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateNormal];
-	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateHighlighted];
-	[copyLinkButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
-	[_emptyCommentsView addSubview:copyLinkButton];
+//	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	kikButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 220.0, _emptyCommentsView.frame.size.width, 44.0);
+//	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+//	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+//	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+//	kikButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+//	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateNormal];
+//	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateHighlighted];
+//	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
+//	[_emptyCommentsView addSubview:kikButton];
+//	
+//	UIButton *lineButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	lineButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 176.0, _emptyCommentsView.frame.size.width, 44.0);
+//	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+//	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+//	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+//	lineButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+//	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateNormal];
+//	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateHighlighted];
+//	[lineButton addTarget:self action:@selector(_goShareLine) forControlEvents:UIControlEventTouchUpInside];
+//	[_emptyCommentsView addSubview:lineButton];
+//	
+//	UIButton *kakaoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	kakaoButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 132.0, _emptyCommentsView.frame.size.width, 44.0);
+//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+//	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+//	kakaoButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+//	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateNormal];
+//	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateHighlighted];
+//	[kakaoButton addTarget:self action:@selector(_goShareKakao) forControlEvents:UIControlEventTouchUpInside];
+//	[_emptyCommentsView addSubview:kakaoButton];
+//	
+//	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	smsButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 88.0, _emptyCommentsView.frame.size.width, 44.0);
+//	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+//	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+//	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+//	smsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+//	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateNormal];
+//	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateHighlighted];
+//	[smsButton addTarget:self action:@selector(_goShareSMS) forControlEvents:UIControlEventTouchUpInside];
+//	[_emptyCommentsView addSubview:smsButton];
+//	
+//	UIButton *copyLinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	copyLinkButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 44.0, _emptyCommentsView.frame.size.width, 44.0);
+//	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
+//	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
+//	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+//	copyLinkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+//	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateNormal];
+//	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateHighlighted];
+//	[copyLinkButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
+//	[_emptyCommentsView addSubview:copyLinkButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
@@ -723,112 +739,6 @@
 	[alertView show];
 }
 
-- (void)_goShareKik {
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-	
-	NSString *urlSchema = @"kik://";
-	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-									message:@"You will now be redirected to share"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Schema Error"
-									message:urlSchema
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}
-}
-
-- (void)_goShareLine {
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-	
-	NSString *urlSchema = @"line://";
-	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-									message:@"You will now be redirected to share"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Schema Error"
-									message:urlSchema
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}
-}
-
-- (void)_goShareKakao {
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-	
-	NSString *urlSchema = @"kakaolink://";
-	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-									message:@"You will now be redirected to share"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Schema Error"
-									message:urlSchema
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}
-}
-
-- (void)_goShareSMS {
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-	
-	if ([MFMessageComposeViewController canSendText]) {
-		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-									message:@"You will now be redirected to share"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-		messageComposeViewController.messageComposeDelegate = self;
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"SMS Error"
-									message:@"Cannot send SMS from this device!"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	}
-}
-
-- (void)_goCopyDeeplink {
-	NSLog(@"_goCOpyDeepLink");
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-	
-	[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-								message:nil
-							   delegate:nil
-					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-					  otherButtonTitles:nil] show];
-}
-
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
 	
@@ -866,7 +776,7 @@
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
 	
-	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (8.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height);
+	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (0.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height);
 	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -1022,24 +932,93 @@
 	}];
 	
 	
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-							   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
-							   @"club_id"		: @(_statusUpdateVO.clubID),
-							   @"subject"		: @"__FLAG__",
-							   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
-		
-		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
-			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-			} else {
-			}
-		}];
-	});
+//	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//		NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+//							   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+//							   @"club_id"		: @(_statusUpdateVO.clubID),
+//							   @"subject"		: @"__FLAG__",
+//							   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+//		
+//		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
+//			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+//			} else {
+//			}
+//		}];
+//	});
 	
 	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
 	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
 		[self.navigationController popToRootViewControllerAnimated:YES];
 	});
+}
+
+- (void)_copyDeeplink {
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+}
+
+
+#pragma mark - ChannelInviteButtonView Delegates
+- (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
+	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", buttonType);
+	
+	BOOL hasSchema = YES;
+	NSString *typeName = @"";
+	NSString *urlSchema = @"";
+	NSString *errorMessage = @"This device isn't allowed or doesn't recognize %@!";
+	
+	[self _copyDeeplink];
+	
+	if (buttonType == HONChannelInviteButtonTypeClipboard) {
+		typeName = @"Clipboard";
+		
+		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
+									message:nil
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+		
+	} else if (buttonType == HONChannelInviteButtonTypeSMS) {
+		typeName = @"SMS";
+		
+		if ([MFMessageComposeViewController canSendText]) {
+			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+			messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+			messageComposeViewController.messageComposeDelegate = self;
+			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		}
+
+//	} else if (buttonType == HONChannelInviteButtonTypeEmail) {
+//		typeName = @"Email";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeKakao) {
+		typeName = @"Kakao";;
+		urlSchema = @"kakaolink://";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeKik) {
+		typeName = @"Kik";
+		urlSchema = @"kik://";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeLine) {
+		typeName = @"LINE";
+		urlSchema = @"line://";
+	}
+	
+	if (!hasSchema) {
+		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+									message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+	
+	} else {
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+		}
+	}
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
 }
 
 

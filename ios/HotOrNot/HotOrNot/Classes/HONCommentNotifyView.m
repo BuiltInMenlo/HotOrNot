@@ -20,14 +20,14 @@
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor clearColor];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 14.0, 280.0, 18.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 14.0, 280.0, 18.0)];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textColor = [UIColor blackColor];
 		[self addSubview:_captionLabel];
 		
-		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 34.0, 280.0, 16.0)];
-		_localityLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 33.0, 280.0, 16.0)];
+		_localityLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:11];
 		_localityLabel.backgroundColor = [UIColor clearColor];
 		_localityLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
 		_localityLabel.text = @"…";
