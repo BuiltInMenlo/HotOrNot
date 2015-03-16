@@ -48,7 +48,7 @@
 	// [self recordTransaction: transaction];
 	
 	//Provide the new content
-	// [self provideContent: transaction.originalTransaction.payment.productIdentifier];
+	// [self provideContent: transaction.originalTransaction.payment.entifier];
 	
 	//Finish the transaction
 	[[SKPaymentQueue defaultQueue] finishTransaction: transaction];

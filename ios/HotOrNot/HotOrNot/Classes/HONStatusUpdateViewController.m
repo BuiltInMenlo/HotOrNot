@@ -265,6 +265,7 @@
 			[_expireTimer invalidate];
 			_expireTimer = nil;
 		}
+
 		
 		_emptyCommentsView.hidden = (_participants > 1);
 		_commentsHolderView.hidden = (_participants < 2);
@@ -462,17 +463,22 @@
 }
 
 - (void)_updateExpireTime {
-	//NSLog(@"_updateExpireTime:[%d] // (%d)", _expireSeconds, _participants);
 	
 	if (_participants < 2) {
 		if (--_expireSeconds >= 0) {
+			NSLog(@"_updateExpireTime:[%d] // (%d) -(%@)", _expireSeconds, _expireSeconds % 20, NSStringFromBOOL(_isActive));
 			
-			if (_expireSeconds % 120 == 0 && !_isActive) {
+			if (_expireSeconds % 20 == 0 && !_isActive) {
+				
+				int secs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"occupancy_timeout"] intValue];
+				int mins = [NSDate elapsedMinutesFromSeconds:secs];
+				int hours = [NSDate elapsedHoursFromSeconds:secs];
+				
 				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 				localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:0];
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
 				localNotification.alertAction = @"View";
-				localNotification.alertBody = @"Get more people";
+				localNotification.alertBody = [NSString stringWithFormat:@"Chat link expires in less than %@!", (hours > 0) ? [NSString stringWithFormat:@"%d hour%@", hours, (hours == 1) ? @"" : @"s"] : (mins > 0) ? [NSString stringWithFormat:@"%d minute%@", mins, (mins == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%d second%@", secs, (secs == 1) ? @"" : @"s"]];  //[[[[NSUserDefaults standardUserDefaults] objectForKey:@"alert_formats"] objectForKey:@"participant_push"] objectForKey:@"msg"];
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
@@ -965,7 +971,6 @@
 	BOOL hasSchema = YES;
 	NSString *typeName = @"";
 	NSString *urlSchema = @"";
-	NSString *errorMessage = @"This device isn't allowed or doesn't recognize %@!";
 	
 	[self _copyDeeplink];
 	

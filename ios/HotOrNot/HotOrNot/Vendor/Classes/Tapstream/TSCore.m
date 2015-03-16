@@ -3,10 +3,10 @@
 #import "TSLogging.h"
 #import "TSUtils.h"
 
-#define kTSVersion @"2.8.1"
+#define kTSVersion @"2.8.6"
 #define kTSEventUrlTemplate @"https://api.tapstream.com/%@/event/%@/"
-#define kTSHitUrlTemplate @"https://api.tapstream.com/%@/hit/%@.gif"
-#define kTSConversionUrlTemplate @"http://reporting.tapstream.com/v1/timelines/lookup?secret=%@&event_session=%@"
+#define kTSHitUrlTemplate @"http://api.tapstream.com/%@/hit/%@.gif"
+#define kTSConversionUrlTemplate @"https://reporting.tapstream.com/v1/timelines/lookup?secret=%@&event_session=%@"
 #define kTSConversionPollInterval 1
 #define kTSConversionPollCount 10
 
@@ -54,6 +54,9 @@
 {
 	if((self = [super init]) != nil)
 	{
+#if TEST_IOS || TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+		[self attachIdfaIfNotPresent:configVal];
+#endif
 		self.del = delegateVal;
 		self.platform = platformVal;
 		self.listener = listenerVal;
@@ -92,6 +95,40 @@
 	SUPER_DEALLOC;
 }
 
+#if TEST_IOS || TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+- (void)attachIdfaIfNotPresent:(TSConfig *)configVal
+{
+	// Collect the IDFA, if the Advertising Framework is available
+	if(!configVal.idfa && configVal.autoCollectIdfa){
+		Class asIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
+		if(asIdentifierManagerClass){
+			SEL getterSel = NSSelectorFromString(@"sharedManager");
+			IMP getterImp = [asIdentifierManagerClass methodForSelector:getterSel];
+
+			if(getterImp){
+				id asIdentifierManager = ((id (*)(id, SEL))getterImp)(asIdentifierManagerClass, getterSel);
+
+				if(asIdentifierManager){
+					SEL idfaSel = NSSelectorFromString(@"advertisingIdentifier");
+					IMP idfaImp = [asIdentifierManager methodForSelector:idfaSel];
+
+					id idfa = ((id (*)(id, SEL))idfaImp)(asIdentifierManager, idfaSel);
+					if(idfa){
+						configVal.idfa = [((NSUUID*) idfa) UUIDString];
+					}
+				}
+			}
+
+			if(!configVal.idfa){
+				[TSLogging logAtLevel:kTSLoggingWarn format:@"An problem occurred retrieving the IDFA."];
+			}
+		}else{
+			[TSLogging logAtLevel:kTSLoggingWarn format:@"Tapstream could not retrieve an IDFA. Is the AdSupport Framework enabled?"];
+		}
+	}
+}
+#endif
+
 - (void)start
 {
 	self.appName = [platform getAppName];
@@ -99,6 +136,8 @@
 	{
 		self.appName = @"";
 	}
+
+
 
 	if(config.fireAutomaticInstallEvent)
 	{
@@ -196,16 +235,6 @@
 		dispatch_after(dispatchTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
 			NSString *allData = data;
-			if(config.collectTasteData)
-			{
-				NSString *processes = @"";
-				NSSet *processSet = [platform getProcessSet];
-				if(processSet)
-				{
-					processes = [TSUtils encodeString:[[processSet allObjects] componentsJoinedByString:@","]];
-				}
-				allData = [[data stringByAppendingString:@"&processes="] stringByAppendingString:processes];
-			}
 
 			TSResponse *response = [platform request:url data:allData method:@"POST"];
 			bool failed = response.status < 200 || response.status >= 300;
@@ -473,6 +502,7 @@
 	[self appendPostPairWithPrefix:@"" key:@"vendor" value:[platform getManufacturer]];
 	[self appendPostPairWithPrefix:@"" key:@"model" value:[platform getModel]];
 	[self appendPostPairWithPrefix:@"" key:@"os" value:[platform getOs]];
+	[self appendPostPairWithPrefix:@"" key:@"os-build" value:[platform getOsBuild]];
 	[self appendPostPairWithPrefix:@"" key:@"resolution" value:[platform getResolution]];
 	[self appendPostPairWithPrefix:@"" key:@"locale" value:[platform getLocale]];
 	[self appendPostPairWithPrefix:@"" key:@"app-name" value:[platform getAppName]];

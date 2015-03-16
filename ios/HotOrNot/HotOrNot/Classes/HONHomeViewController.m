@@ -553,6 +553,12 @@
 	
 //	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	
+	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
+		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
+		_voteScore = [[result objectForKey:@"count"] intValue];
+		[_headerView updateActivityScore:_voteScore];
+	}];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

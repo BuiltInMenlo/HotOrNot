@@ -31,7 +31,7 @@ static void TSLoadStoreKitClasses()
 @synthesize request;
 + (id)requestWrapperWithRequest:(SKProductsRequest *)req
 {
-	return AUTORELEASE([[self alloc] initWithRequest:(NSURLRequest *)req]); //>
+	return AUTORELEASE([[self alloc] initWithRequest:req]);
 }
 - (id)initWithRequest:(SKProductsRequest *)req
 {
@@ -43,7 +43,7 @@ static void TSLoadStoreKitClasses()
 }
 - (id)copyWithZone:(NSZone *)zone
 {
-	return [[[self class] allocWithZone:zone] initWithRequest:(NSURLRequest *)self.request]; //>
+	return [[[self class] allocWithZone:zone] initWithRequest:self.request];
 }
 - (BOOL)isEqual:(id)other
 {
@@ -108,7 +108,7 @@ static void TSLoadStoreKitClasses()
 		if(TSSKPaymentQueue != nil)
 		{
 			self.requestTransactions = [NSMutableDictionary dictionary];
-//>			[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+			[(id)[TSSKPaymentQueue defaultQueue] addTransactionObserver:self];
 		}
 		self.transactionReceiptSnapshots = [NSMutableDictionary dictionary];
 	}
@@ -121,9 +121,6 @@ static void TSLoadStoreKitClasses()
 	{
 		switch(transaction.transactionState)
 		{
-			default:
-				break;
-				
 			case SKPaymentTransactionStatePurchased:
 			{
 				
@@ -134,15 +131,12 @@ static void TSLoadStoreKitClasses()
 				NSData *receipt = nil;
 				
 #if TEST_IOS || TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-				// For ios 7 and up, try to get the Grand Unified Receipt
-				// If we can't get that, fall back to the transactionReceipt
-				if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
+				// For ios 7 and up, try to get the Grand Unified Receipt.
+				if(floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_7_0)
 				{
 					receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
-				}
-				if(!receipt)
-				{
-					receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];//transaction.transactionReceipt;
+				}else{ // For (real) old ios versions, use transactionReceipt.
+					receipt = transaction.transactionReceipt;
 				}
 #else
 				// For mac, try to load the receipt out of the bundle.  If appStoreReceiptURL method is
@@ -159,7 +153,7 @@ static void TSLoadStoreKitClasses()
 				receipt = [NSData dataWithContentsOfURL:receiptUrl];
 #endif
 				
-				if(receipt)
+				if(receipt && transaction.transactionIdentifier != nil)
 				{
 					@synchronized(self)
 					{
@@ -168,6 +162,11 @@ static void TSLoadStoreKitClasses()
 				}
 			}
 			break;
+            case SKPaymentTransactionStateFailed:
+            case SKPaymentTransactionStatePurchasing:
+            case SKPaymentTransactionStateRestored:
+            break;
+            
 		}
 	}
 }
@@ -266,7 +265,7 @@ static void TSLoadStoreKitClasses()
 {
 	if(TSSKPaymentQueue != nil)
 	{
-//>		[[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+		[(id)[TSSKPaymentQueue defaultQueue] removeTransactionObserver:self];
 	}
 
 	if(foregroundedEventObserver != nil)
