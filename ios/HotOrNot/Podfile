@@ -2,7 +2,7 @@
 platform :ios, '7.0'
 
 target 'HotOrNot' do
-pod 'LayerKit'
+pod 'PBJVision'
 pod 'PubNub', '3.7.1'
 end
 

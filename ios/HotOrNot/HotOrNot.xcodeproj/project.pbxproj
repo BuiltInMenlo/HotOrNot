@@ -1857,20 +1857,20 @@
 		4C45A9421996AD9500A2086E /* Details */ = {
 			isa = PBXGroup;
 			children = (
+				3042D9121AB659A400F2D0B8 /* HONChannelInviteButtonView.h */,
+				3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */,
 				3010D7851A2444190078164F /* HONCommentViewCell.h */,
 				3010D7861A2444190078164F /* HONCommentViewCell.m */,
 				30CFAD451A549C6600FD25CF /* HONCommentItemView.h */,
 				30CFAD461A549C6600FD25CF /* HONCommentItemView.m */,
 				30CBEABB1AB3A70A002EA86C /* HONCommentNotifyView.h */,
 				30CBEABC1AB3A70A002EA86C /* HONCommentNotifyView.m */,
-				30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */,
-				30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */,
 				30CFAD421A54905E00FD25CF /* HONReplySubmitViewController.h */,
 				30CFAD431A54905E00FD25CF /* HONReplySubmitViewController.m */,
 				305001401A5E222800E8F303 /* HONStatusUpdateCreatorView.h */,
 				305001411A5E222800E8F303 /* HONStatusUpdateCreatorView.m */,
-				3042D9121AB659A400F2D0B8 /* HONChannelInviteButtonView.h */,
-				3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */,
+				30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */,
+				30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */,
 			);
 			name = Details;
 			sourceTree = "<group>";

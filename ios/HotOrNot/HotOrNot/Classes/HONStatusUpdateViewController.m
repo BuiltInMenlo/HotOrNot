@@ -59,6 +59,8 @@
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
 
+@property (nonatomic, strong) UIImagePickerController *imagePicker;
+@property (nonatomic) BOOL isFirstAppearance;
 @end
 
 @implementation HONStatusUpdateViewController
@@ -83,6 +85,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_appLeavingBackground:)
 													 name:@"APP_LEAVING_BACKGROUND" object:nil];
+		
+		_isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -113,6 +117,7 @@
 		[view removeFromSuperview];
 	}];
 	
+	_imagePicker.delegate = nil;
 	[super destroy];
 }
 
@@ -524,6 +529,8 @@
 	_participants = 0;
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (0.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height)];
+	_scrollView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+								   
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceVertical = YES;
@@ -684,13 +691,18 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
-	[self _goReloadContent];	
+//	[_scrollView setContentOffset:CGPointMake(0.0, -95.0) animated:NO];
+	[self _goReloadContent];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
+	
+	if (_isFirstAppearance) {
+		_isFirstAppearance = NO;
+		[self _presentCamera];
+	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -814,7 +826,6 @@
 - (void)_refreshStatusUpdate:(NSNotification *)notification {
 	NSLog(@"::|> _refreshStatusUpdate <|::");
 	
-
 }
 
 - (void)_tareStatusUpdate:(NSNotification *)notification {
@@ -851,6 +862,49 @@
 
 
 #pragma mark - UI Presentation
+- (void)_presentCamera {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+		
+		_imagePicker = [[UIImagePickerController alloc] init];
+		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
+		_imagePicker.delegate = self;
+		_imagePicker.showsCameraControls = NO;
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, scale, scale);
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.cameraOverlayView = _scrollView;
+		
+		
+		
+//		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_cameraOverlayView.delegate = self;
+//		_imagePicker.cameraOverlayView = _cameraOverlayView;
+		
+		_imagePicker.cameraViewTransform = CGAffineTransformMakeTranslation([UIScreen mainScreen].bounds.size.width, 0.0);
+		[UIView animateWithDuration:1.500 delay:5.333 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+			_imagePicker.cameraViewTransform = CGAffineTransformMakeTranslation([UIScreen mainScreen].bounds.size.width * 0.5, 0.0);
+			
+		} completion:^(BOOL finished) {
+			[self presentViewController:_imagePicker animated:NO completion:^(void) {
+			}];
+			
+		}];
+		
+	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+		_imagePicker = [[UIImagePickerController alloc] init];
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+		_imagePicker.delegate = self;
+		_imagePicker.allowsEditing = NO;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+		
+		[self presentViewController:_imagePicker animated:NO completion:^(void) {
+		}];
+	}
+}
+
 - (void)_appendComment:(HONCommentVO *)vo {
 	NSLog(@"_appendComment:[%@]", (vo.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (vo.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (vo.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (vo.commentContentType == HONCommentContentTypeText) ? @"Text" : @"UNKNOWN");
 	[_replies addObject:vo];
@@ -966,7 +1020,7 @@
 
 #pragma mark - ChannelInviteButtonView Delegates
 - (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
-	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", buttonType);
+	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%u] [*:*]", buttonType);
 	
 	BOOL hasSchema = YES;
 	NSString *typeName = @"";
@@ -1043,6 +1097,44 @@
 - (void)statusUpdateCreatorViewOpenAppStore:(HONStatusUpdateCreatorView *)statusUpdateCreatorView {
 	NSLog(@"[*:*] statusUpdateCreatorViewOpenAppStore [*:*]");
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_statusUpdateVO.appStoreURL]];
+}
+
+
+#pragma mark - ImagePickerViewController Delegates
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+	NSLog(@"[*:*] imagePickerController:didFinishPickingMediaWithInfo:[%@] [*:*]",  NSStringFromCGSize(image.size));
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[self dismissViewControllerAnimated:NO completion:^(void) {}];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
+		
+		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		picker.showsCameraControls = NO;
+		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
+		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, scale, scale);
+		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
+		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		
+	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		}];
+	}
+}
+
+
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 }
 
 

@@ -107,7 +107,7 @@
 
 #pragma mark - Navigation
 - (void)_goCancel {
-	[self dismissViewControllerAnimated:NO completion:^(void){}];
+	 
 }
 
 
