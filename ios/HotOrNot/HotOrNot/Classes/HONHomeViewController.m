@@ -366,7 +366,7 @@
 	[_toggleView toggleEnabled:NO];
 	//[_headerView addSubview:_toggleView];
 	
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight - [[UIApplication sharedApplication] statusBarFrame].size.height))];
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceHorizontal = YES;
@@ -374,43 +374,31 @@
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
+	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@] // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size), NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
+	
 	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
-	tutorial1ImageView.frame = CGRectTranslateY(tutorial1ImageView.frame, kNavHeaderHeight - 24.0);
+//	tutorial1ImageView.frame = CGRectResize(tutorial1ImageView.frame, CGSizeMake(self.view.frame.size.width, self.view.frame.size.height));
+	tutorial1ImageView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	[_scrollView addSubview:tutorial1ImageView];
 	
-	UILabel *tutorial1Label = [[UILabel alloc] initWithFrame:CGRectMake(20.0, _scrollView.frame.size.height - 107.0, 280.0, 30.0)];
-	tutorial1Label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20.0];
-	tutorial1Label.textColor = [UIColor blackColor];
-	tutorial1Label.backgroundColor = [UIColor clearColor];
-	tutorial1Label.textAlignment = NSTextAlignmentCenter;
-	tutorial1Label.text = @"hide from SMS & more";
-	[_scrollView addSubview:tutorial1Label];
+	NSLog(@"TUTORIAL SIZE:[%@]", NSStringFromCGSize(tutorial1ImageView.frame.size));
 	
 	UIImageView *tutorial2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_02"]];
-	tutorial2ImageView.frame = CGRectOffset(tutorial2ImageView.frame, _scrollView.frame.size.width, kNavHeaderHeight - 24.0);
+	tutorial2ImageView.frame = CGRectOffset(tutorial2ImageView.frame, _scrollView.frame.size.width, 0.0);
+	tutorial2ImageView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[_scrollView addSubview:tutorial2ImageView];
 	
-	UILabel *tutorial2Label = [[UILabel alloc] initWithFrame:CGRectMake(340.0, _scrollView.frame.size.height - 107.0, 280.0, 30.0)];
-	tutorial2Label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20.0];
-	tutorial2Label.textColor = [UIColor blackColor];
-	tutorial2Label.backgroundColor = [UIColor clearColor];
-	tutorial2Label.textAlignment = NSTextAlignmentCenter;
-	tutorial2Label.text = @"use DOOD chat links";
-	[_scrollView addSubview:tutorial2Label];
-	
 	UIImageView *tutorial3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_03"]];
-	tutorial3ImageView.frame = CGRectOffset(tutorial3ImageView.frame, _scrollView.frame.size.width * 2.0, kNavHeaderHeight - 24.0);
+	tutorial3ImageView.frame = CGRectOffset(tutorial3ImageView.frame, _scrollView.frame.size.width * 2.0, 0.0);
+	tutorial3ImageView.backgroundColor = [UIColor colorWithRed:0.349 green:0.541 blue:0.725 alpha:1.00];
 	[_scrollView addSubview:tutorial3ImageView];
 	
-	UILabel *tutorial3Label = [[UILabel alloc] initWithFrame:CGRectMake(660.0, _scrollView.frame.size.height - 107.0, 280.0, 30.0)];
-	tutorial3Label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20.0];
-	tutorial3Label.textColor = [UIColor blackColor];
-	tutorial3Label.backgroundColor = [UIColor clearColor];
-	tutorial3Label.textAlignment = NSTextAlignmentCenter;
-	tutorial3Label.text = @"no history or usernames";
-	[_scrollView addSubview:tutorial3Label];
+	UIImageView *tutorial4ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_04"]];
+	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
+	tutorial4ImageView.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	[_scrollView addSubview:tutorial4ImageView];
 	
-	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, self.view.frame.size.height - 43.0) withTotalPages:4 usingDiameter:4.0 andPadding:5.0];
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 43.0) withTotalPages:4 usingDiameter:4.0 andPadding:5.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
 	
@@ -448,21 +436,21 @@
 	//[_scrollView addSubview:_emptyFeedView];
 	
 	_composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_composeButton.frame = CGRectMake(105.0, _scrollView.frame.size.height, 111.0, 111.0);
+	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 65.0);
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
 	[_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 	_composeButton.alpha = 0.0;
 	[self.view addSubview:_composeButton];
 	
-	_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1020.0, 151.0, 1.0, 34.0)];
+	_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + 60.0, 151.0, 1.0, 34.0)];
 	_cursorImageView.animationImages = @[[UIImage imageNamed:@"composeCursor-02"],
 										 [UIImage imageNamed:@"composeCursor-01"]];
 	_cursorImageView.animationDuration = 1.0;
 	_cursorImageView.animationRepeatCount = 0;
 	[_scrollView addSubview:_cursorImageView];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake(1035.0, 153.0, 220.0, 26.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + 75.0, 153.0, 220.0, 26.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -701,17 +689,21 @@
 		_loadingOverlayView.delegate = self;
 		
 		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
-			[_loadingOverlayView outro];
-			
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
 				if ([_textField isFirstResponder])
 					[_textField resignFirstResponder];
 				
 				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-				[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
-				_textField.text = @"";
+				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+					[_loadingOverlayView outro];
+					_textField.text = @"";
+				});
 				
 			} else {
+				[_loadingOverlayView outro];
 				_textField.text = @"";
 				
 				if (![_textField isFirstResponder])
@@ -1266,7 +1258,7 @@
 		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 			[UIView animateWithDuration:0.25 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_composeButton.alpha = 1.0;
-				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - 112.0);
+				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
 				
 			} completion:^(BOOL finished) {
 //				if (![_textField isFirstResponder])
@@ -1288,7 +1280,7 @@
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
 		
-		if (_composeButton.frame.origin.y == scrollView.frame.size.height - 112.0) {
+		if (_composeButton.frame.origin.y == scrollView.frame.size.height - _composeButton.frame.size.height) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
 				_composeButton.alpha = 0.0;
 				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height);
@@ -1308,7 +1300,7 @@
 		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_composeButton.alpha = 1.0;
-				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - 112.0);
+				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
 				
 			} completion:^(BOOL finished) {
 //				if (![_textField isFirstResponder])
@@ -1379,12 +1371,16 @@
 				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 				pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _selectedStatusUpdateVO.statusUpdateID];
 				
-				_textField.text = @"";
 				if ([_textField isFirstResponder])
 					[_textField resignFirstResponder];
 				
-				[self.navigationController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
-				[_loadingOverlayView outro];
+				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					[_loadingOverlayView outro];
+					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+					_textField.text = @"";
+				});
 			}]; // api submit
 		}
 		

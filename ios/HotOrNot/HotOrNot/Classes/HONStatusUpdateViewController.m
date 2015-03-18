@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <LayerKit/LayerKit.h>
-
 #import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
@@ -16,6 +14,10 @@
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BuiltinMenlo.h"
 #import "UIView+BuiltinMenlo.h"
+
+#import "PBJFocusView.h"
+#import "PBJStrobeView.h"
+#import "PBJVision.h"
 
 #import "HONStatusUpdateViewController.h"
 #import "HONReplySubmitViewController.h"
@@ -28,16 +30,21 @@
 #import "HONStatusUpdateCreatorView.h"
 #import "HONChannelInviteButtonView.h"
 
-@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONStatusUpdateCreatorViewDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONStatusUpdateCreatorViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
-@property (nonatomic, strong) LYRConversation *conversation;
 @property (nonatomic, strong) PNChannel *channel;
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
+@property (nonatomic, strong) UIView *cameraHolderView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
 @property (nonatomic, strong) HONStatusUpdateCreatorView *creatorView;
+
+@property (nonatomic, strong) UIView *cameraPreviewView;
+@property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
+@property (nonatomic, strong) PBJFocusView *cameraFocusView;
+@property (nonatomic, strong) PBJStrobeView *strobeView;
 
 @property (nonatomic, strong) UIButton *commentCloseButton;
 @property (nonatomic, strong) UIButton *commentButton;
@@ -58,9 +65,6 @@
 @property (nonatomic) BOOL isActive;
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
-
-@property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic) BOOL isFirstAppearance;
 @end
 
 @implementation HONStatusUpdateViewController
@@ -86,7 +90,8 @@
 												 selector:@selector(_appLeavingBackground:)
 													 name:@"APP_LEAVING_BACKGROUND" object:nil];
 		
-		_isFirstAppearance = YES;
+		[self _setupCamera];
+		[[PBJVision sharedInstance] startPreview];
 	}
 	
 	return (self);
@@ -117,7 +122,6 @@
 		[view removeFromSuperview];
 	}];
 	
-	_imagePicker.delegate = nil;
 	[super destroy];
 }
 
@@ -270,7 +274,7 @@
 			[_expireTimer invalidate];
 			_expireTimer = nil;
 		}
-
+		
 		
 		_emptyCommentsView.hidden = (_participants > 1);
 		_commentsHolderView.hidden = (_participants < 2);
@@ -471,9 +475,9 @@
 	
 	if (_participants < 2) {
 		if (--_expireSeconds >= 0) {
-			NSLog(@"_updateExpireTime:[%d] // (%d) -(%@)", _expireSeconds, _expireSeconds % 20, NSStringFromBOOL(_isActive));
+//			NSLog(@"_updateExpireTime:[%d] // (%d) -(%@)", _expireSeconds, _expireSeconds % 20, NSStringFromBOOL(_isActive));
 			
-			if (_expireSeconds % 20 == 0 && !_isActive) {
+			if (_expireSeconds % 120 == 0 && !_isActive) {
 				
 				int secs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"occupancy_timeout"] intValue];
 				int mins = [NSDate elapsedMinutesFromSeconds:secs];
@@ -513,6 +517,11 @@
 	}
 }
 
+- (void)_copyDeeplink {
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -528,9 +537,16 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
+	_cameraPreviewView.backgroundColor = [UIColor blackColor];
+	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
+	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
+	[self.view addSubview:_cameraPreviewView];
+	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
+	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 84.0, 320.0, self.view.frame.size.height - (0.0 + kNavHeaderHeight + 84.0 + 64.0) + [[UIApplication sharedApplication] statusBarFrame].size.height)];
-	_scrollView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-								   
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceVertical = YES;
@@ -609,81 +625,26 @@
 	_expireLabel.text = @"";
 	[_emptyCommentsView addSubview:_expireLabel];
 	
-	
-	for (int i=0; i<5; i++) {
-		HONChannelInviteButtonView *inviteButtonView = [[HONChannelInviteButtonView alloc] initWithFrame:CGRectMake(0.0, _emptyCommentsView.frame.size.height - ((5.0 - i) * 44.0), _emptyCommentsView.frame.size.width, 44.0) asButtonType:(HONChannelInviteButtonType)i];
-		inviteButtonView.delegate = self;
-		[_emptyCommentsView addSubview:inviteButtonView];
-	}
-	
-//	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	kikButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 220.0, _emptyCommentsView.frame.size.width, 44.0);
-//	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-//	[kikButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-//	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-//	[kikButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-//	kikButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-//	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateNormal];
-//	[kikButton setTitle:@"Share Chat Link on Kik" forState:UIControlStateHighlighted];
-//	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
-//	[_emptyCommentsView addSubview:kikButton];
-//	
-//	UIButton *lineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	lineButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 176.0, _emptyCommentsView.frame.size.width, 44.0);
-//	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-//	[lineButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-//	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-//	[lineButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-//	lineButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-//	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateNormal];
-//	[lineButton setTitle:@"Share Chat Link on LINE" forState:UIControlStateHighlighted];
-//	[lineButton addTarget:self action:@selector(_goShareLine) forControlEvents:UIControlEventTouchUpInside];
-//	[_emptyCommentsView addSubview:lineButton];
-//	
-//	UIButton *kakaoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	kakaoButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 132.0, _emptyCommentsView.frame.size.width, 44.0);
-//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-//	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-//	[kakaoButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-//	kakaoButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-//	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateNormal];
-//	[kakaoButton setTitle:@"Share Chat Link on Kakao" forState:UIControlStateHighlighted];
-//	[kakaoButton addTarget:self action:@selector(_goShareKakao) forControlEvents:UIControlEventTouchUpInside];
-//	[_emptyCommentsView addSubview:kakaoButton];
-//	
-//	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	smsButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 88.0, _emptyCommentsView.frame.size.width, 44.0);
-//	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-//	[smsButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-//	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-//	[smsButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-//	smsButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-//	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateNormal];
-//	[smsButton setTitle:@"Share Chat Link on SMS" forState:UIControlStateHighlighted];
-//	[smsButton addTarget:self action:@selector(_goShareSMS) forControlEvents:UIControlEventTouchUpInside];
-//	[_emptyCommentsView addSubview:smsButton];
-//	
-//	UIButton *copyLinkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	copyLinkButton.frame = CGRectMake(0.0, _emptyCommentsView.frame.size.height - 44.0, _emptyCommentsView.frame.size.width, 44.0);
-//	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_nonActive"] forState:UIControlStateNormal];
-//	[copyLinkButton setBackgroundImage:[UIImage imageNamed:@"composeTextButton_Active"] forState:UIControlStateHighlighted];
-//	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-//	[copyLinkButton setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
-//	copyLinkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-//	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateNormal];
-//	[copyLinkButton setTitle:@"Copy & Share Chat Link" forState:UIControlStateHighlighted];
-//	[copyLinkButton addTarget:self action:@selector(_goCopyDeeplink) forControlEvents:UIControlEventTouchUpInside];
-//	[_emptyCommentsView addSubview:copyLinkButton];
+//	for (int i=0; i<5; i++) {
+//		HONChannelInviteButtonView *inviteButtonView = [[HONChannelInviteButtonView alloc] initWithFrame:CGRectMake(0.0, _emptyCommentsView.frame.size.height - ((5.0 - i) * 44.0), _emptyCommentsView.frame.size.width, 44.0) asButtonType:(HONChannelInviteButtonType)i];
+//		inviteButtonView.delegate = self;
+//		[_emptyCommentsView addSubview:inviteButtonView];
+//	}
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
+	
+	UIButton *commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	commentButton.frame = CGRectMake(105.0, 200.0, 111.0, 111.0);
+	[commentButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
+	[commentButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
+	[commentButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:commentButton];
+	
 	_headerView = [[HONHeaderView alloc] init];
 	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
-//	[_headerView addFlagButtonWithTarget:self action:@selector(_goFlag)];
-//	[_headerView addMoreButtonWithTarget:self action:@selector(_goMore)];
 	[self.view addSubview:_headerView];
 }
 
@@ -698,19 +659,11 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
-	
-	if (_isFirstAppearance) {
-		_isFirstAppearance = NO;
-		[self _presentCamera];
-	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidDisappear:animated];
-	
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRClientObjectsDidChangeNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
 }
 
 
@@ -758,23 +711,25 @@
 }
 
 - (void)_goImageComment {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - emoji"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - photo"];
 	
-	if (_participants >= 10) {
-		_isSubmitting = YES;
-		
-		_commentTextField.text = @"";
-		_comment = @"EMOJI";
-		
-		[self _submitCommentReply:NO];
-		
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Emoji board unlocked when chat has more than 10 friends"
-									message:nil
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil, nil] show];
-	}
+	[[PBJVision sharedInstance] capturePhoto];
+	
+//	if (_participants >= 10) {
+//		_isSubmitting = YES;
+//		
+//		_commentTextField.text = @"";
+//		_comment = @"EMOJI";
+//		
+//		[self _submitCommentReply:NO];
+//		
+//	} else {
+//		[[[UIAlertView alloc] initWithTitle:@"Emoji board unlocked when chat has more than 10 friends"
+//									message:nil
+//								   delegate:nil
+//						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//						  otherButtonTitles:nil, nil] show];
+//	}
 }
 
 - (void)_goTextComment {
@@ -862,47 +817,23 @@
 
 
 #pragma mark - UI Presentation
-- (void)_presentCamera {
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
-		
-		_imagePicker = [[UIImagePickerController alloc] init];
-		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
-		_imagePicker.delegate = self;
-		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, scale, scale);
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.cameraOverlayView = _scrollView;
-		
-		
-		
-//		_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_cameraOverlayView.delegate = self;
-//		_imagePicker.cameraOverlayView = _cameraOverlayView;
-		
-		_imagePicker.cameraViewTransform = CGAffineTransformMakeTranslation([UIScreen mainScreen].bounds.size.width, 0.0);
-		[UIView animateWithDuration:1.500 delay:5.333 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			_imagePicker.cameraViewTransform = CGAffineTransformMakeTranslation([UIScreen mainScreen].bounds.size.width * 0.5, 0.0);
-			
-		} completion:^(BOOL finished) {
-			[self presentViewController:_imagePicker animated:NO completion:^(void) {
-			}];
-			
-		}];
-		
-	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		_imagePicker = [[UIImagePickerController alloc] init];
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-		_imagePicker.delegate = self;
-		_imagePicker.allowsEditing = NO;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-		
-		[self presentViewController:_imagePicker animated:NO completion:^(void) {
-		}];
-	}
+- (void)_setupCamera {
+	PBJVision *vision = [PBJVision sharedInstance];
+	vision.delegate = self;
+	
+	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
+//	_flipButton.hidden = (![vision isCameraDeviceAvailable:PBJCameraDeviceBack]);
+	
+//	vision.cameraMode = PBJCameraModeVideo;
+	vision.cameraMode = PBJCameraModePhoto;
+	vision.cameraOrientation = PBJCameraOrientationPortrait;
+	vision.focusMode = PBJFocusModeContinuousAutoFocus;
+	vision.outputFormat = PBJOutputFormatStandard;
+	vision.videoRenderingEnabled = NO;
+	vision.additionalCompressionProperties = @{AVVideoProfileLevelKey : AVVideoProfileLevelH264Baseline30}; // AVVideoProfileLevelKey requires specific captureSessionPreset
+	
+	// specify a maximum duration with the following property
+	// vision.maximumCaptureDuration = CMTimeMakeWithSeconds(5, 600); // ~ 5 seconds
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {
@@ -991,36 +922,235 @@
 		}
 	}];
 	
-	
-//	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//		NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-//							   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
-//							   @"club_id"		: @(_statusUpdateVO.clubID),
-//							   @"subject"		: @"__FLAG__",
-//							   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
-//		
-//		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
-//			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-//			} else {
-//			}
-//		}];
-//	});
-	
 	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
 	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+		[[PBJVision sharedInstance] stopPreview];
 		[self.navigationController popToRootViewControllerAnimated:YES];
 	});
 }
 
-- (void)_copyDeeplink {
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+
+#pragma mark - PBJVisionDelegate
+
+// session
+- (void)visionSessionWillStart:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionWillStart [*:*]");
+}
+
+- (void)visionSessionDidStart:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStart [*:*]");
+	
+//	if (![_cameraPreviewView superview])
+//		[self.view addSubview:_cameraPreviewView];
+}
+
+- (void)visionSessionDidStop:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStop [*:*]");
+	
+	[_cameraPreviewView removeFromSuperview];
+}
+
+// preview
+- (void)visionSessionDidStartPreview:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStartPreview [*:*]");
+	
+}
+
+- (void)visionSessionDidStopPreview:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStopPreview [*:*]");
+}
+
+// device
+- (void)visionCameraDeviceWillChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraDeviceWillChange [*:*]");
+}
+
+- (void)visionCameraDeviceDidChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraDeviceDidChange [*:*]");
+}
+
+// mode
+- (void)visionCameraModeWillChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraModeWillChange [*:*]");
+}
+
+- (void)visionCameraModeDidChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraModeDidChange [*:*]");
+}
+
+// format
+- (void)visionOutputFormatWillChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionOutputFormatWillChange [*:*]");
+}
+
+- (void)visionOutputFormatDidChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionOutputFormatDidChange [*:*]");
+}
+
+- (void)vision:(PBJVision *)vision didChangeCleanAperture:(CGRect)cleanAperture {
+	NSLog(@"[*:*] vision:didChangeCleanAperture:[%@] [*:*]", NSStringFromCGRect(cleanAperture));
+}
+
+// focus / exposure
+- (void)visionWillStartFocus:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionWillStartFocus [*:*]");
+}
+
+- (void)visionDidStopFocus:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionDidStopFocus [*:*]");
+	
+	if (_cameraFocusView && [_cameraFocusView superview]) {
+		[_cameraFocusView stopAnimation];
+	}
+}
+
+- (void)visionWillChangeExposure:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionWillChangeExposure [*:*]");
+}
+
+- (void)visionDidChangeExposure:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionDidChangeExposure [*:*]");
+	
+	if (_cameraFocusView && [_cameraFocusView superview]) {
+		[_cameraFocusView stopAnimation];
+	}
+}
+
+// flash
+- (void)visionDidChangeFlashMode:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidChangeFlashMode [*:*]");
+}
+
+// photo
+- (void)visionWillCapturePhoto:(PBJVision *)vision {
+	NSLog(@"[*:*] visionWillCapturePhoto [*:*]");
+}
+
+- (void)visionDidCapturePhoto:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidCapturePhoto [*:*]");
+}
+
+- (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error {
+	NSLog(@"[*:*] vision:capturedPhoto:[%@] error:[%@] [*:*]", [photoDict objectForKey:PBJVisionPhotoMetadataKey], error);
+	
+	// handle error properly
+	if (error)
+		return;
+	
+	
+	UIImage *image = [photoDict objectForKey:PBJVisionPhotoImageKey];
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+	imageView.frame = CGRectFromSize([UIScreen mainScreen].bounds.size);
+	[self.view addSubview:imageView];
+	
+	
+	/*
+	_currentPhoto = photoDict;
+	
+	// save to library
+	NSData *photoData = _currentPhoto[PBJVisionPhotoJPEGKey];
+	NSDictionary *metadata = _currentPhoto[PBJVisionPhotoMetadataKey];
+	[_assetLibrary writeImageDataToSavedPhotosAlbum:photoData metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error1) {
+		if (error1 || !assetURL) {
+			// handle error properly
+			return;
+		}
+		
+		NSString *albumName = @"PBJVision";
+		__block BOOL albumFound = NO;
+		[_assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+			if ([albumName compare:[group valueForProperty:ALAssetsGroupPropertyName]] == NSOrderedSame) {
+				albumFound = YES;
+				[_assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+					[group addAsset:asset];
+					UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Photo Saved!" message: @"Saved to the camera roll."
+																   delegate:nil
+														  cancelButtonTitle:nil
+														  otherButtonTitles:@"OK", nil];
+					[alert show];
+				} failureBlock:nil];
+			}
+			if (!group && !albumFound) {
+				__weak ALAssetsLibrary *blockSafeLibrary = _assetLibrary;
+				[_assetLibrary addAssetsGroupAlbumWithName:albumName resultBlock:^(ALAssetsGroup *group1) {
+					[blockSafeLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+						[group1 addAsset:asset];
+						UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Photo Saved!" message: @"Saved to the camera roll."
+																	   delegate:nil
+															  cancelButtonTitle:nil
+															  otherButtonTitles:@"OK", nil];
+						[alert show];
+					} failureBlock:nil];
+				} failureBlock:nil];
+			}
+		} failureBlock:nil];
+	}];
+	
+	_currentPhoto = nil;
+	 */
+}
+
+// video capture
+- (void)visionDidStartVideoCapture:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidStartVideoCapture [*:*]");
+	
+	[_strobeView start];
+//	_recording = YES;
+}
+
+- (void)visionDidPauseVideoCapture:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidPauseVideoCapture [*:*]");
+	
+	[_strobeView stop];
+}
+
+- (void)visionDidResumeVideoCapture:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidResumeVideoCapture [*:*]");
+	
+	[_strobeView start];
+}
+
+- (void)vision:(PBJVision *)vision capturedVideo:(NSDictionary *)videoDict error:(NSError *)error {
+	NSLog(@"[*:*] vision:capturedVideo:[%@] error:[%@] [*:*]", videoDict, error);
+	
+//	_recording = NO;
+	
+	if (error && [error.domain isEqual:PBJVisionErrorDomain] && error.code == PBJVisionErrorCancelled) {
+		NSLog(@"recording session cancelled");
+		return;
+		
+	} else if (error) {
+		NSLog(@"encounted an error in video capture (%@)", error);
+		return;
+	}
+	
+	/*
+	_currentVideo = videoDict;
+	
+	NSString *videoPath = [_currentVideo  objectForKey:PBJVisionVideoPathKey];
+	[_assetLibrary writeVideoAtPathToSavedPhotosAlbum:[NSURL URLWithString:videoPath] completionBlock:^(NSURL *assetURL, NSError *error1) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Video Saved!" message: @"Saved to the camera roll."
+													   delegate:self
+											  cancelButtonTitle:nil
+											  otherButtonTitles:@"OK", nil];
+		[alert show];
+	}];
+	*/
+}
+
+// progress
+- (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
+}
+
+- (void)vision:(PBJVision *)vision didCaptureAudioSample:(CMSampleBufferRef)sampleBuffer {
+	NSLog(@"[*:*] vision:didCaptureAudioSample:[%.04f] [*:*]", vision.capturedAudioSeconds);
 }
 
 
 #pragma mark - ChannelInviteButtonView Delegates
 - (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
-	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%u] [*:*]", buttonType);
+	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%lu] [*:*]", buttonType);
 	
 	BOOL hasSchema = YES;
 	NSString *typeName = @"";
@@ -1100,44 +1230,6 @@
 }
 
 
-#pragma mark - ImagePickerViewController Delegates
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-	NSLog(@"[*:*] imagePickerController:didFinishPickingMediaWithInfo:[%@] [*:*]",  NSStringFromCGSize(image.size));
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
-	[self dismissViewControllerAnimated:NO completion:^(void) {}];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? ([[HONDeviceIntrinsics sharedInstance] isIOS8]) ? 1.65f : 1.55f : 1.25f;
-		
-		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		picker.showsCameraControls = NO;
-		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, scale, scale);
-		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
-		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		
-	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		}];
-	}
-}
-
-
-#pragma mark - NavigationController Delegates
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-}
-
-
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -1161,7 +1253,6 @@
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[_conversation sendTypingIndicator:LYRTypingDidFinish];
 	if (!_isSubmitting && [textField.text length] > 0)
 		[self _goTextComment];
 	

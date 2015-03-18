@@ -1,19 +1,19 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "scroll_001@2x.png"
+      "filename" : "swipeCONTENT_001@2x.png"
     },
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "scroll_001@2x-1.png"
+      "filename" : "swipeCONTENT_001@2x-1.png"
     },
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "scroll_001@3x.png"
+      "filename" : "swipeCONTENT_001@3x.png"
     }
   ],
   "info" : {

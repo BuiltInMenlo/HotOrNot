@@ -6,6 +6,12 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+typedef NS_ENUM(NSUInteger, ColorMask) {
+	ColorMaskRed   = 1,
+	ColorMaskGreen = 2,
+	ColorMaskBlue  = 4
+};
+
 @interface UIImage (BuiltInMenlo)
 
 - (UIImage *)applyLightEffect;
@@ -19,6 +25,8 @@
 - (UIImage *)mirrorImage;
 
 - (UIImage *)fixOrientation;
+
+- (UIImage *)convertToGreyscale;
 
 -(unsigned char*) grayscalePixels;
 -(unsigned char*) rgbaPixels;

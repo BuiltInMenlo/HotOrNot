@@ -39,14 +39,8 @@
 }
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(320.0, kNavHeaderHeight))])) {
-		UIView *statusBarBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, [UIScreen mainScreen].bounds.size.width, 20.0)];
-		statusBarBGView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
-		[self addSubview:statusBarBGView];
-		
-		self.frame = CGRectOffset(self.frame, 0.0, 20.0);
+	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake([UIScreen mainScreen].bounds.size.width, kNavHeaderHeight))])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
-		_bgImageView.frame = CGRectOffset(_bgImageView.frame, 0.0, -20.0);
 		[self addSubview:_bgImageView];
 		
 		_title = @"";
@@ -91,7 +85,7 @@
 
 
 - (void)addButton:(UIView *)buttonView {
-//	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 20.0);
+	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 20.0);
 	[self addSubview:buttonView];
 }
 
