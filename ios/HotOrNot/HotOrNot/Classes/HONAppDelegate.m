@@ -29,13 +29,14 @@
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
+#import "PubNub+BuiltInMenlo.h"
 #import "UIViewController+BuiltInMenlo.h"
 
 #import "AFNetworking.h"
 #import "BlowfishAlgorithm.h"
-#import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
+#import "MBProgressHUD.h"
 #import "TSTapstream.h"
 #import "UIImageDebugger.h"
 #import "UIImageView+AFNetworking.h"
@@ -66,13 +67,8 @@ NSString * const kKeenIOReadKey = @"984990cfc1ba74d560bc85d2fe78ebb4d3595d9d1416
 NSString * const kKeenIOWriteKey = @"3765f6e50fdb595882038fb5c336dd31cbe55a2977ae03aa25d32fa0ef09b5ef9249a383dc54557c2eafbb539301094b347d97bafd67e948f33ff5df60aa438c02e1be7c06abdeafa468ca8e8cde4dafd54872f82fc21ac1e64d82f4522a86820e20f226253006b2aa713c9ac211ba83";
 #endif
 
-
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
-NSString * const kPubNubConfigDomain = @"pubsub.pubnub.com";
-NSString * const kPubNubPublishKey = @"pub-c-a4abb7b2-2e28-43c4-b8f1-b2de162a79c3";
-NSString * const kPubNubSubscribeKey = @"sub-c-ed10ba66-c9b8-11e4-bf07-0619f8945a4f";
-NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkwYzRlN2NkNDgy";
 NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
@@ -304,41 +300,12 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 			
-			
-			[PubNub setConfiguration:[PNConfiguration configurationForOrigin:kPubNubConfigDomain
-																  publishKey:kPubNubPublishKey //@"demo"//
-																subscribeKey:kPubNubSubscribeKey //@"demo"//
-																   secretKey:kPubNubSecretKey]]; //nil]];//
-			
-			[PubNub connectWithSuccessBlock:^(NSString *origin) {
-				PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
-				NSLog(@"PubNub CONNECT:[%@]", origin);
-				
-				[PubNub setClientIdentifier:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) shouldCatchup:YES];
-				
-			} errorBlock:^(PNError *connectionError) {
-				NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
-				
-				if (connectionError.code == kPNClientConnectionFailedOnInternetFailureError) {
-					
-					// wait 1 second
-					int64_t delayInSeconds = 1.0;
-					dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-					dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-						PNLog(PNLogGeneralLevel, self, @"Connection will be established as soon as internet connection will be restored");
-					});
-				}
-				
-				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)", [connectionError localizedDescription], NSStringFromClass([self class])]
-											message:[NSString stringWithFormat:@"Reason:\n%@\n\nSuggestion:\n%@", [connectionError localizedFailureReason], [connectionError localizedRecoverySuggestion]]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}];
-			
+			[[HONPubNubOverseer sharedInstance] activateService];
 			
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+			
+			
 			
 			if (self.window.rootViewController == nil) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];

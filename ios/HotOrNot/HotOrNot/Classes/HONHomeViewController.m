@@ -507,21 +507,21 @@
 	
 	int statusUpdateID = ([_textField.text isPrefixedOrSuffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
 	if (statusUpdateID > 0) {
+		if ([_textField isFirstResponder])
+			[_textField resignFirstResponder];
+		
 		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
 		_loadingOverlayView.delegate = self;
 		
 		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-				if ([_textField isFirstResponder])
-					[_textField resignFirstResponder];
-				
 				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 					[_loadingOverlayView outro];
-					_textField.text = @"";
+					_textField.text = @"What are you doing?";
 				});
 				
 			} else {
@@ -675,7 +675,7 @@
 											 selector:@selector(_textFieldTextDidChangeChange:)
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
-	textField.text = @"";
+	textField.text = @"//269759";//@"";
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);
@@ -871,7 +871,7 @@
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					[_loadingOverlayView outro];
 					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-					_textField.text = @"";
+					_textField.text = @"What are you doing?";
 				});
 			}]; // api submit
 		}

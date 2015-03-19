@@ -133,6 +133,10 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return ([UIScreen mainScreen].scale == 2.0f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
+- (CGSize)screenSize {
+	return (CGSizeMult([UIScreen mainScreen].bounds.size, [UIScreen mainScreen].scale));
+}
+
 - (NSString *)locale {
 	return ([[NSLocale preferredLanguages] firstObject]);
 }

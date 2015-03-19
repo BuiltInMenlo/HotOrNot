@@ -21,6 +21,7 @@ extern const CGSize kScreenMult;
 - (BOOL)isRetina4Inch;
 - (BOOL)isPhoneType6;
 - (BOOL)isPhoneType6Plus;
+- (CGSize)screenSize;
 
 - (NSString *)lanIPAddress;
 - (NSString *)locale;

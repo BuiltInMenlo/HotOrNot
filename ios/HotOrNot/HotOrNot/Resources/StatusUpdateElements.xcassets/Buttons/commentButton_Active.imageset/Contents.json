@@ -3,22 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "sendButton_Active@2x.png"
+      "filename" : "chatButton_Active@2x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "sendButton_Active@2x-1.png"
+      "filename" : "chatButton_Active@2x-1.png"
     },
     {
       "idiom" : "iphone",
+      "filename" : "chatButton_Active-568h@2x.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "sendButton_Active@3x.png"
+      "filename" : "chatButton_Active@3x.png"
     }
   ],
   "info" : {

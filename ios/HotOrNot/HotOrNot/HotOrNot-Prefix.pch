@@ -28,5 +28,4 @@
 
 	#import "HONAppDelegate.h"
 	#import "HONUtilsSuite.h"
-	#import "PNImports.h"
 #endif

@@ -8,7 +8,16 @@
 
 #import "HONCommentVO.h"
 
+typedef NS_ENUM(NSUInteger, HONCommentViewType) {
+	HONCommentViewTypeUnknown = 0,
+	HONCommentViewTypeLocalBot,
+	HONCommentViewTypeRemoteBot,
+	HONCommentViewTypeText,
+	HONCommentViewTypeImage
+};
+
 @interface HONCommentItemView : UIView
+- (id)initWithFrame:(CGRect)frame asType:(HONCommentViewType)viewType;
 - (void)updateStatus:(HONCommentStatusType)statusType;
 
 @property (nonatomic, retain) HONCommentVO *commentVO;

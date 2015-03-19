@@ -12,7 +12,7 @@
 #import "UIView+BuiltinMenlo.h"
 
 #import "HONStatusUpdateHeaderView.h"
-#import "HONRefreshingLabel.h"
+#import "HONButton.h"
 
 @interface HONStatusUpdateHeaderView()
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
@@ -22,24 +22,32 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 84.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 105.0)])) {
+//		self.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_statusUpdateVO = statusUpdateVO;
 		
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(10.0, 30.0, 35.0, 35.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
+		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 60.0, 280.0, 20.0)];
+		HONButton *cameraFlipButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		cameraFlipButton.frame = CGRectMake(self.frame.size.width - 52.0, 0.0, 52.0, 46.0);
+		[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+		[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+		[cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:cameraFlipButton];
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 51.0, 280.0, 20.0)];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16];
+		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 		subjectLabel.text = _statusUpdateVO.topicName;
 		[self addSubview:subjectLabel];
 		
-		UILabel *linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 85.0, 220.0, 18.0)];
+		UILabel *linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 80.0, 220.0, 18.0)];
 		linkLabel.backgroundColor = [UIColor clearColor];
 		linkLabel.textColor = [UIColor whiteColor];
 		linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
@@ -47,12 +55,9 @@
 		[linkLabel resizeFrameForText];
 		[self addSubview:linkLabel];
 		
-		UIButton *linkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake(linkLabel.frameEdges.right + 10.0, 85.0, 18.0, 18.0);
-		[linkButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
-		[linkButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
-		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:linkButton];
+		UIImageView *linkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"linkIcon"]];
+		linkImageView.frame = CGRectOffset(linkImageView.frame, linkLabel.frameEdges.right + 5.0, 81.0);
+		[self addSubview:linkImageView];
 	}
 	
 	return (self);
@@ -66,9 +71,9 @@
 		[self.delegate statusUpdateHeaderViewGoBack:self];
 }
 
-- (void)_goCopyLink {
-	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderView:copyLinkForStatusUpdate:)])
-		[self.delegate statusUpdateHeaderView:self copyLinkForStatusUpdate:_statusUpdateVO];
+- (void)_goFlipCamera {
+	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewChangeCamera:)])
+		[self.delegate statusUpdateHeaderViewChangeCamera:self];
 }
 
 @end

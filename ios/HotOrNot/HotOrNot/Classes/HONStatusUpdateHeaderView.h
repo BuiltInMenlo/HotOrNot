@@ -11,7 +11,8 @@
 @class HONStatusUpdateHeaderView;
 @protocol HONStatusUpdateHeaderViewDelegate <NSObject>
 - (void)statusUpdateHeaderViewGoBack:(HONStatusUpdateHeaderView *)statusUpdateHeaderView;
-- (void)statusUpdateHeaderView:(HONStatusUpdateHeaderView *)statusUpdateHeaderView copyLinkForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO;
+@optional
+- (void)statusUpdateHeaderViewChangeCamera:(HONStatusUpdateHeaderView *)statusUpdateHeaderView;
 @end
 
 @interface HONStatusUpdateHeaderView : UIView

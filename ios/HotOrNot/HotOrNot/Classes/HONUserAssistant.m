@@ -95,7 +95,7 @@ static HONUserAssistant *sharedInstance = nil;
 	
 	[[NSUserDefaults standardUserDefaults] replaceObject:[dict copy] forKey:@"user_info"];
 	
-	NSLog(@"WROTE USER-INFO:[%@]", [[HONUserAssistant sharedInstance] activeUserInfo]);
+//	NSLog(@"WROTE USER-INFO:[%@]", [[HONUserAssistant sharedInstance] activeUserInfo]);
 }
 
 

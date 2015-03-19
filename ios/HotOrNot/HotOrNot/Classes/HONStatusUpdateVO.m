@@ -40,6 +40,9 @@
 		vo.comment = @"";
 	}
 	
+	vo.topicName = ([vo.topicName length] == 0) ? @"N/A" : vo.topicName;
+	vo.subjectName = ([vo.subjectName length] == 0) ? @"N/A" : vo.subjectName;
+	
 	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : [vo.topicName stringByReplacingOccurrencesOfString:@" " withString:@"%20"]] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
 	vo.location = [[CLLocation alloc] initWithLatitude:[[[[[[dictionary objectForKey:@"img"] componentsSeparatedByString:@"//"] lastObject] componentsSeparatedByString:@"_"] firstObject] floatValue] longitude:[[[[[[dictionary objectForKey:@"img"] componentsSeparatedByString:@"//"] lastObject] componentsSeparatedByString:@"_"] lastObject] floatValue]];
 	

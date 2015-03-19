@@ -87,29 +87,6 @@
 			_progressHUD = nil;
 			
 		} else {
-			PNChannel *channel = [PNChannel channelWithName:[result objectForKey:@"id"] shouldObservePresence:YES];
-			[PubNub subscribeOn:@[channel]];
-			
-			[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
-				switch (state) {
-					case PNSubscriptionProcessSubscribedState:
-						NSLog(@"OBSERVER: Subscribed to Channel: %@", channels[0]);
-						break;
-						
-					case PNSubscriptionProcessNotSubscribedState:
-						NSLog(@"OBSERVER: Not subscribed to Channel: %@, Error: %@", channels[0], error);
-						break;
-						
-					case PNSubscriptionProcessWillRestoreState:
-						NSLog(@"OBSERVER: Will re-subscribe to Channel: %@", channels[0]);
-						break;
-						
-					case PNSubscriptionProcessRestoredState:
-						NSLog(@"OBSERVER: Re-subscribed to Channel: %@", channels[0]);
-						break;
-				}
-			}];
-			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", [[result objectForKey:@"id"] intValue]];
 			

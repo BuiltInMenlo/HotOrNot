@@ -10,6 +10,8 @@
 #import "NSDictionary+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
 
+#import "PubNub+BuiltInMenlo.h"
+
 #import "HONCommentVO.h"
 
 
@@ -36,6 +38,7 @@
 	vo.imageContent = [[UIImage alloc] init];
 	
 	NSString *coordComp = [[[dictionary objectForKey:@"image"] componentsSeparatedByString:@"//"] lastObject];
+	NSLog(@"COORDS:[%@]", coordComp);
 	vo.location = [[CLLocation alloc] initWithLatitude:[[[coordComp componentsSeparatedByString:@"_"] firstObject] doubleValue] longitude:[[[coordComp componentsSeparatedByString:@"_"] lastObject] doubleValue]];
 	
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
@@ -88,7 +91,7 @@
 								   @"content_type"		: ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__SYN__"]) ? @((int)HONCommentContentTypeSYN) : ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__BYE__"]) ? @((int)HONCommentContentTypeBYE) : ([[[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__" withString:@""] isNumeric]) ? @((int)HONCommentContentTypeACK) : @((int)HONCommentContentTypeText),
 								   
 								   @"owner_member"		: @{@"id"	: @([[message.message firstComponentByDelimeter:@"|"] intValue]),
-															@"name"	: [message.message firstComponentByDelimeter:@"|"]},
+															@"name"	: ([[message.message firstComponentByDelimeter:@"|"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) ? @"You" : ([[message.message firstComponentByDelimeter:@"|"] isNumeric]) ? @"anon" : [message.message firstComponentByDelimeter:@"|"]},
 								   
 								   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] firstObject] floatValue], [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] lastObject] floatValue]],
 								   @"text"				: [[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__" withString:@""],
@@ -98,7 +101,7 @@
 								   @"added"				: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601],
 								   @"updated"			: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
 	
-//	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
+	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
 	
 	return ([HONCommentVO commentWithDictionary:dict]);
 }

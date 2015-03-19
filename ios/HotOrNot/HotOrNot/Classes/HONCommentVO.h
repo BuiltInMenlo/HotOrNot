@@ -6,7 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-
 #import <CoreLocation/CoreLocation.h>
 
 #import <PubNub/PubNub.h>
@@ -18,6 +17,7 @@ typedef NS_ENUM(NSUInteger, HONCommentContentType) {
 	HONCommentContentTypeUnknown = 0,
 	HONCommentContentTypeSYN,
 	HONCommentContentTypeACK,
+	HONCommentContentTypeBOT,
 	HONCommentContentTypeBYE,
 	HONCommentContentTypeText,
 	HONCommentContentTypeImage
