@@ -49,7 +49,7 @@
         hasEmail = [MFMailComposeViewController canSendMail];
         hasMessaging = [MFMessageComposeViewController canSendText];
 
-        id view = self.view; // Force instantiation of view.
+       //>> id view = self.view; // Force instantiation of view.
     }
     return self;
 }

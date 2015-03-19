@@ -14,8 +14,13 @@
 
 @interface HONLoadingOverlayView : UIView
 - (id)init;
-- (id)initWithView:(UIView *)view;
-- (id)initWithView:(UIView *)view isAnimated:(BOOL)isAnimated;
+- (id)initWithCaption:(NSString *)caption;
+- (id)initAsAnimated:(BOOL)isAnimated;
+- (id)initAsAnimated:(BOOL)isAnimated withCaption:(NSString *)caption;
+- (id)initWithinView:(UIView *)view;
+- (id)initWithinView:(UIView *)view withCaption:(NSString *)caption;
+- (id)initWithinView:(UIView *)view isAnimated:(BOOL)isAnimated;
+- (id)initWithinView:(UIView *)view isAnimated:(BOOL)isAnimated withCaption:(NSString *)caption;
 - (void)outro;
 
 @property (nonatomic, assign) id <HONLoadingOverlayViewDelegate> delegate;

@@ -168,18 +168,16 @@
 }
 - (BOOL)isPrefixedByString:(NSString *)affix {
 	NSLog(@"PREFIX:[%@]", [self substringToIndex:[affix length]]);
-	
-	return ([[self substringToIndex:[affix length]] isEqualToString:affix]);
+	return (([self length] >= [affix length]) ? [[self substringToIndex:[affix length]] isEqualToString:affix] : NO);
 }
 
-- (BOOL)isPrefixedOrSubffixedByString:(NSString *)affix {
-	return ([self isPrefixedByString:affix] || [self isSubfixedByString:affix]);
+- (BOOL)isPrefixedOrSuffixedByString:(NSString *)affix {
+	return ([self isPrefixedByString:affix] || [self isSuffixedByString:affix]);
 }
 
-- (BOOL)isSubfixedByString:(NSString *)affix {
+- (BOOL)isSuffixedByString:(NSString *)affix {
 	NSLog(@"SUFFIX:[%@]", [self substringFromIndex:([self length] - [affix length])]);
-	
-	return ([[self substringFromIndex:([self length] - [affix length])] isEqualToString:affix]);
+	return (([self length] >= [affix length]) ? [[self substringFromIndex:([self length] - [affix length])] isEqualToString:affix] : NO);
 }
 
 - (BOOL)isValidEmailAddress {

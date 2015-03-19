@@ -27,10 +27,10 @@
 #import "HONRefreshControl.h"
 #import "HONScrollView.h"
 #import "HONRefreshingLabel.h"
-#import "HONStatusUpdateCreatorView.h"
+#import "HONStatusUpdateHeaderView.h"
 #import "HONChannelInviteButtonView.h"
 
-@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONStatusUpdateCreatorViewDelegate, PBJVisionDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) PNChannel *channel;
@@ -39,7 +39,7 @@
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) UIView *cameraHolderView;
 @property (nonatomic, strong) HONRefreshControl *refreshControl;
-@property (nonatomic, strong) HONStatusUpdateCreatorView *creatorView;
+@property (nonatomic, strong) HONStatusUpdateHeaderView *statusUpdateHeaderView;
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
@@ -206,8 +206,6 @@
 			_channel = channel;
 			_participants = 1;
 			
-			[_creatorView updateParticipantTotal:_participants];
-			
 			NSMutableDictionary *dict = [@{@"id"				: @"0",
 										   @"msg_id"			: @"0",
 										   @"content_type"		: @((int)HONCommentContentTypeSYN),
@@ -280,7 +278,6 @@
 		_commentsHolderView.hidden = (_participants < 2);
 		_footerView.hidden = (_participants < 2);
 		
-		[_creatorView updateParticipantTotal:_participants];
 		[_imageCommentButton setEnabled:(_participants >= 10)];
 		
 		if (_participants < 2) {
@@ -467,7 +464,6 @@
 		_typingStatusLabel.text = NSLocalizedString(@"typing_status", @"someone is typing…");
 	}];
 	
-	_creatorView.statusUpdateVO = _statusUpdateVO;
 	NSLog(@"%@._didFinishDataRefresh", self.class);
 }
 
@@ -562,10 +558,9 @@
 	[_scrollView addSubview:_commentsHolderView];
 	
 	
-	_creatorView = [[HONStatusUpdateCreatorView alloc] initWithStatusUpdateVO:_statusUpdateVO];
-	[_creatorView updateParticipantTotal:1];
-	_creatorView.delegate = self;
-	[self.view addSubview:_creatorView];
+	_statusUpdateHeaderView = [[HONStatusUpdateHeaderView alloc] initWithStatusUpdateVO:_statusUpdateVO];
+	_statusUpdateHeaderView.delegate = self;
+	[self.view addSubview:_statusUpdateHeaderView];
 	
 	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 64.0, self.view.frame.size.width, 64.0)];
 	_footerView.hidden = YES;
@@ -613,7 +608,7 @@
 	[_commentButton setEnabled:NO];
 	[_inputBGImageView addSubview:_commentButton];
 	
-	_emptyCommentsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, _creatorView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - _creatorView.frameEdges.bottom)];
+	_emptyCommentsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - _statusUpdateHeaderView.frameEdges.bottom)];
 	[self.view addSubview:_emptyCommentsView];
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 50.0, 260.0, 85.0)];
@@ -644,7 +639,7 @@
 	[self.view addSubview:commentButton];
 	
 	_headerView = [[HONHeaderView alloc] init];
-	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
+//	[_headerView addBackButtonWithTarget:self action:@selector(_goBack)];
 	[self.view addSubview:_headerView];
 }
 
@@ -753,8 +748,8 @@
 	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight);
-		_scrollView.frame = CGRectTranslateY(_scrollView.frame, _creatorView.frameEdges.bottom);
+		_statusUpdateHeaderView.frame = CGRectTranslateY(_statusUpdateHeaderView.frame, kNavHeaderHeight);
+		_scrollView.frame = CGRectTranslateY(_scrollView.frame, _statusUpdateHeaderView.frameEdges.bottom);
 		_footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - _footerView.frame.size.height);
 		
 	} completion:^(BOOL finished) {
@@ -1211,22 +1206,15 @@
 }
 
 
-#pragma mark - StatusUpdateCreatorView Delegates
-- (void)statusUpdateCreatorViewDidDownVote:(HONStatusUpdateCreatorView *)statusUpdateCreatorView {
-	NSLog(@"[*:*] statusUpdateCreatorViewDidDownVote [*:*]");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - down_vote"];
+#pragma mark - StatusUpdateHeaderView Delegates
+- (void)statusUpdateHeaderView:(HONStatusUpdateHeaderView *)statusUpdateHeaderView copyLinkForStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO {
+	NSLog(@"[*:*] statusUpdateHeaderView:copyLinkForStatusUpdate:[%@] [*:*]", NSStringFromInt(statusUpdateVO.statusUpdateID));
 }
 
-- (void)statusUpdateCreatorViewDidUpVote:(HONStatusUpdateCreatorView *)statusUpdateCreatorView {
-	NSLog(@"[*:*] statusUpdateCreatorViewDidUpVote [*:*]");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - up_vote"];
+- (void)statusUpdateHeaderViewGoBack:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
+	NSLog(@"[*:*] statusUpdateHeaderViewGoBack [*:*]");
 	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-}
-
-- (void)statusUpdateCreatorViewOpenAppStore:(HONStatusUpdateCreatorView *)statusUpdateCreatorView {
-	NSLog(@"[*:*] statusUpdateCreatorViewOpenAppStore [*:*]");
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_statusUpdateVO.appStoreURL]];
+	[self _goBack];
 }
 
 
@@ -1241,7 +1229,7 @@
 	[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		 _creatorView.frame = CGRectTranslateY(_creatorView.frame, kNavHeaderHeight - _creatorView.frame.size.height);
+		 _statusUpdateHeaderView.frame = CGRectTranslateY(_statusUpdateHeaderView.frame, kNavHeaderHeight - _statusUpdateHeaderView.frame.size.height);
 		 _scrollView.frame = CGRectTranslateY(_scrollView.frame, kNavHeaderHeight);
 		
 		 _footerView.frame = CGRectTranslateY(_footerView.frame, self.view.frame.size.height - (_footerView.frame.size.height + 216.0));

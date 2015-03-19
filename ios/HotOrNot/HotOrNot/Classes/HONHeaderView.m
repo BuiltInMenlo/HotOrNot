@@ -17,7 +17,7 @@
 #import "HONFlagNavButtonView.h"
 #import "HONMoreNavButtonView.h"
 #import "HONNextNavButtonView.h"
-#import "HONSettingsNavButtonView.h"
+#import "HONPrivacyNavButtonView.h"
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -41,6 +41,7 @@
 - (id)init {
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake([UIScreen mainScreen].bounds.size.width, kNavHeaderHeight))])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
+		_bgImageView.frame = CGRectOffset(_bgImageView.frame, 0.0, 20.0);
 		[self addSubview:_bgImageView];
 		
 		_title = @"";
@@ -126,8 +127,8 @@
 	[self addButton:[[HONNextNavButtonView alloc] initWithTarget:target action:action]];
 }
 
-- (void)addSettingsButtonWithTarget:(id)target action:(SEL)action {
-	[self addButton:[[HONSettingsNavButtonView alloc] initWithTarget:target action:action]];
+- (void)addPrivacyButtonWithTarget:(id)target action:(SEL)action {
+	[self addButton:[[HONPrivacyNavButtonView alloc] initWithTarget:target action:action]];
 }
 
 - (void)addTitleButtonWithTarget:(id)target action:(SEL)action {

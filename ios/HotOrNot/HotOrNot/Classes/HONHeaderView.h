@@ -22,7 +22,7 @@
 - (void)addFlagButtonWithTarget:(id)target action:(SEL)action;
 - (void)addMoreButtonWithTarget:(id)target action:(SEL)action;
 - (void)addNextButtonWithTarget:(id)target action:(SEL)action;
-- (void)addSettingsButtonWithTarget:(id)target action:(SEL)action;
+- (void)addPrivacyButtonWithTarget:(id)target action:(SEL)action;
 - (void)addTitleButtonWithTarget:(id)target action:(SEL)action;
 - (void)transitionTitle:(NSString *)title;
 - (void)leftAlignTitle;

@@ -53,6 +53,19 @@
 	return ([UIView viewAtSize:size withBGColor:bgColor]);
 }
 
+- (void)centerAlignWithinParentView {
+	[self centerHorizontalAlignWithinParentView];
+	[self centerVerticalAlignWithinParentView];
+}
+
+- (void)centerHorizontalAlignWithinParentView {
+	self.frame = (self.superview != nil) ? CGRectTranslateX(self.frame, (self.superview.frame.size.width - self.frame.size.width) * 0.5) : self.frame;
+}
+
+- (void)centerVerticalAlignWithinParentView {
+	self.frame = (self.superview != nil) ? CGRectTranslateY(self.frame, (self.superview.frame.size.height - self.frame.size.height) * 0.5) : self.frame;
+}
+
 
 - (UIEdgeInsets)frameEdges {
 	return (UIEdgeInsetsMake(self.frame.origin.y, self.frame.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.origin.x + self.frame.size.width));

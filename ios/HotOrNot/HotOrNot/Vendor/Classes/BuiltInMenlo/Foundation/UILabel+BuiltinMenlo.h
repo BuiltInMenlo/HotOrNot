@@ -12,7 +12,7 @@
 - (CGRect)boundingRectForCharacterRange:(NSRange)range;
 - (CGRect)boundingRectForSubstring:(NSString *)substring;
 - (int)numberOfLinesNeeded;
-- (void)resizeFrameForMultiline;
+- (void)resizeFrameForText;
 - (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize;
 - (CGSize)sizeForText;
 

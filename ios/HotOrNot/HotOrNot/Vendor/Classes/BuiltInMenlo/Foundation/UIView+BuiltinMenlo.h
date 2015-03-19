@@ -17,5 +17,10 @@
 
 - (UIImage *)createImageFromView;
 - (void)reverseSubviews;
+
+- (void)centerAlignWithinParentView;
+- (void)centerHorizontalAlignWithinParentView;
+- (void)centerVerticalAlignWithinParentView;
+
 @property (nonatomic, readonly) UIEdgeInsets frameEdges;
 @end

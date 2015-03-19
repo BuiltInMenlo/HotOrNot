@@ -22,7 +22,7 @@
 
 - (id)initAtPosition:(CGPoint)pos withTotalPages:(int)totalPages usingDiameter:(CGFloat)diameter andPadding:(CGFloat)padding {
 	if ((self = [super initWithFrame:CGRectMake(pos.x, pos.y, totalPages * (diameter + padding), diameter)])) {
-		self.frame = CGRectOffset(self.frame, (-self.frame.size.width * 0.5) + (padding * 0.5), -diameter * 0.5);
+		self.frame = CGRectOffsetX(self.frame, (-self.frame.size.width * 0.5) + (padding * 0.5));
 		
 		_diameter = diameter;
 		_padding = padding;
@@ -36,6 +36,7 @@
 		_onImageViews = [NSMutableArray arrayWithCapacity:_totalPages];
 		
 		UIView *holderView = [[UIView alloc] initWithFrame:CGRectFromSize(self.frame.size)];
+		holderView.frame = CGRectOffsetY(holderView.frame, -_diameter * 0.5);
 		[self addSubview:holderView];
 		
 		for (int i=0; i<_totalPages; i++) {

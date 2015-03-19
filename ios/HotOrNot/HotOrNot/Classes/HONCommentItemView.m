@@ -106,7 +106,7 @@
 	_captionLabel.text = _commentVO.textContent;
 	_captionLabel.numberOfLines = [_captionLabel numberOfLinesNeeded];
 	NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
-	[_captionLabel resizeFrameForMultiline];
+	[_captionLabel resizeFrameForText];
 	
 	_bgImageView.frame = CGRectResizeWidth(_bgImageView.frame, _captionLabel.frame.size.width + 36.0);
 	_bgImageView.frame = CGRectResizeHeight(_bgImageView.frame, (_captionLabel.frame.size.height > _bgImageView.frame.size.height) ? _captionLabel.frame.size.height + 18.0 : _bgImageView.frame.size.height);

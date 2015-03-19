@@ -8,10 +8,15 @@
 
 #import "MBProgressHUD.h"
 
+#import "UILabel+BuiltinMenlo.h"
+#import "UIView+BuiltinMenlo.h"
+
 #import "HONLoadingOverlayView.h"
 
 @interface HONLoadingOverlayView()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UILabel *label;
+@property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic) BOOL isAnimated;
 @end
@@ -20,41 +25,83 @@
 @synthesize delegate = _delegate;
 
 - (id)init {
-	if ((self = [self initAsAnimated:YES])) {
+	if ((self = [self initWithCaption:@""])) {
 	}
 	
 	return (self);
 }
+
 
 - (id)initAsAnimated:(BOOL)isAnimated {
-	if ((self = [self initWithView:[[UIApplication sharedApplication] delegate].window isAnimated:isAnimated])) {
-		_isAnimated = isAnimated;
+	if ((self = [self initAsAnimated:isAnimated withCaption:@""])) {
 	}
 	
 	return (self);
 }
 
-- (id)initWithView:(UIView *)view {
-	if ((self = [self initWithView:view isAnimated:YES])) {
+- (id)initAsAnimated:(BOOL)isAnimated withCaption:(NSString *)caption {
+	if ((self = [self initWithinView:[[UIApplication sharedApplication] delegate].window isAnimated:isAnimated withCaption:caption])) {
 	}
 	
 	return (self);
 }
 
-- (id)initWithView:(UIView *)view isAnimated:(BOOL)isAnimated {
+
+- (id)initWithCaption:(NSString *)caption {
+	if ((self = [self initAsAnimated:YES withCaption:caption])) {
+	}
+	
+	return (self);
+}
+
+
+- (id)initWithinView:(UIView *)view {
+	if ((self = [self initWithinView:view isAnimated:YES])) {
+	}
+	
+	return (self);
+}
+
+- (id)initWithinView:(UIView *)view isAnimated:(BOOL)isAnimated {
+	if ((self = [self initWithinView:view isAnimated:isAnimated withCaption:@""])) {
+	}
+	
+	return (self);
+}
+
+- (id)initWithinView:(UIView *)view withCaption:(NSString *)caption {
+	if ((self = [self initWithinView:view isAnimated:YES withCaption:caption])) {
+	}
+	
+	return (self);
+}
+
+- (id)initWithinView:(UIView *)view isAnimated:(BOOL)isAnimated withCaption:(NSString *)caption {
 	if ((self = [super initWithFrame:view.bounds])) {
+		_caption = caption;
 		_isAnimated = isAnimated;
 		
 		self.alpha = 0.0;
-		self.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.25];
+		self.backgroundColor = [UIColor colorWithWhite:0.00 alpha:0.90];
 		[view addSubview:self];
 		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:self animated:YES];
-		_progressHUD.labelText = @"";
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kProgressHUDMinDuration;
-		_progressHUD.taskInProgress = YES;
+		_label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 260.0, 280.0, 20.0)];
+		_label.backgroundColor = [UIColor clearColor];
+		_label.textColor = [UIColor whiteColor];
+		_label.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:17];
+		_label.text = _caption;
+		[_label resizeFrameForText];
+		[self addSubview:_label];
+		[_label centerAlignWithinParentView];
+		
+		if ([_caption length] == 0) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:self animated:YES];
+			_progressHUD.labelText = @"";
+			_progressHUD.mode = MBProgressHUDModeIndeterminate;
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.taskInProgress = YES;
+		}
 		
 		[UIView animateKeyframesWithDuration:((int)_isAnimated) * 0.125
 									   delay:0.000
@@ -74,7 +121,6 @@
 	
 	return (self);
 }
-
 
 #pragma mark - Public APIs
 - (void)outro {

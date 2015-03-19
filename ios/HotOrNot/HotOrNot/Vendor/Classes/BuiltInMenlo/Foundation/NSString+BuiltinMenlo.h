@@ -24,8 +24,8 @@
 - (NSInteger)indexOfLastOccurrenceOfSubstring:(NSString *)substring;
 - (BOOL)isCircumfixedByString:(NSString *)affix;
 - (BOOL)isPrefixedByString:(NSString *)affix;
-- (BOOL)isPrefixedOrSubffixedByString:(NSString *)affix;
-- (BOOL)isSubfixedByString:(NSString *)affix;
+- (BOOL)isPrefixedOrSuffixedByString:(NSString *)affix;
+- (BOOL)isSuffixedByString:(NSString *)affix;
 
 - (BOOL)isDelimitedByString:(NSString *)delimiter;
 - (BOOL)isNumeric;

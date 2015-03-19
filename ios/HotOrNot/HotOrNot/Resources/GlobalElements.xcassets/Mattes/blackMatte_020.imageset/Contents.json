@@ -1,17 +1,22 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "1x",
       "filename" : "blackMatte-128_020.png"
     },
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "2x",
       "filename" : "blackMatte-128_020@2x.png"
     },
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
+      "subtype" : "retina4",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
       "scale" : "3x",
       "filename" : "blackMatte-128_020@2x-1.png"
     }

@@ -21,5 +21,5 @@ typedef NS_ENUM(NSUInteger, HONHomeAlertViewType) {
 
 
 
-@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 @end
