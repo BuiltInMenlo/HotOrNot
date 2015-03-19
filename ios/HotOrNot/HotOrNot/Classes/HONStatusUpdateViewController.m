@@ -1145,7 +1145,7 @@
 
 #pragma mark - ChannelInviteButtonView Delegates
 - (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
-	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%lu] [*:*]", buttonType);
+	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", (int)buttonType);
 	
 	BOOL hasSchema = YES;
 	NSString *typeName = @"";

@@ -27,6 +27,10 @@
 
 #import "HONDeviceIntrinsics.h"
 
+
+const CGSize kScreenMult = {0.853333333, 0.851574213f};
+
+
 // hMAC key
 NSString * const kHMACKey = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
 
@@ -115,6 +119,14 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (BOOL)isPhoneType5s {
 	return ([[[HONDeviceIntrinsics sharedInstance] modelName] rangeOfString:@"iPhone6"].location == 0);
+}
+
+- (BOOL)isPhoneType6 {
+	return ([UIScreen mainScreen].scale == 2.0f && [UIScreen mainScreen].bounds.size.height == 667.0f);
+}
+
+- (BOOL)isPhoneType6Plus {
+	return ([UIScreen mainScreen].scale == 3.0f && [UIScreen mainScreen].bounds.size.height == 736.0f);
 }
 
 - (BOOL)isRetina4Inch {

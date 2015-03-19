@@ -28,6 +28,7 @@
 #import "HONTermsViewController.h"
 #import "HONLoadingOverlayView.h"
 #import "HONPaginationView.h"
+#import "HONButton.h"
 #import "HONScrollView.h"
 #import "HONTableView.h"
 #import "HONUserClubVO.h"
@@ -38,7 +39,7 @@
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic, strong) UITextField *textField;
-@property (nonatomic, strong) UIButton *composeButton;
+@property (nonatomic, strong) HONButton *composeButton;
 @property (nonatomic, strong) NSMutableArray *retrievedStatusUpdates;
 @property (nonatomic, strong) NSMutableArray *statusUpdates;
 @property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
@@ -258,7 +259,7 @@
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
-	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@] // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size), NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
+	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@](%.02f) // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size),[UIScreen mainScreen].scale, NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
 	
 	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
 	tutorial1ImageView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
@@ -281,7 +282,7 @@
 	tutorial4ImageView.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	[_scrollView addSubview:tutorial4ImageView];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 253.0, 280.0, 36.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 253.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -295,12 +296,12 @@
 	_textField.delegate = self;
 	[_scrollView addSubview:_textField];
 	
-	_composeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_composeButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
 	[_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
-	_composeButton.alpha = 0.0;
+	_composeButton.alpha = 1.0;
 	[self.view addSubview:_composeButton];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];

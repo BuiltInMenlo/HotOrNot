@@ -15,7 +15,8 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake(96.0, 46.0))])) {
-		_button = [UIButton buttonWithType:UIButtonTypeCustom];
+		_button = [HONButton buttonWithType:UIButtonTypeCustom];
+		_button.frame = CGRectFromSize(self.frame.size);
 		[_button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_button];
 	}

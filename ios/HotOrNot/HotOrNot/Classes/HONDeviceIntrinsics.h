@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+extern const CGSize kScreenMult;
+
 @interface HONDeviceIntrinsics : NSObject
 + (HONDeviceIntrinsics *)sharedInstance;
 
@@ -17,6 +19,8 @@
 - (BOOL)isIOS8;
 - (BOOL)isPhoneType5s;
 - (BOOL)isRetina4Inch;
+- (BOOL)isPhoneType6;
+- (BOOL)isPhoneType6Plus;
 
 - (NSString *)lanIPAddress;
 - (NSString *)locale;

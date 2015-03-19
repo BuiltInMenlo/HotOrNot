@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "HONButton.h"
 
 @interface HONNavButtonView : UIView {
 	CGSize _size;
-	UIButton *_button;
+	HONButton *_button;
 }
 
 - (id)initWithTarget:(id)target action:(SEL)action;
