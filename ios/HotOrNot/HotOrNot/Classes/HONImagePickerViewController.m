@@ -9,7 +9,7 @@
 
 #import "HONImagePickerViewController.h"
 #import "HONComposeViewController.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @interface HONImagePickerViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;

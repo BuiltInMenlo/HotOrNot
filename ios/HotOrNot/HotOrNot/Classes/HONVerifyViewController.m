@@ -332,7 +332,7 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONTrivialUserVO userFromOpponentVO:challengeVO.creatorVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
+		[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONUserVO userFromOpponentVO:challengeVO.creatorVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
 			[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
 			[self _removeCellForChallenge:challengeVO];
 		}];
@@ -515,7 +515,7 @@
 								  otherButtonTitles:nil] show];
 				
 			} else {
-				[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONTrivialUserVO userFromOpponentVO:_challengeVO.creatorVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
+				[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONUserVO userFromOpponentVO:_challengeVO.creatorVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
 					[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_challengeVO.creatorVO.userID completion:nil];
 					[self _removeCellForChallenge:_challengeVO];
 				}];

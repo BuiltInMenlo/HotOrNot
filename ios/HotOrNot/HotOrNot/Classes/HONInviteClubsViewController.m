@@ -20,7 +20,7 @@
 
 @interface HONInviteClubsViewController ()
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
-@property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, strong) HONUserVO *userVO;
 @end
 
 
@@ -35,10 +35,10 @@
 	return (self);
 }
 
-- (id)initWithTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[:|:] [%@ initWithTrivialUser] (%d - %@)", self.class, trivialUserVO.userID, trivialUserVO.username);
+- (id)initWithUser:(HONUserVO *)userVO {
+	NSLog(@"[:|:] [%@ initWithUser] (%d - %@)", self.class, userVO.userID, userVO.username);
 	if ((self = [super init])) {
-		_trivialUserVO = trivialUserVO;
+		_userVO = userVO;
 	}
 	
 	return (self);
@@ -86,7 +86,7 @@
 	if ([_selectedClubs count] == 0) {
 		NSLog(@"******* NON SELECTED ******");
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_nofriends_t", nil)
-									message:[NSString stringWithFormat:NSLocalizedString(@"alert_nofriends_m", nil), (_trivialUserVO != nil) ? _trivialUserVO.username : _contactUserVO.fullName]
+									message:[NSString stringWithFormat:NSLocalizedString(@"alert_nofriends_m", nil), (_userVO != nil) ? _userVO.username : _contactUserVO.fullName]
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -102,10 +102,10 @@
 			}
 		}
 		
-		if (_trivialUserVO != nil) {
+		if (_userVO != nil) {
 			for (HONUserClubVO *vo in _selectedClubs) {
-				[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
-					[[HONContactsAssistant sharedInstance] writeTrivialUser:_trivialUserVO toInvitedClub:vo];
+				[[HONAPICaller sharedInstance] inviteInAppUsers:@[_userVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+					[[HONContactsAssistant sharedInstance] writeUser:_userVO toInvitedClub:vo];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 				}];
 			}

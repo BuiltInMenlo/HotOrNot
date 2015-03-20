@@ -89,7 +89,7 @@
 //				
 //				NSArray *following = [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 //				for (NSDictionary *dict in following) {
-//					[_subscribees addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: @([[dict objectForKey:@"id"] intValue]),
+//					[_subscribees addObject:[HONUserVO userWithDictionary:@{@"id"		: @([[dict objectForKey:@"id"] intValue]),
 //																				   @"username"	: [dict objectForKey:@"username"],
 //																				   @"img_url"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dict objectForKey:@"avatar_url"]]}]];
 //				}
@@ -154,7 +154,7 @@
 	if (cell == nil)
 		cell = [[HONFollowUserViewCell alloc] init];
 	
-	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_subscribees objectAtIndex:indexPath.row];
+	HONUserVO *vo = (HONUserVO *)[_subscribees objectAtIndex:indexPath.row];
 	
 	cell.userVO = vo;
 	cell.delegate = self;
@@ -181,9 +181,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:((HONTrivialUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID] animated:YES];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:((HONUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID] animated:YES];
 //	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = ((HONTrivialUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;
+//	userPofileViewController.userID = ((HONUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];

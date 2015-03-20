@@ -10,14 +10,14 @@
 
 @class HONSearchUserViewCell;
 @protocol HONSearchUserViewCellDelegate <NSObject>
-- (void)searchUserViewCell:(HONSearchUserViewCell *)viewCell user:(HONUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
+- (void)searchUserViewCell:(HONSearchUserViewCell *)viewCell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end
 
 @interface HONSearchUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)toggleSelected:(BOOL)isSelected;
 
-@property (nonatomic, retain) HONUserVO *trivialUserVO;
+@property (nonatomic, retain) HONUserVO *userVO;
 @property (nonatomic) BOOL isSelected;
 
 @property (nonatomic, assign) id <HONSearchUserViewCellDelegate> delegate;

@@ -8,16 +8,16 @@
 
 #import "HONTableViewCell.h"
 #import "HONContactUserVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @class HONUserToggleViewCell;
 @protocol HONUserToggleViewCellDelegate <NSObject>
 @optional
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectContactUser:(HONContactUserVO *)contactUserVO;
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForUser:(HONUserVO *)userVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectUser:(HONUserVO *)userVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectUser:(HONUserVO *)userVO;
 @end
 
 @interface HONUserToggleViewCell : HONTableViewCell {
@@ -31,7 +31,7 @@
 - (void)toggleUI:(BOOL)isEnabled;
 
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
-@property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, retain) HONUserVO *userVO;
 @property (nonatomic, assign) id <HONUserToggleViewCellDelegate> delegate;
 
 @end

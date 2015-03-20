@@ -35,7 +35,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 @synthesize delegate = _delegate;
 @synthesize caption = _caption;
 @synthesize contactUserVO = _contactUserVO;
-@synthesize trivialUserVO = _trivialUserVO;
+@synthesize userVO = _userVO;
 @synthesize clubVO = _clubVO;
 @synthesize statusUpdateVO = _statusUpdateVO;
 
@@ -114,10 +114,10 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 11.0, MIN(maxFrame.size.width, size.width), MIN(maxFrame.size.height, size.height));
 }
 
-- (void)setTrivialUserVO:(HONUserVO *)trivialUserVO {
-	_trivialUserVO = trivialUserVO;
+- (void)setUserVO:(HONUserVO *)userVO {
+	_userVO = userVO;
 	
-	NSString *nameCaption = _trivialUserVO.username;//(_trivialUserVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
+	NSString *nameCaption = _userVO.username;//(_userVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"Me " : _userVO.username;//[NSString stringWithFormat:@"%@ is…", _userVO.username];
 	_titleLabel.text = nameCaption;
 	
 	CGSize size = [_titleLabel.text boundingRectWithSize:_titleLabel.frame.size
@@ -371,9 +371,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			[self.delegate clubViewCell:self didSelectClub:_clubVO];
 	
 	} else {
-		if (_trivialUserVO != nil) {
-			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectTrivialUser:)])
-				[self.delegate clubViewCell:self didSelectTrivialUser:_trivialUserVO];
+		if (_userVO != nil) {
+			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectUser:)])
+				[self.delegate clubViewCell:self didSelectUser:_userVO];
 		
 		} else {
 			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectContactUser:)])
@@ -392,9 +392,9 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 			[self.delegate clubViewCell:self didSelectClub:_clubVO];
 		
 	} else {
-		if (_trivialUserVO != nil) {
-			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectTrivialUser:)])
-				[self.delegate clubViewCell:self didSelectTrivialUser:_trivialUserVO];
+		if (_userVO != nil) {
+			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectUser:)])
+				[self.delegate clubViewCell:self didSelectUser:_userVO];
 			
 		} else {
 			if ([self.delegate respondsToSelector:@selector(clubViewCell:didSelectContactUser:)])

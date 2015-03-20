@@ -1,5 +1,5 @@
 //
-//  HONTrivialUserVO.m
+//  HONUserVO.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 01/23/2014 @ 09:43 .

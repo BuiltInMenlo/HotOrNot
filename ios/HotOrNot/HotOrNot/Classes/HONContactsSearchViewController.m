@@ -356,7 +356,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		NSMutableDictionary *props = [[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:_searchUserVO] mutableCopy];
+		NSMutableDictionary *props = [[[HONAnalyticsReporter sharedInstance] propertyForUser:_searchUserVO] mutableCopy];
 		[props setValue:(buttonIndex == 0) ? @"Cancel" : @"Confirm" forKey:@"btn"];
 		
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Results Alert"
@@ -411,7 +411,7 @@
 //										 withProperties:[props copy]];
 		
 		if (buttonIndex == 1) {
-//			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONTrivialUserVO userFromContactUserVO:_contactUserVO]]] : _clubVO;
+//			_clubVO = (_clubVO == nil) ? [[HONClubAssistant sharedInstance] clubWithParticipants:@[[HONUserVO userFromContactUserVO:_contactUserVO]]] : _clubVO;
 ////			if (_clubVO != nil) {
 ////				NSLog(@"CLUB -=- (JOIN) -=-");
 ////				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
@@ -423,7 +423,7 @@
 //				
 ////			} else {
 //				
-//				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] clubDictionaryWithOwner:@{} activeMembers:@[] pendingMembers:@[[HONTrivialUserVO userFromContactUserVO:_contactUserVO]]];
+//				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] clubDictionaryWithOwner:@{} activeMembers:@[] pendingMembers:@[[HONUserVO userFromContactUserVO:_contactUserVO]]];
 //				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 //				[dict setValue:[[HONClubAssistant sharedInstance] rndCoverImageURL] forKey:@"img"];
 //				_clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];

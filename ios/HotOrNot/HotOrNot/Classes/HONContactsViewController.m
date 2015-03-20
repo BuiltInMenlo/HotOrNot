@@ -416,8 +416,8 @@
 	NSLog(@"[[*:*]] clubViewCell:didSelectContactUser");
 }
 
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] clubViewCell:didSelectTrivialUser");
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectUser:(HONUserVO *)userVO {
+	NSLog(@"[[*:*]] clubViewCell:didSelectUser");
 }
 
 
@@ -462,7 +462,7 @@
 			
 		} else if (indexPath.section == 2) {
 			HONUserVO *vo = (HONUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
-			cell.trivialUserVO = vo;
+			cell.userVO = vo;
 		
 		} else if (indexPath.section == 3) {
 			NSLog(@"_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers -- section 3");
@@ -476,7 +476,7 @@
 			
 		} else if (indexPath.section == 2) {
 			HONUserVO *vo = (HONUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
-			cell.trivialUserVO = vo;
+			cell.userVO = vo;
 			
 		} else if (indexPath.section == 3) {
 			HONContactUserVO *vo = (HONContactUserVO *)[_shownDeviceContacts objectAtIndex:indexPath.row];
@@ -512,7 +512,7 @@
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	NSLog(@"-[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
-	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
+	NSLog(@"-[- cell.userVO.userID:[%d]", cell.userVO.userID);
 	NSLog(@"-[- cell.clubVO.clubID:[%d]", cell.clubVO.clubID);
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
@@ -531,7 +531,7 @@
 //			NSLog(@"RECENT CLUB:[%@]", vo.clubName);
 		
 		} else if (indexPath.section == 2) {
-//			HONTrivialUserVO *vo = (HONTrivialUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
+//			HONUserVO *vo = (HONUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
 //			NSLog(@"IN-APP USER:[%@]", vo.username);
 		}
 			
@@ -552,7 +552,7 @@
 //			NSLog(@"RECENT CLUB:[%@]", vo.clubName);
 			
 		} else if (indexPath.section == 2) {
-//			HONTrivialUserVO *vo = (HONTrivialUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
+//			HONUserVO *vo = (HONUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
 //			NSLog(@"IN-APP USER:[%@]", vo.username);
 		
 		} else if (indexPath.section == 3) {

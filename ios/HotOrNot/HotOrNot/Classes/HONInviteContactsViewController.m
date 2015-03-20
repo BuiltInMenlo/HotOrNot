@@ -77,8 +77,8 @@
 
 - (void)_sendInAppUserInvites {
 	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
-		for (HONTrivialUserVO *vo in _selectedInAppContacts)
-			[[HONContactsAssistant sharedInstance] writeTrivialUser:vo toInvitedClub:_clubVO];
+		for (HONUserVO *vo in _selectedInAppContacts)
+			[[HONContactsAssistant sharedInstance] writeUser:vo toInvitedClub:_clubVO];
 		
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
@@ -214,13 +214,13 @@
 		[_selectedNonAppContacts addObject:contactUserVO];
 }
 
-- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectUser:(HONUserVO *)userVO {
+	NSLog(@"[[*:*]] userToggleViewCell:didSelectUser");
 	
-	[super clubViewCell:viewCell didSelectTrivialUser:trivialUserVO];
+	[super clubViewCell:viewCell didSelectUser:userVO];
 	
-	if (![_selectedInAppContacts containsObject:trivialUserVO])
-		[_selectedInAppContacts addObject:trivialUserVO];
+	if (![_selectedInAppContacts containsObject:userVO])
+		[_selectedInAppContacts addObject:userVO];
 }
 
 
@@ -235,12 +235,12 @@
 	
 	NSLog(@"CELL.ISSELECTED:[%d]", cell.isSelected);
 	NSLog(@"CELL.CONTACT:[%@]", cell.contactUserVO.dictionary);
-	NSLog(@"CELL.TRIVIAL:[%@]", cell.trivialUserVO.dictionary);
+	NSLog(@"CELL.USER:[%@]", cell.userVO.dictionary);
 	
 	NSLog(@"::PRE:: IN-APP:[%@]", _selectedInAppContacts);
 	NSLog(@"::PRE:: NON-APP:[%@]", _selectedNonAppContacts);
 	
-	if (cell.trivialUserVO == nil) {
+	if (cell.userVO == nil) {
 		if (cell.isSelected) {
 			if (![_selectedNonAppContacts containsObject:cell.contactUserVO])
 				[_selectedNonAppContacts addObject:cell.contactUserVO];
@@ -252,12 +252,12 @@
 	
 	} else {
 		if (cell.isSelected) {
-			if (![_selectedInAppContacts containsObject:cell.trivialUserVO])
-				[_selectedInAppContacts addObject:cell.trivialUserVO];
+			if (![_selectedInAppContacts containsObject:cell.userVO])
+				[_selectedInAppContacts addObject:cell.userVO];
 			
 		} else {
-			if ([_selectedInAppContacts containsObject:cell.trivialUserVO])
-				[_selectedInAppContacts removeObject:cell.trivialUserVO];
+			if ([_selectedInAppContacts containsObject:cell.userVO])
+				[_selectedInAppContacts removeObject:cell.userVO];
 		}
 	}
 		

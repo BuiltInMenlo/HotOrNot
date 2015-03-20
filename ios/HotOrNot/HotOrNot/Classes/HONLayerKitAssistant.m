@@ -13,7 +13,7 @@
 #import "NSString+BuiltinMenlo.h"
 
 #import "HONLayerKitAssistant.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 //#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 //NSString * const kAppID = @"dda63b70-9f7c-11e4-b4d9-142b010033d0";
@@ -395,8 +395,8 @@ static LYRClient *sharedClient = nil;
 	
 	NSArray *participants = [NSArray arrayRandomizedWithArray:users withCapacity:MIN(25, [users count] - 1)];
 //	[[NSArray arrayRandomizedWithArray:clubVO.activeMembers withCapacity:25] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
-//		[participants addObject:NSStringFromInt(trivialUserVO.userID)];
+//		HONUserVO *userVO = (HONUserVO *)obj;
+//		[participants addObject:NSStringFromInt(userVO.userID)];
 //	}];
 	
 	NSLog(@"clubVO.activeMembers:[%d]\nparticipants:[%@]", (int)[[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] count], participants);

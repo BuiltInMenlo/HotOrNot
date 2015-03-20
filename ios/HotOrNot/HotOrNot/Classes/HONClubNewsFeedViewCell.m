@@ -79,7 +79,7 @@
 		if ([_clubVO.activeMembers count] > 0) {
 			subtitleCaption = [subtitleCaption stringByAppendingString:@", "];
 			int cnt = 0;
-			for (HONTrivialUserVO *vo in _clubVO.activeMembers) {
+			for (HONUserVO *vo in _clubVO.activeMembers) {
 				NSString *caption = ([_clubVO.activeMembers count] - cnt > 1) ? [subtitleCaption stringByAppendingFormat:@"%@, & %d more", vo.username, ([_clubVO.activeMembers count] - cnt)] : [subtitleCaption stringByAppendingString:vo.username];
 				CGSize size = [caption boundingRectWithSize:subtitleLabel.frame.size
 													options:NSStringDrawingTruncatesLastVisibleLine

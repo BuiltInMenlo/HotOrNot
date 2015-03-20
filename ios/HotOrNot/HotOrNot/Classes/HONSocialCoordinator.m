@@ -336,7 +336,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	}
 }
 
-- (void)writeTrivialUser:(HONUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {
+- (void)writeUser:(HONUserVO *)userVO toInvitedClub:(HONUserClubVO *)clubVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
@@ -346,7 +346,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
-		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID)] && [[dict objectForKey:@"user_id"] isEqualToString:NSStringFromInt(trivialUserVO.userID)]) {
+		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID)] && [[dict objectForKey:@"user_id"] isEqualToString:NSStringFromInt(userVO.userID)]) {
 			isFound = YES;
 			break;
 		}
@@ -354,7 +354,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	
 	if (!isFound) {
 		[invites addObject:@{@"club_id"		: @(clubVO.clubID),
-							 @"user_id"		: @(trivialUserVO.userID),
+							 @"user_id"		: @(userVO.userID),
 							 @"phone"		: @""}];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"club_invites"];
@@ -385,7 +385,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	return (isFound);
 }
 
-- (BOOL)isTrivialUserInvitedToClubs:(HONUserVO *)trivialUserVO {
+- (BOOL)isUserInvitedToClubs:(HONUserVO *)userVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
@@ -395,7 +395,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 //	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
 //		for (NSString *key in @[@"owned", @"member"]) {
 //			for (NSDictionary *clubDict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]) {
-//				if ([[dict objectForKey:@"club_id"] intValue] == [[clubDict objectForKey:@"club_id"] intValue] && [[dict objectForKey:@"user_id"] intValue] == trivialUserVO.userID) {
+//				if ([[dict objectForKey:@"club_id"] intValue] == [[clubDict objectForKey:@"club_id"] intValue] && [[dict objectForKey:@"user_id"] intValue] == userVO.userID) {
 //					isFound = YES;
 //					break;
 //				}
@@ -439,12 +439,12 @@ static HONSocialCoordinator *sharedInstance = nil;
 //	return (isFound);
 }
 
-- (BOOL)isTrivialUser:(HONUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO {
+- (BOOL)isUser:(HONUserVO *)userVO invitedToClub:(HONUserClubVO *)clubVO {
 	
 	__block BOOL isFound = NO;
 	[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONUserVO *vo = (HONUserVO *)obj;
-		isFound = (trivialUserVO.userID == vo.userID);
+		isFound = (userVO.userID == vo.userID);
 		*stop = isFound;
 	}];
 	
@@ -460,7 +460,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 //	[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 //		NSDictionary *dict = (NSDictionary *)obj;
 //		
-//		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:NSStringFromInt(trivialUserVO.userID)]) {
+//		if ([[dict objectForKey:@"club_id"] isEqualToString:NSStringFromInt(clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:NSStringFromInt(userVO.userID)]) {
 //			isFound = YES;
 //			*stop = YES;
 //		}
@@ -469,7 +469,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 //	return (isFound);
 }
 
-- (void)writeTrivialUserToDeviceContacts:(HONUserVO *)trivialUserVO {
+- (void)writeUserToDeviceContacts:(HONUserVO *)userVO {
 	CFErrorRef error = NULL;
 	
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);

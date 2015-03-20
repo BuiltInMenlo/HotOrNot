@@ -29,7 +29,7 @@
 
 @implementation HONSuggestedFollowViewCell
 @synthesize delegate = _delegate;
-@synthesize trivialUserVO = _trivialUserVO;
+@synthesize userVO = _userVO;
 
 
 + (NSString *)cellReuseIdentifier {
@@ -84,8 +84,8 @@
 	return (self);
 }
 
-- (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
-	_trivialUserVO = trivialUserVO;
+- (void)setUserVO:(HONUserVO *)userVO {
+	_userVO = userVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 5.0, 33.0, 33.0)];
 	[self.contentView addSubview:avatarImageView];
@@ -106,7 +106,7 @@
 		} completion:nil];
 	};
 	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_trivialUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 															 cachePolicy:kOrthodoxURLCachePolicy
 														 timeoutInterval:[HONAPICaller timeoutInterval]]
 						   placeholderImage:nil
@@ -118,7 +118,7 @@
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _trivialUserVO.username;
+	nameLabel.text = _userVO.username;
 	[self.contentView addSubview:nameLabel];
 	
 	for (int i=0; i<2; i++) {
@@ -131,14 +131,14 @@
 		[borderImageView addSubview:imageLoadingView];
 	}
 	
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userVO.userID completion:^(NSDictionary *result) {
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:result];
 			
 			_totalFollowing = 0;
 			_challenges = [NSMutableArray array];
 			[self _makeStats];
-//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_trivialUserVO.userID completion:^(NSArray *result) {
+//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userVO.userID completion:^(NSArray *result) {
 //				_totalFollowing = [result count];
 //				
 //				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSArray *result) {
@@ -157,12 +157,12 @@
 //					cnt = 0;
 //					for (HONChallengeVO *vo in _challenges) {
 //						NSString *imgPrefix = @"";
-//						if (vo.creatorVO.userID == _trivialUserVO.userID)
+//						if (vo.creatorVO.userID == _userVO.userID)
 //							imgPrefix = vo.creatorVO.imagePrefix;
 //						
 //						else {
 //							for (HONOpponentVO *opponentVO in vo.challengers) {
-//								if (opponentVO.userID == _trivialUserVO.userID)
+//								if (opponentVO.userID == _userVO.userID)
 //									imgPrefix = opponentVO.imagePrefix;
 //							}
 //						}
@@ -205,7 +205,7 @@
 		_followButton.hidden = YES;
 	}];
 	
-	[self.delegate followViewCell:self user:_trivialUserVO toggleSelected:YES];
+	[self.delegate followViewCell:self user:_userVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
@@ -216,7 +216,7 @@
 		_checkButton.hidden = YES;
 	}];
 	
-	[self.delegate followViewCell:self user:_trivialUserVO toggleSelected:NO];
+	[self.delegate followViewCell:self user:_userVO toggleSelected:NO];
 }
 
 

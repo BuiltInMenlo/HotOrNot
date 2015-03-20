@@ -32,5 +32,5 @@ typedef NS_ENUM(NSUInteger, HONActivityAlertType) {
 
 
 @interface HONActivityViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
-- (id)initWithTrivialUser:(HONUserVO *)trivialUserVO;
+- (id)initWithUser:(HONUserVO *)userVO;
 @end

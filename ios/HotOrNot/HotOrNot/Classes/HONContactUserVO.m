@@ -50,20 +50,20 @@
 }
 
 
-+ (HONContactUserVO *)contactFromTrivialUserVO:(HONUserVO *)trivialUserVO {
-	NSString *fName = [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject];
-	NSString *lName = ([[[trivialUserVO.username componentsSeparatedByString:@" "] firstObject] isEqualToString:[[trivialUserVO.username componentsSeparatedByString:@" "] lastObject]]) ? @"" : [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject];
++ (HONContactUserVO *)contactFromUserVO:(HONUserVO *)userVO {
+	NSString *fName = [[userVO.username componentsSeparatedByString:@" "] firstObject];
+	NSString *lName = ([[[userVO.username componentsSeparatedByString:@" "] firstObject] isEqualToString:[[userVO.username componentsSeparatedByString:@" "] lastObject]]) ? @"" : [[userVO.username componentsSeparatedByString:@" "] lastObject];
 
-	NSDictionary *dict = @{@"id"			: @(trivialUserVO.userID),
+	NSDictionary *dict = @{@"id"			: @(userVO.userID),
 						   @"f_name"		: fName,
 						   @"l_name"		: lName,
-						   @"username"		: trivialUserVO.username,
-						   @"avatar_url"	: trivialUserVO.avatarPrefix,
-						   @"extern_name"	: ([trivialUserVO.username length] > 0) ? trivialUserVO.username : ([lName length] == 0) ? fName : [NSString stringWithFormat:@"%@ %@", fName, lName],
-						   @"email"			: ([trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
-						   @"phone"			: (![trivialUserVO.altID isValidEmailAddress]) ? trivialUserVO.altID : @"",
+						   @"username"		: userVO.username,
+						   @"avatar_url"	: userVO.avatarPrefix,
+						   @"extern_name"	: ([userVO.username length] > 0) ? userVO.username : ([lName length] == 0) ? fName : [NSString stringWithFormat:@"%@ %@", fName, lName],
+						   @"email"			: ([userVO.altID isValidEmailAddress]) ? userVO.altID : @"",
+						   @"phone"			: (![userVO.altID isValidEmailAddress]) ? userVO.altID : @"",
 						   @"image"			: UIImageJPEGRepresentation([[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapLargeSize], [HONImageBroker compressJPEGPercentage]),
-						   @"invited"		: [trivialUserVO.invitedDate formattedISO8601String]};
+						   @"invited"		: [userVO.invitedDate formattedISO8601String]};
 	
 	return ([HONContactUserVO contactWithDictionary:dict]);
 }

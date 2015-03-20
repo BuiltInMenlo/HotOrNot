@@ -17,7 +17,7 @@
 
 @implementation HONSearchUserViewCell
 @synthesize delegate = _delegate;
-@synthesize trivialUserVO = _trivialUserVO;
+@synthesize userVO = _userVO;
 @synthesize isSelected = _isSelected;
 
 + (NSString *)cellReuseIdentifier {
@@ -48,8 +48,8 @@
 	return (self);
 }
 
-- (void)setTrivialUserVO:(HONUserVO *)trivialUserVO {
-	_trivialUserVO = trivialUserVO;
+- (void)setUserVO:(HONUserVO *)userVO {
+	_userVO = userVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
 	avatarImageView.alpha = 0.0;
@@ -73,20 +73,20 @@
 		} completion:nil];
 	};
 	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_trivialUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 															 cachePolicy:kOrthodoxURLCachePolicy
 														 timeoutInterval:[HONAPICaller timeoutInterval]]
 						   placeholderImage:nil
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-//	[avatarImageView setImageWithURL:[NSURL URLWithString:[_trivialUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+//	[avatarImageView setImageWithURL:[NSURL URLWithString:[_userVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 20.0, 170.0, 20.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _trivialUserVO.username;
+	nameLabel.text = _userVO.username;
 	[self.contentView addSubview:nameLabel];
 }
 
@@ -106,7 +106,7 @@
 		_followButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_followButton.hidden = YES;
-		[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:YES];
+		[self.delegate searchUserViewCell:self user:_userVO toggleSelected:YES];
 	}];
 }
 
@@ -116,7 +116,7 @@
 		_followButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_checkButton.hidden = YES;
-		[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:NO];
+		[self.delegate searchUserViewCell:self user:_userVO toggleSelected:NO];
 	}];
 }
 

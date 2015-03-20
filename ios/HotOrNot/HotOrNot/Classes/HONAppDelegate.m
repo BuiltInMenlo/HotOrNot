@@ -1371,7 +1371,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 
 - (void)_writeRandomContacts:(int)amt {
 	for (int i=0; i<amt; i++) {
-		[[HONSocialCoordinator sharedInstance] writeTrivialUserToDeviceContacts:nil];
+		[[HONSocialCoordinator sharedInstance] writeUserToDeviceContacts:nil];
 	}
 }
 

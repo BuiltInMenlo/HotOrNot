@@ -49,14 +49,14 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
 - (NSArray *)deviceContactsSortedByName:(BOOL)isSorted;
 
 - (BOOL)isContactUserInvitedToClubs:(HONContactUserVO *)contactUserVO;
-- (BOOL)isTrivialUserInvitedToClubs:(HONUserVO *)trivialUserVO;
+- (BOOL)isUserInvitedToClubs:(HONUserVO *)userVO;
 - (BOOL)isContactUser:(HONContactUserVO *)contactUserVO invitedToClub:(HONUserClubVO *)clubVO;
-- (BOOL)isTrivialUser:(HONUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO;
+- (BOOL)isUser:(HONUserVO *)userVO invitedToClub:(HONUserClubVO *)clubVO;
 
 - (int)totalInvitedContacts;
 - (void)writeContactUser:(HONContactUserVO *)contactUserVO toInvitedClub:(HONUserClubVO *)clubVO;
-- (void)writeTrivialUser:(HONUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO;
+- (void)writeUser:(HONUserVO *)userVO toInvitedClub:(HONUserClubVO *)clubVO;
 
-- (void)writeTrivialUserToDeviceContacts:(HONUserVO *)trivialUserVO;
+- (void)writeUserToDeviceContacts:(HONUserVO *)userVO;
 
 @end

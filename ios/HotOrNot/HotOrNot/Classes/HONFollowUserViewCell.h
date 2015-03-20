@@ -6,17 +6,17 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @class HONFollowUserViewCell;
 @protocol HONFollowUserViewCellDelegate <NSObject>
-- (void)followViewCell:(HONFollowUserViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
+- (void)followViewCell:(HONFollowUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end
 
 @interface HONFollowUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
 - (void)toggleSelected:(BOOL)isSelected;
-@property (nonatomic, retain) HONTrivialUserVO *userVO;
+@property (nonatomic, retain) HONUserVO *userVO;
 @property (nonatomic, assign) id <HONFollowUserViewCellDelegate> delegate;
 @end

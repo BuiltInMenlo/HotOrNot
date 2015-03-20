@@ -20,7 +20,7 @@
 #import "HONActivityItemVO.h"
 
 @interface HONActivityViewController () <HONActivityItemViewCellDelegate>
-@property (nonatomic, strong) HONUserVO *trivialUserVO;
+@property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, assign, readonly) HONActivityProfileType userProfileType;
 @property (nonatomic, strong) NSMutableArray *activityAlerts;
@@ -40,9 +40,9 @@
 	return (self);
 }
 
-- (id)initWithTrivialUser:(HONUserVO *)trivialUserVO {
+- (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [self init])) {
-		_trivialUserVO = trivialUserVO;
+		_userVO = userVO;
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_refreshProfile:)
 													 name:@"REFRESH_PROFILE" object:nil];
@@ -71,10 +71,10 @@
 	_progressHUD.minShowTime = kProgressHUDMinDuration;
 	_progressHUD.taskInProgress = YES;
 	
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userVO.userID completion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != nil) {
-			_trivialUserVO = [HONUserVO userWithDictionary:result];
-			_userProfileType = ([[HONUserAssistant sharedInstance] activeUserID] == _trivialUserVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
+			_userVO = [HONUserVO userWithDictionary:result];
+			_userProfileType = ([[HONUserAssistant sharedInstance] activeUserID] == _userVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
 			[self _retrieveActivityItems];
 			
 		} else {
@@ -220,9 +220,9 @@
 
 
 #pragma mark - ActivityItemView Delegates
-- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONUserVO *)trivialUserVO {
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONUserVO *)userVO {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Show User Activity"
-//									  withTrivialUser:trivialUserVO];
+//									  withUser:userVO];
 }
 
 
@@ -285,7 +285,7 @@
 		
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
 		if (_userProfileType == HONActivityProfileTypeOpponent) {
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO: _userVO]]];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithUser:[HONUserVO userFromUserVO: _userVO]]];
 //			[navigationController setNavigationBarHidden:YES];
 //			[self presentViewController:navigationController animated:YES completion:nil];
 			

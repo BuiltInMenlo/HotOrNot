@@ -36,7 +36,7 @@
 @implementation HONUserToggleViewCell
 @synthesize delegate = _delegate;
 @synthesize contactUserVO = _contactUserVO;
-@synthesize trivialUserVO = _trivialUserVO;
+@synthesize userVO = _userVO;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -131,39 +131,39 @@
 	}];
 }
 
-- (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
-	_trivialUserVO = trivialUserVO;
-	NSLog(@":|: CELL >> TRIVIALUSER:[%@]", trivialUserVO.username);
+- (void)setUserVO:(HONUserVO *)userVO {
+	_userVO = userVO;
+	NSLog(@":|: CELL >> USER:[%@]", userVO.username);
 	
 	[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
 	[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
 	
-	[_toggledOnButton addTarget:self action:@selector(_goDeselectTrivialUser) forControlEvents:UIControlEventTouchUpInside];
+	[_toggledOnButton addTarget:self action:@selector(_goDeselectUser) forControlEvents:UIControlEventTouchUpInside];
 	[_toggledOffButton addTarget:self action:@selector(_goSelectTrivalUser) forControlEvents:UIControlEventTouchUpInside];
 	
-	NSLog(@"AVATAR:[%@]", _trivialUserVO.avatarPrefix);
-//	if ([_trivialUserVO.avatarPrefix rangeOfString:@"default"].location == NSNotFound)
-//		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
+	NSLog(@"AVATAR:[%@]", _userVO.avatarPrefix);
+//	if ([_userVO.avatarPrefix rangeOfString:@"default"].location == NSNotFound)
+//		[self _loadAvatarImageFromPrefix:_userVO.avatarPrefix];
 //	
 //	else
 //		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 //	
 //	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
-//	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
+//	_arrowImageView.image = [UIImage imageNamed:(_userVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 //	_arrowImageView.hidden = NO;
 //	
-//	_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-//	_scoreLabel.text = NSStringFromInt(_trivialUserVO.totalUpvotes);
+//	_scoreLabel.textColor = (_userVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+//	_scoreLabel.text = NSStringFromInt(_userVO.totalUpvotes);
 //	_scoreLabel.hidden = NO;
 //	
 //	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-//	_nameLabel.text = _trivialUserVO.username;
+//	_nameLabel.text = _userVO.username;
 	
-//	if (trivialUserVO.isVerified) {
+//	if (userVO.isVerified) {
 //		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
 //		verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
-//		verifiedImageView.hidden = !trivialUserVO.isVerified;
+//		verifiedImageView.hidden = !userVO.isVerified;
 //		[self.contentView addSubview:verifiedImageView];
 //	}
 }
@@ -203,18 +203,18 @@
 //		
 //		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
 //		
-//		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
+//		_arrowImageView.image = [UIImage imageNamed:(_userVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 //		_arrowImageView.hidden = NO;
 //		
 //		
-//		_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-//		_scoreLabel.text = NSStringFromInt(_trivialUserVO.totalUpvotes);
+//		_scoreLabel.textColor = (_userVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+//		_scoreLabel.text = NSStringFromInt(_userVO.totalUpvotes);
 //		_scoreLabel.hidden = NO;
 //		
-//		if (_trivialUserVO.isVerified) {
+//		if (_userVO.isVerified) {
 //			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
 //			verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
-//			verifiedImageView.hidden = !_trivialUserVO.isVerified;
+//			verifiedImageView.hidden = !_userVO.isVerified;
 //			[self.contentView addSubview:verifiedImageView];
 //		}
 	
@@ -245,14 +245,14 @@
 	}];
 }
 
-- (void)_goDeselectTrivialUser {
+- (void)_goDeselectUser {
 	_isSelected = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_toggledOnButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
-			[self.delegate userToggleViewCell:self didDeselectTrivialUser:_trivialUserVO];
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectUser:)])
+			[self.delegate userToggleViewCell:self didDeselectUser:_userVO];
 	}];
 }
 
@@ -274,14 +274,14 @@
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		
-		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
-			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectUser:)])
+			[self.delegate userToggleViewCell:self didSelectUser:_userVO];
 	}];
 }
 
 - (void)_goUserProfile {
-	if ([self.delegate respondsToSelector:@selector(userToggleViewCell:showProfileForTrivialUser:)])
-		[self.delegate userToggleViewCell:self showProfileForTrivialUser:_trivialUserVO];
+	if ([self.delegate respondsToSelector:@selector(userToggleViewCell:showProfileForUser:)])
+		[self.delegate userToggleViewCell:self showProfileForUser:_userVO];
 }
 
 

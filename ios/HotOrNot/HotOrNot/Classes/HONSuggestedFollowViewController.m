@@ -12,7 +12,7 @@
 
 #import "HONSuggestedFollowViewController.h"
 #import "HONSuggestedFollowViewCell.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONUserProfileViewController.h"
@@ -69,7 +69,7 @@
 	_cells = [NSMutableArray array];
 	
 	for (NSDictionary *dict in @[])
-		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
+		[_users addObject:[HONUserVO userWithDictionary:dict]];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Suggested"];
 	[self.view addSubview:headerView];
@@ -127,13 +127,13 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	
-//	for (HONTrivialUserVO *vo in _removeUsers) {
+//	for (HONUserVO *vo in _removeUsers) {
 //		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSArray *result) {
 //			[HONAppDelegate writeFollowingList:result];
 //		}];
 //	}
 //
-//	for (HONTrivialUserVO *vo in _selectedUsers) {
+//	for (HONUserVO *vo in _selectedUsers) {
 //		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSArray *result) {
 //			[HONAppDelegate writeFollowingList:result];
 //		}];
@@ -161,7 +161,7 @@
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
 	
-	for (HONTrivialUserVO *vo in _users) {
+	for (HONUserVO *vo in _users) {
 		[_selectedUsers addObject:vo];
 		[_addUsers addObject:vo];
 	}
@@ -172,15 +172,15 @@
 
 
 #pragma mark - SuggestedViewCell Delegates
-- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
+- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
 		
 	if (isSelected) {
 		[_selectedUsers addObject:userVO];
 		
 	} else {
 		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONTrivialUserVO *vo in _selectedUsers) {
-			for (HONTrivialUserVO *dropVO in _users) {
+		for (HONUserVO *vo in _selectedUsers) {
+			for (HONUserVO *dropVO in _users) {
 				if ([vo.username isEqualToString:dropVO.username]) {
 					[removeVOs addObject:vo];
 				}
@@ -214,13 +214,13 @@
 	if (cell == nil)
 		cell = [[HONSuggestedFollowViewCell alloc] init];
 	
-	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_users objectAtIndex:indexPath.row];
-	cell.trivialUserVO = vo;
+	HONUserVO *vo = (HONUserVO *)[_users objectAtIndex:indexPath.row];
+	cell.userVO = vo;
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	BOOL isFound = NO;
-//	for (HONTrivialUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
+//	for (HONUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
 //		if (vo.userID == userVO.userID) {
 //			isFound = YES;
 //			[_selectedUsers addObject:vo];
@@ -251,7 +251,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	HONTrivialUserVO *vo = [_users objectAtIndex:indexPath.row];
+	HONUserVO *vo = [_users objectAtIndex:indexPath.row];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -277,12 +277,12 @@
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
 			for (NSDictionary *dict in @[])
-				[_selectedUsers addObject:[HONTrivialUserVO userWithDictionary:dict]];
+				[_selectedUsers addObject:[HONUserVO userWithDictionary:dict]];
 			
 			for (HONSuggestedFollowViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
-//			for (HONTrivialUserVO *vo in _selectedUsers) {
+//			for (HONUserVO *vo in _selectedUsers) {
 //				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSArray *result) {
 //					[HONAppDelegate writeFollowingList:result];
 //				}];

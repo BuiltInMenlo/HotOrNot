@@ -29,7 +29,7 @@
 #import "HONTabBannerView.h"
 #import "HONSearchBarView.h"
 #import "HONUserClubVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONTableView.h"
 
 @interface HONUserClubsViewController () <HONClubViewCellDelegate, HONInsetOverlayViewDelegate, HONSelfieCameraViewControllerDelegate, HONTabBannerViewDelegate>

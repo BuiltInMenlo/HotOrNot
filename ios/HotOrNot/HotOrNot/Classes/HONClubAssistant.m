@@ -1063,13 +1063,13 @@ static HONClubAssistant *sharedInstance = nil;
 			}];
 			
 			[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONUserVO *trivialUserVO = (HONUserVO *)obj;
-				if ([trivialUserVO.altID length] > 0) {
-					HONContactUserVO *contactUserVO = [HONContactUserVO contactFromTrivialUserVO:trivialUserVO];
+				HONUserVO *userVO = (HONUserVO *)obj;
+				if ([userVO.altID length] > 0) {
+					HONContactUserVO *contactUserVO = [HONContactUserVO contactFromUserVO:userVO];
 					[selectedContacts addObject:contactUserVO];
 					
-					[participants addObject:trivialUserVO.username];
-					names = [names stringByAppendingFormat:@"%@, ", trivialUserVO.username];
+					[participants addObject:userVO.username];
+					names = [names stringByAppendingFormat:@"%@, ", userVO.username];
 				}
 			}];
 

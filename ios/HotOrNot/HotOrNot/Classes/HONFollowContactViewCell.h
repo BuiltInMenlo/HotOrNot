@@ -6,11 +6,11 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @class HONFollowContactViewCell;
 @protocol HONFollowContactViewCellDelegate <NSObject>
-- (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
+- (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end
 
 @interface HONFollowContactViewCell : UITableViewCell {
@@ -21,6 +21,6 @@
 - (void)toggleSelected:(BOOL)isSelected;
 
 @property (nonatomic, assign) id<HONFollowContactViewCellDelegate> delegate;
-@property (nonatomic, retain) HONTrivialUserVO *userVO;
+@property (nonatomic, retain) HONUserVO *userVO;
 
 @end

@@ -12,7 +12,7 @@
 
 @class HONActivityItemViewCell;
 @protocol HONActivityItemViewCellDelegate <HONTableViewCellDelegate>
-- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONUserVO *)trivialUserVO;
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONUserVO *)userVO;
 @end
 
 @interface HONActivityItemViewCell : HONTableViewCell

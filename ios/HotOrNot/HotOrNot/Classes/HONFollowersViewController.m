@@ -11,7 +11,7 @@
 #import "HONFollowersViewController.h"
 #import "HONFollowUserViewCell.h"
 #import "HONUserVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONHeaderView.h"
 #import "HONUserProfileViewController.h"
 
@@ -63,7 +63,7 @@
 				[users addObject:[dict objectForKey:@"user"]];
 			
 			for (NSDictionary *dict in [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
-				[_subscribers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
+				[_subscribers addObject:[HONUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
 																			   @"username"	: [dict objectForKey:@"username"],
 																			   @"img_url"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dict objectForKey:@"avatar_url"]]}]];
 			[_tableView reloadData];
@@ -153,7 +153,7 @@
 	if (cell == nil)
 		cell = [[HONFollowUserViewCell alloc] init];
 	
-	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row];
+	HONUserVO *vo = (HONUserVO *)[_subscribers objectAtIndex:indexPath.row];
 	
 	cell.userVO = vo;
 	cell.delegate = self;
@@ -179,10 +179,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:((HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID] animated:YES];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:((HONUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID] animated:YES];
 	
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:((HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID];
-//	userPofileViewController.userID = ((HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID;
+//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:((HONUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID];
+//	userPofileViewController.userID = ((HONUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID;
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];

@@ -77,6 +77,6 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO;
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectUser:(HONUserVO *)userVO;
 
 @end

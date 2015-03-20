@@ -18,7 +18,7 @@
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONMessagesButtonView.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONFollowContactViewCell.h"
 #import "HONInviteContactViewCell.h"
@@ -85,11 +85,11 @@
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			BOOL isFound = NO;
-			for (HONTrivialUserVO *searchVO in _inAppContacts) {
+			for (HONUserVO *searchVO in _inAppContacts) {
 				if (searchVO.userID == vo.userID) {
 					isFound = YES;
 					break;
@@ -112,12 +112,12 @@
 - (void)_sendPhoneContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			
 			BOOL isFound = NO;
-			for (HONTrivialUserVO *searchVO in _inAppContacts) {
+			for (HONUserVO *searchVO in _inAppContacts) {
 				if (searchVO.userID == vo.userID) {
 					isFound = YES;
 					break;
@@ -139,7 +139,7 @@
 
 - (void)_followUsers {
 	NSString *userIDs = @"";
-	for (HONTrivialUserVO *vo in _selectedInAppContacts)
+	for (HONUserVO *vo in _selectedInAppContacts)
 		userIDs = [userIDs stringByAppendingFormat:@"%d|", vo.userID];
 	
 //	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSArray *result) {
@@ -449,7 +449,7 @@
 
 
 #pragma mark - FollowContactViewCell Delegates
-- (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
+- (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
 
 	
 	_hasUpdated = YES;
@@ -458,8 +458,8 @@
 	
 	else {
 		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
-			for (HONTrivialUserVO *dropVO in _inAppContacts) {
+		for (HONUserVO *vo in _selectedInAppContacts) {
+			for (HONUserVO *dropVO in _inAppContacts) {
 				if (vo.userID == dropVO.userID) {
 					[removeVOs addObject:vo];
 				}
@@ -514,17 +514,17 @@
 		
 		if (cell == nil) {
 			cell = [[HONFollowContactViewCell alloc] init];
-			cell.userVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
+			cell.userVO = (HONUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
-		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
+		for (HONUserVO *vo in _selectedInAppContacts) {
 			if (cell.userVO.userID == vo.userID) {
 				[cell toggleSelected:YES];
 				break;
 			}
 		}
 		
-//		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
+//		for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 //			if (cell.userVO.userID == vo.userID) {
 //				[cell toggleSelected:YES];
 //				break;
@@ -572,7 +572,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
+	HONUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
 		
 //	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }

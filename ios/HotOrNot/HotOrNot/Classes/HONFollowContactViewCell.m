@@ -46,7 +46,7 @@
 	return (self);
 }
 
-- (void)setUserVO:(HONTrivialUserVO *)userVO {
+- (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
 	avatarImageView.alpha = 0.0;

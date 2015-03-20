@@ -109,7 +109,7 @@
 - (NSDictionary *)_trackingProps {
 	NSMutableArray *users = [NSMutableArray array];
 	for (HONUserVO *vo in _selectedUsers)
-		[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
+		[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForUser:vo]];
 
 	NSMutableDictionary *props = [NSMutableDictionary dictionary];
 	[props setValue:users forKey:@"members"];
@@ -244,17 +244,17 @@
 
 
 #pragma mark - ClubViewCell Delegates
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO {
-	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectUser:(HONUserVO *)userVO {
+	NSLog(@"[*:*] clubViewCell:didSelectUser");
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
-//									withTrivialUser:trivialUserVO];
+//									withUser:userVO];
 	
-	if ([_selectedUsers containsObject:viewCell.trivialUserVO])
-		[_selectedUsers removeObject:viewCell.trivialUserVO];
+	if ([_selectedUsers containsObject:viewCell.userVO])
+		[_selectedUsers removeObject:viewCell.userVO];
 	
 	else
-		[_selectedUsers addObject:viewCell.trivialUserVO];
+		[_selectedUsers addObject:viewCell.userVO];
 }
 
 
@@ -320,11 +320,11 @@
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	
 	HONUserVO *vo = (HONUserVO *)[_searchUsers objectAtIndex:indexPath.row];
-	cell.trivialUserVO = vo;
+	cell.userVO = vo;
 	
 	[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		HONUserVO *vo = (HONUserVO *)obj;
-		[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
+		[cell toggleSelected:(vo.userID == cell.userVO.userID)];
 		*stop = cell.isSelected;
 	}];
 	
@@ -352,19 +352,19 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONClubViewCell *cell = (HONClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
+	NSLog(@"[[- cell.userVO.userID:[%d]", cell.userVO.userID);
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
-//									withTrivialUser:cell.trivialUserVO];
+//									withUser:cell.userVO];
 	
-	NSLog(@"IN-APP USER:[%@]", cell.trivialUserVO.username);
+	NSLog(@"IN-APP USER:[%@]", cell.userVO.username);
 	
 	[cell invertSelected];
-	if ([_selectedUsers containsObject:cell.trivialUserVO])
-		[_selectedUsers removeObject:cell.trivialUserVO];
+	if ([_selectedUsers containsObject:cell.userVO])
+		[_selectedUsers removeObject:cell.userVO];
 	
 	else
-		[_selectedUsers addObject:cell.trivialUserVO];
+		[_selectedUsers addObject:cell.userVO];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

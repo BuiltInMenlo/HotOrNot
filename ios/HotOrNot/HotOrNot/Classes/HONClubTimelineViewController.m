@@ -207,10 +207,10 @@
 	
 	NSString *titleCaption = [NSString stringWithFormat:@"%@, ", _clubVO.ownerName];//(_clubVO.ownerID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"Me, " : @"";
 	
-	for (HONTrivialUserVO *vo in _clubVO.activeMembers)
+	for (HONUserVO *vo in _clubVO.activeMembers)
 		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", vo.username];//(vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"Me" : vo.username];
 	
-	for (HONTrivialUserVO *vo in _clubVO.pendingMembers) {
+	for (HONUserVO *vo in _clubVO.pendingMembers) {
 		if ([vo.username length] == 0)
 			continue;
 		

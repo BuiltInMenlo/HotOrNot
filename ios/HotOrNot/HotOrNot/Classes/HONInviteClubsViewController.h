@@ -9,10 +9,10 @@
 #import "HONSelectClubsViewController.h"
 
 #import "HONContactUserVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @class HONInviteClubsViewController;
 @interface HONInviteClubsViewController : HONSelectClubsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithContactUser:(HONContactUserVO *)contactUserVO;
-- (id)initWithTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (id)initWithUser:(HONUserVO *)userVO;
 @end
