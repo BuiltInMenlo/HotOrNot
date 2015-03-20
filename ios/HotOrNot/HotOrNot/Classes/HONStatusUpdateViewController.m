@@ -23,7 +23,7 @@
 #import "HONChannelInviteButtonView.h"
 #import "HONImageRevealerView.h"
 
-@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONImageRevealerViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) PNChannel *channel;
@@ -147,7 +147,7 @@
 	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 						   @"club_id"		: @(_clubVO.clubID),
 						   @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-						   @"subject"		: [NSString stringWithFormat:@"%d|%.04f_%.04f|%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
+						   @"subject"		: [NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__TXT__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
 						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -167,7 +167,7 @@
 	}];
 	
 	[PubNub sendMessage:[dict objectForKey:@"subject"] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-		//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+		NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 	}];
 	
 	_isSubmitting = NO;
@@ -175,7 +175,7 @@
 
 #pragma mark - Data Calls
 - (void)_uploadPhoto:(UIImage *)image {
-	NSString *filename = [NSString stringWithFormat:@"%d_%@", (int)[[NSDate date] timeIntervalSince1970], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString]];
+	__block NSString *filename = [NSString stringWithFormat:@"%d_%@", (int)[[NSDate date] timeIntervalSince1970], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString]];
 	NSString *imageURLPrefix = [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
 	
 	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:image];
@@ -184,9 +184,28 @@
 	NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 	NSLog(@"ADJ IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
 	
-	[[HONAPICaller sharedInstance] uploadPhotoToS3:UIImageJPEGRepresentation(processedImage, [HONImageBroker compressJPEGPercentage]) intoBucketType:HONAmazonS3BucketTypeClubsSource withFilename:filename completion:^(NSObject *result) {
-		NSLog(@"S3 UPLOADED:[%@]", result);
-		[self _submitPhotoReplyWithURLPrefix:imageURLPrefix];
+	[[HONAPICaller sharedInstance] uploadPhotoToS3:UIImageJPEGRepresentation(processedImage, [HONImageBroker compressJPEGPercentage]) intoBucketType:HONAmazonS3BucketTypeClubsSource withFilename:filename completion:^(BOOL success, NSError *error) {
+		NSLog(@"S3 UPLOADED:[%@]\n%@", NSStringFromBOOL(success), error);
+		
+		if (success) {
+//			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
+//					  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//						  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//			}];
+
+			[self _submitPhotoReplyWithURLPrefix:imageURLPrefix];
+		
+		} else {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
+		}
 	}];
 }
 
@@ -195,7 +214,7 @@
 						   @"club_id"		: @(_clubVO.clubID),
 						   @"img_url"		: urlPrefix,
 //						   @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-						   @"subject"		: [NSString stringWithFormat:@"%d|%.04f_%.04f|%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
+						   @"subject"		: [NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__IMG__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
 						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -236,7 +255,7 @@
 			_channel = channel;
 			_participants = 1;
 			
-			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 			}];
 			
@@ -251,24 +270,24 @@
 		NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
 		
 		HONCommentVO *commentVO = [HONCommentVO commentWithMessage:message];
-		NSLog(@"CommentType:[%@](%d)\n", (commentVO.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (commentVO.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (commentVO.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (commentVO.commentContentType == HONCommentContentTypeText) ? @"Text" : (commentVO.commentContentType == HONCommentContentTypeImage) ? @"Image" : @"UNKNOWN", commentVO.commentContentType);
+		NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : @"UNKNOWN");
 		NSLog(@"commentVO.userID:[%d]", commentVO.userID);
 		
-		if (commentVO.commentContentType == HONCommentContentTypeSYN) {
+		if (commentVO.messageType == HONChatMessageTypeSYN) {
 			if (commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]) {
 				_participants++;
 				
 				commentVO.textContent = @"just joined";
 				[self _appendComment:commentVO];
 				
-				[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|%d__ACK__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, commentVO.userID] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+				[PubNub sendMessage:[NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__ACK__:%d", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, commentVO.userID] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 					//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 				}];
 			
 			} else {
 				NSDictionary *dict = @{@"id"				: @"0",
 									   @"msg_id"			: @"0",
-									   @"content_type"		: @((int)HONCommentContentTypeBOT),
+									   @"content_type"		: @((int)HONChatMessageTypeBOT),
 									   
 									   @"owner_member"		: @{@"id"	: @(2392),
 																@"name"	: @"Botly"},
@@ -283,14 +302,14 @@
 				[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
 			}
 			
-		} else if (commentVO.commentContentType == HONCommentContentTypeBOT) {
+		} else if (commentVO.messageType == HONChatMessageTypeBOT) {
 			[self _appendComment:commentVO];
 			
-		} else if (commentVO.commentContentType == HONCommentContentTypeACK) {
+		} else if (commentVO.messageType == HONChatMessageTypeACK) {
 			if ([commentVO.textContent intValue] == [[HONUserAssistant sharedInstance] activeUserID])
 				_participants++;
 		
-		} else if (commentVO.commentContentType == HONCommentContentTypeBYE) {
+		} else if (commentVO.messageType == HONChatMessageTypeBYE) {
 			_participants = MAX(0, --_participants);
 			
 			if (commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]) {
@@ -298,14 +317,14 @@
 				[self _appendComment:commentVO];
 			}
 		
-		} else if (commentVO.commentContentType == HONCommentContentTypeText) {
+		} else if (commentVO.messageType == HONChatMessageTypeTXT) {
 			[self _appendComment:commentVO];
 		
-		} else if (commentVO.commentContentType == HONCommentContentTypeImage) {
+		} else if (commentVO.messageType == HONChatMessageTypeIMG) {
 			[self _appendComment:commentVO];
 		
 		} else {
-			NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.commentContentType);
+			NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.messageType);
 		}
 		
 		if (_expireTimer != nil) {
@@ -438,8 +457,8 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"placeholderClubPhoto_%.fx%.f", [[HONDeviceIntrinsics sharedInstance] screenSize].width, [[HONDeviceIntrinsics sharedInstance] screenSize].height]]];
-	bgImageView.frame = CGRectResize(bgImageView.frame, [[HONDeviceIntrinsics sharedInstance] screenSize]);
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"placeholderClubPhoto_%.fx%.f", [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].width, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].height]]];
+	bgImageView.frame = CGRectResize(bgImageView.frame, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize]);
 	[self.view addSubview:bgImageView];
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
@@ -646,7 +665,7 @@
 
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	UITextField *textField = (UITextField *)[notification object];
 	
 #if __APPSTORE_BUILD__ == 0
@@ -675,13 +694,14 @@
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {
-	NSLog(@"_appendComment:[%@]", (vo.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (vo.commentContentType == HONCommentContentTypeBOT) ? @"BOT" :(vo.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (vo.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (vo.commentContentType == HONCommentContentTypeText) ? @"Text" : (vo.commentContentType == HONCommentContentTypeImage) ? @"Image" : @"UNKNOWN");
+	NSLog(@"_appendComment:[%@]", (vo.messageType == HONChatMessageTypeSYN) ? @"SYN" : (vo.messageType == HONChatMessageTypeBOT) ? @"BOT" :(vo.messageType == HONChatMessageTypeACK) ? @"ACK" : (vo.messageType == HONChatMessageTypeBYE) ? @"BYE": (vo.messageType == HONChatMessageTypeTXT) ? @"Text" : (vo.messageType == HONChatMessageTypeIMG) ? @"Image" : @"UNKNOWN");
 	[_replies addObject:vo];
 	
 	CGFloat offset = 33.0;
 	HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, self.view.frame.size.width, 38.0)];
-	itemView.alpha = 0.0;
+	itemView.delegate = self;
 	itemView.commentVO = vo;
+	itemView.alpha = 0.0;
 	[_commentsHolderView addSubview:itemView];
 	
 	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
@@ -744,6 +764,112 @@
 }
 
 
+#pragma mark - ChannelInviteButtonView Delegates
+- (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
+	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", (int)buttonType);
+	
+	BOOL hasSchema = YES;
+	NSString *typeName = @"";
+	NSString *urlSchema = @"";
+	
+	[self _copyDeeplink];
+	
+	if (buttonType == HONChannelInviteButtonTypeClipboard) {
+		typeName = @"Clipboard";
+		
+		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
+									message:nil
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+		
+	} else if (buttonType == HONChannelInviteButtonTypeSMS) {
+		typeName = @"SMS";
+		
+		if ([MFMessageComposeViewController canSendText]) {
+			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+			messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+			messageComposeViewController.messageComposeDelegate = self;
+			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		}
+		
+		//	} else if (buttonType == HONChannelInviteButtonTypeEmail) {
+		//		typeName = @"Email";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeKakao) {
+		typeName = @"Kakao";;
+		urlSchema = @"kakaolink://";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeKik) {
+		typeName = @"Kik";
+		urlSchema = @"kik://";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeLine) {
+		typeName = @"LINE";
+		urlSchema = @"line://";
+	}
+	
+	if (!hasSchema) {
+		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+									message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+		}
+	}
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
+}
+
+
+#pragma mark - CommentItemView Delegates
+- (void)commentItemView:(HONCommentItemView *)commentItemView hidePhotoForComment:(HONCommentVO *)commentVO {
+	NSLog(@"[*:*] commentItemView:hidePhotoForComment:[%@] [*:*]", commentVO.imagePrefix);
+	
+	if (_revealerView != nil)
+		[_revealerView outro];
+}
+
+- (void)commentItemView:(HONCommentItemView *)commentItemView showPhotoForComment:(HONCommentVO *)commentVO {
+	NSLog(@"[*:*] commentItemView:showPhotoForComment:[%@] [*:*]", commentVO.imagePrefix);
+	
+	if (_revealerView != nil) {
+		if (_revealerView.superview != nil)
+			[_revealerView removeFromSuperview];
+		
+		_revealerView.delegate = nil;
+		_revealerView = nil;
+	}
+	
+	_revealerView = [[HONImageRevealerView alloc] initWithComment:commentVO];
+	_revealerView.delegate = self;
+	[self.view addSubview:_revealerView];
+}
+
+
+#pragma mark - HONImageRevealerView Delegates
+- (void)imageRevealerViewDidIntro:(HONImageRevealerView *)imageRevealerView {
+	NSLog(@"[*:*] imageRevealerViewDidIntro [*:*]");
+}
+
+- (void)imageRevealerViewDidOutro:(HONImageRevealerView *)imageRevealerView {
+	NSLog(@"[*:*] imageRevealerViewDidOutro [*:*]");
+	
+	if (imageRevealerView != nil) {
+		if (imageRevealerView.superview != nil)
+			[imageRevealerView removeFromSuperview];
+		
+		imageRevealerView.delegate = nil;
+		imageRevealerView = nil;
+	}
+}
+
+
 #pragma mark - StatusUpdateFooterView Delegates
 - (void)statusUpdateFooterViewEnterComment:(HONStatusUpdateFooterView *)statusUpdateFooterView {
 	NSLog(@"[*:*] statusUpdateFooterViewEnterComment [*:*]");
@@ -777,46 +903,6 @@
 	[self _goBack];
 }
 
-
-#pragma mark - CommentItemView Delegates
-- (void)commentItemView:(HONCommentItemView *)commentItemView showPhotoForComment:(HONCommentVO *)commentVO {
-	NSLog(@"[*:*] commentItemView:showPhotoForComment:[%@] [*:*]", commentVO.imagePrefix);
-	
-	if (_revealerView != nil) {
-		if (_revealerView.superview != nil)
-			[_revealerView removeFromSuperview];
-		
-		_revealerView = nil;
-	}
-	
-	_revealerView = [[HONImageRevealerView alloc] initWithComment:commentVO];
-	
-	
-	UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(kPhotoHDSize)];
-	[photoImageView centerAlignWithinParentView];
-	[self.view addSubview:photoImageView];
-	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		commentVO.imageContent = image;
-		photoImageView.image = image;
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		NSLog(@"ERROR:[%@]", error.description);
-		commentVO.imageContent = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
-		photoImageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
-	};
-	
-	NSLog(@"URL:[%@]", commentVO.avatarPrefix);
-	[photoImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:commentVO.avatarPrefix]
-															cachePolicy:kOrthodoxURLCachePolicy
-														timeoutInterval:[HONAPICaller timeoutInterval]]
-						  placeholderImage:nil
-								   success:imageSuccessBlock
-								   failure:imageFailureBlock];
-	
-	
-}
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -1051,71 +1137,6 @@
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
 	[controller dismissViewControllerAnimated:YES completion:nil];
-}
-
-
-
-
-#pragma mark - ChannelInviteButtonView Delegates
-- (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
-	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", (int)buttonType);
-	
-	BOOL hasSchema = YES;
-	NSString *typeName = @"";
-	NSString *urlSchema = @"";
-	
-	[self _copyDeeplink];
-	
-	if (buttonType == HONChannelInviteButtonTypeClipboard) {
-		typeName = @"Clipboard";
-		
-		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-									message:nil
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		
-	} else if (buttonType == HONChannelInviteButtonTypeSMS) {
-		typeName = @"SMS";
-		
-		if ([MFMessageComposeViewController canSendText]) {
-			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-			messageComposeViewController.messageComposeDelegate = self;
-			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		}
-		
-		//	} else if (buttonType == HONChannelInviteButtonTypeEmail) {
-		//		typeName = @"Email";
-		
-	} else if (buttonType == HONChannelInviteButtonTypeKakao) {
-		typeName = @"Kakao";;
-		urlSchema = @"kakaolink://";
-		
-	} else if (buttonType == HONChannelInviteButtonTypeKik) {
-		typeName = @"Kik";
-		urlSchema = @"kik://";
-		
-	} else if (buttonType == HONChannelInviteButtonTypeLine) {
-		typeName = @"LINE";
-		urlSchema = @"line://";
-	}
-	
-	if (!hasSchema) {
-		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-									message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-	} else {
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-		}
-	}
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
 }
 
 

@@ -11,6 +11,8 @@
 #import <CommonCrypto/CommonHMAC.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 #include <arpa/inet.h>
 #include <ifaddrs.h>
@@ -29,6 +31,23 @@
 
 
 const CGSize kScreenMult = {0.853333333, 0.851574213f};
+
+
+
+// Stores reference on WiFi/LAN interface name
+static NSString * const kPNNetworkWirelessCableInterfaceName = @"en";
+
+// Store reference on 3G/EDGE interface name
+static NSString * const kPNNetworkCellularInterfaceName = @"pdp_ip";
+
+// Stores reference on default IP address which means that interface is not really connected
+static char * const kPNNetworkDefaultAddress = "0.0.0.0";
+
+// WiFi service types
+static NSString * kPNWLANBasicServiceSetIdentifierKey = @"BSSID";
+static NSString * kPNWLANServiceSetIdentifierKey = @"SSID";
+
+
 
 
 // hMAC key
@@ -58,31 +77,52 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 
 - (NSString *)lanIPAddress {
-	NSString *address = @"error";
+	NSString *address = nil;
 	struct ifaddrs *interfaces = NULL;
-	struct ifaddrs *temp_addr = NULL;
-	int success = 0;
-	// retrieve the current interfaces - returns 0 on success
-	success = getifaddrs(&interfaces);
-	if (success == 0) {
-		// Loop through linked list of interfaces
-		temp_addr = interfaces;
-		while(temp_addr != NULL) {
-			if(temp_addr->ifa_addr->sa_family == AF_INET) {
-				// Check if interface is en0 which is the wifi connection on the iPhone
-				if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-					// Get NSString from C String
-					address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+	struct ifaddrs *interface = NULL;
+	
+	// Retrieving list of interfaces
+	if (getifaddrs(&interfaces) == 0) {
+		
+		interface = interfaces;
+		while (interface != NULL) {
+			
+			// Checking whether found network interface or not
+			sa_family_t family = interface->ifa_addr->sa_family;
+			if (family == AF_INET || family == AF_INET6) {
+				
+				char *interfaceName = interface->ifa_name;
+				char *interfaceAddress = inet_ntoa(((struct sockaddr_in*)interface->ifa_addr)->sin_addr);
+				unsigned int interfaceStateFlags = interface->ifa_flags;
+				BOOL isActive = !(interfaceStateFlags & IFF_LOOPBACK);
+				
+				if (isActive) {
+					
+					NSString *interfaceNameString = [NSString stringWithUTF8String:interfaceName];
+					
+					if ([interfaceNameString hasPrefix:kPNNetworkWirelessCableInterfaceName] ||
+						[interfaceNameString hasPrefix:kPNNetworkCellularInterfaceName]) {
+						
+						// Check on whether interface has assigned address or not
+						if (strcmp(interfaceAddress, kPNNetworkDefaultAddress) != 0) {
+							
+							address = [NSString stringWithUTF8String:interfaceAddress];
+							
+							break;
+						}
+						
+					}
 				}
 			}
 			
-			temp_addr = temp_addr->ifa_next;
+			interface = interface->ifa_next;
 		}
 	}
 	
-	// Free memory
 	freeifaddrs(interfaces);
-	return (address);
+	
+	
+	return address;
 }
 
 - (NSString *)uniqueIdentifierWithoutSeperators:(BOOL)noDashes {
@@ -130,8 +170,16 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return ([UIScreen mainScreen].scale == 2.0f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
-- (CGSize)screenSize {
+- (CGFloat)scaledScreenHeight {
+	return (CGSizeMult([UIScreen mainScreen].bounds.size, [UIScreen mainScreen].scale).height);
+}
+
+- (CGSize)scaledScreenSize {
 	return (CGSizeMult([UIScreen mainScreen].bounds.size, [UIScreen mainScreen].scale));
+}
+
+- (CGFloat)scaledScreenWidth {
+	return (CGSizeMult([UIScreen mainScreen].bounds.size, [UIScreen mainScreen].scale).width);
 }
 
 - (NSString *)locale {

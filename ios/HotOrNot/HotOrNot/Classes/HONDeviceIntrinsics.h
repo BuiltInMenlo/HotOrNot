@@ -15,13 +15,17 @@ extern const CGSize kScreenMult;
 - (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
 - (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
 
+
+
 - (BOOL)isIOS7;
 - (BOOL)isIOS8;
 - (BOOL)isPhoneType5s;
 - (BOOL)isRetina4Inch;
 - (BOOL)isPhoneType6;
 - (BOOL)isPhoneType6Plus;
-- (CGSize)screenSize;
+- (CGFloat)scaledScreenHeight;
+- (CGSize)scaledScreenSize;
+- (CGFloat)scaledScreenWidth;
 
 - (NSString *)lanIPAddress;
 - (NSString *)locale;

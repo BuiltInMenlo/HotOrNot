@@ -22,5 +22,10 @@
 - (void)centerHorizontalAlignWithinParentView;
 - (void)centerVerticalAlignWithinParentView;
 
+- (void)centerAlignWithRect:(CGRect)rect;
+- (void)centerHorizontalAlignWithRect:(CGRect)rect;
+- (void)centerVerticalAlignWithRect:(CGRect)rect;
+
+
 @property (nonatomic, readonly) UIEdgeInsets frameEdges;
 @end

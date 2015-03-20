@@ -463,7 +463,8 @@ NSStringFromNSNumber(NSNumber *val, int precision)
 BIM_INLINE NSString*
 NSStringFromUIGestureRecognizerState(UIGestureRecognizerState val)
 {
-	NSString *string = (val == UIGestureRecognizerStateBegan) ? @"Began" : (val == UIGestureRecognizerStateCancelled) ? @"Canceled" : (val == UIGestureRecognizerStateEnded) ? @"Ended" : (val == UIGestureRecognizerStateFailed) ? @"Failed" : (val == UIGestureRecognizerStatePossible) ? @"Possible" : (val == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN";
+//	NSString *string = (val == UIGestureRecognizerStatePossible) ? @"Possible" : (val == UIGestureRecognizerStateBegan) ? @"Began" : (val == UIGestureRecognizerStateChanged) ? @"Changed" : (val == UIGestureRecognizerStateEnded) ? @"Ended" : (val == UIGestureRecognizerStateCancelled) ? @"Canceled" : (val == UIGestureRecognizerStateFailed) ? @"Failed" : (val == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN";
+	NSString *string = (val == UIGestureRecognizerStatePossible) ? @"Possible" : (val == UIGestureRecognizerStateBegan) ? @"Began" : (val == UIGestureRecognizerStateEnded) ? @"Ended" : (val == UIGestureRecognizerStateCancelled) ? @"Canceled" : (val == UIGestureRecognizerStateFailed) ? @"Failed" : (val == UIGestureRecognizerStateRecognized) ? @"Recognized" : @"UNKNOWN";
 	return (string);
 }
 

@@ -385,37 +385,15 @@ static HONImageBroker *sharedInstance = nil;
 	if (image.imageOrientation != UIImageOrientationUp)
 		image = [image fixOrientation];
 	
-	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
-	UIImage *scaledImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES];
-	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//	UIImage *scaledImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES];
+//	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
-	UIImage *croppedImage = [[HONImageBroker sharedInstance] cropImage:scaledImage toRect:[[HONImageBroker sharedInstance] rectForCroppedImage:scaledImage toSize:kUploadBaseSize]];
-	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//	UIImage *croppedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES] toFillSize:kUploadBaseSize];
+//	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
-	return (croppedImage);
-	
-	
-//	UIImage *processedImage = image;
-//	float ratio = [[HONImageBroker sharedInstance] aspectRatioForImage:image];//image.size.width / image.size.height;
-//	if (ratio > 1.0)
-//		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0 * ratio, 1280.0)] toRect:CGRectMake(((1280.0 * ratio) - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
-//	
-//	else if (ratio == 0.75) {
-//		if (CGSizeEqualToSize(image.size, CGSizeMake(960.0, 1280.0)))
-//			return (image);
-//		
-//		else
-//			processedImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
-//		
-//	} else if (ratio < 1.0)
-//		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 960.0 / ratio)] toRect:CGRectMake(0.0, ((960.0 / ratio) - 1280.0) * 0.5, 960.0, 1280.0)];
-//	
-//	else
-//		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0, 1280.0)] toRect:CGRectMake((1280.0 - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
-//	
-//	
-//	return (processedImage);
+	return ([[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES] toFillSize:kUploadBaseSize]);
 }
 
 - (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {
@@ -437,20 +415,6 @@ static HONImageBroker *sharedInstance = nil;
 	UIView *matteView = [UIView viewAtSize:kInstagramSize withBGColor:[UIColor blackColor]];
 	[matteView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeInstagram]]];
 	[UIImageJPEGRepresentation([matteView createImageFromView], 1.0f) writeToFile:path atomically:YES];
-	
-	
-//	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
-//	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
-	
-//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectFromSize(kInstagramSize)];
-//	canvasView.backgroundColor = [UIColor blackColor];
-//	
-//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
-//	imageView.image = processedImage;
-//	[canvasView addSubview:imageView];
-//	[canvasView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeInstagram]]];
-//	
-//	[UIImageJPEGRepresentation([[HONImageBroker sharedInstance] createImageFromView:canvasView], 1.0f) writeToFile:path atomically:YES];
 }
 
 

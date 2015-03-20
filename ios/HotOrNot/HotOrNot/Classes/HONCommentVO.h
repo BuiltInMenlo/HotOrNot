@@ -8,20 +8,11 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#import <PubNub/PubNub.h>
+
+#import "PubNub+BuiltInMenlo.h"
 
 #import "HONClubPhotoVO.h"
 
-
-typedef NS_ENUM(NSUInteger, HONCommentContentType) {
-	HONCommentContentTypeUnknown = 0,
-	HONCommentContentTypeSYN,
-	HONCommentContentTypeACK,
-	HONCommentContentTypeBOT,
-	HONCommentContentTypeBYE,
-	HONCommentContentTypeText,
-	HONCommentContentTypeImage
-};
 
 typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 	HONCommentStatusTypeUnknown = 0,
@@ -40,7 +31,7 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;
 @property (nonatomic) HONCommentStatusType commentStatusType;
-@property (nonatomic) HONCommentContentType commentContentType;
+@property (nonatomic) HONChatMessageType messageType;
 @property (nonatomic, retain) NSString *messageID;
 @property (nonatomic) int parentID;
 @property (nonatomic) int clubID;

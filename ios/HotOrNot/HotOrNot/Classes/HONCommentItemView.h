@@ -11,6 +11,7 @@
 @class HONCommentItemView;
 @protocol HONCommentItemViewDelegate <NSObject>
 @optional
+- (void)commentItemView:(HONCommentItemView *)commentItemView hidePhotoForComment:(HONCommentVO *)commentVO;
 - (void)commentItemView:(HONCommentItemView *)commentItemView showPhotoForComment:(HONCommentVO *)commentVO;
 @end
 

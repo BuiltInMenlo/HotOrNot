@@ -6,17 +6,15 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-//#import <AWSiOSSDKv2/AWSCore.h>
-//#import "AWSCore.h"
-//#import <AWSiOSSDK/S3/AmazonS3Client.h>
 
-#import "S3.h"
 #import <CommonCrypto/CommonHMAC.h>
+
+#import <AWSiOSSDKv2/S3.h>
 
 #import "NSDate+BuiltinMenlo.h"
 
 #import "MBProgressHUD.h"
-//#import "Reachability.h"
+//#import "S3.h"
 
 #import "HONAPICaller.h"
 
@@ -207,6 +205,8 @@ static HONAPICaller *sharedInstance = nil;
 + (NSTimeInterval)timeoutInterval {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeout_interval"] doubleValue]);
 }
+
+
 
 
 - (NSString *)phpAPIBasePath {
@@ -441,7 +441,7 @@ static HONAPICaller *sharedInstance = nil;
 //		completion(nil);
 //}
 
-- (void)uploadPhotoToS3:(NSData *)imageData intoBucketType:(HONAmazonS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion {
+- (void)uploadPhotoToS3:(NSData *)imageData intoBucketType:(HONAmazonS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(BOOL success, NSError * error))completion {
 	NSString *bucketName = (bucketType == HONAmazonS3BucketTypeAvatarsSource) ? @"hotornot-avatars" : (bucketType == HONAmazonS3BucketTypeClubsSource) ? @"hotornot-challenges" : @"hotornot-challenges";
 
 	NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:[filename stringByAppendingString:kPhotoHDSuffix]];
@@ -458,18 +458,18 @@ static HONAPICaller *sharedInstance = nil;
 	
 	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
 	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-		if (task.error) {
+		if (task.error)
 			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
-			if (completion)
-				completion(task.error);
 			
-		} else {
+		else
 			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
-			if (completion)
-				completion(nil);
-		}
 		
-		return nil;
+		
+		if (completion)
+			completion((task.error == nil), task.error);
+		
+		
+		return (nil);
 	}];
 	
 	

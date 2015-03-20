@@ -661,11 +661,9 @@
 #pragma mark - UI Presentation
 #pragma mark - LoadingOverlayView Delegates
 - (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView {
-	
 }
 
 - (void)loadingOverlayViewDidOutro:(HONLoadingOverlayView *)loadingOverlayView {
-	
 }
 
 

@@ -43,11 +43,13 @@ static HONPubNubOverseer *sharedInstance = nil;
 														subscribeKey:kPubNubSubscribeKey //@"demo"//
 														   secretKey:kPubNubSecretKey]]; //nil]];//
 	
+	
 	[PubNub connectWithSuccessBlock:^(NSString *origin) {
 		PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
 		NSLog(@"PubNub CONNECT:[%@]", origin);
 		
 		[PubNub setClientIdentifier:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) shouldCatchup:YES];
+		[PNLogger logGeneralMessageFrom:self message:^{ return @"Hello world!!!";}];
 		
 	} errorBlock:^(PNError *connectionError) {
 		NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);

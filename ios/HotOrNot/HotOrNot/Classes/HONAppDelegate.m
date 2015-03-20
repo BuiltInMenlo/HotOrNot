@@ -6,23 +6,22 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-//#import <AWSiOSSDKv2/AWSCore.h>
-#import "AWSCore.h"
-#import <CommonCrypto/CommonHMAC.h>
 
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
+#import <CommonCrypto/CommonHMAC.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
 #import <Social/SLServiceTypes.h>
 #import <StoreKit/StoreKit.h>
+
 #import <sys/utsname.h>
 #import </usr/include/objc/objc-class.h>
 
+#import <AWSiOSSDKv2/AWSCore.h>
 #import <HockeySDK/HockeySDK.h>
 //#import <Tapjoy/Tapjoy.h>
 
-#import "Flurry.h"
 
 #import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
@@ -34,7 +33,9 @@
 #import "UIViewController+BuiltInMenlo.h"
 
 #import "AFNetworking.h"
+//#import "AWSCore.h"
 #import "BlowfishAlgorithm.h"
+#import "Flurry.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
@@ -237,6 +238,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		
 		NSLog(@"API BASE PATHS:\nPHP\t\t: [%@]\nPYTHON\t: [%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [[HONAPICaller sharedInstance] phpAPIBasePath], [[HONAPICaller sharedInstance] pythonAPIBasePath]);
+		NSLog(@"DEVICE IP:[%@]", [[HONDeviceIntrinsics sharedInstance] lanIPAddress]);
 		
 		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
 			[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];

@@ -17,7 +17,7 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, messageID, clubID, parentID, userID, location, username, avatarPrefix, commentStatusType, score, textContent, imageContent, addedDate;
+@synthesize commentID, messageID, clubID, parentID, userID, location, username, avatarPrefix, messageType, commentStatusType, score, textContent, imageContent, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
@@ -28,12 +28,11 @@
 	vo.clubID = ([dictionary objectForKey:@"club_id"] != nil) ? [[dictionary objectForKey:@"club_id"] intValue] : [[HONClubAssistant sharedInstance] globalClub].clubID;
 	vo.parentID = [[dictionary objectForKey:@"parent_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : [[dictionary objectForKey:@"user_id"] intValue];
-	
-	vo.commentContentType = ([dictionary objectForKey:@"content_type"] != nil) ? (HONCommentContentType)[[dictionary objectForKey:@"content_type"] intValue] : HONCommentContentTypeUnknown;
-//	NSLog(@"content_type:[%d] // [%d]", [[dictionary objectForKey:@"content_type"] intValue], (int)vo.commentContentType);
-	
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
+
+	NSLog(@"content_type:[%d] // [%d]", [[dictionary objectForKey:@"content_type"] intValue], (int)vo.messageType);
 	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONUserAssistant sharedInstance] activeUserAvatarURL] : [[HONUserAssistant sharedInstance] rndAvatarURL];
+	vo.messageType = ([dictionary objectForKey:@"content_type"] != nil) ? (HONChatMessageType)[[dictionary objectForKey:@"content_type"] intValue] : HONChatMessageTypeUndefined;
 	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"";
 //	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];
 	
@@ -92,21 +91,28 @@
 + (HONCommentVO *)commentWithMessage:(PNMessage *)message {
 	NSLog(@"commentWithMessage:%@", message.message);
 	
-	NSMutableDictionary *dict = [@{@"id"				: @"0",
-								   @"msg_id"			: @"0",
-								   @"content_type"		: ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__SYN__"]) ? @((int)HONCommentContentTypeSYN) : ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__BYE__"]) ? @((int)HONCommentContentTypeBYE) : ([[[NSRegularExpression alloc] initWithPattern:@"^\\d{10,}_[a-f0-9]{32}$"] isMatch:[message.message lastComponentByDelimeter:@"|"]]) ? @((int)HONCommentContentTypeImage) : ([[message.message lastComponentByDelimeter:@"|"] rangeOfString:@"__ACK__"].location != NSNotFound) ? @((int)HONCommentContentTypeACK) : @((int)HONCommentContentTypeText),
-								   @"owner_member"		: @{@"id"	: @([[message.message firstComponentByDelimeter:@"|"] intValue]),
-															@"name"	: ([[message.message firstComponentByDelimeter:@"|"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) ? @"You" : ([[message.message firstComponentByDelimeter:@"|"] isNumeric]) ? @"anon" : [message.message firstComponentByDelimeter:@"|"]},
+	int srcUserID = [message originUserID];
+	HONChatMessageType messageType = [message messageType];
+	
+	
+//	NSString *coords = [kHONChatMessageCoordsRoot stringByAppendingFormat:@"%.04f_%.04f", [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] firstObject] doubleValue], [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] lastObject] doubleValue]];
+//	NSString *msgType = [[message.message lastComponentByDelimeter:@"|"] firstComponentByDelimeter:@":"];
+	
+	NSMutableDictionary *dict = [@{@"id"				: @(0),
+								   @"msg_id"			: @(0),
+								   @"content_type"		: @((int)messageType), //([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__SYN__"]) ? @((int)HONChatMessageTypeSYN) : ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__BYE__"]) ? @((int)HONChatMessageTypeBYE) : ([[[NSRegularExpression alloc] initWithPattern:@"^\\d{10,}_[a-f0-9]{32}$"] isMatch:[message.message lastComponentByDelimeter:@"|"]]) ? @((int)HONChatMessageTypeIMG) : ([[message.message lastComponentByDelimeter:@"|"] rangeOfString:@"__ACK__"].location != NSNotFound) ? @((int)HONChatMessageTypeACK) : @((int)HONChatMessageTypeTXT),
+								   @"owner_member"		: @{@"id"	: @(srcUserID),
+															@"name"	: message.originUsername}, //([[message.message firstComponentByDelimeter:@"|"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) ? @"You" : ([[message.message firstComponentByDelimeter:@"|"] isNumeric]) ? @"anon" : [message.message firstComponentByDelimeter:@"|"]},
 								   
-								   @"image"				: ([[[NSRegularExpression alloc] initWithPattern:@"^\\d{10,}_[a-f0-9]{32}$"] isMatch:[message.message lastComponentByDelimeter:@"|"]]) ? [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], [[message.message lastComponentByDelimeter:@"|"] stringByAppendingString:kPhotoHDSuffix]] : [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] firstObject] floatValue], [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] lastObject] floatValue]],
-								   @"text"				: [[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__" withString:@""],
+								   @"image"				: (messageType == HONChatMessageTypeIMG) ? [message imageURLPrefix] : [message coordsURI],
+								   @"text"				: [message contents], // [[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__:" withString:@""],
 								   
 								   @"net_vote_score"	: @(0),
-								   @"status"			: NSStringFromInt(0),
+								   @"status"			: @(0),
 								   @"added"				: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601],
 								   @"updated"			: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
 	
-//	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
+	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
 	
 	return ([HONCommentVO commentWithDictionary:dict]);
 }

@@ -54,17 +54,35 @@
 }
 
 - (void)centerAlignWithinParentView {
-	[self centerHorizontalAlignWithinParentView];
-	[self centerVerticalAlignWithinParentView];
+	if (self.superview != nil) {
+		[self centerHorizontalAlignWithRect:self.superview.frame];
+		[self centerVerticalAlignWithRect:self.superview.frame];
+	}
 }
 
 - (void)centerHorizontalAlignWithinParentView {
-	self.frame = (self.superview != nil) ? CGRectTranslateX(self.frame, (self.superview.frame.size.width - self.frame.size.width) * 0.5) : self.frame;
+	if (self.superview != nil)
+		[self centerHorizontalAlignWithRect:self.superview.frame];
 }
 
 - (void)centerVerticalAlignWithinParentView {
-	self.frame = (self.superview != nil) ? CGRectTranslateY(self.frame, (self.superview.frame.size.height - self.frame.size.height) * 0.5) : self.frame;
+	if (self.superview != nil)
+		[self centerVerticalAlignWithRect:self.superview.frame];
 }
+
+- (void)centerAlignWithRect:(CGRect)rect {
+	[self centerHorizontalAlignWithRect:rect];
+	[self centerVerticalAlignWithRect:rect];
+}
+
+- (void)centerHorizontalAlignWithRect:(CGRect)rect {
+	self.frame = CGRectTranslateY(self.frame, (rect.size.width - self.frame.size.width) * 0.5);
+}
+
+- (void)centerVerticalAlignWithRect:(CGRect)rect {
+	self.frame = CGRectTranslateY(self.frame, (rect.size.height - self.frame.size.height) * 0.5);
+}
+
 
 
 - (UIEdgeInsets)frameEdges {
