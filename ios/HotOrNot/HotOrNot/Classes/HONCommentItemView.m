@@ -15,8 +15,9 @@
 @interface HONCommentItemView()
 //@property (nonatomic, strong) UIImageView *loadingImageView;
 //@property(nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) UIView *bgView;
 @property (nonatomic, strong) UILabel *captionLabel;
+@property (nonatomic, strong) UIButton *photoButton;
 //@property (nonatomic, strong) UIImageView *captionImageView;
 //@property (nonatomic, strong) UIImageView *statusImageView;
 //@property (nonatomic, strong) UILabel *timeLabel;
@@ -25,83 +26,40 @@
 
 @implementation HONCommentItemView
 @synthesize commentVO = _commentVO;
+@synthesize delegate = _delegate;
 
-- (id)initWithFrame:(CGRect)frame asType:(HONCommentViewType)viewType {
+- (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-//		self.backgroundColor = [UIColor blackColor];
+		_bgView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 11.0, self.frame.size.width - 10.0, 38.0)];
+		_bgView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.90];
+		[self addSubview:_bgView];
 		
-//		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"greyChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(17.0, 27.0, 17.0, 17.0) resizingMode:UIImageResizingModeStretch]];
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, self.frame.size.width - 10.0, 38.0)];
-		_bgImageView.backgroundColor = [UIColor blackColor];
-//		_bgImageView.frame = CGRectMake(57.0, 11.0, 214.0, 36.0);
-		[self addSubview:_bgImageView];
-		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, self.frame.size.width - 40.0, 18.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, self.frame.size.width - 74.0, 18.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 		_captionLabel.backgroundColor = [UIColor clearColor];
+//		_captionLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugVioletColor];
 		_captionLabel.textColor = [UIColor whiteColor];
 		_captionLabel.lineBreakMode = NSLineBreakByWordWrapping;
 		[self addSubview:_captionLabel];
 		
-		UIButton *overlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		overlayButton.frame = CGRectFromSize(self.frame.size);
-		[self addSubview:overlayButton];
+		_photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_photoButton.frame = CGRectMake(_captionLabel.frameEdges.right, 20.0, 0.0, 0.0);
+//		_photoButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
+		[_photoButton setBackgroundImage:[UIImage imageNamed:@"viewPhotoButton_nonActive"] forState:UIControlStateNormal];
+		[_photoButton setBackgroundImage:[UIImage imageNamed:@"viewPhotoButton_Active"] forState:UIControlStateHighlighted];
+		[_photoButton setBackgroundImage:[UIImage imageNamed:@"viewPhotoButton_Disabled"] forState:UIControlStateDisabled];
+		[_photoButton setBackgroundImage:[UIImage imageNamed:@"viewPhotoButton_Selected"] forState:UIControlStateSelected];
+		[_photoButton setBackgroundImage:[UIImage imageNamed:@"viewPhotoButton_Selected"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+		[self addSubview:_photoButton];
+		
+//		UIButton *overlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		overlayButton.frame = CGRectFromSize(self.frame.size);
+//		[self addSubview:overlayButton];
 	}
 	
 	return (self);
 }
 
-/*
-- (id)initWithFrame:(CGRect)frame {
-	if ((self = [super initWithFrame:frame])) {
-		
-//		_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"loadingDots_50"]];
-//		_loadingImageView.frame = CGRectOffset(_loadingImageView.frame, 15.0, 15.0);
-//		[self addSubview:_loadingImageView];
-		
-//		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(19.0, 11.0, 34.0, 34.0)];
-//		[self addSubview:_avatarImageView];
-		
-//		[[HONViewDispensor sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"topicMask"]];
-		
-		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"greyChatBubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(17.0, 27.0, 17.0, 17.0) resizingMode:UIImageResizingModeStretch]];
-		_bgImageView.frame = CGRectMake(57.0, 11.0, 214.0, 36.0);
-		[self addSubview:_bgImageView];
-		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0, 18.0, 175.0, 18.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
-		_captionLabel.backgroundColor = [UIColor clearColor];
-		_captionLabel.textColor = [UIColor blackColor];
-		_captionLabel.lineBreakMode = NSLineBreakByWordWrapping;
-		[self addSubview:_captionLabel];
-		
-//		_captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(82.0, 24.0, 35.0, 35.0)];
-//		[self addSubview:_captionImageView];
-		
-//		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 19.0, 80.0, 14.0)];
-//		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
-//		_timeLabel.backgroundColor = [UIColor clearColor];
-//		_timeLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
-		//[self addSubview:_timeLabel];
-		
-//		_localityLabel = [[UILabel alloc] initWithFrame:CGRectMake(_captionLabel.frameEdges.left, _bgImageView.frameEdges.bottom, 180.0, 14.0)];
-//		_localityLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:11];
-//		_localityLabel.backgroundColor = [UIColor clearColor];
-//		_localityLabel.textColor = [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75];
-//		_localityLabel.text = @"…";
-		//[self addSubview:_localityLabel];
-		
-//		_statusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"statusUpdate_sent"]];
-		//[self addSubview:_statusImageView];
-		
-		UIButton *overlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		overlayButton.frame = CGRectFromSize(self.frame.size);
-		[self addSubview:overlayButton];
-	}
-	
-	return (self);
-}
-*/
 
 #pragma mark - Public APIs
 - (void)setCommentVO:(HONCommentVO *)commentVO {
@@ -131,12 +89,21 @@
 	NSString *caption = [NSString stringWithFormat:@"%@ %@", _commentVO.username, _commentVO.textContent];
 	_captionLabel.text = caption;
 	_captionLabel.numberOfLines = [_captionLabel numberOfLinesNeeded];
-	[_captionLabel setTextColor:(_commentVO.commentContentType == HONCommentContentTypeBOT) ? [UIColor orangeColor] : [UIColor yellowColor] range:[_captionLabel.text rangeOfString:_commentVO.username]];
-	NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
+	_captionLabel.textColor = (_commentVO.commentContentType == HONCommentContentTypeBOT) ? [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75] : _captionLabel.textColor;
+	[_captionLabel setTextColor:(_commentVO.commentContentType == HONCommentContentTypeBOT) ? [UIColor colorWithRed:1.000 green:0.635 blue:0.000 alpha:1.00] : [UIColor colorWithRed:1.000 green:0.847 blue:0.000 alpha:1.00] range:[_captionLabel.text rangeOfString:_commentVO.username]];
+//	NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
 	[_captionLabel resizeFrameForText];
 	
-	_bgImageView.frame = CGRectResizeWidth(_bgImageView.frame, MIN(_captionLabel.frame.size.width + 20.0, self.frame.size.width - 20.0));
-	_bgImageView.frame = CGRectResizeHeight(_bgImageView.frame, _captionLabel.frame.size.height + 20.0);
+	_photoButton.frame = CGRectTranslateX(_photoButton.frame, _captionLabel.frameEdges.right);
+	
+	if (_commentVO.commentContentType == HONCommentContentTypeImage) {
+		_photoButton.frame = CGRectResize(_photoButton.frame, [_photoButton backgroundImageForState:UIControlStateNormal].size);
+		_photoButton.frame = CGRectTranslate(_photoButton.frame, CGPointMake(_captionLabel.frameEdges.right + 10.0, _captionLabel.frame.origin.y + (_captionLabel.frame.size.height - _photoButton.frame.size.height) * 0.5));
+		[_photoButton addTarget:self action:@selector(_goShowPhoto) forControlEvents:UIControlEventTouchUpInside];
+	}
+	
+	_bgView.frame = CGRectResizeWidth(_bgView.frame, MIN(_photoButton.frameEdges.right, self.frame.size.width - 20.0));
+	_bgView.frame = CGRectResizeHeight(_bgView.frame, _captionLabel.frame.size.height + 20.0);
 	
 	//_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_commentVO.addedDate];
 	//_timeLabel.frame = CGRectTranslate(_timeLabel.frame, CGPointMake(_bgImageView.frameEdges.right + 8.0, 0.0 + (_bgImageView.frameEdges.top + (_bgImageView.frame.size.height - _timeLabel.frame.size.height) * 0.5)));
@@ -169,37 +136,22 @@
 	}
 	
 	
-	NSLog(@"FRAMES:[%@][%@]", NSStringFromCGRect(_bgImageView.frame), NSStringFromCGRect(_captionLabel.frame));
+	NSLog(@"FRAMES -- BG:[%@] CAPTION:[%@] BUTTON:[%@]", NSStringFromCGRect(_bgView.frame), NSStringFromCGRect(_captionLabel.frame), NSStringFromCGRect(_photoButton.frame));
 	
-//	if (_commentVO.commentStatusType == HONCommentStatusTypeSent) {
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_sent"];
-//		
-//	} else if (_commentVO.commentStatusType == HONCommentStatusTypeDelivered) {
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_delivered"];
-//		
-//	} else if (_commentVO.commentStatusType == HONCommentStatusTypeSeen) {
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_seen"];
-//	
-//	} else
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_unknown"];
-	
-	//self.frame = CGRectResizeHeight(self.frame, _localityLabel.frameEdges.bottom + 5.0);
-	
-	self.frame = CGRectResize(self.frame, _bgImageView.frame.size);
-	self.frame = CGRectResizeHeight(self.frame, _bgImageView.frameEdges.bottom + 5.0);
+	self.frame = CGRectResize(self.frame, _bgView.frame.size);
+	self.frame = CGRectResizeHeight(self.frame, _bgView.frameEdges.bottom + 5.0);
 }
 
 
+#pragma mark - Public APIs
 - (void)updateStatus:(HONCommentStatusType)statusType {
-//	if (statusType == HONCommentStatusTypeSent) {
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_sent"];
-//	
-//	} else if (statusType == HONCommentStatusTypeDelivered) {
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_delivered"];
-//		
-//	} else if (statusType == HONCommentStatusTypeSeen) {
-//		_statusImageView.image = [UIImage imageNamed:@"statusUpdate_seen"];
-//	}
+}
+
+
+#pragma mark - Navigation
+- (void)_goShowPhoto {
+	if ([self.delegate respondsToSelector:@selector(commentItemView:showPhotoForComment:)])
+		[self.delegate commentItemView:self showPhotoForComment:_commentVO];
 }
 
 @end

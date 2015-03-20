@@ -55,20 +55,20 @@
 	
 	NSMutableArray *pending = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"pending"])
-		[pending addObject:([[dict objectForKey:@"extern_name"] length] > 0) ? [HONTrivialUserVO userFromContactUserVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
+		[pending addObject:([[dict objectForKey:@"extern_name"] length] > 0) ? [HONUserVO userFromContactUserVO:[HONContactUserVO contactWithDictionary:dict]] : [HONUserVO userWithDictionary:dict]];
 	vo.pendingMembers = pending;
 	vo.totalMembers += (int)[vo.pendingMembers count];
 	
 	NSMutableArray *members = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
-		[members addObject:[HONTrivialUserVO userWithDictionary:dict]];
+		[members addObject:[HONUserVO userWithDictionary:dict]];
 	vo.activeMembers = members;
 	vo.totalMembers += (int)[vo.activeMembers count];
 	vo.visibleMembers += (int)[vo.activeMembers count];
 	
 	NSMutableArray *banned = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"blocked"])
-		[banned addObject:[HONTrivialUserVO userWithDictionary:dict]];
+		[banned addObject:[HONUserVO userWithDictionary:dict]];
 	vo.bannedMembers = banned;
 	
 	NSMutableArray *submissions = [NSMutableArray array];
@@ -84,7 +84,7 @@
 	vo.clubEnrollmentType = (vo.ownerID == [[HONUserAssistant sharedInstance] activeUserID]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-		for (HONTrivialUserVO *trivialUserVO in vo.pendingMembers) {
+		for (HONUserVO *trivialUserVO in vo.pendingMembers) {
 //			NSLog(@"PENDING:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
 			if (trivialUserVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypePending;
@@ -94,7 +94,7 @@
 	}
 		
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-		for (HONTrivialUserVO *trivialUserVO in vo.activeMembers) {
+		for (HONUserVO *trivialUserVO in vo.activeMembers) {
 //			NSLog(@"ACTIVE:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
 			if (trivialUserVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeMember;
@@ -104,7 +104,7 @@
 	}
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-		for (HONTrivialUserVO *trivialUserVO in vo.bannedMembers) {
+		for (HONUserVO *trivialUserVO in vo.bannedMembers) {
 //			NSLog(@"BANNED:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
 			if (trivialUserVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeBanned;

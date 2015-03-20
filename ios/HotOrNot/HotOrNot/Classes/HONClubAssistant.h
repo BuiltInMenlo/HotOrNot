@@ -10,10 +10,9 @@
 #import "HONClubPhotoVO.h"
 #import "HONStatusUpdateVO.h"
 #import "HONCommentVO.h"
-#import "HONEmotionVO.h"
 #import "HONSubjectVO.h"
 #import "HONTopicVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
@@ -33,7 +32,7 @@
 - (HONUserClubVO *)homeLocationClub;
 - (void)writeHomeLocationClub:(HONUserClubVO *)clubVO;
 
-- (HONTrivialUserVO *)clubMemberWithUserID:(int)userID;
+- (HONUserVO *)clubMemberWithUserID:(int)userID;
 
 //- (NSMutableDictionary *)emptyClubPhotoDictionary;
 //- (NSString *)userSignupClubCoverImageURL;

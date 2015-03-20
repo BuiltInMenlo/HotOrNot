@@ -114,7 +114,7 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	_titleLabel.frame = CGRectMake(_titleLabel.frame.origin.x, _titleLabel.frame.origin.y + 11.0, MIN(maxFrame.size.width, size.width), MIN(maxFrame.size.height, size.height));
 }
 
-- (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
+- (void)setTrivialUserVO:(HONUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
 	NSString *nameCaption = _trivialUserVO.username;//(_trivialUserVO.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"Me " : _trivialUserVO.username;//[NSString stringWithFormat:@"%@ is…", _trivialUserVO.username];
@@ -153,14 +153,14 @@ const CGRect kOrgLoaderFrame = {17.0f, 17.0f, 42.0f, 44.0f};
 	}];
 	
 	[_clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		
 		if (![uniqueParticipants containsObject:vo.username])
 			[uniqueParticipants addObject:vo.username];
 	}];
 	
 	[_clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		
 		if (![uniqueParticipants containsObject:vo.username])
 			[uniqueParticipants addObject:vo.username];

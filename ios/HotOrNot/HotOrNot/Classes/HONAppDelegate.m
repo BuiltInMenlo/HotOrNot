@@ -6,7 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <AWSiOSSDKv2/AWSCore.h>
+//#import <AWSiOSSDKv2/AWSCore.h>
+#import "AWSCore.h"
 #import <CommonCrypto/CommonHMAC.h>
 
 #import <AddressBook/AddressBook.h>
@@ -43,7 +44,7 @@
 
 #import "HONAppDelegate.h"
 #import "HONStoreTransactionObserver.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONHomeViewController.h"
 #import "HONActivityViewController.h"
 #import "HONSettingsViewController.h"
@@ -82,18 +83,6 @@ const CGFloat kDetailsHeroImageHeight = 324.0;
 // animation params
 const CGFloat kProfileTime = 0.25f;
 const CGFloat kButtonSelectDelay = 0.0625;
-
-// image sizes
-const CGSize kSnapAvatarSize = {48.0f, 48.0f};
-const CGSize kSnapThumbSize = {80.0f, 80.0f};
-const CGSize kSnapTabSize = {320.0f, 480.0f};
-const CGSize kSnapMediumSize = {160.0f, 160.0f};
-const CGSize kSnapLargeSize = {320.0f, 568.0f};
-
-NSString * const kSnapThumbSuffix = @"Small_160x160.jpg";
-NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
-NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
-NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
 NSString * const kTwilioSMS = @"6475577873";
 
@@ -458,6 +447,11 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"clubs"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
+	
+	
+//	NSString *src = @"1426799062_2a85921f3cbf4f8f9e99d37842c09818";
+//	NSString *match = @"^\\d{10,}_[a-f0-9]{32}$";
+//	NSLog(@"RegEx TEST --- (%@) CONTAINS (%@) ::::: [%@]", src, match, NSStringFromBOOL([[[NSRegularExpression alloc] initWithPattern:match] isMatch:src]));
 	
 	
 //	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];

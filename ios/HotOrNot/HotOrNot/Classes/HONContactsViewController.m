@@ -18,7 +18,7 @@
 #import "HONComposeNavButtonView.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @interface HONContactsViewController () <HONLineButtonViewDelegate, HONClubViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
@@ -94,7 +94,7 @@
 		for (NSDictionary *dict in result) {
 			NSLog(@"EMAIL CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
-			for (HONTrivialUserVO *vo in _inAppUsers) {
+			for (HONUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
 					isDuplicate = YES;
 					break;
@@ -104,7 +104,7 @@
 			if (isDuplicate)
 				continue;
 			
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapThumbSuffix]}];
 			
@@ -124,7 +124,7 @@
 		for (NSDictionary *dict in result) {
 //			NSLog(@"PHONE CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
-			for (HONTrivialUserVO *vo in _inAppUsers) {
+			for (HONUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]] || vo.userID == [[dict objectForKey:@"id"] intValue]) {
 					isDuplicate = YES;
 					break;
@@ -134,7 +134,7 @@
 			if (isDuplicate)
 				continue;
 			
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"alt_id"		: [[dict objectForKey:@"phone"] normalizedPhoneNumber],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
@@ -159,7 +159,7 @@
 		if ([(NSArray *)result count] > 1) {
 			for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
 				BOOL isDuplicate = NO;
-				for (HONTrivialUserVO *vo in _inAppUsers) {
+				for (HONUserVO *vo in _inAppUsers) {
 					if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
 						isDuplicate = YES;
 						break;
@@ -169,7 +169,7 @@
 				if (isDuplicate)
 					continue;
 				
-				HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+				HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																			  @"username"	: [dict objectForKey:@"username"],
 																			  @"alt_id"		: [[dict objectForKey:@"phone"] normalizedPhoneNumber],
 																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]]}];
@@ -416,7 +416,7 @@
 	NSLog(@"[[*:*]] clubViewCell:didSelectContactUser");
 }
 
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO {
 	NSLog(@"[[*:*]] clubViewCell:didSelectTrivialUser");
 }
 
@@ -461,7 +461,7 @@
 			cell.clubVO = vo;
 			
 		} else if (indexPath.section == 2) {
-			HONTrivialUserVO *vo = (HONTrivialUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
+			HONUserVO *vo = (HONUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
 			cell.trivialUserVO = vo;
 		
 		} else if (indexPath.section == 3) {
@@ -475,7 +475,7 @@
 			cell.clubVO = vo;
 			
 		} else if (indexPath.section == 2) {
-			HONTrivialUserVO *vo = (HONTrivialUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
+			HONUserVO *vo = (HONUserVO *)[_inAppUsers objectAtIndex:indexPath.row];
 			cell.trivialUserVO = vo;
 			
 		} else if (indexPath.section == 3) {

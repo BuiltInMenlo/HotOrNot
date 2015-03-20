@@ -14,7 +14,7 @@
 #import "HONTableView.h"
 #import "HONClubViewCell.h"
 #import "HONContactUserVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONUserClubVO.h"
 #import "HONSearchBarView.h"
 #import "HONTableHeaderView.h"
@@ -77,6 +77,6 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO;
 
 @end

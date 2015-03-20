@@ -77,9 +77,9 @@
 									}
 	 
 									failure:^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-										[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userVO.avatarPrefix
-																						   forBucketType:HONS3BucketTypeAvatars
-																							  completion:nil];
+//										[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userVO.avatarPrefix
+//																						   forBucketType:HONS3BucketTypeAvatars
+//																							  completion:nil];
 										
 										weakSelf.avatarImageView.image = [[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapTabSize];
 										[UIView animateWithDuration:0.25 animations:^(void) {

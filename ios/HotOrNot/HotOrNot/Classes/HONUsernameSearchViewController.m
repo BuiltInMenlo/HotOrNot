@@ -11,7 +11,7 @@
 
 #import "HONUsernameSearchViewController.h"
 #import "HONClubViewCell.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONUserClubVO.h"
 #import "HONTableView.h"
 #import "HONSearchBarView.h"
@@ -64,7 +64,7 @@
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
 		_searchUsers = [NSMutableArray array];
 		for (NSDictionary *dict in result) {
-			[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
+			[_searchUsers addObject:[HONUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
 																		   @"username"	: [dict objectForKey:@"username"],
 																		   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
 		}
@@ -108,7 +108,7 @@
 
 - (NSDictionary *)_trackingProps {
 	NSMutableArray *users = [NSMutableArray array];
-	for (HONTrivialUserVO *vo in _selectedUsers)
+	for (HONUserVO *vo in _selectedUsers)
 		[users addObject:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:vo]];
 
 	NSMutableDictionary *props = [NSMutableDictionary dictionary];
@@ -199,7 +199,7 @@
 		[_selectedUsers removeAllObjects];
 	
 	else {
-		for (HONTrivialUserVO *vo in _searchUsers) {
+		for (HONUserVO *vo in _searchUsers) {
 			if (![_selectedUsers containsObject:vo])
 				[_selectedUsers addObject:vo];
 		}
@@ -244,7 +244,7 @@
 
 
 #pragma mark - ClubViewCell Delegates
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO {
 	NSLog(@"[*:*] clubViewCell:didSelectTrivialUser");
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Username - Selected In-App User"
@@ -319,11 +319,11 @@
 	
 	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
 	
-	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
+	HONUserVO *vo = (HONUserVO *)[_searchUsers objectAtIndex:indexPath.row];
 	cell.trivialUserVO = vo;
 	
 	[_selectedUsers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		[cell toggleSelected:(vo.userID == cell.trivialUserVO.userID)];
 		*stop = cell.isSelected;
 	}];

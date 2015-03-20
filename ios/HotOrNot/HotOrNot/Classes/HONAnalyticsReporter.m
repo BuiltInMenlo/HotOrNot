@@ -144,7 +144,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 								@"purchased"	: NSStringFromBOOL(vo.isPurchased)}});
 }
 
-- (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
+- (NSDictionary *)propertyForTrivialUser:(HONUserVO *)vo {
 	return (@{@"member"	: @{@"id"		: @(vo.userID),
 							@"username"	: vo.username,
 							@"avatar"	: vo.avatarPrefix}});
@@ -236,7 +236,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 									   withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+- (void)trackEvent:(NSString *)event withTrivialUser:(HONUserVO *)trivialUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsReporter sharedInstance] orthodoxProperties] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsReporter sharedInstance] propertyForTrivialUser:trivialUserVO]];
 	

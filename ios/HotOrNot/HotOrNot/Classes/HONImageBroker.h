@@ -9,6 +9,23 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
+// image sizes
+extern const CGSize kSnapAvatarSize;
+extern const CGSize kSnapThumbSize;
+extern const CGSize kSnapTabSize;
+extern const CGSize kSnapMediumSize;
+extern const CGSize kSnapLargeSize;
+
+extern const CGSize kPhotoHDSize;
+
+// image size suffixes
+extern NSString * const kSnapThumbSuffix;
+extern NSString * const kSnapMediumSuffix;
+extern NSString * const kSnapTabSuffix;
+extern NSString * const kSnapLargeSuffix;
+
+extern NSString * const kPhotoHDSuffix;
+
 typedef NS_ENUM(NSUInteger, HONImageBrokerShareTemplateType) {
 	HONImageBrokerShareTemplateTypeDefault = 0,
 	HONImageBrokerShareTemplateTypeInstagram,

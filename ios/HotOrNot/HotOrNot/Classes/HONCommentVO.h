@@ -48,6 +48,7 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @property (nonatomic, retain) CLLocation *location;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarPrefix;
+@property (nonatomic, retain) NSString *imagePrefix;
 @property (nonatomic) int score;
 @property (nonatomic, retain) NSString *textContent;
 @property (nonatomic, retain) UIImage *imageContent;

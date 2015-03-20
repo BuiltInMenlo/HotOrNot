@@ -1,25 +1,30 @@
 //
-//  HONUserVO.h
+//  HONTrivialUserVO.h
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 9/18/12.
-//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 01/23/2014 @ 09:43 .
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONActivityItemVO.h"
+#import "HONOpponentVO.h"
+
+@class HONContactUserVO;
 @interface HONUserVO : NSObject
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary;
++ (HONUserVO *)userFromActivityItemVO:(HONActivityItemVO *)activityItemVO;
++ (HONUserVO *)userFromContactUserVO:(HONContactUserVO *)contactUserVO;
++ (HONUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 
 @property (nonatomic) int userID;
-@property (nonatomic) int points;
-@property (nonatomic) int voteScore;
-@property (nonatomic) int totalVolleys;
-@property (nonatomic) BOOL isVerified;
-@property (nonatomic) BOOL isSuspended;
-@property (nonatomic, retain) NSDate *birthday;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarPrefix;
-@property (nonatomic, retain) NSMutableArray *friends;
-
+@property (nonatomic, retain) NSString *altID;
+@property (nonatomic, retain) NSString *phoneNumber;
+@property (nonatomic, retain) NSDate *invitedDate;
+@property (nonatomic, retain) NSDate *joinedDate;
+@property (nonatomic) int voteScore;
+@property (nonatomic) BOOL isVerified;
 @end

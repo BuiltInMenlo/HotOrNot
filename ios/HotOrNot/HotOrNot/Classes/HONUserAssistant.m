@@ -182,7 +182,7 @@ static HONUserAssistant *sharedInstance = nil;
 	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] mutableCopy];
 	
 	if (![dict hasObjectForKey:key]) {
-		HONTrivialUserVO *vo = [[HONClubAssistant sharedInstance] clubMemberWithUserID:userID];
+		HONUserVO *vo = [[HONClubAssistant sharedInstance] clubMemberWithUserID:userID];
 		
 		if (vo != nil) {
 			[dict setObject:@{@"id"			: @(vo.userID),
@@ -207,7 +207,7 @@ static HONUserAssistant *sharedInstance = nil;
 	NSMutableDictionary *dict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"user_lookup"] mutableCopy];
 	
 	if (![dict hasObjectForKey:key]) {
-		HONTrivialUserVO *vo = [[HONClubAssistant sharedInstance] clubMemberWithUserID:userID];
+		HONUserVO *vo = [[HONClubAssistant sharedInstance] clubMemberWithUserID:userID];
 		
 		if (vo != nil) {
 			[dict setObject:@{@"id"			: @(vo.userID),

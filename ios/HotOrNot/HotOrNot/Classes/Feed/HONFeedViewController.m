@@ -782,7 +782,7 @@
 - (void)_heroImageFinishedLoadingWithError:(NSError *)error
 {
 	HONOpponentVO *opponent = _challenge.creatorVO;
-	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:opponent.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
+//	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:opponent.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
 	_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 	[_heroImageView setImageWithURL:[NSURL URLWithString:[opponent.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
 	

@@ -12,7 +12,7 @@
 #import "HONContactsSearchViewController.h"
 #import "HONCallingCodesViewController.h"
 #import "HONComposeTopicViewController.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONUserClubVO.h"
 
@@ -23,7 +23,7 @@
 @property (nonatomic, strong) NSString *callingCode;
 @property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) NSMutableArray *searchUsers;
-@property (nonatomic, strong) HONTrivialUserVO *searchUserVO;
+@property (nonatomic, strong) HONUserVO *searchUserVO;
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic) BOOL isDismissing;
@@ -84,7 +84,7 @@
 		
 		if ([result count] > 0) {
 			NSDictionary *dict = [result firstObject];
-			_searchUserVO = [HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
+			_searchUserVO = [HONUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
 																   @"username"	: [dict objectForKey:@"username"],
 																   @"img_url"	: [dict objectForKey:@"avatar_url"]}];
 			[_searchUsers addObject:_searchUserVO];

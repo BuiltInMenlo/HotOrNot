@@ -8,6 +8,7 @@
 
 @class HONLoadingOverlayView;
 @protocol HONLoadingOverlayViewDelegate <NSObject>
+@optional
 - (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView;
 - (void)loadingOverlayViewDidOutro:(HONLoadingOverlayView *)loadingOverlayView;
 @end

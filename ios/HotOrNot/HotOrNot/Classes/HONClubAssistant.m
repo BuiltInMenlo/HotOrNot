@@ -114,7 +114,7 @@ static HONClubAssistant *sharedInstance = nil;
 - (NSMutableDictionary *)clubDictionaryWithOwner:(NSDictionary *)owner activeMembers:(NSArray *)actives pendingMembers:(NSArray *)invites {
 	NSMutableArray *members = [NSMutableArray array];
 	[actives enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		[members addObject:@{@"id"			: @(vo.userID),
 							 @"username"	: vo.username,
 							 @"avatar"		: vo.avatarPrefix,
@@ -124,7 +124,7 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	NSMutableArray *pending = [NSMutableArray array];
 	[invites enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		[pending addObject:@{@"id"			: @(vo.userID),
 							 @"username"	: vo.username,
 							 @"avatar"		: vo.avatarPrefix,
@@ -216,7 +216,7 @@ static HONClubAssistant *sharedInstance = nil;
 		clubVO = [HONUserClubVO clubWithDictionary:result];
 		
 		[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+			HONUserVO *vo = (HONUserVO *)obj;
 			[[HONUserAssistant sharedInstance]writeClubMemberToUserLookup:@{@"id"		: @(vo.userID),
 																			@"username"	: vo.username,
 																			@"avatar"	: vo.avatarPrefix}];
@@ -236,11 +236,11 @@ static HONClubAssistant *sharedInstance = nil;
 	}];
 }
 
-- (HONTrivialUserVO *)clubMemberWithUserID:(int)userID {
+- (HONUserVO *)clubMemberWithUserID:(int)userID {
 	__block HONUserClubVO *clubVO = [[HONClubAssistant sharedInstance] globalClub];
-	__block HONTrivialUserVO *userVO = nil;
+	__block HONUserVO *userVO = nil;
 	[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		
 		if (vo.userID == userID) {
 			userVO = vo;
@@ -452,7 +452,7 @@ static HONClubAssistant *sharedInstance = nil;
 		return (YES);
 	
 	[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		
 		if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 			isFound = YES;
@@ -462,7 +462,7 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	if (!isFound) {
 		[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+			HONUserVO *vo = (HONUserVO *)obj;
 			
 			if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) {
 				isFound = YES;
@@ -1056,14 +1056,14 @@ static HONClubAssistant *sharedInstance = nil;
 			
 			NSMutableArray *participants = [NSMutableArray array];
 			[clubVO.activeMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+				HONUserVO *vo = (HONUserVO *)obj;
 				[selectedUsers addObject:vo];
 				[participants addObject:vo.username];
 				names = [names stringByAppendingFormat:@"%@, ", vo.username];
 			}];
 			
 			[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				HONTrivialUserVO *trivialUserVO = (HONTrivialUserVO *)obj;
+				HONUserVO *trivialUserVO = (HONUserVO *)obj;
 				if ([trivialUserVO.altID length] > 0) {
 					HONContactUserVO *contactUserVO = [HONContactUserVO contactFromTrivialUserVO:trivialUserVO];
 					[selectedContacts addObject:contactUserVO];
@@ -1130,14 +1130,14 @@ static HONClubAssistant *sharedInstance = nil;
 			continue;
 		
 		else {
-			for (HONTrivialUserVO *participantVO in participants) {
-				for (HONTrivialUserVO *vo in ownedClubVO.activeMembers) {
+			for (HONUserVO *participantVO in participants) {
+				for (HONUserVO *vo in ownedClubVO.activeMembers) {
 					NSLog(@"OWNED MATCHING ACTIVE(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
 					avail -= (int)(participantVO.userID == vo.userID);
 				}
 				
 				if (avail > 0) {
-					for (HONTrivialUserVO *vo in ownedClubVO.pendingMembers) {
+					for (HONUserVO *vo in ownedClubVO.pendingMembers) {
 						NSLog(@"OWNED(%d) MATCHING PENDING(%d):[%@]<=|%d|-=>[%@]", ownedClubVO.clubID, avail, participantVO.username, ((participantVO.userID != 0 && vo.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [vo.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])), vo.username);
 						NSLog(@"PARTICIPANT:(%d)[%@]", participantVO.userID, participantVO.altID);
 						NSLog(@"PENDING:(%d)[%@]", vo.userID, vo.altID);
@@ -1167,10 +1167,10 @@ static HONClubAssistant *sharedInstance = nil;
 				continue;
 			
 			else {
-				for (HONTrivialUserVO *participantVO in participants) {
+				for (HONUserVO *participantVO in participants) {
 					avail -= (int)(memberClubVO.ownerID == participantVO.userID);
 					
-					for (HONTrivialUserVO *vo in memberClubVO.activeMembers) {
+					for (HONUserVO *vo in memberClubVO.activeMembers) {
 						if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID])
 							continue;
 						
@@ -1179,7 +1179,7 @@ static HONClubAssistant *sharedInstance = nil;
 					}
 					
 					if (avail > 0) {
-						for (HONTrivialUserVO *vo in memberClubVO.pendingMembers) {
+						for (HONUserVO *vo in memberClubVO.pendingMembers) {
 							NSLog(@"MEMBER MATCHING PENDING(%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, ((participantVO.userID != 0 && vo.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [vo.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID])), vo.username);
 							avail -= (int)((participantVO.userID != 0 && vo.userID != 0 && participantVO.userID == vo.userID) || ([participantVO.altID length] > 0 && [vo.altID length] > 0 && [participantVO.altID isEqualToString:vo.altID]));
 						}
@@ -1205,16 +1205,16 @@ static HONClubAssistant *sharedInstance = nil;
 					continue;
 				
 				else {
-					for (HONTrivialUserVO *participantVO in participants) {
+					for (HONUserVO *participantVO in participants) {
 						avail -= (int)(pendingClubVO.ownerID == participantVO.userID);
 						
-						for (HONTrivialUserVO *vo in pendingClubVO.activeMembers) {
+						for (HONUserVO *vo in pendingClubVO.activeMembers) {
 							NSLog(@"PENDING MATCHING ACTIVE (%d):[%@]<=|%d|-=>[%@]", avail, participantVO.username, (participantVO.userID == vo.userID), vo.username);
 							avail -= (int)(participantVO.userID == vo.userID);
 						}
 						
 						if (avail > 0) {
-							for (HONTrivialUserVO *vo in pendingClubVO.pendingMembers) {
+							for (HONUserVO *vo in pendingClubVO.pendingMembers) {
 								if (vo.userID == [[HONUserAssistant sharedInstance] activeUserID])
 									continue;
 								

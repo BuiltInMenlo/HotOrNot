@@ -46,20 +46,20 @@
 	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : [vo.topicName stringByReplacingOccurrencesOfString:@" " withString:@"%20"]] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];
 	vo.location = [[CLLocation alloc] initWithLatitude:[[[[[[dictionary objectForKey:@"img"] componentsSeparatedByString:@"//"] lastObject] componentsSeparatedByString:@"_"] firstObject] floatValue] longitude:[[[[[[dictionary objectForKey:@"img"] componentsSeparatedByString:@"//"] lastObject] componentsSeparatedByString:@"_"] lastObject] floatValue]];
 	
-	if ([vo.topicName isEqualToString:@"Feeling"]) {
-		__block BOOL isFound = NO;
-		[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			HONTopicVO *topicVO = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
-			
-			if ([topicVO.topicName isEqualToString:vo.subjectName])
-				isFound = YES;
-			
-			*stop = isFound;
-		}];
-		
-		if (!isFound)
-			vo.imagePrefix = [NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", [vo.topicName lowercaseString]];
-	}
+//	if ([vo.topicName isEqualToString:@"Feeling"]) {
+//		__block BOOL isFound = NO;
+//		[[[NSUserDefaults standardUserDefaults] objectForKey:@"compose_topics"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//			HONTopicVO *topicVO = [HONTopicVO topicWithDictionary:(NSDictionary *)obj];
+//			
+//			if ([topicVO.topicName isEqualToString:vo.subjectName])
+//				isFound = YES;
+//			
+//			*stop = isFound;
+//		}];
+//		
+//		if (!isFound)
+//			vo.imagePrefix = [NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", [vo.topicName lowercaseString]];
+//	}
 	
 	vo.score = ([dictionary objectForKey:@"net_vote_score"] != [NSNull null]) ? [[dictionary objectForKey:@"net_vote_score"] intValue] : 0;
 	vo.replies = ([dictionary objectForKey:@"replies"] != nil || [dictionary objectForKey:@"replies"] != [NSNull null]) ? [dictionary objectForKey:@"replies"] : @[];

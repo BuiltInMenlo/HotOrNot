@@ -160,7 +160,7 @@
 				_subjectImageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
 				_isLoading = NO;
 				
-				//[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+				//[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONAmazonS3BucketTypeClubsSource completion:nil];
 				[_selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 			};
 			

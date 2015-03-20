@@ -675,7 +675,9 @@
 											 selector:@selector(_textFieldTextDidChangeChange:)
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
-	textField.text = @"//269759";//@"";
+	textField.text = @"";
+	textField.text = @"//269759";
+	
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);

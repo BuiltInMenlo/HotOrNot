@@ -123,7 +123,7 @@
 		};
 		
 		void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
+//			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 			
 			[avatarImageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultCoverImageURL] stringByAppendingString:kSnapMediumSuffix]]];
 			[UIView animateWithDuration:0.25 animations:^(void) {
@@ -176,8 +176,7 @@
 		};
 		
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
-			
+//			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 			
 			NSLog(@"DEFAULT:[%@]", [[[HONClubAssistant sharedInstance] defaultCoverImageURL] stringByAppendingString:kSnapMediumSuffix]);
 			[imageView setImageWithURL:[NSURL URLWithString:[[[HONClubAssistant sharedInstance] defaultCoverImageURL] stringByAppendingString:kSnapMediumSuffix]]];

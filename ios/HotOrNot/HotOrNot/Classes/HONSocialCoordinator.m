@@ -336,7 +336,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	}
 }
 
-- (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {
+- (void)writeTrivialUser:(HONUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
@@ -385,7 +385,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 	return (isFound);
 }
 
-- (BOOL)isTrivialUserInvitedToClubs:(HONTrivialUserVO *)trivialUserVO {
+- (BOOL)isTrivialUserInvitedToClubs:(HONUserVO *)trivialUserVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
@@ -409,7 +409,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 - (BOOL)isContactUser:(HONContactUserVO *)contactUserVO invitedToClub:(HONUserClubVO *)clubVO {
 	__block BOOL isFound = NO;
 	[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		if (contactUserVO.isSMSAvailable)
 			isFound = ([contactUserVO.mobileNumber isEqualToString:vo.altID]);
 		
@@ -439,11 +439,11 @@ static HONSocialCoordinator *sharedInstance = nil;
 //	return (isFound);
 }
 
-- (BOOL)isTrivialUser:(HONTrivialUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO {
+- (BOOL)isTrivialUser:(HONUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO {
 	
 	__block BOOL isFound = NO;
 	[clubVO.pendingMembers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		HONTrivialUserVO *vo = (HONTrivialUserVO *)obj;
+		HONUserVO *vo = (HONUserVO *)obj;
 		isFound = (trivialUserVO.userID == vo.userID);
 		*stop = isFound;
 	}];
@@ -469,7 +469,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 //	return (isFound);
 }
 
-- (void)writeTrivialUserToDeviceContacts:(HONTrivialUserVO *)trivialUserVO {
+- (void)writeTrivialUserToDeviceContacts:(HONUserVO *)trivialUserVO {
 	CFErrorRef error = NULL;
 	
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);

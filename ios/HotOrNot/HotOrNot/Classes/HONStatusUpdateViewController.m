@@ -13,18 +13,17 @@
 #import "UIView+BuiltinMenlo.h"
 
 #import "PBJFocusView.h"
-#import "PBJStrobeView.h"
 #import "PBJVision.h"
 
 #import "HONStatusUpdateViewController.h"
 #import "HONCommentItemView.h"
-#import "HONCommentNotifyView.h"
 #import "HONScrollView.h"
 #import "HONStatusUpdateHeaderView.h"
 #import "HONStatusUpdateFooterView.h"
 #import "HONChannelInviteButtonView.h"
+#import "HONImageRevealerView.h"
 
-@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) PNChannel *channel;
@@ -36,7 +35,6 @@
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
 @property (nonatomic, strong) PBJFocusView *cameraFocusView;
-@property (nonatomic, strong) PBJStrobeView *strobeView;
 
 @property (nonatomic, strong) UIButton *commentCloseButton;
 @property (nonatomic, strong) UIButton *submitCommentButton;
@@ -48,6 +46,8 @@
 @property (nonatomic, strong) NSString *comment;
 @property (nonatomic, strong) NSTimer *expireTimer;
 @property (nonatomic, strong) UILabel *expireLabel;
+
+@property (nonatomic, strong) HONImageRevealerView *revealerView;
 
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) BOOL isActive;
@@ -143,11 +143,59 @@
 	}];
 }
 
-- (void)_submitCommentReply:(BOOL)isText {
+- (void)_submitTextComment {
 	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
 						   @"club_id"		: @(_clubVO.clubID),
 						   @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-						   @"subject"		: [NSString stringWithFormat:@"%d|%.04f_%.04f|%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, (isText) ? _comment : @"emoji"],
+						   @"subject"		: [NSString stringWithFormat:@"%d|%.04f_%.04f|%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
+						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
+	
+	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
+	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kProgressHUDMinDuration;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+			_progressHUD = nil;
+		}
+	}];
+	
+	[PubNub sendMessage:[dict objectForKey:@"subject"] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+		//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+	}];
+	
+	_isSubmitting = NO;
+}
+
+#pragma mark - Data Calls
+- (void)_uploadPhoto:(UIImage *)image {
+	NSString *filename = [NSString stringWithFormat:@"%d_%@", (int)[[NSDate date] timeIntervalSince1970], [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString]];
+	NSString *imageURLPrefix = [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
+	
+	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:image];
+	
+	NSLog(@"FILE PREFIX: %@", imageURLPrefix);
+	NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
+	NSLog(@"ADJ IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
+	
+	[[HONAPICaller sharedInstance] uploadPhotoToS3:UIImageJPEGRepresentation(processedImage, [HONImageBroker compressJPEGPercentage]) intoBucketType:HONAmazonS3BucketTypeClubsSource withFilename:filename completion:^(NSObject *result) {
+		NSLog(@"S3 UPLOADED:[%@]", result);
+		[self _submitPhotoReplyWithURLPrefix:imageURLPrefix];
+	}];
+}
+
+- (void)_submitPhotoReplyWithURLPrefix:(NSString *)urlPrefix {
+	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+						   @"club_id"		: @(_clubVO.clubID),
+						   @"img_url"		: urlPrefix,
+//						   @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+						   @"subject"		: [NSString stringWithFormat:@"%d|%.04f_%.04f|%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
 						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -188,37 +236,6 @@
 			_channel = channel;
 			_participants = 1;
 			
-//			NSDictionary *dict = @{@"id"				: @"0",
-//								   @"msg_id"			: @"0",
-//								   @"content_type"		: @((int)HONCommentContentTypeSYN),
-//								   
-//								   @"owner_member"		: @{@"id"	: @([[HONUserAssistant sharedInstance] activeUserID]),
-//															@"name"	: [[HONUserAssistant sharedInstance] activeUsername]},
-//								   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-//								   @"text"				: @"you have joined this |DOOD CHAT|",
-//								   
-//								   @"net_vote_score"	: @(0),
-//								   @"status"			: NSStringFromInt(0),
-//								   @"added"				: [NSDate stringFormattedISO8601],
-//								   @"updated"			: [NSDate stringFormattedISO8601]};
-			
-			
-//			NSDictionary *dict = @{@"id"				: @"0",
-//								   @"msg_id"			: @"0",
-//								   @"content_type"		: @((int)HONCommentContentTypeBOT),
-//								   
-//								   @"owner_member"		: @{@"id"	: @(2392),
-//															@"name"	: @"Botly"},
-//								   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", 0.0, 0.0],
-//								   @"text"				: @"Welcome to Popup chat!",
-//								   
-//								   @"net_vote_score"	: @(0),
-//								   @"status"			: NSStringFromInt(0),
-//								   @"added"				: [NSDate stringFormattedISO8601],
-//								   @"updated"			: [NSDate stringFormattedISO8601]};
-//			
-//			[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-			
 			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 			}];
@@ -234,7 +251,7 @@
 		NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
 		
 		HONCommentVO *commentVO = [HONCommentVO commentWithMessage:message];
-		NSLog(@"CommentType:[%@]\n", (commentVO.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (commentVO.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (commentVO.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (commentVO.commentContentType == HONCommentContentTypeText) ? @"Text" : @"UNKNOWN");
+		NSLog(@"CommentType:[%@](%d)\n", (commentVO.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (commentVO.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (commentVO.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (commentVO.commentContentType == HONCommentContentTypeText) ? @"Text" : (commentVO.commentContentType == HONCommentContentTypeImage) ? @"Image" : @"UNKNOWN", commentVO.commentContentType);
 		NSLog(@"commentVO.userID:[%d]", commentVO.userID);
 		
 		if (commentVO.commentContentType == HONCommentContentTypeSYN) {
@@ -283,6 +300,12 @@
 		
 		} else if (commentVO.commentContentType == HONCommentContentTypeText) {
 			[self _appendComment:commentVO];
+		
+		} else if (commentVO.commentContentType == HONCommentContentTypeImage) {
+			[self _appendComment:commentVO];
+		
+		} else {
+			NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.commentContentType);
 		}
 		
 		if (_expireTimer != nil) {
@@ -300,7 +323,7 @@
 														  userInfo:nil
 														   repeats:YES];
 		} else {
-			_expireLabel.text = @"";
+			_expireLabel.text = [NSString stringWithFormat:@"%d other %@ here", _participants - 1, (_participants - 1 == 1) ? @"person" : @"people"];
 		}
 	}];
 	
@@ -447,7 +470,7 @@
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height))];
 //	_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
-	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right);
+	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, 10.0, _scrollView.contentInset.right);
 	_scrollView.alwaysBounceVertical = YES;
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
@@ -459,11 +482,6 @@
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
-	
-//	_inputBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
-//	_inputBGImageView.frame = CGRectOffsetY(_inputBGImageView.frame, 20.0);
-//	_inputBGImageView.userInteractionEnabled = YES;
-//	[_commentFooterView addSubview:_inputBGImageView];
 	
 	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 13.0, _commentsHolderView.frame.size.width - 100.0, 23.0)];
 	_commentTextField.backgroundColor = [UIColor blackColor];
@@ -571,7 +589,7 @@
 	_comment = _commentTextField.text;
 	_commentTextField.text = @"";
 	
-	[self _submitCommentReply:YES];
+	[self _submitTextComment];
 }
 
 - (void)_goActivateTextComment {
@@ -585,7 +603,7 @@
 		[_commentTextField resignFirstResponder];
 	
 	_commentFooterView.hidden = YES;
-	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + (([_expireLabel.text length] > 0) ? _expireLabel.frame.size.height : 0.0) + [UIApplication sharedApplication].statusBarFrame.size.height));
+	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
@@ -657,94 +675,25 @@
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {
-	NSLog(@"_appendComment:[%@]", (vo.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (vo.commentContentType == HONCommentContentTypeBOT) ? @"BOT" :(vo.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (vo.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (vo.commentContentType == HONCommentContentTypeText) ? @"Text" : @"UNKNOWN");
+	NSLog(@"_appendComment:[%@]", (vo.commentContentType == HONCommentContentTypeSYN) ? @"SYN" : (vo.commentContentType == HONCommentContentTypeBOT) ? @"BOT" :(vo.commentContentType == HONCommentContentTypeACK) ? @"ACK" : (vo.commentContentType == HONCommentContentTypeBYE) ? @"BYE": (vo.commentContentType == HONCommentContentTypeText) ? @"Text" : (vo.commentContentType == HONCommentContentTypeImage) ? @"Image" : @"UNKNOWN");
 	[_replies addObject:vo];
 	
-	if (vo.commentContentType == HONCommentContentTypeSYN) {
-		CGFloat offset = 33.0;
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, self.view.frame.size.width, 90.0) asType:HONCommentViewTypeLocalBot];
-		itemView.alpha = 0.0;
-		itemView.commentVO = vo;
-		[_commentsHolderView addSubview:itemView];
-		
-		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
-		
-		[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			itemView.alpha = 1.0;
-			itemView.frame = CGRectOffsetY(itemView.frame, -offset);
-		} completion:^(BOOL finished) {
-		}];
-		
-	} else if (vo.commentContentType == HONCommentContentTypeBOT) {
-//		HONCommentNotifyView *notifyView = [[HONCommentNotifyView alloc] initWithFrame:CGRectMake(0.0, _commentsHolderView.frame.size.height, self.view.frame.size.width, 50.0)];
-//		notifyView.alpha = 0.0;
-//		notifyView.commentVO = vo;
-//		[_commentsHolderView addSubview:notifyView];
-//		
-//		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, notifyView.frame.size.height);
-//		
-//		[UIView animateKeyframesWithDuration:0.125 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-//			notifyView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-		
-		CGFloat offset = 33.0;
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, self.view.frame.size.width, 90.0) asType:HONCommentViewTypeLocalBot];
-		itemView.alpha = 0.0;
-		itemView.commentVO = vo;
-		[_commentsHolderView addSubview:itemView];
-		
-		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
-		
-		[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			itemView.alpha = 1.0;
-			itemView.frame = CGRectOffsetY(itemView.frame, -offset);
-		} completion:^(BOOL finished) {
-		}];
+	CGFloat offset = 33.0;
+	HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, self.view.frame.size.width, 38.0)];
+	itemView.alpha = 0.0;
+	itemView.commentVO = vo;
+	[_commentsHolderView addSubview:itemView];
 	
-	} else if (vo.commentContentType == HONCommentContentTypeBYE) {
-//		HONCommentNotifyView *notifyView = [[HONCommentNotifyView alloc] initWithFrame:CGRectMake(0.0, _commentsHolderView.frame.size.height, self.view.frame.size.width, 50.0)];
-//		notifyView.alpha = 0.0;
-//		notifyView.commentVO = vo;
-//		[_commentsHolderView addSubview:notifyView];
-//		
-//		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, notifyView.frame.size.height);
-//		
-//		[UIView animateKeyframesWithDuration:0.125 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-//			notifyView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-		
-		CGFloat offset = 33.0;
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, self.view.frame.size.width, 90.0) asType:HONCommentViewTypeLocalBot];
-		itemView.alpha = 0.0;
-		itemView.commentVO = vo;
-		[_commentsHolderView addSubview:itemView];
-		
-		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
-		
-		[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			itemView.alpha = 1.0;
-			itemView.frame = CGRectOffsetY(itemView.frame, -offset);
-		} completion:^(BOOL finished) {
-		}];
+	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
 	
-	} else if (vo.commentContentType == HONCommentContentTypeText) {
-		CGFloat offset = 33.0;
-		HONCommentItemView *itemView = [[HONCommentItemView alloc] initWithFrame:CGRectMake(0.0, offset + _commentsHolderView.frame.size.height, self.view.frame.size.width, 90.0) asType:HONCommentViewTypeText];
-		itemView.alpha = 0.0;
-		itemView.commentVO = vo;
-		[_commentsHolderView addSubview:itemView];
-		
-		_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
-		
-		[UIView animateKeyframesWithDuration:0.25 delay:0.00 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-			itemView.alpha = 1.0;
-			itemView.frame = CGRectOffsetY(itemView.frame, -offset);
-		} completion:^(BOOL finished) {
-		}];
-	}
-	
+	[UIView animateKeyframesWithDuration:0.25 delay:0.00
+								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+							  animations:^(void) {
+		itemView.alpha = 1.0;
+		itemView.frame = CGRectOffsetY(itemView.frame, -offset);
+	} completion:^(BOOL finished) {
+	}];
+
 	_scrollView.contentSize = _commentsHolderView.frame.size;
 	[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
 	if (_scrollView.frame.size.height - _commentsHolderView.frame.size.height < 0)
@@ -795,203 +744,6 @@
 }
 
 
-#pragma mark - PBJVisionDelegate
-
-// session
-- (void)visionSessionWillStart:(PBJVision *)vision {
-	NSLog(@"[*:*] visionSessionWillStart [*:*]");
-}
-
-- (void)visionSessionDidStart:(PBJVision *)vision {
-	NSLog(@"[*:*] visionSessionDidStart [*:*]");
-	
-//	if (![_cameraPreviewView superview])
-//		[self.view addSubview:_cameraPreviewView];
-}
-
-- (void)visionSessionDidStop:(PBJVision *)vision {
-	NSLog(@"[*:*] visionSessionDidStop [*:*]");
-	
-	[_cameraPreviewView removeFromSuperview];
-}
-
-// preview
-- (void)visionSessionDidStartPreview:(PBJVision *)vision {
-	NSLog(@"[*:*] visionSessionDidStartPreview [*:*]");
-	
-}
-
-- (void)visionSessionDidStopPreview:(PBJVision *)vision {
-	NSLog(@"[*:*] visionSessionDidStopPreview [*:*]");
-}
-
-// device
-- (void)visionCameraDeviceWillChange:(PBJVision *)vision {
-	NSLog(@"[*:*] visionCameraDeviceWillChange [*:*]");
-}
-
-- (void)visionCameraDeviceDidChange:(PBJVision *)vision {
-	NSLog(@"[*:*] visionCameraDeviceDidChange [*:*]");
-}
-
-// mode
-- (void)visionCameraModeWillChange:(PBJVision *)vision {
-	NSLog(@"[*:*] visionCameraModeWillChange [*:*]");
-}
-
-- (void)visionCameraModeDidChange:(PBJVision *)vision {
-	NSLog(@"[*:*] visionCameraModeDidChange [*:*]");
-}
-
-// format
-- (void)visionOutputFormatWillChange:(PBJVision *)vision {
-	NSLog(@"[*:*] visionOutputFormatWillChange [*:*]");
-}
-
-- (void)visionOutputFormatDidChange:(PBJVision *)vision {
-	NSLog(@"[*:*] visionOutputFormatDidChange [*:*]");
-}
-
-- (void)vision:(PBJVision *)vision didChangeCleanAperture:(CGRect)cleanAperture {
-	NSLog(@"[*:*] vision:didChangeCleanAperture:[%@] [*:*]", NSStringFromCGRect(cleanAperture));
-}
-
-// focus / exposure
-- (void)visionWillStartFocus:(PBJVision *)vision {
-	//NSLog(@"[*:*] visionWillStartFocus [*:*]");
-}
-
-- (void)visionDidStopFocus:(PBJVision *)vision {
-	//NSLog(@"[*:*] visionDidStopFocus [*:*]");
-	
-	if (_cameraFocusView && [_cameraFocusView superview]) {
-		[_cameraFocusView stopAnimation];
-	}
-}
-
-- (void)visionWillChangeExposure:(PBJVision *)vision {
-	//NSLog(@"[*:*] visionWillChangeExposure [*:*]");
-}
-
-- (void)visionDidChangeExposure:(PBJVision *)vision {
-	//NSLog(@"[*:*] visionDidChangeExposure [*:*]");
-	
-	if (_cameraFocusView && [_cameraFocusView superview]) {
-		[_cameraFocusView stopAnimation];
-	}
-}
-
-// flash
-- (void)visionDidChangeFlashMode:(PBJVision *)vision {
-	NSLog(@"[*:*] visionDidChangeFlashMode [*:*]");
-}
-
-// photo
-- (void)visionWillCapturePhoto:(PBJVision *)vision {
-	NSLog(@"[*:*] visionWillCapturePhoto [*:*]");
-}
-
-- (void)visionDidCapturePhoto:(PBJVision *)vision {
-	NSLog(@"[*:*] visionDidCapturePhoto [*:*]");
-}
-
-- (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error {
-	NSLog(@"[*:*] vision:capturedPhoto:[%@] error:[%@] [*:*]", [photoDict objectForKey:PBJVisionPhotoMetadataKey], error);
-	
-	if (error != nil) {
-		[[[UIAlertView alloc] initWithTitle:@"Error taking photo!"
-									message:nil
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		[_statusUpdateFooterView toggleTakePhotoButton:YES];
-		
-	} else {
-//		UIImage *image = [photoDict objectForKey:PBJVisionPhotoImageKey];
-//		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-//		imageView.frame = CGRectFromSize([UIScreen mainScreen].bounds.size);
-//		[self.view addSubview:imageView];
-		
-		[_statusUpdateFooterView toggleTakePhotoButton:YES];
-		
-		[self _submitCommentReply:NO];
-	}
-}
-
-
-// progress
-- (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
-	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
-}
-
-- (void)vision:(PBJVision *)vision didCaptureAudioSample:(CMSampleBufferRef)sampleBuffer {
-	NSLog(@"[*:*] vision:didCaptureAudioSample:[%.04f] [*:*]", vision.capturedAudioSeconds);
-}
-
-
-#pragma mark - ChannelInviteButtonView Delegates
-- (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
-	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", (int)buttonType);
-	
-	BOOL hasSchema = YES;
-	NSString *typeName = @"";
-	NSString *urlSchema = @"";
-	
-	[self _copyDeeplink];
-	
-	if (buttonType == HONChannelInviteButtonTypeClipboard) {
-		typeName = @"Clipboard";
-		
-		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
-									message:nil
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
-		
-	} else if (buttonType == HONChannelInviteButtonTypeSMS) {
-		typeName = @"SMS";
-		
-		if ([MFMessageComposeViewController canSendText]) {
-			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-			messageComposeViewController.messageComposeDelegate = self;
-			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		}
-
-//	} else if (buttonType == HONChannelInviteButtonTypeEmail) {
-//		typeName = @"Email";
-		
-	} else if (buttonType == HONChannelInviteButtonTypeKakao) {
-		typeName = @"Kakao";;
-		urlSchema = @"kakaolink://";
-		
-	} else if (buttonType == HONChannelInviteButtonTypeKik) {
-		typeName = @"Kik";
-		urlSchema = @"kik://";
-		
-	} else if (buttonType == HONChannelInviteButtonTypeLine) {
-		typeName = @"LINE";
-		urlSchema = @"line://";
-	}
-	
-	if (!hasSchema) {
-		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-									message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	
-	} else {
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-		}
-	}
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
-}
-
-
 #pragma mark - StatusUpdateFooterView Delegates
 - (void)statusUpdateFooterViewEnterComment:(HONStatusUpdateFooterView *)statusUpdateFooterView {
 	NSLog(@"[*:*] statusUpdateFooterViewEnterComment [*:*]");
@@ -1026,6 +778,46 @@
 }
 
 
+#pragma mark - CommentItemView Delegates
+- (void)commentItemView:(HONCommentItemView *)commentItemView showPhotoForComment:(HONCommentVO *)commentVO {
+	NSLog(@"[*:*] commentItemView:showPhotoForComment:[%@] [*:*]", commentVO.imagePrefix);
+	
+	if (_revealerView != nil) {
+		if (_revealerView.superview != nil)
+			[_revealerView removeFromSuperview];
+		
+		_revealerView = nil;
+	}
+	
+	_revealerView = [[HONImageRevealerView alloc] initWithComment:commentVO];
+	
+	
+	UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectFromSize(kPhotoHDSize)];
+	[photoImageView centerAlignWithinParentView];
+	[self.view addSubview:photoImageView];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		commentVO.imageContent = image;
+		photoImageView.image = image;
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		NSLog(@"ERROR:[%@]", error.description);
+		commentVO.imageContent = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
+		photoImageView.image = [UIImage imageNamed:@"placeholderClubPhoto_320x320"];
+	};
+	
+	NSLog(@"URL:[%@]", commentVO.avatarPrefix);
+	[photoImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:commentVO.avatarPrefix]
+															cachePolicy:kOrthodoxURLCachePolicy
+														timeoutInterval:[HONAPICaller timeoutInterval]]
+						  placeholderImage:nil
+								   success:imageSuccessBlock
+								   failure:imageFailureBlock];
+	
+	
+}
+
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -1033,7 +825,7 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
-	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + (([_expireLabel.text length] > 0) ? _expireLabel.frame.size.height : 0.0) + 216.0));
+	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + _expireLabel.frame.size.height + 216.0));
 	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
@@ -1260,5 +1052,198 @@
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
 	[controller dismissViewControllerAnimated:YES completion:nil];
 }
+
+
+
+
+#pragma mark - ChannelInviteButtonView Delegates
+- (void)channelInviteButtonView:(HONChannelInviteButtonView *)buttonView didSelectType:(HONChannelInviteButtonType)buttonType {
+	NSLog(@"[*:*] channelInviteButtonView:didSelectType:[%d] [*:*]", (int)buttonType);
+	
+	BOOL hasSchema = YES;
+	NSString *typeName = @"";
+	NSString *urlSchema = @"";
+	
+	[self _copyDeeplink];
+	
+	if (buttonType == HONChannelInviteButtonTypeClipboard) {
+		typeName = @"Clipboard";
+		
+		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
+									message:nil
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+		
+	} else if (buttonType == HONChannelInviteButtonTypeSMS) {
+		typeName = @"SMS";
+		
+		if ([MFMessageComposeViewController canSendText]) {
+			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+			messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+			messageComposeViewController.messageComposeDelegate = self;
+			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		}
+		
+		//	} else if (buttonType == HONChannelInviteButtonTypeEmail) {
+		//		typeName = @"Email";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeKakao) {
+		typeName = @"Kakao";;
+		urlSchema = @"kakaolink://";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeKik) {
+		typeName = @"Kik";
+		urlSchema = @"kik://";
+		
+	} else if (buttonType == HONChannelInviteButtonTypeLine) {
+		typeName = @"LINE";
+		urlSchema = @"line://";
+	}
+	
+	if (!hasSchema) {
+		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+									message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+		}
+	}
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
+}
+
+
+#pragma mark - PBJVisionDelegate
+
+// session
+- (void)visionSessionWillStart:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionWillStart [*:*]");
+}
+
+- (void)visionSessionDidStart:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStart [*:*]");
+	
+//	if (![_cameraPreviewView superview])
+//		[self.view addSubview:_cameraPreviewView];
+}
+
+- (void)visionSessionDidStop:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStop [*:*]");
+	
+	[_cameraPreviewView removeFromSuperview];
+}
+
+// preview
+- (void)visionSessionDidStartPreview:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStartPreview [*:*]");
+}
+
+- (void)visionSessionDidStopPreview:(PBJVision *)vision {
+	NSLog(@"[*:*] visionSessionDidStopPreview [*:*]");
+}
+
+// device
+- (void)visionCameraDeviceWillChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraDeviceWillChange [*:*]");
+}
+
+- (void)visionCameraDeviceDidChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraDeviceDidChange [*:*]");
+}
+
+// mode
+- (void)visionCameraModeWillChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraModeWillChange [*:*]");
+}
+
+- (void)visionCameraModeDidChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionCameraModeDidChange [*:*]");
+}
+
+// format
+- (void)visionOutputFormatWillChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionOutputFormatWillChange [*:*]");
+}
+
+- (void)visionOutputFormatDidChange:(PBJVision *)vision {
+	NSLog(@"[*:*] visionOutputFormatDidChange [*:*]");
+}
+
+- (void)vision:(PBJVision *)vision didChangeCleanAperture:(CGRect)cleanAperture {
+	NSLog(@"[*:*] vision:didChangeCleanAperture:[%@] [*:*]", NSStringFromCGRect(cleanAperture));
+}
+
+// focus / exposure
+- (void)visionWillStartFocus:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionWillStartFocus [*:*]");
+}
+
+- (void)visionDidStopFocus:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionDidStopFocus [*:*]");
+	
+	if (_cameraFocusView && [_cameraFocusView superview]) {
+		[_cameraFocusView stopAnimation];
+	}
+}
+
+- (void)visionWillChangeExposure:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionWillChangeExposure [*:*]");
+}
+
+- (void)visionDidChangeExposure:(PBJVision *)vision {
+	//NSLog(@"[*:*] visionDidChangeExposure [*:*]");
+	
+	if (_cameraFocusView && [_cameraFocusView superview]) {
+		[_cameraFocusView stopAnimation];
+	}
+}
+
+// flash
+- (void)visionDidChangeFlashMode:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidChangeFlashMode [*:*]");
+}
+
+// photo
+- (void)visionWillCapturePhoto:(PBJVision *)vision {
+	NSLog(@"[*:*] visionWillCapturePhoto [*:*]");
+}
+
+- (void)visionDidCapturePhoto:(PBJVision *)vision {
+	NSLog(@"[*:*] visionDidCapturePhoto [*:*]");
+}
+
+- (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error {
+	NSLog(@"[*:*] vision:capturedPhoto:[%@] error:[%@] [*:*]", [photoDict objectForKey:PBJVisionPhotoMetadataKey], error);
+	
+	if (error != nil) {
+		[[[UIAlertView alloc] initWithTitle:@"Error taking photo!"
+									message:nil
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		[_statusUpdateFooterView toggleTakePhotoButton:YES];
+		
+	} else {
+		[_statusUpdateFooterView toggleTakePhotoButton:YES];
+		[self _uploadPhoto:[photoDict objectForKey:PBJVisionPhotoImageKey]];
+	}
+}
+
+
+// progress
+- (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
+}
+
+- (void)vision:(PBJVision *)vision didCaptureAudioSample:(CMSampleBufferRef)sampleBuffer {
+	NSLog(@"[*:*] vision:didCaptureAudioSample:[%.04f] [*:*]", vision.capturedAudioSeconds);
+}
+
 
 @end

@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, HONClubViewCellType) {
 @optional
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectClub:(HONUserClubVO *)clubVO;
 - (void)clubViewCell:(HONClubViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
-- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)clubViewCell:(HONClubViewCell *)viewCell didSelectTrivialUser:(HONUserVO *)trivialUserVO;
 @end
 
 @interface HONClubViewCell : HONToggleLEDViewCell
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, HONClubViewCellType) {
 
 @property (nonatomic, retain) NSString *caption;
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
-@property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, retain) HONUserVO *trivialUserVO;
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, retain) HONClubPhotoVO *statusUpdateVO;
 @property (nonatomic, assign) HONClubViewCellType cellType;

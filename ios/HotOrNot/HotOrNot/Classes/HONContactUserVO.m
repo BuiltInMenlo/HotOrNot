@@ -50,7 +50,7 @@
 }
 
 
-+ (HONContactUserVO *)contactFromTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
++ (HONContactUserVO *)contactFromTrivialUserVO:(HONUserVO *)trivialUserVO {
 	NSString *fName = [[trivialUserVO.username componentsSeparatedByString:@" "] firstObject];
 	NSString *lName = ([[[trivialUserVO.username componentsSeparatedByString:@" "] firstObject] isEqualToString:[[trivialUserVO.username componentsSeparatedByString:@" "] lastObject]]) ? @"" : [[trivialUserVO.username componentsSeparatedByString:@" "] lastObject];
 

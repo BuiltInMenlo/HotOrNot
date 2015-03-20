@@ -12,7 +12,7 @@
 #import <Social/SLServiceTypes.h>
 
 #import "HONContactUserVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONUserClubVO.h"
 
 typedef NS_ENUM(NSUInteger, HONSocialPlatformShareType) {
@@ -49,14 +49,14 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
 - (NSArray *)deviceContactsSortedByName:(BOOL)isSorted;
 
 - (BOOL)isContactUserInvitedToClubs:(HONContactUserVO *)contactUserVO;
-- (BOOL)isTrivialUserInvitedToClubs:(HONTrivialUserVO *)trivialUserVO;
+- (BOOL)isTrivialUserInvitedToClubs:(HONUserVO *)trivialUserVO;
 - (BOOL)isContactUser:(HONContactUserVO *)contactUserVO invitedToClub:(HONUserClubVO *)clubVO;
-- (BOOL)isTrivialUser:(HONTrivialUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO;
+- (BOOL)isTrivialUser:(HONUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO;
 
 - (int)totalInvitedContacts;
 - (void)writeContactUser:(HONContactUserVO *)contactUserVO toInvitedClub:(HONUserClubVO *)clubVO;
-- (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO;
+- (void)writeTrivialUser:(HONUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO;
 
-- (void)writeTrivialUserToDeviceContacts:(HONTrivialUserVO *)trivialUserVO;
+- (void)writeTrivialUserToDeviceContacts:(HONUserVO *)trivialUserVO;
 
 @end

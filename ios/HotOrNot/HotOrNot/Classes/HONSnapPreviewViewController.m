@@ -36,7 +36,6 @@
 @property (nonatomic) BOOL hasTakenVerifyAction;
 @end
 
-
 @implementation HONSnapPreviewViewController
 @synthesize delegate = _delegate;
 
@@ -112,7 +111,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeSelfies completion:nil];
+//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeSelfies completion:nil];
 		
 		[_imageLoadingView stopAnimating];
 		[UIView animateWithDuration:0.33 animations:^(void) {

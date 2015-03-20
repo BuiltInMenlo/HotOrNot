@@ -6,14 +6,17 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-
+//#import <AWSiOSSDKv2/AWSCore.h>
+//#import "AWSCore.h"
 //#import <AWSiOSSDK/S3/AmazonS3Client.h>
+
+#import "S3.h"
 #import <CommonCrypto/CommonHMAC.h>
 
 #import "NSDate+BuiltinMenlo.h"
 
 #import "MBProgressHUD.h"
-#import "Reachability.h"
+//#import "Reachability.h"
 
 #import "HONAPICaller.h"
 
@@ -262,7 +265,8 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (BOOL)canPingAPIServer {
-	return (!([[Reachability reachabilityWithHostName:[[[[HONAPICaller sharedInstance] phpAPIBasePath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
+	return (YES);
+//	return (!([[Reachability reachabilityWithHostName:[[[[HONAPICaller sharedInstance] phpAPIBasePath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
 }
 
 
@@ -361,18 +365,18 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Images
-- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType completion:(void (^)(id result))completion {
+- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONAmazonS3BucketType)bucketType completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:prefixURL forBucketType:bucketType preDelay:kNotifiyDelay completion:completion];
 }
 
-- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(id result))completion {
+- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONAmazonS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"imgURL"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:prefixURL]};
 	
 	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
 	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
-		SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", [[HONAPICaller sharedInstance] phpAPIBasePath], (bucketType == HONS3BucketTypeAvatars) ? kAPIProcessUserImage : (bucketType == HONS3BucketTypeSelfies) ? kAPIProcessChallengeImage : (bucketType == HONS3BucketTypeClubs) ? kAPIClubsProcessImage : kAPIProcessChallengeImage, params);
+		SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", [[HONAPICaller sharedInstance] phpAPIBasePath], (bucketType == HONAmazonS3BucketTypeAvatarsSource) ? kAPIProcessUserImage : (bucketType == HONAmazonS3BucketTypeClubsSource) ? kAPIProcessChallengeImage : (bucketType == HONAmazonS3BucketTypeClubsSource) ? kAPIClubsProcessImage : kAPIProcessChallengeImage, params);
 		AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingPHPBasePath];
-		[httpClient postPath:(bucketType == HONS3BucketTypeAvatars) ? kAPIProcessUserImage : (bucketType == HONS3BucketTypeSelfies) ? kAPIProcessChallengeImage : (bucketType == HONS3BucketTypeClubs) ? kAPIClubsProcessImage : kAPIProcessChallengeImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		[httpClient postPath:(bucketType == HONAmazonS3BucketTypeAvatarsSource) ? kAPIProcessUserImage : (bucketType == HONAmazonS3BucketTypeClubsSource) ? kAPIProcessChallengeImage : (bucketType == HONAmazonS3BucketTypeClubsSource) ? kAPIClubsProcessImage : kAPIProcessChallengeImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
@@ -388,13 +392,13 @@ static HONAPICaller *sharedInstance = nil;
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] phpAPIBasePath], (bucketType == HONS3BucketTypeAvatars) ? kAPIProcessUserImage : (bucketType == HONS3BucketTypeSelfies) ? kAPIProcessChallengeImage : (bucketType == HONS3BucketTypeClubs) ? kAPIClubsProcessImage : kAPIProcessChallengeImage, [error localizedDescription]);
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] phpAPIBasePath], (bucketType == HONAmazonS3BucketTypeAvatarsSource) ? kAPIProcessUserImage : (bucketType == HONAmazonS3BucketTypeClubsSource) ? kAPIProcessChallengeImage : (bucketType == HONAmazonS3BucketTypeClubsSource) ? kAPIClubsProcessImage : kAPIProcessChallengeImage, [error localizedDescription]);
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 		}];
 	});
 }
 
-- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion {
+//- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion {
 //	NSString *bucketName = (bucketType == HONS3BucketTypeAvatars) ? @"hotornot-avatars" : (bucketType == HONS3BucketTypeSelfies) ? @"hotornot-challenges" : (bucketType == HONS3BucketTypeClubs) ? @"hotornot-challenges" : @"hotornot-challenges";
 	
 //	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucketName];
@@ -433,6 +437,70 @@ static HONAPICaller *sharedInstance = nil;
 //			[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 //	}
 //	
+//	if (completion)
+//		completion(nil);
+//}
+
+- (void)uploadPhotoToS3:(NSData *)imageData intoBucketType:(HONAmazonS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion {
+	NSString *bucketName = (bucketType == HONAmazonS3BucketTypeAvatarsSource) ? @"hotornot-avatars" : (bucketType == HONAmazonS3BucketTypeClubsSource) ? @"hotornot-challenges" : @"hotornot-challenges";
+
+	NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:[filename stringByAppendingString:kPhotoHDSuffix]];
+	[imageData writeToFile:path atomically:YES];
+	
+	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
+	
+	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
+	uploadRequest.bucket = bucketName;
+	uploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+	uploadRequest.key = [[path pathComponents] lastObject];
+	uploadRequest.contentType = @"image/jpeg";
+	uploadRequest.body = url;
+	
+	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
+	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+		if (task.error) {
+			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+			if (completion)
+				completion(task.error);
+			
+		} else {
+			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
+			if (completion)
+				completion(nil);
+		}
+		
+		return nil;
+	}];
+	
+	
+	
+//	S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucketName];
+//	por.data = imageData;
+//	por.requestTag = [NSString stringWithFormat:@"%@|%@|%u", por.bucket, kSnapLargeSuffix, (int)bucketType];
+//	por.contentType = @"image/jpeg";
+//	por.delegate = self;
+//
+//	_awsUploadCounter = 0;
+//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAPICaller s3Credentials] objectForKey:@"key"]
+//													 withSecretKey:[[HONAPICaller s3Credentials] objectForKey:@"secret"]];
+//
+//	@try {
+//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:bucketName]];
+//		[s3 putObject:por];
+//
+//	} @catch (AmazonClientException *exception) {
+//		if (_progressHUD == nil)
+//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//
+//		_progressHUD.minShowTime = kProgressHUDMinDuration;
+//		_progressHUD.mode = MBProgressHUDModeCustomView;
+//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+//		[_progressHUD show:NO];
+//		[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//		_progressHUD = nil;
+//	}
+//
 //	if (completion)
 //		completion(nil);
 }
@@ -1938,7 +2006,7 @@ static HONAPICaller *sharedInstance = nil;
 - (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(id result))completion {
 	
 	NSString *userIDs = @"";
-	for (HONTrivialUserVO *vo in inAppUsers)
+	for (HONUserVO *vo in inAppUsers)
 		userIDs = [userIDs stringByAppendingFormat:@"%d,", vo.userID];
 	
 	NSString *contacts = @"";
@@ -2513,5 +2581,45 @@ static HONAPICaller *sharedInstance = nil;
 - (void)removeRequestToQueue:(AFHTTPRequestOperation *)requestOperation {
 	[_requestQueueSet removeObject:requestOperation];
 }
+
+
+//#pragma mark - AWS Delegates
+//- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
+//	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
+//	NSLog(@"\nAWS didCompleteWithResponse:\n[%@] - %@", tag, request.url);
+//	
+//	if ([[tag objectAtIndex:1] isEqualToString:kSnapLargeSuffix]) {
+//		switch ((HONAmazonS3BucketType)[[tag objectAtIndex:2] intValue]) {
+//			case HONAmazonS3BucketTypeAvatarsSource:
+//				break;
+//				
+//			case HONAmazonS3BucketTypeClubsSource:
+//				break;
+//				
+//			default:
+//				break;
+//		}
+//	}
+//	
+//	_awsUploadCounter++;
+//	if (_awsUploadCounter == 2) {
+//		_awsUploadCounter = 0;
+//	}
+//}
+//
+//- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
+//	NSLog(@"AWS didFailWithError:\n%@", [error description]);
+////	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
+//	
+//	if (_progressHUD == nil)
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.minShowTime = kProgressHUDMinDuration;
+//	_progressHUD.mode = MBProgressHUDModeCustomView;
+//	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+//	[_progressHUD show:NO];
+//	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//	_progressHUD = nil;
+//}
 
 @end

@@ -12,7 +12,7 @@
 
 #import "HONContactUserVO.h"
 #import "HONOpponentVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 #import "HONUserClubVO.h"
 #import "HONClubPhotoVO.h"
 
@@ -31,11 +31,11 @@ typedef NS_ENUM(NSUInteger, HONAmazonS3BucketType) {
 	HONAmazonS3BucketTypeEmoticonsCloudFront
 };
 
-typedef NS_ENUM(NSUInteger, HONS3BucketType) {
-	HONS3BucketTypeAvatars = 0,
-	HONS3BucketTypeSelfies,
-	HONS3BucketTypeClubs
-};
+//typedef NS_ENUM(NSUInteger, HONS3BucketType) {
+//	HONS3BucketTypeAvatars = 0,
+//	HONS3BucketTypeSelfies,
+//	HONS3BucketTypeClubs
+//};
 
 
 // network error descriptions
@@ -105,11 +105,13 @@ extern const NSURLRequestCachePolicy kOrthodoxURLCachePolicy;
 /**
  * Images
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType completion:(void (^)(id result))completion;
-- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(id result))completion;
+//- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType completion:(void (^)(id result))completion;
+//- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(id result))completion;
+//- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion;
+
 //- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket completion:(void (^)(id result))completion;
 //- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket preDelay:(int64_t)delay completion:(void (^)(id result))completion;
-- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion;
+- (void)uploadPhotoToS3:(NSData *)imageData intoBucketType:(HONAmazonS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

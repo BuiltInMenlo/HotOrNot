@@ -12,7 +12,7 @@ typedef NS_ENUM(NSUInteger, HONRegexMatchUsernameGroup) {
 	HONRegexMatchSuffixGroup
 };
 
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @interface HONUserAssistant : NSObject
 + (HONUserAssistant *)sharedInstance;

@@ -15,11 +15,33 @@
 
 #import "HONImageBroker.h"
 
+
+
+// image sizes
+const CGSize kSnapAvatarSize = {48.0f, 48.0f};
+const CGSize kSnapThumbSize = {80.0f, 80.0f};
+const CGSize kSnapTabSize = {320.0f, 480.0f};
+const CGSize kSnapMediumSize = {160.0f, 160.0f};
+const CGSize kSnapLargeSize = {320.0f, 568.0f};
+
+const CGSize kPhotoHDSize = {414.0f, 736.0f};
+
+NSString * const kSnapThumbSuffix = @"Small_160x160.jpg";
+NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
+NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
+NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
+
+NSString * const kPhotoHDSuffix = @"_hd.jpg";
+
+
+
 const CGFloat kSnapRatio = 1.775;//1.853125f;
 const CGSize kInstagramSize = {612.0, 612.0};
 //const CGSize kUploadBaseSize = {960.0, 1280.0};
 //const CGSize kUploadBaseSize = {852.0, 1136.0};
-const CGSize kUploadBaseSize = {640.0, 1136.0};
+//const CGSize kUploadBaseSize = {640.0, 1136.0};
+//const CGSize kUploadBaseSize = {1656.0, 2208.0};
+const CGSize kUploadBaseSize = {1242.0, 2208.0};
 
 
 @implementation HONImageBroker
@@ -295,8 +317,8 @@ static HONImageBroker *sharedInstance = nil;
 //	CGFloat ratio = size.width / size.height; //[[HONImageBroker sharedInstance] aspectRatioForImage:image];
 	
 	// w > h : w < h : w = h
-	CGPoint pos = (image.size.width == size.width) ? CGPointMake(0.0, (image.size.width - size.height) * 0.5) : (image.size.height == size.height) ? CGPointMake((image.size.width - size.width) * 0.5, 0.0) : CGPointZero;
-//	NSLog(@"CROPPED POS:[%@] (%@)(%@) {%f}", NSStringFromCGPoint(pos), NSStringFromCGSize(image.size), NSStringFromCGSize(size), ratio);
+	CGPoint pos = (image.size.width == size.width) ? CGPointMake(0.0, (image.size.height - size.height) * 0.5) : (image.size.height == size.height) ? CGPointMake((image.size.width - size.width) * 0.5, 0.0) : CGPointZero;
+	NSLog(@"CROPPED POS:[%@] (%@)(%@) {%f}", NSStringFromCGPoint(pos), NSStringFromCGSize(image.size), NSStringFromCGSize(size), size.width / size.height);
 	
 	return (CGRectMake(pos.x, pos.y, size.width, size.height));
 }
@@ -363,13 +385,13 @@ static HONImageBroker *sharedInstance = nil;
 	if (image.imageOrientation != UIImageOrientationUp)
 		image = [image fixOrientation];
 	
-//	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+	NSLog(@"PRE-PROC IMAGE:[%@] (%f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
 	UIImage *scaledImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:kUploadBaseSize preserveRatio:YES];
-//	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+	NSLog(@"SCALED IMAGE:[%@] (%f)", NSStringFromCGSize(scaledImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
 	UIImage *croppedImage = [[HONImageBroker sharedInstance] cropImage:scaledImage toRect:[[HONImageBroker sharedInstance] rectForCroppedImage:scaledImage toSize:kUploadBaseSize]];
-//	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+	NSLog(@"CROPPED IMAGE:[%@] (%f)", NSStringFromCGSize(croppedImage.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
 	
 	return (croppedImage);
 	

@@ -13,7 +13,7 @@
 #import "HONTableViewCell.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
-#import "HONUserVO.h"
+#import "HONRepleteUserVO.h"
 #import "HONComposeTopicViewController.h"
 #import "HONTableView.h"
 

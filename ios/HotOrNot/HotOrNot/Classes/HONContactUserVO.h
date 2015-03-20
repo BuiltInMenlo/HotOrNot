@@ -12,10 +12,10 @@ typedef NS_ENUM(NSUInteger, HONContactType) {
 	HONContactTypeMatched
 };
 
-@class HONTrivialUserVO;
+@class HONUserVO;
 @interface HONContactUserVO : NSObject
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary;
-+ (HONContactUserVO *)contactFromTrivialUserVO:(HONTrivialUserVO *)trivialUserVO;
++ (HONContactUserVO *)contactFromTrivialUserVO:(HONUserVO *)trivialUserVO;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

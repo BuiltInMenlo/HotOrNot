@@ -7,7 +7,7 @@
 //
 
 #import "HONViewController.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 typedef NS_ENUM(NSUInteger, HONActivityProfileType) {
 	HONActivityProfileTypeUser,
@@ -32,5 +32,5 @@ typedef NS_ENUM(NSUInteger, HONActivityAlertType) {
 
 
 @interface HONActivityViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
-- (id)initWithTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (id)initWithTrivialUser:(HONUserVO *)trivialUserVO;
 @end

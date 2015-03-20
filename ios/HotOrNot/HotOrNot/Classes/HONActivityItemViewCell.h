@@ -8,11 +8,11 @@
 
 #import "HONTableViewCell.h"
 #import "HONActivityItemVO.h"
-#import "HONTrivialUserVO.h"
+#import "HONUserVO.h"
 
 @class HONActivityItemViewCell;
 @protocol HONActivityItemViewCellDelegate <HONTableViewCellDelegate>
-- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONUserVO *)trivialUserVO;
 @end
 
 @interface HONActivityItemViewCell : HONTableViewCell

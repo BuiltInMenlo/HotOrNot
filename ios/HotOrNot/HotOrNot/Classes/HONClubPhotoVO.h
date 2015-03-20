@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, HONClubPhotoSubmissionType) {
 
 @interface HONClubPhotoVO : NSObject
 + (HONClubPhotoVO *)clubPhotoWithDictionary:(NSDictionary *)dictionary;
+
 @property (nonatomic, retain) NSDictionary *dictionary;
 
 @property (nonatomic) int userID;

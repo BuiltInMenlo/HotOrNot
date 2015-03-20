@@ -20,7 +20,7 @@
 #import "HONActivityItemVO.h"
 
 @interface HONActivityViewController () <HONActivityItemViewCellDelegate>
-@property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
+@property (nonatomic, strong) HONUserVO *trivialUserVO;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, assign, readonly) HONActivityProfileType userProfileType;
 @property (nonatomic, strong) NSMutableArray *activityAlerts;
@@ -40,7 +40,7 @@
 	return (self);
 }
 
-- (id)initWithTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+- (id)initWithTrivialUser:(HONUserVO *)trivialUserVO {
 	if ((self = [self init])) {
 		_trivialUserVO = trivialUserVO;
 		[[NSNotificationCenter defaultCenter] addObserver:self
@@ -73,7 +73,7 @@
 	
 	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != nil) {
-			_trivialUserVO = [HONTrivialUserVO userWithDictionary:result];
+			_trivialUserVO = [HONUserVO userWithDictionary:result];
 			_userProfileType = ([[HONUserAssistant sharedInstance] activeUserID] == _trivialUserVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
 			[self _retrieveActivityItems];
 			
@@ -220,7 +220,7 @@
 
 
 #pragma mark - ActivityItemView Delegates
-- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO {
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONUserVO *)trivialUserVO {
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Show User Activity"
 //									  withTrivialUser:trivialUserVO];
 }

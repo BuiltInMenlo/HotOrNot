@@ -9,7 +9,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "HONBaseVO.h"
-#import "HONTopicVO.h"
 #import "HONSubjectVO.h"
 
 @interface HONStatusUpdateVO : HONBaseVO
