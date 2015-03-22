@@ -9,6 +9,7 @@
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
+#import "NSDictionary+BuiltInMenlo.h"
 #import "PubNub+BuiltInMenlo.h"
 #import "UIView+BuiltinMenlo.h"
 
@@ -342,7 +343,7 @@
 														  userInfo:nil
 														   repeats:YES];
 		} else {
-			_expireLabel.text = [NSString stringWithFormat:@"%d other %@ here", _participants - 1, (_participants - 1 == 1) ? @"person" : @"people"];
+			_expireLabel.text = [NSString stringWithFormat:@"%d other %@ here right now…", _participants - 1, (_participants - 1 == 1) ? @"person is" : @"people are"];
 		}
 	}];
 	
@@ -541,6 +542,16 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
+	
+//	if ([_statusUpdateVO.comment isEqualToString:@"YES"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
+															message:[NSString stringWithFormat:@"doodch.at/%d/\nYour Popup will expire in 10 minutes if no one joins. Would you like to share now?", _statusUpdateVO.statusUpdateID]
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:NSLocalizedString(@"What's a Popup?", nil), @"Cancel", nil];
+		[alertView setTag:HONStatusUpdateAlertViewTypeIntro];
+		[alertView show];
+//	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -571,13 +582,11 @@
 
 
 - (void)_goShare {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"share"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"share"];
+	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
+							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID)};
 	
-	[[NSUserDefaults standardUserDefaults] setObject:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]} forKey:@"share"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:@{@"deeplink"	: [NSString stringWithFormat:@"dood://%d", _statusUpdateVO.statusUpdateID]}];
+	[[NSUserDefaults standardUserDefaults] replaceObject:metaData forKey:@"share_props"];
+	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:metaData];
 }
 
 - (void)_goFlag {
@@ -897,6 +906,11 @@
 	vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
 }
 
+- (void)statusUpdateHeaderViewCopyLink:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
+	NSLog(@"[*:*] statusUpdateHeaderViewCopyLink [*:*]");
+	[self _goShare];
+}
+
 - (void)statusUpdateHeaderViewGoBack:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
 	NSLog(@"[*:*] statusUpdateHeaderViewGoBack [*:*]");
 	
@@ -1111,11 +1125,22 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == HONStatusUpdateAlertViewTypeFlag) {
-		if (buttonIndex == 1) {
-			[self _flagStatusUpdate];
-		}
 	
+	if (alertView.tag == HONStatusUpdateAlertViewTypeIntro) {
+		if (buttonIndex == 0) {
+			[self _goShare];
+			
+		} else if (buttonIndex == 1) {
+			[[[UIAlertView alloc] initWithTitle:nil
+										message:@"A Popup is real time chat that can only be accessed by sharing a unique a Popup link. The link will only work on mobile and only work if the user has the Popup application installed."
+										delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else if (buttonIndex == 2) {
+			
+		}
+		
 	} else if (alertView.tag == HONStatusUpdateAlertViewTypeBack) {
 		if (buttonIndex == 1) {
 			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(YES) forKey:@"back_chat"];
@@ -1123,6 +1148,11 @@
 			
 			[self _popBack];
 		}
+	} else if (alertView.tag == HONStatusUpdateAlertViewTypeFlag) {
+		if (buttonIndex == 1) {
+			[self _flagStatusUpdate];
+		}
+	
 	}
 }
 

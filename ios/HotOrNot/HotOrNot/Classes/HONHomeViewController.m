@@ -516,6 +516,8 @@
 		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
 				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
+				
 				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
@@ -534,13 +536,61 @@
 		}];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation"
-															message:_textField.text
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-												  otherButtonTitles:@"Create Chat", nil];
-		[alertView setTag:HONHomeAlertViewTypeCompose];
-		[alertView show];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
+		
+		if ([_textField isFirstResponder])
+			[_textField resignFirstResponder];
+		
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Creating Popup link…"];
+		_loadingOverlayView.delegate = self;
+		
+		NSError *error;
+		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
+													 encoding:NSUTF8StringEncoding];
+		
+		NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+									   @"img_url"		: @"",
+									   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+									   @"challenge_id"	: @(0),
+									   @"topic_id"		: @(0),
+									   @"subject"		: _textField.text,
+									   @"subjects"		: jsonString};
+		NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
+		
+		
+		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
+		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kProgressHUDMinDuration;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+				_progressHUD.labelText = @"Error!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+				_progressHUD = nil;
+				
+			} else {
+			} // api result
+			
+			_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _selectedStatusUpdateVO.statusUpdateID];
+			
+			if ([_textField isFirstResponder])
+				[_textField resignFirstResponder];
+			
+			HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+			
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				[_loadingOverlayView outro];
+				[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+				_textField.text = @"What are you doing?";
+			});
+		}]; // api submit
 	}
 }
 
@@ -820,60 +870,7 @@
 	if (alertView.tag == HONHomeAlertViewTypeFlag) {
 	} else if (alertView.tag == HONHomeAlertViewTypeCompose) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
 			
-			if ([_textField isFirstResponder])
-				[_textField resignFirstResponder];
-			
-			_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Creating Popup link…"];
-			_loadingOverlayView.delegate = self;
-			
-			NSError *error;
-			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
-														 encoding:NSUTF8StringEncoding];
-			
-			NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
-										   @"img_url"		: @"",
-										   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
-										   @"challenge_id"	: @(0),
-										   @"topic_id"		: @(0),
-										   @"subject"		: [_textField.text stringByAppendingString:@"|"],
-										   @"subjects"		: jsonString};
-			NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", submitParams);
-			
-			
-			NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
-			[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
-				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-					if (_progressHUD == nil)
-						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-					_progressHUD.minShowTime = kProgressHUDMinDuration;
-					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-					_progressHUD.labelText = @"Error!";
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-					_progressHUD = nil;
-					
-				} else {
-				} // api result
-				
-				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-				
-				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-				pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _selectedStatusUpdateVO.statusUpdateID];
-				
-				if ([_textField isFirstResponder])
-					[_textField resignFirstResponder];
-				
-				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-				
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					[_loadingOverlayView outro];
-					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-					_textField.text = @"What are you doing?";
-				});
-			}]; // api submit
 		}
 		
 	} else if (alertView.tag == HONHomeAlertViewTypeJoin) {

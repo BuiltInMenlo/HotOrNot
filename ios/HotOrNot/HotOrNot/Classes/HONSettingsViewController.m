@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSDictionary+BuiltInMenlo.h"
+
 #import "HONRefreshControl.h"
 #import "KeychainItemWrapper.h"
 
@@ -370,15 +372,19 @@
 	} else*/
 	if (indexPath.section == 0) {
 		if (cell.indexPath.row == 0) {
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																	 delegate:self
-															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													   destructiveButtonTitle:nil
-															otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on SMS", @"Share on Email", nil];
-			[actionSheet setTag:1];
-			[actionSheet showInView:[[UIApplication sharedApplication].windows firstObject]];
+			NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeInvite),
+									   @"deeplink"	: @""};
 			
-//			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:nil];
+			[[NSUserDefaults standardUserDefaults] replaceObject:metaData forKey:@"share_props"];
+			[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:metaData];
+			
+//			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+//																	 delegate:self
+//															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+//													   destructiveButtonTitle:nil
+//															otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on SMS", @"Share on Email", nil];
+//			[actionSheet setTag:1];
+//			[actionSheet showInView:[[UIApplication sharedApplication].windows firstObject]];
 			
 		} else {
 			//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Settings Tab - Support"];

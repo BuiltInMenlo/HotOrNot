@@ -22,7 +22,7 @@
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.userID = ([dictionary objectForKey:@"owner_member"] != nil) ? [[[dictionary objectForKey:@"owner_member"] objectForKey:@"id"] intValue] : ([dictionary objectForKey:@"creator"] != nil) ? [[[dictionary objectForKey:@"creator"] objectForKey:@"id"] intValue] : ([dictionary objectForKey:@"creator_id"] != nil) ? [[dictionary objectForKey:@"creator_id"] intValue] : [[dictionary objectForKey:@"owner_member_id"] intValue];
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : ([dictionary objectForKey:@"creator"] != nil) ? [[dictionary objectForKey:@"creator"] objectForKey:@"username"] : @"OP";
-	vo.topicName = ([[dictionary objectForKey:@"emotions"] count] > 0) ? [[dictionary objectForKey:@"emotions"] firstObject] : @"";
+	vo.topicName = NSStringFromBOOL([dictionary objectForKey:@"emotions"] != nil);
 	vo.subjectName = [dictionary objectForKey:@"text"];
 	vo.appStoreURL = ([dictionary objectForKey:@"app_store"] != nil) ? [dictionary objectForKey:@"app_store"] : @"";//@"https://itunes.apple.com/us/app/crossy-road-endless-arcade/id924373886?mt=8";
 	vo.comment = [dictionary objectForKey:@"text"];
@@ -30,17 +30,14 @@
 	vo.username = [[HONUserAssistant sharedInstance] usernameWithDigitsStripped:vo.username];
 	
 	if ([[dictionary objectForKey:@"text"] isDelimitedByString:@"|"]) {
-		vo.topicName = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] firstObject];
 		vo.subjectName = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
 		vo.comment = [[[dictionary objectForKey:@"text"] componentsSeparatedByString:@"|"] lastObject];
 	
 	} else {
-		vo.topicName = [dictionary objectForKey:@"text"];
 		vo.subjectName = [dictionary objectForKey:@"text"];
-		vo.comment = @"";
+		vo.comment = [dictionary objectForKey:@"text"];
 	}
 	
-	vo.topicName = ([vo.topicName length] == 0) ? @"N/A" : vo.topicName;
 	vo.subjectName = ([vo.subjectName length] == 0) ? @"N/A" : vo.subjectName;
 	
 	vo.imagePrefix = [[NSString stringWithFormat:@"https://hotornot-compose.s3.amazonaws.com/%@.png", ([vo.topicName isEqualToString:@"Feeling"]) ? vo.subjectName : [vo.topicName stringByReplacingOccurrencesOfString:@" " withString:@"%20"]] lowercaseString];//2nd-tier vo // [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL]];

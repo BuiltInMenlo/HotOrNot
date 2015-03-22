@@ -15,6 +15,11 @@
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
 
+typedef NS_ENUM(NSUInteger, HONSocialActionType) {
+	HONSocialActionTypeInvite = 0,
+	HONSocialActionTypeShare
+};
+
 typedef NS_ENUM(NSUInteger, HONSocialPlatformShareType) {
 	HONSocialPlatformShareTypeDefault = 0,
 	HONSocialPlatformShareTypeClipboard,
@@ -37,6 +42,7 @@ typedef NS_ENUM(NSUInteger, HONSocialPlatformShareActionSheetType) {
 @interface HONSocialCoordinator : NSObject <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
 + (HONSocialCoordinator *)sharedInstance;
 
++ (NSString *)inviteMessageForSocialPlatform:(HONSocialPlatformShareType)shareType;
 + (NSString *)shareMessageForSocialPlatform:(HONSocialPlatformShareType)shareType;
 + (UIImage *)shareImageForSocialPlatform:(HONSocialPlatformShareType)shareType;
 - (void)presentActionSheetForSharingWithMetaData:(NSDictionary *)metaData;

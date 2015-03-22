@@ -42,6 +42,35 @@ static HONSocialCoordinator *sharedInstance = nil;
 	return (self);
 }
 
++ (NSString *)inviteMessageForSocialPlatform:(HONSocialPlatformShareType)shareType {
+	NSString *key = kSocialPlatformDefaultKey;
+	
+	if (shareType == HONSocialPlatformShareTypeClipboard) {
+		key = kSocialPlatformClipboardKey;
+		
+	} else if (shareType == HONSocialPlatformShareTypeInstagram) {
+		key = kSocialPlatformInstagamKey;
+		
+	} else if (shareType == HONSocialPlatformShareTypeSMS) {
+		key = kSocialPlatformSMSKey;
+		
+	} else if (shareType == HONSocialPlatformShareTypeEmail) {
+		key = kSocialPlatformEmailKey;
+		
+	} else if (shareType == HONSocialPlatformShareTypeTwitter) {
+		key = kSocialPlatformTwitterKey;
+		
+	} else if (shareType == HONSocialPlatformShareTypeFacebook) {
+		key = kSocialPlatformFacebookKey;
+		
+	} else if (shareType == HONSocialPlatformShareTypeKik) {
+		key = kSocialPlatformKikKey;
+	}
+	
+	NSDictionary *inviteFormats = [[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"];
+	return (([key isEqualToString:kSocialPlatformEmailKey]) ? [NSString stringWithFormat:@"%@|%@", [[inviteFormats objectForKey:key] objectForKey:@"subject"], [[inviteFormats objectForKey:key] objectForKey:@"body"]] : [inviteFormats objectForKey:key]);
+}
+
 + (NSString *)shareMessageForSocialPlatform:(HONSocialPlatformShareType)shareType {
 	NSString *key = kSocialPlatformDefaultKey;
 	
@@ -99,9 +128,10 @@ static HONSocialCoordinator *sharedInstance = nil;
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:[@"share_template-" stringByAppendingString:key]]]);
 }
 
-
 - (void)presentActionSheetForSharingWithMetaData:(NSDictionary *)metaData {
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+	[UIPasteboard generalPasteboard].string = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeDefault], [metaData objectForKey:@"deeplink"]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:(metaData != nil) ? [metaData objectForKey:@"title"] : nil
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil

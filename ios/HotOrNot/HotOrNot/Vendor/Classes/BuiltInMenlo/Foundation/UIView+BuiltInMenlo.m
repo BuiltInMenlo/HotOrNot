@@ -54,25 +54,16 @@
 }
 
 - (void)centerAlignWithinParentView {
-	if (self.superview != nil) {
-		[self centerHorizontalAlignWithRect:self.superview.frame];
-		[self centerVerticalAlignWithRect:self.superview.frame];
-	}
+	[self centerHorizontalAlignWithinParentView];
+	[self centerVerticalAlignWithinParentView];
 }
 
 - (void)centerHorizontalAlignWithinParentView {
-	if (self.superview != nil)
-		[self centerHorizontalAlignWithRect:self.superview.frame];
+	self.frame = (self.superview != nil) ? CGRectTranslateX(self.frame, (self.superview.frame.size.width - self.frame.size.width) * 0.5) : self.frame;
 }
 
 - (void)centerVerticalAlignWithinParentView {
-	if (self.superview != nil)
-		[self centerVerticalAlignWithRect:self.superview.frame];
-}
-
-- (void)centerAlignWithRect:(CGRect)rect {
-	[self centerHorizontalAlignWithRect:rect];
-	[self centerVerticalAlignWithRect:rect];
+	self.frame = (self.superview != nil) ? CGRectTranslateY(self.frame, (self.superview.frame.size.height - self.frame.size.height) * 0.5) : self.frame;
 }
 
 - (void)centerHorizontalAlignWithRect:(CGRect)rect {

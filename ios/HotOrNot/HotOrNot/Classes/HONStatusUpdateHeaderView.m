@@ -44,7 +44,7 @@
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
-		subjectLabel.text = _statusUpdateVO.topicName;
+		subjectLabel.text = _statusUpdateVO.subjectName;
 		[self addSubview:subjectLabel];
 		
 		UILabel *linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 80.0, 220.0, 18.0)];
@@ -58,6 +58,11 @@
 		UIImageView *linkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"linkIcon"]];
 		linkImageView.frame = CGRectOffset(linkImageView.frame, linkLabel.frameEdges.right + 5.0, 81.0);
 		[self addSubview:linkImageView];
+		
+		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		linkButton.frame = linkImageView.frame;
+		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:linkButton];
 	}
 	
 	return (self);
@@ -69,6 +74,10 @@
 - (void)_goBack {
 	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewGoBack:)])
 		[self.delegate statusUpdateHeaderViewGoBack:self];
+}
+
+- (void)_goCopyLink {
+	
 }
 
 - (void)_goFlipCamera {

@@ -26,9 +26,12 @@ NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_sc0011.json";
 #else
 NSString * const kAPIHostKey = @"devint";
-NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_marsh.json";
+//NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
+//NSString * const kConfigJSON = @"boot_marsh.json";
 #endif
+
+NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
+NSString * const kConfigJSON = @"boot_sc0011.json";
 
 
 //] api endpts [>
