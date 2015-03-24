@@ -129,7 +129,8 @@ static HONSocialCoordinator *sharedInstance = nil;
 }
 
 - (void)presentActionSheetForSharingWithMetaData:(NSDictionary *)metaData {
-	[UIPasteboard generalPasteboard].string = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeDefault], [metaData objectForKey:@"deeplink"]];
+	//[UIPasteboard generalPasteboard].string = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeDefault], [metaData objectForKey:@"deeplink"]];
+	[UIPasteboard generalPasteboard].string = [metaData objectForKey:@"message"];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:(metaData != nil) ? [metaData objectForKey:@"title"] : nil
 															 delegate:self
@@ -154,6 +155,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 						  otherButtonTitles:nil] show];
 		
 	} else if (shareType == HONSocialPlatformShareTypeEmail) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - email"];
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.delegate = (id<UINavigationControllerDelegate>)self;
@@ -181,6 +183,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 		}
 		
 	} else if (shareType == HONSocialPlatformShareTypeInstagram) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - instagram"];
 		NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 		[[HONImageBroker sharedInstance] saveForInstagram:[HONSocialCoordinator shareImageForSocialPlatform:HONSocialPlatformShareTypeInstagram]
 											 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
@@ -204,6 +207,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 		}
 		
 	} else if (shareType == HONSocialPlatformShareTypeSMS) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - sms"];
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 			messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [metaData objectForKey:@"deeplink"]];
@@ -222,6 +226,7 @@ static HONSocialCoordinator *sharedInstance = nil;
 		}
 		
 	} else if (shareType == HONSocialPlatformShareTypeTwitter) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - twitter"];
 		if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 			SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 			SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {

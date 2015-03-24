@@ -643,7 +643,7 @@
 		4C60AF6A17CCFEF800609792 /* HONStickerButtonsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonsPickerView.m; sourceTree = "<group>"; };
 		4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserToggleViewCell.h; sourceTree = "<group>"; };
 		4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserToggleViewCell.m; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* DOOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DOOD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* Popup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Popup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1758,7 +1758,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* DOOD.app */,
+				4C62652515F96C7100AA7FCE /* Popup.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2144,7 +2144,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* DOOD.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* Popup.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2638,7 +2638,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_NAME = DOOD;
+				PRODUCT_NAME = Popup;
 				PROVISIONING_PROFILE = "fafff231-5e9d-45cf-8357-b2d5885cb494";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "fafff231-5e9d-45cf-8357-b2d5885cb494";
 				SDKROOT = iphoneos;
@@ -2688,7 +2688,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_NAME = DOOD;
+				PRODUCT_NAME = Popup;
 				PROVISIONING_PROFILE = "7203e98c-429a-480e-bcf7-9db8980a97ef";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7203e98c-429a-480e-bcf7-9db8980a97ef";
 				SDKROOT = iphoneos;

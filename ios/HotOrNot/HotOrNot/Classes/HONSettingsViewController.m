@@ -372,6 +372,8 @@
 	} else*/
 	if (indexPath.section == 0) {
 		if (cell.indexPath.row == 0) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"SETTINGS - invite"];
+			
 			NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeInvite),
 									   @"deeplink"	: @""};
 			

@@ -7,7 +7,7 @@
 */
 
 
-"CFBundleDisplayName" = "DOOD";
-"CFBundleName" = "DOOD";
+"CFBundleDisplayName" = "Popup";
+"CFBundleName" = "Popup";
 
-"NSLocationWhenInUseUsageDescription" = "DOOD uses your location to join a live photo feed of who is doing what around you.";
+"NSLocationWhenInUseUsageDescription" = "Popup uses your location to join a live photo feed of who is doing what around you.";

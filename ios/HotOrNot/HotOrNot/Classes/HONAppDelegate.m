@@ -58,10 +58,10 @@ NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRD
 NSString * const kBlowfishIV = @"„7ì”~ís";
 
 #if __APPSTORE_BUILD__ == 1
-NSString * const kKeenIOProjectID = @"54bb13196f31a230ad1cfef9";
-NSString * const kKeenIOMasterKey = @"3DB8C226B5D919804F9A08D6413D4CE2";
-NSString * const kKeenIOReadKey = @"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
-NSString * const kKeenIOWriteKey = @"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
+NSString * const kKeenIOProjectID = @"551054dfe085576f3fb24cfd";//@"54bb13196f31a230ad1cfef9";
+NSString * const kKeenIOMasterKey = @"980A6532BC7AB5B6489BBA2458BBFBCF";//@"3DB8C226B5D919804F9A08D6413D4CE2";
+NSString * const kKeenIOReadKey = @"0b7a1444ba73e7584da531247968ecde3b54733993fece6cb9827dca50248f8df1b3cfd888d39ab9dc326d3c25fabf023a30995b66fe34679d174e2fd56c2cc66039123ae17ad192c4024fc3169922b560616b355d9a7263fac1b37189ad628537a9fd2378ded658cbcf66128ce14dea";//@"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
+NSString * const kKeenIOWriteKey = @"42e6a5311c254b6030c0f2d9f035377e2be399b744c55e09a6c3cfb8c682917f1f02c6d237f3c1b7d160df58b09ce8648de7bbeff3dd189da67e496fbd25312fcea72f189bc21c1bdafe01db17aef22cfd606985acea4e43f184210e588f64fedfecbe041301ab7436e8982dec4e955f";//@"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
 #else
 NSString * const kKeenIOProjectID = @"54bb1391e0855733be551306";
 NSString * const kKeenIOMasterKey = @"D805BE8BA8AF8F65F7C4825CA31C58E1";
@@ -71,10 +71,11 @@ NSString * const kKeenIOWriteKey = @"3765f6e50fdb595882038fb5c336dd31cbe55a2977a
 
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
+//NSString * const kTapStreamSecretKey = @"Y0Xvvy5xTjuJFydsMeAmRA";//@"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-NSString * const kFlurryAPIKey = @"R84M6PFVNH2Z5Q8JW88C";
+NSString * const kFlurryAPIKey = @"QT9CV529T9WRJ9P9MP26";//@"R84M6PFVNH2Z5Q8JW88C";
 
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
@@ -1119,7 +1120,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				
 				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-				pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", vo.statusUpdateID];
+				pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", vo.statusUpdateID];
 				
 				[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
 			}]; // api submit

@@ -22,6 +22,7 @@
 #import "HONActivityViewController.h"
 #import "HONRegisterViewController.h"
 #import "HONRestrictedViewController.h"
+#import "HONPrivacyPolicyViewController.h"
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
@@ -236,6 +237,8 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	
 	_transitionController = [[TransitionDelegate alloc] init];
 	
 	_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
@@ -311,6 +314,11 @@
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 49.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
+	
+	UIButton *focusButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	focusButton.frame = CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height);
+	[focusButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:focusButton];
 }
 
 - (void)viewDidLoad {
@@ -485,6 +493,8 @@
 }
 
 - (void)_goTextField {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - textfield"];
+
 	if (![_textField isFirstResponder])
 		[_textField becomeFirstResponder];
 }
@@ -503,39 +513,39 @@
 //	[self presentViewController:navigationController animated:YES completion:nil];
 	
 	NSString *statusUpdateAffix = @"//";
-	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // IS NUMERIC:[%@] -=- PREFIXED:[%@] SUFFIXED:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromBOOL([_textField.text isSuffixedByString:statusUpdateAffix]), NSStringFromBOOL([[_textField.text substringFromIndex:2] isNumeric]));
+	//NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // IS NUMERIC:[%@] -=- PREFIXED:[%@] SUFFIXED:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromBOOL([_textField.text isSuffixedByString:statusUpdateAffix]), NSStringFromBOOL([[_textField.text substringFromIndex:2] isNumeric]));
 	
-	int statusUpdateID = ([_textField.text isPrefixedOrSuffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
-	if (statusUpdateID > 0) {
-		if ([_textField isFirstResponder])
-			[_textField resignFirstResponder];
-		
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
-		_loadingOverlayView.delegate = self;
-		
-		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
-			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
-				
-				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-				
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-					[_loadingOverlayView outro];
-					_textField.text = @"What are you doing?";
-				});
-				
-			} else {
-				[_loadingOverlayView outro];
-				_textField.text = @"";
-				
-				if (![_textField isFirstResponder])
-					[_textField becomeFirstResponder];
-			}
-		}];
-		
-	} else {
+	//int statusUpdateID = ([_textField.text isPrefixedOrSuffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
+//	if (statusUpdateID > 0) {
+//		if ([_textField isFirstResponder])
+//			[_textField resignFirstResponder];
+//		
+//		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
+//		_loadingOverlayView.delegate = self;
+//		
+//		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+//			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+//				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+//				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
+//				
+//				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+//				
+//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+//					[_loadingOverlayView outro];
+//					_textField.text = @"What are you doing?";
+//				});
+//				
+//			} else {
+//				[_loadingOverlayView outro];
+//				_textField.text = @"";
+//				
+//				if (![_textField isFirstResponder])
+//					[_textField becomeFirstResponder];
+//			}
+//		}];
+//		
+//	} else {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
 		
 		if ([_textField isFirstResponder])
@@ -578,7 +588,7 @@
 			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _selectedStatusUpdateVO.statusUpdateID];
+			pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", _selectedStatusUpdateVO.statusUpdateID];
 			
 			if ([_textField isFirstResponder])
 				[_textField resignFirstResponder];
@@ -591,13 +601,13 @@
 				_textField.text = @"What are you doing?";
 			});
 		}]; // api submit
-	}
+//	}
 }
 
 - (void)_goSettings {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - more_button"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -724,7 +734,7 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	textField.text = @"";
-	textField.text = @"//269759";
+	//textField.text = @"//269759";
 	
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
@@ -796,6 +806,7 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 //	NSLog(@"[*:*] scrollViewDidEndDecelerating:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - swipe_%d", (int)(scrollView.contentOffset.x / scrollView.frame.size.width)]];
 	
 	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
 	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {

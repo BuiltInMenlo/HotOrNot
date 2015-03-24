@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "swipeCONTENT_002@2x.png"
+      "filename" : "homeHeaderBG@2x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "swipeCONTENT_002@2x-1.png"
+      "filename" : "homeHeaderBG@2x-1.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "swipeCONTENT_002@1x.png",
+      "filename" : "homeHeaderBG@2x-2.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "swipeCONTENT_002@3x.png"
+      "filename" : "homeHeaderBG@3x.png"
     }
   ],
   "info" : {

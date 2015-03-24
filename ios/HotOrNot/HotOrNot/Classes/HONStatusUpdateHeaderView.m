@@ -16,6 +16,8 @@
 
 @interface HONStatusUpdateHeaderView()
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
+@property (nonatomic, strong) UILabel *backLabel;
+@property (nonatomic, strong) UIImageView *backImageView;
 @end
 
 @implementation HONStatusUpdateHeaderView
@@ -26,10 +28,20 @@
 //		self.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		_statusUpdateVO = statusUpdateVO;
 		
+		_backImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"backButton_nonActive"]];
+		[self addSubview:_backImageView];
+		
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 10.0, 280.0, 26.0)];
+		_backLabel.backgroundColor = [UIColor clearColor];
+		_backLabel.textColor = [UIColor whiteColor];
+		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_backLabel.text = @"Home";
+		[self addSubview:_backLabel];
+		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+//		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+//		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
@@ -51,7 +63,7 @@
 		linkLabel.backgroundColor = [UIColor clearColor];
 		linkLabel.textColor = [UIColor whiteColor];
 		linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		linkLabel.text = [NSString stringWithFormat:@"doodch.at/%d", _statusUpdateVO.statusUpdateID];
+		linkLabel.text = [NSString stringWithFormat:@"http://popup.rocks/%d", _statusUpdateVO.statusUpdateID];
 		[linkLabel resizeFrameForText];
 		[self addSubview:linkLabel];
 		
@@ -72,6 +84,10 @@
 #pragma mark - Public APIs
 #pragma mark - Navigation
 - (void)_goBack {
+	_backImageView.image = nil;
+	
+	_backLabel.text = @"Deleting";
+	
 	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewGoBack:)])
 		[self.delegate statusUpdateHeaderViewGoBack:self];
 }

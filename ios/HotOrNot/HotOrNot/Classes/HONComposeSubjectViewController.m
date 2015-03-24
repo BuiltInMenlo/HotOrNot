@@ -88,10 +88,10 @@
 			
 		} else {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", [[result objectForKey:@"id"] intValue]];
+			pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", [[result objectForKey:@"id"] intValue]];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Your DOOD chat link has been copied to your clipboard!"
-										message:[NSString stringWithFormat:@"Share your DOOD chat link with friends for them to join. doodch.at/%d/", [[result objectForKey:@"id"] intValue]]
+										message:[NSString stringWithFormat:@"Share your DOOD chat link with friends for them to join. http://popup.rocks/%d/", [[result objectForKey:@"id"] intValue]]
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];

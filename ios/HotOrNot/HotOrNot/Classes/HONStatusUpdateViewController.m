@@ -85,7 +85,7 @@
 		_clubVO = clubVO;
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+		pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
 	}
 	
 	return (self);
@@ -440,7 +440,7 @@
 
 - (void)_copyDeeplink {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+	pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
 }
 
 
@@ -451,6 +451,8 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
 	
+	self.view.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	
 	_isActive = YES;
 	_isSubmitting = NO;
 	
@@ -458,11 +460,12 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"placeholderClubPhoto_%.fx%.f", [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].width, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].height]]];
-	bgImageView.frame = CGRectResize(bgImageView.frame, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize]);
-	[self.view addSubview:bgImageView];
+//	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"placeholderClubPhoto_%.fx%.f", [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].width, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].height]]];
+//	bgImageView.frame = CGRectResize(bgImageView.frame, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize]);
+//	[self.view addSubview:bgImageView];
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
+	_cameraPreviewView.alpha = 0.5;
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
@@ -545,9 +548,9 @@
 	
 //	if ([_statusUpdateVO.comment isEqualToString:@"YES"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
-															message:[NSString stringWithFormat:@"doodch.at/%d/\nYour Popup will expire in 10 minutes if no one joins. Would you like to share now?", _statusUpdateVO.statusUpdateID]
+															message:[NSString stringWithFormat:@"popup.rocks/%d/\nYour Popup will expire in 10 minutes if no one joins. Would you like to share now?", _statusUpdateVO.statusUpdateID]
 														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  cancelButtonTitle:@"Share Popup"
 												  otherButtonTitles:NSLocalizedString(@"What's a Popup?", nil), @"Cancel", nil];
 		[alertView setTag:HONStatusUpdateAlertViewTypeIntro];
 		[alertView show];
@@ -582,11 +585,24 @@
 
 
 - (void)_goShare {
-	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
-							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID)};
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - share"];
 	
+	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
+							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),
+							   @"title"		: [NSString stringWithFormat:@"Popup link has been copied to your clipboard!\nhttp://popup.rocks/%d\nShare now for people to join.", _statusUpdateVO.statusUpdateID],
+							   @"message"	: [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID]};
+	
+	[UIPasteboard generalPasteboard].string = [metaData objectForKey:@"message"];
 	[[NSUserDefaults standardUserDefaults] replaceObject:metaData forKey:@"share_props"];
-	[[HONSocialCoordinator sharedInstance] presentActionSheetForSharingWithMetaData:metaData];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:(metaData != nil) ? [metaData objectForKey:@"title"] : nil
+															 delegate:self
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
+	
 }
 
 - (void)_goFlag {
@@ -737,21 +753,21 @@
 		_expireTimer = nil;
 	}
 	
-	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
-	matteView.backgroundColor = [UIColor colorWithRed:0.361 green:0.898 blue:0.576 alpha:1.00];
-	[_headerView addSubview:matteView];
-	
+//	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(84.0, 44.0))];
+//	matteView.backgroundColor = [UIColor blackColor];
+//	[_statusUpdateHeaderView addSubview:matteView];
+//	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 	activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
 	[activityIndicatorView startAnimating];
-	[_headerView addSubview:activityIndicatorView];
+	[_statusUpdateHeaderView addSubview:activityIndicatorView];
 	
-	UILabel *backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 11.0, 120.0, 20.0)];
-	backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-	backLabel.backgroundColor = [UIColor clearColor];
-	backLabel.textColor = [UIColor whiteColor];
-	backLabel.text = @"Deleting…";
-	[_headerView addSubview:backLabel];
+//	UILabel *backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 11.0, 120.0, 20.0)];
+//	backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+//	backLabel.backgroundColor = [UIColor clearColor];
+//	backLabel.textColor = [UIColor whiteColor];
+//	backLabel.text = @"Deleting…";
+//	[_statusUpdateHeaderView addSubview:backLabel];
 	
 	
 	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
@@ -798,7 +814,7 @@
 		
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
+			messageComposeViewController.body = [NSString stringWithFormat:@"http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
 			messageComposeViewController.messageComposeDelegate = self;
 			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		}
@@ -807,7 +823,7 @@
 		//		typeName = @"Email";
 		
 	} else if (buttonType == HONChannelInviteButtonTypeKakao) {
-		typeName = @"Kakao";;
+		typeName = @"Kakao";
 		urlSchema = @"kakaolink://";
 		
 	} else if (buttonType == HONChannelInviteButtonTypeKik) {
@@ -902,6 +918,8 @@
 #pragma mark - StatusUpdateHeaderView Delegates
 - (void)statusUpdateHeaderViewChangeCamera:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
 	NSLog(@"[*:*] statusUpdateHeaderViewChangeCamera [*:*]");
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flip_camera"];
+	
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
 }
@@ -972,95 +990,16 @@
 
 #pragma mark - Actionsheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.tag == HONStatusUpdateActionSheetTypeDownloadAvailable) {
+	if (actionSheet.tag == 0) {
 		if (buttonIndex == 0) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - download"];
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_statusUpdateVO.appStoreURL]];
-		
-		} else if (buttonIndex == HONSocialPlatformShareTypeClipboard) {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
 			
-			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		
-		} else if (buttonIndex == HONSocialPlatformShareTypeTwitter) {
-			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
-				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
-					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
-				};
-				
-				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
-				[twitterComposeViewController addImage:[[HONUserAssistant sharedInstance] activeUserAvatar]];
-				twitterComposeViewController.completionHandler = completionBlock;
-				
-				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:@"Cannot use Twitter from this device!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == HONSocialPlatformShareTypeInstagram) {
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
-			[[HONImageBroker sharedInstance] saveForInstagram:[[HONUserAssistant sharedInstance] activeUserAvatar]
-												 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
-													   toPath:savePath];
-			
-			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
-				UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-				documentInteractionController.UTI = @"com.instagram.exclusivegram";
-				documentInteractionController.delegate = self;
-				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
-				[documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize Instagram!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == HONSocialPlatformShareTypeSMS) {
-			if ([MFMessageComposeViewController canSendText]) {
-				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
-				messageComposeViewController.messageComposeDelegate = self;
-				
-				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
-											message:@"Cannot send SMS from this device!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-		}
-	
-	} else if (actionSheet.tag == HONStatusUpdateActionSheetTypeDownloadNotAvailable) {
-		if (buttonIndex == 0) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
-			
-			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"doodch.at/%d/", _statusUpdateVO.statusUpdateID];
-			
-			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
-										message:@""
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			
 		} else if (buttonIndex == 1) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
@@ -1083,27 +1022,6 @@
 			}
 			
 		} else if (buttonIndex == 2) {
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
-			[[HONImageBroker sharedInstance] saveForInstagram:[[HONUserAssistant sharedInstance] activeUserAvatar]
-												 withUsername:[[HONUserAssistant sharedInstance] activeUsername]
-													   toPath:savePath];
-			
-			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
-				UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-				documentInteractionController.UTI = @"com.instagram.exclusivegram";
-				documentInteractionController.delegate = self;
-				documentInteractionController.annotation = @{@"InstagramCaption"	: [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeInstagram], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]};
-				[documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize Instagram!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == 3) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 				messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
@@ -1117,6 +1035,57 @@
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 3) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
+			
+			typeName = @"Kik";
+			urlSchema = @"kik://";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+			}
+		
+		} else if (buttonIndex == 4) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
+			
+			typeName = @"Kakao";
+			urlSchema = @"kakaolink://";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+			}
+		
+		} else if (buttonIndex == 5) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
 			}
 		}
 	}
@@ -1128,9 +1097,13 @@
 	
 	if (alertView.tag == HONStatusUpdateAlertViewTypeIntro) {
 		if (buttonIndex == 0) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - intro_share"];
+
 			[self _goShare];
 			
 		} else if (buttonIndex == 1) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - intro_help"];
+
 			[[[UIAlertView alloc] initWithTitle:nil
 										message:@"A Popup is real time chat that can only be accessed by sharing a unique a Popup link. The link will only work on mobile and only work if the user has the Popup application installed."
 										delegate:nil
@@ -1138,7 +1111,7 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-			
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - intro_cancel"];
 		}
 		
 	} else if (alertView.tag == HONStatusUpdateAlertViewTypeBack) {
@@ -1271,6 +1244,15 @@
 
 - (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error {
 	NSLog(@"[*:*] vision:capturedPhoto:[%@] error:[%@] [*:*]", [photoDict objectForKey:PBJVisionPhotoMetadataKey], error);
+	
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
+	_cameraPreviewView.alpha = 0.5;
+	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
+	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
+	[self.view addSubview:_cameraPreviewView];
+	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
 	
 	if (error != nil) {
 		[[[UIAlertView alloc] initWithTitle:@"Error taking photo!"
