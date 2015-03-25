@@ -30,8 +30,8 @@ NSString * const kAPIHostKey = @"devint";
 //NSString * const kConfigJSON = @"boot_marsh.json";
 #endif
 
-NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
-NSString * const kConfigJSON = @"boot_sc0011.json";
+//NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
+//NSString * const kConfigJSON = @"boot_sc0011.json";
 
 
 //] api endpts [>

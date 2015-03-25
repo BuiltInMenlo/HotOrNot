@@ -71,8 +71,8 @@ NSString * const kKeenIOWriteKey = @"3765f6e50fdb595882038fb5c336dd31cbe55a2977a
 
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
-//NSString * const kTapStreamSecretKey = @"Y0Xvvy5xTjuJFydsMeAmRA";//@"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
-NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
+NSString * const kTapStreamSecretKey = @"Y0Xvvy5xTjuJFydsMeAmRA";//@"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
+//NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 NSString * const kFlurryAPIKey = @"QT9CV529T9WRJ9P9MP26";//@"R84M6PFVNH2Z5Q8JW88C";
@@ -726,7 +726,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	
 	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
-	if ([protocol isEqualToString:@"dood"]) {
+	if ([protocol isEqualToString:@"popuprocks"]) {
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		

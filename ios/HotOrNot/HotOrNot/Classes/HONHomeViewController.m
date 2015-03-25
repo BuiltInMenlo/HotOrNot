@@ -827,15 +827,15 @@
 			}];
 		}
 		
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-																message:@"You agree to the following terms."
-															   delegate:self
-													  cancelButtonTitle:@"View Terms"
-													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-			[alertView show];
-		}
+//		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+//																message:@"You agree to the following terms."
+//															   delegate:self
+//													  cancelButtonTitle:@"View Terms"
+//													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+//			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+//			[alertView show];
+//		}
 		
 	} else if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
 		if ([_textField isFirstResponder])
@@ -861,15 +861,15 @@
 			}];
 		}
 		
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-																message:@"You agree to the following terms."
-															   delegate:self
-													  cancelButtonTitle:@"View Terms"
-													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-			[alertView show];
-		}
+//		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+//																message:@"You agree to the following terms."
+//															   delegate:self
+//													  cancelButtonTitle:@"View Terms"
+//													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+//			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+//			[alertView show];
+//		}
 	}
 }
 

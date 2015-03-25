@@ -599,7 +599,7 @@
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Copy Chat URL", @"Share on Twitter", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
+													otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 	
@@ -1001,30 +1001,9 @@
 							  otherButtonTitles:nil] show];
 		
 		} else if (buttonIndex == 1) {
-			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
-				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
-					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
-				};
-				
-				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeTwitter], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]]];
-				[twitterComposeViewController addImage:[[HONUserAssistant sharedInstance] activeUserAvatar]];
-				twitterComposeViewController.completionHandler = completionBlock;
-				
-				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:@"Cannot use Twitter from this device!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == 2) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [NSString stringWithFormat:[HONSocialCoordinator shareMessageForSocialPlatform:HONSocialPlatformShareTypeSMS], [_statusUpdateVO.imagePrefix lastComponentByDelimeter:@"/"]];
+				messageComposeViewController.body = [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
 				messageComposeViewController.messageComposeDelegate = self;
 				
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
@@ -1037,12 +1016,27 @@
 								  otherButtonTitles:nil] show];
 			}
 			
-		} else if (buttonIndex == 3) {
+		} else if (buttonIndex == 2) {
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
 			
 			typeName = @"Kik";
 			urlSchema = @"kik://";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+			}
+		
+		} else if (buttonIndex == 3) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
 			
 			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
 				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
@@ -1061,21 +1055,6 @@
 			
 			typeName = @"Kakao";
 			urlSchema = @"kakaolink://";
-			
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-			} else {
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-			}
-		
-		} else if (buttonIndex == 5) {
-			NSString *typeName = @"";
-			NSString *urlSchema = @"";
 			
 			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
 				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
