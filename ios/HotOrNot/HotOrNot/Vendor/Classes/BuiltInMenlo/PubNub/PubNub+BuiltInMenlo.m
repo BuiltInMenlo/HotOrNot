@@ -121,7 +121,7 @@ NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 	__block HONChatMessageType msgType = HONChatMessageTypeUndetermined;
 	__block NSString *typeFlag = [[self.message lastComponentByDelimeter:@"|"] firstComponentByDelimeter:@":"];
 	
-	NSLog(@"MSG FLG:[%@]", typeFlag);
+	//NSLog(@"MSG FLG:[%@]", typeFlag);
 	
 	if ([typeFlag length] == 0)
 		return (HONChatMessageTypeUndefined);

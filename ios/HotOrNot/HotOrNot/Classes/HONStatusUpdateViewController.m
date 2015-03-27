@@ -11,6 +11,7 @@
 #import "NSString+BuiltinMenlo.h"
 #import "NSDictionary+BuiltInMenlo.h"
 #import "PubNub+BuiltInMenlo.h"
+#import "UIImageView+AFNetworking.h"
 #import "UIView+BuiltinMenlo.h"
 
 #import "PBJFocusView.h"
@@ -22,15 +23,17 @@
 #import "HONStatusUpdateHeaderView.h"
 #import "HONStatusUpdateFooterView.h"
 #import "HONChannelInviteButtonView.h"
+#import "HONLoadingOverlayView.h"
 #import "HONImageRevealerView.h"
 
-@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONImageRevealerViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONImageRevealerViewDelegate, HONLoadingOverlayViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) PNChannel *channel;
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) HONScrollView *scrollView;
+@property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) HONStatusUpdateHeaderView *statusUpdateHeaderView;
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
@@ -127,7 +130,7 @@
 			_channel = [self _channelSetupForStatusUpdate];
 		
 		} else {
-			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 				if (messageState == PNMessageSent) {
 					NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 					[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
@@ -189,11 +192,12 @@
 		NSLog(@"S3 UPLOADED:[%@]\n%@", NSStringFromBOOL(success), error);
 		
 		if (success) {
-//			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
-//					  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//						  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//			}];
+			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
+					  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+						  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+			}];
 
+			;[_loadingOverlayView outro];
 			[self _submitPhotoReplyWithURLPrefix:imageURLPrefix];
 		
 		} else {
@@ -322,8 +326,21 @@
 			[self _appendComment:commentVO];
 		
 		} else if (commentVO.messageType == HONChatMessageTypeIMG) {
-			[self _appendComment:commentVO];
-		
+			UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+			
+			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+				NSLog(@"SOURCE IMAGE:[%@] (%.06f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+				[self _appendComment:commentVO];
+			};
+			
+			//NSLog(@"URL:[%@]", [commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]);
+			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]]
+																cachePolicy:kOrthodoxURLCachePolicy
+															timeoutInterval:[HONAPICaller timeoutInterval]]
+							  placeholderImage:nil
+									   success:imageSuccessBlock
+									   failure:nil];
+			
 		} else {
 			NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.messageType);
 		}
@@ -465,7 +482,7 @@
 //	[self.view addSubview:bgImageView];
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
-	_cameraPreviewView.alpha = 0.5;
+//	_cameraPreviewView.alpha = 0.5;
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
@@ -620,7 +637,9 @@
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - photo"];
 	
-	[_statusUpdateFooterView toggleTakePhotoButton:NO];
+	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+	_loadingOverlayView.delegate = self;
+//	[_statusUpdateFooterView toggleTakePhotoButton:NO];
 	[[PBJVision sharedInstance] capturePhoto];
 }
 
@@ -770,7 +789,7 @@
 //	[_statusUpdateHeaderView addSubview:backLabel];
 	
 	
-	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		if (messageState == PNMessageSent) {
 			NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 			[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
@@ -1139,7 +1158,7 @@
 - (void)visionSessionDidStop:(PBJVision *)vision {
 	NSLog(@"[*:*] visionSessionDidStop [*:*]");
 	
-	[_cameraPreviewView removeFromSuperview];
+	//[_cameraPreviewView removeFromSuperview];
 }
 
 // preview
@@ -1149,6 +1168,10 @@
 
 - (void)visionSessionDidStopPreview:(PBJVision *)vision {
 	NSLog(@"[*:*] visionSessionDidStopPreview [*:*]");
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[[PBJVision sharedInstance] startPreview];
+	});
 }
 
 // device
@@ -1222,16 +1245,21 @@
 }
 
 - (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error {
-	NSLog(@"[*:*] vision:capturedPhoto:[%@] error:[%@] [*:*]", [photoDict objectForKey:PBJVisionPhotoMetadataKey], error);
+	NSLog(@"[*:*] vision:capturedPhoto:[%d] error:[%@] [*:*]", [[photoDict objectForKey:PBJVisionPhotoMetadataKey] count], error);
 	
-	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
-	_cameraPreviewView.alpha = 0.5;
-	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
-	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
-	[self.view addSubview:_cameraPreviewView];
-	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
+	[[PBJVision sharedInstance] stopPreview];
+//	[_cameraPreviewView removeFromSuperview];
+//	_cameraPreviewView = nil;
+//	_cameraPreviewLayer = nil;
+//	
+//	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
+//	_cameraPreviewView.alpha = 0.5;
+//	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
+//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+//	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+//	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
+//	[self.view addSubview:_cameraPreviewView];
+//	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
 	
 	if (error != nil) {
 		[[[UIAlertView alloc] initWithTitle:@"Error taking photo!"

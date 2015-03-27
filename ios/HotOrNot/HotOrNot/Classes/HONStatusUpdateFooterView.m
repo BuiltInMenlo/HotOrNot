@@ -26,7 +26,7 @@
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButtonDisabled"] forState:UIControlStateDisabled];
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
-		//[self addSubview:_takePhotoButton];
+		[self addSubview:_takePhotoButton];
 		
 		UIButton *commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		commentButton.frame = CGRectMake((_takePhotoButton.frame.origin.x - 56.0) * 0.5, 0.0, 56.0, 56.0);
