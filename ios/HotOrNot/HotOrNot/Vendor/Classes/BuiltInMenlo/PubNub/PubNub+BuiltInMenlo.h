@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, HONChatMessageType) {
 	HONChatMessageTypeBOT,
 	HONChatMessageTypeTXT,
 	HONChatMessageTypeIMG,
+	HONChatMessageTypeVID,
 	HONChatMessageTypeBYE,
 	HONChatMessageTypeFIN,
 	HONChatMessageTypeERR,
@@ -41,6 +42,7 @@ extern NSString * const kHONChatMessageTypeAutomatedKey;
 extern NSString * const kHONChatMessageTypeBotKey;
 extern NSString * const kHONHONChatMessageTypeTXTKey;
 extern NSString * const kHONHONChatMessageTypeIMGKey;
+extern NSString * const kHONHONChatMessageTypeVIDKey;
 extern NSString * const kHONChatMessageTypeLeaveKey;
 extern NSString * const kHONChatMessageTypeCompleteKey;
 extern NSString * const kHONChatMessageTypeErrorKey;

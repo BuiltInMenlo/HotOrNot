@@ -44,7 +44,7 @@
 	} else {
 		vo.imagePrefix = [dictionary objectForKey:@"image"];
 		vo.location = [[HONDeviceIntrinsics sharedInstance] deviceLocation];
-		vo.textContent = @"has posted a photo!";
+		vo.textContent = (vo.messageType == HONChatMessageTypeIMG) ? @"posted a photo!" : @"posted a video!";
 	}
 	
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
@@ -94,18 +94,14 @@
 	int srcUserID = [message originUserID];
 	HONChatMessageType messageType = [message messageType];
 	
-	
-//	NSString *coords = [kHONChatMessageCoordsRoot stringByAppendingFormat:@"%.04f_%.04f", [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] firstObject] doubleValue], [[[[[message.message componentsSeparatedByString:@"|"] objectAtIndex:1] componentsSeparatedByString:@"_"] lastObject] doubleValue]];
-//	NSString *msgType = [[message.message lastComponentByDelimeter:@"|"] firstComponentByDelimeter:@":"];
-	
 	NSMutableDictionary *dict = [@{@"id"				: @(0),
 								   @"msg_id"			: @(0),
-								   @"content_type"		: @((int)messageType), //([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__SYN__"]) ? @((int)HONChatMessageTypeSYN) : ([[message.message lastComponentByDelimeter:@"|"] isEqualToString:@"__BYE__"]) ? @((int)HONChatMessageTypeBYE) : ([[[NSRegularExpression alloc] initWithPattern:@"^\\d{10,}_[a-f0-9]{32}$"] isMatch:[message.message lastComponentByDelimeter:@"|"]]) ? @((int)HONChatMessageTypeIMG) : ([[message.message lastComponentByDelimeter:@"|"] rangeOfString:@"__ACK__"].location != NSNotFound) ? @((int)HONChatMessageTypeACK) : @((int)HONChatMessageTypeTXT),
+								   @"content_type"		: @((int)messageType),
 								   @"owner_member"		: @{@"id"	: @(srcUserID),
-															@"name"	: message.originUsername}, //([[message.message firstComponentByDelimeter:@"|"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) ? @"You" : ([[message.message firstComponentByDelimeter:@"|"] isNumeric]) ? @"anon" : [message.message firstComponentByDelimeter:@"|"]},
+															@"name"	: message.originUsername},
 								   
-								   @"image"				: (messageType == HONChatMessageTypeIMG) ? [message imageURLPrefix] : [message coordsURI],
-								   @"text"				: [message contents], // [[message.message lastComponentByDelimeter:@"|"] stringByReplacingOccurrencesOfString:@"__ACK__:" withString:@""],
+								   @"image"				: (messageType == HONChatMessageTypeIMG || messageType == HONChatMessageTypeVID) ? [message imageURLPrefix] : [message coordsURI],
+								   @"text"				: [message contents],
 								   
 								   @"net_vote_score"	: @(0),
 								   @"status"			: @(0),

@@ -513,39 +513,39 @@
 //	[self presentViewController:navigationController animated:YES completion:nil];
 	
 	NSString *statusUpdateAffix = @"//";
-	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // IS NUMERIC:[%@] -=- PREFIXED:[%@] SUFFIXED:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromBOOL([_textField.text isSuffixedByString:statusUpdateAffix]), NSStringFromBOOL([[_textField.text substringFromIndex:2] isNumeric]));
-	
-	int statusUpdateID = ([_textField.text isPrefixedOrSuffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
-	if (statusUpdateID > 0) {
-		if ([_textField isFirstResponder])
-			[_textField resignFirstResponder];
-		
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
-		_loadingOverlayView.delegate = self;
-		
-		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
-			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
-				
-				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-				
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-					[_loadingOverlayView outro];
-					_textField.text = @"What are you doing?";
-				});
-				
-			} else {
-				[_loadingOverlayView outro];
-				_textField.text = @"";
-				
-				if (![_textField isFirstResponder])
-					[_textField becomeFirstResponder];
-			}
-		}];
-		
-	} else {
+//	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // IS NUMERIC:[%@] -=- PREFIXED:[%@] SUFFIXED:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromBOOL([_textField.text isSuffixedByString:statusUpdateAffix]), NSStringFromBOOL([[_textField.text substringFromIndex:2] isNumeric]));
+//	
+//	int statusUpdateID = ([_textField.text isPrefixedOrSuffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
+//	if (statusUpdateID > 0) {
+//		if ([_textField isFirstResponder])
+//			[_textField resignFirstResponder];
+//		
+//		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
+//		_loadingOverlayView.delegate = self;
+//		
+//		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+//			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+//				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+//				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
+//				
+//				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+//				
+//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+//					[_loadingOverlayView outro];
+//					_textField.text = @"What are you doing?";
+//				});
+//				
+//			} else {
+//				[_loadingOverlayView outro];
+//				_textField.text = @"";
+//				
+//				if (![_textField isFirstResponder])
+//					[_textField becomeFirstResponder];
+//			}
+//		}];
+//		
+//	} else {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
 		
 		if ([_textField isFirstResponder])
@@ -588,7 +588,7 @@
 			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", _selectedStatusUpdateVO.statusUpdateID];
+			pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _selectedStatusUpdateVO.statusUpdateID];
 			
 			if ([_textField isFirstResponder])
 				[_textField resignFirstResponder];
@@ -601,7 +601,7 @@
 				_textField.text = @"What are you doing?";
 			});
 		}]; // api submit
-	}
+//	}
 }
 
 - (void)_goSettings {

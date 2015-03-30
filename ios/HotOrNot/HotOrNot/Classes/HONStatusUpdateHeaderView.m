@@ -63,7 +63,7 @@
 		linkLabel.backgroundColor = [UIColor clearColor];
 		linkLabel.textColor = [UIColor whiteColor];
 		linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		linkLabel.text = [NSString stringWithFormat:@"http://popup.rocks/%d", _statusUpdateVO.statusUpdateID];
+		linkLabel.text = [NSString stringWithFormat:@"http://popup.vlly.im/%d", _statusUpdateVO.statusUpdateID];
 		[linkLabel resizeFrameForText];
 		[self addSubview:linkLabel];
 		

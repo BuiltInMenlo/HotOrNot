@@ -37,8 +37,8 @@
 		[self addSubview:_captionLabel];
 		
 		_photoIconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_captionLabel.frameEdges.right, 20.0, 0.0, 0.0)];
-		_photoIconImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
-		_photoIconImageView.image = [UIImage imageNamed:@"viewPhotoIcon_loading"];
+		//_photoIconImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
+		_photoIconImageView.image = [UIImage imageNamed:@"viewPhotoButton_Selected"];
 		[self addSubview:_photoIconImageView];
 	}
 	
@@ -70,6 +70,9 @@
 //		lpGestureRecognizer.cancelsTouchesInView = NO;
 //		lpGestureRecognizer.delaysTouchesEnded = NO;
 		[self addGestureRecognizer:lpGestureRecognizer];
+	
+	} else if (_commentVO.messageType == HONChatMessageTypeVID) {
+		
 	}
 	
 	_bgView.frame = CGRectResizeWidth(_bgView.frame, MIN(_photoIconImageView.frameEdges.right, self.frame.size.width - 20.0));

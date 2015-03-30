@@ -59,7 +59,6 @@
 		_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 		_loadingOverlayView.delegate = self;
 		
-		
 		NSLog(@"URL:[%@]", [_commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]);
 		[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]]
 															   cachePolicy:kOrthodoxURLCachePolicy

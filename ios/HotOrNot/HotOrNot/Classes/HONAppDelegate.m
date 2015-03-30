@@ -1120,7 +1120,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				
 				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-				pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", vo.statusUpdateID];
+				pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", vo.statusUpdateID];
 				
 				[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
 			}]; // api submit

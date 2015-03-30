@@ -18,7 +18,8 @@ NSString * const kHONChatMessageTypeAcknowledgeKey		= @"__ACK__";	// ACKnowledge
 NSString * const kHONChatMessageTypeAutomatedKey		= @"__AUT__";	// AUTomated
 NSString * const kHONChatMessageTypeBotKey				= @"__BOT__";	// roBOT
 NSString * const kHONChatMessageTypeTXTKey				= @"__TXT__";	// TeXT
-NSString * const kHONChatMessageTypeIMGKey			= @"__IMG__";   // IMaGe
+NSString * const kHONChatMessageTypeIMGKey				= @"__IMG__";   // IMaGe
+NSString * const kHONChatMessageTypeVIDKey				= @"__VID__";   // VIDeo
 NSString * const kHONChatMessageTypeLeaveKey			= @"__BYE__";	// BYE-bye
 NSString * const kHONChatMessageTypeCompleteKey			= @"__FIN__";	// FINished
 NSString * const kHONChatMessageTypeErrorKey			= @"__ERR__";	// ERRor
@@ -107,7 +108,7 @@ NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 }
 
 - (NSString *)imageURLPrefix {
-	return (([self messageType] == HONChatMessageTypeIMG) ? [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront], [[self.message lastComponentByDelimeter:@"|"] lastComponentByDelimeter:@":"]] : @"");
+	return ((self.messageType == HONChatMessageTypeIMG || self.messageType == HONChatMessageTypeVID) ? [NSString stringWithFormat:@"%@/%@", [HONAPICaller s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront], [[self.message lastComponentByDelimeter:@"|"] lastComponentByDelimeter:@":"]] : @"");
 }
 
 - (CLLocation *)location {
@@ -127,7 +128,7 @@ NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 		return (HONChatMessageTypeUndefined);
 	
 	[[self _messageTypeKeyNamePairs] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		NSLog(@"flag[%@] = %@", (NSString *)key, obj);
+		//NSLog(@"flag[%@] = %@", (NSString *)key, obj);
 		if ([typeFlag isEqualToString:(NSString *)key]) {
 			msgType = (HONChatMessageType)[(NSNumber *)obj intValue];
 			*stop = YES;
@@ -176,6 +177,7 @@ NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 			  kHONChatMessageTypeBotKey				: @(HONChatMessageTypeBOT),
 			  kHONChatMessageTypeTXTKey				: @(HONChatMessageTypeTXT),
 			  kHONChatMessageTypeIMGKey				: @(HONChatMessageTypeIMG),
+			  kHONChatMessageTypeVIDKey				: @(HONChatMessageTypeVID),
 			  kHONChatMessageTypeLeaveKey			: @(HONChatMessageTypeBYE),
 			  kHONChatMessageTypeCompleteKey		: @(HONChatMessageTypeFIN),
 			  kHONChatMessageTypeErrorKey			: @(HONChatMessageTypeERR),

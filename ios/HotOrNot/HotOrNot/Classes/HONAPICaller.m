@@ -474,38 +474,6 @@ static HONAPICaller *sharedInstance = nil;
 		
 		return (nil);
 	}];
-	
-	
-	
-//	S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucketName];
-//	por.data = imageData;
-//	por.requestTag = [NSString stringWithFormat:@"%@|%@|%u", por.bucket, kSnapLargeSuffix, (int)bucketType];
-//	por.contentType = @"image/jpeg";
-//	por.delegate = self;
-//
-//	_awsUploadCounter = 0;
-//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAPICaller s3Credentials] objectForKey:@"key"]
-//													 withSecretKey:[[HONAPICaller s3Credentials] objectForKey:@"secret"]];
-//
-//	@try {
-//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:bucketName]];
-//		[s3 putObject:por];
-//
-//	} @catch (AmazonClientException *exception) {
-//		if (_progressHUD == nil)
-//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//
-//		_progressHUD.minShowTime = kProgressHUDMinDuration;
-//		_progressHUD.mode = MBProgressHUDModeCustomView;
-//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-//		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-//		[_progressHUD show:NO];
-//		[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-//		_progressHUD = nil;
-//	}
-//
-//	if (completion)
-//		completion(nil);
 }
 
 

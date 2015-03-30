@@ -6,6 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+
+#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
+#import <QuartzCore/QuartzCore.h>
+
+#import <AWSiOSSDKv2/S3.h>
+
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
@@ -39,6 +46,7 @@
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
 @property (nonatomic, strong) PBJFocusView *cameraFocusView;
+@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 @property (nonatomic, strong) UIButton *commentCloseButton;
 @property (nonatomic, strong) UIButton *submitCommentButton;
@@ -88,7 +96,7 @@
 		_clubVO = clubVO;
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
+		pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
 	}
 	
 	return (self);
@@ -275,7 +283,7 @@
 		NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
 		
 		HONCommentVO *commentVO = [HONCommentVO commentWithMessage:message];
-		NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : @"UNKNOWN");
+		NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
 		NSLog(@"commentVO.userID:[%d]", commentVO.userID);
 		
 		if (commentVO.messageType == HONChatMessageTypeSYN) {
@@ -341,6 +349,17 @@
 									   success:imageSuccessBlock
 									   failure:nil];
 			
+		} else if (commentVO.messageType == HONChatMessageTypeVID) {
+			_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:commentVO.textContent]];
+			_moviePlayer.view.hidden = NO;
+			[_moviePlayer play];
+			
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				_moviePlayer.view.hidden = YES;
+			});
+			
+			[self _appendComment:commentVO];
+	
 		} else {
 			NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.messageType);
 		}
@@ -363,7 +382,6 @@
 			_expireLabel.text = [NSString stringWithFormat:@"%d other %@ here right now…", _participants - 1, (_participants - 1 == 1) ? @"person is" : @"people are"];
 		}
 	}];
-	
 	
 //	[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
 //		NSLog(@"\n::: MESSAGE PROC OBSERVER - [%@](%@)\n", (state == PNMessageSent) ? @"MessageSent" : (state == PNMessageSending) ? @"MessageSending" : (state == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
@@ -457,7 +475,7 @@
 
 - (void)_copyDeeplink {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
+	pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
 }
 
 
@@ -468,7 +486,7 @@
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
 	
-	self.view.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	self.view.backgroundColor = [UIColor blackColor];// [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	
 	_isActive = YES;
 	_isSubmitting = NO;
@@ -482,13 +500,23 @@
 //	[self.view addSubview:bgImageView];
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
-//	_cameraPreviewView.alpha = 0.5;
+	_cameraPreviewView.alpha = 0.5;
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
+	
+//	NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"mp4"];
+//	_moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL fileURLWithPath:path]];
+	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+	_moviePlayer.controlStyle = MPMovieControlStyleNone;
+	_moviePlayer.shouldAutoplay = YES;
+	_moviePlayer.view.frame = self.view.frame;
+	_moviePlayer.view.hidden = YES;
+	[self.view addSubview:_moviePlayer.view];
+	//[moviePlayer setFullscreen:NO animated:YES];
 	
 	_statusUpdateHeaderView = [[HONStatusUpdateHeaderView alloc] initWithStatusUpdateVO:_statusUpdateVO];
 	_statusUpdateHeaderView.delegate = self;
@@ -564,13 +592,13 @@
 	[super viewDidAppear:animated];
 	
 //	if ([_statusUpdateVO.comment isEqualToString:@"YES"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
-															message:[NSString stringWithFormat:@"popup.rocks/%d/\nYour Popup will expire in 10 minutes if no one joins. Would you like to share now?", _statusUpdateVO.statusUpdateID]
-														   delegate:self
-												  cancelButtonTitle:@"Share Popup"
-												  otherButtonTitles:NSLocalizedString(@"What's a Popup?", nil), @"Cancel", nil];
-		[alertView setTag:HONStatusUpdateAlertViewTypeIntro];
-		[alertView show];
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
+//															message:[NSString stringWithFormat:@"popup.vlly.im/%d/\nYour Popup will expire in 10 minutes if no one joins. Would you like to share now?", _statusUpdateVO.statusUpdateID]
+//														   delegate:self
+//												  cancelButtonTitle:@"Share Popup"
+//												  otherButtonTitles:NSLocalizedString(@"What's a Popup?", nil), @"Cancel", nil];
+//		[alertView setTag:HONStatusUpdateAlertViewTypeIntro];
+//		[alertView show];
 //	}
 }
 
@@ -606,8 +634,8 @@
 	
 	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
 							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),
-							   @"title"		: [NSString stringWithFormat:@"Popup link has been copied to your clipboard!\nhttp://popup.rocks/%d\nShare now for people to join.", _statusUpdateVO.statusUpdateID],
-							   @"message"	: [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID]};
+							   @"title"		: [NSString stringWithFormat:@"Popup link has been copied to your clipboard!\nhttp://popup.vlly.im/%d\nShare now for people to join.", _statusUpdateVO.statusUpdateID],
+							   @"message"	: [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID]};
 	
 	[UIPasteboard generalPasteboard].string = [metaData objectForKey:@"message"];
 	[[NSUserDefaults standardUserDefaults] replaceObject:metaData forKey:@"share_props"];
@@ -729,7 +757,8 @@
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
 	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
-	vision.cameraMode = PBJCameraModePhoto;
+//	vision.cameraMode = PBJCameraModePhoto;
+	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
 	vision.focusMode = PBJFocusModeContinuousAutoFocus;
 	vision.outputFormat = PBJOutputFormatStandard;
@@ -738,7 +767,7 @@
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {
-	NSLog(@"_appendComment:[%@]", (vo.messageType == HONChatMessageTypeSYN) ? @"SYN" : (vo.messageType == HONChatMessageTypeBOT) ? @"BOT" :(vo.messageType == HONChatMessageTypeACK) ? @"ACK" : (vo.messageType == HONChatMessageTypeBYE) ? @"BYE": (vo.messageType == HONChatMessageTypeTXT) ? @"Text" : (vo.messageType == HONChatMessageTypeIMG) ? @"Image" : @"UNKNOWN");
+	NSLog(@"_appendComment:[%@]", (vo.messageType == HONChatMessageTypeSYN) ? @"SYN" : (vo.messageType == HONChatMessageTypeBOT) ? @"BOT" :(vo.messageType == HONChatMessageTypeACK) ? @"ACK" : (vo.messageType == HONChatMessageTypeBYE) ? @"BYE": (vo.messageType == HONChatMessageTypeTXT) ? @"Text" : (vo.messageType == HONChatMessageTypeIMG) ? @"Image" : (vo.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
 	[_replies addObject:vo];
 	
 	CGFloat offset = 33.0;
@@ -833,7 +862,7 @@
 		
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:@"http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
+			messageComposeViewController.body = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
 			messageComposeViewController.messageComposeDelegate = self;
 			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		}
@@ -930,7 +959,21 @@
 
 - (void)statusUpdateFooterViewTakePhoto:(HONStatusUpdateFooterView *)statusUpdateFooterView {
 	NSLog(@"[*:*] statusUpdateFooterViewTakePhoto [*:*]");
-	[self _goImageComment];
+	//[self _goImageComment];
+	
+	[[PBJVision sharedInstance] startVideoCapture];
+	_statusUpdateHeaderView.hidden = YES;
+	_statusUpdateFooterView.hidden = YES;
+	_scrollView.hidden = YES;
+	_expireLabel.hidden = YES;
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[[PBJVision sharedInstance] endVideoCapture];
+		_statusUpdateHeaderView.hidden = NO;
+		_statusUpdateFooterView.hidden = NO;
+		_scrollView.hidden = NO;
+		_expireLabel.hidden = NO;
+	});
 }
 
 
@@ -1022,7 +1065,7 @@
 		} else if (buttonIndex == 1) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.rocks/%d/", _statusUpdateVO.statusUpdateID];
+				messageComposeViewController.body = [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
 				messageComposeViewController.messageComposeDelegate = self;
 				
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
@@ -1273,6 +1316,39 @@
 		[_statusUpdateFooterView toggleTakePhotoButton:YES];
 		[self _uploadPhoto:[photoDict objectForKey:PBJVisionPhotoImageKey]];
 	}
+}
+
+- (void)vision:(PBJVision *)vision capturedVideo:(NSDictionary *)videoDict error:(NSError *)error {
+	NSLog(@"[*:*] vision:capturedVideo:[%@] [*:*]", videoDict);
+	
+	NSString *bucketName = @"hotornot-challenges";
+	
+	NSString *path = [videoDict objectForKey:PBJVisionVideoPathKey];
+	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
+	
+	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
+	uploadRequest.bucket = bucketName;
+	uploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+	uploadRequest.key = [[path pathComponents] lastObject];
+	uploadRequest.contentType = @"video/mp4";
+	uploadRequest.body = url;
+	
+	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
+	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+		if (task.error)
+			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+		
+		else {
+			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
+			
+			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__VID__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [[path pathComponents] lastObject]]
+					  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+						  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+					  }];
+			
+		}
+		return (nil);
+	}];
 }
 
 
