@@ -527,7 +527,7 @@
 	
 	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 53.0, self.view.frame.size.width, 53.0)];
 	_commentFooterView.backgroundColor = [UIColor blackColor];
-	_commentFooterView.hidden = YES;
+//	_commentFooterView.hidden = YES;
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height - 120.0, self.view.frame.size.width - 20.0, 22.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
@@ -693,7 +693,7 @@
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
 	
-	_commentFooterView.hidden = YES;
+//	_commentFooterView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
@@ -947,7 +947,7 @@
 - (void)statusUpdateFooterViewEnterComment:(HONStatusUpdateFooterView *)statusUpdateFooterView {
 	NSLog(@"[*:*] statusUpdateFooterViewEnterComment [*:*]");
 	
-	_commentFooterView.hidden = NO;
+//	_commentFooterView.hidden = NO;
 	if (![_commentTextField isFirstResponder])
 		[_commentTextField becomeFirstResponder];
 }

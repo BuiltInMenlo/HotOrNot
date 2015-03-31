@@ -167,7 +167,7 @@
 	return (([normalized integerValue] > 0 || [normalized isEqualToString:@"0"]));
 }
 - (BOOL)isPrefixedByString:(NSString *)affix {
-	NSLog(@"PREFIX:[%@]", [self substringToIndex:[affix length]]);
+	//NSLog(@"PREFIX:[%@]", [self substringToIndex:[affix length]]);
 	return (([self length] >= [affix length]) ? [[self substringToIndex:[affix length]] isEqualToString:affix] : NO);
 }
 
@@ -176,7 +176,7 @@
 }
 
 - (BOOL)isSuffixedByString:(NSString *)affix {
-	NSLog(@"SUFFIX:[%@]", [self substringFromIndex:([self length] - [affix length])]);
+	//NSLog(@"SUFFIX:[%@]", [self substringFromIndex:([self length] - [affix length])]);
 	return (([self length] >= [affix length]) ? [[self substringFromIndex:([self length] - [affix length])] isEqualToString:affix] : NO);
 }
 

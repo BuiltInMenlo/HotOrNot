@@ -292,12 +292,42 @@
 	[_textField setReturnKeyType:UIReturnKeyDone];
 	[_textField setTextColor:[UIColor whiteColor]];
 	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_textField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:29];
+	_textField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:29];
 	_textField.keyboardType = UIKeyboardTypeAlphabet;
 	_textField.textAlignment = NSTextAlignmentCenter;
 	_textField.text = @"What are you doing?";
 	_textField.delegate = self;
 	[_scrollView addSubview:_textField];
+	
+	UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 350.0, self.view.frame.size.width - 100.0, 18.0);
+	[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+	linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateNormal];
+	[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateHighlighted];
+	[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:linkButton];
+	
+	UIButton *supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 370.0, self.view.frame.size.width - 100.0, 18.0);
+	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+	supportButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	[supportButton setTitle:@"/Support" forState:UIControlStateNormal];
+	[supportButton setTitle:@"/Support" forState:UIControlStateHighlighted];
+	[supportButton addTarget:self action:@selector(_goSupport) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:supportButton];
+	
+
+	
+//	UILabel *supportLabel = [[UILabel alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 370.0, self.view.frame.size.width - 100.0, 18.0)];
+//	supportLabel.backgroundColor = [UIColor clearColor];
+//	supportLabel.textColor = [UIColor whiteColor];
+//	supportLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+//	supportLabel.textAlignment = NSTextAlignmentCenter;
+//	supportLabel.text = @"/Support";
+//	[_scrollView addSubview:supportLabel];
 	
 	_composeButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
@@ -314,11 +344,6 @@
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 49.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
-	
-	UIButton *focusButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	focusButton.frame = CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height);
-	[focusButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:focusButton];
 }
 
 - (void)viewDidLoad {
@@ -383,7 +408,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
 }
 
@@ -503,49 +528,42 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 	//									 withProperties:@{@"src"	: @"header"}];
 	
-//	HONComposeTopicViewController *composeTopicViewController = [[HONComposeTopicViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:composeTopicViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	navigationController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-//	[navigationController setTransitioningDelegate:_transitionController];
-//	navigationController.modalPresentationStyle = UIModalPresentationCustom;
-//	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-//	[self presentViewController:navigationController animated:YES completion:nil];
+	int challenge_id = ([[NSUserDefaults standardUserDefaults] hasObjectForKey:@"challenge_id"]) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] : 0;
 	
-	NSString *statusUpdateAffix = @"//";
-//	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // IS NUMERIC:[%@] -=- PREFIXED:[%@] SUFFIXED:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromBOOL([_textField.text isSuffixedByString:statusUpdateAffix]), NSStringFromBOOL([[_textField.text substringFromIndex:2] isNumeric]));
-//	
-//	int statusUpdateID = ([_textField.text isPrefixedOrSuffixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
-//	if (statusUpdateID > 0) {
-//		if ([_textField isFirstResponder])
-//			[_textField resignFirstResponder];
-//		
-//		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
-//		_loadingOverlayView.delegate = self;
-//		
-//		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
-//			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-//				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-//				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
-//				
-//				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-//				
-//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-//					[_loadingOverlayView outro];
-//					_textField.text = @"What are you doing?";
-//				});
-//				
-//			} else {
-//				[_loadingOverlayView outro];
-//				_textField.text = @"";
-//				
-//				if (![_textField isFirstResponder])
-//					[_textField becomeFirstResponder];
-//			}
-//		}];
-//		
-//	} else {
+	NSString *statusUpdateAffix = @"/";
+	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // PREFIXED:[%@] -=- IS NUMERIC:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromInt(challenge_id));
+
+	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
+	if (statusUpdateID > 0) {
+		if ([_textField isFirstResponder])
+			[_textField resignFirstResponder];
+		
+		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
+		_loadingOverlayView.delegate = self;
+		
+		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
+				
+				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+					[_loadingOverlayView outro];
+					_textField.text = @"What are you doing?";
+				});
+				
+			} else {
+				[_loadingOverlayView outro];
+				_textField.text = @"";
+				
+				if (![_textField isFirstResponder])
+					[_textField becomeFirstResponder];
+			}
+		}];
+		
+	} else {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
 		
 		if ([_textField isFirstResponder])
@@ -595,13 +613,26 @@
 			
 			HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 			
+			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt([[result objectForKey:@"id"] intValue]) forKey:@"challenge_id"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[_loadingOverlayView outro];
 				[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 				_textField.text = @"What are you doing?";
 			});
 		}]; // api submit
-//	}
+	}
+}
+
+- (void)_goDeeplink {
+	_textField.text = [NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]];
+	[self _goCompose];
+}
+
+- (void)_goSupport {
+	_textField.text = @"/411";
+	[self _goCompose];
 }
 
 - (void)_goSettings {

@@ -40,8 +40,6 @@
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
-//		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-//		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
@@ -52,23 +50,24 @@
 		[cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cameraFlipButton];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 51.0, 280.0, 20.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 51.0, self.frame.size.width - 20.0, 20.0)];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.text = _statusUpdateVO.subjectName;
 		[self addSubview:subjectLabel];
 		
-		UILabel *linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 80.0, 220.0, 18.0)];
+		UILabel *linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 80.0, self.frame.size.width - 100.0, 18.0)];
 		linkLabel.backgroundColor = [UIColor clearColor];
 		linkLabel.textColor = [UIColor whiteColor];
 		linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		linkLabel.text = [NSString stringWithFormat:@"http://popup.vlly.im/%d", _statusUpdateVO.statusUpdateID];
-		[linkLabel resizeFrameForText];
+		linkLabel.textAlignment = NSTextAlignmentCenter;
+		linkLabel.text = [NSString stringWithFormat:@"/%d", _statusUpdateVO.statusUpdateID];
 		[self addSubview:linkLabel];
 		
 		UIImageView *linkImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"linkIcon"]];
-		linkImageView.frame = CGRectOffset(linkImageView.frame, linkLabel.frameEdges.right + 5.0, 81.0);
+		linkImageView.frame = CGRectOffset(linkImageView.frame, (self.frame.size.width - linkImageView.frame.size.width) * 0.5, 120.0);
 		[self addSubview:linkImageView];
 		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
