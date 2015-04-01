@@ -1,5 +1,5 @@
 //
-//  HONImageRevealerView.m
+//  HONMediaRevealerView.m
 //  HotOrNot
 //
 //  Created by BIM  on 3/19/15.
@@ -9,17 +9,17 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIView+BuiltInMenlo.h"
 
-#import "HONImageRevealerView.h"
+#import "HONMediaRevealerView.h"
 #import "HONLoadingOverlayView.h"
 
-@interface HONImageRevealerView () <HONLoadingOverlayViewDelegate>
+@interface HONMediaRevealerView () <HONLoadingOverlayViewDelegate>
 @property (nonatomic, strong) HONCommentVO *commentVO;
 @property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UILabel *usernameLabel;
 @end
 
-@implementation HONImageRevealerView
+@implementation HONMediaRevealerView
 @synthesize delegate = _delegate;
 
 - (id)initWithComment:(HONCommentVO *)commentVO {
@@ -81,8 +81,8 @@
 								  _imageView.alpha = 1.0;
 								  
 							  } completion:^(BOOL finished) {
-								  if ([self.delegate respondsToSelector:@selector(imageRevealerViewDidIntro:)])
-									  [self.delegate imageRevealerViewDidIntro:self];
+								  if ([self.delegate respondsToSelector:@selector(mediaRevealerViewDidIntro:)])
+									  [self.delegate mediaRevealerViewDidIntro:self];
 							  }];
 }
 
@@ -104,8 +104,8 @@
 							  } completion:^(BOOL finished) {
 								  [self removeFromSuperview];
 								  
-								  if ([self.delegate respondsToSelector:@selector(imageRevealerViewDidOutro:)])
-									  [self.delegate imageRevealerViewDidOutro:self];
+								  if ([self.delegate respondsToSelector:@selector(mediaRevealerViewDidOutro:)])
+									  [self.delegate mediaRevealerViewDidOutro:self];
 							  }];
 }
 

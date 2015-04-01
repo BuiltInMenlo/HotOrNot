@@ -18,7 +18,7 @@
 @synthesize delegate = _delegate;
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 75.0, [UIScreen mainScreen].bounds.size.width, 75.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 56.0, [UIScreen mainScreen].bounds.size.width, 56.0)])) {
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_takePhotoButton.frame = CGRectMake((self.frame.size.width - 56.0), 0.0, 56.0, 56.0);

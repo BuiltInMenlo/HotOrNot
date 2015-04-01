@@ -114,7 +114,7 @@
 		30E177961A6EB4F2003D46DA /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E177951A6EB4F2003D46DA /* StoreKit.framework */; };
 		30E177981A6EB563003D46DA /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E177971A6EB563003D46DA /* GameKit.framework */; };
 		30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */; };
-		30E4AFAF1ABB9F850016B731 /* HONImageRevealerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E4AFAE1ABB9F850016B731 /* HONImageRevealerView.m */; };
+		30E4AFAF1ABB9F850016B731 /* HONMediaRevealerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */; };
 		30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E805171A15183300F0A130 /* libFlurry_5.4.0.a */; };
 		30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */; };
 		30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */; };
@@ -492,8 +492,8 @@
 		30E177971A6EB563003D46DA /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateViewController.h; sourceTree = "<group>"; };
 		30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateViewController.m; sourceTree = "<group>"; };
-		30E4AFAD1ABB9F850016B731 /* HONImageRevealerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImageRevealerView.h; sourceTree = "<group>"; };
-		30E4AFAE1ABB9F850016B731 /* HONImageRevealerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImageRevealerView.m; sourceTree = "<group>"; };
+		30E4AFAD1ABB9F850016B731 /* HONMediaRevealerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMediaRevealerView.h; sourceTree = "<group>"; };
+		30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMediaRevealerView.m; sourceTree = "<group>"; };
 		30E805161A15183300F0A130 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
 		30E805171A15183300F0A130 /* libFlurry_5.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_5.4.0.a; sourceTree = "<group>"; };
 		30FC08A319B3FFA200085E7C /* HONContactsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsSearchViewController.h; sourceTree = "<group>"; };
@@ -1667,8 +1667,8 @@
 				3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */,
 				30CFAD451A549C6600FD25CF /* HONCommentItemView.h */,
 				30CFAD461A549C6600FD25CF /* HONCommentItemView.m */,
-				30E4AFAD1ABB9F850016B731 /* HONImageRevealerView.h */,
-				30E4AFAE1ABB9F850016B731 /* HONImageRevealerView.m */,
+				30E4AFAD1ABB9F850016B731 /* HONMediaRevealerView.h */,
+				30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */,
 				30727F8E1ABA8DDE00524075 /* HONStatusUpdateFooterView.h */,
 				30727F8F1ABA8DDF00524075 /* HONStatusUpdateFooterView.m */,
 				305001401A5E222800E8F303 /* HONStatusUpdateHeaderView.h */,
@@ -2438,7 +2438,7 @@
 				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				3024A5D91A7B1EF800231BA5 /* JRSwizzle.m in Sources */,
-				30E4AFAF1ABB9F850016B731 /* HONImageRevealerView.m in Sources */,
+				30E4AFAF1ABB9F850016B731 /* HONMediaRevealerView.m in Sources */,
 				30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */,
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
 				300641C31A5EF29C0078BCE9 /* RegExCategories.m in Sources */,

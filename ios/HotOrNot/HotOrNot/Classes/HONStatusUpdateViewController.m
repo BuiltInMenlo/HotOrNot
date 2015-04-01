@@ -31,9 +31,9 @@
 #import "HONStatusUpdateFooterView.h"
 #import "HONChannelInviteButtonView.h"
 #import "HONLoadingOverlayView.h"
-#import "HONImageRevealerView.h"
+#import "HONMediaRevealerView.h"
 
-@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONImageRevealerViewDelegate, HONLoadingOverlayViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
+@interface HONStatusUpdateViewController () <HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONMediaRevealerViewDelegate, HONLoadingOverlayViewDelegate, HONStatusUpdateFooterViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) PNChannel *channel;
@@ -50,6 +50,7 @@
 
 @property (nonatomic, strong) UIButton *commentCloseButton;
 @property (nonatomic, strong) UIButton *submitCommentButton;
+@property (nonatomic, strong) UIImageView *footerImageView;
 @property (nonatomic, strong) NSMutableArray *replies;
 @property (nonatomic, strong) UIView *commentsHolderView;
 @property (nonatomic, strong) UIView *commentFooterView;
@@ -59,7 +60,7 @@
 @property (nonatomic, strong) NSTimer *expireTimer;
 @property (nonatomic, strong) UILabel *expireLabel;
 
-@property (nonatomic, strong) HONImageRevealerView *revealerView;
+@property (nonatomic, strong) HONMediaRevealerView *revealerView;
 
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) BOOL isActive;
@@ -522,20 +523,21 @@
 	_statusUpdateHeaderView.delegate = self;
 	
 	_statusUpdateFooterView = [[HONStatusUpdateFooterView alloc] init];
-//	_statusUpdateFooterView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 	_statusUpdateFooterView.delegate = self;
 	
-	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 53.0, self.view.frame.size.width, 53.0)];
+	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 45.0, self.view.frame.size.width, 45.0)];
 	_commentFooterView.backgroundColor = [UIColor blackColor];
-//	_commentFooterView.hidden = YES;
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height - 120.0, self.view.frame.size.width - 20.0, 22.0)];
+	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
+	[_commentFooterView addSubview:_footerImageView];
+	
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height - 70.0, self.view.frame.size.width - 20.0, 22.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textColor = [UIColor whiteColor];
 	_expireLabel.text = @"";
 	
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height))];
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 36.0 + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height))];
 //	_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, 10.0, _scrollView.contentInset.right);
@@ -544,15 +546,24 @@
 	[self.view addSubview:_scrollView];
 	
 	[self.view addSubview:_statusUpdateHeaderView];
-	[self.view addSubview:_statusUpdateFooterView];
 	[self.view addSubview:_commentFooterView];
+	
+	UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	takePhotoButton.frame = CGRectMake((self.view.frame.size.width - 56.0), self.view.frame.size.height - 56.0, 56.0, 56.0);
+	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
+	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
+	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButtonDisabled"] forState:UIControlStateDisabled];
+	[takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:takePhotoButton];
+	
+	//[self.view addSubview:_statusUpdateFooterView];
 	[self.view addSubview:_expireLabel];
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 13.0, _commentsHolderView.frame.size.width - 100.0, 23.0)];
-	_commentTextField.backgroundColor = [UIColor blackColor];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 10.0, _commentsHolderView.frame.size.width - 100.0, 23.0)];
+	_commentTextField.backgroundColor = [UIColor clearColor];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -561,7 +572,7 @@
 	[_commentTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	_commentTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
-	_commentTextField.placeholder = NSLocalizedString(@"enter_comment", @"Comment");
+	_commentTextField.placeholder = @"";
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;
 	[_commentFooterView addSubview:_commentTextField];
@@ -573,7 +584,7 @@
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Disabled"] forState:UIControlStateDisabled];
 	[_submitCommentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
 	[_submitCommentButton setEnabled:NO];
-	[_commentFooterView addSubview:_submitCommentButton];
+	//[_commentFooterView addSubview:_submitCommentButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
@@ -693,16 +704,13 @@
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
 	
-//	_commentFooterView.hidden = YES;
+	_footerImageView.hidden = NO;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_statusUpdateHeaderView.frame = CGRectTranslateY(_statusUpdateHeaderView.frame, kNavHeaderHeight);
-//		_scrollView.frame = CGRectTranslateY(_scrollView.frame, _statusUpdateHeaderView.frameEdges.bottom);
-//		_scrollView.frame = CGRectOffsetY(_scrollView.frame, _statusUpdateHeaderView.frame.size.height);
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
@@ -757,8 +765,8 @@
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
 	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
-//	vision.cameraMode = PBJCameraModePhoto;
-	vision.cameraMode = PBJCameraModeVideo;
+	vision.cameraMode = PBJCameraModePhoto;
+//	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
 	vision.focusMode = PBJFocusModeContinuousAutoFocus;
 	vision.outputFormat = PBJOutputFormatStandard;
@@ -919,26 +927,26 @@
 		_revealerView = nil;
 	}
 	
-	_revealerView = [[HONImageRevealerView alloc] initWithComment:commentVO];
+	_revealerView = [[HONMediaRevealerView alloc] initWithComment:commentVO];
 	_revealerView.delegate = self;
 	[self.view addSubview:_revealerView];
 }
 
 
-#pragma mark - HONImageRevealerView Delegates
-- (void)imageRevealerViewDidIntro:(HONImageRevealerView *)imageRevealerView {
-	NSLog(@"[*:*] imageRevealerViewDidIntro [*:*]");
+#pragma mark - HONMediaRevealerView Delegates
+- (void)mediaRevealerViewDidIntro:(HONMediaRevealerView *)mediaRevealerView {
+	NSLog(@"[*:*] mediaRevealerViewDidIntro [*:*]");
 }
 
-- (void)imageRevealerViewDidOutro:(HONImageRevealerView *)imageRevealerView {
-	NSLog(@"[*:*] imageRevealerViewDidOutro [*:*]");
+- (void)mediaRevealerViewDidOutro:(HONMediaRevealerView *)mediaRevealerView {
+	NSLog(@"[*:*] mediaRevealerViewDidOutro [*:*]");
 	
-	if (imageRevealerView != nil) {
-		if (imageRevealerView.superview != nil)
-			[imageRevealerView removeFromSuperview];
+	if (mediaRevealerView != nil) {
+		if (mediaRevealerView.superview != nil)
+			[mediaRevealerView removeFromSuperview];
 		
-		imageRevealerView.delegate = nil;
-		imageRevealerView = nil;
+		mediaRevealerView.delegate = nil;
+		mediaRevealerView = nil;
 	}
 }
 
@@ -959,21 +967,21 @@
 
 - (void)statusUpdateFooterViewTakePhoto:(HONStatusUpdateFooterView *)statusUpdateFooterView {
 	NSLog(@"[*:*] statusUpdateFooterViewTakePhoto [*:*]");
-	//[self _goImageComment];
+	[self _goImageComment];
 	
-	[[PBJVision sharedInstance] startVideoCapture];
-	_statusUpdateHeaderView.hidden = YES;
-	_statusUpdateFooterView.hidden = YES;
-	_scrollView.hidden = YES;
-	_expireLabel.hidden = YES;
-	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[[PBJVision sharedInstance] endVideoCapture];
-		_statusUpdateHeaderView.hidden = NO;
-		_statusUpdateFooterView.hidden = NO;
-		_scrollView.hidden = NO;
-		_expireLabel.hidden = NO;
-	});
+//	[[PBJVision sharedInstance] startVideoCapture];
+//	_statusUpdateHeaderView.hidden = YES;
+//	_statusUpdateFooterView.hidden = YES;
+//	_scrollView.hidden = YES;
+//	_expireLabel.hidden = YES;
+//	
+//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//		[[PBJVision sharedInstance] endVideoCapture];
+//		_statusUpdateHeaderView.hidden = NO;
+//		_statusUpdateFooterView.hidden = NO;
+//		_scrollView.hidden = NO;
+//		_expireLabel.hidden = NO;
+//	});
 }
 
 
@@ -1005,16 +1013,13 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
+	_footerImageView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + _expireLabel.frame.size.height + 216.0));
 	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-//		 _statusUpdateHeaderView.frame = CGRectTranslateY(_statusUpdateHeaderView.frame, kNavHeaderHeight - _statusUpdateHeaderView.frame.size.height);
-//		 _scrollView.frame = CGRectTranslateY(_scrollView.frame, _statusUpdateHeaderView.frameEdges.bottom);
-//		_scrollView.frame = CGRectOffsetY(_scrollView.frame, -_statusUpdateHeaderView.frame.size.height);
-		
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
 		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		 _commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0));

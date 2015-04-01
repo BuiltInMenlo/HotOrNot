@@ -285,7 +285,7 @@
 	tutorial4ImageView.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	[_scrollView addSubview:tutorial4ImageView];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 253.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 223.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -299,18 +299,20 @@
 	_textField.delegate = self;
 	[_scrollView addSubview:_textField];
 	
-	UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 350.0, self.view.frame.size.width - 100.0, 18.0);
-	[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-	linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-	[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateNormal];
-	[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateHighlighted];
-	[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:linkButton];
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) {
+		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 310.0, self.view.frame.size.width - 100.0, 18.0);
+		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+		linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateNormal];
+		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateHighlighted];
+		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:linkButton];
+	}
 	
 	UIButton *supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 370.0, self.view.frame.size.width - 100.0, 18.0);
+	supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) ? 335.0 : 310.0, self.view.frame.size.width - 100.0, 18.0);
 	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 	supportButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
@@ -318,16 +320,6 @@
 	[supportButton setTitle:@"/Support" forState:UIControlStateHighlighted];
 	[supportButton addTarget:self action:@selector(_goSupport) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:supportButton];
-	
-
-	
-//	UILabel *supportLabel = [[UILabel alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 370.0, self.view.frame.size.width - 100.0, 18.0)];
-//	supportLabel.backgroundColor = [UIColor clearColor];
-//	supportLabel.textColor = [UIColor whiteColor];
-//	supportLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-//	supportLabel.textAlignment = NSTextAlignmentCenter;
-//	supportLabel.text = @"/Support";
-//	[_scrollView addSubview:supportLabel];
 	
 	_composeButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
@@ -532,8 +524,8 @@
 	
 	NSString *statusUpdateAffix = @"/";
 	NSLog(@"(*)(*)(*)(*)(*)(*) TOPIC:[%@] // PREFIXED:[%@] -=- IS NUMERIC:[%@]", _textField.text, NSStringFromBOOL([_textField.text isPrefixedByString:statusUpdateAffix]), NSStringFromInt(challenge_id));
-
-	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:2] intValue] : 0;
+	
+	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:[statusUpdateAffix length]] intValue] : 0;
 	if (statusUpdateID > 0) {
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -545,6 +537,9 @@
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
 				_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
+				
+				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt(statusUpdateID) forKey:@"challenge_id"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 				

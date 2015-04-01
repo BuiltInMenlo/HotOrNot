@@ -3,16 +3,16 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "swipecontent_003_1x-1.png"
+      "filename" : "swipeCONTENT_003@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "swipeCONTENT_003@2x-1.png"
+      "filename" : "swipeCONTENT_003@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "swipecontent_003_1x.png",
+      "filename" : "swipeCONTENT_003@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
