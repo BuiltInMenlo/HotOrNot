@@ -63,6 +63,9 @@
 		30727F901ABA8DDF00524075 /* HONStatusUpdateFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F8F1ABA8DDF00524075 /* HONStatusUpdateFooterView.m */; };
 		30727F9A1ABA99AE00524075 /* PubNub+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F991ABA99AE00524075 /* PubNub+BuiltInMenlo.m */; };
 		30727F9D1ABAA8E200524075 /* HONPubNubOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F9C1ABAA8E100524075 /* HONPubNubOverseer.m */; };
+		3073BB351ACB97B100CE2441 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3073BB341ACB97B100CE2441 /* StoreKit.framework */; };
+		3073BB381ACB97EA00CE2441 /* iTunesArtwork.png in Resources */ = {isa = PBXBuildFile; fileRef = 3073BB361ACB97EA00CE2441 /* iTunesArtwork.png */; };
+		3073BB391ACB97EA00CE2441 /* iTunesArtwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3073BB371ACB97EA00CE2441 /* iTunesArtwork@2x.png */; };
 		307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
@@ -111,7 +114,6 @@
 		30D8A2441AB683BC00EC57C8 /* TSUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D8A20F1AB683BC00EC57C8 /* TSUtils.m */; };
 		30DD5A9B1A11CDE300A571DA /* KakaoOpenSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */; };
 		30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30DDD7821A2A62880032B898 /* Boca Raton.gpx */; };
-		30E177961A6EB4F2003D46DA /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E177951A6EB4F2003D46DA /* StoreKit.framework */; };
 		30E177981A6EB563003D46DA /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E177971A6EB563003D46DA /* GameKit.framework */; };
 		30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */; };
 		30E4AFAF1ABB9F850016B731 /* HONMediaRevealerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */; };
@@ -376,6 +378,9 @@
 		30727F991ABA99AE00524075 /* PubNub+BuiltInMenlo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PubNub+BuiltInMenlo.m"; sourceTree = "<group>"; };
 		30727F9B1ABAA8E100524075 /* HONPubNubOverseer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPubNubOverseer.h; sourceTree = "<group>"; };
 		30727F9C1ABAA8E100524075 /* HONPubNubOverseer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPubNubOverseer.m; sourceTree = "<group>"; };
+		3073BB341ACB97B100CE2441 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		3073BB361ACB97EA00CE2441 /* iTunesArtwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iTunesArtwork.png; sourceTree = "<group>"; };
+		3073BB371ACB97EA00CE2441 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
 		3075E02E19D66107007B3346 /* HONCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraOverlayView.m; sourceTree = "<group>"; };
 		307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshingLabel.h; sourceTree = "<group>"; };
@@ -488,7 +493,6 @@
 		30D8A2101AB683BC00EC57C8 /* TSWordOfMouthDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSWordOfMouthDelegate.h; sourceTree = "<group>"; };
 		30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KakaoOpenSDK.framework; sourceTree = "<group>"; };
 		30DDD7821A2A62880032B898 /* Boca Raton.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Boca Raton.gpx"; sourceTree = "<group>"; };
-		30E177951A6EB4F2003D46DA /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		30E177971A6EB563003D46DA /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		30E26CF91A1EBF0600281486 /* HONStatusUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateViewController.h; sourceTree = "<group>"; };
 		30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateViewController.m; sourceTree = "<group>"; };
@@ -856,10 +860,10 @@
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
+				3073BB351ACB97B100CE2441 /* StoreKit.framework in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
-				30E177961A6EB4F2003D46DA /* StoreKit.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
@@ -1766,10 +1770,10 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3073BB341ACB97B100CE2441 /* StoreKit.framework */,
 				300BA8B11A7C50FC0087DFE0 /* libicucore.dylib */,
 				300BA8B21A7C50FC0087DFE0 /* libz.1.2.5.dylib */,
 				30E177971A6EB563003D46DA /* GameKit.framework */,
-				30E177951A6EB4F2003D46DA /* StoreKit.framework */,
 				4CEC304217DAD3140016AAE1 /* Accelerate.framework */,
 				4CA8D9F51613933600B7B13C /* Accounts.framework */,
 				4C026019172B2CA8001CC476 /* AddressBook.framework */,
@@ -1809,6 +1813,8 @@
 		4C62652F15F96C7100AA7FCE /* HotOrNot */ = {
 			isa = PBXGroup;
 			children = (
+				3073BB361ACB97EA00CE2441 /* iTunesArtwork.png */,
+				3073BB371ACB97EA00CE2441 /* iTunesArtwork@2x.png */,
 				3010D7821A2439090078164F /* HotOrNot.entitlements */,
 				4C0F3CB71988DDE300703D09 /* Localizable.strings */,
 				4C62673915F96E5600AA7FCE /* Classes */,
@@ -2169,7 +2175,7 @@
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.iCloud = {
 								enabled = 0;
@@ -2217,8 +2223,10 @@
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
 				4C01BAD3190CAAD1006CD80D /* StatusUpdateElements.xcassets in Resources */,
+				3073BB391ACB97EA00CE2441 /* iTunesArtwork@2x.png in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
+				3073BB381ACB97EA00CE2441 /* iTunesArtwork.png in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
 				303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */,
 				30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */,
@@ -2552,7 +2560,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "fafff231-5e9d-45cf-8357-b2d5885cb494";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 arm64 x86_64";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
 		};
@@ -2595,7 +2603,7 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 arm64 x86_64";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};
@@ -2643,7 +2651,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "fafff231-5e9d-45cf-8357-b2d5885cb494";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 x86_64 arm64";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -2693,7 +2701,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7203e98c-429a-480e-bcf7-9db8980a97ef";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 x86_64 arm64";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
