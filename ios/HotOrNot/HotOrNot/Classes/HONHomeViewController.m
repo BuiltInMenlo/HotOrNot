@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSArray+BuiltinMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
@@ -46,6 +47,7 @@
 @property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
 @property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UIView *noNetworkView;
+@property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic) int voteScore;
 @property (nonatomic) int totStatusUpdates;
 @property (nonatomic) BOOL isLoading;
@@ -255,6 +257,7 @@
 	[_noNetworkView addSubview:noNetworkLabel];
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
+	_scrollView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceHorizontal = YES;
@@ -265,24 +268,22 @@
 	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@](%.02f) // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size),[UIScreen mainScreen].scale, NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
 	
 	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
-	tutorial1ImageView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	//tutorial1ImageView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	[_scrollView addSubview:tutorial1ImageView];
-	
-	NSLog(@"TUTORIAL SIZE:[%@]", NSStringFromCGSize(tutorial1ImageView.frame.size));
 	
 	UIImageView *tutorial2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_02"]];
 	tutorial2ImageView.frame = CGRectOffset(tutorial2ImageView.frame, _scrollView.frame.size.width, 0.0);
-	tutorial2ImageView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+	//tutorial2ImageView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[_scrollView addSubview:tutorial2ImageView];
 	
 	UIImageView *tutorial3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_03"]];
 	tutorial3ImageView.frame = CGRectOffset(tutorial3ImageView.frame, _scrollView.frame.size.width * 2.0, 0.0);
-	tutorial3ImageView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
+	//tutorial3ImageView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	[_scrollView addSubview:tutorial3ImageView];
 	
 	UIImageView *tutorial4ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_04"]];
 	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
-	tutorial4ImageView.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	//tutorial4ImageView.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	[_scrollView addSubview:tutorial4ImageView];
 	
 	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 223.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
@@ -321,6 +322,12 @@
 	[supportButton addTarget:self action:@selector(_goSupport) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:supportButton];
 	
+	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_overlayView.hidden = YES;
+	_overlayView.alpha = 0.0;
+	[self.view addSubview:_overlayView];
+	
 	_composeButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
@@ -330,7 +337,7 @@
 	[self.view addSubview:_composeButton];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goSettings)];
+	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
 	[self.view addSubview:_headerView];
 	
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 49.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
@@ -630,12 +637,21 @@
 	[self _goCompose];
 }
 
-- (void)_goSettings {
+- (void)_goInvite {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - more_button"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+	
+	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
+														message:@"http://popup.vlly.im/%d\nShare now for people to join."
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
+											  otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
+	[alertView setTag:HONHomeAlertViewTypeInvite];
+	[alertView show];
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -760,11 +776,16 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	textField.text = @"";
+	_overlayView.alpha = 0.0;
+	_overlayView.hidden = NO;
 	//textField.text = @"//269759";
 	
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, -150.0);
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);
+						 _overlayView.alpha = 1.0;
+						 
 					 } completion:^(BOOL finished) {
 						 [_composeButton removeTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 						 [_composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
@@ -793,8 +814,10 @@
 	textField.text = ([textField.text length] == 0) ? @"What are you doing?" : textField.text;
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
+						 _overlayView.alpha = 0.0;
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, 216.0);
 					 } completion:^(BOOL finished) {
+						 _overlayView.hidden = YES;
 						 [_composeButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 						 [_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 					 }];
@@ -828,6 +851,18 @@
 			}];
 		}
 	}
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+	
+	UIColor *color = [colors randomElement];
+	[UIView animateWithDuration:0.333 animations:^(void) {
+		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
+	} completion:nil];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
@@ -933,6 +968,84 @@
 		}];
 		
 	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
+	} else if (alertView.tag == HONHomeAlertViewTypeInvite) {
+		if (buttonIndex == 1) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
+			
+			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
+										message:@""
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else if (buttonIndex == 2) {
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.body = [UIPasteboard generalPasteboard].string;
+				messageComposeViewController.messageComposeDelegate = self;
+				
+				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 3) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
+			
+			typeName = @"Kik";
+			urlSchema = @"kik://";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+			}
+			
+		} else if (buttonIndex == 4) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+			}
+			
+		} else if (buttonIndex == 5) {
+			NSString *typeName = @"";
+			NSString *urlSchema = @"";
+			
+			typeName = @"Kakao";
+			urlSchema = @"kakaolink://";
+			
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+			}
+		}
+	
 	} else if (alertView.tag == HONHomeAlertViewTypeTermsAgreement) {
 		if (buttonIndex == 1) {
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"terms"];
@@ -967,6 +1080,19 @@
 			}];
 		}
 	}
+}
+
+
+#pragma mark - MailCompose Delegates
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+	[controller dismissViewControllerAnimated:NO completion:^(void) {
+	}];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	[controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 

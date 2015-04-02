@@ -3,16 +3,16 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "startChatButton_Active@2x.png"
+      "filename" : "startchatbutton_active_1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "startChatButton_Active@2x-1.png"
+      "filename" : "startchatbutton_active@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "startChatButton_Active@2x-2.png",
+      "filename" : "startchatbutton_active_1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },

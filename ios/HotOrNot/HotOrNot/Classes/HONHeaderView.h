@@ -20,6 +20,7 @@
 - (void)addDoneButtonWithTarget:(id)target action:(SEL)action;
 - (void)addDownloadButtonWithTarget:(id)target action:(SEL)action;
 - (void)addFlagButtonWithTarget:(id)target action:(SEL)action;
+- (void)addInviteButtonWithTarget:(id)target action:(SEL)action;
 - (void)addMoreButtonWithTarget:(id)target action:(SEL)action;
 - (void)addNextButtonWithTarget:(id)target action:(SEL)action;
 - (void)addPrivacyButtonWithTarget:(id)target action:(SEL)action;

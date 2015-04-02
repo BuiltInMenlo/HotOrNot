@@ -51,6 +51,7 @@
 @property (nonatomic, strong) UIButton *commentCloseButton;
 @property (nonatomic, strong) UIButton *submitCommentButton;
 @property (nonatomic, strong) UIImageView *footerImageView;
+@property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) NSMutableArray *replies;
 @property (nonatomic, strong) UIView *commentsHolderView;
 @property (nonatomic, strong) UIView *commentFooterView;
@@ -204,9 +205,12 @@
 			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
 					  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 						  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+						  
+						  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+							  [_loadingOverlayView outro];
+						  });
 			}];
 
-			;[_loadingOverlayView outro];
 			[self _submitPhotoReplyWithURLPrefix:imageURLPrefix];
 		
 		} else {
@@ -314,6 +318,24 @@
 									   @"updated"			: [NSDate stringFormattedISO8601]};
 				
 				[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					NSDictionary *dict = @{@"id"				: @"0",
+										   @"msg_id"			: @"0",
+										   @"content_type"		: @((int)HONChatMessageTypeBOT),
+										   
+										   @"owner_member"		: @{@"id"	: @(2392),
+																	@"name"	: @"Botly"},
+										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+										   @"text"				: [NSString stringWithFormat:@"changed the topic to “%@”", _statusUpdateVO.subjectName],
+										   
+										   @"net_vote_score"	: @(0),
+										   @"status"			: NSStringFromInt(0),
+										   @"added"				: [NSDate stringFormattedISO8601],
+										   @"updated"			: [NSDate stringFormattedISO8601]};
+					
+					[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+				});
 			}
 			
 		} else if (commentVO.messageType == HONChatMessageTypeBOT) {
@@ -335,15 +357,27 @@
 			[self _appendComment:commentVO];
 		
 		} else if (commentVO.messageType == HONChatMessageTypeIMG) {
-			UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-			
 			void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 				NSLog(@"SOURCE IMAGE:[%@] (%.06f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+				_imageView.image = image;
+				_imageView.hidden = NO;
 				[self _appendComment:commentVO];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					[UIView animateWithDuration:0.333
+									 animations:^(void) {
+										 _imageView.alpha = 0.0;
+									 } completion:^(BOOL finished) {
+										 _imageView.hidden = YES;
+										 _imageView.image = nil;
+										 _imageView.alpha = 1.0;
+									 }];
+					
+				});
 			};
 			
 			//NSLog(@"URL:[%@]", [commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]);
-			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]]
+			[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]]
 																cachePolicy:kOrthodoxURLCachePolicy
 															timeoutInterval:[HONAPICaller timeoutInterval]]
 							  placeholderImage:nil
@@ -518,6 +552,10 @@
 	_moviePlayer.view.hidden = YES;
 	[self.view addSubview:_moviePlayer.view];
 	//[moviePlayer setFullscreen:NO animated:YES];
+	
+	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	_imageView.hidden = YES;
+	[self.view addSubview:_imageView];
 	
 	_statusUpdateHeaderView = [[HONStatusUpdateHeaderView alloc] initWithStatusUpdateVO:_statusUpdateVO];
 	_statusUpdateHeaderView.delegate = self;
@@ -1293,7 +1331,7 @@
 }
 
 - (void)vision:(PBJVision *)vision capturedPhoto:(NSDictionary *)photoDict error:(NSError *)error {
-	NSLog(@"[*:*] vision:capturedPhoto:[%d] error:[%@] [*:*]", [[photoDict objectForKey:PBJVisionPhotoMetadataKey] count], error);
+	NSLog(@"[*:*] vision:capturedPhoto:[%lu] error:[%@] [*:*]", (unsigned long)[[photoDict objectForKey:PBJVisionPhotoMetadataKey] count], error);
 	
 	[[PBJVision sharedInstance] stopPreview];
 //	[_cameraPreviewView removeFromSuperview];

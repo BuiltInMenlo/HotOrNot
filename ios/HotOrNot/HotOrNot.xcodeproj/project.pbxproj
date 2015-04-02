@@ -66,6 +66,7 @@
 		3073BB351ACB97B100CE2441 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3073BB341ACB97B100CE2441 /* StoreKit.framework */; };
 		3073BB381ACB97EA00CE2441 /* iTunesArtwork.png in Resources */ = {isa = PBXBuildFile; fileRef = 3073BB361ACB97EA00CE2441 /* iTunesArtwork.png */; };
 		3073BB391ACB97EA00CE2441 /* iTunesArtwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3073BB371ACB97EA00CE2441 /* iTunesArtwork@2x.png */; };
+		3073BB3C1ACCB72B00CE2441 /* HONInviteNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3073BB3B1ACCB72B00CE2441 /* HONInviteNavButtonView.m */; };
 		307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
@@ -381,6 +382,8 @@
 		3073BB341ACB97B100CE2441 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		3073BB361ACB97EA00CE2441 /* iTunesArtwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iTunesArtwork.png; sourceTree = "<group>"; };
 		3073BB371ACB97EA00CE2441 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
+		3073BB3A1ACCB72B00CE2441 /* HONInviteNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteNavButtonView.h; sourceTree = "<group>"; };
+		3073BB3B1ACCB72B00CE2441 /* HONInviteNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteNavButtonView.m; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
 		3075E02E19D66107007B3346 /* HONCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraOverlayView.m; sourceTree = "<group>"; };
 		307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshingLabel.h; sourceTree = "<group>"; };
@@ -1975,6 +1978,8 @@
 				30FE37151A81D6AF00BAB7C9 /* HONDownloadNavButton.m */,
 				30FE37171A81D6D800BAB7C9 /* HONFlagNavButtonView.h */,
 				30FE37181A81D6D800BAB7C9 /* HONFlagNavButtonView.m */,
+				3073BB3A1ACCB72B00CE2441 /* HONInviteNavButtonView.h */,
+				3073BB3B1ACCB72B00CE2441 /* HONInviteNavButtonView.m */,
 				3030DF571A63344D00406AAF /* HONMoreNavButtonView.h */,
 				3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */,
 				3051F8A81A08AE8D00CD85F2 /* HONNextNavButtonView.h */,
@@ -2455,6 +2460,7 @@
 				30D8A23C1AB683BC00EC57C8 /* TSCore.m in Sources */,
 				30D8A23D1AB683BC00EC57C8 /* TSCoreListenerImpl.m in Sources */,
 				30D8A23E1AB683BC00EC57C8 /* TSEvent.m in Sources */,
+				3073BB3C1ACCB72B00CE2441 /* HONInviteNavButtonView.m in Sources */,
 				30D8A23F1AB683BC00EC57C8 /* TSHit.m in Sources */,
 				30D8A2401AB683BC00EC57C8 /* TSLogging.m in Sources */,
 				30D8A2411AB683BC00EC57C8 /* TSPlatformImpl.m in Sources */,

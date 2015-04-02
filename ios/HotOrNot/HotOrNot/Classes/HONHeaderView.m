@@ -15,6 +15,7 @@
 #import "HONDoneNavButtonView.h"
 #import "HONDownloadNavButton.h"
 #import "HONFlagNavButtonView.h"
+#import "HONInviteNavButtonView.h"
 #import "HONMoreNavButtonView.h"
 #import "HONNextNavButtonView.h"
 #import "HONPrivacyNavButtonView.h"
@@ -117,6 +118,10 @@
 
 - (void)addFlagButtonWithTarget:(id)target action:(SEL)action {
 	[self addButton:[[HONFlagNavButtonView alloc] initWithTarget:target action:action]];
+}
+
+- (void)addInviteButtonWithTarget:(id)target action:(SEL)action {
+	[self addButton:[[HONInviteNavButtonView alloc] initWithTarget:target action:action]];
 }
 
 - (void)addMoreButtonWithTarget:(id)target action:(SEL)action {

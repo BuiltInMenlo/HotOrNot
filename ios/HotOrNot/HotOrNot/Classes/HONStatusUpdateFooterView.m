@@ -18,10 +18,10 @@
 @synthesize delegate = _delegate;
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 56.0, [UIScreen mainScreen].bounds.size.width, 56.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 45.0, [UIScreen mainScreen].bounds.size.width, 45.0)])) {
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake((self.frame.size.width - 56.0), 0.0, 56.0, 56.0);
+		_takePhotoButton.frame = CGRectMake((self.frame.size.width - 45.0), 0.0, 45.0, 45.0);
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButtonDisabled"] forState:UIControlStateDisabled];

@@ -14,12 +14,13 @@ typedef NS_ENUM(NSUInteger, HONHomeAlertViewType) {
 	HONHomeAlertViewTypeCompose,
 	HONHomeAlertViewTypeJoin,
 	HONHomeAlertViewTypeShare,
+	HONHomeAlertViewTypeInvite,
 	HONHomeAlertViewTypeShowTerms,
-	HONHomeAlertViewTypeTermsAgreement
+	HONHomeAlertViewTypeTermsAgreement,
 };
 
 
 
 
-@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
+@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 @end

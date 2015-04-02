@@ -61,8 +61,8 @@
 	_photoIconImageView.frame = CGRectTranslateX(_photoIconImageView.frame, _captionLabel.frameEdges.right);
 	
 	if (_commentVO.messageType == HONChatMessageTypeIMG) {
-		_photoIconImageView.frame = CGRectResize(_photoIconImageView.frame, _photoIconImageView.image.size);
-		_photoIconImageView.frame = CGRectTranslate(_photoIconImageView.frame, CGPointMake(_captionLabel.frameEdges.right + 10.0, _captionLabel.frame.origin.y + (_captionLabel.frame.size.height - _photoIconImageView.frame.size.height) * 0.5));
+		//_photoIconImageView.frame = CGRectResize(_photoIconImageView.frame, _photoIconImageView.image.size);
+		//_photoIconImageView.frame = CGRectTranslate(_photoIconImageView.frame, CGPointMake(_captionLabel.frameEdges.right + 10.0, _captionLabel.frame.origin.y + (_captionLabel.frame.size.height - _photoIconImageView.frame.size.height) * 0.5));
 		
 		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 		lpGestureRecognizer.minimumPressDuration = 0.25;
