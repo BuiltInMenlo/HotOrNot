@@ -13,6 +13,7 @@
 @optional
 - (void)commentItemView:(HONCommentItemView *)commentItemView hidePhotoForComment:(HONCommentVO *)commentVO;
 - (void)commentItemView:(HONCommentItemView *)commentItemView showPhotoForComment:(HONCommentVO *)commentVO;
+- (void)commentItemViewShareLink:(HONCommentItemView *)commentItemView;
 @end
 
 @interface HONCommentItemView : UIView

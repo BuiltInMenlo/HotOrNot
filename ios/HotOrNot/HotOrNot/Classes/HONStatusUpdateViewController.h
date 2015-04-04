@@ -18,7 +18,8 @@ typedef NS_ENUM(NSUInteger, HONStatusUpdateActionSheetType) {
 typedef NS_ENUM(NSUInteger, HONStatusUpdateAlertViewType) {
 	HONStatusUpdateAlertViewTypeIntro = 0,
 	HONStatusUpdateAlertViewTypeBack,
-	HONStatusUpdateAlertViewTypeFlag
+	HONStatusUpdateAlertViewTypeFlag,
+	HONStatusUpdateAlertViewTypeShare
 };
 
 @interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>

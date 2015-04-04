@@ -295,7 +295,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
-			
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - activated"];
 			
 			if (self.window.rootViewController == nil) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
@@ -566,13 +566,12 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationWillResignActive:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
 	
-	_taskImageView.alpha = 0.0;
-	[self.window addSubview:_taskImageView];
-	[UIView animateWithDuration:0.333 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_taskImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+//	_taskImageView.alpha = 0.0;
+//	[self.window addSubview:_taskImageView];
+//	[UIView animateWithDuration:0.333 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//		_taskImageView.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];	
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -727,6 +726,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
 	if ([protocol isEqualToString:@"popuprocks"]) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - fromDeep"];
+		
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		

@@ -149,25 +149,6 @@ NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 }
 
 
-
-//
-//- (HONChatMessageType)_messageTypeForKey:(NSString *)keyName {
-//	__block HONChatMessageType messageType = HONChatMessageTypeUndetermined;
-//	
-//	[[self _messageTypeKeyNamePairs] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-//		if ([keyName isEqualToString:(NSString *)key]) {
-//			messageType = (HONChatMessageType)obj;
-//			*stop = YES;
-//		}
-//	}];
-//	
-//	return (messageType);
-//}
-
-
-
-
-
 - (NSDictionary *)_messageTypeKeyNamePairs {
 	return (@{kHONChatMessageTypeUndeterminedKey	: @(HONChatMessageTypeUndetermined),
 			  kHONChatMessageTypeUndefinedKey		: @(HONChatMessageTypeUndefined),

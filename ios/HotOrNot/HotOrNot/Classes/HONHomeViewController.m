@@ -53,6 +53,10 @@
 @property (nonatomic) BOOL isLoading;
 @property (nonatomic, strong) NSString *composeSubject;
 @property (nonatomic, strong) TransitionDelegate *transitionController;
+
+@property (nonatomic, strong) UIView *loadingView;
+@property (nonatomic, strong) NSTimer *tintTimer;
+
 @end
 
 @implementation HONHomeViewController
@@ -268,25 +272,21 @@
 	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@](%.02f) // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size),[UIScreen mainScreen].scale, NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
 	
 	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
-	//tutorial1ImageView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	[_scrollView addSubview:tutorial1ImageView];
 	
 	UIImageView *tutorial2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_02"]];
 	tutorial2ImageView.frame = CGRectOffset(tutorial2ImageView.frame, _scrollView.frame.size.width, 0.0);
-	//tutorial2ImageView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[_scrollView addSubview:tutorial2ImageView];
 	
 	UIImageView *tutorial3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_03"]];
 	tutorial3ImageView.frame = CGRectOffset(tutorial3ImageView.frame, _scrollView.frame.size.width * 2.0, 0.0);
-	//tutorial3ImageView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	[_scrollView addSubview:tutorial3ImageView];
 	
 	UIImageView *tutorial4ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_04"]];
 	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
-	//tutorial4ImageView.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	[_scrollView addSubview:tutorial4ImageView];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 223.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 216.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -299,18 +299,6 @@
 	_textField.text = @"What are you doing?";
 	_textField.delegate = self;
 	[_scrollView addSubview:_textField];
-	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) {
-		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 310.0, self.view.frame.size.width - 100.0, 18.0);
-		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-		linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateNormal];
-		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateHighlighted];
-		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
-		[_scrollView addSubview:linkButton];
-	}
 	
 	UIButton *supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) ? 335.0 : 310.0, self.view.frame.size.width - 100.0, 18.0);
@@ -404,6 +392,18 @@
 		_voteScore = [[result objectForKey:@"count"] intValue];
 		[_headerView updateActivityScore:_voteScore];
 	}];
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) {
+		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 310.0, self.view.frame.size.width - 100.0, 18.0);
+		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+		linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateNormal];
+		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateHighlighted];
+		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:linkButton];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -457,35 +457,33 @@
 																				
 																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
 																				[_loadingOverlayView outro];
-//																				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-																					KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-																					[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
-																					
-																					dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-																						[[HONAPICaller sharedInstance] updateUsernameForUser:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
-																							NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
+																				
+																				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+																					[[HONAPICaller sharedInstance] updateUsernameForUser:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
+																						NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+																						
+																						if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+																							[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+																						
+																						[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
+																							NSLog(@"~*~*~*~*~*~* AVATAR UPDATE !¡!¡!¡!¡!¡!¡!¡!");
 																							
 																							if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
 																								[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 																							
-																							[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
-																								NSLog(@"~*~*~*~*~*~* AVATAR UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+																							[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+																								NSLog(@"~*~*~*~*~*~* PHONE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n");
 																								
-																								if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-																									[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-																								
-																								[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-																									NSLog(@"~*~*~*~*~*~* PHONE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n");
-																									
-																									if (!((BOOL)[[result objectForKey:@"result"] intValue]))
-																										NSLog(@"!¡!¡!¡!¡!¡!¡!¡ PHONE UPDATE FAILED !¡!¡!¡!¡!¡!¡!¡!");
-																								}];
+																								if (!((BOOL)[[result objectForKey:@"result"] intValue]))
+																									NSLog(@"!¡!¡!¡!¡!¡!¡!¡ PHONE UPDATE FAILED !¡!¡!¡!¡!¡!¡!¡!");
 																							}];
 																						}];
-																					});
-																					
-																					[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
-//																				}];
+																					}];
+																				});
+																				
+																				[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 																				
 																			} else {
 																				[_loadingOverlayView outro];
@@ -527,6 +525,29 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 	//									 withProperties:@{@"src"	: @"header"}];
 	
+	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+	[self.view addSubview:_loadingView];
+	
+	UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
+										   [UIImage imageNamed:@"loading_02"],
+										   [UIImage imageNamed:@"loading_03"],
+										   [UIImage imageNamed:@"loading_04"],
+										   [UIImage imageNamed:@"loading_05"],
+										   [UIImage imageNamed:@"loading_06"],
+										   [UIImage imageNamed:@"loading_07"],
+										   [UIImage imageNamed:@"loading_08"]];
+	animationImageView.animationDuration = 0.75;
+	animationImageView.animationRepeatCount = 0;
+	[animationImageView startAnimating];
+	[_loadingView addSubview:animationImageView];
+	
+	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.1250
+												  target:self
+												selector:@selector(_changeLoadTint)
+												userInfo:nil repeats:YES];
+	
 	int challenge_id = ([[NSUserDefaults standardUserDefaults] hasObjectForKey:@"challenge_id"]) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] : 0;
 	
 	NSString *statusUpdateAffix = @"/";
@@ -537,8 +558,9 @@
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
 		
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
-		_loadingOverlayView.delegate = self;
+		
+//		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Finding Popup Link…"];
+//		_loadingOverlayView.delegate = self;
 		
 		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
@@ -552,12 +574,20 @@
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+					[_tintTimer invalidate];
+					_tintTimer = nil;
+					[_loadingView removeFromSuperview];
+					
 					[_loadingOverlayView outro];
 					_textField.text = @"What are you doing?";
 				});
 				
 			} else {
-				[_loadingOverlayView outro];
+				[_loadingView removeFromSuperview];
+				[_tintTimer invalidate];
+				_tintTimer = nil;
+				
+//				[_loadingOverlayView outro];
 				_textField.text = @"";
 				
 				if (![_textField isFirstResponder])
@@ -566,13 +596,13 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - compose"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - enterPopup"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
 		
-		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Creating Popup link…"];
-		_loadingOverlayView.delegate = self;
+//		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Creating Popup link…"];
+//		_loadingOverlayView.delegate = self;
 		
 		NSError *error;
 		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
@@ -619,6 +649,10 @@
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				[_loadingView removeFromSuperview];
+				[_tintTimer invalidate];
+				_tintTimer = nil;
+				
 				[_loadingOverlayView outro];
 				[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 				_textField.text = @"What are you doing?";
@@ -633,12 +667,12 @@
 }
 
 - (void)_goSupport {
-	_textField.text = @"/411";
+	_textField.text = @"/22222";
 	[self _goCompose];
 }
 
 - (void)_goInvite {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - more_button"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareApp"];
 	
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 //	[navigationController setNavigationBarHidden:YES];
@@ -646,7 +680,7 @@
 	
 	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
-														message:@"http://popup.vlly.im/%d\nShare now for people to join."
+														message:@"http://popup.vlly.im\nShare now for people to join."
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
 											  otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
@@ -761,6 +795,19 @@
 
 
 #pragma mark - UI Presentation
+- (void)_changeLoadTint {
+	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+	
+	UIColor *color = [colors randomElement];
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		[[HONViewDispensor sharedInstance] tintView:_loadingView withColor:color];
+	} completion:nil];
+}
+
+
 #pragma mark - LoadingOverlayView Delegates
 - (void)loadingOverlayViewDidIntro:(HONLoadingOverlayView *)loadingOverlayView {
 }
@@ -782,7 +829,7 @@
 	
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, -150.0);
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, -58.0);
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);
 						 _overlayView.alpha = 1.0;
 						 
@@ -816,6 +863,7 @@
 					 animations:^(void) {
 						 _overlayView.alpha = 0.0;
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, 216.0);
+						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, 0.0);
 					 } completion:^(BOOL finished) {
 						 _overlayView.hidden = YES;
 						 [_composeButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
@@ -970,7 +1018,7 @@
 	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
 	} else if (alertView.tag == HONHomeAlertViewTypeInvite) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -979,6 +1027,8 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareSMS"];
+			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 				messageComposeViewController.body = [UIPasteboard generalPasteboard].string;
@@ -995,6 +1045,8 @@
 			}
 			
 		} else if (buttonIndex == 3) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareKik"];
+			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
 			
@@ -1013,8 +1065,10 @@
 			}
 			
 		} else if (buttonIndex == 4) {
-			NSString *typeName = @"";
-			NSString *urlSchema = @"";
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareLine"];
+			
+			NSString *typeName = @"Line";
+			NSString *urlSchema = @"line://";
 			
 			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
 				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
@@ -1028,6 +1082,8 @@
 			}
 			
 		} else if (buttonIndex == 5) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareKakao"];
+			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
 			

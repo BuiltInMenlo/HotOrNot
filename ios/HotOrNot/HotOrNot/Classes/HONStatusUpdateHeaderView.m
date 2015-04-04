@@ -17,6 +17,7 @@
 @interface HONStatusUpdateHeaderView()
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) UILabel *backLabel;
+@property (nonatomic, strong) UILabel *linkLabel;
 @property (nonatomic, strong) UIImageView *backImageView;
 @end
 
@@ -24,42 +25,41 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 105.0)])) {
-//		self.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 90.0)])) {
+		self.backgroundColor = [UIColor blackColor];
 		_statusUpdateVO = statusUpdateVO;
+		
+		UIView *statusBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, self.frame.size.width, 20.0)];
+		statusBarView.backgroundColor = [UIColor blackColor];
+		[self addSubview:statusBarView];
 		
 		_backImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"backButton_nonActive"]];
 		[self addSubview:_backImageView];
-		
-		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 10.0, 280.0, 26.0)];
-		_backLabel.backgroundColor = [UIColor clearColor];
-		_backLabel.textColor = [UIColor whiteColor];
-		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_backLabel.text = @"Home";
-		//[self addSubview:_backLabel];
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 12.0, 120.0, 20.0)];
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
-		subjectLabel.text = [NSString stringWithFormat:@"/%d", _statusUpdateVO.statusUpdateID];
-		[subjectLabel resizeFrameForText];
-		[self addSubview:subjectLabel];
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 12.0, 120.0, 20.0)];
+		_backLabel.backgroundColor = [UIColor blackColor];
+		_backLabel.textColor = [UIColor whiteColor];
+		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+		_backLabel.text = [NSString stringWithFormat:@"/%d", _statusUpdateVO.statusUpdateID];
+		[_backLabel resizeFrameForText];
+		[self addSubview:_backLabel];
 		
-		UILabel *linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(subjectLabel.frameEdges.right + 5.0, 15.0, 100.0, 18.0)];
-		linkLabel.backgroundColor = [UIColor clearColor];
-		linkLabel.textColor = [UIColor whiteColor];
-		linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		linkLabel.text = @"(share this)";
-		[self addSubview:linkLabel];
+		_linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(_backLabel.frameEdges.right + 5.0, 15.0, 100.0, 18.0)];
+		_linkLabel.backgroundColor = [UIColor clearColor];
+		_linkLabel.textColor = [UIColor whiteColor];
+		_linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+		_linkLabel.text = @"(share this)";
+		[self addSubview:_linkLabel];
 		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = linkLabel.frame;
+		linkButton.frame = CGRectMake(self.frame.size.width - 104.0, -4.0, 52.0, 46.0);
+		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:linkButton];
 
@@ -69,6 +69,19 @@
 		[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cameraFlipButton];
+		
+		
+		UIView *bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 52.0, self.frame.size.width, 38.0)];
+		bannerView.backgroundColor = [UIColor colorWithRed:1.000 green:0.839 blue:0.000 alpha:1.00];
+		[self addSubview:bannerView];
+		
+		UILabel *bannerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, self.frame.size.width - 20.0, 38.0)];
+		bannerLabel.backgroundColor = [UIColor clearColor];
+		bannerLabel.textColor = [UIColor blackColor];
+		bannerLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+		bannerLabel.textAlignment= NSTextAlignmentCenter;
+		bannerLabel.text = [NSString stringWithFormat:@"popup.villy.im/%d has been copied to share", _statusUpdateVO.statusUpdateID];
+		[bannerView addSubview:bannerLabel];
 	}
 	
 	return (self);
@@ -80,14 +93,18 @@
 - (void)_goBack {
 	_backImageView.image = nil;
 	
+	_linkLabel.text = @"";
 	_backLabel.text = @"Deleting";
+	_backLabel.frame = CGRectResizeWidth(_backLabel.frame, 200.0);
+	[_backLabel resizeFrameForText];
 	
 	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewGoBack:)])
 		[self.delegate statusUpdateHeaderViewGoBack:self];
 }
 
 - (void)_goCopyLink {
-	
+	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewCopyLink:)])
+		[self.delegate statusUpdateHeaderViewCopyLink:self];
 }
 
 - (void)_goFlipCamera {
