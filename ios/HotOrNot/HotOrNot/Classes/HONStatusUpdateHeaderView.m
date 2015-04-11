@@ -26,11 +26,11 @@
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 90.0)])) {
-		self.backgroundColor = [UIColor blackColor];
+		self.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		_statusUpdateVO = statusUpdateVO;
 		
 		UIView *statusBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, self.frame.size.width, 20.0)];
-		statusBarView.backgroundColor = [UIColor blackColor];
+		statusBarView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		[self addSubview:statusBarView];
 		
 		_backImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"backButton_nonActive"]];
@@ -41,11 +41,11 @@
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 12.0, 120.0, 20.0)];
-		_backLabel.backgroundColor = [UIColor blackColor];
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 9.0, 120.0, 18.0)];
+		_backLabel.backgroundColor = [UIColor clearColor];
 		_backLabel.textColor = [UIColor whiteColor];
-		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
-		_backLabel.text = [NSString stringWithFormat:@"/%d", _statusUpdateVO.statusUpdateID];
+		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_backLabel.text = [NSString stringWithFormat:@"pop.rx/%d", _statusUpdateVO.statusUpdateID];
 		[_backLabel resizeFrameForText];
 		[self addSubview:_backLabel];
 		
@@ -54,10 +54,10 @@
 		_linkLabel.textColor = [UIColor whiteColor];
 		_linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		_linkLabel.text = @"(share this)";
-		[self addSubview:_linkLabel];
+//		[self addSubview:_linkLabel];
 		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake(self.frame.size.width - 104.0, -4.0, 52.0, 46.0);
+		linkButton.frame = CGRectMake(self.frame.size.width - 100.0, -6.0, 52.0, 46.0);
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
@@ -94,7 +94,7 @@
 	_backImageView.image = nil;
 	
 	_linkLabel.text = @"";
-	_backLabel.text = @"Deleting";
+	_backLabel.text = @"Cleaning up…";
 	_backLabel.frame = CGRectResizeWidth(_backLabel.frame, 200.0);
 	[_backLabel resizeFrameForText];
 	

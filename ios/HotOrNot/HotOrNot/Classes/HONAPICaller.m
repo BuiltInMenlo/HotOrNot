@@ -1843,7 +1843,7 @@ static HONAPICaller *sharedInstance = nil;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], [[operation request] URL], [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
+//		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }
 

@@ -8,7 +8,6 @@
 
 
 #import <AVFoundation/AVFoundation.h>
-#import <MediaPlayer/MediaPlayer.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import <AWSiOSSDKv2/S3.h>
@@ -283,6 +282,12 @@
 		}
 	}];
 	
+	[PubNub enablePushNotificationsOnChannel:channel
+						 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+				  andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
+					  NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
+				  }];
+	
 	
 	// Observer looks for message received events
 	[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
@@ -345,7 +350,7 @@
 											   @"owner_member"		: @{@"id"	: @(2392),
 																		@"name"	: @"Botly"},
 											   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-											   @"text"				: [NSString stringWithFormat:@"changed the topic to “%@”", _statusUpdateVO.subjectName],
+											   @"text"				: [NSString stringWithFormat:@"Share your Popup now! http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID],
 											   
 											   @"net_vote_score"	: @(0),
 											   @"status"			: NSStringFromInt(0),
@@ -412,11 +417,13 @@
 				[self _appendComment:commentVO];
 			
 		} else if (commentVO.messageType == HONChatMessageTypeVID) {
-			_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:commentVO.textContent]];
+			_moviePlayer.contentURL = [NSURL URLWithString:commentVO.imagePrefix];
 			_moviePlayer.view.hidden = NO;
 			[_moviePlayer play];
 			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//			NSLog(@"---------VIDEO:[%@]", commentVO.imagePrefix);
+			
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(7.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				_moviePlayer.view.hidden = YES;
 			});
 			
@@ -573,11 +580,15 @@
 //	NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"mp4"];
 //	_moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL fileURLWithPath:path]];
 	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+//	_moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/Comp_1.mov"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
 	_moviePlayer.shouldAutoplay = YES;
 	_moviePlayer.view.frame = self.view.frame;
 	_moviePlayer.view.hidden = YES;
+	//_moviePlayer.view.transform = CGAffineTransformMake(3.0, 0.0, 0.0, 3.0, 0.0, 0.0);
+	
 	[self.view addSubview:_moviePlayer.view];
+//	[_moviePlayer play];
 	//[moviePlayer setFullscreen:NO animated:YES];
 	
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
@@ -600,6 +611,7 @@
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textColor = [UIColor whiteColor];
+	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.text = @"";
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 36.0 + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height))];
@@ -627,7 +639,7 @@
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 10.0, _commentsHolderView.frame.size.width - 100.0, 23.0)];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, _commentsHolderView.frame.size.width - 100.0, 23.0)];
 	_commentTextField.backgroundColor = [UIColor clearColor];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -643,17 +655,22 @@
 	[_commentFooterView addSubview:_commentTextField];
 	
 	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitCommentButton.frame = CGRectMake(_commentFooterView.frame.size.width - 80.0, 0.0, 79.0, 53.0);
+	_submitCommentButton.frame = CGRectMake(_commentFooterView.frame.size.width - 46.0, 0.0, 46.0, 46.0);
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_nonActive"] forState:UIControlStateNormal];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Active"] forState:UIControlStateHighlighted];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Disabled"] forState:UIControlStateDisabled];
 	[_submitCommentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
-	[_submitCommentButton setEnabled:NO];
-	//[_commentFooterView addSubview:_submitCommentButton];
+	_submitCommentButton.hidden = YES;
+	[_commentFooterView addSubview:_submitCommentButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	lpGestureRecognizer.delaysTouchesBegan = YES;
+	[self.view addGestureRecognizer:lpGestureRecognizer];
 }
 
 - (void)viewDidLoad {
@@ -716,14 +733,6 @@
 	[UIPasteboard generalPasteboard].string = [metaData objectForKey:@"message"];
 	[[NSUserDefaults standardUserDefaults] replaceObject:metaData forKey:@"share_props"];
 	
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc]	initWithTitle:(metaData != nil) ? [metaData objectForKey:@"title"] : nil
-//															 delegate:self
-//													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-//											   destructiveButtonTitle:nil
-//													otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
-//	[actionSheet setTag:0];
-//	[actionSheet showInView:self.view];
-	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
 														message:[NSString stringWithFormat:@"http://popup.vlly.im/%d\nShare now for people to join.", _statusUpdateVO.statusUpdateID]
 													   delegate:self
@@ -731,8 +740,6 @@
 											  otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
 	[alertView setTag:HONStatusUpdateAlertViewTypeShare];
 	[alertView show];
-	
-	
 }
 
 - (void)_goFlag {
@@ -750,10 +757,24 @@
 - (void)_goImageComment {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - image"];
 	
-	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
-	_loadingOverlayView.delegate = self;
+//	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+//	_loadingOverlayView.delegate = self;
 //	[_statusUpdateFooterView toggleTakePhotoButton:NO];
-	[[PBJVision sharedInstance] capturePhoto];
+//	[[PBJVision sharedInstance] capturePhoto];
+	
+//	[[PBJVision sharedInstance] startVideoCapture];
+//	_statusUpdateHeaderView.hidden = YES;
+//	_statusUpdateFooterView.hidden = YES;
+//	_scrollView.hidden = YES;
+//	_expireLabel.hidden = YES;
+	
+//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//		[[PBJVision sharedInstance] endVideoCapture];
+//		_statusUpdateHeaderView.hidden = NO;
+//		_statusUpdateFooterView.hidden = NO;
+//		_scrollView.hidden = NO;
+//		_expireLabel.hidden = NO;
+//	});
 }
 
 - (void)_goTextComment {
@@ -781,6 +802,9 @@
 	_footerImageView.hidden = NO;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _statusUpdateFooterView.frame.size.height + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
+	_takePhotoButton.hidden = NO;
+	_submitCommentButton.hidden = YES;
+	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
@@ -794,6 +818,31 @@
 	}];
 }
 
+-(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+	if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
+		
+		CGPoint touchPoint = [gestureRecognizer locationInView:self.view];
+		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
+		
+		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
+			[[PBJVision sharedInstance] startVideoCapture];
+			_statusUpdateHeaderView.hidden = YES;
+			_statusUpdateFooterView.hidden = YES;
+			_scrollView.hidden = YES;
+			_expireLabel.hidden = YES;
+		}
+		
+	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
+		
+		[[PBJVision sharedInstance] endVideoCapture];
+		_statusUpdateHeaderView.hidden = NO;
+		_statusUpdateFooterView.hidden = NO;
+		_scrollView.hidden = NO;
+		_expireLabel.hidden = NO;
+	}
+}
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 //	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
@@ -840,8 +889,8 @@
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
 	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
-	vision.cameraMode = PBJCameraModePhoto;
-//	vision.cameraMode = PBJCameraModeVideo;
+//	vision.cameraMode = PBJCameraModePhoto;
+	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
 	vision.focusMode = PBJFocusModeContinuousAutoFocus;
 	vision.outputFormat = PBJOutputFormatStandard;
@@ -1001,7 +1050,16 @@
 
 - (void)commentItemViewShareLink:(HONCommentItemView *)commentItemView {
 	NSLog(@"[*:*] commentItemViewShareLink [*:*]");
-	[self _goShare];
+	if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb-messenger://"]]) {
+		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
+									message:@"This device isn't allowed or doesn't recognize FB Messenger!"
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil) 
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"fb-messenger://"]];
+	}
 }
 
 #pragma mark - HONMediaRevealerView Delegates
@@ -1038,21 +1096,21 @@
 
 - (void)statusUpdateFooterViewTakePhoto:(HONStatusUpdateFooterView *)statusUpdateFooterView {
 	NSLog(@"[*:*] statusUpdateFooterViewTakePhoto [*:*]");
-	[self _goImageComment];
+//	[self _goImageComment];
 	
-//	[[PBJVision sharedInstance] startVideoCapture];
-//	_statusUpdateHeaderView.hidden = YES;
-//	_statusUpdateFooterView.hidden = YES;
-//	_scrollView.hidden = YES;
-//	_expireLabel.hidden = YES;
-//	
-//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//		[[PBJVision sharedInstance] endVideoCapture];
-//		_statusUpdateHeaderView.hidden = NO;
-//		_statusUpdateFooterView.hidden = NO;
-//		_scrollView.hidden = NO;
-//		_expireLabel.hidden = NO;
-//	});
+	[[PBJVision sharedInstance] startVideoCapture];
+	_statusUpdateHeaderView.hidden = YES;
+	_statusUpdateFooterView.hidden = YES;
+	_scrollView.hidden = YES;
+	_expireLabel.hidden = YES;
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[[PBJVision sharedInstance] endVideoCapture];
+		_statusUpdateHeaderView.hidden = NO;
+		_statusUpdateFooterView.hidden = NO;
+		_scrollView.hidden = NO;
+		_expireLabel.hidden = NO;
+	});
 }
 
 
@@ -1086,6 +1144,9 @@
 	
 	_footerImageView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + _expireLabel.frame.size.height + 216.0));
+	
+	_takePhotoButton.hidden = YES;
+	_submitCommentButton.hidden = NO;
 	
 	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
@@ -1124,89 +1185,6 @@
 
 - (void)_onTextEditingDidEnd:(id)sender {
 //	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
-}
-
-
-#pragma mark - Actionsheet Delegates
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.tag == 0) {
-		if (buttonIndex == 0) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - copy_clipboard"];
-			
-			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
-										message:@""
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-		
-		} else if (buttonIndex == 1) {
-			if ([MFMessageComposeViewController canSendText]) {
-				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [NSString stringWithFormat:@"Join my Popup! (expires in 10 mins) http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
-				messageComposeViewController.messageComposeDelegate = self;
-				
-				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
-											message:@"Cannot send SMS from this device!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == 2) {
-			NSString *typeName = @"";
-			NSString *urlSchema = @"";
-			
-			typeName = @"Kik";
-			urlSchema = @"kik://";
-			
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-			} else {
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-			}
-		
-		} else if (buttonIndex == 3) {
-			NSString *typeName = @"";
-			NSString *urlSchema = @"";
-			
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-			} else {
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-			}
-		
-		} else if (buttonIndex == 4) {
-			NSString *typeName = @"";
-			NSString *urlSchema = @"";
-			
-			typeName = @"Kakao";
-			urlSchema = @"kakaolink://";
-			
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
-				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-			} else {
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
-			}
-		}
-	}
 }
 
 

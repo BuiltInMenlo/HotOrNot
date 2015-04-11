@@ -428,6 +428,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
 	[KeenClient disableGeoLocation];
+	//[KeenClient enableLogging];
 	
 	[Flurry setCrashReportingEnabled:YES];
 	[Flurry setShowErrorInLogEnabled:YES];
@@ -804,6 +805,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
+	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
 	
 	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {

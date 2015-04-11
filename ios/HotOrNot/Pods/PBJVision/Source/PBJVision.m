@@ -339,7 +339,7 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
             break;
     }
 
-    [connection setVideoOrientation:orientation];
+	[connection setVideoOrientation:orientation];
 }
 
 - (void)_setCameraMode:(PBJCameraMode)cameraMode cameraDevice:(PBJCameraDevice)cameraDevice outputFormat:(PBJOutputFormat)outputFormat
@@ -699,7 +699,7 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
         }
         [self _setupGL];
         
-        _captureSessionPreset = AVCaptureSessionPresetMedium;
+        _captureSessionPreset = AVCaptureSessionPreset640x480;
         _captureDirectory = nil;
 
         _autoUpdatePreviewOrientation = YES;
@@ -2118,8 +2118,8 @@ typedef void (^PBJVisionBlock)();
     
 	NSDictionary *videoSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
                                      AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
-                                     AVVideoWidthKey : @(videoDimensions.width),
-                                     AVVideoHeightKey : @(videoDimensions.height),
+                                     AVVideoWidthKey : @(480),//@(videoDimensions.width),
+                                     AVVideoHeightKey : @(640),//@(videoDimensions.height),
                                      AVVideoCompressionPropertiesKey : compressionSettings };
     
     return [_mediaWriter setupVideoWithSettings:videoSettings];

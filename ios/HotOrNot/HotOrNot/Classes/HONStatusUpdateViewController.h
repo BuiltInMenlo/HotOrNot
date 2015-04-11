@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MediaPlayer/MediaPlayer.h>
+
 #import "HONViewController.h"
 #import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"
@@ -22,7 +24,7 @@ typedef NS_ENUM(NSUInteger, HONStatusUpdateAlertViewType) {
 	HONStatusUpdateAlertViewTypeShare
 };
 
-@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
+@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 - (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO;
 - (void)leaveActiveChat;
 @end

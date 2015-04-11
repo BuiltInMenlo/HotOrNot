@@ -53,6 +53,7 @@
 @property (nonatomic) BOOL isLoading;
 @property (nonatomic, strong) NSString *composeSubject;
 @property (nonatomic, strong) TransitionDelegate *transitionController;
+@property (nonatomic, strong) NSArray *colors;
 
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, strong) NSTimer *tintTimer;
@@ -66,6 +67,11 @@
 		_totalType = HONStateMitigatorTotalTypeHomeTab;
 		_viewStateType = HONStateMitigatorViewStateTypeHome;
 		_voteScore = 0;
+		
+		_colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+					[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+					[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+					[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_selectedHomeTab:)
@@ -105,85 +111,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveClubPhotosAtPage:(int)page {
-	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-//	__block int nextPage = page + 1;
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForClubByClubID:locationClubVO.clubID fromPage:MAX(1, page) completion:^(NSDictionary *result) {
-		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
-		
-		if (page == 1)
-			_totStatusUpdates = [[result objectForKey:@"count"] intValue];
-		
-		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
-		[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
-			[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
-			
-			HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:dict];
-			[_statusUpdates addObject:vo];
-			
-			[[HONUserAssistant sharedInstance] writeClubMemberToUserLookup:@{@"id"			: [[dict objectForKey:@"owner_member"] objectForKey:@"id"],
-																			 @"username"	: [[dict objectForKey:@"owner_member"] objectForKey:@"name"],
-																			 @"avatar"		: [[HONUserAssistant sharedInstance] rndAvatarURL]}];
-		}];
-		
-		[self _didFinishDataRefresh];
-	}];
-}
-
-- (void)_retriveOwnedPhotosAtPage:(int)page {
-	__block HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-//	__block int nextPage = page + 1;
-	
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:MAX(1, page) completion:^(NSDictionary *result) {
-		NSLog(@"TOTAL:[%d]", [[result objectForKey:@"count"] intValue]);
-		if (page == 1)
-			_totStatusUpdates = [[result objectForKey:@"count"] intValue];
-		
-		[_retrievedStatusUpdates addObjectsFromArray:[result objectForKey:@"results"]];
-		[_retrievedStatusUpdates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
-			if ([[[dict objectForKey:@"text"] lowercaseString] isEqualToString:@"#__verifyme__"]) {
-				_totStatusUpdates--;
-				return;
-			}
-			
-			[dict setValue:@(locationClubVO.clubID) forKey:@"club_id"];
-			
-			HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:dict];
-			[_statusUpdates addObject:vo];
-		}];
-		
-		[self _didFinishDataRefresh];
-	}];
-}
-
-- (void)_flagStatusUpdate {
-	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
-						   @"club_id"		: @(_selectedStatusUpdateVO.clubID),
-						   @"subject"		: @"__FLAG__",
-						   @"challenge_id"	: @(_selectedStatusUpdateVO.statusUpdateID)};
-	
-	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
-		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kProgressHUDMinDuration;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", @"Upload fail");
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-			_progressHUD = nil;
-			
-		} else {
-			[self _goReloadContents];
-		}
-	}];
-}
-
-
 #pragma mark - Data Handling
 - (void)_goReloadContents {
 	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
@@ -286,20 +213,6 @@
 	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
 	[_scrollView addSubview:tutorial4ImageView];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 216.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
-	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_textField setReturnKeyType:UIReturnKeyDone];
-	[_textField setTextColor:[UIColor whiteColor]];
-	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_textField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:29];
-	_textField.keyboardType = UIKeyboardTypeAlphabet;
-	_textField.textAlignment = NSTextAlignmentCenter;
-	_textField.text = @"What are you doing?";
-	_textField.delegate = self;
-	[_scrollView addSubview:_textField];
-	
 	UIButton *supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) ? 335.0 : 310.0, self.view.frame.size.width - 100.0, 18.0);
 	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -311,10 +224,25 @@
 	[_scrollView addSubview:supportButton];
 	
 	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_overlayView.frame = CGRectOffsetX(_overlayView.frame, _scrollView.frame.size.width * 3.0);
 	_overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	_overlayView.hidden = YES;
 	_overlayView.alpha = 0.0;
-	[self.view addSubview:_overlayView];
+	[_scrollView addSubview:_overlayView];
+	
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 216.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
+	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_textField setReturnKeyType:UIReturnKeyDone];
+	[_textField setTextColor:[UIColor whiteColor]];
+	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	_textField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:29];
+	_textField.keyboardType = UIKeyboardTypeAlphabet;
+	_textField.textAlignment = NSTextAlignmentCenter;
+	_textField.text = @"My First Popup";
+	_textField.delegate = self;
+	[_scrollView addSubview:_textField];
 	
 	_composeButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
@@ -543,7 +471,7 @@
 	[animationImageView startAnimating];
 	[_loadingView addSubview:animationImageView];
 	
-	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.1250
+	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
 												  target:self
 												selector:@selector(_changeLoadTint)
 												userInfo:nil repeats:YES];
@@ -902,12 +830,7 @@
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
-						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
-						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
-						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
-	
-	UIColor *color = [colors randomElement];
+	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
 	[UIView animateWithDuration:0.333 animations:^(void) {
 		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
 	} completion:nil];
@@ -919,7 +842,7 @@
 	
 	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
 	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
-//		[self _registerPushNotifications];
+		[self _registerPushNotifications];
 		
 		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
@@ -957,7 +880,7 @@
 	
 	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
 	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
-//		[self _registerPushNotifications];
+		[self _registerPushNotifications];
 		
 		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
@@ -1115,7 +1038,6 @@
 	
 	if (alertView.tag == HONHomeAlertViewTypeFlag) {
 		if (buttonIndex == 1) {
-			[self _flagStatusUpdate];
 		}
 	
 	} else if (alertView.tag == HONHomeAlertViewTypeCompose) {

@@ -51,6 +51,17 @@ static HONPubNubOverseer *sharedInstance = nil;
 		[PubNub setClientIdentifier:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) shouldCatchup:YES];
 		[PNLogger logGeneralMessageFrom:self message:^{ return @"Hello world!!!";}];
 		
+		// APNS enabled already?
+		[PubNub requestPushNotificationEnabledChannelsForDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+											 withCompletionHandlingBlock:^(NSArray *channels, PNError *error){
+												 if (channels.count == 0 )
+												 {
+													 NSLog(@"BLOCK: requestPushNotificationEnabledChannelsForDevicePushToken: Channel: %@ , Error %@",channels,error);
+													 
+													 // Enable APNS on this Channel with deviceToken
+												 }
+											 }];
+		
 	} errorBlock:^(PNError *connectionError) {
 		NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
 		
@@ -64,11 +75,11 @@ static HONPubNubOverseer *sharedInstance = nil;
 			});
 		}
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)", [connectionError localizedDescription], NSStringFromClass([self class])]
-									message:[NSString stringWithFormat:@"Reason:\n%@\n\nSuggestion:\n%@", [connectionError localizedFailureReason], [connectionError localizedRecoverySuggestion]]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
+//		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)", [connectionError localizedDescription], NSStringFromClass([self class])]
+//									message:[NSString stringWithFormat:@"Reason:\n%@\n\nSuggestion:\n%@", [connectionError localizedFailureReason], [connectionError localizedRecoverySuggestion]]
+//								   delegate:nil
+//						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//						  otherButtonTitles:nil] show];
 	}];
 }
 

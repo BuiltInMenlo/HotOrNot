@@ -38,6 +38,10 @@ extern const CGSize kScreenMult;
 - (void)writePushToken:(NSString *)pushToken;
 - (NSString *)pushToken;
 
+- (void)writeDataPushToken:(NSData *)pushToken;
+- (NSData *)dataPushToken;
+
+
 - (CLLocation *)deviceLocation;
 - (void)updateDeviceLocation:(CLLocation *)location;
 

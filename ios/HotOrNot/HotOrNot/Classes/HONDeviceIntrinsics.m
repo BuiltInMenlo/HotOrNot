@@ -218,6 +218,16 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] : @"");
 }
 
+- (void)writeDataPushToken:(NSData *)pushToken {
+	[[NSUserDefaults standardUserDefaults] replaceObject:pushToken forKey:@"device_token-data"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSData *)dataPushToken {
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token-data"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token-data"] : [NSData data]);
+}
+
+
 - (CLLocation *)deviceLocation {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"coords"] == nil)
 		[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:CGFLOAT_MAX longitude:CGFLOAT_MAX]];

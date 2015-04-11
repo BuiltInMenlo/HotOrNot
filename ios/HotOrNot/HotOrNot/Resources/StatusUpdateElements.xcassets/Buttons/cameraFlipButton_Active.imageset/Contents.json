@@ -3,16 +3,16 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "cameraFlip_Active@2x.png"
+      "filename" : "cameraFlip_Active@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "cameraFlip_Active@2x-1.png"
+      "filename" : "cameraFlip_Active@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "cameraFlip_Active-568h@2x.png",
+      "filename" : "cameraFlip_Active@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
