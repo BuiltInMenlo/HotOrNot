@@ -152,14 +152,16 @@
 }
 
 - (void)_registerPushNotifications {
+	NSLog(@"%@._registerPushNotifications", self.class);
+	
 	if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
-		if (![[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+		//if (![[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
 			[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
 			[[UIApplication sharedApplication] registerForRemoteNotifications];
-		}
+		//}
 		
 	} else {
-		if ([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone)
+//		if ([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone)
 			[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert)];
 	}
 }

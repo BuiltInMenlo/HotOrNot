@@ -49,18 +49,6 @@ static HONPubNubOverseer *sharedInstance = nil;
 		NSLog(@"PubNub CONNECT:[%@]", origin);
 		
 		[PubNub setClientIdentifier:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) shouldCatchup:YES];
-		[PNLogger logGeneralMessageFrom:self message:^{ return @"Hello world!!!";}];
-		
-		// APNS enabled already?
-		[PubNub requestPushNotificationEnabledChannelsForDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
-											 withCompletionHandlingBlock:^(NSArray *channels, PNError *error){
-												 if (channels.count == 0 )
-												 {
-													 NSLog(@"BLOCK: requestPushNotificationEnabledChannelsForDevicePushToken: Channel: %@ , Error %@",channels,error);
-													 
-													 // Enable APNS on this Channel with deviceToken
-												 }
-											 }];
 		
 	} errorBlock:^(PNError *connectionError) {
 		NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);

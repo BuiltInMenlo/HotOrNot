@@ -282,12 +282,21 @@
 		}
 	}];
 	
-	[PubNub enablePushNotificationsOnChannel:channel
-						 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
-				  andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
-					  NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
-				  }];
-	
+	// APNS enabled already?
+	[PubNub requestPushNotificationEnabledChannelsForDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+										 withCompletionHandlingBlock:^(NSArray *channels, PNError *error){
+											 if (channels.count == 0 )
+											 {
+												 NSLog(@"BLOCK: requestPushNotificationEnabledChannelsForDevicePushToken: Channel: %@ , Error %@",channels,error);
+												 
+												 // Enable APNS on this Channel with deviceToken
+												 [PubNub enablePushNotificationsOnChannel:channel
+																	  withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+															   andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
+																   NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
+															   }];
+											 }
+										 }];
 	
 	// Observer looks for message received events
 	[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
@@ -309,40 +318,40 @@
 				}];
 			
 			} else {
-				NSDictionary *dict = @{@"id"				: @"0",
-									   @"msg_id"			: @"0",
-									   @"content_type"		: @((int)HONChatMessageTypeBOT),
-									   
-									   @"owner_member"		: @{@"id"	: @(2392),
-																@"name"	: @"Botly"},
-									   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-									   @"text"				: @"Welcome to Popup Chat!",
-									   
-									   @"net_vote_score"	: @(0),
-									   @"status"			: NSStringFromInt(0),
-									   @"added"				: [NSDate stringFormattedISO8601],
-									   @"updated"			: [NSDate stringFormattedISO8601]};
-				
-				[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-				
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					NSDictionary *dict = @{@"id"				: @"0",
-										   @"msg_id"			: @"0",
-										   @"content_type"		: @((int)HONChatMessageTypeBOT),
-										   
-										   @"owner_member"		: @{@"id"	: @(2392),
-																	@"name"	: @"Botly"},
-										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-										   @"text"				: [NSString stringWithFormat:@"changed the topic to “%@”", _statusUpdateVO.subjectName],
-										   
-										   @"net_vote_score"	: @(0),
-										   @"status"			: NSStringFromInt(0),
-										   @"added"				: [NSDate stringFormattedISO8601],
-										   @"updated"			: [NSDate stringFormattedISO8601]};
-					
-					[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-					
-					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//				NSDictionary *dict = @{@"id"				: @"0",
+//									   @"msg_id"			: @"0",
+//									   @"content_type"		: @((int)HONChatMessageTypeBOT),
+//									   
+//									   @"owner_member"		: @{@"id"	: @(2392),
+//																@"name"	: @"Botly"},
+//									   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+//									   @"text"				: @"Welcome to Popup Chat!",
+//									   
+//									   @"net_vote_score"	: @(0),
+//									   @"status"			: NSStringFromInt(0),
+//									   @"added"				: [NSDate stringFormattedISO8601],
+//									   @"updated"			: [NSDate stringFormattedISO8601]};
+//				
+//				[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+//				
+//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//					NSDictionary *dict = @{@"id"				: @"0",
+//										   @"msg_id"			: @"0",
+//										   @"content_type"		: @((int)HONChatMessageTypeBOT),
+//										   
+//										   @"owner_member"		: @{@"id"	: @(2392),
+//																	@"name"	: @"Botly"},
+//										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+//										   @"text"				: [NSString stringWithFormat:@"changed the topic to “%@”", _statusUpdateVO.subjectName],
+//										   
+//										   @"net_vote_score"	: @(0),
+//										   @"status"			: NSStringFromInt(0),
+//										   @"added"				: [NSDate stringFormattedISO8601],
+//										   @"updated"			: [NSDate stringFormattedISO8601]};
+//					
+//					[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+//					
+//					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 						NSDictionary *dict = @{@"id"				: @"0",
 											   @"msg_id"			: @"0",
 											   @"content_type"		: @((int)HONChatMessageTypeAUT),
@@ -358,8 +367,8 @@
 											   @"updated"			: [NSDate stringFormattedISO8601]};
 						
 						[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-					});
-				});
+//					});
+//				});
 			}
 			
 		} else if (commentVO.messageType == HONChatMessageTypeBOT) {
@@ -442,12 +451,14 @@
 //			if ([_commentTextField isFirstResponder])
 //				[self _goCancelComment];
 			
+			_cameraPreviewView.alpha = 0.85;
 			_expireSeconds = (_expireSeconds == 0) ? 600 : _expireSeconds;
 			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
 															target:self selector:@selector(_updateExpireTime)
 														  userInfo:nil
 														   repeats:YES];
 		} else {
+			_cameraPreviewView.alpha = 1.00;
 			_expireLabel.text = [NSString stringWithFormat:@"%d %@ here…", _participants - 1, (_participants - 1 == 1) ? @"person is" : @"people are"];
 		}
 	}];

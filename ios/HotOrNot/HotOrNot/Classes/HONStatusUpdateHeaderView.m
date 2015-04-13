@@ -25,7 +25,7 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 90.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 52.0)])) {
 		self.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		_statusUpdateVO = statusUpdateVO;
 		
@@ -41,11 +41,11 @@
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 9.0, 120.0, 18.0)];
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 9.0, 200.0, 18.0)];
 		_backLabel.backgroundColor = [UIColor clearColor];
 		_backLabel.textColor = [UIColor whiteColor];
 		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_backLabel.text = [NSString stringWithFormat:@"pop.rx/%d", _statusUpdateVO.statusUpdateID];
+		_backLabel.text = [NSString stringWithFormat:@"pop.vlly.im/%d", _statusUpdateVO.statusUpdateID];
 		[_backLabel resizeFrameForText];
 		[self addSubview:_backLabel];
 		
@@ -73,7 +73,7 @@
 		
 		UIView *bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 52.0, self.frame.size.width, 38.0)];
 		bannerView.backgroundColor = [UIColor colorWithRed:1.000 green:0.839 blue:0.000 alpha:1.00];
-		[self addSubview:bannerView];
+		//[self addSubview:bannerView];
 		
 		UILabel *bannerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, self.frame.size.width - 20.0, 38.0)];
 		bannerLabel.backgroundColor = [UIColor clearColor];
