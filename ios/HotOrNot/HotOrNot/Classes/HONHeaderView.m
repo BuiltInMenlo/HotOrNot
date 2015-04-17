@@ -43,7 +43,7 @@
 	if ((self = [super initWithFrame:CGRectFromSize(CGSizeMake([UIScreen mainScreen].bounds.size.width, kNavHeaderHeight))])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navHeaderBackground"]];
 		_bgImageView.frame = CGRectOffset(_bgImageView.frame, 0.0, 20.0);
-		[self addSubview:_bgImageView];
+		//[self addSubview:_bgImageView];
 		
 		_title = @"";
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 10.0, (self.frame.size.width - 110.0), 22.0)];

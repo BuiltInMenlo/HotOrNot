@@ -1145,6 +1145,12 @@
 	[self _goBack];
 }
 
+- (void)statusUpdateHeaderViewFlag:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
+	NSLog(@"[*:*] statusUpdateHeaderViewFlag [*:*]");
+	
+	[self _goFlag];
+}
+
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {

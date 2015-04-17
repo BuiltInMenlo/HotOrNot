@@ -56,10 +56,17 @@
 		_linkLabel.text = @"(share this)";
 //		[self addSubview:_linkLabel];
 		
+		HONButton *flagButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		flagButton.frame = CGRectMake(self.frame.size.width - 140.0, 0.0, 44.0, 44.0);
+		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:flagButton];
+		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake(self.frame.size.width - 100.0, -6.0, 52.0, 46.0);
+		linkButton.frame = CGRectMake(self.frame.size.width - 100.0, -4.0, 52.0, 46.0);
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateHighlighted];
+		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:linkButton];
 
@@ -110,6 +117,11 @@
 - (void)_goFlipCamera {
 	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewChangeCamera:)])
 		[self.delegate statusUpdateHeaderViewChangeCamera:self];
+}
+
+- (void)_goFlag {
+	if ([self.delegate respondsToSelector:@selector(statusUpdateHeaderViewFlag:)])
+		[self.delegate statusUpdateHeaderViewFlag:self];
 }
 
 @end

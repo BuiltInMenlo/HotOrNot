@@ -14,7 +14,7 @@
 	if ((self = [super initWithTarget:target action:action])) {
 		[_button setBackgroundImage:[UIImage imageNamed:@"privacyButton_nonActive"] forState:UIControlStateNormal];
 		[_button setBackgroundImage:[UIImage imageNamed:@"privacyButton_Active"] forState:UIControlStateHighlighted];
-		[self setFrame:CGRectOffsetX(self.frame, [UIScreen mainScreen].bounds.size.width - self.frame.size.width)];
+		//[self setFrame:CGRectOffsetX(self.frame, [UIScreen mainScreen].bounds.size.width - self.frame.size.width)];
 	}
 	
 	return (self);

@@ -255,6 +255,7 @@
 	[self.view addSubview:_composeButton];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
 	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
 	[self.view addSubview:_headerView];
 	
@@ -601,12 +602,14 @@
 	[self _goCompose];
 }
 
+- (void)_goPrivacy {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goInvite {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareApp"];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 	
 	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
@@ -861,15 +864,15 @@
 			}];
 		}
 		
-//		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-//																message:@"You agree to the following terms."
-//															   delegate:self
-//													  cancelButtonTitle:@"View Terms"
-//													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-//			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-//			[alertView show];
-//		}
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+																message:@"You agree to the following terms."
+															   delegate:self
+													  cancelButtonTitle:@"View Terms"
+													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+			[alertView show];
+		}
 		
 	} else if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
 		if ([_textField isFirstResponder])
@@ -895,15 +898,15 @@
 			}];
 		}
 		
-//		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-//																message:@"You agree to the following terms."
-//															   delegate:self
-//													  cancelButtonTitle:@"View Terms"
-//													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-//			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-//			[alertView show];
-//		}
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+																message:@"You agree to the following terms."
+															   delegate:self
+													  cancelButtonTitle:@"View Terms"
+													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+			[alertView show];
+		}
 	}
 }
 
@@ -1031,6 +1034,9 @@
 		if (buttonIndex == 1) {
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"terms"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		} else if (buttonIndex == 0) {
+			[self _goPrivacy];
 		}
 	}
 }
