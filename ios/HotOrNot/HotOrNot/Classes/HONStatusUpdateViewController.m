@@ -12,6 +12,7 @@
 
 #import <AWSiOSSDKv2/S3.h>
 
+#import "NSArray+BuiltInMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
@@ -58,7 +59,13 @@
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) NSString *comment;
 @property (nonatomic, strong) NSTimer *expireTimer;
+@property (nonatomic, strong) NSTimer *durationTimer;
+@property (nonatomic, strong) UILabel *statusLabel;
 @property (nonatomic, strong) UILabel *expireLabel;
+@property (nonatomic, strong) CALayer *maskLayer;
+@property (nonatomic, strong) UIView *bgView;
+@property (nonatomic, strong) UIView *hudView;
+@property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 
 @property (nonatomic, strong) HONMediaRevealerView *revealerView;
@@ -83,6 +90,15 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_appLeavingBackground:)
 													 name:@"APP_LEAVING_BACKGROUND" object:nil];
+		
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_playbackStateChanged:)
+													 name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayer];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_playbackEnded:)
+													 name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayer];
 		
 		[self _setupCamera];
 		[[PBJVision sharedInstance] startPreview];
@@ -186,6 +202,7 @@
 	
 	_isSubmitting = NO;
 }
+
 
 #pragma mark - Data Calls
 - (void)_uploadPhoto:(UIImage *)image {
@@ -352,21 +369,25 @@
 //					[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
 //					
 //					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-						NSDictionary *dict = @{@"id"				: @"0",
-											   @"msg_id"			: @"0",
-											   @"content_type"		: @((int)HONChatMessageTypeAUT),
-											   
-											   @"owner_member"		: @{@"id"	: @(2392),
-																		@"name"	: @"Botly"},
-											   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-											   @"text"				: [NSString stringWithFormat:@"Share your Popup now! http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID],
-											   
-											   @"net_vote_score"	: @(0),
-											   @"status"			: NSStringFromInt(0),
-											   @"added"				: [NSDate stringFormattedISO8601],
-											   @"updated"			: [NSDate stringFormattedISO8601]};
-						
-						[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+//						NSDictionary *dict = @{@"id"				: @"0",
+//											   @"msg_id"			: @"0",
+//											   @"content_type"		: @((int)HONChatMessageTypeAUT),
+//											   
+//											   @"owner_member"		: @{@"id"	: @(2392),
+//																		@"name"	: @"Botly"},
+//											   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+//											   @"text"				: [NSString stringWithFormat:@"Share your Popup now! http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID],
+//											   
+//											   @"net_vote_score"	: @(0),
+//											   @"status"			: NSStringFromInt(0),
+//											   @"added"				: [NSDate stringFormattedISO8601],
+//											   @"updated"			: [NSDate stringFormattedISO8601]};
+//						
+//						[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+//				
+//						[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(YES) forKey:@"chat_share"];
+//						[[NSUserDefaults standardUserDefaults] synchronize];
+				
 //					});
 //				});
 			}
@@ -426,17 +447,22 @@
 				[self _appendComment:commentVO];
 			
 		} else if (commentVO.messageType == HONChatMessageTypeVID) {
-			_moviePlayer.contentURL = [NSURL URLWithString:commentVO.imagePrefix];
-			_moviePlayer.view.hidden = NO;
-			[_moviePlayer play];
-			
-//			NSLog(@"---------VIDEO:[%@]", commentVO.imagePrefix);
-			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(7.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				_moviePlayer.view.hidden = YES;
-			});
-			
-			[self _appendComment:commentVO];
+			//if (_bgView.frame.size.height == self.view.frame.size.height * 0.5) {
+				if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+				
+				[UIView animateKeyframesWithDuration:0.25 delay:0.00
+											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+										  animations:^(void) {
+											  _moviePlayer.view.alpha = 0.0;
+										  } completion:^(BOOL finished) {
+											  _moviePlayer.contentURL = [NSURL URLWithString:commentVO.imagePrefix];
+											  [_moviePlayer play];
+										  }];
+				
+				_statusLabel.text = @"Loading video…";
+				[self _appendComment:commentVO];
+			//}
 	
 		} else {
 			NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.messageType);
@@ -451,14 +477,12 @@
 //			if ([_commentTextField isFirstResponder])
 //				[self _goCancelComment];
 			
-			_cameraPreviewView.alpha = 0.85;
 			_expireSeconds = (_expireSeconds == 0) ? 600 : _expireSeconds;
-			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
-															target:self selector:@selector(_updateExpireTime)
-														  userInfo:nil
-														   repeats:YES];
+//			_expireTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+//															target:self selector:@selector(_updateExpireTime)
+//														  userInfo:nil
+//														   repeats:YES];
 		} else {
-			_cameraPreviewView.alpha = 1.00;
 			_expireLabel.text = [NSString stringWithFormat:@"%d %@ here…", _participants - 1, (_participants - 1 == 1) ? @"person is" : @"people are"];
 		}
 	}];
@@ -524,7 +548,7 @@
 //			int mins = _expireSeconds / 60;
 //			int secs = _expireSeconds % 60;
 			
-			_expireLabel.text = @"No one is here, share chat link now…";// [NSString stringWithFormat:[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_interval"], mins, secs];
+			_expireLabel.text = @"Send a pop…";// [NSString stringWithFormat:[[NSUserDefaults standardUserDefaults] objectForKey:@"expire_interval"], mins, secs];
 			
 		} else
 			[self _popBack];
@@ -553,6 +577,18 @@
 	}
 }
 
+- (void)_updateTint {
+	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+	
+	UIColor *color = [colors randomElement];
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		[[HONViewDispensor sharedInstance] tintView:_bgView withColor:color];
+	} completion:nil];
+}
+
 - (void)_copyDeeplink {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
@@ -575,32 +611,33 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
-//	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"placeholderClubPhoto_%.fx%.f", [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].width, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize].height]]];
-//	bgImageView.frame = CGRectResize(bgImageView.frame, [[HONDeviceIntrinsics sharedInstance] scaledScreenSize]);
-//	[self.view addSubview:bgImageView];
+	_bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5)];
+	_bgView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
+	[self.view addSubview:_bgView];
 	
-	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
-	_cameraPreviewView.alpha = 0.5;
+	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:1.25
+												  target:self
+												selector:@selector(_updateTint)
+												userInfo:nil repeats:YES];
+	
+	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+	_moviePlayer.controlStyle = MPMovieControlStyleNone;
+	_moviePlayer.shouldAutoplay = YES;
+	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_moviePlayer.view.alpha = 0.0;
+	[self.view addSubview:_moviePlayer.view];
+	
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5)];
+	_cameraPreviewView.backgroundColor = [UIColor blackColor];
+	
+	//_cameraPreviewView.hidden = YES;
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
+	_cameraPreviewLayer.opacity = 0.33;
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
-	
-//	NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"mp4"];
-//	_moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL fileURLWithPath:path]];
-	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-//	_moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/Comp_1.mov"]];
-	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-	_moviePlayer.shouldAutoplay = YES;
-	_moviePlayer.view.frame = self.view.frame;
-	_moviePlayer.view.hidden = YES;
-	//_moviePlayer.view.transform = CGAffineTransformMake(3.0, 0.0, 0.0, 3.0, 0.0, 0.0);
-	
-	[self.view addSubview:_moviePlayer.view];
-//	[_moviePlayer play];
-	//[moviePlayer setFullscreen:NO animated:YES];
 	
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	_imageView.hidden = YES;
@@ -613,19 +650,20 @@
 	_statusUpdateFooterView.delegate = self;
 	
 	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 55.0, self.view.frame.size.width, 55.0)];
-	_commentFooterView.backgroundColor = [UIColor blackColor];
+	//_commentFooterView.backgroundColor = [UIColor blackColor];
 	
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
+	_footerImageView.frame = CGRectOffset(_footerImageView.frame, 10.0, -10.0);
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height - 80.0, self.view.frame.size.width - 20.0, 22.0)];
-	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, (self.view.frame.size.height * 0.5) + 11.0, 100.0, 22.0)];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.textAlignment = NSTextAlignmentCenter;
-	_expireLabel.text = @"";
+	_expireLabel.text = @"1";
 	
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 36.0 + _expireLabel.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height))];
+//	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, (self.view.frame.size.height * 0.5) - _commentFooterView.frame.size.height)];
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 15.0 + [UIApplication sharedApplication].statusBarFrame.size.height))];
 	//_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, 10.0, _scrollView.contentInset.right);
@@ -633,19 +671,55 @@
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
+	_hudView = [[UIView alloc] initWithFrame:self.view.frame];
+	[self.view addSubview:_hudView];
+	
+//	UIView *maskView = [[UIView alloc] initWithFrame:self.view.frame];
+//	maskView.layer.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+//	maskView.backgroundColor = [UIColor blackColor];
+//	
+//	_maskLayer = maskView.layer;
+//	_scrollView.layer.mask = _maskLayer;
+//	_scrollView.layer.masksToBounds = YES;
+
+	
 	[self.view addSubview:_statusUpdateHeaderView];
 	[self.view addSubview:_commentFooterView];
 	
 	_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - 56.0), self.view.frame.size.height - 56.0, 56.0, 56.0);
+	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - 74.0), self.view.frame.size.height - 74.0, 64.0, 64.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButtonDisabled"] forState:UIControlStateDisabled];
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_takePhotoButton];
 	
-//	[self.view addSubview:_statusUpdateFooterView];
-	[self.view addSubview:_expireLabel];
+	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	flagButton.frame = CGRectMake(self.view.frame.size.width - 44.0, (self.view.frame.size.height * 0.5) - 44.0, 84.0, 44.0);
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	[_hudView addSubview:flagButton];
+	
+	UIImageView *participantsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"participantsIcon"]];
+	participantsImageView.frame = CGRectOffset(participantsImageView.frame, 0.0, self.view.frame.size.height * 0.5);
+	[_hudView addSubview:participantsImageView];
+	
+	_statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 165.0, self.view.frame.size.width - 20.0, 30.0)];
+	_statusLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
+	_statusLabel.backgroundColor = [UIColor clearColor];
+	_statusLabel.textColor = [UIColor whiteColor];
+	_statusLabel.text = @"Send a pop…";
+	[_bgView addSubview:_statusLabel];
+	
+	UIButton *cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 52.0, (self.view.frame.size.height * 0.5) + 5.0, 52.0, 46.0);
+	[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+	[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+	[cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+	[_hudView addSubview:cameraFlipButton];
+	
+	[_hudView addSubview:_expireLabel];
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
@@ -675,7 +749,7 @@
 	[_commentFooterView addSubview:_submitCommentButton];
 	
 	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_commentCloseButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 260.0));
+	_commentCloseButton.frame = CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height - (260.0));
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
@@ -748,7 +822,7 @@
 														message:[NSString stringWithFormat:@"http://popup.vlly.im/%d\nShare now for people to join.", _statusUpdateVO.statusUpdateID]
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
-											  otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
+											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", nil];//@"Share Kik", @"Share Line", @"Share Kakao", nil];
 	[alertView setTag:HONStatusUpdateAlertViewTypeShare];
 	[alertView show];
 }
@@ -807,6 +881,8 @@
 
 - (void)_goCancelComment {
 	_commentTextField.text = @"";
+	_footerImageView.image = [UIImage imageNamed:@"commentInputBG"];
+	
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
 	
@@ -820,9 +896,10 @@
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_hudView.alpha = 1.0;
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
-		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
-		_takePhotoButton.frame = CGRectTranslateY(_takePhotoButton.frame, self.view.frame.size.height - 56.0);
+//		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
+		_takePhotoButton.frame = CGRectTranslateY(_takePhotoButton.frame, self.view.frame.size.height - 74.0);
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
 	} completion:^(BOOL finished) {
 		[_commentCloseButton removeFromSuperview];
@@ -837,22 +914,48 @@
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
 		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
+			[_moviePlayer stop];
+			_moviePlayer.view.hidden = YES;
+			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.25, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+			_bgView.frame = CGRectMake(0.0, 20.0, 0.0, 60.0);
+			_cameraPreviewLayer.opacity = 1.0;
 			[[PBJVision sharedInstance] startVideoCapture];
 			_statusUpdateHeaderView.hidden = YES;
 			_statusUpdateFooterView.hidden = YES;
+			_commentFooterView.hidden = YES;
 			_scrollView.hidden = YES;
-			_expireLabel.hidden = YES;
+			_hudView.hidden = YES;
+			
+			[UIView animateKeyframesWithDuration:3.00 delay:0.00
+										 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveLinear)
+									  animations:^(void) {
+										  _bgView.frame = CGRectResizeWidth(_bgView.frame, self.view.frame.size.width);
+									  } completion:^(BOOL finished) {
+									  }];
 		}
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
 		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
+		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+		[_bgView.layer removeAllAnimations];
+		_bgView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+		_cameraPreviewLayer.opacity = 0.33;
+		_statusLabel.text = @"Sending popup…";
 		
 		[[PBJVision sharedInstance] endVideoCapture];
 		_statusUpdateHeaderView.hidden = NO;
 		_statusUpdateFooterView.hidden = NO;
+		_commentFooterView.hidden = NO;
 		_scrollView.hidden = NO;
-		_expireLabel.hidden = NO;
+		_hudView.hidden = NO;
 	}
+}
+
+- (void)_goFlipCamera {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flip_camera"];
+	
+	PBJVision *vision = [PBJVision sharedInstance];
+	vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -878,6 +981,32 @@
 	_isActive = YES;
 }
 
+- (void)_playbackStateChanged:(NSNotification *)notification {
+	NSLog(@"_playbackStateChangedNotification:[%d][%d]", _moviePlayer.loadState, _moviePlayer.playbackState);
+	
+	if (_moviePlayer.loadState == 0) {
+		_moviePlayer.view.hidden = NO;
+		[UIView animateKeyframesWithDuration:0.25 delay:0.00
+									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+								  animations:^(void) {
+									  _moviePlayer.view.alpha = 1.0;
+								  } completion:^(BOOL finished) {
+								  }];
+	}
+	
+}
+
+- (void)_playbackEnded:(NSNotification *)notification {
+	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
+	[_moviePlayer play];
+	
+//	[UIView animateKeyframesWithDuration:0.25 delay:0.00
+//								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+//							  animations:^(void) {
+//								  _moviePlayer.view.alpha = 0.0;
+//							  } completion:^(BOOL finished) {
+//							  }];
+}
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 //	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
@@ -922,6 +1051,13 @@
 	
 	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
 	
+	for (UIView *view in _commentsHolderView.subviews) {
+		CGFloat offset = (_commentsHolderView.frameEdges.bottom - view.frame.origin.y) - 22.0;
+		NSLog(@"offset:[%0.4f]", offset);
+		
+		view.alpha = 1.0 - (offset / 198.352);
+	}
+	
 	[UIView animateKeyframesWithDuration:0.25 delay:0.00
 								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
 							  animations:^(void) {
@@ -944,15 +1080,20 @@
 		_expireTimer = nil;
 	}
 	
-	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(40.0, 44.0))];
-	matteView.backgroundColor = [UIColor blackColor];
-	[_statusUpdateHeaderView addSubview:matteView];
+	if (_tintTimer != nil) {
+		[_tintTimer invalidate];
+		_tintTimer = nil;
+	}
 	
-	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
-	[activityIndicatorView startAnimating];
-	[_statusUpdateHeaderView addSubview:activityIndicatorView];
-	
+//	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(40.0, 44.0))];
+//	matteView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
+//	[_statusUpdateHeaderView addSubview:matteView];
+
+//	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+//	activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
+//	[activityIndicatorView startAnimating];
+//	[_statusUpdateHeaderView addSubview:activityIndicatorView];
+//	
 	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		if (messageState == PNMessageSent) {
 			NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
@@ -963,6 +1104,9 @@
 			[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
 		}
 	}];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
 	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
@@ -1159,6 +1303,7 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
+	_footerImageView.image = [UIImage imageNamed:@"commentInput2BG"];
 	_footerImageView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + _expireLabel.frame.size.height + 216.0));
 	
@@ -1170,12 +1315,14 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
-		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
+//		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0));
 		_takePhotoButton.frame = CGRectTranslateY(_takePhotoButton.frame, self.view.frame.size.height - (_takePhotoButton.frame.size.height + 216.0));
+		
+		_hudView.alpha = 0.0;
 	 } completion:^(BOOL finished) {
 		 
-		 _commentCloseButton.frame = _scrollView.frame;
+		 //_commentCloseButton.frame = _scrollView.frame;
 		 [self.view addSubview:_commentCloseButton];
 	 }];
 }
@@ -1237,6 +1384,7 @@
 	} else if (alertView.tag == HONStatusUpdateAlertViewTypeFlag) {
 		if (buttonIndex == 1) {
 			[self _flagStatusUpdate];
+			[self _popBack];
 		}
 	
 	} else if (alertView.tag == HONStatusUpdateAlertViewTypeShare) {
@@ -1448,19 +1596,7 @@
 	NSLog(@"[*:*] vision:capturedPhoto:[%lu] error:[%@] [*:*]", (unsigned long)[[photoDict objectForKey:PBJVisionPhotoMetadataKey] count], error);
 	
 	[[PBJVision sharedInstance] stopPreview];
-//	[_cameraPreviewView removeFromSuperview];
-//	_cameraPreviewView = nil;
-//	_cameraPreviewLayer = nil;
-//	
-//	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
-//	_cameraPreviewView.alpha = 0.5;
-//	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
-//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-//	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-//	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
-//	[self.view addSubview:_cameraPreviewView];
-//	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
-	
+//
 	if (error != nil) {
 		[[[UIAlertView alloc] initWithTitle:@"Error taking photo!"
 									message:nil

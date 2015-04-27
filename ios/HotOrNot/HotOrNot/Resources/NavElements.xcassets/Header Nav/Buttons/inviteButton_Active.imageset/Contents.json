@@ -3,7 +3,7 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "homeShareButton_Active@1x.png"
+      "filename" : "cameraShare_Active@1x.png"
     },
     {
       "idiom" : "iphone",
@@ -12,7 +12,7 @@
     },
     {
       "idiom" : "iphone",
-      "filename" : "homeShareButton_Active@1x-1.png",
+      "filename" : "cameraShare_Active@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },

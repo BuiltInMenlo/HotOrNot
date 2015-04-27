@@ -26,12 +26,12 @@
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 52.0)])) {
-		self.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
+		//self.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		_statusUpdateVO = statusUpdateVO;
 		
 		UIView *statusBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, self.frame.size.width, 20.0)];
 		statusBarView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
-		[self addSubview:statusBarView];
+		//[self addSubview:statusBarView];
 		
 		_backImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"backButton_nonActive"]];
 		[self addSubview:_backImageView];
@@ -41,42 +41,27 @@
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 9.0, 200.0, 18.0)];
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(43.0, 8.0, 200.0, 24.0)];
 		_backLabel.backgroundColor = [UIColor clearColor];
 		_backLabel.textColor = [UIColor whiteColor];
-		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 		_backLabel.text = [NSString stringWithFormat:@"pop.vlly.im/%d", _statusUpdateVO.statusUpdateID];
 		[_backLabel resizeFrameForText];
 		[self addSubview:_backLabel];
 		
-		_linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(_backLabel.frameEdges.right + 5.0, 15.0, 100.0, 18.0)];
+		_linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(_backLabel.frameEdges.right + 9.0, 14.0, 100.0, 18.0)];
 		_linkLabel.backgroundColor = [UIColor clearColor];
 		_linkLabel.textColor = [UIColor whiteColor];
-		_linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+		_linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		_linkLabel.text = @"(share this)";
 //		[self addSubview:_linkLabel];
 		
-		HONButton *flagButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		flagButton.frame = CGRectMake(self.frame.size.width - 140.0, 0.0, 44.0, 44.0);
-		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:flagButton];
-		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake(self.frame.size.width - 100.0, -4.0, 52.0, 46.0);
+		linkButton.frame = CGRectMake(self.frame.size.width - 54.0, -2.0, 52.0, 46.0);
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:linkButton];
-
-		HONButton *cameraFlipButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		cameraFlipButton.frame = CGRectMake(self.frame.size.width - 52.0, 0.0, 52.0, 46.0);
-		[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-		[cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-		[cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:cameraFlipButton];
-		
 		
 		UIView *bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 52.0, self.frame.size.width, 38.0)];
 		bannerView.backgroundColor = [UIColor colorWithRed:1.000 green:0.839 blue:0.000 alpha:1.00];
@@ -98,7 +83,7 @@
 #pragma mark - Public APIs
 #pragma mark - Navigation
 - (void)_goBack {
-	_backImageView.image = nil;
+	//_backImageView.image = nil;
 	
 	_linkLabel.text = @"";
 	_backLabel.text = @"Cleaning up…";

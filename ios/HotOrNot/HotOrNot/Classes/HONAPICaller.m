@@ -2518,15 +2518,15 @@ static HONAPICaller *sharedInstance = nil;
 
 #pragma mark - UI Presentation
 - (void)showDataErrorHUD {
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.minShowTime = kProgressHUDMinDuration;
-	_progressHUD.mode = MBProgressHUDModeCustomView;
-	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-	[_progressHUD show:NO];
-	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-	_progressHUD = nil;
+//	if (_progressHUD == nil)
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.minShowTime = kProgressHUDMinDuration;
+//	_progressHUD.mode = MBProgressHUDModeCustomView;
+//	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+//	[_progressHUD show:NO];
+//	[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//	_progressHUD = nil;
 }
 
 - (void)showSuccessHUD {

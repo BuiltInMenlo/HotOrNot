@@ -616,7 +616,7 @@
 														message:@"http://popup.vlly.im\nShare now for people to join."
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
-											  otherButtonTitles:@"Copy Chat URL", @"Share on SMS", @"Share Kik", @"Share Line", @"Share Kakao", nil];
+											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", nil];//@"Share Kik", @"Share Line", @"Share Kakao", nil];
 	[alertView setTag:HONHomeAlertViewTypeInvite];
 	[alertView show];
 }

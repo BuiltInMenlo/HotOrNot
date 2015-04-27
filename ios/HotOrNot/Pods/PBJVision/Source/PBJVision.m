@@ -727,6 +727,7 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
         _maximumCaptureDuration = kCMTimeInvalid;
 
         [self setMirroringMode:PBJMirroringAuto];
+		
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillEnterForeground:) name:@"UIApplicationWillEnterForegroundNotification" object:[UIApplication sharedApplication]];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidEnterBackground:) name:@"UIApplicationDidEnterBackgroundNotification" object:[UIApplication sharedApplication]];
@@ -2118,8 +2119,8 @@ typedef void (^PBJVisionBlock)();
     
 	NSDictionary *videoSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
                                      AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
-                                     AVVideoWidthKey : @(480),//@(videoDimensions.width),
-                                     AVVideoHeightKey : @(640),//@(videoDimensions.height),
+                                     AVVideoWidthKey : @(videoDimensions.width),
+                                     AVVideoHeightKey : @(videoDimensions.height + 80.0),
                                      AVVideoCompressionPropertiesKey : compressionSettings };
     
     return [_mediaWriter setupVideoWithSettings:videoSettings];
