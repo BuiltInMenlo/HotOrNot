@@ -1,6 +1,6 @@
 //
 //  PBJVision.m
-//  Vision
+//  PBJVision
 //
 //  Created by Patrick Piemonte on 4/30/13.
 //  Copyright (c) 2013-present, Patrick Piemonte, http://patrickpiemonte.com
@@ -70,7 +70,6 @@ NSString * const PBJVisionVideoPathKey = @"PBJVisionVideoPathKey";
 NSString * const PBJVisionVideoThumbnailKey = @"PBJVisionVideoThumbnailKey";
 NSString * const PBJVisionVideoThumbnailArrayKey = @"PBJVisionVideoThumbnailArrayKey";
 NSString * const PBJVisionVideoCapturedDurationKey = @"PBJVisionVideoCapturedDurationKey";
-
 
 // PBJGLProgram shader uniforms for pixel format conversion on the GPU
 typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
@@ -339,7 +338,7 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
             break;
     }
 
-	[connection setVideoOrientation:orientation];
+    [connection setVideoOrientation:orientation];
 }
 
 - (void)_setCameraMode:(PBJCameraMode)cameraMode cameraDevice:(PBJCameraDevice)cameraDevice outputFormat:(PBJOutputFormat)outputFormat
@@ -350,32 +349,26 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
     
     DLog(@"change device (%d) mode (%d) format (%d)", changeDevice, changeMode, changeOutputFormat);
     
-    if (!changeMode && !changeDevice && !changeOutputFormat)
+    if (!changeMode && !changeDevice && !changeOutputFormat) {
         return;
-    
-    SEL targetDelegateMethodBeforeChange;
-    SEL targetDelegateMethodAfterChange;
-
-    if (changeDevice) {
-        targetDelegateMethodBeforeChange = @selector(visionCameraDeviceWillChange:);
-        targetDelegateMethodAfterChange = @selector(visionCameraDeviceDidChange:);
-    }
-    else if (changeMode) {
-        targetDelegateMethodBeforeChange = @selector(visionCameraModeWillChange:);
-        targetDelegateMethodAfterChange = @selector(visionCameraModeDidChange:);
-    }
-    else {
-        targetDelegateMethodBeforeChange = @selector(visionOutputFormatWillChange:);
-        targetDelegateMethodAfterChange = @selector(visionOutputFormatDidChange:);
     }
 
-    if ([_delegate respondsToSelector:targetDelegateMethodBeforeChange]) {
-        // At this point, `targetDelegateMethodBeforeChange` will always refer to a valid selector, as
-        // from the sequence of conditionals above. Also the enclosing `if` statement ensures
-        // that the delegate responds to it, thus safely ignore this compiler warning.
+    if (changeDevice && [_delegate respondsToSelector:@selector(visionCameraDeviceWillChange:)]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [_delegate performSelector:targetDelegateMethodBeforeChange withObject:self];
+        [_delegate performSelector:@selector(visionCameraDeviceWillChange:) withObject:self];
+#pragma clang diagnostic pop
+    }
+    if (changeMode && [_delegate respondsToSelector:@selector(visionCameraModeWillChange:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [_delegate performSelector:@selector(visionCameraModeWillChange:) withObject:self];
+#pragma clang diagnostic pop
+    }
+    if (changeOutputFormat && [_delegate respondsToSelector:@selector(visionOutputFormatWillChange:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [_delegate performSelector:@selector(visionOutputFormatWillChange:) withObject:self];
 #pragma clang diagnostic pop
     }
     
@@ -383,22 +376,36 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
     
     _cameraDevice = cameraDevice;
     _cameraMode = cameraMode;
-    
     _outputFormat = outputFormat;
-    
+
+    PBJVisionBlock didChangeBlock = ^{
+        _flags.changingModes = NO;
+            
+        if (changeDevice && [_delegate respondsToSelector:@selector(visionCameraDeviceDidChange:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [_delegate performSelector:@selector(visionCameraDeviceDidChange:) withObject:self];
+#pragma clang diagnostic pop
+        }
+        if (changeMode && [_delegate respondsToSelector:@selector(visionCameraModeDidChange:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [_delegate performSelector:@selector(visionCameraModeDidChange:) withObject:self];
+#pragma clang diagnostic pop
+        }
+        if (changeOutputFormat && [_delegate respondsToSelector:@selector(visionOutputFormatDidChange:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [_delegate performSelector:@selector(visionOutputFormatDidChange:) withObject:self];
+#pragma clang diagnostic pop
+        }
+    };
+
     // since there is no session in progress, set and bail
     if (!_captureSession) {
         _flags.changingModes = NO;
             
-        if ([_delegate respondsToSelector:targetDelegateMethodAfterChange]) {
-            // At this point, `targetDelegateMethodAfterChange` will always refer to a valid selector, as
-            // from the sequence of conditionals above. Also the enclosing `if` statement ensures
-            // that the delegate responds to it, thus safely ignore this compiler warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            [_delegate performSelector:targetDelegateMethodAfterChange withObject:self];
-#pragma clang diagnostic pop
-        }
+        didChangeBlock();
         
         return;
     }
@@ -409,19 +416,7 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
 
         [self setMirroringMode:_mirroringMode];
         
-        [self _enqueueBlockOnMainQueue:^{
-            _flags.changingModes = NO;
-            
-            if ([_delegate respondsToSelector:targetDelegateMethodAfterChange]) {
-                // At this point, `targetDelegateMethodAfterChange` will always refer to a valid selector, as
-                // from the sequence of conditionals above. Also the enclosing `if` statement ensures
-                // that the delegate responds to it, thus safely ignore this compiler warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                [_delegate performSelector:targetDelegateMethodAfterChange withObject:self];
-#pragma clang diagnostic pop
-            }
-        }];
+        [self _enqueueBlockOnMainQueue:didChangeBlock];
     }];
 }
 
@@ -567,71 +562,45 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
 
     CMTime fps = CMTimeMake(1, (int32_t)videoFrameRate);
 
-    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-        
-        AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-        AVCaptureDeviceFormat *supportingFormat = nil;
-        int32_t maxWidth = 0;
+    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureDeviceFormat *supportingFormat = nil;
+    int32_t maxWidth = 0;
 
-        NSArray *formats = [videoDevice formats];
-        for (AVCaptureDeviceFormat *format in formats) {
-            NSArray *videoSupportedFrameRateRanges = format.videoSupportedFrameRateRanges;
-            for (AVFrameRateRange *range in videoSupportedFrameRateRanges) {
-    
-                CMFormatDescriptionRef desc = format.formatDescription;
-                CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(desc);
-                int32_t width = dimensions.width;
-                if (range.minFrameRate <= videoFrameRate && videoFrameRate <= range.maxFrameRate && width >= maxWidth) {
-                    supportingFormat = format;
-                    maxWidth = width;
-                }
-                
+    NSArray *formats = [videoDevice formats];
+    for (AVCaptureDeviceFormat *format in formats) {
+        NSArray *videoSupportedFrameRateRanges = format.videoSupportedFrameRateRanges;
+        for (AVFrameRateRange *range in videoSupportedFrameRateRanges) {
+
+            CMFormatDescriptionRef desc = format.formatDescription;
+            CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(desc);
+            int32_t width = dimensions.width;
+            if (range.minFrameRate <= videoFrameRate && videoFrameRate <= range.maxFrameRate && width >= maxWidth) {
+                supportingFormat = format;
+                maxWidth = width;
             }
-        }
-        
-        if (supportingFormat) {
-            NSError *error = nil;
-            if ([_currentDevice lockForConfiguration:&error]) {
-                _currentDevice.activeVideoMinFrameDuration = fps;
-                _currentDevice.activeVideoMaxFrameDuration = fps;
-                _videoFrameRate = videoFrameRate;
-                [_currentDevice unlockForConfiguration];
-            } else if (error) {
-                DLog(@"error locking device for frame rate change (%@)", error);
-            }
-        }
-        
-        [self _enqueueBlockOnMainQueue:^{
-            if ([_delegate respondsToSelector:@selector(visionDidChangeVideoFormatAndFrameRate:)])
-                [_delegate visionDidChangeVideoFormatAndFrameRate:self];
-        }];
             
-    } else {
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        AVCaptureConnection *connection = [_currentOutput connectionWithMediaType:AVMediaTypeVideo];
-        if (connection.isVideoMaxFrameDurationSupported) {
-            connection.videoMaxFrameDuration = fps;
-        } else {
-            DLog(@"failed to set frame rate");
         }
-        
-        if (connection.isVideoMinFrameDurationSupported) {
-            connection.videoMinFrameDuration = fps;
-            _videoFrameRate = videoFrameRate;
-        } else {
-            DLog(@"failed to set frame rate");
-        }
-        
-        [self _enqueueBlockOnMainQueue:^{
-            if ([_delegate respondsToSelector:@selector(visionDidChangeVideoFormatAndFrameRate:)])
-                [_delegate visionDidChangeVideoFormatAndFrameRate:self];
-        }];
-#pragma clang diagnostic pop
-
     }
     
+    if (supportingFormat) {
+        NSError *error = nil;
+        [_captureSession beginConfiguration];  // the session to which the receiver's AVCaptureDeviceInput is added.
+        if ([_currentDevice lockForConfiguration:&error]) {
+            [_currentDevice setActiveFormat:supportingFormat];
+            _currentDevice.activeVideoMinFrameDuration = fps;
+            _currentDevice.activeVideoMaxFrameDuration = fps;
+            _videoFrameRate = videoFrameRate;
+            [_currentDevice unlockForConfiguration];
+        } else if (error) {
+            DLog(@"error locking device for frame rate change (%@)", error);
+        }
+    }
+    [_captureSession commitConfiguration];
+    [self _enqueueBlockOnMainQueue:^{
+        if ([_delegate respondsToSelector:@selector(visionDidChangeVideoFormatAndFrameRate:)])
+            [_delegate visionDidChangeVideoFormatAndFrameRate:self];
+    }];
+
     if (isRecording) {
         [self resumeVideoCapture];
     }
@@ -642,46 +611,22 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
     if (!_currentDevice)
         return 0;
 
-    NSInteger frameRate = 0;
-    
-    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-
-        frameRate = _currentDevice.activeVideoMaxFrameDuration.timescale;
-    
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        AVCaptureConnection *connection = [_currentOutput connectionWithMediaType:AVMediaTypeVideo];
-        frameRate = connection.videoMaxFrameDuration.timescale;
-#pragma clang diagnostic pop
-    }
-	
-	return frameRate;
+	return _currentDevice.activeVideoMaxFrameDuration.timescale;
 }
 
 - (BOOL)supportsVideoFrameRate:(NSInteger)videoFrameRate
 {
-    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-        AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 
-        NSArray *formats = [videoDevice formats];
-        for (AVCaptureDeviceFormat *format in formats) {
-            NSArray *videoSupportedFrameRateRanges = [format videoSupportedFrameRateRanges];
-            for (AVFrameRateRange *frameRateRange in videoSupportedFrameRateRanges) {
-                if ( (frameRateRange.minFrameRate <= videoFrameRate) && (videoFrameRate <= frameRateRange.maxFrameRate) ) {
-                    return YES;
-                }
+    NSArray *formats = [videoDevice formats];
+    for (AVCaptureDeviceFormat *format in formats) {
+        NSArray *videoSupportedFrameRateRanges = [format videoSupportedFrameRateRanges];
+        for (AVFrameRateRange *frameRateRange in videoSupportedFrameRateRanges) {
+            if ( (frameRateRange.minFrameRate <= videoFrameRate) && (videoFrameRate <= frameRateRange.maxFrameRate) ) {
+                return YES;
             }
         }
-        
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        AVCaptureConnection *connection = [_currentOutput connectionWithMediaType:AVMediaTypeVideo];
-        return (connection.isVideoMaxFrameDurationSupported && connection.isVideoMinFrameDurationSupported);
-#pragma clang diagnostic pop
     }
-
     return NO;
 }
 
@@ -699,7 +644,7 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
         }
         [self _setupGL];
         
-        _captureSessionPreset = AVCaptureSessionPreset640x480;
+        _captureSessionPreset = AVCaptureSessionPresetMedium;
         _captureDirectory = nil;
 
         _autoUpdatePreviewOrientation = YES;
@@ -727,10 +672,9 @@ typedef NS_ENUM(GLint, PBJVisionUniformLocationTypes)
         _maximumCaptureDuration = kCMTimeInvalid;
 
         [self setMirroringMode:PBJMirroringAuto];
-		
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillEnterForeground:) name:@"UIApplicationWillEnterForegroundNotification" object:[UIApplication sharedApplication]];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidEnterBackground:) name:@"UIApplicationDidEnterBackgroundNotification" object:[UIApplication sharedApplication]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:[UIApplication sharedApplication]];
     }
     return self;
 }
@@ -1132,21 +1076,17 @@ typedef void (^PBJVisionBlock)();
         }
         
         // setup video device configuration
-        if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-
-            NSError *error = nil;
-            if ([newCaptureDevice lockForConfiguration:&error]) {
+        NSError *error = nil;
+        if ([newCaptureDevice lockForConfiguration:&error]) {
+        
+            // smooth autofocus for videos
+            if ([newCaptureDevice isSmoothAutoFocusSupported])
+                [newCaptureDevice setSmoothAutoFocusEnabled:YES];
             
-                // smooth autofocus for videos
-                if ([newCaptureDevice isSmoothAutoFocusSupported])
-                    [newCaptureDevice setSmoothAutoFocusEnabled:YES];
-                
-                [newCaptureDevice unlockForConfiguration];
-        
-            } else if (error) {
-                DLog(@"error locking device for video device configuration (%@)", error);
-            }
-        
+            [newCaptureDevice unlockForConfiguration];
+    
+        } else if (error) {
+            DLog(@"error locking device for video device configuration (%@)", error);
         }
         
     } else if ( newCaptureOutput && (newCaptureOutput == _captureOutputPhoto) ) {
@@ -1215,6 +1155,9 @@ typedef void (^PBJVisionBlock)();
             [self _setOrientationForConnection:_previewLayer.connection];
         }
         
+        if (_previewLayer)
+            _previewLayer.connection.enabled = YES;
+        
         if (![_captureSession isRunning]) {
             [_captureSession startRunning];
             
@@ -1236,7 +1179,7 @@ typedef void (^PBJVisionBlock)();
             return;
 
         if (_previewLayer)
-            _previewLayer.connection.enabled = YES;
+            _previewLayer.connection.enabled = NO;
 
         if ([_captureSession isRunning])
             [_captureSession stopRunning];
@@ -1357,6 +1300,11 @@ typedef void (^PBJVisionBlock)();
     }
 }
 
+- (BOOL)isAdjustingFocus
+{
+    return [_currentDevice isAdjustingFocus];
+}
+
 - (void)exposeAtAdjustedPointOfInterest:(CGPoint)adjustedPoint
 {
     if ([_currentDevice isAdjustingExposure])
@@ -1376,6 +1324,11 @@ typedef void (^PBJVisionBlock)();
     } else if (error) {
         DLog(@"error locking device for exposure adjustment (%@)", error);
     }
+}
+
+- (BOOL)isAdjustingExposure
+{
+    return [_currentDevice isAdjustingExposure];
 }
 
 - (void)_adjustFocusExposureAndWhiteBalance
@@ -1552,15 +1505,12 @@ typedef void (^PBJVisionBlock)();
     return thumbnail;
 }
 
-
+// http://sylvana.net/jpegcrop/exif_orientation.html
 - (UIImageOrientation)_imageOrientationFromExifOrientation:(NSInteger)exifOrientation
 {
     UIImageOrientation imageOrientation = UIImageOrientationUp;
-    
+
     switch (exifOrientation) {
-        case 1:
-            imageOrientation = UIImageOrientationUp;
-            break;
         case 2:
             imageOrientation = UIImageOrientationUpMirrored;
             break;
@@ -1582,7 +1532,9 @@ typedef void (^PBJVisionBlock)();
         case 8:
             imageOrientation = UIImageOrientationLeft;
             break;
+        case 1:
         default:
+            // UIImageOrientationUp;
             break;
     }
     
@@ -1592,9 +1544,9 @@ typedef void (^PBJVisionBlock)();
 - (void)_willCapturePhoto
 {
     DLog(@"will capture photo");
-    if ([_delegate respondsToSelector:@selector(visionWillCapturePhoto:)])
+    if ([_delegate respondsToSelector:@selector(visionWillCapturePhoto:)]) {
         [_delegate visionWillCapturePhoto:self];
-    
+    }
     if (_autoFreezePreviewDuringCapture) {
         [self freezePreview];
     }
@@ -1602,8 +1554,9 @@ typedef void (^PBJVisionBlock)();
 
 - (void)_didCapturePhoto
 {
-    if ([_delegate respondsToSelector:@selector(visionDidCapturePhoto:)])
+    if ([_delegate respondsToSelector:@selector(visionDidCapturePhoto:)]) {
         [_delegate visionDidCapturePhoto:self];
+    }
     DLog(@"did capture photo");
 }
 
@@ -1618,6 +1571,11 @@ typedef void (^PBJVisionBlock)();
     NSMutableDictionary *photoDict = [[NSMutableDictionary alloc] init];
     NSDictionary *metadata = nil;
     NSError *error = nil;
+
+    // add any attachments to propagate
+    NSDictionary *tiffDict = @{ (NSString *)kCGImagePropertyTIFFSoftware : @"PBJVision",
+                                    (NSString *)kCGImagePropertyTIFFDateTime : [NSString PBJformattedTimestampStringFromDate:[NSDate date]] };
+    CMSetAttachment(sampleBuffer, kCGImagePropertyTIFFDictionary, (__bridge CFTypeRef)(tiffDict), kCMAttachmentMode_ShouldPropagate);
 
     // add photo metadata (ie EXIF: Aperture, Brightness, Exposure, FocalLength, etc)
     metadata = (__bridge NSDictionary *)CMCopyDictionaryOfAttachments(kCFAllocatorDefault, sampleBuffer, kCMAttachmentMode_ShouldPropagate);
@@ -1683,9 +1641,7 @@ typedef void (^PBJVisionBlock)();
     AVCaptureConnection *connection = [_currentOutput connectionWithMediaType:AVMediaTypeVideo];
     [self _setOrientationForConnection:connection];
     
-    [_captureOutputPhoto captureStillImageAsynchronouslyFromConnection:connection completionHandler:
-    ^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
-        
+    [_captureOutputPhoto captureStillImageAsynchronouslyFromConnection:connection completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
         if (!imageDataSampleBuffer) {
             DLog(@"failed to obtain image data sample buffer");
             return;
@@ -1697,6 +1653,11 @@ typedef void (^PBJVisionBlock)();
             }
             return;
         }
+        
+        // add any attachments to propagate
+        NSDictionary *tiffDict = @{ (NSString *)kCGImagePropertyTIFFSoftware : @"PBJVision",
+                                    (NSString *)kCGImagePropertyTIFFDateTime : [NSString PBJformattedTimestampStringFromDate:[NSDate date]] };
+        CMSetAttachment(imageDataSampleBuffer, kCGImagePropertyTIFFDictionary, (__bridge CFTypeRef)(tiffDict), kCMAttachmentMode_ShouldPropagate);
     
         NSMutableDictionary *photoDict = [[NSMutableDictionary alloc] init];
         NSDictionary *metadata = nil;
@@ -1957,6 +1918,7 @@ typedef void (^PBJVisionBlock)();
                 }
             }];
         };
+
         [_mediaWriter finishWritingWithCompletionHandler:finishWritingCompletionHandler];
     }];
 }
@@ -2120,7 +2082,7 @@ typedef void (^PBJVisionBlock)();
 	NSDictionary *videoSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
                                      AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
                                      AVVideoWidthKey : @(videoDimensions.width),
-                                     AVVideoHeightKey : @(videoDimensions.height + 80.0),
+                                     AVVideoHeightKey : @(videoDimensions.height),
                                      AVVideoCompressionPropertiesKey : compressionSettings };
     
     return [_mediaWriter setupVideoWithSettings:videoSettings];

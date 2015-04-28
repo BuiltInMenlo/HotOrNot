@@ -25,7 +25,7 @@
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_bgView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 11.0, self.frame.size.width - 10.0, 38.0)];
-		_bgView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.90];
+		_bgView.backgroundColor = [UIColor clearColor];
 		[self addSubview:_bgView];
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, self.frame.size.width - 74.0, 18.0)];
@@ -88,7 +88,7 @@
 	}
 	
 	_bgView.frame = CGRectResizeWidth(_bgView.frame, MIN(_photoIconImageView.frameEdges.right, self.frame.size.width - 20.0));
-	_bgView.frame = CGRectResizeHeight(_bgView.frame, _captionLabel.frame.size.height + 20.0);
+	_bgView.frame = CGRectResizeHeight(_bgView.frame, _captionLabel.frame.size.height + 5.0);
 	
 	NSLog(@"FRAMES -- BG:[%@] CAPTION:[%@] BUTTON:[%@]", NSStringFromCGRect(_bgView.frame), NSStringFromCGRect(_captionLabel.frame), NSStringFromCGRect(_photoIconImageView.frame));
 	

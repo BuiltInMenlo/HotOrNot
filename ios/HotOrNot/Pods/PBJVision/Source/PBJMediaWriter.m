@@ -149,10 +149,7 @@
     AVMutableMetadataItem *softwareItem = [[AVMutableMetadataItem alloc] init];
     [softwareItem setKeySpace:AVMetadataKeySpaceCommon];
     [softwareItem setKey:AVMetadataCommonKeySoftware];
-    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *softwareName = [NSString stringWithFormat:@"%@ %@ PBJVision %@ %@", [currentDevice systemName], [currentDevice systemVersion], appName, appVersion];
-    [softwareItem setValue:softwareName];
+    [softwareItem setValue:@"PBJVision"];
 
     // creation date
     AVMutableMetadataItem *creationDateItem = [[AVMutableMetadataItem alloc] init];
@@ -282,7 +279,7 @@
 				if ([_assetWriterVideoInput appendSampleBuffer:sampleBuffer]) {
                     _videoTimestamp = timestamp;
 				} else {
-					DLog(@"writer error appending video (%@)", [_assetWriter error]);
+					DLog(@"writer error appending video (%@)", _assetWriter.error);
                 }
 			}
 		} else {
@@ -290,7 +287,7 @@
 				if ([_assetWriterAudioInput appendSampleBuffer:sampleBuffer]) {
                     _audioTimestamp = timestamp;
 				} else {
-					DLog(@"writer error appending audio (%@)", [_assetWriter error]);
+					DLog(@"writer error appending audio (%@)", _assetWriter.error);
                 }
 			}
 		}
@@ -300,11 +297,13 @@
 
 - (void)finishWritingWithCompletionHandler:(void (^)(void))handler
 {
-    if (_assetWriter.status == AVAssetWriterStatusUnknown) {
-        DLog(@"asset writer is in an unknown state, wasn't recording");
+    if (_assetWriter.status == AVAssetWriterStatusUnknown ||
+        _assetWriter.status == AVAssetWriterStatusCompleted) {
+        DLog(@"asset writer was in an unexpected state (%@)", @(_assetWriter.status));
         return;
     }
-
+    [_assetWriterVideoInput markAsFinished];
+    [_assetWriterAudioInput markAsFinished];
     [_assetWriter finishWritingWithCompletionHandler:handler];
 }
 

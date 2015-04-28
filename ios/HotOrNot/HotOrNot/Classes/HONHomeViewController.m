@@ -302,8 +302,6 @@
 			}];
 		}];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
-		
 	} else {
 		[self _goRegistration];
 	}
@@ -386,7 +384,7 @@
 																				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 																				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
 																				
-																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
+																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - joiniOS"];
 																				[_loadingOverlayView outro];
 																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -436,8 +434,6 @@
 }
 
 - (void)_goActivity {
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Activity"];
-	
 	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d DOOD point%@", _voteScore, (_voteScore != 1) ? @"s" : @""]
 								message:@"Each image and comment vote gives you a single point."
 							   delegate:nil
@@ -446,8 +442,6 @@
 }
 
 - (void)_goTextField {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - textfield"];
-
 	if (![_textField isFirstResponder])
 		[_textField becomeFirstResponder];
 }
@@ -486,6 +480,8 @@
 	
 	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:[statusUpdateAffix length]] intValue] : 0;
 	if (statusUpdateID > 0) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - joinPopup"];
+		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
 		
@@ -527,7 +523,7 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - enterPopup"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - createPopup"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -609,7 +605,7 @@
 }
 
 - (void)_goInvite {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareApp"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareApp"];
 	
 	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
@@ -636,9 +632,6 @@
 	[super _goPanGesture:gestureRecognizer];
 //	HONHomeViewCell *cell = (HONHomeViewCell *)[_collectionView cellForItemAtIndexPath:[_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:_collectionView]]];
 	
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"Home Tab - Status Update SWIPE"
-//											 withClubPhoto:cell.clubPhotoVO];
-	
 	if ([gestureRecognizer velocityInView:self.view].x <= -1500) {
 	}
 }
@@ -649,14 +642,12 @@
 - (void)_showFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _showFirstRun <|::");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter_fr"];
 	[self _goRegistration];
 }
 
 - (void)_completedFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _completedFirstRun <|::");
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
 	[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
 		[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
 																@"state"	: [result objectForKey:@"state"],
@@ -946,7 +937,7 @@
 	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
 	} else if (alertView.tag == HONHomeAlertViewTypeInvite) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareClipboard"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -955,7 +946,7 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareSMS"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareSMS"];
 			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -973,7 +964,7 @@
 			}
 			
 		} else if (buttonIndex == 3) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareKik"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareKik"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -993,7 +984,7 @@
 			}
 			
 		} else if (buttonIndex == 4) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareLine"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareLine"];
 			
 			NSString *typeName = @"Line";
 			NSString *urlSchema = @"line://";
@@ -1010,7 +1001,7 @@
 			}
 			
 		} else if (buttonIndex == 5) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareKakao"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareKakao"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";

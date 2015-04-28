@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "onTapInputBackground@1x.png"
+      "filename" : "enternameinputbackground_1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "onTapInputBackground@2x.png"
+      "filename" : "enternameinputbackground_2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "onTapInputBackground@1x-1.png",
+      "filename" : "enternameinputbackground_1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "onTapInputBackground@3x.png"
+      "filename" : "enternameinputbackground_3x.png"
     }
   ],
   "info" : {

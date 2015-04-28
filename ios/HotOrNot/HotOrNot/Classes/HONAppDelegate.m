@@ -295,7 +295,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - activated"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - activated"];
 			
 			if (self.window.rootViewController == nil) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
@@ -649,7 +649,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
 	[KeenClient disableGeoLocation];
-//	[KeenClient enableLogging];
+	[KeenClient enableLogging];
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
@@ -727,7 +727,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
 	if ([protocol isEqualToString:@"popuprocks"]) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - fromDeep"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - fromDeep"];
 		
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
@@ -803,6 +803,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	pushToken = [pushToken substringToIndex:[pushToken length] - 1];
 	pushToken = [pushToken stringByReplacingOccurrencesOfString:@" " withString:@""];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - acceptPush"];
+	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
 	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
@@ -827,6 +829,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - deniedPush"];
 	
 	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {

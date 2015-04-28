@@ -1,0 +1,1 @@
+PODS_HOTORNOT_KIKAPI_OTHER_LDFLAGS = -framework "CoreGraphics" -framework "MobileCoreServices" -framework "StoreKit" -framework "UIKit"

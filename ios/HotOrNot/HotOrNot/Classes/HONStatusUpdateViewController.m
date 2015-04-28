@@ -21,7 +21,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIView+BuiltinMenlo.h"
 
-#import "PBJFocusView.h"
+#import "KikAPI.h"
 #import "PBJVision.h"
 
 #import "HONStatusUpdateViewController.h"
@@ -45,7 +45,7 @@
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
-@property (nonatomic, strong) PBJFocusView *cameraFocusView;
+//@property (nonatomic, strong) PBJFocusView *cameraFocusView;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 @property (nonatomic, strong) UIButton *commentCloseButton;
@@ -74,6 +74,7 @@
 @property (nonatomic) BOOL isActive;
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
+@property (nonatomic) int comments;
 @end
 
 @implementation HONStatusUpdateViewController
@@ -289,6 +290,7 @@
 		if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
 			_channel = channel;
 			_participants = 1;
+			_comments = 0;
 			
 			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
@@ -313,6 +315,8 @@
 																   NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
 															   }];
 											 }
+											 
+											 NSLog(@"BLOCK: requestPushNotificationEnabledChannelsForDevicePushToken: Channel: %@",channels);
 										 }];
 	
 	// Observer looks for message received events
@@ -350,7 +354,7 @@
 //									   @"updated"			: [NSDate stringFormattedISO8601]};
 //				
 //				[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-//				
+//
 //				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 //					NSDictionary *dict = @{@"id"				: @"0",
 //										   @"msg_id"			: @"0",
@@ -461,7 +465,7 @@
 										  }];
 				
 				_statusLabel.text = @"Loading video…";
-				[self _appendComment:commentVO];
+				//[self _appendComment:commentVO];
 			//}
 	
 		} else {
@@ -483,7 +487,7 @@
 //														  userInfo:nil
 //														   repeats:YES];
 		} else {
-			_expireLabel.text = [NSString stringWithFormat:@"%d %@ here…", _participants - 1, (_participants - 1 == 1) ? @"person is" : @"people are"];
+			_expireLabel.text = [NSString stringWithFormat:@"%d", _participants - 1];
 		}
 	}];
 	
@@ -627,6 +631,10 @@
 	_moviePlayer.view.alpha = 0.0;
 	[self.view addSubview:_moviePlayer.view];
 	
+//	UIScrollView *irisScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5)];
+//	irisScrollView.contentSize = CGSizeMake(self.view.frame.size.width * 4.0, self.view.frame.size.height * 0.5);
+//	irisScrollView.pagingEnabled = YES;
+	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5)];
 	_cameraPreviewView.backgroundColor = [UIColor blackColor];
 	
@@ -652,7 +660,7 @@
 	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 55.0, self.view.frame.size.width, 55.0)];
 	//_commentFooterView.backgroundColor = [UIColor blackColor];
 	
-	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
+	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInput2BG"]];
 	_footerImageView.frame = CGRectOffset(_footerImageView.frame, 10.0, -10.0);
 	[_commentFooterView addSubview:_footerImageView];
 	
@@ -808,7 +816,7 @@
 
 
 - (void)_goShare {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - sharePopup"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
 	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
 							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),
@@ -822,7 +830,7 @@
 														message:[NSString stringWithFormat:@"http://popup.vlly.im/%d\nShare now for people to join.", _statusUpdateVO.statusUpdateID]
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
-											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", nil];//@"Share Kik", @"Share Line", @"Share Kakao", nil];
+											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", @"Share Kik", nil];//, @"Share Line", @"Share Kakao", nil];
 	[alertView setTag:HONStatusUpdateAlertViewTypeShare];
 	[alertView show];
 }
@@ -837,10 +845,20 @@
 											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 	[alertView setTag:HONStatusUpdateAlertViewTypeFlag];
 	[alertView show];
+	
+//	[[KikClient sharedInstance] openProfileForKikUsername:@"kikteam"];
+	
+//	KikMessage *message = [KikMessage photoMessageWithImageURL:@"http://popup.rocks/images/my_icon.png"
+//													previewURL:@"http://popup.rocks/images/my_icon.png"];
+//	[[KikClient sharedInstance] sendKikMessage:message];
+	
+//	UIImage *image = [UIImage imageNamed:@"noNetworkBG"];
+//	KikMessage *message = [KikMessage photoMessageWithImage:image];
+//	[[KikClient sharedInstance] sendKikMessage:message];
 }
 
 - (void)_goImageComment {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - image"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - image"];
 	
 //	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 //	_loadingOverlayView.delegate = self;
@@ -863,7 +881,7 @@
 }
 
 - (void)_goTextComment {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - comment"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - comment"];
 	
 	_isSubmitting = YES;
 	[_submitCommentButton setEnabled:NO];
@@ -871,7 +889,34 @@
 	_comment = _commentTextField.text;
 	_commentTextField.text = @"";
 	
-	[self _submitTextComment];
+	if (++_comments == 1) {
+		[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
+			if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+		}];
+		
+		NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
+		[userInfo replaceObject:_comment forKey:@"username"];
+		[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
+		
+		NSDictionary *dict = @{@"id"				: @"0",
+							   @"msg_id"			: @"0",
+							   @"content_type"		: @((int)HONChatMessageTypeBOT),
+							   
+							   @"owner_member"		: @{@"id"	: @(2392),
+														@"name"	: @"Botly"},
+							   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+							   @"text"				: [NSString stringWithFormat:@"You changed your name to “%@”", _comment],
+							   
+							   @"net_vote_score"	: @(0),
+							   @"status"			: NSStringFromInt(0),
+							   @"added"				: [NSDate stringFormattedISO8601],
+							   @"updated"			: [NSDate stringFormattedISO8601]};
+		
+		[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+		
+	} else
+		[self _submitTextComment];
 }
 
 - (void)_goActivateTextComment {
@@ -881,7 +926,7 @@
 
 - (void)_goCancelComment {
 	_commentTextField.text = @"";
-	_footerImageView.image = [UIImage imageNamed:@"commentInputBG"];
+	_footerImageView.image = [UIImage imageNamed:(_comments == 0) ? @"commentInput2BG" : @"commentInputBG"];
 	
 	if ([_commentTextField isFirstResponder])
 		[_commentTextField resignFirstResponder];
@@ -935,6 +980,8 @@
 		}
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - sendVideo" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
+		
 		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
 		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
 		[_bgView.layer removeAllAnimations];
@@ -1389,7 +1436,7 @@
 	
 	} else if (alertView.tag == HONStatusUpdateAlertViewTypeShare) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareClipboard"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -1398,7 +1445,7 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareSMS"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareSMS"];
 			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -1416,7 +1463,7 @@
 			}
 			
 		} else if (buttonIndex == 3) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareKik"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareKik"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -1424,7 +1471,7 @@
 			typeName = @"Kik";
 			urlSchema = @"kik://";
 			
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
+			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kik://"]]) {
 				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
 											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
 										   delegate:nil
@@ -1432,11 +1479,15 @@
 								  otherButtonTitles:nil] show];
 				
 			} else {
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+				KikMessage *message = [KikMessage articleMessageWithTitle:@"Popup on Kik"
+																	 text:@"Join my Popup?"
+															   contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
+															   previewURL:@"http://popup.rocks/images/my_icon.png"];
+				[[KikClient sharedInstance] sendKikMessage:message];
 			}
 			
 		} else if (buttonIndex == 4) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareLine"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareLine"];
 			
 			NSString *typeName = @"Line";
 			NSString *urlSchema = @"line://";
@@ -1453,7 +1504,7 @@
 			}
 			
 		} else if (buttonIndex == 5) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"KPI - shareKakao"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareKakao"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -1561,9 +1612,9 @@
 - (void)visionDidStopFocus:(PBJVision *)vision {
 	//NSLog(@"[*:*] visionDidStopFocus [*:*]");
 	
-	if (_cameraFocusView && [_cameraFocusView superview]) {
-		[_cameraFocusView stopAnimation];
-	}
+//	if (_cameraFocusView && [_cameraFocusView superview]) {
+//		[_cameraFocusView stopAnimation];
+//	}
 }
 
 - (void)visionWillChangeExposure:(PBJVision *)vision {
@@ -1573,9 +1624,9 @@
 - (void)visionDidChangeExposure:(PBJVision *)vision {
 	//NSLog(@"[*:*] visionDidChangeExposure [*:*]");
 	
-	if (_cameraFocusView && [_cameraFocusView superview]) {
-		[_cameraFocusView stopAnimation];
-	}
+//	if (_cameraFocusView && [_cameraFocusView superview]) {
+//		[_cameraFocusView stopAnimation];
+//	}
 }
 
 // flash
