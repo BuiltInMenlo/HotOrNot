@@ -74,6 +74,7 @@
 		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
 		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
+		30990E391AF95A06002D37D7 /* FBSDKMessengerShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */; };
 		30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256061A3BB1F400C789E1 /* HONTopicViewCell.m */; };
 		30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256091A3BB28E00C789E1 /* HONTopicVO.m */; };
@@ -118,6 +119,7 @@
 		30E177981A6EB563003D46DA /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E177971A6EB563003D46DA /* GameKit.framework */; };
 		30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */; };
 		30E4AFAF1ABB9F850016B731 /* HONMediaRevealerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */; };
+		30E6782A1AFC0B55000F56D8 /* popup_sharefb.gif in Resources */ = {isa = PBXBuildFile; fileRef = 30E678291AFC0B55000F56D8 /* popup_sharefb.gif */; };
 		30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E805171A15183300F0A130 /* libFlurry_5.4.0.a */; };
 		30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */; };
 		30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */; };
@@ -405,6 +407,7 @@
 		3091229F19C501F60081B141 /* HONComposeSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeSubjectViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONComposeSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeSubjectViewController.m; sourceTree = "<group>"; };
 		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
+		30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKMessengerShareKit.framework; sourceTree = "<group>"; };
 		30AFF5701A79AB43005F408B /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
 		30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeViewFlowLayout.h; sourceTree = "<group>"; };
@@ -501,6 +504,7 @@
 		30E26CFA1A1EBF0600281486 /* HONStatusUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStatusUpdateViewController.m; sourceTree = "<group>"; };
 		30E4AFAD1ABB9F850016B731 /* HONMediaRevealerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMediaRevealerView.h; sourceTree = "<group>"; };
 		30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMediaRevealerView.m; sourceTree = "<group>"; };
+		30E678291AFC0B55000F56D8 /* popup_sharefb.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = popup_sharefb.gif; sourceTree = "<group>"; };
 		30E805161A15183300F0A130 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
 		30E805171A15183300F0A130 /* libFlurry_5.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_5.4.0.a; sourceTree = "<group>"; };
 		30FC08A319B3FFA200085E7C /* HONContactsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsSearchViewController.h; sourceTree = "<group>"; };
@@ -860,6 +864,7 @@
 				4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */,
 				30DD5A9B1A11CDE300A571DA /* KakaoOpenSDK.framework in Frameworks */,
 				4C62675A15F96FA800AA7FCE /* MapKit.framework in Frameworks */,
+				30990E391AF95A06002D37D7 /* FBSDKMessengerShareKit.framework in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
@@ -1158,6 +1163,7 @@
 		308F361919E3388E00EE9512 /* FPO */ = {
 			isa = PBXGroup;
 			children = (
+				30E678291AFC0B55000F56D8 /* popup_sharefb.gif */,
 				308F361A19E3389B00EE9512 /* 1lgZ0.gif */,
 			);
 			name = FPO;
@@ -1628,6 +1634,7 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */,
 				30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */,
 				30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */,
 			);
@@ -2223,6 +2230,7 @@
 				4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */,
 				4C0F3CB51988DDE300703D09 /* Localizable.strings in Resources */,
 				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
+				30E6782A1AFC0B55000F56D8 /* popup_sharefb.gif in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,

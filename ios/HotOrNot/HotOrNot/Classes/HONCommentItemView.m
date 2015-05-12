@@ -28,8 +28,8 @@
 		_bgView.backgroundColor = [UIColor clearColor];
 		[self addSubview:_bgView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, self.frame.size.width - 74.0, 18.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, self.frame.size.width - 74.0, 20.0)];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 //		_captionLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugVioletColor];
 		_captionLabel.textColor = [UIColor whiteColor];

@@ -34,14 +34,15 @@
 		//[self addSubview:statusBarView];
 		
 		_backImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"backButton_nonActive"]];
+//		_backImageView.alpha = 0.0;
 		[self addSubview:_backImageView];
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
+		backButton.frame = CGRectMake(0.0, -9.0, 99.0, 46.0);
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(43.0, 8.0, 200.0, 24.0)];
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(46.0, 7.0, 200.0, 24.0)];
 		_backLabel.backgroundColor = [UIColor clearColor];
 		_backLabel.textColor = [UIColor whiteColor];
 		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
@@ -49,7 +50,7 @@
 		[_backLabel resizeFrameForText];
 		[self addSubview:_backLabel];
 		
-		_linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(_backLabel.frameEdges.right + 9.0, 14.0, 100.0, 18.0)];
+		_linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(_backLabel.frameEdges.right + 9.0, 10.0, 100.0, 18.0)];
 		_linkLabel.backgroundColor = [UIColor clearColor];
 		_linkLabel.textColor = [UIColor whiteColor];
 		_linkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
@@ -79,14 +80,18 @@
 	return (self);
 }
 
+- (void)changeTitle:(NSString *)title {
+//	_backLabel.text = title;
+	_backImageView.alpha = 1.0;
+}
+
 
 #pragma mark - Public APIs
 #pragma mark - Navigation
 - (void)_goBack {
-	//_backImageView.image = nil;
+	_backImageView.image = [UIImage imageNamed:@"backSpinnerButton_nonActive"];
 	
 	_linkLabel.text = @"";
-	_backLabel.text = @"Cleaning up…";
 	_backLabel.frame = CGRectResizeWidth(_backLabel.frame, 200.0);
 	[_backLabel resizeFrameForText];
 	

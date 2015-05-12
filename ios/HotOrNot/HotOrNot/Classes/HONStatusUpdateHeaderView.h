@@ -19,6 +19,7 @@
 
 @interface HONStatusUpdateHeaderView : UIView
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO;
+- (void)changeTitle:(NSString *)title;
 
 @property (nonatomic, assign) id <HONStatusUpdateHeaderViewDelegate> delegate;
 @end

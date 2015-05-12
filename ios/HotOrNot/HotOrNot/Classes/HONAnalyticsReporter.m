@@ -174,7 +174,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	[eventName addEntriesFromDictionary:@{@"action"	: [[event componentsSeparatedByString:@" - "] lastObject]}];
 	
 	
-//	NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
+	//NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
 	
 	
 	NSError *error = nil;

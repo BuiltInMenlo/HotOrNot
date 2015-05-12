@@ -19,6 +19,7 @@
 
 - (id)init {
 	if ((self = [super initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 45.0, [UIScreen mainScreen].bounds.size.width, 45.0)])) {
+		self.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_takePhotoButton.frame = CGRectMake((self.frame.size.width - 45.0), 0.0, 45.0, 45.0);

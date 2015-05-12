@@ -15,6 +15,7 @@
 #import "UIScrollView+BuiltInMenlo.h"
 
 #import "KeychainItemWrapper.h"
+#import "KikAPI.h"
 #import "MBProgressHUD.h"
 #import "TransitionDelegate.h"
 
@@ -47,13 +48,15 @@
 @property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
 @property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UIView *noNetworkView;
-@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) UIButton *overlayButton;
 @property (nonatomic) int voteScore;
 @property (nonatomic) int totStatusUpdates;
 @property (nonatomic) BOOL isLoading;
 @property (nonatomic, strong) NSString *composeSubject;
 @property (nonatomic, strong) TransitionDelegate *transitionController;
 @property (nonatomic, strong) NSArray *colors;
+@property (nonatomic, strong) UIButton *supportButton;
+@property (nonatomic, strong) UIView *tintView;
 
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, strong) NSTimer *tintTimer;
@@ -198,6 +201,11 @@
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
+	_tintView = [[UIView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height)];
+	_tintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_tintView.alpha = 0.0;
+	[_scrollView addSubview:_tintView];
+	
 	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@](%.02f) // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size),[UIScreen mainScreen].scale, NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
 	
 	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
@@ -215,24 +223,34 @@
 	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
 	[_scrollView addSubview:tutorial4ImageView];
 	
-	UIButton *supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) ? 335.0 : 310.0, self.view.frame.size.width - 100.0, 18.0);
-	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[supportButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-	supportButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-	[supportButton setTitle:@"/Support" forState:UIControlStateNormal];
-	[supportButton setTitle:@"/Support" forState:UIControlStateHighlighted];
-	[supportButton addTarget:self action:@selector(_goSupport) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:supportButton];
+//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"channels"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//		int channelID = [obj intValue];
+//		
+//		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
+//		linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 310.0 + (idx * 25.0), self.view.frame.size.width - 100.0, 18.0);
+//		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+//		linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+//		[linkButton setTitle:[NSString stringWithFormat:@"/%d", channelID] forState:UIControlStateNormal];
+//		[linkButton setTitle:[NSString stringWithFormat:@"/%d", channelID] forState:UIControlStateHighlighted];
+//		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
+//		[_scrollView addSubview:linkButton];
+//	}];
 	
-	_overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_overlayView.frame = CGRectOffsetX(_overlayView.frame, _scrollView.frame.size.width * 3.0);
-	_overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	_overlayView.hidden = YES;
-	_overlayView.alpha = 0.0;
-	[_scrollView addSubview:_overlayView];
+	_supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), 335.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
+	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_nonActive"] forState:UIControlStateNormal];
+	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_Active"] forState:UIControlStateHighlighted];
+	[_supportButton addTarget:self action:@selector(_goRandom) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:_supportButton];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 280.0) * 0.5), 216.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 280.0, 36.0)];
+	_overlayButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_overlayButton.frame = CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height);
+	[_overlayButton addTarget:self action:@selector(_goCancelCompose) forControlEvents:UIControlEventTouchUpInside];
+	_overlayButton.hidden = YES;
+	[_scrollView addSubview:_overlayButton];
+	
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 181.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -242,7 +260,7 @@
 	_textField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:29];
 	_textField.keyboardType = UIKeyboardTypeAlphabet;
 	_textField.textAlignment = NSTextAlignmentCenter;
-	_textField.text = @"My First Popup";
+	_textField.text = @"What is on your mind?";
 	_textField.delegate = self;
 	[_scrollView addSubview:_textField];
 	
@@ -256,10 +274,10 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
-	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
+//	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
 	[self.view addSubview:_headerView];
 	
-	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 49.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 44.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
 }
@@ -321,18 +339,6 @@
 		_voteScore = [[result objectForKey:@"count"] intValue];
 		[_headerView updateActivityScore:_voteScore];
 	}];
-	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] != 0) {
-		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 310.0, self.view.frame.size.width - 100.0, 18.0);
-		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-		linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateNormal];
-		[linkButton setTitle:[NSString stringWithFormat:@"/%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue]] forState:UIControlStateHighlighted];
-		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
-		[_scrollView addSubview:linkButton];
-	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -384,7 +390,7 @@
 																				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 																				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
 																				
-																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - joiniOS"];
+																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - joiniOS"];
 																				[_loadingOverlayView outro];
 																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -480,7 +486,7 @@
 	
 	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:[statusUpdateAffix length]] intValue] : 0;
 	if (statusUpdateID > 0) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - joinPopup"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - joinPopup"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -496,6 +502,24 @@
 				
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt(statusUpdateID) forKey:@"challenge_id"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+//				[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//					NSError *error = nil;
+//					NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//					
+//					if (error != nil) {
+//						SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+//						[[HONAPICaller sharedInstance] showDataErrorHUD];
+//						
+//					} else {
+//						SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//					}
+//					
+//				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+//					[[HONAPICaller sharedInstance] showDataErrorHUD];
+//				}];
 				
 				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 				
@@ -523,7 +547,7 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - createPopup"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - createPopup"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -564,6 +588,45 @@
 			_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
 			
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+			[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"		: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
+																 @"title"	: _textField.text} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				
+				if (error != nil) {
+					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+					[[HONAPICaller sharedInstance] showDataErrorHUD];
+					
+				} else {
+					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+				}
+				
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+				[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
+																	@"channel"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
+																	@"message"	: @"created popup"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+																		NSError *error = nil;
+																		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+																		
+																		if (error != nil) {
+																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+																			[[HONAPICaller sharedInstance] showDataErrorHUD];
+																			
+																		} else {
+																			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+																		}
+																		
+																	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+																		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+																		[[HONAPICaller sharedInstance] showDataErrorHUD];
+																	}];
+			
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+				[[HONAPICaller sharedInstance] showDataErrorHUD];
+			}];
+			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _selectedStatusUpdateVO.statusUpdateID];
 			
@@ -572,8 +635,8 @@
 			
 			HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 			
-			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt([[result objectForKey:@"id"] intValue]) forKey:@"challenge_id"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+//			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt([[result objectForKey:@"id"] intValue]) forKey:@"challenge_id"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[_loadingView removeFromSuperview];
@@ -586,6 +649,103 @@
 			});
 		}]; // api submit
 	}
+}
+
+- (void)_goRandom {
+	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+	[self.view addSubview:_loadingView];
+	
+	UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
+										   [UIImage imageNamed:@"loading_02"],
+										   [UIImage imageNamed:@"loading_03"],
+										   [UIImage imageNamed:@"loading_04"],
+										   [UIImage imageNamed:@"loading_05"],
+										   [UIImage imageNamed:@"loading_06"],
+										   [UIImage imageNamed:@"loading_07"],
+										   [UIImage imageNamed:@"loading_08"]];
+	animationImageView.animationDuration = 0.75;
+	animationImageView.animationRepeatCount = 0;
+	[animationImageView startAnimating];
+	[_loadingView addSubview:animationImageView];
+	
+	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
+												  target:self
+												selector:@selector(_changeLoadTint)
+												userInfo:nil repeats:YES];
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com"]];
+	[httpClient getPath:@"popupsfixB.txt" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			int statusUpdateID = [[[[result objectForKey:@"id"] componentsSeparatedByString:@"_"] lastObject] intValue];
+			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
+				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+					_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+					_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
+					
+					[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt(statusUpdateID) forKey:@"challenge_id"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+					
+					AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+					[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+						NSError *error = nil;
+						NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+						
+						if (error != nil) {
+							SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+							[[HONAPICaller sharedInstance] showDataErrorHUD];
+							
+						} else {
+							SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+						}
+						
+					} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+						SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+						[[HONAPICaller sharedInstance] showDataErrorHUD];
+					}];
+					
+					HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+					
+					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+						[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+						[_tintTimer invalidate];
+						_tintTimer = nil;
+						[_loadingView removeFromSuperview];
+						
+						[_loadingOverlayView outro];
+						_textField.text = @"What are you doing?";
+					});
+					
+				} else {
+					[_loadingView removeFromSuperview];
+					[_tintTimer invalidate];
+					_tintTimer = nil;
+					_textField.text = @"";
+					
+					if (![_textField isFirstResponder])
+						[_textField becomeFirstResponder];
+				}
+			}];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)_goCancelCompose {
+	[_textField resignFirstResponder];
 }
 
 - (void)_goDeeplink {
@@ -605,7 +765,7 @@
 }
 
 - (void)_goInvite {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareApp"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareApp"];
 	
 	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
@@ -747,15 +907,15 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	textField.text = @"";
-	_overlayView.alpha = 0.0;
-	_overlayView.hidden = NO;
+	_overlayButton.hidden = NO;
 	//textField.text = @"//269759";
 	
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, -58.0);
+						 _tintView.alpha = 1.0;
+						 _supportButton.alpha = 0.0;
+						 //_scrollView.frame = CGRectTranslateY(_scrollView.frame, -58.0);
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);
-						 _overlayView.alpha = 1.0;
 						 
 					 } completion:^(BOOL finished) {
 						 [_composeButton removeTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
@@ -785,11 +945,12 @@
 	textField.text = ([textField.text length] == 0) ? @"What are you doing?" : textField.text;
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
-						 _overlayView.alpha = 0.0;
+						 _tintView.alpha = 0.0;
+						 _supportButton.alpha = 1.0;
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, 216.0);
-						 _scrollView.frame = CGRectTranslateY(_scrollView.frame, 0.0);
+						 //_scrollView.frame = CGRectTranslateY(_scrollView.frame, 0.0);
 					 } completion:^(BOOL finished) {
-						 _overlayView.hidden = YES;
+						 _overlayButton.hidden = YES;
 						 [_composeButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 						 [_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 					 }];
@@ -816,9 +977,9 @@
 			}];
 		}
 		
-		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 49.0) - (_composeButton.frame.size.height + 7.0)) {
+		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 44.0) - (_composeButton.frame.size.height + 7.0)) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 49.0);
+				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 44.0);
 			} completion:^(BOOL finished) {
 			}];
 		}
@@ -848,9 +1009,9 @@
 			}];
 		}
 		
-		if (_paginationView.frame.origin.y == self.view.frame.size.height - 49.0) {
+		if (_paginationView.frame.origin.y == self.view.frame.size.height - 44.0) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 49.0) - (_composeButton.frame.size.height + 7.0));
+				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 44.0) - (_composeButton.frame.size.height + 7.0));
 			} completion:^(BOOL finished) {
 			}];
 		}
@@ -937,7 +1098,7 @@
 	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
 	} else if (alertView.tag == HONHomeAlertViewTypeInvite) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareClipboard"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -946,7 +1107,7 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareSMS"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareSMS"];
 			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -964,7 +1125,7 @@
 			}
 			
 		} else if (buttonIndex == 3) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareKik"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareKik"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -980,11 +1141,15 @@
 								  otherButtonTitles:nil] show];
 				
 			} else {
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlSchema]];
+				KikMessage *message = [KikMessage articleMessageWithTitle:@"[LIVE NOW]"
+																	 text:@"Walkie talkie style video chat."
+															   contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _selectedStatusUpdateVO.statusUpdateID]
+															   previewURL:@"http://popup.rocks/images/my_icon.png"];
+				[[KikClient sharedInstance] sendKikMessage:message];
 			}
 			
 		} else if (buttonIndex == 4) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareLine"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareLine"];
 			
 			NSString *typeName = @"Line";
 			NSString *urlSchema = @"line://";
@@ -1001,7 +1166,7 @@
 			}
 			
 		} else if (buttonIndex == 5) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0428Cohort - shareKakao"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareKakao"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";

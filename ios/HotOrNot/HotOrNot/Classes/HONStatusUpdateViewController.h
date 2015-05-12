@@ -18,7 +18,7 @@ typedef NS_ENUM(NSUInteger, HONStatusUpdateActionSheetType) {
 };
 
 typedef NS_ENUM(NSUInteger, HONStatusUpdateAlertViewType) {
-	HONStatusUpdateAlertViewTypeIntro = 0,
+	HONStatusUpdateAlertViewTypeEmpty = 0,
 	HONStatusUpdateAlertViewTypeBack,
 	HONStatusUpdateAlertViewTypeFlag,
 	HONStatusUpdateAlertViewTypeShare
