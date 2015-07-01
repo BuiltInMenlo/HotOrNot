@@ -82,6 +82,16 @@
 	return [NSData dataFromBase64String:self];
 }
 
+- (NSString *)jsonEncodedString:(NSDictionary *)dictionary {
+	NSError *error;
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[dictionary objectForKey:@"options"]
+													   options:0
+														 error:&error];
+	
+	return ([[NSString alloc] initWithData:jsonData
+								  encoding:NSUTF8StringEncoding]);
+}
+
 
 - (NSString *)stringWithInt:(int)integer {
 	return ([NSString stringWithFormat:@"%d", integer]);

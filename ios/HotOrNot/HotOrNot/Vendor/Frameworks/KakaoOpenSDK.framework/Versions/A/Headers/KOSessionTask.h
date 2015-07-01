@@ -1,5 +1,5 @@
 /**
-* Copyright 2014 Kakao Corp.
+* Copyright 2015 Daum Kakao Corp.
 *
 * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
 *
@@ -19,6 +19,11 @@
 #import <UIKit/UIKit.h>
 #import "KOHTTPMethod.h"
 
+/*!
+ @abstract 각종 API 요청 완료시 호출되는 콜백 핸들러
+ @param result 해당 API 요청의 결과
+ @param error 호출 실패시의 오류 정보
+ */
 typedef void(^KOSessionTaskCompletionHandler)(id result, NSError *error);
 
 @interface KOSessionTask : NSObject
@@ -35,8 +40,25 @@ typedef void(^KOSessionTaskCompletionHandler)(id result, NSError *error);
            multipartFormData:(BOOL)multipartFormData
            completionHandler:(KOSessionTaskCompletionHandler)completionHandler;
 
+/*!
+ @abstract 해당 API 요청을 취소
+ @discussion
+ */
 - (void)cancel;
 
+/*!
+ @abstract 해당 API 요청을 취소
+ @param error 취소할 때 발생시키고자 하는(원인) NSError.
+ @discussion
+ */
 - (void)cancelWithError:(NSError *)error;
+
+/*!
+ @abstract API 요청시의 타임아웃을 설정
+ @param timeoutInterval second단위의 타임아웃 값(NSTimeInterval). 기본 180초(3분).
+ @discussion
+ */
++ (void)setRequestTimeoutInterval:(NSTimeInterval)timeoutInterval;
++ (NSTimeInterval)requestTimeoutInterval;
 
 @end

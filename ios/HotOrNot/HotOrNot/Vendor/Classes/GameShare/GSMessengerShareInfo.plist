@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>title</key>
+	<string>Popup iOS</string>
+	<key>subtitle</key>
+	<string>Tap here to join Popup</string>
+	<key>main_image</key>
+	<string>popup_share</string>
+	<key>main_image_url</key>
+	<string>http://j79ydv.com/images/ads/300x250_ja.jpg</string>
+	<key>sub_image</key>
+	<string></string>
+	<key>sub_image_url</key>
+	<string>http://j79ydv.com/images/icons/kikpeeps.jpg</string>
+	<key>outbound_url</key>
+	<string>http://j79ydv.com/s.php</string>
+	<key>meta</key>
+	<dict>
+		<key>channel</key>
+		<string>derp</string>
+	</dict>
+</dict>
+</plist>

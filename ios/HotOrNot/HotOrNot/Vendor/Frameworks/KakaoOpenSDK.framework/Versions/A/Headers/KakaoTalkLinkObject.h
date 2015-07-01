@@ -1,5 +1,5 @@
 /**
-* Copyright 2014 Kakao Corp.
+* Copyright 2014 Daum Kakao Corp.
 *
 * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
 *
@@ -21,8 +21,8 @@
  카카오 링크를 호출할때 필요한 내용을 담을 객체입니다.
  아래 4가지 형태의 객체를 생성할 수 있습니다.
  1. 레이블형 : 일반 텍스트를 사용합니다.
- 2. 이미지형 : 메세지에 보여줄 이미지의 url을 지정할 수 있습니다.
- 3. 링크형 : 메세지에 사용자가 클릭해여 Action을 취할 수 있는 링크를 만들 수 있습니다.
+ 2. 이미지형 : 메시지에 보여줄 이미지의 url을 지정할 수 있습니다.
+ 3. 링크형 : 메시지에 사용자가 클릭해여 Action을 취할 수 있는 링크를 만들 수 있습니다.
  4. 버튼형 : 링크형과 거의 유사하지만 하이퍼 링크를 버튼이미지로 표시할 수 있습니다.
  */
 
@@ -43,13 +43,13 @@
 
 /*!
  @abstract 레이블 객체를 생성한다.
- @param text 메세지에 표시될 text content
+ @param text 메시지에 표시될 text content
  */
 + (KakaoTalkLinkObject *)createLabel:(NSString *)text;
 
 /*!
  @abstract 이미지 객체를 생성한다.
- @param src 메세지에 표시될 image 의 url 정보. <br>ex) "http://abcd.com/thumb.png"
+ @param src 메시지에 표시될 image 의 url 정보. <br>ex) "http://abcd.com/thumb.png"
  @param width 이미지의 가로 픽셀 사이즈.
  @param height 이미지의 세로 픽셀 사이즈.
  */

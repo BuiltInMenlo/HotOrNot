@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Kakao Corp.
+ * Copyright 2014 Daum Kakao Corp.
  *
  * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
  *
@@ -17,6 +17,8 @@
  */
 
 #import "KOSessionTask.h"
+#import "KOPushTokenInfo.h"
+#import "KakaoPushMessageObject.h"
 
 @class KakaoPushMessageObject;
 

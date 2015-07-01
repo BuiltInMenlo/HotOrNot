@@ -1,5 +1,5 @@
 /**
-* Copyright 2014 Kakao Corp.
+* Copyright 2014 Daum Kakao Corp.
 *
 * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
 *
@@ -59,7 +59,7 @@ typedef NS_ENUM(NSInteger, KakaoTalkLinkActionDeviceType) {
 + (KakaoTalkLinkAction *)createWebAction;
 
 /*!
- @abstract 웹용 Action을 생성한다.
+ @abstract 웹용 Action을 생성한다. 앱링크에 연결할 수 없는 플랫폼일 경우, 사용될 web url 로 지정할 수 있다. e.g. PC (Mac OS, Windows)
  @param url 웹 url
 */
 + (KakaoTalkLinkAction *)createWebAction:(NSString *)url;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Kakao Corp.
+ * Copyright 2014 Daum Kakao Corp.
  *
  * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
  *
@@ -17,6 +17,13 @@
  */
 
 #import "KOSessionTask.h"
+#import "KOStoryProfile.h"
+#import "KOStoryPostInfo.h"
+#import "KOStoryLinkInfo.h"
+#import "KOStoryMyStoryInfo.h"
+#import "KOStoryMyStoryImageInfo.h"
+#import "KOStoryLikeInfo.h"
+#import "KOStoryCommentInfo.h"
 
 /*!
  @header KOSessionTask+StoryAPI.h
@@ -27,6 +34,19 @@
  인증된 session 정보를 바탕으로 각종 카카오스토리 API를 호출할 수 있습니다.
  */
 @interface KOSessionTask (StoryAPI)
+
+/*!
+ @abstract KOStoryPostPermission 스토리 포스팅 공개 범위
+ @constant KOStoryPostPermissionPublic 전체공개
+ @constant KOStoryPostPermissionFriend 친구공개
+ @constant KOStoryPostPermissionOnlyMe 나만보기
+ */
+typedef NS_ENUM(NSInteger, KOStoryPostPermission) {
+    KOStoryPostPermissionPublic = 0,
+    KOStoryPostPermissionFriend,
+    KOStoryPostPermissionOnlyMe
+};
+
 #pragma mark - KakaoStory
 
 /*!
@@ -35,6 +55,15 @@
  @discussion
  */
 + (instancetype)storyProfileTaskWithCompletionHandler:(KOSessionTaskCompletionHandler)completionHandler;
+
+/*!
+ @abstract 현재 로그인된 사용자의 카카오스토리 프로필 정보를 얻을 수 있습니다.
+ @param secureResource 프로필, 썸네일 이미지 등의 리소스 정보들에 대해 https를 지원하는 형식으로 응답을 받을지의 여부. YES일 경우 https지원, NO일 경우 http지원.
+ @param completionHandler 스토리 프로필 정보를 얻어 처리하는 핸들러
+ @discussion
+ */
++ (instancetype)storyProfileTaskWithSecureResource:(BOOL)secureResource
+                                 completionHandler:(KOSessionTaskCompletionHandler)completionHandler;
 
 /*!
  @abstract 로컬 이미지 파일을 카카오스토리에 업로드합니다.

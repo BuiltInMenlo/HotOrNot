@@ -716,7 +716,7 @@ PBJMediaWriterDelegate>
 		// default flags
 		_flags.thumbnailEnabled = YES;
 		_flags.defaultVideoThumbnails = YES;
-		_flags.audioCaptureEnabled = YES;
+		_flags.audioCaptureEnabled = NO;
 		
 		// setup queues
 		_captureSessionDispatchQueue = dispatch_queue_create("PBJVisionSession", DISPATCH_QUEUE_SERIAL); // protects session
@@ -2119,8 +2119,10 @@ typedef void (^PBJVisionBlock)();
 	
 	NSDictionary *videoSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
 									 AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
-									 AVVideoWidthKey : @(videoDimensions.width + 20.0),
-									 AVVideoHeightKey : @(videoDimensions.height + 80.0),
+									 AVVideoWidthKey : @(videoDimensions.width),
+									 AVVideoHeightKey : @(videoDimensions.width),
+//									 AVVideoWidthKey : @(videoDimensions.width + 20.0),
+//									 AVVideoHeightKey : @(videoDimensions.height + 80.0),
 									 AVVideoCompressionPropertiesKey : compressionSettings };
 	
 	return [_mediaWriter setupVideoWithSettings:videoSettings];

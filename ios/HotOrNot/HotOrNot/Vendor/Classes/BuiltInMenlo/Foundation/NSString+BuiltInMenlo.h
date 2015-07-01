@@ -13,6 +13,7 @@
 - (NSString *)base64EncodedStringWithWrapWidth:(NSUInteger)wrapWidth;
 - (NSString *)base64EncodedString;
 - (NSString *)base64DecodedString;
+- (NSString *)jsonEncodedString:(NSDictionary *)dictionary;
 - (NSData *)base64DecodedData;
 
 - (NSString *)stringWithInt:(int)integer;

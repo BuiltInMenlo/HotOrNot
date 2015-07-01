@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIView+BuiltInMenlo.h"
 #import "UILabel+BuiltInMenlo.h"
 
 @implementation UILabel (BuiltInMenlo)
@@ -69,8 +70,7 @@
 	self.frame = CGRectResize(self.frame, [self sizeForText]);
 }
 
-- (void)setTextColor:(UIColor *)textColor range:(NSRange)range
-{
+- (void)setTextColor:(UIColor *)textColor range:(NSRange)range {
 	NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
 	[text addAttribute:NSForegroundColorAttributeName
 				 value:textColor
@@ -79,8 +79,7 @@
 	[self setAttributedText:text];
 }
 
-- (void)setFont:(UIFont *)font range:(NSRange)range
-{
+- (void)setFont:(UIFont *)font range:(NSRange)range {
 	NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
 	[text addAttribute:NSFontAttributeName
 				 value:font

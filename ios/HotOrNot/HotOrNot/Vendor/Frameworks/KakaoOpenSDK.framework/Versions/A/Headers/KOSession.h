@@ -1,5 +1,5 @@
 /**
-* Copyright 2014 Kakao Corp.
+* Copyright 2015 Daum Kakao Corp.
 *
 * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
 *
@@ -26,9 +26,9 @@
 
 /*!
  @abstract Kakao 인증시의 내부 상태값
- @param KOSessionStateNotOpen 세션이 열리지 않은 상태. 인증이 되지 않은 상태.
- @param KOSessionStateOpening 세션을 열기위한 진행중의 상태. 인증 진행중의 상태.
- @param KOSessionStateOpen 세션이 성공적으로 열린 상태. 인증이 완료된 상태.
+ @constant KOSessionStateNotOpen 세션이 열리지 않은 상태. 인증이 되지 않은 상태.
+ @constant KOSessionStateOpening 세션을 열기위한 진행중의 상태. 인증 진행중의 상태.
+ @constant KOSessionStateOpen 세션이 성공적으로 열린 상태. 인증이 완료된 상태.
  */
 typedef NS_ENUM(NSInteger, KOSessionState) {
     KOSessionStateNotOpen = 0,
@@ -96,6 +96,12 @@ typedef NS_ENUM(NSInteger, KOAuthType) {
 @property(nonatomic, readonly) KOSessionState state;
 
 /*!
+ * @property automaticPeriodicRefresh
+ * @abstract access token의 자동 주기적 갱신 여부 설정. 해당 값이 YES일 경우 handleDidBecomeActive시 및 특정 시간 주기로 필요시 토큰을 자동 갱신함.
+ */
+@property (nonatomic, getter=isAutomaticPeriodicRefresh) BOOL automaticPeriodicRefresh;
+
+/*!
  @abstract 현재 session 정보
  */
 
@@ -108,14 +114,14 @@ typedef NS_ENUM(NSInteger, KOAuthType) {
 + (BOOL)isKakaoAccountLoginCallback:(NSURL *)url;
 
 /*!
- KakaoLink 메세지의 Action인지 여부
- @param url KakaoLink 메세지의 execparam 을 담은 url
+ KakaoLink 메시지의 Action인지 여부
+ @param url KakaoLink 메시지의 execparam 을 담은 url
  */
 + (BOOL)isKakaoLinkCallback:(NSURL *)url;
 
 /*!
  KakaoStory Post의 Action인지 여부
- @param url KakaoStory Post 메세지의 execparam 을 담은 url
+ @param url KakaoStory Post 메시지의 execparam 을 담은 url
  */
 + (BOOL)isStoryPostCallback:(NSURL *)url;
 
@@ -127,9 +133,14 @@ typedef NS_ENUM(NSInteger, KOAuthType) {
 + (BOOL)handleOpenURL:(NSURL *)url;
 
 /*!
- openWithCompletionHandler 로 인증도중에 빠져나와 앱으로 돌아올때의 인증처리를 취소한다.
+ openWithCompletionHandler로 인증 도중에 빠져나와 앱으로 돌아올때의 인증처리를 취소한다. 보통 applicationDidBecomeActive에서 해당 부분을 호출한다.
  */
 + (void)handleDidBecomeActive;
+
+/*!
+ application이 background 상태로 변경시 알려준다. 보통 applicationDidEnterBackground에서 해당 부분을 호출한다.
+ */
++ (void)handleDidEnterBackground;
 
 /*!
  기기의 로그인 수행 가능한 카카오 앱에 로그인 요청을 전달한다.
@@ -140,9 +151,17 @@ typedef NS_ENUM(NSInteger, KOAuthType) {
 /*!
  기기의 로그인 수행 가능한 카카오 앱에 로그인 요청을 전달한다.
  @param completionHandler 요청 완료시 실행될 block. 오류 처리와 로그인 완료 작업을 수행한다.
+ @param authParams 로그인 요청시의 인증에 필요한 부가적인 파라미터들을 전달한다.
+ */
+- (void)openWithCompletionHandler:(KOSessionCompletionHandler)completionHandler authParams:(NSDictionary *)authParams;
+
+/*!
+ 기기의 로그인 수행 가능한 카카오 앱에 로그인 요청을 전달한다.
+ @param completionHandler 요청 완료시 실행될 block. 오류 처리와 로그인 완료 작업을 수행한다.
+ @param authParams 로그인 요청시의 인증에 필요한 부가적인 파라미터들을 전달한다.
  @param authType 로그인 요청시의 인증 타입(KOAuthType)의 array(var arguments로서 nil-terminated list). 주의) list의 마지막은 꼭 nil로 끝나야함. 예) KOAuthTypeTalk, KOAuthTypeStory, KOAuthTypeAccount, nil
  */
-- (void)openWithCompletionHandler:(KOSessionCompletionHandler)completionHandler authType:(KOAuthType)authType, ...;
+- (void)openWithCompletionHandler:(KOSessionCompletionHandler)completionHandler authParams:(NSDictionary *)authParams authType:(KOAuthType)authType, ...;
 
 /*!
  현재 기기에서만 로그아웃한다.
@@ -169,3 +188,22 @@ typedef NS_ENUM(NSInteger, KOAuthType) {
  로그인 인증 정보 변경 노티피케이션 이름
  */
 extern NSString *const KOSessionDidChangeNotification;
+
+
+// Auth Parameters Keys
+/*!
+ 로그인 시 동의 화면의 타입 설정에 대한 키 이름
+ */
+extern NSString *const KOAuthKeyApprovalType;
+
+
+// Auth Parameters Approval Type Values
+/*!
+ 로그인 시 동의 화면의 타입 중 어플리케이션 개별 인증 설정
+ */
+extern NSString *const KOAuthApprovalIndividualType;
+
+/*!
+ 로그인 시 동의 화면의 타입 중 프로젝트 인증 설정
+ */
+extern NSString *const KOAuthApprovalProjectType;

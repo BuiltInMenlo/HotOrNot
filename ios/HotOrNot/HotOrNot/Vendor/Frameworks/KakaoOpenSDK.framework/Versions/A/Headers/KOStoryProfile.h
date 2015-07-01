@@ -1,5 +1,5 @@
 /**
-* Copyright 2014 Kakao Corp.
+* Copyright 2014 Daum Kakao Corp.
 *
 * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
 *
@@ -71,10 +71,18 @@ typedef NS_ENUM(NSInteger, KOStoryProfileBirthdayType) {
  */
 @property(nonatomic, readonly) KOStoryProfileBirthdayType birthdayType;
 
+/*!
+ @property permalink
+ @abstract 내 스토리를 방문할 수 있는 웹 page의 URL
+ */
+@property(nonatomic, readonly) NSString *permalink;
+
+
 - (id)initWithNickname:(NSString *)nickName
        profileImageURL:(NSString *)profileImageURL
           thumbnailURL:(NSString *)thumbnailURL
             bgImageURL:(NSString *)bgImageURL
               birthday:(NSString *)birthday
-          birthdayType:(KOStoryProfileBirthdayType)birthdayType;
+          birthdayType:(KOStoryProfileBirthdayType)birthdayType
+             permalink:(NSString *)permalink;
 @end

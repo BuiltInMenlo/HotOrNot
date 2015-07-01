@@ -18,35 +18,40 @@
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
 @property (nonatomic, strong) UILabel *backLabel;
 @property (nonatomic, strong) UILabel *linkLabel;
-@property (nonatomic, strong) UIImageView *backImageView;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @end
 
 @implementation HONStatusUpdateHeaderView
 @synthesize delegate = _delegate;
 
 - (id)initWithStatusUpdateVO:(HONStatusUpdateVO *)statusUpdateVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 52.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, [UIApplication sharedApplication].statusBarFrame.size.height, [UIScreen mainScreen].bounds.size.width, 46.0)])) {
 		//self.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		_statusUpdateVO = statusUpdateVO;
+		
+		
 		
 		UIView *statusBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, self.frame.size.width, 20.0)];
 		statusBarView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		//[self addSubview:statusBarView];
 		
-		_backImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"backButton_nonActive"]];
-//		_backImageView.alpha = 0.0;
-		[self addSubview:_backImageView];
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, 11.0, 13.0);
+		_activityIndicatorView.alpha = 0.0;
+		[self addSubview:_activityIndicatorView];
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(0.0, -9.0, 99.0, 46.0);
-		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+		[backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(46.0, 7.0, 200.0, 24.0)];
+		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(46.0, 10.0, 200.0, 24.0)];
 		_backLabel.backgroundColor = [UIColor clearColor];
 		_backLabel.textColor = [UIColor whiteColor];
 		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
-		_backLabel.text = [NSString stringWithFormat:@"pop.vlly.im/%d", _statusUpdateVO.statusUpdateID];
+		_backLabel.text = @"Home";//[NSString stringWithFormat:@"pop.vlly.im/%d", _statusUpdateVO.statusUpdateID];
 		[_backLabel resizeFrameForText];
 		[self addSubview:_backLabel];
 		
@@ -82,16 +87,22 @@
 
 - (void)changeTitle:(NSString *)title {
 //	_backLabel.text = title;
-	_backImageView.alpha = 1.0;
+//	_activityIndicatorView.hidden = NO;
 }
 
 
 #pragma mark - Public APIs
 #pragma mark - Navigation
-- (void)_goBack {
-	_backImageView.image = [UIImage imageNamed:@"backSpinnerButton_nonActive"];
+- (void)_goBack:(id)sender {
+	UIButton *button = (UIButton *)sender;
 	
-	_linkLabel.text = @"";
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"text"] isEqualToString:@"NO"]) {
+		[button removeFromSuperview];
+		[_activityIndicatorView startAnimating];
+		_activityIndicatorView.alpha = 1.0;
+	}
+	
+	_linkLabel.text = @"Deleting…";
 	_backLabel.frame = CGRectResizeWidth(_backLabel.frame, 200.0);
 	[_backLabel resizeFrameForText];
 	

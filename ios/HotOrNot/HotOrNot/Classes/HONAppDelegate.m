@@ -21,6 +21,7 @@
 #import <AWSiOSSDKv2/AWSCore.h>
 #import <FBSDKMessengerShareKit/FBSDKMessengerShareKit.h>
 #import <HockeySDK/HockeySDK.h>
+#import <KakaoOpenSDK/KakaoOpenSDK.h>
 //#import <Tapjoy/Tapjoy.h>
 
 
@@ -31,6 +32,7 @@
 #import "NSDictionary+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
 #import "PubNub+BuiltInMenlo.h"
+#import "UIImageView+AFNetworking.h"
 #import "UIViewController+BuiltInMenlo.h"
 
 #import "AFNetworking.h"
@@ -42,7 +44,8 @@
 #import "MBProgressHUD.h"
 #import "TSTapstream.h"
 #import "UIImageDebugger.h"
-#import "UIImageView+AFNetworking.h"
+//#import "WXApi.h"
+
 
 #import "HONAppDelegate.h"
 #import "HONStoreTransactionObserver.h"
@@ -91,9 +94,9 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, FBSDKMessengerURLHandlerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
 #else
-@interface HONAppDelegate() <HONLoadingOverlayViewDelegate, PNDelegate>
+@interface HONAppDelegate() <FBSDKMessengerURLHandlerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -305,7 +308,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - activated"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - activated"];
 			
 			if (self.window.rootViewController == nil) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONHomeViewController alloc] init]];
@@ -316,6 +319,31 @@ NSString * const kTwilioSMS = @"6475577873";
 				
 				self.navController = navigationController;
 			}
+			
+//			NSLog(@":::: wechat ::::");
+//			WXMediaMessage *message = [WXMediaMessage message];
+//			message.title = @"Some Title";
+//			message.description = @"Amazing Sunset";
+//			[message setThumbImage:[UIImage imageNamed:@"appIcon"]];
+//			
+//			SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
+//			req.bText = NO;
+//			req.message = message;
+//			req.scene = WXSceneTimeline;
+//			[WXApi sendReq:req];
+			
+//			SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
+//			req.bText = NO;
+//			req.message = message;
+//			req.scene = WXSceneSession;
+//			[WXApi sendReq:req];
+			
+			
+//			[KOAppCall openKakaoTalkAppLink:@[[KakaoTalkLinkObject createLabel:@"Join Skout"], [KakaoTalkLinkObject createImage:@"http://j79ydv.com/images/ads/300x250_ja.jpg"
+//																														  width:138
+//																														 height:80], [KakaoTalkLinkObject createImage:@"http://j79ydv.com/images/ads/300x250_ja.jpg"
+//																																								width:138
+//																																							   height:80]]];
 		}
 	}];
 }
@@ -473,7 +501,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clubs"];
 	
 	
-	_messageURLHandler = [[FBSDKMessengerURLHandler alloc] init];;
+	_messageURLHandler = [[FBSDKMessengerURLHandler alloc] init];
 	_messageURLHandler.delegate = self;
 	
 	
@@ -593,6 +621,27 @@ NSString * const kTwilioSMS = @"6475577873";
 	return (YES);
 }
 
+- (void)_goLogin {
+	[[KOSession sharedSession] close];
+	
+	[[KOSession sharedSession] openWithCompletionHandler:^(NSError *error) {
+		
+		if ([[KOSession sharedSession] isOpen]) {
+			// login success.
+			NSLog(@"login success.");
+			
+		} else {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"에러"
+																message:error.localizedDescription
+															   delegate:nil
+													  cancelButtonTitle:@"확인"
+													  otherButtonTitles:nil];
+			[alertView show];
+		}
+		
+	}];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
 	
@@ -607,6 +656,8 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
 	
+//	if ([MPMusicPlayerController applicationMusicPlayer].volume == 0.0)
+//		[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	
 //	[HONAppDelegate incTotalForCounter:@"background"];
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground];
@@ -681,7 +732,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
 	[KeenClient disableGeoLocation];
-	[KeenClient enableLogging];
+//	[KeenClient enableLogging];
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
@@ -744,6 +795,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
+//	if ([MPMusicPlayerController applicationMusicPlayer].volume == 0.0)
+//		[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+	
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Terminating"
 //									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
@@ -762,8 +816,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		if ([_messageURLHandler canOpenURL:url sourceApplication:sourceApplication])
 			[_messageURLHandler openURL:url sourceApplication:sourceApplication];
 			
-	} else if ([protocol isEqualToString:@"popuprocks"] && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - fromDeep"];
+	} else if ([protocol isEqualToString:@"popuprocks"]) {
 		
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
@@ -771,120 +824,143 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSLog(@"isNumeric:[%@][%@] -=- %@/%@", [path firstObject], [path lastObject], NSStringFromBOOL([[path firstObject] isNumeric]), NSStringFromBOOL([[path lastObject] isNumeric]));
 		NSLog(@"currentViewController:[%@]", [UIViewController currentViewController].class);
 		
-		if ([[path firstObject] isNumeric]) {
-			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-			_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-			[self.window addSubview:_loadingView];
+		if ([[path firstObject] isEqualToString:@"username"]) {
+			NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
+			[userInfo replaceObject:[path lastObject] forKey:@"username"];
+			[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
 			
-			UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
-			animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-												   [UIImage imageNamed:@"loading_02"],
-												   [UIImage imageNamed:@"loading_03"],
-												   [UIImage imageNamed:@"loading_04"],
-												   [UIImage imageNamed:@"loading_05"],
-												   [UIImage imageNamed:@"loading_06"],
-												   [UIImage imageNamed:@"loading_07"],
-												   [UIImage imageNamed:@"loading_08"]];
-			animationImageView.animationDuration = 0.75;
-			animationImageView.animationRepeatCount = 0;
-			[animationImageView startAnimating];
-			[_loadingView addSubview:animationImageView];
-			
-			_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-														  target:self
-														selector:@selector(_changeLoadTint)
-														userInfo:nil repeats:YES];
-			
-			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path firstObject] intValue] completion:^(NSDictionary *result) {
-				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-					[_tintTimer invalidate];
-					_tintTimer = nil;
-					[_loadingView removeFromSuperview];
-					
-					[_loadingOverlayView outro];
-
-					HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-					[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
-				
-				} else {
-					[_tintTimer invalidate];
-					_tintTimer = nil;
-					[_loadingView removeFromSuperview];
-					
-					[_loadingOverlayView outro];
-
-					
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
-																		message:@"Would you like to start a new chat?"
-																	   delegate:self
-															  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-															  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-					[alertView setTag:HONAppDelegateAlertTypeCreateChat];
-					[alertView show];
-				}
+			[[HONAPICaller sharedInstance] updateUsernameForUser:[path lastObject] completion:^(NSDictionary *result) {
+				if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 			}];
-			
-		} else if ([[path lastObject] isNumeric]) {
-			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-			_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-			[self.window addSubview:_loadingView];
-			
-			UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
-			animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-												   [UIImage imageNamed:@"loading_02"],
-												   [UIImage imageNamed:@"loading_03"],
-												   [UIImage imageNamed:@"loading_04"],
-												   [UIImage imageNamed:@"loading_05"],
-												   [UIImage imageNamed:@"loading_06"],
-												   [UIImage imageNamed:@"loading_07"],
-												   [UIImage imageNamed:@"loading_08"]];
-			animationImageView.animationDuration = 0.75;
-			animationImageView.animationRepeatCount = 0;
-			[animationImageView startAnimating];
-			[_loadingView addSubview:animationImageView];
-			
-			_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-														  target:self
-														selector:@selector(_changeLoadTint)
-														userInfo:nil repeats:YES];
-			
-			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
-				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-					[_tintTimer invalidate];
-					_tintTimer = nil;
-					[_loadingView removeFromSuperview];
+		}
+		
+		if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - fromDeep"];
+			if ([[path firstObject] isNumeric]) {
+				[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path firstObject] intValue] completion:^(NSDictionary *result) {
+					if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+						
+						if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+							_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+							_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+							[self.window addSubview:_loadingView];
+							
+							UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
+							animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
+																   [UIImage imageNamed:@"loading_02"],
+																   [UIImage imageNamed:@"loading_03"],
+																   [UIImage imageNamed:@"loading_04"],
+																   [UIImage imageNamed:@"loading_05"],
+																   [UIImage imageNamed:@"loading_06"],
+																   [UIImage imageNamed:@"loading_07"],
+																   [UIImage imageNamed:@"loading_08"]];
+							animationImageView.animationDuration = 0.75;
+							animationImageView.animationRepeatCount = 0;
+							[animationImageView startAnimating];
+							[_loadingView addSubview:animationImageView];
+							
+							_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
+																		  target:self
+																		selector:@selector(_changeLoadTint)
+																		userInfo:nil repeats:YES];
+							
+							HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+							[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+							
+							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+								[_tintTimer invalidate];
+								_tintTimer = nil;
+								[_loadingView removeFromSuperview];
+								
+								[_loadingOverlayView outro];
+							});
+						}
 					
-					[_loadingOverlayView outro];
+					} else {
+						[_tintTimer invalidate];
+						_tintTimer = nil;
+						[_loadingView removeFromSuperview];
+						
+						[_loadingOverlayView outro];
 
-					
-					HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-					[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+						
+						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
+																			message:@"Would you like to start a new chat?"
+																		   delegate:self
+																  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+																  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+						[alertView setTag:HONAppDelegateAlertTypeCreateChat];
+						[alertView show];
+					}
+				}];
 				
-				} else {
-					[_tintTimer invalidate];
-					_tintTimer = nil;
-					[_loadingView removeFromSuperview];
+			} else if ([[path lastObject] isNumeric]) {
+				[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
+					if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
+						if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+							
+							_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+							_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+							[self.window addSubview:_loadingView];
+							
+							UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
+							animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
+																   [UIImage imageNamed:@"loading_02"],
+																   [UIImage imageNamed:@"loading_03"],
+																   [UIImage imageNamed:@"loading_04"],
+																   [UIImage imageNamed:@"loading_05"],
+																   [UIImage imageNamed:@"loading_06"],
+																   [UIImage imageNamed:@"loading_07"],
+																   [UIImage imageNamed:@"loading_08"]];
+							animationImageView.animationDuration = 0.75;
+							animationImageView.animationRepeatCount = 0;
+							[animationImageView startAnimating];
+							[_loadingView addSubview:animationImageView];
+							
+							_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
+																		  target:self
+																		selector:@selector(_changeLoadTint)
+																		userInfo:nil repeats:YES];
+							
+							HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+							[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+							
+							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+								[_tintTimer invalidate];
+								_tintTimer = nil;
+								[_loadingView removeFromSuperview];
+								
+								[_loadingOverlayView outro];
+							});
+						}
 					
-					[_loadingOverlayView outro];
+					} else {
+						[_tintTimer invalidate];
+						_tintTimer = nil;
+						[_loadingView removeFromSuperview];
+						
+						[_loadingOverlayView outro];
 
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
-																		message:@"Would you like to start a new chat?"
-																	   delegate:self
-															  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-															  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-					[alertView setTag:HONAppDelegateAlertTypeCreateChat];
-					[alertView show];
-				}
-			}];
-			
-		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
-																message:@"Would you like to start a new chat?"
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-			[alertView setTag:HONAppDelegateAlertTypeCreateChat];
-			[alertView show];
+						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
+																			message:@"Would you like to start a new chat?"
+																		   delegate:self
+																  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+																  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+						[alertView setTag:HONAppDelegateAlertTypeCreateChat];
+						[alertView show];
+					}
+				}];
+				
+			} else {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
+																	message:@"Would you like to start a new chat?"
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
+				[alertView setTag:HONAppDelegateAlertTypeCreateChat];
+				[alertView show];
+			}
 		}
 	}
 	
@@ -907,7 +983,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	pushToken = [pushToken substringToIndex:[pushToken length] - 1];
 	pushToken = [pushToken stringByReplacingOccurrencesOfString:@" " withString:@""];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - acceptPush"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - acceptPush"];
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
@@ -934,7 +1010,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - deniedPush"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - deniedPush"];
 	
 	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
 		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
@@ -967,10 +1043,48 @@ NSString * const kTwilioSMS = @"6475577873";
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
 				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				
-				if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])])
+				if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+					_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+					_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+					[self.window addSubview:_loadingView];
+					
+					UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
+					animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
+														   [UIImage imageNamed:@"loading_02"],
+														   [UIImage imageNamed:@"loading_03"],
+														   [UIImage imageNamed:@"loading_04"],
+														   [UIImage imageNamed:@"loading_05"],
+														   [UIImage imageNamed:@"loading_06"],
+														   [UIImage imageNamed:@"loading_07"],
+														   [UIImage imageNamed:@"loading_08"]];
+					animationImageView.animationDuration = 0.75;
+					animationImageView.animationRepeatCount = 0;
+					[animationImageView startAnimating];
+					[_loadingView addSubview:animationImageView];
+					
+					_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
+																  target:self
+																selector:@selector(_changeLoadTint)
+																userInfo:nil repeats:YES];
+					
 					[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+					
+					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+						[_tintTimer invalidate];
+						_tintTimer = nil;
+						[_loadingView removeFromSuperview];
+						
+						[_loadingOverlayView outro];
+					});
+				}
 				
 			} else {
+				[_tintTimer invalidate];
+				_tintTimer = nil;
+				[_loadingView removeFromSuperview];
+				
+				[_loadingOverlayView outro];
+				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
 																	message:@"Would you like to start a new chat?"
 																   delegate:self
@@ -1125,9 +1239,7 @@ void uncaughtExceptionHandler(NSException *exception) {
  * When people enter your app through the composer in Messenger,
  * this delegate function will be called.
  */
-- (void)messengerURLHandler:(FBSDKMessengerURLHandler *)messengerURLHandler
-didHandleOpenFromComposerWithContext:(FBSDKMessengerURLHandlerOpenFromComposerContext *)context;
-{
+- (void)messengerURLHandler:(FBSDKMessengerURLHandler *)messengerURLHandler didHandleOpenFromComposerWithContext:(FBSDKMessengerURLHandlerOpenFromComposerContext *)context {
 	NSLog(@"didHandleOpenFromComposerWithContext:[%@]", context.metadata);
 }
 
@@ -1135,48 +1247,49 @@ didHandleOpenFromComposerWithContext:(FBSDKMessengerURLHandlerOpenFromComposerCo
  * When people enter your app through the "Reply" button on content
  * this delegate function will be called.
  */
-- (void)messengerURLHandler:(FBSDKMessengerURLHandler *)messengerURLHandler
-  didHandleReplyWithContext:(FBSDKMessengerURLHandlerReplyContext *)context;
-{
+- (void)messengerURLHandler:(FBSDKMessengerURLHandler *)messengerURLHandler didHandleReplyWithContext:(FBSDKMessengerURLHandlerReplyContext *)context; {
 	NSLog(@"didHandleReplyWithContext:[%@]", context.metadata);
 	int statusUpdateID = [[[[[[context.metadata componentsSeparatedByString:@":"] lastObject] stringByReplacingOccurrencesOfString:@"\"" withString:@""] componentsSeparatedByString:@"_"] lastObject] intValue];
 	
 	if (statusUpdateID > 0) {
-		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-		[self.window addSubview:_loadingView];
-		
-		UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
-		animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-											   [UIImage imageNamed:@"loading_02"],
-											   [UIImage imageNamed:@"loading_03"],
-											   [UIImage imageNamed:@"loading_04"],
-											   [UIImage imageNamed:@"loading_05"],
-											   [UIImage imageNamed:@"loading_06"],
-											   [UIImage imageNamed:@"loading_07"],
-											   [UIImage imageNamed:@"loading_08"]];
-		animationImageView.animationDuration = 0.75;
-		animationImageView.animationRepeatCount = 0;
-		[animationImageView startAnimating];
-		[_loadingView addSubview:animationImageView];
-		
-		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-													  target:self
-													selector:@selector(_changeLoadTint)
-													userInfo:nil repeats:YES];
-		
 		[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
 			if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
 				HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 				
-				[_tintTimer invalidate];
-				_tintTimer = nil;
-				[_loadingView removeFromSuperview];
-				
-				[_loadingOverlayView outro];
-
-				if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])])
+				if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+					_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+					_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+					[self.window addSubview:_loadingView];
+					
+					UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
+					animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
+														   [UIImage imageNamed:@"loading_02"],
+														   [UIImage imageNamed:@"loading_03"],
+														   [UIImage imageNamed:@"loading_04"],
+														   [UIImage imageNamed:@"loading_05"],
+														   [UIImage imageNamed:@"loading_06"],
+														   [UIImage imageNamed:@"loading_07"],
+														   [UIImage imageNamed:@"loading_08"]];
+					animationImageView.animationDuration = 0.75;
+					animationImageView.animationRepeatCount = 0;
+					[animationImageView startAnimating];
+					[_loadingView addSubview:animationImageView];
+					
+					_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
+																  target:self
+																selector:@selector(_changeLoadTint)
+																userInfo:nil repeats:YES];
+					
 					[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
+					
+					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+						[_tintTimer invalidate];
+						_tintTimer = nil;
+						[_loadingView removeFromSuperview];
+						
+						[_loadingOverlayView outro];
+					});
+				}
 				
 			} else {
 				[_tintTimer invalidate];

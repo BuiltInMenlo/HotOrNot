@@ -1,5 +1,5 @@
 /**
-* Copyright 2014 Kakao Corp.
+* Copyright 2014 Daum Kakao Corp.
 *
 * Redistribution and modification in source or binary forms are not permitted without specific prior written permission.
 *
@@ -31,7 +31,7 @@
 @interface KOStoryMyStoryInfo : NSObject
 
 /*!
- @abstract KOStoryMediaType 스토리 포스팅 공개 범위에 대한 정의.
+ @abstract KOStoryMediaType 스토리의 미디어 형식
  @constant KOStoryMediaTypeUnknown 알수 없는 미디어 형식
  @constant KOStoryMediaTypeNotSupported 지원되지 않는 미디어 형식
  @constant KOStoryMediaTypeNote 텍스트 같은 노트 형식
@@ -42,6 +42,20 @@ typedef NS_ENUM(NSInteger, KOStoryMediaType) {
     KOStoryMediaTypeNotSupported,
     KOStoryMediaTypeNote,
     KOStoryMediaTypePhoto
+};
+
+/*!
+ @abstract KOStoryPermission 스토리의 공개 범위
+ @constant KOStoryPermissionUnknown 알수 없는 공개 범위
+ @constant KOStoryPermissionPublic 전체공개
+ @constant KOStoryPermissionFriend 친구공개
+ @constant KOStoryPermissionOnlyMe 나만보기
+ */
+typedef NS_ENUM(NSInteger, KOStoryPermission) {
+    KOStoryPermissionUnknown = 0,
+    KOStoryPermissionPublic,
+    KOStoryPermissionFriend,
+    KOStoryPermissionOnlyMe
 };
 
 /*!
@@ -104,6 +118,13 @@ typedef NS_ENUM(NSInteger, KOStoryMediaType) {
  */
 @property(nonatomic, readonly) NSArray *likes;
 
+/*!
+ @property permission
+ @abstract 내스토리 정보의 공개 범위. 예) PUBLIC, FRIEND, ONLY_ME, UNKNOWN
+ */
+@property(nonatomic, readonly) KOStoryPermission permission;
+
+
 - (id)initWithID:(NSString *)myStoryID
          content:(NSString *)content
        mediaType:(KOStoryMediaType)mediaType
@@ -113,8 +134,11 @@ typedef NS_ENUM(NSInteger, KOStoryMediaType) {
     commentCount:(NSNumber *)commentCount
        likeCount:(NSNumber *)likeCount
         comments:(NSArray *)comments
-           likes:(NSArray *)likes;
+           likes:(NSArray *)likes
+      permission:(KOStoryPermission)permission;
 
 - (NSString *)convertMediaTypeToString:(KOStoryMediaType)mediaType;
+
+- (NSString *)convertPermissionToString:(KOStoryPermission)permission;
 
 @end

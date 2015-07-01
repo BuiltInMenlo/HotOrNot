@@ -24,6 +24,7 @@
 #import "HONActivityViewController.h"
 #import "HONRegisterViewController.h"
 #import "HONRestrictedViewController.h"
+#import "HONInviteViewController.h"
 #import "HONPrivacyPolicyViewController.h"
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
@@ -268,13 +269,14 @@
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_nonActive"] forState:UIControlStateNormal];
 	[_composeButton setBackgroundImage:[UIImage imageNamed:@"composeButton_Active"] forState:UIControlStateHighlighted];
-	[_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
+	//[_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
+	[_composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 	_composeButton.alpha = 1.0;
 	[self.view addSubview:_composeButton];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
-//	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
+	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
 	[self.view addSubview:_headerView];
 	
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 44.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
@@ -344,6 +346,16 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+															message:@"You agree to the following terms."
+														   delegate:self
+												  cancelButtonTitle:@"View Terms"
+												  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+		[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+		[alertView show];
+	}
 }
 
 
@@ -390,7 +402,7 @@
 																				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 																				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
 																				
-																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - joiniOS"];
+																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - joiniOS"];
 																				[_loadingOverlayView outro];
 																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -486,7 +498,7 @@
 	
 	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:[statusUpdateAffix length]] intValue] : 0;
 	if (statusUpdateID > 0) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - joinPopup"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - joinPopup"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -522,12 +534,12 @@
 //				}];
 				
 				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+				[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+					[_loadingView removeFromSuperview];
 					[_tintTimer invalidate];
 					_tintTimer = nil;
-					[_loadingView removeFromSuperview];
 					
 					[_loadingOverlayView outro];
 					_textField.text = @"What are you doing?";
@@ -547,7 +559,7 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - createPopup"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - createPopup"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -588,44 +600,44 @@
 			_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
 			
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-			[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"		: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
-																 @"title"	: _textField.text} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				
-				if (error != nil) {
-					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-					[[HONAPICaller sharedInstance] showDataErrorHUD];
-					
-				} else {
-					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-				}
-				
-				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-				[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
-																	@"channel"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
-																	@"message"	: @"created popup"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-																		NSError *error = nil;
-																		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-																		
-																		if (error != nil) {
-																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-																			[[HONAPICaller sharedInstance] showDataErrorHUD];
-																			
-																		} else {
-																			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-																		}
-																		
-																	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-																		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-																		[[HONAPICaller sharedInstance] showDataErrorHUD];
-																	}];
-			
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-				[[HONAPICaller sharedInstance] showDataErrorHUD];
-			}];
+//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+//			[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"		: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
+//																 @"title"	: _textField.text} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//				NSError *error = nil;
+//				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//				
+//				if (error != nil) {
+//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+//					[[HONAPICaller sharedInstance] showDataErrorHUD];
+//					
+//				} else {
+//					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//				}
+//				
+//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+//				[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
+//																	@"channel"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
+//																	@"message"	: @"created popup"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//																		NSError *error = nil;
+//																		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//																		
+//																		if (error != nil) {
+//																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+//																			[[HONAPICaller sharedInstance] showDataErrorHUD];
+//																			
+//																		} else {
+//																			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//																		}
+//																		
+//																	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//																		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+//																		[[HONAPICaller sharedInstance] showDataErrorHUD];
+//																	}];
+//
+//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+//				[[HONAPICaller sharedInstance] showDataErrorHUD];
+//			}];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _selectedStatusUpdateVO.statusUpdateID];
@@ -634,9 +646,7 @@
 				[_textField resignFirstResponder];
 			
 			HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-			
-//			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt([[result objectForKey:@"id"] intValue]) forKey:@"challenge_id"];
-//			[[NSUserDefaults standardUserDefaults] synchronize];
+			[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 			
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[_loadingView removeFromSuperview];
@@ -644,7 +654,6 @@
 				_tintTimer = nil;
 				
 				[_loadingOverlayView outro];
-				[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 				_textField.text = @"What are you doing?";
 			});
 		}]; // api submit
@@ -714,13 +723,33 @@
 						[[HONAPICaller sharedInstance] showDataErrorHUD];
 					}];
 					
+					httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+					[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
+																		@"channel"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
+																		@"message"	: @"created popup"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+																			NSError *error = nil;
+																			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+																			
+																			if (error != nil) {
+																				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+																				[[HONAPICaller sharedInstance] showDataErrorHUD];
+																				
+																			} else {
+																				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+																			}
+																			
+																		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+																			[[HONAPICaller sharedInstance] showDataErrorHUD];
+																		}];
+					
 					HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
+					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 					
 					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-						[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+						[_loadingView removeFromSuperview];
 						[_tintTimer invalidate];
 						_tintTimer = nil;
-						[_loadingView removeFromSuperview];
 						
 						[_loadingOverlayView outro];
 						_textField.text = @"What are you doing?";
@@ -765,16 +794,18 @@
 }
 
 - (void)_goInvite {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareApp"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareApp"];
 	
-	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
-														message:@"http://popup.vlly.im\nShare now for people to join."
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
-											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", nil];//@"Share Kik", @"Share Line", @"Share Kakao", nil];
-	[alertView setTag:HONHomeAlertViewTypeInvite];
-	[alertView show];
+//	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
+//														message:@"http://popup.vlly.im\nShare now for people to join."
+//													   delegate:self
+//											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
+//											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", nil];//@"Share Kik", @"Share Line", @"Share Kakao", nil];
+//	[alertView setTag:HONHomeAlertViewTypeInvite];
+//	[alertView show];
+	
+	[self.navigationController pushViewController:[[HONInviteViewController alloc] init] animated:YES];
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -918,8 +949,8 @@
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);
 						 
 					 } completion:^(BOOL finished) {
-						 [_composeButton removeTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
-						 [_composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+//						 [_composeButton removeTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
+//						 [_composeButton addTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
 					 }];
 }
 
@@ -951,8 +982,8 @@
 						 //_scrollView.frame = CGRectTranslateY(_scrollView.frame, 0.0);
 					 } completion:^(BOOL finished) {
 						 _overlayButton.hidden = YES;
-						 [_composeButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
-						 [_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
+						// [_composeButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
+						// [_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 					 }];
 }
 
@@ -1014,16 +1045,6 @@
 				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 44.0) - (_composeButton.frame.size.height + 7.0));
 			} completion:^(BOOL finished) {
 			}];
-		}
-		
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-																message:@"You agree to the following terms."
-															   delegate:self
-													  cancelButtonTitle:@"View Terms"
-													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-			[alertView show];
 		}
 		
 	} else if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
@@ -1098,7 +1119,7 @@
 	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
 	} else if (alertView.tag == HONHomeAlertViewTypeInvite) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareClipboard"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -1107,7 +1128,7 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareSMS"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareSMS"];
 			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -1125,7 +1146,7 @@
 			}
 			
 		} else if (buttonIndex == 3) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareKik"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKik"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -1149,7 +1170,7 @@
 			}
 			
 		} else if (buttonIndex == 4) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareLine"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareLine"];
 			
 			NSString *typeName = @"Line";
 			NSString *urlSchema = @"line://";
@@ -1166,7 +1187,7 @@
 			}
 			
 		} else if (buttonIndex == 5) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Cohort - shareKakao"];
+			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKakao"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";

@@ -73,8 +73,16 @@
 		308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361419E337AA00EE9512 /* FLAnimatedImage.m */; };
 		308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 308F361619E337AA00EE9512 /* FLAnimatedImageView.m */; };
 		308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */ = {isa = PBXBuildFile; fileRef = 308F361A19E3389B00EE9512 /* 1lgZ0.gif */; };
+		3096E6E51B437079002EAD0B /* popup_share.png in Resources */ = {isa = PBXBuildFile; fileRef = 3096E6E41B437078002EAD0B /* popup_share.png */; };
 		30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */; };
 		30990E391AF95A06002D37D7 /* FBSDKMessengerShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */; };
+		30AD79301B43A1AE00F9C634 /* GameShareRecources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30AD79231B43A1AE00F9C634 /* GameShareRecources.bundle */; };
+		30AD79311B43A1AE00F9C634 /* GSCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD79251B43A1AE00F9C634 /* GSCollectionViewCell.m */; };
+		30AD79321B43A1AE00F9C634 /* GSCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD79271B43A1AE00F9C634 /* GSCollectionViewController.m */; };
+		30AD79331B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD79291B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m */; };
+		30AD79341B43A1AE00F9C634 /* GSMessenger.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD792B1B43A1AE00F9C634 /* GSMessenger.m */; };
+		30AD79351B43A1AE00F9C634 /* GSMessengerShareInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30AD792D1B43A1AE00F9C634 /* GSMessengerShareInfo.plist */; };
+		30AD79361B43A1AE00F9C634 /* GSMessengerVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD792F1B43A1AE00F9C634 /* GSMessengerVO.m */; };
 		30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256061A3BB1F400C789E1 /* HONTopicViewCell.m */; };
 		30B2560A1A3BB28E00C789E1 /* HONTopicVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B256091A3BB28E00C789E1 /* HONTopicVO.m */; };
@@ -227,7 +235,7 @@
 		4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC94FD9190733C900347A34 /* HONPaginationView.m */; };
 		4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA415A181BE4D100FC9863 /* HONEmotionVO.m */; };
 		4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */; };
-		4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */; };
+		4CD5616719775FCB006F1DB5 /* HONInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD5616619775FCB006F1DB5 /* HONInviteViewController.m */; };
 		4CDFB3181889349900E9F33B /* HONFontAllocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDFB3171889349900E9F33B /* HONFontAllocator.m */; };
 		4CE0399E185727150005256F /* HONAPICaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0399D185727150005256F /* HONAPICaller.m */; };
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
@@ -406,8 +414,22 @@
 		308F361A19E3389B00EE9512 /* 1lgZ0.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 1lgZ0.gif; sourceTree = "<group>"; };
 		3091229F19C501F60081B141 /* HONComposeSubjectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeSubjectViewController.h; sourceTree = "<group>"; };
 		309122A019C501F60081B141 /* HONComposeSubjectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONComposeSubjectViewController.m; sourceTree = "<group>"; };
+		3096E6E41B437078002EAD0B /* popup_share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popup_share.png; sourceTree = "<group>"; };
 		30976BDF1A2D02E9001DDA82 /* Vancouver, BC.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Vancouver, BC.gpx"; sourceTree = "<group>"; };
 		30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKMessengerShareKit.framework; sourceTree = "<group>"; };
+		30AD79231B43A1AE00F9C634 /* GameShareRecources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GameShareRecources.bundle; sourceTree = "<group>"; };
+		30AD79241B43A1AE00F9C634 /* GSCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSCollectionViewCell.h; sourceTree = "<group>"; };
+		30AD79251B43A1AE00F9C634 /* GSCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSCollectionViewCell.m; sourceTree = "<group>"; };
+		30AD79261B43A1AE00F9C634 /* GSCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSCollectionViewController.h; sourceTree = "<group>"; };
+		30AD79271B43A1AE00F9C634 /* GSCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSCollectionViewController.m; sourceTree = "<group>"; };
+		30AD79281B43A1AE00F9C634 /* GSCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		30AD79291B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		30AD792A1B43A1AE00F9C634 /* GSMessenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessenger.h; sourceTree = "<group>"; };
+		30AD792B1B43A1AE00F9C634 /* GSMessenger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSMessenger.m; sourceTree = "<group>"; };
+		30AD792C1B43A1AE00F9C634 /* GSMessengerProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessengerProperties.h; sourceTree = "<group>"; };
+		30AD792D1B43A1AE00F9C634 /* GSMessengerShareInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = GSMessengerShareInfo.plist; sourceTree = "<group>"; };
+		30AD792E1B43A1AE00F9C634 /* GSMessengerVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessengerVO.h; sourceTree = "<group>"; };
+		30AD792F1B43A1AE00F9C634 /* GSMessengerVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSMessengerVO.m; sourceTree = "<group>"; };
 		30AFF5701A79AB43005F408B /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
 		30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONComposeViewFlowLayout.h; sourceTree = "<group>"; };
@@ -795,8 +817,8 @@
 		4CD071AB19554A87003894F4 /* HONInviteClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteClubsViewController.h; sourceTree = "<group>"; };
 		4CD071AC19554A87003894F4 /* HONInviteClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteClubsViewController.m; sourceTree = "<group>"; };
 		4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PicoCandySDKResources.bundle; sourceTree = "<group>"; };
-		4CD5616519775FCB006F1DB5 /* HONNetworkStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNetworkStatusViewController.h; sourceTree = "<group>"; };
-		4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONNetworkStatusViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4CD5616519775FCB006F1DB5 /* HONInviteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteViewController.h; sourceTree = "<group>"; };
+		4CD5616619775FCB006F1DB5 /* HONInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONInviteViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CDFB3161889349900E9F33B /* HONFontAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFontAllocator.h; sourceTree = "<group>"; };
 		4CDFB3171889349900E9F33B /* HONFontAllocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFontAllocator.m; sourceTree = "<group>"; };
 		4CE0399C185727150005256F /* HONAPICaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAPICaller.h; sourceTree = "<group>"; };
@@ -972,8 +994,6 @@
 		3022043919D61C4300C3D677 /* WebView Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				4CD5616519775FCB006F1DB5 /* HONNetworkStatusViewController.h */,
-				4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */,
 				4C7341901616C078001F9F11 /* HONPrivacyPolicyViewController.h */,
 				4C7341911616C078001F9F11 /* HONPrivacyPolicyViewController.m */,
 				4CBE874A16371D1E004084DF /* HONTermsViewController.h */,
@@ -1163,6 +1183,7 @@
 		308F361919E3388E00EE9512 /* FPO */ = {
 			isa = PBXGroup;
 			children = (
+				3096E6E41B437078002EAD0B /* popup_share.png */,
 				30E678291AFC0B55000F56D8 /* popup_sharefb.gif */,
 				308F361A19E3389B00EE9512 /* 1lgZ0.gif */,
 			);
@@ -1194,6 +1215,26 @@
 				07B6E6B119884AE700DA0805 /* searchInputBG_clubs@2x.png */,
 			);
 			name = Search;
+			sourceTree = "<group>";
+		};
+		30AD79201B43A0E400F9C634 /* GameShare */ = {
+			isa = PBXGroup;
+			children = (
+				30AD792D1B43A1AE00F9C634 /* GSMessengerShareInfo.plist */,
+				30AD79241B43A1AE00F9C634 /* GSCollectionViewCell.h */,
+				30AD79251B43A1AE00F9C634 /* GSCollectionViewCell.m */,
+				30AD79261B43A1AE00F9C634 /* GSCollectionViewController.h */,
+				30AD79271B43A1AE00F9C634 /* GSCollectionViewController.m */,
+				30AD79281B43A1AE00F9C634 /* GSCollectionViewFlowLayout.h */,
+				30AD79291B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m */,
+				30AD792A1B43A1AE00F9C634 /* GSMessenger.h */,
+				30AD792B1B43A1AE00F9C634 /* GSMessenger.m */,
+				30AD792C1B43A1AE00F9C634 /* GSMessengerProperties.h */,
+				30AD792E1B43A1AE00F9C634 /* GSMessengerVO.h */,
+				30AD792F1B43A1AE00F9C634 /* GSMessengerVO.m */,
+				30AD79231B43A1AE00F9C634 /* GameShareRecources.bundle */,
+			);
+			path = GameShare;
 			sourceTree = "<group>";
 		};
 		30AFF56F1A79AB43005F408B /* KeychainItemWrapper */ = {
@@ -1427,6 +1468,8 @@
 			children = (
 				3045F9BB1A1E61AD00F4FA88 /* HONHomeViewController.h */,
 				3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */,
+				4CD5616519775FCB006F1DB5 /* HONInviteViewController.h */,
+				4CD5616619775FCB006F1DB5 /* HONInviteViewController.m */,
 			);
 			name = Home;
 			sourceTree = "<group>";
@@ -1531,6 +1574,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30AD79201B43A0E400F9C634 /* GameShare */,
 				30B7E0721A73E5E500E52071 /* BuiltInMenlo */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
 				3042E12C1A76CD8C005AFD12 /* AnimatedGIF */,
@@ -2222,6 +2266,7 @@
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
+				30AD79351B43A1AE00F9C634 /* GSMessengerShareInfo.plist in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */,
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
@@ -2251,7 +2296,9 @@
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
+				30AD79301B43A1AE00F9C634 /* GameShareRecources.bundle in Resources */,
 				30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */,
+				3096E6E51B437079002EAD0B /* popup_share.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
@@ -2329,6 +2376,7 @@
 				4C93EAE319140896001F43DE /* HONCallingCodesViewController.m in Sources */,
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				3042D9141AB659A400F2D0B8 /* HONChannelInviteButtonView.m in Sources */,
+				30AD79361B43A1AE00F9C634 /* GSMessengerVO.m in Sources */,
 				3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */,
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
@@ -2355,6 +2403,7 @@
 				301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				3010D7811A24109E0078164F /* HONHomeFeedToggleView.m in Sources */,
+				30AD79341B43A1AE00F9C634 /* GSMessenger.m in Sources */,
 				3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */,
 				3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
@@ -2368,7 +2417,7 @@
 				3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */,
 				30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */,
 				302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */,
-				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
+				4CD5616719775FCB006F1DB5 /* HONInviteViewController.m in Sources */,
 				3051F8AA1A08AE8D00CD85F2 /* HONNextNavButtonView.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
 				4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */,
@@ -2404,6 +2453,7 @@
 				4CA34C5516F6B6550000751E /* HONTableViewCell.m in Sources */,
 				4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
+				30AD79331B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m in Sources */,
 				305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */,
 				301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */,
 				30B256071A3BB1F400C789E1 /* HONTopicViewCell.m in Sources */,
@@ -2419,6 +2469,7 @@
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
+				30AD79321B43A1AE00F9C634 /* GSCollectionViewController.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
 				3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */,
 				30727F7F1ABA4F7B00524075 /* NSArray+BuiltInMenlo.m in Sources */,
@@ -2460,6 +2511,7 @@
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				3024A5D91A7B1EF800231BA5 /* JRSwizzle.m in Sources */,
 				30E4AFAF1ABB9F850016B731 /* HONMediaRevealerView.m in Sources */,
+				30AD79311B43A1AE00F9C634 /* GSCollectionViewCell.m in Sources */,
 				30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */,
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
 				300641C31A5EF29C0078BCE9 /* RegExCategories.m in Sources */,
@@ -2654,6 +2706,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/WeChatSDK",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2703,6 +2756,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Flurry",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/WeChatSDK",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (

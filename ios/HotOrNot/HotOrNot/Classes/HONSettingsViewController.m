@@ -21,7 +21,7 @@
 #import "HONTermsViewController.h"
 #import "HONActivityViewController.h"
 #import "HONUsernameViewController.h"
-#import "HONNetworkStatusViewController.h"
+#import "HONInviteViewController.h"
 #import "HONComposeTopicViewController.h"
 #import "HONContactsSearchViewController.h"
 #import "HONUsernameSearchViewController.h"

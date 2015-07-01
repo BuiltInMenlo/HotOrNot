@@ -58,12 +58,19 @@
 	[self centerVerticalAlignWithinParentView];
 }
 
+- (void)centerAlignWithRect:(CGRect)rect {
+	[self centerHorizontalAlignWithRect:rect];
+	[self centerVerticalAlignWithRect:rect];
+}
+
 - (void)centerHorizontalAlignWithinParentView {
-	self.frame = (self.superview != nil) ? CGRectTranslateX(self.frame, (self.superview.frame.size.width - self.frame.size.width) * 0.5) : self.frame;
+	CGRect parentFrame = (self.superview != nil) ? self.superview.frame : [[UIApplication sharedApplication] delegate].window.frame;
+	self.frame = CGRectTranslateX(self.frame, (parentFrame.size.width - self.frame.size.width) * 0.5);
 }
 
 - (void)centerVerticalAlignWithinParentView {
-	self.frame = (self.superview != nil) ? CGRectTranslateY(self.frame, (self.superview.frame.size.height - self.frame.size.height) * 0.5) : self.frame;
+	CGRect parentFrame = (self.superview != nil) ? self.superview.frame : [[UIApplication sharedApplication] delegate].window.frame;
+	self.frame = CGRectTranslateY(self.frame, (parentFrame.size.height - self.frame.size.height) * 0.5);
 }
 
 - (void)centerHorizontalAlignWithRect:(CGRect)rect {

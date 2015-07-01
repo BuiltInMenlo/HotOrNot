@@ -28,7 +28,7 @@
 		_bgView.backgroundColor = [UIColor clearColor];
 		[self addSubview:_bgView];
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, self.frame.size.width - 74.0, 20.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 20.0, self.frame.size.width - 74.0, 20.0)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 //		_captionLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugVioletColor];
@@ -73,7 +73,7 @@
 	
 	} else if (_commentVO.messageType == HONChatMessageTypeVID) {
 	} else if (_commentVO.messageType == HONChatMessageTypeAUT) {
-		_photoIconImageView.image = [UIImage imageNamed:@"autFBButton_nonActive"];
+		//_photoIconImageView.image = [UIImage imageNamed:@"autFBButton_nonActive"];
 		_photoIconImageView.frame = CGRectResize(_photoIconImageView.frame, _photoIconImageView.image.size);
 		_photoIconImageView.frame = CGRectTranslate(_photoIconImageView.frame, CGPointMake(10.0, 0.0));
 		_captionLabel.frame = CGRectResize(_captionLabel.frame, _photoIconImageView.frame.size);
