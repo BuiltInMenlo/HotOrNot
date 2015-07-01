@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:HotOrNot/Vendor/Classes/GameShare/GSMessengerSchemas.plist">
+   </FileRef>
+   <FileRef
       location = "group:HotOrNot.xcodeproj">
    </FileRef>
    <FileRef

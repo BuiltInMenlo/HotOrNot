@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "kikIcon@1x.png"
+      "filename" : "kik_Active@1x-1.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "kikIcon@2x.png"
+      "filename" : "kik_Active@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "kikIcon@1x-1.png",
+      "filename" : "kik_Active@1x.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "kikIcon@3x.png"
+      "filename" : "kik_Active@3x.png"
     }
   ],
   "info" : {

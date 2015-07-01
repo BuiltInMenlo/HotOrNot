@@ -102,6 +102,8 @@
 		30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308CB19E20B510017ACBF /* UIImageView+AFNetworking.m */; };
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
+		30B6F34D1B445937000BBF12 /* libWeChatSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34A1B445937000BBF12 /* libWeChatSDK.a */; };
+		30B6F34F1B4463F1000BBF12 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34E1B4463F1000BBF12 /* libc++.dylib */; };
 		30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */; };
@@ -468,6 +470,10 @@
 		30B3096619E292D80017ACBF /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		30B3096819E292D80017ACBF /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
+		30B6F34A1B445937000BBF12 /* libWeChatSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWeChatSDK.a; sourceTree = "<group>"; };
+		30B6F34B1B445937000BBF12 /* WXApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApi.h; sourceTree = "<group>"; };
+		30B6F34C1B445937000BBF12 /* WXApiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApiObject.h; sourceTree = "<group>"; };
+		30B6F34E1B4463F1000BBF12 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		30BFAC431A01B499000CE4FC /* HONStickerButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonView.m; sourceTree = "<group>"; };
 		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
 		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
@@ -862,6 +868,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30B6F34F1B4463F1000BBF12 /* libc++.dylib in Frameworks */,
 				300BA8B31A7C50FC0087DFE0 /* libicucore.dylib in Frameworks */,
 				300BA8B41A7C50FC0087DFE0 /* libz.1.2.5.dylib in Frameworks */,
 				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
@@ -876,6 +883,7 @@
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
 				4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */,
+				30B6F34D1B445937000BBF12 /* libWeChatSDK.a in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
@@ -1290,6 +1298,16 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		30B6F3491B445936000BBF12 /* WeChatSDK */ = {
+			isa = PBXGroup;
+			children = (
+				30B6F34A1B445937000BBF12 /* libWeChatSDK.a */,
+				30B6F34B1B445937000BBF12 /* WXApi.h */,
+				30B6F34C1B445937000BBF12 /* WXApiObject.h */,
+			);
+			path = WeChatSDK;
+			sourceTree = "<group>";
+		};
 		30B7E0721A73E5E500E52071 /* BuiltInMenlo */ = {
 			isa = PBXGroup;
 			children = (
@@ -1591,6 +1609,7 @@
 				300641C01A5EF29C0078BCE9 /* RegExCategories */,
 				30D8A1F21AB683BC00EC57C8 /* Tapstream */,
 				302C9AB41A86AE5C009E7DD6 /* Transition Delegate */,
+				30B6F3491B445936000BBF12 /* WeChatSDK */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1824,6 +1843,7 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				30B6F34E1B4463F1000BBF12 /* libc++.dylib */,
 				3073BB341ACB97B100CE2441 /* StoreKit.framework */,
 				300BA8B11A7C50FC0087DFE0 /* libicucore.dylib */,
 				300BA8B21A7C50FC0087DFE0 /* libz.1.2.5.dylib */,

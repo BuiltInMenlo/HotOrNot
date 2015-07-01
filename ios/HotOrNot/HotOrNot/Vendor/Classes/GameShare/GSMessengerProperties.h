@@ -7,13 +7,14 @@
 //
 
 typedef NS_ENUM(NSUInteger, GSMessengerType) {
-	GSMessengerTypeFBMessenger = 1,
-	GSMessengerTypeKakaoTalk,
-	GSMessengerTypeKik,
-	GSMessengerTypeLine,
-	GSMessengerTypeSMS,
+	GSMessengerTypeKik = 1,
+	GSMessengerTypeFBMessenger,
 	GSMessengerTypeWhatsApp,
+	GSMessengerTypeLine,
+	GSMessengerTypeKakaoTalk,
 	GSMessengerTypeWeChat,
+	GSMessengerTypeSMS,
 	GSMessengerTypeHike,
+	GSMessengerTypeViber,
 	GSMessengerTypeOTHER
 };

@@ -6,9 +6,9 @@
 		<key>id</key>
 		<string>1</string>
 		<key>name</key>
-		<string>FB_MESSENGER</string>
+		<string>KIK</string>
 		<key>image</key>
-		<string>gs-fbMessengerButton</string>
+		<string>gs-kikButton</string>
 		<key>sort</key>
 		<string>0</string>
 		<key>enabled</key>
@@ -18,9 +18,9 @@
 		<key>id</key>
 		<string>2</string>
 		<key>name</key>
-		<string>KAKAO_TALK</string>
+		<string>FB_MESSENGER</string>
 		<key>image</key>
-		<string>gs-kakaoTalkButton</string>
+		<string>gs-fbMessengerButton</string>
 		<key>sort</key>
 		<string>1</string>
 		<key>enabled</key>
@@ -30,9 +30,9 @@
 		<key>id</key>
 		<string>3</string>
 		<key>name</key>
-		<string>KIK</string>
+		<string>WHATS_APP</string>
 		<key>image</key>
-		<string>gs-kikButton</string>
+		<string>gs-whatsAppButton</string>
 		<key>sort</key>
 		<string>2</string>
 		<key>enabled</key>
@@ -54,9 +54,9 @@
 		<key>id</key>
 		<string>5</string>
 		<key>name</key>
-		<string>SMS</string>
+		<string>KAKAO_TALK</string>
 		<key>image</key>
-		<string>gs-smsButton</string>
+		<string>gs-kakaoTalkButton</string>
 		<key>sort</key>
 		<string>4</string>
 		<key>enabled</key>
@@ -66,9 +66,9 @@
 		<key>id</key>
 		<string>6</string>
 		<key>name</key>
-		<string>WHATS_APP</string>
+		<string>WE_CHAT</string>
 		<key>image</key>
-		<string>gs-whatsAppButton</string>
+		<string>gs-weChatButton</string>
 		<key>sort</key>
 		<string>5</string>
 		<key>enabled</key>
@@ -78,9 +78,9 @@
 		<key>id</key>
 		<string>7</string>
 		<key>name</key>
-		<string>WE_CHAT</string>
+		<string>SMS</string>
 		<key>image</key>
-		<string>gs-weChatButton</string>
+		<string>gs-smsButton</string>
 		<key>sort</key>
 		<string>6</string>
 		<key>enabled</key>
@@ -102,13 +102,25 @@
 		<key>id</key>
 		<string>9</string>
 		<key>name</key>
-		<string>OTHER</string>
+		<string>VIBER</string>
 		<key>image</key>
-		<string>gs-otherButton</string>
+		<string>gs-viberButton</string>
 		<key>sort</key>
 		<string>8</string>
 		<key>enabled</key>
 		<true/>
+	</dict>
+	<dict>
+		<key>id</key>
+		<string>10</string>
+		<key>name</key>
+		<string>OTHER</string>
+		<key>image</key>
+		<string>gs-otherButton</string>
+		<key>sort</key>
+		<string>9</string>
+		<key>enabled</key>
+		<false/>
 	</dict>
 </array>
 </plist>

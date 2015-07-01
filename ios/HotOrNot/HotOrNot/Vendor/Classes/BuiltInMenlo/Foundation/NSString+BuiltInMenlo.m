@@ -97,6 +97,15 @@
 	return ([NSString stringWithFormat:@"%d", integer]);
 }
 
+- (NSString *)urlDecodedString {
+	return (__bridge_transfer NSString *)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, (CFStringRef)self, CFSTR(""), CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+}
+
+- (NSString *)urlEncodedString {
+	return ((NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)self, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ", CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding))));
+}
+
+
 + (id)initWithInteger:(int)integer {
 	return ([NSString stringWithFormat:@"%d", integer]);
 }

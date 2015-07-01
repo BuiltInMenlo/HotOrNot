@@ -9,22 +9,44 @@
 #import "GSMessengerProperties.h"
 #import "GSCollectionViewController.h"
 
-@interface GSMessenger : NSObject {
+extern NSString * const kFBMessengerKey;
+extern NSString * const kKakaoTalkKey;
+extern NSString * const kKikKey;
+extern NSString * const kLineKey;
+extern NSString * const kSMSKey;
+extern NSString * const kWhatsAppKey;
+extern NSString * const kWeChatKey;
+extern NSString * const kHikeKey;
+extern NSString * const kViberKey;
+extern NSString * const kOTHERKey;
+
+@class GSMessenger;
+@protocol GSMessengerDelegate <NSObject>
+@required
+@optional
+- (void)didCloseMessenger;
+- (void)didSelectMessengerWithType:(GSMessengerType)messengerType;
+- (void)didSkipMessenger;
+@end
+@interface GSMessenger : NSObject <GSCollectionViewControllerDelegate> {
 @private
 	
 	NSArray *_supportedTypes;
 	NSMutableArray *_selectedTypes;
 	
 	GSCollectionViewController *_gsViewController;
-	id<GSCollectionViewControllerDelegate> _delegate;
+	id<GSCollectionViewControllerDelegate> _vcDelegate;
 }
 
 + (GSMessenger *)sharedInstance;
 
++ (NSArray *)selectedMessengerTypes;
++ (NSArray *)supportedMessengerTypes;
+
 - (void)addAllMessengerTypes;
-- (void)addMessengerTypes:(NSArray *)messengerTypes;
 - (void)addMessengerType:(GSMessengerType)messengerType;
-- (void)setDelegate:(id<GSCollectionViewControllerDelegate>)delegate;
+- (void)addMessengerTypes:(NSArray *)messengerTypes;
 - (void)showMessengersWithViewController:(UIViewController *)viewController;
-- (void)showMessengersWithViewController:(UIViewController *)viewController usingDelegate:(id<GSCollectionViewControllerDelegate>)delegate;
+
+@property (nonatomic, assign) id<GSMessengerDelegate> delegate;
 @end

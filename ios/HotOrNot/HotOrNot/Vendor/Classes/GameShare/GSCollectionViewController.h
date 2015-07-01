@@ -20,7 +20,7 @@
 - (void)gsCollectionViewDidSkip:(GSCollectionViewController *)viewController;
 @end
 
-@interface GSCollectionViewController : UIViewController <MFMessageComposeViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
+@interface GSCollectionViewController : UIViewController <MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 - (id)initWithAllMessengers;
 - (id)initWithMessengers:(NSArray *)messengers;
 - (void)addMessengerType:(GSMessengerType)messengerType;

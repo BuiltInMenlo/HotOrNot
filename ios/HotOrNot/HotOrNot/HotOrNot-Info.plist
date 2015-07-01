@@ -61,12 +61,12 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wxad3790468c7ae7dd_wx2681c4b7b30b3e87</string>
+				<string>wxad3790468c7ae7dd</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>42454</string>
+	<string>42520</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>

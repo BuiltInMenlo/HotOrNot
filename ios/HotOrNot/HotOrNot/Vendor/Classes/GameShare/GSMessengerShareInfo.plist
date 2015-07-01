@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>title</key>
-	<string>Popup iOS</string>
+	<string>Popup on iOS</string>
 	<key>subtitle</key>
-	<string>Tap here to join Popup</string>
+	<string>Join Popup!</string>
 	<key>body_text</key>
 	<string>Tap here to join my Popup</string>
 	<key>main_image</key>
@@ -18,10 +18,118 @@
 	<string>http://j79ydv.com/images/icons/kikpeeps.jpg</string>
 	<key>outbound_url</key>
 	<string>http://j79ydv.com/s.php</string>
-	<key>meta</key>
+	<key>options</key>
+	<dict/>
+	<key>FB_MESSENGER</key>
 	<dict>
-		<key>channel</key>
-		<string>derp</string>
+		<key>override</key>
+		<true/>
+		<key>share_image</key>
+		<string>popup_share</string>
+		<key>options</key>
+		<dict>
+			<key>channel</key>
+			<string>204614_278389</string>
+		</dict>
+	</dict>
+	<key>KAKAO_TALK</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>title</key>
+		<string></string>
+		<key>image_url</key>
+		<string>http://j79ydv.com/images/ads/300x250_ja.jpg</string>
+		<key>button_icon_url</key>
+		<string>http://j79ydv.com/images/icons/kikpeeps.jpg</string>
+		<key>button_text</key>
+		<string>Tap here to join my Popup</string>
+		<key>outbound_url</key>
+		<string>http://j79ydv.com/s.php</string>
+	</dict>
+	<key>KIK</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>title</key>
+		<string></string>
+		<key>subtitle</key>
+		<string></string>
+		<key>icon_url</key>
+		<string></string>
+		<key>image_url</key>
+		<string></string>
+		<key>body_text</key>
+		<string></string>
+		<key>outbound_url</key>
+		<string></string>
+	</dict>
+	<key>LINE</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>body_text</key>
+		<string></string>
+		<key>link</key>
+		<string></string>
+	</dict>
+	<key>SMS</key>
+	<dict>
+		<key>override</key>
+		<false/>
+		<key>body_text</key>
+		<string>Check out Skout</string>
+		<key>link</key>
+		<string>http://taps.io/trySkout</string>
+	</dict>
+	<key>WHATS_APP</key>
+	<dict>
+		<key>override</key>
+		<false/>
+		<key>body_text</key>
+		<string></string>
+		<key>link</key>
+		<string></string>
+	</dict>
+	<key>WE_CHAT</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>title</key>
+		<string>Popup on iOS - WeChat</string>
+		<key>body_text</key>
+		<string>Join my Popup!</string>
+		<key>image</key>
+		<string>popup_share</string>
+		<key>link</key>
+		<string>http://j79ydv.com/s.php</string>
+	</dict>
+	<key>HIKE</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>body_text</key>
+		<string></string>
+		<key>link</key>
+		<string></string>
+	</dict>
+	<key>VIBER</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>body_text</key>
+		<string></string>
+		<key>link</key>
+		<string></string>
+	</dict>
+	<key>OTHER</key>
+	<dict>
+		<key>override</key>
+		<true/>
+		<key>body_text</key>
+		<string></string>
+		<key>link</key>
+		<string></string>
 	</dict>
 </dict>
 </plist>

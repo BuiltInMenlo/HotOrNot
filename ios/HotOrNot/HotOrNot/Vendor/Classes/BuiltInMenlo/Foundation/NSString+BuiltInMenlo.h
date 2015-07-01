@@ -15,6 +15,8 @@
 - (NSString *)base64DecodedString;
 - (NSString *)jsonEncodedString:(NSDictionary *)dictionary;
 - (NSData *)base64DecodedData;
+- (NSString *)urlDecodedString;
+- (NSString *)urlEncodedString;
 
 - (NSString *)stringWithInt:(int)integer;
 + (id)initWithInteger:(int)integer;

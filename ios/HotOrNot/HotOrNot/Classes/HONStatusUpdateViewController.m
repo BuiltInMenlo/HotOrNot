@@ -36,7 +36,7 @@
 
 #import "GSMessenger.h"
 
-@interface HONStatusUpdateViewController () <FBSDKMessengerURLHandlerDelegate, GSCollectionViewControllerDelegate, HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONMediaRevealerViewDelegate, HONLoadingOverlayViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
+@interface HONStatusUpdateViewController () <FBSDKMessengerURLHandlerDelegate, GSMessengerDelegate, HONChannelInviteButtonViewDelegate, HONCommentItemViewDelegate, HONMediaRevealerViewDelegate, HONLoadingOverlayViewDelegate, HONStatusUpdateHeaderViewDelegate, PBJVisionDelegate>
 - (PNChannel *)_channelSetupForStatusUpdate;
 
 @property (nonatomic, strong) PNChannel *channel;
@@ -1168,7 +1168,8 @@
 	GSMessenger *messenger = [GSMessenger sharedInstance];
 //	[messenger addMessengerTypes:@[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine)]];
 	[messenger addAllMessengerTypes];
-	[messenger showMessengersWithViewController:self usingDelegate:self];
+	messenger.delegate = self;
+	[messenger showMessengersWithViewController:self];
 	
 //	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
 //							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),
@@ -1692,17 +1693,17 @@
 }
 
 
-#pragma mark - GSCollectionView Delegates
-- (void)gsCollectionView:(GSCollectionViewController *)viewController didSelectMessenger:(GSMessengerVO *)messengerVO {
-	NSLog(@"[*:*] gsCollectionView:didSelectMessenger:[%@] [*:*]", messengerVO.messengerName);
+#pragma mark - GSMessenger Delegates
+- (void)didCloseMessenger {
+	NSLog(@"[*:*] didCloseMessenger [*:*]");
 }
 
-- (void)gsCollectionViewDidClose:(GSCollectionViewController *)viewController {
-	NSLog(@"[*:*] gsCollectionViewDidClose [*:*]");
+- (void)didSelectMessengerWithType:(GSMessengerType)messengerType {
+	NSLog(@"[*:*] didSelectMessengerWithType:[%d] [*:*]", (int)messengerType);
 }
 
-- (void)gsCollectionViewDidSkip:(GSCollectionViewController *)viewController {
-	NSLog(@"[*:*] gsCollectionViewDidSkip: [*:*]");
+- (void)didSkipMessenger {
+	NSLog(@"[*:*] didSkipMessenger [*:*]");
 }
 
 
