@@ -71,12 +71,6 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			[_allMessengers addObject:[GSMessengerVO messengerWithDictionary:(NSDictionary *)obj]];
 		}];
 		
-		/*
-		 line://msg/text/Hi!%20Check%20out%20Skout%20http://taps.io/getSkout
-		 whatsapp://send?text=Hi!%20Check%20out%20Skout%20http://taps.io/trySkout
-		 sms://body=Hi!%20Check%20out%20Skout%20http://taps.io/installSkout
-		*/
-		
 		_baseShareInfo = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GSMessengerShareInfo"
 																									ofType:@"plist"]];
 		if ([[_baseShareInfo objectForKey:@"main_image_url"] length] > 0)
@@ -112,6 +106,11 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	return (self);
 }
 
+- (void)addMessengerType:(GSMessengerType)messengerType {
+	if ([[GSCollectionViewController supportedTypes] containsObject:@(messengerType)])
+		[_selectedMessengers addObject:[self _messengerVOForType:messengerType]];
+}
+
 -(void)dealloc {
 	NSLog(@"[:|:] [%@ - dealloc] [:|:]", self.class);
 	
@@ -138,7 +137,6 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	NSLog(@"[:|:] [%@ - didReceiveMemoryWarning] [:|:]", self.class);
 	
 	[super didReceiveMemoryWarning];
-	// Dispose of any resources that can be recreated.
 }
 
 
@@ -297,8 +295,12 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		}
 		
 	} else if (_selectedMessengerType == GSMessengerTypeSMS) {
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms://"]]) {
-			
+		if ([MFMessageComposeViewController canSendText]) {
+			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+			messageComposeViewController.body = [NSString stringWithFormat:@"%@\n%@ %@", [shareInfo objectForKey:@"title"], [shareInfo objectForKey:@"copy_txt"], [shareInfo objectForKey:@"link"]];
+			messageComposeViewController.messageComposeDelegate = self;
+			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"SMS Not Available!"
 										message:@"SMS is not allowed for this device"
@@ -309,6 +311,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		
 	} else if (_selectedMessengerType == GSMessengerTypeWhatsApp) {
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"whatsapp://"]]) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"whatsapp://send?text=%@\n%@", [shareInfo objectForKey:@"title"], [shareInfo objectForKey:@"link"]]]];
 			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"WhatsApp Not Available!"
@@ -321,14 +324,26 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	} else if (_selectedMessengerType == GSMessengerTypeWeChat) {
 		
 	} else if (_selectedMessengerType == GSMessengerTypeHike) {
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"combsbhike://"]]) {
+			
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"Hike Not Available!"
+										message:@"Cannot open Hike on this device"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		}
 		
 	} else if (_selectedMessengerType == GSMessengerTypeOTHER) {
 		
 	} else {
+		shareInfo = @{};
 	}
 	
-	if ([self.delegate respondsToSelector:@selector(gsCollectionView:didSelectMessenger:)])
-		[self.delegate gsCollectionView:self didSelectMessenger:_selectedMessengerVO];
+	if ([shareInfo count] > 0) {
+		if ([self.delegate respondsToSelector:@selector(gsCollectionView:didSelectMessenger:)])
+			[self.delegate gsCollectionView:self didSelectMessenger:_selectedMessengerVO];
+	}
 }
 
 - (void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -356,7 +371,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 }
 
 
-#pragma mark - <UICollectionViewDataSource>
+#pragma mark - UICollectionView DataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
 	//NSLog(@"[:|:] [%@ - numberOfSectionsInCollectionView] [:|:]", self.class);
 	return (1);
@@ -382,7 +397,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 }
 
 
-#pragma mark - <UICollectionViewDelegate>
+#pragma mark - UICollectionView Delegates
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
 	//NSLog(@"[:|:] [%@ - collectionView:willDisplayCell:%@ forItemAtIndexPath:%@] [:|:]", self.class, cell, NSStringFromNSIndexPath(indexPath));
 	
@@ -417,6 +432,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 }
 
 
+#pragma mark - Messenger Delegates
 #pragma mark - FBSDKMessengerURL Delegates
 - (void)messengerURLHandler:(FBSDKMessengerURLHandler *)messengerURLHandler didHandleCancelWithContext:(FBSDKMessengerURLHandlerCancelContext *)context {
 	NSLog(@"messengerURLHandler:didHandleOpenFromComposerWithContext:[%@]", context);
@@ -431,15 +447,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 }
 
 
-#pragma mark - KakaoTalk
-#pragma mark - Kik
-#pragma mark - Line
-#pragma mark - SMS
-#pragma mark - WhatsApp
-#pragma mark - WeChat
-#pragma mark - Hike
-#pragma mark - Other
-
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	[controller dismissViewControllerAnimated:YES completion:nil];
+}
 
 
 
@@ -495,7 +506,9 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 					  @"link"	: [_baseShareInfo objectForKey:@"outbound_url"]};
 		
 	} else if (messengerType == GSMessengerTypeSMS) {
-		shareInfo = @{};
+		shareInfo = @{@"title"		: [_baseShareInfo objectForKey:@"title"],
+					  @"copy_txt"	: [_baseShareInfo objectForKey:@"body_text"],
+					  @"link"		: [_baseShareInfo objectForKey:@"outbound_url"]};
 		
 	} else if (messengerType == GSMessengerTypeWhatsApp) {
 		shareInfo = @{};
@@ -504,7 +517,9 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		shareInfo = @{};
 		
 	} else if (messengerType == GSMessengerTypeHike) {
-		shareInfo = @{};
+		shareInfo = @{@"title"		: [_baseShareInfo objectForKey:@"title"],
+					  @"copy_txt"	: [_baseShareInfo objectForKey:@"body_text"],
+					  @"link"		: [_baseShareInfo objectForKey:@"outbound_url"]};
 		
 	} else if (messengerType == GSMessengerTypeOTHER) {
 		shareInfo = @{};

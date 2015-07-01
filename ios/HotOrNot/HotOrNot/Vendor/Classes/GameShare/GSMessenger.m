@@ -27,15 +27,49 @@ static GSMessenger *sharedInstance = nil;
 	if((self = [super init]) != nil) {
 		_selectedTypes = [NSMutableArray array];
 		_supportedTypes = [NSArray arrayWithObjects:@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine), @(GSMessengerTypeSMS), @(GSMessengerTypeWhatsApp), @(GSMessengerTypeWeChat), @(GSMessengerTypeHike), @(GSMessengerTypeOTHER), nil];
+		
+		if (_gsViewController == nil)
+			_gsViewController = [[GSCollectionViewController alloc] init];
 	}
 	
 	return (self);
 }
 
-- (void)addMessengerType:(GSMessengerType)messengerType {
-	[_selectedTypes addObject:@(messengerType)];
+- (void)addAllMessengerTypes {
+	[self addMessengerTypes:_supportedTypes];
 }
 
+- (void)addMessengerType:(GSMessengerType)messengerType {
+	[_selectedTypes addObject:@(messengerType)];
+	[_gsViewController addMessengerType:messengerType];
+}
+
+- (void)addMessengerTypes:(NSArray *)messengerTypes {
+	[messengerTypes enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		GSMessengerType messengerType = (GSMessengerType)[(NSNumber *)obj intValue];
+		[self addMessengerType:messengerType];
+	}];
+}
+
+- (void)showMessengersWithViewController:(UIViewController *)viewController  {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_gsViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[viewController presentViewController:navigationController animated:YES completion:^(void) {
+	}];
+}
+
+- (void)showMessengersWithViewController:(UIViewController *)viewController usingDelegate:(id<GSCollectionViewControllerDelegate>)delegate {
+	[self setDelegate:delegate];
+	[self showMessengersWithViewController:viewController];
+}
+
+- (void)setDelegate:(id<GSCollectionViewControllerDelegate>)delegate {
+	if (_gsViewController.delegate != nil)
+		_gsViewController = nil;
+	
+	_delegate = delegate;
+	_gsViewController.delegate = _delegate;
+}
 
 - (NSArray *)selectedTypes {
 	return (_selectedTypes);

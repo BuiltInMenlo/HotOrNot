@@ -38,8 +38,6 @@
 	if ((self == [super initWithFrame:frame])) {
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
 		_button.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
-		[_button setBackgroundImage:[UIImage imageNamed:@"placeholderClubPhoto_160x160"] forState:UIControlStateNormal];
-		[_button setBackgroundImage:[UIImage imageNamed:@"placeholderClubPhoto_160x160"] forState:UIControlStateHighlighted];
 		[_button addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_button];
 	}
@@ -84,7 +82,7 @@
 	[_button setBackgroundImage:_messengerVO.selectedImage forState:UIControlStateSelected];
 	
 //	NSString *resource = [[NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"GameShareRecources" ofType:@"bundle"]] pathForResource:@"fileName" ofType:@"png"];
-	// [UIImage imageNamed:@"GameShareRecources.bundle/imageInBundle.png"];
+//	[UIImage imageNamed:@"GameShareRecources.bundle/imageInBundle.png"];
 }
 
 

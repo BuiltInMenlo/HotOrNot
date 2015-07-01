@@ -6,6 +6,8 @@
 	<string>Popup iOS</string>
 	<key>subtitle</key>
 	<string>Tap here to join Popup</string>
+	<key>body_text</key>
+	<string>Tap here to join my Popup</string>
 	<key>main_image</key>
 	<string>popup_share</string>
 	<key>main_image_url</key>

@@ -1165,15 +1165,10 @@
 - (void)_goShare {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
-	NSArray *messengers = @[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine)];
-	
-	GSCollectionViewController *gsViewController = [[GSCollectionViewController alloc] initWithMessengers:messengers];
-	gsViewController.delegate = self;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:gsViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-	}];
+	GSMessenger *messenger = [GSMessenger sharedInstance];
+//	[messenger addMessengerTypes:@[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine)]];
+	[messenger addAllMessengerTypes];
+	[messenger showMessengersWithViewController:self usingDelegate:self];
 	
 //	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
 //							   @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),

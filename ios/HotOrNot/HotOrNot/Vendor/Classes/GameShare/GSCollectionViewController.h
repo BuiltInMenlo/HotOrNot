@@ -20,9 +20,10 @@
 - (void)gsCollectionViewDidSkip:(GSCollectionViewController *)viewController;
 @end
 
-@interface GSCollectionViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
+@interface GSCollectionViewController : UIViewController <MFMessageComposeViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 - (id)initWithAllMessengers;
 - (id)initWithMessengers:(NSArray *)messengers;
+- (void)addMessengerType:(GSMessengerType)messengerType;
 
 @property (nonatomic, retain) NSDictionary *metaInfo;
 

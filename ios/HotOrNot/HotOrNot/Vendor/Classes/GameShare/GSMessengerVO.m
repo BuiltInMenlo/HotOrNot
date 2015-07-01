@@ -22,10 +22,6 @@
 	vo.sortOrder = [[dictionary objectForKey:@"sort"] intValue];
 	vo.isEnabled = (BOOL)[[dictionary objectForKey:@"enabled"] intValue];
 	
-	NSLog(@"normal:[%@]", [vo.imagePrefix stringByAppendingString:@"_normal"]);
-	NSLog(@"highlighted:[%@]", [vo.imagePrefix stringByAppendingString:@"_highlighted"]);
-	NSLog(@"selected:[%@]", [vo.imagePrefix stringByAppendingString:@"_selected"]);
-	
 	vo.normalImage = [UIImage imageNamed:[vo.imagePrefix stringByAppendingString:@"_normal"]];
 	vo.hilightedImage = [UIImage imageNamed:[vo.imagePrefix stringByAppendingString:@"_highlighted"]];
 	vo.selectedImage = [UIImage imageNamed:[vo.imagePrefix stringByAppendingString:@"_selected"]];
