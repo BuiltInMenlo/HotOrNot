@@ -699,7 +699,7 @@ PBJMediaWriterDelegate>
 		}
 		[self _setupGL];
 		
-		_captureSessionPreset = AVCaptureSessionPreset640x480;
+		_captureSessionPreset = AVCaptureSessionPresetLow;//-- AVCaptureSessionPreset640x480;
 		_captureDirectory = nil;
 		
 		_autoUpdatePreviewOrientation = YES;
@@ -708,7 +708,7 @@ PBJMediaWriterDelegate>
 		
 		// Average bytes per second based on video dimensions
 		// lower the bitRate, higher the compression
-		_videoBitRate = PBJVideoBitRate640x480;
+		_videoBitRate = PBJVideoBitRate1280x720; //-- PBJVideoBitRate640x480;
 		
 		// default audio/video configuration
 		_audioBitRate = 64000;
@@ -854,7 +854,7 @@ typedef void (^PBJVisionBlock)();
 	[_captureOutputVideo setSampleBufferDelegate:self queue:_captureCaptureDispatchQueue];
 	
 	// capture device initial settings
-	_videoFrameRate = 30;
+	_videoFrameRate = 12;//-- 30;
 	
 	// add notification observers
 	NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -1355,6 +1355,14 @@ typedef void (^PBJVisionBlock)();
 	} else if (error) {
 		DLog(@"error locking device for focus adjustment (%@)", error);
 	}
+}
+
+- (BOOL)isAdjustingExposure {
+	return ([_currentDevice isAdjustingExposure]);
+}
+
+- (BOOL)isAdjustingFocus {
+	return ([_currentDevice isAdjustingFocus]);
 }
 
 - (void)exposeAtAdjustedPointOfInterest:(CGPoint)adjustedPoint
@@ -2107,11 +2115,30 @@ typedef void (^PBJVisionBlock)();
 	
 	NSDictionary *compressionSettings = nil;
 	
+	/**
+	 *
+	AVVideoProfileLevelH264Baseline30			NS_AVAILABLE(10_8, 4_0);
+	AVVideoProfileLevelH264Baseline31			NS_AVAILABLE(10_8, 4_0);
+	AVVideoProfileLevelH264Baseline41			NS_AVAILABLE(10_8, 5_0);
+	AVVideoProfileLevelH264BaselineAutoLevel	NS_AVAILABLE(10_9, 7_0);
+	AVVideoProfileLevelH264Main30				NS_AVAILABLE(10_8, 4_0);
+	AVVideoProfileLevelH264Main31				NS_AVAILABLE(10_8, 4_0);
+	AVVideoProfileLevelH264Main32				NS_AVAILABLE(10_8, 5_0);
+	AVVideoProfileLevelH264Main41				NS_AVAILABLE(10_8, 5_0);
+	AVVideoProfileLevelH264MainAutoLevel		NS_AVAILABLE(10_9, 7_0);
+	AVVideoProfileLevelH264High40				NS_AVAILABLE(10_9, 6_0);
+	AVVideoProfileLevelH264High41				NS_AVAILABLE(10_9, 6_0);
+	AVVideoProfileLevelH264HighAutoLevel		NS_AVAILABLE(10_9, 7_0);
+	*
+	**/
+	
+	
 	if (_additionalCompressionProperties && [_additionalCompressionProperties count] > 0) {
 		NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:_additionalCompressionProperties];
 		mutableDictionary[AVVideoAverageBitRateKey] = @(_videoBitRate);
 		mutableDictionary[AVVideoMaxKeyFrameIntervalKey] = @(_videoFrameRate);
 		compressionSettings = mutableDictionary;
+		
 	} else {
 		compressionSettings = @{ AVVideoAverageBitRateKey : @(_videoBitRate),
 								 AVVideoMaxKeyFrameIntervalKey : @(_videoFrameRate) };

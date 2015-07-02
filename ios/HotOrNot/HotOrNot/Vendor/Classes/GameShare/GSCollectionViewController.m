@@ -11,9 +11,7 @@
 
 #import "WXApi.h"
 
-#import "NSString+BuiltInMenlo.h"
-#import "UILabel+BuiltInMenlo.h"
-#import "UIView+BuiltInMenlo.h"
+#import "NSString+GameShare.h"
 
 #import "GSCollectionViewController.h"
 #import "GSCollectionViewFlowLayout.h"
@@ -39,7 +37,7 @@
 @property (nonatomic, strong) NSMutableArray *allMessengers;
 @property (nonatomic, strong) NSMutableArray *selectedMessengers;
 @property (nonatomic, strong) GSMessengerVO *selectedMessengerVO;
-@property (nonatomic) GSMessengerType selectedMessengerType;
+@property (nonatomic) GSMessengerShareType selectedMessengerType;
 @property (nonatomic, strong) NSString *selectedMessengerText;
 @property (nonatomic, strong) NSDictionary *selectedMessengerContent;
 
@@ -61,8 +59,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 }
 
 + (NSArray *)supportedTypes {
-	return ([@[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine), @(GSMessengerTypeSMS), @(GSMessengerTypeWhatsApp), @(GSMessengerTypeWeChat), @(GSMessengerTypeHike), @(GSMessengerTypeViber)] sortedArrayUsingSelector:@selector(compare:)]);
-//	return (@[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine), @(GSMessengerTypeSMS), @(GSMessengerTypeWhatsApp), @(GSMessengerTypeWeChat), @(GSMessengerTypeHike), @(GSMessengerTypeViber)]);
+	return ([@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)] sortedArrayUsingSelector:@selector(compare:)]);
+//	return (@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)]);
 }
 
 
@@ -117,18 +115,18 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	if ((self = [self init])) {
 		_selectedMessengers = [NSMutableArray array];
 		[messengers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			GSMessengerType messengerType = (GSMessengerType)[(NSNumber *)obj intValue];
-			if ([[GSCollectionViewController supportedTypes] containsObject:@(messengerType)])
-				[_selectedMessengers addObject:[self _messengerVOForType:messengerType]];
+			GSMessengerShareType messengerShareType = (GSMessengerShareType)[(NSNumber *)obj intValue];
+			if ([[GSCollectionViewController supportedTypes] containsObject:@(messengerShareType)])
+				[_selectedMessengers addObject:[self _messengerVOForShareType:messengerShareType]];
 		}];
 	}
 	
 	return (self);
 }
 
-- (void)addMessengerType:(GSMessengerType)messengerType {
-	if ([[GSCollectionViewController supportedTypes] containsObject:@(messengerType)])
-		[_selectedMessengers addObject:[self _messengerVOForType:messengerType]];
+- (void)addMessengerShareType:(GSMessengerShareType)messengerShareType {
+	if ([[GSCollectionViewController supportedTypes] containsObject:@(messengerShareType)])
+		[_selectedMessengers addObject:[self _messengerVOForShareType:messengerShareType]];
 }
 
 
@@ -254,10 +252,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 - (void)_goSelect {
 	NSLog(@"[:|:] [%@ - _goSelect] [:|:]", self.class);
 	
-	NSDictionary *shareInfo = [self _shareInfoForMessengerType:_selectedMessengerType];
+	NSDictionary *shareInfo = [self _shareInfoForMessengerShareType:_selectedMessengerType];
 	NSLog(@"shareInfo:\n%@", shareInfo);
 	
-	if (_selectedMessengerType == GSMessengerTypeFBMessenger) {
+	if (_selectedMessengerType == GSMessengerShareTypeFBMessenger) {
 		NSError *error;
 		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[shareInfo objectForKey:@"options"]
 														   options:0
@@ -283,9 +281,9 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeKakaoTalk) {
-		NSLog(@"schema:%@", [self _schemaForType:GSMessengerTypeKakaoTalk]);
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[[self _schemaForType:GSMessengerTypeKakaoTalk] objectForKey:@"protocol"]]]) {
+	} else if (_selectedMessengerType == GSMessengerShareTypeKakaoTalk) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeKakaoTalk];
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
 			[KOAppCall openKakaoTalkAppLink:[shareInfo objectForKey:@"link_objs"]];
 			
 		} else {
@@ -296,8 +294,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeKik) {
-		NSDictionary *schema = [self _schemaForType:GSMessengerTypeKik] ;
+	} else if (_selectedMessengerType == GSMessengerShareTypeKik) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeKik] ;
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], @"www.gs.trydood.com/kikshare.php"]]];
 			
@@ -309,8 +307,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeLine) {
-		NSDictionary *schema = [self _schemaForType:GSMessengerTypeLine];
+	} else if (_selectedMessengerType == GSMessengerShareTypeLine) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeLine];
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [[shareInfo objectForKey:@"title"], [shareInfo objectForKey:@"link"] urlEncodedString]]]];
 			
@@ -322,7 +320,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeSMS) {
+	} else if (_selectedMessengerType == GSMessengerShareTypeSMS) {
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 			messageComposeViewController.body = [NSString stringWithFormat:@"%@\n%@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
@@ -337,8 +335,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeWhatsApp) {
-		NSDictionary *schema = [self _schemaForType:GSMessengerTypeWhatsApp];
+	} else if (_selectedMessengerType == GSMessengerShareTypeWhatsApp) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeWhatsApp];
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [[NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]] urlEncodedString]]]];
 			
@@ -350,8 +348,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeWeChat) {
-		if ([WXApi isWXAppInstalled]) {
+	} else if (_selectedMessengerType == GSMessengerShareTypeWeChat) {
+		if ([WXApi isWXAppSupportApi]) {
 //		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]]) {
 			_selectedMessengerContent = @{@"title"		: [shareInfo objectForKey:@"title"],
 										  @"body_text"	: [shareInfo objectForKey:@"body_text"],
@@ -366,7 +364,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
-			[alertView setTag:GSMessengerTypeWeChat];
+			[alertView setTag:GSMessengerShareTypeWeChat];
 			[alertView show];
 			
 		} else {
@@ -377,9 +375,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeViber) {
-		NSLog(@"schema:%@", [self _schemaForType:GSMessengerTypeViber]);
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[[self _schemaForType:GSMessengerTypeViber] objectForKey:@"protocol"]]]) {
+	} else if (_selectedMessengerType == GSMessengerShareTypeViber) {
+		NSLog(@"schema:%@", [self _schemaForMessengerShareType:GSMessengerShareTypeViber]);
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeViber];
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
 			_selectedMessengerText = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -390,7 +389,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
-			[alertView setTag:GSMessengerTypeViber];
+			[alertView setTag:GSMessengerShareTypeViber];
 			[alertView show];
 		
 		} else {
@@ -401,9 +400,9 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeHike) {
-		NSLog(@"schema:%@", [self _schemaForType:GSMessengerTypeHike]);
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[[self _schemaForType:GSMessengerTypeHike] objectForKey:@"protocol"]]]) {
+	} else if (_selectedMessengerType == GSMessengerShareTypeHike) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeHike];
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
 			_selectedMessengerText = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -414,7 +413,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
-			[alertView setTag:GSMessengerTypeHike];
+			[alertView setTag:GSMessengerShareTypeHike];
 			[alertView show];
 			
 		} else {
@@ -425,7 +424,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (_selectedMessengerType == GSMessengerTypeOTHER) {
+	} else if (_selectedMessengerType == GSMessengerShareTypeOTHER) {
 		
 	} else {
 		shareInfo = @{};
@@ -542,7 +541,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	NSLog(@"alertView:%d didDismissWithButtonIndex:%d", (int)alertView.tag, (int)buttonIndex);
 	
-	if (alertView.tag == GSMessengerTypeWeChat) {
+	if (alertView.tag == GSMessengerShareTypeWeChat) {
 		[WXApi registerApp:@"ID:wxad3790468c7ae7dd"
 		   withDescription:[[NSBundle mainBundle] bundleIdentifier]];
 		
@@ -565,13 +564,13 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		req.scene = WXSceneSession;
 		[WXApi sendReq:req];
 		
-	} else if (alertView.tag == GSMessengerTypeHike) {
-		NSDictionary *schema = [self _schemaForType:GSMessengerTypeHike];
+	} else if (alertView.tag == GSMessengerShareTypeHike) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeHike];
 //		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"combsbhike://" stringByAppendingString:_selectedMessengerText]]];
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]];
 		
-	} else if (alertView.tag == GSMessengerTypeViber) {
-		NSDictionary *schema = [self _schemaForType:GSMessengerTypeViber];
+	} else if (alertView.tag == GSMessengerShareTypeViber) {
+		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeViber];
 //		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"Viber://" stringByAppendingString:_selectedMessengerText]]];
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [@" " urlEncodedString]]]];
 	}
@@ -586,14 +585,14 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 
 #pragma mark -
 #pragma mark - Helpers
-- (GSMessengerVO *)_messengerVOForType:(GSMessengerType)messengerType {
-	NSLog(@"[:|:] [%@ - _messengerVOForType:%d] [:|:]", self.class, (int)messengerType);
+- (GSMessengerVO *)_messengerVOForShareType:(GSMessengerShareType)messengerShareType {
+	NSLog(@"[:|:] [%@ - _messengerVOForShareType:%d] [:|:]", self.class, (int)messengerShareType);
 	
 	__block GSMessengerVO *messengerVO = nil;
 	[_allMessengers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		GSMessengerVO *vo = (GSMessengerVO *)obj;
 		
-		if (vo.messengerID == (int)messengerType) {
+		if (vo.messengerID == (int)messengerShareType) {
 			messengerVO = vo;
 			*stop = YES;
 		}
@@ -602,10 +601,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	return (messengerVO);
 }
 
-- (NSDictionary *)_schemaForType:(GSMessengerType)messengerType {
-	NSLog(@"[:|:] [%@ - _schemaForType:%d] [:|:]", self.class, (int)messengerType);
+- (NSDictionary *)_schemaForMessengerShareType:(GSMessengerShareType)messengerShareType {
+	NSLog(@"[:|:] [%@ - _schemaForShareType:%d] [:|:]", self.class, (int)messengerShareType);
 	
-	GSMessengerVO *vo = [self _messengerVOForType:messengerType];
+	GSMessengerVO *vo = [self _messengerVOForShareType:messengerShareType];
 	
 	__block NSDictionary *schema = nil;
 	[_messengerSchemas enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -620,13 +619,13 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	return (schema);
 }
 
-- (NSDictionary *)_shareInfoForMessengerType:(GSMessengerType)messengerType {
+- (NSDictionary *)_shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
 	NSMutableDictionary *shareInfo = [NSMutableDictionary dictionary];
 	
-	NSLog(@"[:|:] [%@ - _shareInfoForMessengerType:%d] [:|:]", self.class, (int)messengerType);
+	NSLog(@"[:|:] [%@ - _shareInfoForMessengerType:%d] [:|:]", self.class, (int)messengerShareType);
 	NSLog(@"_baseShareInfo:\n%@", _baseShareInfo);
 	
-	if (messengerType == GSMessengerTypeFBMessenger) {
+	if (messengerShareType == GSMessengerShareTypeFBMessenger) {
 		NSDictionary *fbShareInfo = [_baseShareInfo objectForKey:kFBMessengerKey];
 		NSLog(@"fbShareInfo:\n%@", fbShareInfo);
 		BOOL isOverride = (BOOL)[[fbShareInfo objectForKey:@"override"] intValue];
@@ -634,7 +633,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:[UIImage imageNamed:([[fbShareInfo objectForKey:@"share_image"] length] > 0) ? [fbShareInfo objectForKey:@"share_image"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image"] : @""] forKey:@"share_image"];
 		[shareInfo setObject:([[fbShareInfo objectForKey:@"options"] count] > 0) ? [fbShareInfo objectForKey:@"options"] : (!isOverride) ? [_baseShareInfo objectForKey:@"options"] : @{} forKey:@"options"];
 	
-	} else if (messengerType == GSMessengerTypeKakaoTalk) {
+	} else if (messengerShareType == GSMessengerShareTypeKakaoTalk) {
 		NSDictionary *kakaoShareInfo = [_baseShareInfo objectForKey:kKakaoTalkKey];
 		NSLog(@"kakaoShareInfo:\n%@", kakaoShareInfo);
 		BOOL isOverride = (BOOL)[[kakaoShareInfo objectForKey:@"override"] intValue];
@@ -669,7 +668,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 //										[KakaoTalkLinkObject createWebButton:[_baseShareInfo objectForKey:@"subtitle"]
 //																		 url:[_baseShareInfo objectForKey:@"sub_image_url"]]]};
 
-	} else if (messengerType == GSMessengerTypeKik) {
+	} else if (messengerShareType == GSMessengerShareTypeKik) {
 		NSDictionary *kikShareInfo = [_baseShareInfo objectForKey:kKikKey];
 		NSLog(@"kikShareInfo:\n%@", kikShareInfo);
 		BOOL isOverride = (BOOL)[[kikShareInfo objectForKey:@"override"] intValue];
@@ -681,7 +680,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[kikShareInfo objectForKey:@"body_text"] length] > 0) ? [kikShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:([[kikShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kikShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"outbound_url"];
 		
-	} else if (messengerType == GSMessengerTypeLine) {
+	} else if (messengerShareType == GSMessengerShareTypeLine) {
 		NSDictionary *lineShareInfo = [_baseShareInfo objectForKey:kLineKey];
 		NSLog(@"lineShareInfo:\n%@", lineShareInfo);
 		BOOL isOverride = (BOOL)[[lineShareInfo objectForKey:@"override"] intValue];
@@ -689,7 +688,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[lineShareInfo objectForKey:@"body_text"] length] > 0) ? [lineShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:([[lineShareInfo objectForKey:@"link"] length] > 0) ? [lineShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
 		
-	} else if (messengerType == GSMessengerTypeSMS) {
+	} else if (messengerShareType == GSMessengerShareTypeSMS) {
 		NSDictionary *smsShareInfo = [_baseShareInfo objectForKey:kSMSKey];
 		NSLog(@"smsShareInfo:\n%@", smsShareInfo);
 		BOOL isOverride = (BOOL)[[smsShareInfo objectForKey:@"override"] intValue];
@@ -697,7 +696,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[smsShareInfo objectForKey:@"body_text"] length] > 0) ? [smsShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:([[smsShareInfo objectForKey:@"link"] length] > 0) ? [smsShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
 		
-	} else if (messengerType == GSMessengerTypeWhatsApp) {
+	} else if (messengerShareType == GSMessengerShareTypeWhatsApp) {
 		NSDictionary *whatsAppShareInfo = [_baseShareInfo objectForKey:kWhatsAppKey];
 		NSLog(@"whatsAppShareInfo:\n%@", whatsAppShareInfo);
 		BOOL isOverride = (BOOL)[[whatsAppShareInfo objectForKey:@"override"] intValue];
@@ -705,7 +704,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[whatsAppShareInfo objectForKey:@"body_text"] length] > 0) ? [whatsAppShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:([[whatsAppShareInfo objectForKey:@"link"] length] > 0) ? [whatsAppShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
 		
-	} else if (messengerType == GSMessengerTypeWeChat) {
+	} else if (messengerShareType == GSMessengerShareTypeWeChat) {
 		NSDictionary *weChatShareInfo = [_baseShareInfo objectForKey:kWeChatKey];
 		NSLog(@"weChatShareInfo:\n%@", weChatShareInfo);
 		BOOL isOverride = (BOOL)[[weChatShareInfo objectForKey:@"override"] intValue];
@@ -714,7 +713,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:[UIImage imageNamed:([[weChatShareInfo objectForKey:@"image"] length] > 0) ? [weChatShareInfo objectForKey:@"image"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image"] : nil] forKey:@"image"];
 		[shareInfo setObject:([[weChatShareInfo objectForKey:@"link"] length] > 0) ? [weChatShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
 		
-	} else if (messengerType == GSMessengerTypeHike) {
+	} else if (messengerShareType == GSMessengerShareTypeHike) {
 		NSDictionary *hikeShareInfo = [_baseShareInfo objectForKey:kHikeKey];
 		NSLog(@"hikeShareInfo:\n%@", hikeShareInfo);
 		BOOL isOverride = (BOOL)[[hikeShareInfo objectForKey:@"override"] intValue];
@@ -722,7 +721,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[hikeShareInfo objectForKey:@"body_text"] length] > 0) ? [hikeShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:([[hikeShareInfo objectForKey:@"link"] length] > 0) ? [hikeShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
 		
-	} else if (messengerType == GSMessengerTypeViber) {
+	} else if (messengerShareType == GSMessengerShareTypeViber) {
 		NSDictionary *viberShareInfo = [_baseShareInfo objectForKey:kOTHERKey];
 		NSLog(@"viberShareInfo:\n%@", viberShareInfo);
 		BOOL isOverride = (BOOL)[[viberShareInfo objectForKey:@"override"] intValue];
@@ -730,7 +729,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[viberShareInfo objectForKey:@"body_text"] length] > 0) ? [viberShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:([[viberShareInfo objectForKey:@"link"] length] > 0) ? [viberShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
 		
-	} else if (messengerType == GSMessengerTypeOTHER) {
+	} else if (messengerShareType == GSMessengerShareTypeOTHER) {
 		NSDictionary *otherShareInfo = [_baseShareInfo objectForKey:kOTHERKey];
 		NSLog(@"otherShareInfo:\n%@", otherShareInfo);
 		BOOL isOverride = (BOOL)[[otherShareInfo objectForKey:@"override"] intValue];

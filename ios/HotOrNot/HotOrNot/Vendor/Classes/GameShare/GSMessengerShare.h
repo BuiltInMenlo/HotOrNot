@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "GSMessengerProperties.h"
+#import "GSMessengerShareProperties.h"
 #import "GSCollectionViewController.h"
 
 extern NSString * const kFBMessengerKey;
@@ -20,15 +20,15 @@ extern NSString * const kHikeKey;
 extern NSString * const kViberKey;
 extern NSString * const kOTHERKey;
 
-@class GSMessenger;
-@protocol GSMessengerDelegate <NSObject>
+@class GSMessengerShare;
+@protocol GSMessengerShareDelegate <NSObject>
 @required
 @optional
-- (void)didCloseMessenger;
-- (void)didSelectMessengerWithType:(GSMessengerType)messengerType;
-- (void)didSkipMessenger;
+- (void)didCloseMessengerShare;
+- (void)didSelectMessengerWithType:(GSMessengerShareType)messengerType;
+- (void)didSkipMessengerShare;
 @end
-@interface GSMessenger : NSObject <GSCollectionViewControllerDelegate> {
+@interface GSMessengerShare : NSObject <GSCollectionViewControllerDelegate> {
 @private
 	
 	NSArray *_supportedTypes;
@@ -38,15 +38,15 @@ extern NSString * const kOTHERKey;
 	id<GSCollectionViewControllerDelegate> _vcDelegate;
 }
 
-+ (GSMessenger *)sharedInstance;
++ (GSMessengerShare *)sharedInstance;
 
 + (NSArray *)selectedMessengerTypes;
 + (NSArray *)supportedMessengerTypes;
 
-- (void)addAllMessengerTypes;
-- (void)addMessengerType:(GSMessengerType)messengerType;
-- (void)addMessengerTypes:(NSArray *)messengerTypes;
-- (void)showMessengersWithViewController:(UIViewController *)viewController;
+- (void)addAllMessengerShareTypes;
+- (void)addMessengerShareType:(GSMessengerShareType)messengerShareType;
+- (void)addMessengerShareTypes:(NSArray *)messengerShareTypes;
+- (void)showMessengerSharePickerOnViewController:(UIViewController *)viewController;
 
-@property (nonatomic, assign) id<GSMessengerDelegate> delegate;
+@property (nonatomic, assign) id<GSMessengerShareDelegate> delegate;
 @end

@@ -31,7 +31,7 @@ static void TSLoadStoreKitClasses()
 @synthesize request;
 + (id)requestWrapperWithRequest:(SKProductsRequest *)req
 {
-	return AUTORELEASE([[self alloc] initWithRequest:req]);
+	return AUTORELEASE([[self alloc] initWithRequest:(NSURLRequest *)req]);
 }
 - (id)initWithRequest:(SKProductsRequest *)req
 {
@@ -43,7 +43,7 @@ static void TSLoadStoreKitClasses()
 }
 - (id)copyWithZone:(NSZone *)zone
 {
-	return [[[self class] allocWithZone:zone] initWithRequest:self.request];
+	return [[[self class] allocWithZone:zone] initWithRequest:(NSURLRequest *)self.request];
 }
 - (BOOL)isEqual:(id)other
 {
@@ -136,7 +136,8 @@ static void TSLoadStoreKitClasses()
 				{
 					receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
 				}else{ // For (real) old ios versions, use transactionReceipt.
-					receipt = transaction.transactionReceipt;
+					//receipt = transaction.transactionReceipt;
+					receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
 				}
 #else
 				// For mac, try to load the receipt out of the bundle.  If appStoreReceiptURL method is
@@ -165,6 +166,7 @@ static void TSLoadStoreKitClasses()
             case SKPaymentTransactionStateFailed:
             case SKPaymentTransactionStatePurchasing:
             case SKPaymentTransactionStateRestored:
+			case SKPaymentTransactionStateDeferred:
             break;
             
 		}

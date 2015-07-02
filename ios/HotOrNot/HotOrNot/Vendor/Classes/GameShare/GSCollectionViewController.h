@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "GSMessengerProperties.h"
+#import "GSMessengerShareProperties.h"
 #import "GSMessengerVO.h"
 
 @class GSCollectionViewController;
@@ -23,7 +23,7 @@
 @interface GSCollectionViewController : UIViewController <MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 - (id)initWithAllMessengers;
 - (id)initWithMessengers:(NSArray *)messengers;
-- (void)addMessengerType:(GSMessengerType)messengerType;
+- (void)addMessengerShareType:(GSMessengerShareType)messengerShareType;
 
 @property (nonatomic, retain) NSDictionary *metaInfo;
 

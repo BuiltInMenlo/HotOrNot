@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "GSMessengerVO.h"
-#import "GSMessenger.h"
+#import "GSMessengerShare.h"
 
 @class GSCollectionViewCell;
 @protocol GSCollectionViewCellDelegate <NSObject>
@@ -27,5 +27,5 @@
 @property (nonatomic, retain) NSIndexPath *indexPath;
 @property (nonatomic, assign) id <GSCollectionViewCellDelegate> delegate;
 @property (nonatomic, retain) GSMessengerVO *messengerVO;
-@property (nonatomic) GSMessengerType messengerType;
+@property (nonatomic) GSMessengerShareType messengerType;
 @end

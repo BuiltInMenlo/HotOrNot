@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "GSMessenger.h"
+#import "GSMessengerShare.h"
 
 NSString * const kFBMessengerKey	= @"FB_MESSENGER";
 NSString * const kKakaoTalkKey		= @"KAKAO_TALK";
@@ -19,13 +19,13 @@ NSString * const kHikeKey			= @"HIKE";
 NSString * const kViberKey			= @"VIBER";
 NSString * const kOTHERKey			= @"OTHER";
 
-@implementation GSMessenger
+@implementation GSMessengerShare
 @synthesize delegate = _delegate;
 
 #pragma mark - Singletion Creation
-static GSMessenger *sharedInstance = nil;
-+ (GSMessenger *)sharedInstance {
-	static GSMessenger *s_sharedInstance = nil;
+static GSMessengerShare *sharedInstance = nil;
++ (GSMessengerShare *)sharedInstance {
+	static GSMessengerShare *s_sharedInstance = nil;
 	static dispatch_once_t onceToken;
 	
 	dispatch_once(&onceToken, ^{
@@ -38,19 +38,19 @@ static GSMessenger *sharedInstance = nil;
 
 #pragma mark - Static Methods
 + (NSArray *)selectedMessengerTypes {
-	return ([[GSMessenger sharedInstance] selectedTypes]);
+	return ([[GSMessengerShare sharedInstance] selectedTypes]);
 }
 
 + (NSArray *)supportedMessengerTypes {
-	return ([[GSMessenger sharedInstance] supportedTypes]);
+	return ([[GSMessengerShare sharedInstance] supportedTypes]);
 }
 
 
 - (id)init {
 	if((self = [super init]) != nil) {
 		_selectedTypes = [NSMutableArray array];
-//		_supportedTypes = [NSArray arrayWithObjects:@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine), @(GSMessengerTypeSMS), @(GSMessengerTypeWhatsApp), @(GSMessengerTypeWeChat), @(GSMessengerTypeHike), @(GSMessengerTypeOTHER), nil];
-		_supportedTypes = [[NSArray arrayWithObjects:@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine), @(GSMessengerTypeSMS), @(GSMessengerTypeWhatsApp), @(GSMessengerTypeWeChat), @(GSMessengerTypeHike), @(GSMessengerTypeViber), nil] sortedArrayUsingSelector:@selector(compare:)];
+//		_supportedTypes = [NSArray arrayWithObjects:@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeOTHER), nil];
+		_supportedTypes = [[NSArray arrayWithObjects:@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber), nil] sortedArrayUsingSelector:@selector(compare:)];
 		
 		if (_gsViewController == nil)
 			_gsViewController = [[GSCollectionViewController alloc] init];
@@ -64,27 +64,27 @@ static GSMessenger *sharedInstance = nil;
 
 
 #pragma mark - Data Handling
-- (void)addAllMessengerTypes {
-	[self addMessengerTypes:[[GSMessenger sharedInstance] supportedTypes]];
+- (void)addAllMessengerShareTypes {
+	[self addMessengerShareTypes:[[GSMessengerShare sharedInstance] supportedTypes]];
 }
 
-- (void)addMessengerType:(GSMessengerType)messengerType {
-	if ([_supportedTypes containsObject:@(messengerType)]) {
-		[_selectedTypes addObject:@(messengerType)];
-		[_gsViewController addMessengerType:messengerType];
+- (void)addMessengerShareType:(GSMessengerShareType)messengerShareType {
+	if ([_supportedTypes containsObject:@(messengerShareType)]) {
+		[_selectedTypes addObject:@(messengerShareType)];
+		[_gsViewController addMessengerShareType:messengerShareType];
 	}
 }
 
-- (void)addMessengerTypes:(NSArray *)messengerTypes {
-	[messengerTypes enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		GSMessengerType messengerType = (GSMessengerType)[(NSNumber *)obj intValue];
-		[self addMessengerType:messengerType];
+- (void)addMessengerShareTypes:(NSArray *)messengerShareTypes {
+	[messengerShareTypes enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		GSMessengerShareType messengerShareType = (GSMessengerShareType)[(NSNumber *)obj intValue];
+		[self addMessengerShareType:messengerShareType];
 	}];
 }
 
 
 #pragma mark - UI Presentation
-- (void)showMessengersWithViewController:(UIViewController *)viewController  {
+- (void)showMessengerSharePickerOnViewController:(UIViewController *)viewController  {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_gsViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[viewController presentViewController:navigationController animated:YES completion:^(void) {
@@ -107,21 +107,21 @@ static GSMessenger *sharedInstance = nil;
 	NSLog(@"[*:*] gsCollectionView:didSelectMessenger:[%@] [*:*]", messengerVO.messengerName);
 	
 	if ([self.delegate respondsToSelector:@selector(didSelectMessengerWithType:)])
-		[self.delegate didSelectMessengerWithType:(GSMessengerType)messengerVO.messengerID];
+		[self.delegate didSelectMessengerWithType:(GSMessengerShareType)messengerVO.messengerID];
 }
 
 - (void)gsCollectionViewDidClose:(GSCollectionViewController *)viewController {
 	NSLog(@"[*:*] gsCollectionViewDidClose [*:*]");
 	
-	if ([self.delegate respondsToSelector:@selector(didCloseMessenger)])
-		[self.delegate didCloseMessenger];
+	if ([self.delegate respondsToSelector:@selector(didCloseMessengerShare)])
+		[self.delegate didCloseMessengerShare];
 }
 
 - (void)gsCollectionViewDidSkip:(GSCollectionViewController *)viewController {
 	NSLog(@"[*:*] gsCollectionViewDidSkip: [*:*]");
 	
-	if ([self.delegate respondsToSelector:@selector(didSkipMessenger)])
-		[self.delegate didSkipMessenger];
+	if ([self.delegate respondsToSelector:@selector(didSkipMessengerShare)])
+		[self.delegate didSkipMessengerShare];
 }
 
 @end

@@ -1,28 +1,27 @@
 //
-//  NSData+BuiltInMenlo.h
-//  HotOrNot
+//  NSData+GameShare.h
+//  GameShare
 //
-//  Created by BIM  on 11/4/14.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 11/4/14.
+//  Copyright (c) 2014. All rights reserved.
 //
 
-void *NewBase64Decode(
+void *base64Decode(
 	const char *inputBuffer,
 	size_t length,
 	size_t *outputLength);
 
-char *NewBase64Encode(
+char *base64Encode(
 	const void *inputBuffer,
 	size_t length,
 	bool separateLines,
 	size_t *outputLength);
 
-@interface NSData (BuiltInMenlo)
+@interface NSData (GameShare)
 
 + (NSData *)dataFromBase64String:(NSString *)aString;
 - (NSString *)base64EncodedString;
 
-// added by Hiroshi Hashiguchi
 - (NSString *)base64EncodedStringWithSeparateLines:(BOOL)separateLines;
 
 @end

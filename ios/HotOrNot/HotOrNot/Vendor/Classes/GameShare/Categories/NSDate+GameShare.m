@@ -1,21 +1,20 @@
 //
-//  NSDate+BuiltInMenlo.m
-//  HotOrNot
+//  NSDate+GameShare.m
+//  GameShare
 //
-//  Created by BIM  on 11/4/14.
-//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 11/4/14.
+//  Copyright (c) 2014. All rights reserved.
 //
 
-#import "NSDate+BuiltinMenlo.h"
+#import "NSDate+GameShare.h"
 
-@implementation NSDateFormatter (BuiltInMenlo)
+@implementation NSDateFormatter (GameShare)
 
 static NSString *kISO8601BlankTimestamp		= @"0000-00-00T00:00:00-0000";
 static NSString *kOrthodoxBlankTimestamp	= @"0000-00-00 00:00:00";
 
 static NSString *kISO860Template			= @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
 static NSString *kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
-
 
 + (NSDateFormatter *)dateFormatterISO8601 {
 	NSDateFormatter *dateFormatter = [NSDateFormatter dateFormatterWithTemplate:kISO860Template];
@@ -45,7 +44,7 @@ static NSString *kOrthodoxTemplate			= @"yyyy-MM-dd HH:mm:ss";
 
 
 
-@implementation NSDate (BuiltInMenlo)
+@implementation NSDate (GameShare)
 
 + (instancetype)blankTimestamp {
 	return ([[NSDateFormatter dateFormatterOrthodox:NO] dateFromString:kOrthodoxBlankTimestamp]);

@@ -80,7 +80,7 @@
 		30AD79311B43A1AE00F9C634 /* GSCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD79251B43A1AE00F9C634 /* GSCollectionViewCell.m */; };
 		30AD79321B43A1AE00F9C634 /* GSCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD79271B43A1AE00F9C634 /* GSCollectionViewController.m */; };
 		30AD79331B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD79291B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m */; };
-		30AD79341B43A1AE00F9C634 /* GSMessenger.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD792B1B43A1AE00F9C634 /* GSMessenger.m */; };
+		30AD79341B43A1AE00F9C634 /* GSMessengerShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD792B1B43A1AE00F9C634 /* GSMessengerShare.m */; };
 		30AD79351B43A1AE00F9C634 /* GSMessengerShareInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30AD792D1B43A1AE00F9C634 /* GSMessengerShareInfo.plist */; };
 		30AD79361B43A1AE00F9C634 /* GSMessengerVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AD792F1B43A1AE00F9C634 /* GSMessengerVO.m */; };
 		30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AFF5711A79AB43005F408B /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -104,6 +104,12 @@
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
 		30B6F34D1B445937000BBF12 /* libWeChatSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34A1B445937000BBF12 /* libWeChatSDK.a */; };
 		30B6F34F1B4463F1000BBF12 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34E1B4463F1000BBF12 /* libc++.dylib */; };
+		30B6F35F1B44947C000BBF12 /* NSArray+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F3551B44947C000BBF12 /* NSArray+GameShare.m */; };
+		30B6F3601B44947C000BBF12 /* NSCharacterSet+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F3571B44947C000BBF12 /* NSCharacterSet+GameShare.m */; };
+		30B6F3611B44947C000BBF12 /* NSData+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F3591B44947C000BBF12 /* NSData+GameShare.m */; };
+		30B6F3621B44947C000BBF12 /* NSDate+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F35B1B44947C000BBF12 /* NSDate+GameShare.m */; };
+		30B6F3631B44947C000BBF12 /* NSString+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F35D1B44947C000BBF12 /* NSString+GameShare.m */; };
+		30B6F3661B4495B6000BBF12 /* NSRegularExpression+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F3651B4495B6000BBF12 /* NSRegularExpression+GameShare.m */; };
 		30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C7C61F19E0DBE70038B22C /* HONLineButtonView.m */; };
 		30CA9C991A02182800A0A703 /* HONStateMitigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9C981A02182800A0A703 /* HONStateMitigator.m */; };
 		30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */ = {isa = PBXBuildFile; fileRef = 30CA9CAA1A02F62900A0A703 /* HONAnimationOverseer.m */; };
@@ -426,9 +432,8 @@
 		30AD79271B43A1AE00F9C634 /* GSCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSCollectionViewController.m; sourceTree = "<group>"; };
 		30AD79281B43A1AE00F9C634 /* GSCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		30AD79291B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		30AD792A1B43A1AE00F9C634 /* GSMessenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessenger.h; sourceTree = "<group>"; };
-		30AD792B1B43A1AE00F9C634 /* GSMessenger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSMessenger.m; sourceTree = "<group>"; };
-		30AD792C1B43A1AE00F9C634 /* GSMessengerProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessengerProperties.h; sourceTree = "<group>"; };
+		30AD792A1B43A1AE00F9C634 /* GSMessengerShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessengerShare.h; sourceTree = "<group>"; };
+		30AD792B1B43A1AE00F9C634 /* GSMessengerShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSMessengerShare.m; sourceTree = "<group>"; };
 		30AD792D1B43A1AE00F9C634 /* GSMessengerShareInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = GSMessengerShareInfo.plist; sourceTree = "<group>"; };
 		30AD792E1B43A1AE00F9C634 /* GSMessengerVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessengerVO.h; sourceTree = "<group>"; };
 		30AD792F1B43A1AE00F9C634 /* GSMessengerVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSMessengerVO.m; sourceTree = "<group>"; };
@@ -474,6 +479,19 @@
 		30B6F34B1B445937000BBF12 /* WXApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApi.h; sourceTree = "<group>"; };
 		30B6F34C1B445937000BBF12 /* WXApiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApiObject.h; sourceTree = "<group>"; };
 		30B6F34E1B4463F1000BBF12 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		30B6F3501B4487DF000BBF12 /* GSMessengerShareProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMessengerShareProperties.h; sourceTree = "<group>"; };
+		30B6F3541B44947C000BBF12 /* NSArray+GameShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+GameShare.h"; sourceTree = "<group>"; };
+		30B6F3551B44947C000BBF12 /* NSArray+GameShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+GameShare.m"; sourceTree = "<group>"; };
+		30B6F3561B44947C000BBF12 /* NSCharacterSet+GameShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+GameShare.h"; sourceTree = "<group>"; };
+		30B6F3571B44947C000BBF12 /* NSCharacterSet+GameShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+GameShare.m"; sourceTree = "<group>"; };
+		30B6F3581B44947C000BBF12 /* NSData+GameShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GameShare.h"; sourceTree = "<group>"; };
+		30B6F3591B44947C000BBF12 /* NSData+GameShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GameShare.m"; sourceTree = "<group>"; };
+		30B6F35A1B44947C000BBF12 /* NSDate+GameShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+GameShare.h"; sourceTree = "<group>"; };
+		30B6F35B1B44947C000BBF12 /* NSDate+GameShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+GameShare.m"; sourceTree = "<group>"; };
+		30B6F35C1B44947C000BBF12 /* NSString+GameShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+GameShare.h"; sourceTree = "<group>"; };
+		30B6F35D1B44947C000BBF12 /* NSString+GameShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+GameShare.m"; sourceTree = "<group>"; };
+		30B6F3641B4495B6000BBF12 /* NSRegularExpression+GameShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSRegularExpression+GameShare.h"; sourceTree = "<group>"; };
+		30B6F3651B4495B6000BBF12 /* NSRegularExpression+GameShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSRegularExpression+GameShare.m"; sourceTree = "<group>"; };
 		30BFAC431A01B499000CE4FC /* HONStickerButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerButtonView.m; sourceTree = "<group>"; };
 		30BFAC841A01ECC9000CE4FC /* HONStickerSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStickerSummaryView.h; sourceTree = "<group>"; };
 		30BFAC851A01ECC9000CE4FC /* HONStickerSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerSummaryView.m; sourceTree = "<group>"; };
@@ -1228,6 +1246,7 @@
 		30AD79201B43A0E400F9C634 /* GameShare */ = {
 			isa = PBXGroup;
 			children = (
+				30B6F3511B44947C000BBF12 /* Categories */,
 				30AD792D1B43A1AE00F9C634 /* GSMessengerShareInfo.plist */,
 				30AD79241B43A1AE00F9C634 /* GSCollectionViewCell.h */,
 				30AD79251B43A1AE00F9C634 /* GSCollectionViewCell.m */,
@@ -1235,9 +1254,9 @@
 				30AD79271B43A1AE00F9C634 /* GSCollectionViewController.m */,
 				30AD79281B43A1AE00F9C634 /* GSCollectionViewFlowLayout.h */,
 				30AD79291B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m */,
-				30AD792A1B43A1AE00F9C634 /* GSMessenger.h */,
-				30AD792B1B43A1AE00F9C634 /* GSMessenger.m */,
-				30AD792C1B43A1AE00F9C634 /* GSMessengerProperties.h */,
+				30AD792A1B43A1AE00F9C634 /* GSMessengerShare.h */,
+				30AD792B1B43A1AE00F9C634 /* GSMessengerShare.m */,
+				30B6F3501B4487DF000BBF12 /* GSMessengerShareProperties.h */,
 				30AD792E1B43A1AE00F9C634 /* GSMessengerVO.h */,
 				30AD792F1B43A1AE00F9C634 /* GSMessengerVO.m */,
 				30AD79231B43A1AE00F9C634 /* GameShareRecources.bundle */,
@@ -1306,6 +1325,25 @@
 				30B6F34C1B445937000BBF12 /* WXApiObject.h */,
 			);
 			path = WeChatSDK;
+			sourceTree = "<group>";
+		};
+		30B6F3511B44947C000BBF12 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				30B6F3541B44947C000BBF12 /* NSArray+GameShare.h */,
+				30B6F3551B44947C000BBF12 /* NSArray+GameShare.m */,
+				30B6F3561B44947C000BBF12 /* NSCharacterSet+GameShare.h */,
+				30B6F3571B44947C000BBF12 /* NSCharacterSet+GameShare.m */,
+				30B6F3581B44947C000BBF12 /* NSData+GameShare.h */,
+				30B6F3591B44947C000BBF12 /* NSData+GameShare.m */,
+				30B6F35A1B44947C000BBF12 /* NSDate+GameShare.h */,
+				30B6F35B1B44947C000BBF12 /* NSDate+GameShare.m */,
+				30B6F3641B4495B6000BBF12 /* NSRegularExpression+GameShare.h */,
+				30B6F3651B4495B6000BBF12 /* NSRegularExpression+GameShare.m */,
+				30B6F35C1B44947C000BBF12 /* NSString+GameShare.h */,
+				30B6F35D1B44947C000BBF12 /* NSString+GameShare.m */,
+			);
+			path = Categories;
 			sourceTree = "<group>";
 		};
 		30B7E0721A73E5E500E52071 /* BuiltInMenlo */ = {
@@ -2387,6 +2425,7 @@
 				4CEC4B0718B9517F00F39C92 /* HONAnalyticsReporter.m in Sources */,
 				30CA9CAB1A02F62900A0A703 /* HONAnimationOverseer.m in Sources */,
 				4CE0399E185727150005256F /* HONAPICaller.m in Sources */,
+				30B6F3631B44947C000BBF12 /* NSString+GameShare.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */,
 				3051F8A71A08AC0000CD85F2 /* HONBackNavButtonView.m in Sources */,
@@ -2423,12 +2462,13 @@
 				301DF22B1A10228B00D2BEB9 /* HONGeoLocator.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				3010D7811A24109E0078164F /* HONHomeFeedToggleView.m in Sources */,
-				30AD79341B43A1AE00F9C634 /* GSMessenger.m in Sources */,
+				30AD79341B43A1AE00F9C634 /* GSMessengerShare.m in Sources */,
 				3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */,
 				3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
+				30B6F3611B44947C000BBF12 /* NSData+GameShare.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
 				30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */,
 				3024A5E61A7B769500231BA5 /* HONLoadingOverlayView.m in Sources */,
@@ -2512,6 +2552,7 @@
 				30B308CF19E20B510017ACBF /* AFJSONRequestOperation.m in Sources */,
 				30B308D019E20B510017ACBF /* AFNetworkActivityIndicatorManager.m in Sources */,
 				30B308D119E20B510017ACBF /* AFPropertyListRequestOperation.m in Sources */,
+				30B6F3661B4495B6000BBF12 /* NSRegularExpression+GameShare.m in Sources */,
 				30B308D219E20B510017ACBF /* AFURLConnectionOperation.m in Sources */,
 				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
 				30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */,
@@ -2524,6 +2565,8 @@
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
+				30B6F3621B44947C000BBF12 /* NSDate+GameShare.m in Sources */,
+				30B6F3601B44947C000BBF12 /* NSCharacterSet+GameShare.m in Sources */,
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
 				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,
 				4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */,
@@ -2540,6 +2583,7 @@
 				30D8A23C1AB683BC00EC57C8 /* TSCore.m in Sources */,
 				30D8A23D1AB683BC00EC57C8 /* TSCoreListenerImpl.m in Sources */,
 				30D8A23E1AB683BC00EC57C8 /* TSEvent.m in Sources */,
+				30B6F35F1B44947C000BBF12 /* NSArray+GameShare.m in Sources */,
 				3073BB3C1ACCB72B00CE2441 /* HONInviteNavButtonView.m in Sources */,
 				30D8A23F1AB683BC00EC57C8 /* TSHit.m in Sources */,
 				30D8A2401AB683BC00EC57C8 /* TSLogging.m in Sources */,
