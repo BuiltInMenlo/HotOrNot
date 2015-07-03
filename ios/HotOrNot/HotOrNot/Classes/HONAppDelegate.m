@@ -986,17 +986,17 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - acceptPush"];
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
-	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
-	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
-	
-	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
-		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
-				if (![result isEqual:[NSNull null]])
-					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-			}];
-		}];
-	}
+//	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
+//	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
+//	
+//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
+//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
+//				if (![result isEqual:[NSNull null]])
+//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//			}];
+//		}];
+//	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
@@ -1012,14 +1012,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - deniedPush"];
 	
-	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
-		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
-				if (![result isEqual:[NSNull null]])
-					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-			}];
-		}];
-	}
+//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
+//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
+//				if (![result isEqual:[NSNull null]])
+//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//			}];
+//		}];
+//	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:@"didFailToRegisterForRemoteNotificationsWithError"

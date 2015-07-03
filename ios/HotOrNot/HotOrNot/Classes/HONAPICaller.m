@@ -22,15 +22,15 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kAPIHostKey = @"prod";
-NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
+NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_sc0011.json";
 #else
 NSString * const kAPIHostKey = @"devint";
-//NSString * const kConfigURL = @"https://volley-api.devint.selfieclubapp.com";
+//NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
 //NSString * const kConfigJSON = @"boot_marsh.json";
 #endif
 
-//NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
+//NSString * const kConfigURL = @"http://volley-api.selfieclubapp.com";
 //NSString * const kConfigJSON = @"boot_sc0011.json";
 
 
@@ -213,11 +213,11 @@ static HONAPICaller *sharedInstance = nil;
 
 
 - (NSString *)phpAPIBasePath {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"server_apis"] objectForKey:kAPIHostKey] objectForKey:@"php"]);
+	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"server_apis"] objectForKey:kAPIHostKey] objectForKey:@"php"] stringByReplacingOccurrencesOfString:@"https://" withString:@"https://]"]);
 }
 
 - (NSString *)pythonAPIBasePath {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"server_apis"] objectForKey:kAPIHostKey] objectForKey:@"python"]);
+	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"server_apis"] objectForKey:kAPIHostKey] objectForKey:@"python"] stringByReplacingOccurrencesOfString:@"https://" withString:@"https://]"]);
 }
 
 - (AFHTTPClient *)appendHeaders:(NSDictionary *)headers toHTTPCLient:(AFHTTPClient *)httpClient {
@@ -1831,11 +1831,17 @@ static HONAPICaller *sharedInstance = nil;
 			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
 			//[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
+			NSLog(@"<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<- [WTF 02-A] : STATUS UPD :: NO RESULTS //<<-<<-<<-<<-<<-<<-<<-");
+			NSLog(@"%@", result);
+			
 			if (completion)
 				completion(@{@"detail"	: @"Not found"});
 			
 		} else {
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			NSLog(@"<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<- [WTF 02-A] : STATUS UPD :: MATCHED //<<-<<-<<-<<-<<-<<-<<-");
+			NSLog(@"%@", result);
 			
 			if (completion)
 				completion(result);
@@ -1844,6 +1850,9 @@ static HONAPICaller *sharedInstance = nil;
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], [[operation request] URL], [error localizedDescription]);
 //		[[HONAPICaller sharedInstance] showDataErrorHUD];
+		
+		NSLog(@"<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<-<<- [WTF 02-A] : STATUS UPD QUERY :: FAIL //<<-<<-<<-<<-<<-<<-<<-");
+		NSLog(@"%@", error);
 	}];
 }
 
