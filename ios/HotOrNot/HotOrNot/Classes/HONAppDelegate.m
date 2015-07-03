@@ -409,15 +409,15 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_changeLoadTint {
-	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
-						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
-						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
-						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
-	
-	UIColor *color = [colors randomElement];
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		[[HONViewDispensor sharedInstance] tintView:_loadingView withColor:color];
-	} completion:nil];
+//	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+//						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+//						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+//						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+//	
+//	UIColor *color = [colors randomElement];
+//	[UIView animateWithDuration:0.125 animations:^(void) {
+//		[[HONViewDispensor sharedInstance] tintView:_loadingView withColor:color];
+//	} completion:nil];
 }
 
 
@@ -986,17 +986,17 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - acceptPush"];
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
-//	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
-//	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
-//	
-//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
-//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
-//				if (![result isEqual:[NSNull null]])
-//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//			}];
-//		}];
-//	}
+	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
+	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
+	
+	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
+		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
+				if (![result isEqual:[NSNull null]])
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+			}];
+		}];
+	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
@@ -1012,14 +1012,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - deniedPush"];
 	
-//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
-//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
-//				if (![result isEqual:[NSNull null]])
-//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//			}];
-//		}];
-//	}
+	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
+		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
+				if (![result isEqual:[NSNull null]])
+					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+			}];
+		}];
+	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:@"didFailToRegisterForRemoteNotificationsWithError"

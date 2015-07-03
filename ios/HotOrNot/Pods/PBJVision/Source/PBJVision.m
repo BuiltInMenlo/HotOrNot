@@ -716,7 +716,7 @@ PBJMediaWriterDelegate>
 		// default flags
 		_flags.thumbnailEnabled = YES;
 		_flags.defaultVideoThumbnails = YES;
-		_flags.audioCaptureEnabled = NO;
+		_flags.audioCaptureEnabled = YES;
 		
 		// setup queues
 		_captureSessionDispatchQueue = dispatch_queue_create("PBJVisionSession", DISPATCH_QUEUE_SERIAL); // protects session

@@ -18,6 +18,7 @@
 @property (nonatomic, strong) UILabel *label;
 @property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) BOOL isAnimated;
 @end
 
@@ -94,6 +95,11 @@
 		[self addSubview:_label];
 		[_label centerAlignWithinParentView];
 		
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+		_activityIndicatorView.center = CGPointMake(self.bounds.size.width * 0.5, self.bounds.size.height * 0.5);
+		[_activityIndicatorView startAnimating];
+		[self addSubview:_activityIndicatorView];
+		
 		if ([_caption length] == 0) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:self animated:YES];
@@ -155,6 +161,8 @@
 		self.alpha = 0.0;
 		
 	} completion:^(BOOL finished) {
+		[_activityIndicatorView stopAnimating];
+		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;

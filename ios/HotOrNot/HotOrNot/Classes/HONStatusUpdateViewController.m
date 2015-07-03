@@ -48,8 +48,7 @@
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
-@property (nonatomic, strong) MPMoviePlayerController *primaryMoviePlayer;
-@property (nonatomic, strong) MPMoviePlayerController *auxillaryMoviePlayer;
+@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 @property (nonatomic, strong) UIButton *commentOpenButton;
 @property (nonatomic, strong) UIButton *commentCloseButton;
@@ -90,14 +89,12 @@
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
-@property (nonatomic) BOOL isPrimaryPlayerFocused;
 @end
 
 @implementation HONStatusUpdateViewController
 
 - (id)init {
 	if ((self = [super init])) {
-		_isPrimaryPlayerFocused = YES;
 		_totalType = HONStateMitigatorTotalTypeStatusUpdate;
 		_viewStateType = HONStateMitigatorViewStateTypeStatusUpdate;
 		
@@ -111,19 +108,11 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_playbackStateChanged:)
-													 name:MPMoviePlayerPlaybackStateDidChangeNotification object:@{@"pri"	: _primaryMoviePlayer}];
+													 name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayer];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_playbackEnded:)
-													 name:MPMoviePlayerPlaybackDidFinishNotification object:@{@"aux"	: _auxillaryMoviePlayer}];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_playbackStateChanged:)
-													 name:MPMoviePlayerPlaybackStateDidChangeNotification object:@{@"pri"	: _primaryMoviePlayer}];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_playbackEnded:)
-													 name:MPMoviePlayerPlaybackDidFinishNotification object:@{@"aux"	: _auxillaryMoviePlayer}];
+													 name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayer];
 		
 		[self _setupCamera];
 		[[PBJVision sharedInstance] startPreview];
@@ -135,9 +124,37 @@
 - (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO {
 	NSLog(@"%@ - initWithStatusUpdate:[%@] forClub:[%d - %@]", [self description], statusUpdateVO.dictionary, clubVO.clubID, clubVO.clubName);
 	if ((self = [self init])) {
+		_statusUpdateVO = statusUpdateVO;
+		_clubVO = clubVO;
 		
-		_statusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:@{}];
-		_clubVO = [[HONClubAssistant sharedInstance] globalClub];
+//		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+//		[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
+//														 @"channel"	: [NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID],
+//														 @"message"	: @"joined"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//															 NSError *error = nil;
+//															 NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//															 
+//															 if (error != nil) {
+//																 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+//																 [[HONAPICaller sharedInstance] showDataErrorHUD];
+//																 
+//															 } else {
+//																 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//															 }
+//															 
+////															 [[[UIAlertView alloc] initWithTitle:@"PUSH"
+////																						 message:[[[operation request] URL] absoluteString]
+////																						delegate:nil
+////																				 cancelButtonTitle:@"OK"
+////																				 otherButtonTitles:nil] show];
+//															 
+//														 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//															 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+//															 [[HONAPICaller sharedInstance] showDataErrorHUD];
+//														 }];
+		
+//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//		pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
 	}
 	
 	return (self);
@@ -626,9 +643,20 @@
 				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - videoView" withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
 																											 @"channel"	: _channel.name}];
 				
-				[self _moviePlayerSwitcherooToNewURL:commentVO.imagePrefix withCompletionHandler:^(void) {
-				}];
+//				if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+//					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+			
+				[UIView animateKeyframesWithDuration:0.25 delay:0.00
+											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+											animations:^(void) {
+												_moviePlayer.view.alpha = 0.0;
+											} completion:^(BOOL finished) {
+												_moviePlayer.contentURL = [NSURL URLWithString:commentVO.imagePrefix];
+												[_moviePlayer play];
+											}];
 				
+				_animationImageView.hidden = NO;
+				_statusLabel.text = @"Loading video…";
 		
 			} else {
 				NSLog(@"UNKNOWN COMMENT TYPE [%d]", (int)commentVO.messageType);
@@ -663,63 +691,6 @@
 	
 	
 	return (channel);
-}
-
-
-- (void)_moviePlayerSwitcherooToNewURL:(NSString *)contentURL withCompletionHandler:(void (^)(void))handler {
-	
-	/**
-	 
-	 typedef NS_ENUM(NSInteger, MPMoviePlaybackState) {
-	 MPMoviePlaybackStateStopped,
-	 MPMoviePlaybackStatePlaying,
-	 MPMoviePlaybackStatePaused,
-	 MPMoviePlaybackStateInterrupted,
-	 MPMoviePlaybackStateSeekingForward,
-	 MPMoviePlaybackStateSeekingBackward
-	 };
-	 
-	 typedef NS_OPTIONS(NSUInteger, MPMovieLoadState) {
-	 MPMovieLoadStateUnknown        = 0,
-	 MPMovieLoadStatePlayable       = 1 << 0,
-	 MPMovieLoadStatePlaythroughOK  = 1 << 1, // Playback will be automatically started in this state when shouldAutoplay is YES
-	 MPMovieLoadStateStalled        = 1 << 2, // Playback will be automatically paused in this state, if started
-	 };
-	 
-	 
-	 typedef NS_ENUM(NSInteger, MPMovieFinishReason) {
-	 MPMovieFinishReasonPlaybackEnded,
-	 MPMovieFinishReasonPlaybackError,
-	 MPMovieFinishReasonUserExited
-	 };
-	 **/
-	
-	
-	_isPrimaryPlayerFocused = !_isPrimaryPlayerFocused;
-	
-	_animationImageView.hidden = NO;
-	_statusLabel.text = @"Loading Video…";
-	[UIView animateKeyframesWithDuration:0.25 delay:0.00
-								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-								  _primaryMoviePlayer.view.alpha = (int)(_isPrimaryPlayerFocused);
-								  _auxillaryMoviePlayer.view.alpha = (int)(_isPrimaryPlayerFocused);
-								  
-	  } completion:^(BOOL finished) {
-		  _primaryMoviePlayer.contentURL = (_isPrimaryPlayerFocused) ? [NSURL URLWithString:contentURL] : nil;
-		  _auxillaryMoviePlayer.contentURL = (_isPrimaryPlayerFocused) ? nil : [NSURL URLWithString:contentURL];
-		  
-		   if (_primaryMoviePlayer.playbackState == MPMoviePlaybackStatePlaying) {
-			   if (!_isPrimaryPlayerFocused) {
-				   [_primaryMoviePlayer stop];
-			   }
-		   }
-		  
-		  if (_auxillaryMoviePlayer.playbackState == MPMoviePlaybackStatePlaying) {
-			  if (_isPrimaryPlayerFocused) {
-				  [_auxillaryMoviePlayer stop];
-			  }
-		  }
-	  }];
 }
 
 - (void)_flagStatusUpdate {
@@ -861,24 +832,14 @@
 //	view.autoresizesSubviews = TRUE;
 	
 	
-	_primaryMoviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-	_primaryMoviePlayer.controlStyle = MPMovieControlStyleNone;
-	_primaryMoviePlayer.shouldAutoplay = YES;
-	_primaryMoviePlayer.repeatMode = MPMovieRepeatModeOne;
-	_primaryMoviePlayer.scalingMode = MPMovieScalingModeFill;
-	_primaryMoviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-	_primaryMoviePlayer.view.alpha = 0.0;
-	[self.view addSubview:_primaryMoviePlayer.view];
-	
-	
-	_auxillaryMoviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-	_auxillaryMoviePlayer.controlStyle = _primaryMoviePlayer.controlStyle;
-	_auxillaryMoviePlayer.shouldAutoplay = _primaryMoviePlayer.shouldAutoplay;
-	_auxillaryMoviePlayer.repeatMode = _primaryMoviePlayer.repeatMode;
-	_auxillaryMoviePlayer.scalingMode = _primaryMoviePlayer.scalingMode;
-	_auxillaryMoviePlayer.view.frame = _primaryMoviePlayer.view.frame;
-	_auxillaryMoviePlayer.view.alpha = 0.0;
-	[self.view addSubview:_auxillaryMoviePlayer.view];
+	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+	_moviePlayer.controlStyle = MPMovieControlStyleNone;
+	_moviePlayer.shouldAutoplay = YES;
+	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
+	_moviePlayer.scalingMode = MPMovieScalingModeFill;
+	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_moviePlayer.view.alpha = 0.0;
+	[self.view addSubview:_moviePlayer.view];
 	
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	_imageView.hidden = YES;
@@ -1064,21 +1025,21 @@
 	HONButton *kikButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_nonActive"] forState:UIControlStateNormal];
 	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_Active"] forState:UIControlStateHighlighted];
-	[kikButton addTarget:self action:@selector(_goAssignKikHandle) forControlEvents:UIControlEventTouchUpInside];
+	[kikButton addTarget:self action:@selector(_goKik) forControlEvents:UIControlEventTouchUpInside];
 	kikButton.frame = CGRectMake(55.0, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
 	[_shareHolderView addSubview:kikButton];
 	
 	HONButton *fbButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_nonActive"] forState:UIControlStateNormal];
 	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_Active"] forState:UIControlStateHighlighted];
-	[fbButton addTarget:self action:@selector(_goAssignFBHandle) forControlEvents:UIControlEventTouchUpInside];
+	[fbButton addTarget:self action:@selector(_goFB) forControlEvents:UIControlEventTouchUpInside];
 	fbButton.frame = CGRectMake((self.view.frame.size.width - fbButton.frame.size.width) * 0.5, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), fbButton.frame.size.width, fbButton.frame.size.height);
 	[_shareHolderView addSubview:fbButton];
 	
 	HONButton *kakaoButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_nonActive"] forState:UIControlStateNormal];
 	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_Active"] forState:UIControlStateHighlighted];
-	[kakaoButton addTarget:self action:@selector(_goAsignKakaoHandle) forControlEvents:UIControlEventTouchUpInside];
+	[kakaoButton addTarget:self action:@selector(_goKakao) forControlEvents:UIControlEventTouchUpInside];
 	kakaoButton.frame = CGRectMake((self.view.frame.size.width - 55.0) - kikButton.frame.size.width, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
 	[_shareHolderView addSubview:kakaoButton];
 	
@@ -1130,7 +1091,7 @@
 	}
 }
 
-- (void)_goAssignKikHandle {
+- (void)_goKik {
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://tap2install.com/ios-app.php"]];
 	
 	//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
@@ -1160,23 +1121,22 @@
 			[_nameImageView removeFromSuperview];
 		}];
 		
-		_primaryMoviePlayer.view.hidden = NO;
+		_moviePlayer.view.hidden = NO;
 		_cameraPreviewView.hidden = NO;
 		
 		[self _goCancelComment];
 	//});
 }
 
-- (void)_goAsignKakaoHandle {
+- (void)_goKakao {
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"kakaolink"]];
 	
-	_nameTextField.text = @"anon";
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[self _didfinishHandleLookup];
+		[self _goSkipName];
 	});
 }
 
-- (void)_goAssignFBHandle {
+- (void)_goFB {
 	FBSDKMessengerShareOptions *options = [[FBSDKMessengerShareOptions alloc] init];
 	options.metadata = [NSString stringWithFormat:@"{\"channel\":\"%@\"}", _channel.name];
 	options.contextOverride = [[FBSDKMessengerBroadcastContext alloc] init];
@@ -1184,14 +1144,32 @@
 	[FBSDKMessengerSharer shareAnimatedGIF:[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"popup_sharefb" ofType:@"gif"]]
 								 withOptions:options];
 	
-	_nameTextField.text = @"anon";
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 		[self _goSkipName];
 	});
 }
 
 - (void)_goSkipName {
-	[self _didfinishHandleLookup];
+	_nameTextField.text = @"anon";
+	_shareHolderView.hidden = YES;
+	
+	[self _goSetName];
+	
+//	if (![_nameTextField isFirstResponder])
+//		[_nameTextField becomeFirstResponder];
+//	
+//	_nameButton = [HONButton buttonWithType:UIButtonTypeCustom];
+//	_nameButton.frame = CGRectMake(0.0, self.view.frame.size.height - (65.0), self.view.frame.size.width, 65.0);
+//	[_nameButton setBackgroundImage:[UIImage imageNamed:@"nameButton_nonActive"] forState:UIControlStateNormal];
+//	[_nameButton setBackgroundImage:[UIImage imageNamed:@"nameButton_Active"] forState:UIControlStateHighlighted];
+//	[_nameButton addTarget:self action:@selector(_goSetName) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:_nameButton];
+//	
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_nameButton.frame = CGRectMake(0.0, self.view.frame.size.height - (216.0 + _nameButton.frame.size.height), self.view.frame.size.width, _nameButton.frame.size.height);
+//	} completion:^(BOOL finished) {
+//		[_nameImageView removeFromSuperview];
+//	}];
 }
 
 - (void)_goShare {
@@ -1268,8 +1246,7 @@
 //	});
 }
 
-- (void)_didfinishHandleLookup {
-	_shareHolderView.hidden = YES;
+- (void)_goSetName {
 	
 	_comment = _nameTextField.text;
 	[_statusUpdateHeaderView changeTitle:@""];
@@ -1300,14 +1277,7 @@
 		[_nameImageView removeFromSuperview];
 	}];
 	
-	if (_isPrimaryPlayerFocused) {
-		
-	} else {
-		
-	}
-	
-	
-	_primaryMoviePlayer.view.hidden = NO;
+	_moviePlayer.view.hidden = NO;
 	_cameraPreviewView.hidden = NO;
 	
 	[self _goCancelComment];
@@ -1394,38 +1364,34 @@
 	_scrollView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 10.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
+	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_submitCommentButton.hidden = YES;
+	_movieFillView.hidden = YES;
+	
+	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if ([_moviePlayer isPreparedToPlay])
+			_moviePlayer.view.alpha = 1.0;
+		
+		_cameraPreviewView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
+		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_flagButton.alpha = 1.0;
 		_cameraFlipButton.alpha = 1.0;
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
+//		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
-		
 	} completion:^(BOOL finished) {
-		if (_scrollView.contentSize.height - _scrollView.frame.size.height > 0)
-			[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
-	
-		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-		_submitCommentButton.hidden = YES;
-		_movieFillView.hidden = YES;
+		//[_commentCloseButton removeFromSuperview];
 	}];
-	
-	
-	_primaryMoviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-	_auxillaryMoviePlayer.view.frame = _primaryMoviePlayer.view.frame;
-	
-	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-	
-	if ([_primaryMoviePlayer isPreparedToPlay]) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_primaryMoviePlayer.view.alpha = (int)(_isPrimaryPlayerFocused);
-			_auxillaryMoviePlayer.view.alpha = (int)(!_isPrimaryPlayerFocused);
-			_cameraPreviewView.alpha = 1.0;
-		
-		} completion:^(BOOL finished) {
-			
-		}];
-	}
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -1456,30 +1422,22 @@
 			//_animationImageView.frame = CGRectMake(20.0, 20.0, 50.0, 50.0);
 			//_animationImageView.hidden = NO;
 			
-			_primaryMoviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-			_auxillaryMoviePlayer.view.frame = _primaryMoviePlayer.view.frame;
-			
+			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
 			_openCommentButton.hidden = YES;
 			_submitCommentButton.hidden = YES;
 			_movieFillView.hidden = YES;
 			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 			
-			if (_primaryMoviePlayer.playbackState == MPMoviePlaybackStatePlaying) {
-				[_primaryMoviePlayer stop];
-			}
-			
-			
-			if (_auxillaryMoviePlayer.playbackState == MPMoviePlaybackStatePlaying) {
-				[_auxillaryMoviePlayer stop];
-			}
-				 
-			_primaryMoviePlayer.view.hidden = YES;
-			_auxillaryMoviePlayer.view.hidden = YES;
-			
+			[_moviePlayer stop];
+			_moviePlayer.view.hidden = YES;
 			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.25, self.view.frame.size.width, self.view.frame.size.height * 0.5);
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
-			[[PBJVision sharedInstance] startVideoCapture];
+			
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				[[PBJVision sharedInstance] startVideoCapture];
+			});
+			
 			_statusUpdateHeaderView.hidden = YES;
 			_commentFooterView.hidden = YES;
 			_scrollView.hidden = YES;
@@ -1549,12 +1507,8 @@
 - (void)_appEnteringBackground:(NSNotification *)notification {
 	_isActive = NO;
 	_statusLabel.text = @"Send a pop…";
-	
-	[_primaryMoviePlayer stop];
-	[_auxillaryMoviePlayer stop];
-	
-	_primaryMoviePlayer.view.alpha = 0.0;
-	_auxillaryMoviePlayer.view.alpha = 0.0;
+	[_moviePlayer stop];
+	_moviePlayer.view.alpha = 0.0;
 }
 
 - (void)_appLeavingBackground:(NSNotification *)notification {
@@ -1562,21 +1516,21 @@
 }
 
 - (void)_playbackStateChanged:(NSNotification *)notification {
-	NSLog(@"_playbackStateChangedNotification:[%d][%d]<-PRI_// <> \\_AUX->[%d][%d]", _primaryMoviePlayer.loadState, _primaryMoviePlayer.playbackState, _auxillaryMoviePlayer.loadState, _auxillaryMoviePlayer.playbackState);
+	NSLog(@"_playbackStateChangedNotification:[%d][%d]", _moviePlayer.loadState, _moviePlayer.playbackState);
 	
-	if (_primaryMoviePlayer.loadState == 0) {
+	if (_moviePlayer.loadState == 0) {
 		_animationImageView.hidden = YES;
-		_primaryMoviePlayer.view.hidden = NO;
+		_moviePlayer.view.hidden = NO;
 		[UIView animateKeyframesWithDuration:0.25 delay:0.00
 									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
 									animations:^(void) {
-										_primaryMoviePlayer.view.alpha = 1.0;
+										_moviePlayer.view.alpha = 1.0;
 									} completion:^(BOOL finished) {
 									}];
 	}
 	
-	if (_primaryMoviePlayer.loadState == 3 && _primaryMoviePlayer.playbackState == 1) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - videoView" withProperties:@{@"file"	: [[_primaryMoviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
+	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - videoView" withProperties:@{@"file"	: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
 																									 @"channel"	: _channel.name}];
 
 	}
@@ -1584,7 +1538,14 @@
 
 - (void)_playbackEnded:(NSNotification *)notification {
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
-	[_primaryMoviePlayer play];
+	//[_moviePlayer play];
+	
+//	[UIView animateKeyframesWithDuration:0.25 delay:0.00
+//								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+//								animations:^(void) {
+//									_moviePlayer.view.alpha = 0.0;
+//								} completion:^(BOOL finished) {
+//								}];
 }
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
@@ -1741,8 +1702,8 @@
 		[self.navigationController popToRootViewControllerAnimated:YES];
 	});
 	
-	[_primaryMoviePlayer stop];
-	_primaryMoviePlayer.view.hidden = YES;
+	[_moviePlayer stop];
+	_moviePlayer.view.hidden = YES;
 }
 
 
@@ -1933,7 +1894,7 @@
 		
 		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5);
 		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-		_primaryMoviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5);
+		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"text"];
 		[[NSUserDefaults standardUserDefaults] synchronize];

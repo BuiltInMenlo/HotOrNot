@@ -118,6 +118,7 @@
 
 + (AVCaptureDevice *)audioDevice
 {
+	NSLog(@"AudioDevices:[%@]", [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio]);
     NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio];
     if ([devices count] > 0)
         return [devices objectAtIndex:0];
