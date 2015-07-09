@@ -211,7 +211,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	
 	//GameShareRecources.bundle/gs-backButton_normal
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_closeButton.frame = CGRectMake(10.0, 16.0, 39.0, 39.0);
+	_closeButton.frame = CGRectMake(5.0, 26.0, 39.0, 39.0);
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"gs-backButton_normal"] forState:UIControlStateNormal];
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"gs-backButton_highlighted"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
@@ -233,7 +233,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 
 #pragma mark - Navigation
 - (void)_goDismissViewController {
-	[self dismissViewControllerAnimated:YES completion:^(void) {
+	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 }
 

@@ -886,7 +886,7 @@
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 31.0, self.view.frame.size.width - 160.0, 22.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:18];
-	_expireLabel.backgroundColor = [UIColor clearColor];
+	_expireLabel.backgroundColor = [UIColor redColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 	_expireLabel.text = @"1 person here…";
@@ -1058,7 +1058,7 @@
 	_lpGestureRecognizer.delaysTouchesBegan = YES;
 	[self.view addGestureRecognizer:_lpGestureRecognizer];
 	
-	//[self _goSetName];
+	[self _goSetName];
 	
 	GSMessengerShare *messengerShare = [GSMessengerShare sharedInstance];
 	[messengerShare addAllMessengerShareTypes];
@@ -1508,7 +1508,7 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - sendVideo" withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 			
 			NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-			_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+			_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 			_commentFooterView.backgroundColor = [UIColor clearColor];
 			

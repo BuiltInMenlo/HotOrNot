@@ -1031,10 +1031,10 @@
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
-	[UIView animateWithDuration:0.333 animations:^(void) {
-		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
-	} completion:nil];
+//	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
+//	[UIView animateWithDuration:0.333 animations:^(void) {
+//		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
+//	} completion:nil];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
