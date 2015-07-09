@@ -22,7 +22,7 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kAPIHostKey = @"prod";
-NSString * const kConfigURL = @"https://volley-api.selfieclubapp.com";
+NSString * const kConfigURL = @"http://gs.trydood.com";
 NSString * const kConfigJSON = @"boot_sc0011.json";
 #else
 NSString * const kAPIHostKey = @"devint";

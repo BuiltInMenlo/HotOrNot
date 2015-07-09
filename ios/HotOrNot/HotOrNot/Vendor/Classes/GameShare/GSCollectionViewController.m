@@ -32,6 +32,7 @@
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UIButton *skipButton;
 
+@property (nonatomic, strong) NSString *outboundURL;
 @property (nonatomic, strong) NSDictionary *baseShareInfo;
 @property (nonatomic, strong) NSMutableArray *messengerSchemas;
 @property (nonatomic, strong) NSMutableArray *allMessengers;
@@ -69,6 +70,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	NSLog(@"[:|:] [%@ - init] [:|:]", self.class);
 	
 	if ((self = [super init])) {
+		_outboundURL = @"";
 		_selectedMessengerText = @"";
 		_selectedMessengerContent = nil;
 		_allMessengers = [NSMutableArray array];
@@ -127,6 +129,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 - (void)addMessengerShareType:(GSMessengerShareType)messengerShareType {
 	if ([[GSCollectionViewController supportedTypes] containsObject:@(messengerShareType)])
 		[_selectedMessengers addObject:[self _messengerVOForShareType:messengerShareType]];
+}
+
+- (void)setOutboundURL:(NSString *)outboundURL {
+	_outboundURL = outboundURL;
 }
 
 
@@ -205,7 +211,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	
 	//GameShareRecources.bundle/gs-backButton_normal
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_closeButton.frame = CGRectMake(10.0, 16.0, 99.0, 46.0);
+	_closeButton.frame = CGRectMake(10.0, 16.0, 39.0, 39.0);
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"gs-backButton_normal"] forState:UIControlStateNormal];
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"gs-backButton_highlighted"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
@@ -641,7 +647,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		NSMutableArray *linkObjs = [NSMutableArray array];
 		NSString *title = ([[kakaoShareInfo objectForKey:@"title"] length] > 0) ? [kakaoShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"";
 		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
-		NSString *url = ([[kakaoShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"";
+		NSString *url = ([_outboundURL length] == 0) ? ([[kakaoShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"" : _outboundURL;
 		
 		if ([title length] > 0) {
 			[linkObjs addObject:[KakaoTalkLinkObject createLabel:title]];
@@ -678,7 +684,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[kikShareInfo objectForKey:@"icon_url"] length] > 0) ? [kikShareInfo objectForKey:@"icon_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"" forKey:@"icon_url"];
 		[shareInfo setObject:([[kikShareInfo objectForKey:@"image_url"] length] > 0) ? [kikShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @"" forKey:@"image_url"];
 		[shareInfo setObject:([[kikShareInfo objectForKey:@"body_text"] length] > 0) ? [kikShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[kikShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kikShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"outbound_url"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[kikShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kikShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"outbound_url"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeLine) {
 		NSDictionary *lineShareInfo = [_baseShareInfo objectForKey:kLineKey];
@@ -686,7 +692,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		BOOL isOverride = (BOOL)[[lineShareInfo objectForKey:@"override"] intValue];
 		
 		[shareInfo setObject:([[lineShareInfo objectForKey:@"body_text"] length] > 0) ? [lineShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[lineShareInfo objectForKey:@"link"] length] > 0) ? [lineShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[lineShareInfo objectForKey:@"link"] length] > 0) ? [lineShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"link"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeSMS) {
 		NSDictionary *smsShareInfo = [_baseShareInfo objectForKey:kSMSKey];
@@ -694,7 +700,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		BOOL isOverride = (BOOL)[[smsShareInfo objectForKey:@"override"] intValue];
 		
 		[shareInfo setObject:([[smsShareInfo objectForKey:@"body_text"] length] > 0) ? [smsShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[smsShareInfo objectForKey:@"link"] length] > 0) ? [smsShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[smsShareInfo objectForKey:@"link"] length] > 0) ? [smsShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"link"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeWhatsApp) {
 		NSDictionary *whatsAppShareInfo = [_baseShareInfo objectForKey:kWhatsAppKey];
@@ -702,7 +708,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		BOOL isOverride = (BOOL)[[whatsAppShareInfo objectForKey:@"override"] intValue];
 		
 		[shareInfo setObject:([[whatsAppShareInfo objectForKey:@"body_text"] length] > 0) ? [whatsAppShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[whatsAppShareInfo objectForKey:@"link"] length] > 0) ? [whatsAppShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[whatsAppShareInfo objectForKey:@"link"] length] > 0) ? [whatsAppShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"": _outboundURL forKey:@"link"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeWeChat) {
 		NSDictionary *weChatShareInfo = [_baseShareInfo objectForKey:kWeChatKey];
@@ -711,7 +717,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		[shareInfo setObject:([[weChatShareInfo objectForKey:@"title"] length] > 0) ? [weChatShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"" forKey:@"title"];
 		[shareInfo setObject:([[weChatShareInfo objectForKey:@"body_text"] length] > 0) ? [weChatShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:[UIImage imageNamed:([[weChatShareInfo objectForKey:@"image"] length] > 0) ? [weChatShareInfo objectForKey:@"image"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image"] : nil] forKey:@"image"];
-		[shareInfo setObject:([[weChatShareInfo objectForKey:@"link"] length] > 0) ? [weChatShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[weChatShareInfo objectForKey:@"link"] length] > 0) ? [weChatShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"link"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeHike) {
 		NSDictionary *hikeShareInfo = [_baseShareInfo objectForKey:kHikeKey];
@@ -719,7 +725,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		BOOL isOverride = (BOOL)[[hikeShareInfo objectForKey:@"override"] intValue];
 		
 		[shareInfo setObject:([[hikeShareInfo objectForKey:@"body_text"] length] > 0) ? [hikeShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[hikeShareInfo objectForKey:@"link"] length] > 0) ? [hikeShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[hikeShareInfo objectForKey:@"link"] length] > 0) ? [hikeShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"link"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeViber) {
 		NSDictionary *viberShareInfo = [_baseShareInfo objectForKey:kOTHERKey];
@@ -727,7 +733,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		BOOL isOverride = (BOOL)[[viberShareInfo objectForKey:@"override"] intValue];
 		
 		[shareInfo setObject:([[viberShareInfo objectForKey:@"body_text"] length] > 0) ? [viberShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[viberShareInfo objectForKey:@"link"] length] > 0) ? [viberShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[viberShareInfo objectForKey:@"link"] length] > 0) ? [viberShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"link"];
 		
 	} else if (messengerShareType == GSMessengerShareTypeOTHER) {
 		NSDictionary *otherShareInfo = [_baseShareInfo objectForKey:kOTHERKey];
@@ -735,11 +741,11 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		BOOL isOverride = (BOOL)[[otherShareInfo objectForKey:@"override"] intValue];
 		
 		[shareInfo setObject:([[otherShareInfo objectForKey:@"body_text"] length] > 0) ? [otherShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
-		[shareInfo setObject:([[otherShareInfo objectForKey:@"link"] length] > 0) ? [otherShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? ([[otherShareInfo objectForKey:@"link"] length] > 0) ? [otherShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" : _outboundURL forKey:@"link"];
 		
 	} else {
 		[shareInfo setObject:[_baseShareInfo objectForKey:@"body_text"] forKey:@"body_text"];
-		[shareInfo setObject:[_baseShareInfo objectForKey:@"outbound_url"] forKey:@"link"];
+		[shareInfo setObject:([_outboundURL length] == 0) ? [_baseShareInfo objectForKey:@"outbound_url"] :_outboundURL forKey:@"link"];
 	}
 	
 	return (shareInfo);

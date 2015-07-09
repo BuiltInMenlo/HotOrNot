@@ -80,6 +80,7 @@
 @property (nonatomic, strong) UIButton *nameButton;
 @property (nonatomic, strong) UIView *shareHolderView;
 @property (nonatomic, strong) UIView *tutorialView;
+@property (nonatomic, strong) NSString *vidName;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 
 @property (nonatomic, strong) HONMediaRevealerView *revealerView;
@@ -215,6 +216,35 @@
 
 
 #pragma mark - Data Calls
+- (void)_retrieveLastVideo {
+	NSDictionary *params = @{@"action"	: @(2),
+							 @"channel"	: _channel.name};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"http://gs.trydood.com", @"popup.php", params);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://gs.trydood.com"]];
+	[httpClient postPath:@"popup.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			if ([[result objectForKey:@"url"] length] > 0) {
+				_moviePlayer.view.alpha = 1.0;
+				_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:[result objectForKey:@"url"]]];
+				[_moviePlayer play];
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"http://gs.trydood.com", @"popup.php", [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
 - (void)_retrieveStatusUpdate {
 	if (_expireTimer != nil) {
 		[_expireTimer invalidate];
@@ -248,11 +278,13 @@
 }
 
 - (void)_submitTextComment {
-	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-							 @"club_id"		: @(_clubVO.clubID),
-							 @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-							 @"subject"		: [NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__TXT__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
-							 @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+	
+	
+	NSDictionary *dict = @{@"user_id"			: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+						   @"club_id"			: @(_clubVO.clubID),
+						   @"img_url"			: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+						   @"subject"			: [NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__TXT__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
+						   @"challenge_id"		: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
@@ -420,6 +452,9 @@
 //			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 //				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 //			}];
+			
+			[self _retrieveLastVideo];
+
 			
 		} else if (state == PNSubscriptionProcessNotSubscribedState) {
 		} else if (state == PNSubscriptionProcessWillRestoreState) {
@@ -794,27 +829,21 @@
 	_tintBGView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	[self.view addSubview:_tintBGView];
 	
-	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:1.25
-													target:self
-												selector:@selector(_updateTint)
-												userInfo:nil repeats:YES];
+//	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:1.25
+//													target:self
+//												selector:@selector(_updateTint)
+//												userInfo:nil repeats:YES];
 	
 	_movieFillView = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5)];
 	_movieFillView.backgroundColor = [UIColor blackColor];
 	_movieFillView.hidden = YES;
 	[self.view addSubview:_movieFillView];
 	
-	_nameImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	_nameImageView.image = [UIImage imageNamed:@"nameTutorial"];
-	_nameImageView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	
-	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5)];
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62)];
 	_cameraPreviewView.backgroundColor = [UIColor blackColor];
 	_cameraPreviewView.alpha = 0.0;
 	
-	//_cameraPreviewView.hidden = YES;
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
-	//_cameraPreviewLayer.opacity = 0.60;
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
@@ -837,7 +866,7 @@
 	_moviePlayer.shouldAutoplay = YES;
 	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
 	_moviePlayer.scalingMode = MPMovieScalingModeFill;
-	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 	_moviePlayer.view.alpha = 0.0;
 	[self.view addSubview:_moviePlayer.view];
 	
@@ -855,8 +884,8 @@
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInput2BG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 30.0, self.view.frame.size.width - 160.0, 22.0)];
-	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 31.0, self.view.frame.size.width - 160.0, 22.0)];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1.0];
@@ -873,19 +902,25 @@
 	[self.view addSubview:_scrollView];
 	
 	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0)];
-	_animationImageView.animationImages = @[[UIImage imageNamed:@"contentLoader_01"],
-											[UIImage imageNamed:@"contentLoader_02"],
-											[UIImage imageNamed:@"contentLoader_03"],
-											[UIImage imageNamed:@"contentLoader_04"],
-											[UIImage imageNamed:@"contentLoader_05"],
-											[UIImage imageNamed:@"contentLoader_06"],
-											[UIImage imageNamed:@"contentLoader_07"],
-											[UIImage imageNamed:@"contentLoader_08"]];
-	_animationImageView.animationDuration = 0.75;
-	_animationImageView.animationRepeatCount = 0;
+//	_animationImageView.animationImages = @[[UIImage imageNamed:@"contentLoader_01"],
+//											[UIImage imageNamed:@"contentLoader_02"],
+//											[UIImage imageNamed:@"contentLoader_03"],
+//											[UIImage imageNamed:@"contentLoader_04"],
+//											[UIImage imageNamed:@"contentLoader_05"],
+//											[UIImage imageNamed:@"contentLoader_06"],
+//											[UIImage imageNamed:@"contentLoader_07"],
+//											[UIImage imageNamed:@"contentLoader_08"]];
+//	_animationImageView.animationDuration = 0.75;
+//	_animationImageView.animationRepeatCount = 0;
 	_animationImageView.hidden = YES;
-	[_animationImageView startAnimating];
+//	[_animationImageView startAnimating];
 	[self.view addSubview:_animationImageView];
+	
+	
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, _animationImageView.bounds.size.height * 0.5);
+	[activityIndicatorView startAnimating];
+	[_animationImageView addSubview:activityIndicatorView];
 	
 //	UIView *maskView = [[UIView alloc] initWithFrame:self.view.frame];
 //	maskView.layer.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
@@ -899,13 +934,20 @@
 	[self.view addSubview:_statusUpdateHeaderView];
 	[self.view addSubview:_commentFooterView];
 	
+	
+	_nameImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
+	_nameImageView.frame = CGRectOffset(_nameImageView.frame, 0.0, self.view.frame.size.height * 0.55);
+	[self.view addSubview:_nameImageView];
+	
+	
+	
 	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_flagButton.frame = CGRectMake((self.view.frame.size.width - 50.0) * 0.5, (self.view.frame.size.height * 0.5) - 50.0, 50.0, 50.0);
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	_flagButton.alpha = 0.0;
-	[self.view addSubview:_flagButton];
+	//[self.view addSubview:_flagButton];
 	
 //	UIImageView *participantsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"participantsIcon"]];
 //	participantsImageView.frame = CGRectOffset(participantsImageView.frame, 7.0, (self.view.frame.size.height * 0.5) + 9.0);
@@ -938,7 +980,7 @@
 //	[_bgView addSubview:_statusLabel];
 	
 	_openCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_openCommentButton.frame = CGRectMake(12.0, self.view.frame.size.height - 72.0, 72.0, 72.0);
+	_openCommentButton.frame = CGRectMake(27.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
 	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
@@ -946,12 +988,11 @@
 	[self.view addSubview:_openCommentButton];
 	
 	_tutorialView = [[UIView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 200.0) * 0.5, self.view.frame.size.height - 130.0, 200.0, 50.0)];
-	_tutorialView.backgroundColor = [UIColor redColor];
 	_tutorialView.hidden = YES;
 	//[self.view addSubview:_tutorialView];
 	
 	_takePhotoButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, self.view.frame.size.height - 72.0, 72.0, 72.0);
+	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, self.view.frame.size.height - 82.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
@@ -959,13 +1000,13 @@
 	[self.view addSubview:_takePhotoButton];
 	
 	NSLog(@"FRAME:%@", NSStringFromCGRect(_cameraPreviewView.frame));
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	
 	_cameraFlipButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 72.0, self.view.frame.size.height - 72.0, 72.0, 72.0);
-	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-	[_cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 88.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
+	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[_cameraFlipButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	_cameraFlipButton.alpha = 0.0;
 	[self.view addSubview:_cameraFlipButton];
 	
@@ -1006,7 +1047,7 @@
 	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_countdownLabel.backgroundColor = [UIColor clearColor];
 	_countdownLabel.textAlignment = NSTextAlignmentCenter;
-	_countdownLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1.0];
+	_countdownLabel.textColor = [UIColor whiteColor];
 	_countdownLabel.text = @"5";
 	_countdownLabel.hidden = YES;
 	[self.view addSubview:_countdownLabel];
@@ -1017,38 +1058,46 @@
 	_lpGestureRecognizer.delaysTouchesBegan = YES;
 	[self.view addGestureRecognizer:_lpGestureRecognizer];
 	
-	_shareHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-	[self.view addSubview:_shareHolderView];
+	//[self _goSetName];
 	
-	[_shareHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareBG"]]];
+	GSMessengerShare *messengerShare = [GSMessengerShare sharedInstance];
+	[messengerShare addAllMessengerShareTypes];
+	[messengerShare overrrideWithOutboundURL:@"http://gs.trydood.com/"];
+	messengerShare.delegate = self;
+	[messengerShare showMessengerSharePickerOnViewController:self];
 	
-	HONButton *kikButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_nonActive"] forState:UIControlStateNormal];
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_Active"] forState:UIControlStateHighlighted];
-	[kikButton addTarget:self action:@selector(_goKik) forControlEvents:UIControlEventTouchUpInside];
-	kikButton.frame = CGRectMake(55.0, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
-	[_shareHolderView addSubview:kikButton];
-	
-	HONButton *fbButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_nonActive"] forState:UIControlStateNormal];
-	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_Active"] forState:UIControlStateHighlighted];
-	[fbButton addTarget:self action:@selector(_goFB) forControlEvents:UIControlEventTouchUpInside];
-	fbButton.frame = CGRectMake((self.view.frame.size.width - fbButton.frame.size.width) * 0.5, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), fbButton.frame.size.width, fbButton.frame.size.height);
-	[_shareHolderView addSubview:fbButton];
-	
-	HONButton *kakaoButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_nonActive"] forState:UIControlStateNormal];
-	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_Active"] forState:UIControlStateHighlighted];
-	[kakaoButton addTarget:self action:@selector(_goKakao) forControlEvents:UIControlEventTouchUpInside];
-	kakaoButton.frame = CGRectMake((self.view.frame.size.width - 55.0) - kikButton.frame.size.width, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
-	[_shareHolderView addSubview:kakaoButton];
-	
-	HONButton *skipButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipNameButton_nonActive"] forState:UIControlStateNormal];
-	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipNameButton_Active"] forState:UIControlStateHighlighted];
-	[skipButton addTarget:self action:@selector(_goSkipName) forControlEvents:UIControlEventTouchUpInside];
-	skipButton.frame = CGRectMake(0.0, self.view.frame.size.height - skipButton.frame.size.height, skipButton.frame.size.width, skipButton.frame.size.height);
-	[_shareHolderView addSubview:skipButton];
+//	_shareHolderView = [[UIView alloc] initWithFrame:self.view.frame];
+//	[self.view addSubview:_shareHolderView];
+//	
+//	[_shareHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareBG"]]];
+//	
+//	HONButton *kikButton = [HONButton buttonWithType:UIButtonTypeCustom];
+//	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_nonActive"] forState:UIControlStateNormal];
+//	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_Active"] forState:UIControlStateHighlighted];
+//	[kikButton addTarget:self action:@selector(_goKik) forControlEvents:UIControlEventTouchUpInside];
+//	kikButton.frame = CGRectMake(55.0, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
+//	[_shareHolderView addSubview:kikButton];
+//	
+//	HONButton *fbButton = [HONButton buttonWithType:UIButtonTypeCustom];
+//	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_nonActive"] forState:UIControlStateNormal];
+//	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_Active"] forState:UIControlStateHighlighted];
+//	[fbButton addTarget:self action:@selector(_goFB) forControlEvents:UIControlEventTouchUpInside];
+//	fbButton.frame = CGRectMake((self.view.frame.size.width - fbButton.frame.size.width) * 0.5, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), fbButton.frame.size.width, fbButton.frame.size.height);
+//	[_shareHolderView addSubview:fbButton];
+//	
+//	HONButton *kakaoButton = [HONButton buttonWithType:UIButtonTypeCustom];
+//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_nonActive"] forState:UIControlStateNormal];
+//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_Active"] forState:UIControlStateHighlighted];
+//	[kakaoButton addTarget:self action:@selector(_goKakao) forControlEvents:UIControlEventTouchUpInside];
+//	kakaoButton.frame = CGRectMake((self.view.frame.size.width - 55.0) - kikButton.frame.size.width, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
+//	[_shareHolderView addSubview:kakaoButton];
+//	
+//	HONButton *skipButton = [HONButton buttonWithType:UIButtonTypeCustom];
+//	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipNameButton_nonActive"] forState:UIControlStateNormal];
+//	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipNameButton_Active"] forState:UIControlStateHighlighted];
+//	[skipButton addTarget:self action:@selector(_goSkipName) forControlEvents:UIControlEventTouchUpInside];
+//	skipButton.frame = CGRectMake(0.0, self.view.frame.size.height - skipButton.frame.size.height, skipButton.frame.size.width, skipButton.frame.size.height);
+//	[_shareHolderView addSubview:skipButton];
 }
 
 - (void)viewDidLoad {
@@ -1095,7 +1144,7 @@
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://tap2install.com/ios-app.php"]];
 	
 	//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 		_cameraPreviewView.frame =CGRectMake(_cameraPreviewView.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 333.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 368.0 : 284.0, _cameraPreviewView.frame.size.width, _cameraPreviewView.frame.size.height);
 		//_takePhotoButton.frame = CGRectOffset(_takePhotoButton.frame, _takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0);
 		
@@ -1178,6 +1227,7 @@
 	GSMessengerShare *messengerShare = [GSMessengerShare sharedInstance];
 //	[messengerShare addMessengerShareTypes:@[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine)]];
 	[messengerShare addAllMessengerShareTypes];
+	[messengerShare overrrideWithOutboundURL:@"http://gs.trydood.com"];
 	messengerShare.delegate = self;
 	[messengerShare showMessengerSharePickerOnViewController:self];
 	
@@ -1244,6 +1294,7 @@
 //		_scrollView.hidden = NO;
 //		_expireLabel.hidden = NO;
 //	});
+	
 }
 
 - (void)_goSetName {
@@ -1270,12 +1321,12 @@
 	_tutorialView.hidden = NO;
 	_commentTextField.hidden = NO;
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_cameraPreviewView.alpha = 1.0;
-		_nameImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[_nameImageView removeFromSuperview];
-	}];
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_cameraPreviewView.alpha = 1.0;
+//		_nameImageView.alpha = 0.0;
+//	} completion:^(BOOL finished) {
+//		[_nameImageView removeFromSuperview];
+//	}];
 	
 	_moviePlayer.view.hidden = NO;
 	_cameraPreviewView.hidden = NO;
@@ -1364,12 +1415,12 @@
 	_scrollView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 10.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 729.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	_submitCommentButton.hidden = YES;
 	_movieFillView.hidden = YES;
 	
-	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
+	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -1422,7 +1473,7 @@
 			//_animationImageView.frame = CGRectMake(20.0, 20.0, 50.0, 50.0);
 			//_animationImageView.hidden = NO;
 			
-			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 			_openCommentButton.hidden = YES;
 			_submitCommentButton.hidden = YES;
 			_movieFillView.hidden = YES;
@@ -1430,7 +1481,7 @@
 			
 			[_moviePlayer stop];
 			_moviePlayer.view.hidden = YES;
-			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.25, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
 			
@@ -1457,8 +1508,8 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - sendVideo" withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 			
 			NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-			_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+			_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 			_commentFooterView.backgroundColor = [UIColor clearColor];
 			
 			_statusLabel.text = @"Sending popup…";
@@ -1851,7 +1902,7 @@
 
 - (void)statusUpdateHeaderViewCopyLink:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
 	NSLog(@"[*:*] statusUpdateHeaderViewCopyLink [*:*]");
-	[self _goShare];
+	[self _goFlag];
 }
 
 - (void)statusUpdateHeaderViewGoBack:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
@@ -1892,9 +1943,9 @@
 			_cameraPreviewView.hidden = NO;
 		});
 		
-		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5);
+		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width * 0., self.view.frame.size.width * 0.62);
 		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5);
+		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.62);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"text"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -2226,6 +2277,38 @@
 	NSString *bucketName = @"hotornot-challenges";
 	
 	NSString *path = [videoDict objectForKey:PBJVisionVideoPathKey];
+	_vidName = [[path pathComponents] lastObject];
+	
+	
+	NSDictionary *params = @{@"action"	: @(1),
+							 @"channel"	: _channel.name,
+							 @"userID"	: @([[HONUserAssistant sharedInstance] activeUserID]),
+							 @"vidURL"	: _vidName};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"http://gs.trydood.com", @"popup.php", params);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://gs.trydood.com"]];
+	[httpClient postPath:@"popup.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			
+			
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"http://gs.trydood.com", @"popup.php", [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+	
+	
+	
+	
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
 	
 	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];

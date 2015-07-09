@@ -24,6 +24,7 @@
 - (id)initWithAllMessengers;
 - (id)initWithMessengers:(NSArray *)messengers;
 - (void)addMessengerShareType:(GSMessengerShareType)messengerShareType;
+- (void)setOutboundURL:(NSString *)outboundURL;
 
 @property (nonatomic, retain) NSDictionary *metaInfo;
 

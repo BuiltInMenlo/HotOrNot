@@ -239,7 +239,7 @@
 //	}];
 	
 	_supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), 335.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
+	_supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), 410.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
 	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_nonActive"] forState:UIControlStateNormal];
 	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_Active"] forState:UIControlStateHighlighted];
 	[_supportButton addTarget:self action:@selector(_goRandom) forControlEvents:UIControlEventTouchUpInside];
@@ -251,14 +251,14 @@
 	_overlayButton.hidden = YES;
 	[_scrollView addSubview:_overlayButton];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 181.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 302.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_textField setReturnKeyType:UIReturnKeyDone];
 	[_textField setTextColor:[UIColor whiteColor]];
 	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_textField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:29];
+	_textField.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:25];
 	_textField.keyboardType = UIKeyboardTypeAlphabet;
 	_textField.textAlignment = NSTextAlignmentCenter;
 	_textField.text = @"What is on your mind?";
@@ -275,9 +275,16 @@
 	[self.view addSubview:_composeButton];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
-	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
+//	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
+//	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
 	[self.view addSubview:_headerView];
+	
+	HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	linkButton.frame = CGRectMake(6.0, 22.0, 52.0, 46.0);
+	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
+	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
+	[linkButton addTarget:self action:@selector(_goPrivacy) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:linkButton];
 	
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 44.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
@@ -548,7 +555,7 @@
 					_tintTimer = nil;
 					
 					[_loadingOverlayView outro];
-					_textField.text = @"What are you doing?";
+					_textField.text = @"What is on your mind?";
 				});
 				
 			} else {
@@ -660,7 +667,7 @@
 				_tintTimer = nil;
 				
 				[_loadingOverlayView outro];
-				_textField.text = @"What are you doing?";
+				_textField.text = @"What is on your mind?";
 			});
 		}]; // api submit
 	}
@@ -758,7 +765,7 @@
 						_tintTimer = nil;
 						
 						[_loadingOverlayView outro];
-						_textField.text = @"What are you doing?";
+						_textField.text = @"What is on your mind?";
 					});
 					
 				} else {
@@ -979,7 +986,7 @@
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
 	
-	textField.text = ([textField.text length] == 0) ? @"What are you doing?" : textField.text;
+	textField.text = ([textField.text length] == 0) ? @"What is on your mind?" : textField.text;
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
 						 _tintView.alpha = 0.0;

@@ -82,6 +82,10 @@ static GSMessengerShare *sharedInstance = nil;
 	}];
 }
 
+- (void)overrrideWithOutboundURL:(NSString *)outboundURL {
+	[_gsViewController setOutboundURL:outboundURL];
+}
+
 
 #pragma mark - UI Presentation
 - (void)showMessengerSharePickerOnViewController:(UIViewController *)viewController  {

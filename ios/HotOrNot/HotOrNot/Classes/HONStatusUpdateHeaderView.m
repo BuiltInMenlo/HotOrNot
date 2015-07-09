@@ -41,7 +41,7 @@
 		[self addSubview:_activityIndicatorView];
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(0.0, 0.0, 99.0, 46.0);
+		backButton.frame = CGRectMake(5.0, 5.0, 99.0, 46.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
@@ -53,7 +53,7 @@
 		_backLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:20];
 		_backLabel.text = @"Home";//[NSString stringWithFormat:@"pop.vlly.im/%d", _statusUpdateVO.statusUpdateID];
 		[_backLabel resizeFrameForText];
-		[self addSubview:_backLabel];
+		//[self addSubview:_backLabel];
 		
 		_linkLabel = [[UILabel alloc] initWithFrame:CGRectMake(_backLabel.frameEdges.right + 9.0, 10.0, 100.0, 18.0)];
 		_linkLabel.backgroundColor = [UIColor clearColor];
@@ -63,9 +63,9 @@
 //		[self addSubview:_linkLabel];
 		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		linkButton.frame = CGRectMake(self.frame.size.width - 54.0, -2.0, 52.0, 46.0);
-		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-		[linkButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+		linkButton.frame = CGRectMake(self.frame.size.width - 54.0, 4.0, 52.0, 46.0);
+		[linkButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+		[linkButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:linkButton];
 		
