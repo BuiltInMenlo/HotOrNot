@@ -373,89 +373,89 @@
 //	[self presentViewController:navigationController animated:NO completion:^(void) {
 //	}];
 	
-	NSLog(@"_checkUsername -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
-	NSLog(@"_checkUsername -- USERNAME:[%@]", [[HONUserAssistant sharedInstance] activeUsername]);
-	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
-	
-	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
-		NSLog(@"RESULT:[%@]", result);
-		
-		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
-		} else {
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				[[HONAPICaller sharedInstance] checkForAvailablePhone:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] completion:^(NSDictionary *result) {
-					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue])
-						NSLog(@"\n\n!¡!¡!¡ FAILED API NAME/PHONE CHECK !¡!¡!¡");
-					
-					else
-						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
-				}];
-			});
-			
-			NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
-			NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
-			NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
-			
-			NSLog(@"\n\n******** FINALIZE W/ API **********");
-			[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
-																		@"username"		: [[HONUserAssistant sharedInstance] activeUsername],
-																		@"phone"		: [[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
-																			
-																			
-																			NSLog(@"~*~*~*~*~*~* FINALIZE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n%@", result);
-																			int responseCode = [[result objectForKey:@"result"] intValue];
-																			if (result != nil && responseCode == 0) {
-																				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-																				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
-																				
-																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - joiniOS"];
-																				[_loadingOverlayView outro];
-																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
-																				
-																				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-																					[[HONAPICaller sharedInstance] updateUsernameForUser:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
-																						NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
-																						
-																						if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-																							[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-																						
-																						[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
-																							NSLog(@"~*~*~*~*~*~* AVATAR UPDATE !¡!¡!¡!¡!¡!¡!¡!");
-																							
-																							if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-																								[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-																							
-																							[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-																								NSLog(@"~*~*~*~*~*~* PHONE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n");
-																								
-																								if (!((BOOL)[[result objectForKey:@"result"] intValue]))
-																									NSLog(@"!¡!¡!¡!¡!¡!¡!¡ PHONE UPDATE FAILED !¡!¡!¡!¡!¡!¡!¡!");
-																							}];
-																						}];
-																					}];
-																				});
-																				
-																				[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
-																				
-																			} else {
-																				[_loadingOverlayView outro];
-																				
-																				if (_progressHUD == nil)
-																					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-																				[_progressHUD setYOffset:-80.0];
-																				_progressHUD.minShowTime = kProgressHUDErrorDuration;
-																				_progressHUD.mode = MBProgressHUDModeCustomView;
-																				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-																				_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
-																				[_progressHUD show:NO];
-																				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration + 0.75];
-																				_progressHUD = nil;
-																			}
-																		}]; // finalize
-		}
-	}];
+//	NSLog(@"_checkUsername -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+//	NSLog(@"_checkUsername -- USERNAME:[%@]", [[HONUserAssistant sharedInstance] activeUsername]);
+//	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+//	
+//	NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
+//	[[HONAPICaller sharedInstance] checkForAvailableUsername:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
+//		NSLog(@"RESULT:[%@]", result);
+//		
+//		if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue]) {
+//		} else {
+//			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//				[[HONAPICaller sharedInstance] checkForAvailablePhone:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] completion:^(NSDictionary *result) {
+//					if ((BOOL)[[result objectForKey:@"found"] intValue] && !(BOOL)[[result objectForKey:@"self"] intValue])
+//						NSLog(@"\n\n!¡!¡!¡ FAILED API NAME/PHONE CHECK !¡!¡!¡");
+//					
+//					else
+//						NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
+//				}];
+//			});
+//			
+//			NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+//			NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
+//			NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+//			
+//			NSLog(@"\n\n******** FINALIZE W/ API **********");
+//			[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+//																		@"username"		: [[HONUserAssistant sharedInstance] activeUsername],
+//																		@"phone"		: [[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
+//																			
+//																			
+//																			NSLog(@"~*~*~*~*~*~* FINALIZE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n%@", result);
+//																			int responseCode = [[result objectForKey:@"result"] intValue];
+//																			if (result != nil && responseCode == 0) {
+//																				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//																				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
+//																				
+//																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - joiniOS"];
+//																				[_loadingOverlayView outro];
+//																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+//																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
+//																				
+//																				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//																					[[HONAPICaller sharedInstance] updateUsernameForUser:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
+//																						NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+//																						
+//																						if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+//																							[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//																						
+//																						[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:[[HONUserAssistant sharedInstance] rndAvatarURL] completion:^(NSDictionary *result) {
+//																							NSLog(@"~*~*~*~*~*~* AVATAR UPDATE !¡!¡!¡!¡!¡!¡!¡!");
+//																							
+//																							if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+//																								[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//																							
+//																							[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+//																								NSLog(@"~*~*~*~*~*~* PHONE UPDATE !¡!¡!¡!¡!¡!¡!¡!\n");
+//																								
+//																								if (!((BOOL)[[result objectForKey:@"result"] intValue]))
+//																									NSLog(@"!¡!¡!¡!¡!¡!¡!¡ PHONE UPDATE FAILED !¡!¡!¡!¡!¡!¡!¡!");
+//																							}];
+//																						}];
+//																					}];
+//																				});
+//																				
+//																				[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
+//																				
+//																			} else {
+//																				[_loadingOverlayView outro];
+//																				
+//																				if (_progressHUD == nil)
+//																					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//																				[_progressHUD setYOffset:-80.0];
+//																				_progressHUD.minShowTime = kProgressHUDErrorDuration;
+//																				_progressHUD.mode = MBProgressHUDModeCustomView;
+//																				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//																				_progressHUD.labelText = NSLocalizedString((responseCode == 1) ? @"hud_usernameTaken" : (responseCode == 2) ? @"phone_taken" : (responseCode == 3) ? @"user_phone" : @"hud_loadError", nil);
+//																				[_progressHUD show:NO];
+//																				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration + 0.75];
+//																				_progressHUD = nil;
+//																			}
+//																		}]; // finalize
+//		}
+//	}];
 }
 
 - (void)_goActivity {
@@ -478,19 +478,6 @@
 	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[self.view addSubview:_loadingView];
-	
-	UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-										   [UIImage imageNamed:@"loading_02"],
-										   [UIImage imageNamed:@"loading_03"],
-										   [UIImage imageNamed:@"loading_04"],
-										   [UIImage imageNamed:@"loading_05"],
-										   [UIImage imageNamed:@"loading_06"],
-										   [UIImage imageNamed:@"loading_07"],
-										   [UIImage imageNamed:@"loading_08"]];
-	animationImageView.animationDuration = 0.75;
-	animationImageView.animationRepeatCount = 0;
-	[animationImageView startAnimating];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, _loadingView.bounds.size.height * 0.5);
@@ -528,24 +515,6 @@
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt(statusUpdateID) forKey:@"challenge_id"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-//				[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//					NSError *error = nil;
-//					NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//					
-//					if (error != nil) {
-//						SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//						[[HONAPICaller sharedInstance] showDataErrorHUD];
-//						
-//					} else {
-//						SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//					}
-//					
-//				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-//					[[HONAPICaller sharedInstance] showDataErrorHUD];
-//				}];
-				
 				HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 				[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 				
@@ -572,13 +541,10 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - createPopup"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - create"];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
-		
-//		_loadingOverlayView = [[HONLoadingOverlayView alloc] initWithCaption:@"Creating Popup link…"];
-//		_loadingOverlayView.delegate = self;
 		
 		NSError *error;
 		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
@@ -595,81 +561,42 @@
 		
 		
 		NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", submitParams);
-		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
-			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kProgressHUDMinDuration;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = @"Error!";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
-				_progressHUD = nil;
-				
-			} else {
-			} // api result
-			
-			_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
-			
-//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-//			[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"		: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
-//																 @"title"	: _textField.text} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//				NSError *error = nil;
-//				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//		[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:submitParams completion:^(NSDictionary *result) {
+//			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+//				if (_progressHUD == nil)
+//					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//				_progressHUD.minShowTime = kProgressHUDMinDuration;
+//				_progressHUD.mode = MBProgressHUDModeCustomView;
+//				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//				_progressHUD.labelText = @"Error!";
+//				[_progressHUD show:NO];
+//				[_progressHUD hide:YES afterDelay:kProgressHUDErrorDuration];
+//				_progressHUD = nil;
 //				
-//				if (error != nil) {
-//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//					[[HONAPICaller sharedInstance] showDataErrorHUD];
-//					
-//				} else {
-//					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//				}
-//				
-//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-//				[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
-//																	@"channel"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
-//																	@"message"	: @"created popup"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//																		NSError *error = nil;
-//																		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//																		
-//																		if (error != nil) {
-//																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//																			[[HONAPICaller sharedInstance] showDataErrorHUD];
-//																			
-//																		} else {
-//																			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//																		}
-//																		
-//																	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//																		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-//																		[[HONAPICaller sharedInstance] showDataErrorHUD];
-//																	}];
-//
-//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-//				[[HONAPICaller sharedInstance] showDataErrorHUD];
-//			}];
-			
-			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _selectedStatusUpdateVO.statusUpdateID];
-			
-			if ([_textField isFirstResponder])
-				[_textField resignFirstResponder];
-			
+//			} else {
+//			} // api result
+		
+		_selectedStatusUpdateVO = nil;//[HONStatusUpdateVO statusUpdateWithDictionary:result];
+//			_selectedStatusUpdateVO.comment = NSStringFromBOOL(YES);
+//			
+//			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//			pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _selectedStatusUpdateVO.statusUpdateID];
+//			
+//			if ([_textField isFirstResponder])
+//				[_textField resignFirstResponder];
+//			
 			HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 			[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				[_loadingView removeFromSuperview];
-				[_tintTimer invalidate];
-				_tintTimer = nil;
-				
-				[_loadingOverlayView outro];
-				_textField.text = @"What is on your mind?";
-			});
-		}]; // api submit
+//
+//			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//				[_loadingView removeFromSuperview];
+//				[_tintTimer invalidate];
+//				_tintTimer = nil;
+//				
+//				[_loadingOverlayView outro];
+//				_textField.text = @"What is on your mind?";
+//			});
+//		}]; // api submit
 	}
 }
 
@@ -678,19 +605,10 @@
 	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[self.view addSubview:_loadingView];
 	
-	UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-										   [UIImage imageNamed:@"loading_02"],
-										   [UIImage imageNamed:@"loading_03"],
-										   [UIImage imageNamed:@"loading_04"],
-										   [UIImage imageNamed:@"loading_05"],
-										   [UIImage imageNamed:@"loading_06"],
-										   [UIImage imageNamed:@"loading_07"],
-										   [UIImage imageNamed:@"loading_08"]];
-	animationImageView.animationDuration = 0.75;
-	animationImageView.animationRepeatCount = 0;
-	[animationImageView startAnimating];
-	[_loadingView addSubview:animationImageView];
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, _loadingView.bounds.size.height * 0.5);
+	[activityIndicatorView startAnimating];
+	[_loadingView addSubview:activityIndicatorView];
 	
 //	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
 //												  target:self

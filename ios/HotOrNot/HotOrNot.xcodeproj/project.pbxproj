@@ -37,7 +37,6 @@
 		3030DF5C1A6348ED00406AAF /* HONSubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONSubjectsViewController.m */; };
 		303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0E19D5E78600CB2501 /* fpo_push.caf */; };
 		3042D9141AB659A400F2D0B8 /* HONChannelInviteButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */; };
-		3042E1321A76D628005AFD12 /* UIImage+AnimatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042E1311A76D628005AFD12 /* UIImage+AnimatedGIF.m */; };
 		3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */; };
 		3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */; };
 		304CB4711A79B3670042BBE5 /* HONRestrictedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 304CB4701A79B3670042BBE5 /* HONRestrictedViewController.m */; };
@@ -102,6 +101,7 @@
 		30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B308CB19E20B510017ACBF /* UIImageView+AFNetworking.m */; };
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
+		30B3872C1B519DBE00521714 /* boot_sc0011.json in Resources */ = {isa = PBXBuildFile; fileRef = 30B3872B1B519DBE00521714 /* boot_sc0011.json */; };
 		30B6F34D1B445937000BBF12 /* libWeChatSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34A1B445937000BBF12 /* libWeChatSDK.a */; };
 		30B6F34F1B4463F1000BBF12 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34E1B4463F1000BBF12 /* libc++.dylib */; };
 		30B6F35F1B44947C000BBF12 /* NSArray+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F3551B44947C000BBF12 /* NSArray+GameShare.m */; };
@@ -328,8 +328,6 @@
 		303BAD0E19D5E78600CB2501 /* fpo_push.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fpo_push.caf; sourceTree = "<group>"; };
 		3042D9121AB659A400F2D0B8 /* HONChannelInviteButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChannelInviteButtonView.h; sourceTree = "<group>"; };
 		3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChannelInviteButtonView.m; sourceTree = "<group>"; };
-		3042E1301A76D628005AFD12 /* UIImage+AnimatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+AnimatedGIF.h"; sourceTree = "<group>"; };
-		3042E1311A76D628005AFD12 /* UIImage+AnimatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+AnimatedGIF.m"; sourceTree = "<group>"; };
 		3045E59C19E4CF65003FF312 /* HONStoreProductsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductsViewController.h; sourceTree = "<group>"; };
 		3045E59D19E4CF65003FF312 /* HONStoreProductsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStoreProductsViewController.m; sourceTree = "<group>"; };
 		3045E59F19E4CF85003FF312 /* HONStoreProductViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductViewCell.h; sourceTree = "<group>"; };
@@ -475,6 +473,7 @@
 		30B3096619E292D80017ACBF /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		30B3096819E292D80017ACBF /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
+		30B3872B1B519DBE00521714 /* boot_sc0011.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = boot_sc0011.json; path = HotOrNot/Resources/boot_sc0011.json; sourceTree = SOURCE_ROOT; };
 		30B6F34A1B445937000BBF12 /* libWeChatSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWeChatSDK.a; sourceTree = "<group>"; };
 		30B6F34B1B445937000BBF12 /* WXApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApi.h; sourceTree = "<group>"; };
 		30B6F34C1B445937000BBF12 /* WXApiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApiObject.h; sourceTree = "<group>"; };
@@ -994,6 +993,7 @@
 		301DF23A1A10848600D2BEB9 /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				30B3872B1B519DBE00521714 /* boot_sc0011.json */,
 				301DF23B1A10848600D2BEB9 /* AWS */,
 			);
 			path = JSON;
@@ -1100,15 +1100,6 @@
 				4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */,
 			);
 			name = Bundles;
-			sourceTree = "<group>";
-		};
-		3042E12C1A76CD8C005AFD12 /* AnimatedGIF */ = {
-			isa = PBXGroup;
-			children = (
-				3042E1301A76D628005AFD12 /* UIImage+AnimatedGIF.h */,
-				3042E1311A76D628005AFD12 /* UIImage+AnimatedGIF.m */,
-			);
-			path = AnimatedGIF;
 			sourceTree = "<group>";
 		};
 		30727F661ABA4F7B00524075 /* Foundation */ = {
@@ -1633,7 +1624,6 @@
 				30AD79201B43A0E400F9C634 /* GameShare */,
 				30B7E0721A73E5E500E52071 /* BuiltInMenlo */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
-				3042E12C1A76CD8C005AFD12 /* AnimatedGIF */,
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
 				4C6F71A519506A28009C4D53 /* CKRefreshControl */,
 				30E805151A15183300F0A130 /* Flurry */,
@@ -2356,6 +2346,7 @@
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
 				30AD79301B43A1AE00F9C634 /* GameShareRecources.bundle in Resources */,
 				30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */,
+				30B3872C1B519DBE00521714 /* boot_sc0011.json in Resources */,
 				3096E6E51B437079002EAD0B /* popup_share.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
@@ -2556,7 +2547,6 @@
 				30B308D219E20B510017ACBF /* AFURLConnectionOperation.m in Sources */,
 				30B308D319E20B510017ACBF /* AFXMLRequestOperation.m in Sources */,
 				30B308D419E20B510017ACBF /* UIImageView+AFNetworking.m in Sources */,
-				3042E1321A76D628005AFD12 /* UIImage+AnimatedGIF.m in Sources */,
 				4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */,
 				4C4328A518E3A9FA0035FF06 /* BlowfishAlgorithm.m in Sources */,
 				308F361719E337AA00EE9512 /* FLAnimatedImage.m in Sources */,

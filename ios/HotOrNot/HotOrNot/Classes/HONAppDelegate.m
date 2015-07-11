@@ -62,10 +62,10 @@ NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRD
 NSString * const kBlowfishIV = @"„7ì”~ís";
 
 #if __APPSTORE_BUILD__ == 1
-NSString * const kKeenIOProjectID = @"551054dfe085576f3fb24cfd";//@"54bb13196f31a230ad1cfef9";
-NSString * const kKeenIOMasterKey = @"980A6532BC7AB5B6489BBA2458BBFBCF";//@"3DB8C226B5D919804F9A08D6413D4CE2";
-NSString * const kKeenIOReadKey = @"0b7a1444ba73e7584da531247968ecde3b54733993fece6cb9827dca50248f8df1b3cfd888d39ab9dc326d3c25fabf023a30995b66fe34679d174e2fd56c2cc66039123ae17ad192c4024fc3169922b560616b355d9a7263fac1b37189ad628537a9fd2378ded658cbcf66128ce14dea";//@"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
-NSString * const kKeenIOWriteKey = @"42e6a5311c254b6030c0f2d9f035377e2be399b744c55e09a6c3cfb8c682917f1f02c6d237f3c1b7d160df58b09ce8648de7bbeff3dd189da67e496fbd25312fcea72f189bc21c1bdafe01db17aef22cfd606985acea4e43f184210e588f64fedfecbe041301ab7436e8982dec4e955f";//@"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
+NSString * const kKeenIOProjectID = @"559fbb4f672e6c4e2cea1bab";//@"551054dfe085576f3fb24cfd";//@"54bb13196f31a230ad1cfef9";
+NSString * const kKeenIOMasterKey = @"9AD6705D760DE306DEA59827D0CF1D62";//@"980A6532BC7AB5B6489BBA2458BBFBCF";//@"3DB8C226B5D919804F9A08D6413D4CE2";
+NSString * const kKeenIOReadKey = @"a704d1b101e28221727b7b5e97bad1a5c7aa4deca37ad6ea0b03f676557a44b18e4e9918c52fc3019b6f63c73022d9f3fff37800b34e483513f1fffc5281551b6bcfef2f03309fa556f95f9fd0925ad43d1d52a70857a65d185d143a93f9867c7d8a9a3bcf311119438d1c26e838f59e";//@"0b7a1444ba73e7584da531247968ecde3b54733993fece6cb9827dca50248f8df1b3cfd888d39ab9dc326d3c25fabf023a30995b66fe34679d174e2fd56c2cc66039123ae17ad192c4024fc3169922b560616b355d9a7263fac1b37189ad628537a9fd2378ded658cbcf66128ce14dea";//@"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
+NSString * const kKeenIOWriteKey = @"be8e83a45f01146d0bf9e569e73c9ebac017da3a37eaa6d01483bddf0ac93c43ff7c67b1a93cf22cca9b6a5d44f443c12b5654a9e3e47d53b970d11a1ddb0e3f44c405a07f13bc94fbdf8c7a3af3b861b04b5797a863b3686947ec9ee96768409703d2572fd903e761a8ff3768d5cb02";//@"42e6a5311c254b6030c0f2d9f035377e2be399b744c55e09a6c3cfb8c682917f1f02c6d237f3c1b7d160df58b09ce8648de7bbeff3dd189da67e496fbd25312fcea72f189bc21c1bdafe01db17aef22cfd606985acea4e43f184210e588f64fedfecbe041301ab7436e8982dec4e955f";//@"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
 #else
 NSString * const kKeenIOProjectID = @"54bb1391e0855733be551306";
 NSString * const kKeenIOMasterKey = @"D805BE8BA8AF8F65F7C4825CA31C58E1";
@@ -79,7 +79,7 @@ NSString * const kTapStreamSecretKey = @"Y0Xvvy5xTjuJFydsMeAmRA";//@"WTmu7AxOTDm
 //NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-NSString * const kFlurryAPIKey = @"QT9CV529T9WRJ9P9MP26";//@"R84M6PFVNH2Z5Q8JW88C";
+NSString * const kFlurryAPIKey = @"MK2QRHS5GHHMG7NC8F52";//@"QT9CV529T9WRJ9P9MP26";
 
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
@@ -175,7 +175,11 @@ NSString * const kTwilioSMS = @"6475577873";
 
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
-	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"boot_sc0011" ofType:@"json"];
+	NSData *data = [NSData dataWithContentsOfFile:filePath];
+	NSDictionary *result = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+	
+//	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"server_apis"] forKey:@"server_apis"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
@@ -243,7 +247,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 			
 			NSLog(@"alert_format:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"alert_formats"] objectForKey:@"alert_format"]);
-		}];
+//		}];
 
 		
 		
@@ -285,23 +289,23 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_registerUser {
-	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
-		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
-			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-			
+//	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
+//		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
+//			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+	
 			NSDate *cohortDate = [[HONUserAssistant sharedInstance] activeUserSignupDate];
 			
 			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - day"
-											   withProperties:@{@"day"	: [NSDate utcNowDate]}];
-			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_date"
-											   withProperties:@{@"cohort_date"	: [[[cohortDate formattedISO8601String] componentsSeparatedByString:@"T"] firstObject]}];
-			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_week"
-											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
-			
-			[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - day"
+//											   withProperties:@{@"day"	: [NSDate utcNowDate]}];
+//			
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_date"
+//											   withProperties:@{@"cohort_date"	: [[[cohortDate formattedISO8601String] componentsSeparatedByString:@"T"] firstObject]}];
+//			
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - cohort_week"
+//											   withProperties:@{@"cohort_week"	: [NSString stringWithFormat:@"%04d-W%02d", [cohortDate year], [cohortDate weekOfYear]]}];
+	
+			//[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 			
 			[[HONPubNubOverseer sharedInstance] activateService];
 			
@@ -319,33 +323,8 @@ NSString * const kTwilioSMS = @"6475577873";
 				
 				self.navController = navigationController;
 			}
-			
-//			NSLog(@":::: wechat ::::");
-//			WXMediaMessage *message = [WXMediaMessage message];
-//			message.title = @"Some Title";
-//			message.description = @"Amazing Sunset";
-//			[message setThumbImage:[UIImage imageNamed:@"appIcon"]];
-//			
-//			SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
-//			req.bText = NO;
-//			req.message = message;
-//			req.scene = WXSceneTimeline;
-//			[WXApi sendReq:req];
-			
-//			SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
-//			req.bText = NO;
-//			req.message = message;
-//			req.scene = WXSceneSession;
-//			[WXApi sendReq:req];
-			
-			
-//			[KOAppCall openKakaoTalkAppLink:@[[KakaoTalkLinkObject createLabel:@"Join Skout"], [KakaoTalkLinkObject createImage:@"http://j79ydv.com/images/ads/300x250_ja.jpg"
-//																														  width:138
-//																														 height:80], [KakaoTalkLinkObject createImage:@"http://j79ydv.com/images/ads/300x250_ja.jpg"
-//																																								width:138
-//																																							   height:80]]];
-		}
-	}];
+//		}
+//	}];
 }
 
 - (void)_challengeObjectFromPush:(int)challengeID cancelNextPushes:(BOOL)isCancel {
@@ -482,9 +461,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[Flurry setCrashReportingEnabled:YES];
 	[Flurry setShowErrorInLogEnabled:YES];
-	[Flurry setLogLevel:FlurryLogLevelCriticalOnly];
+	[Flurry setLogLevel:FlurryLogLevelAll];
 	[Flurry startSession:kFlurryAPIKey];
-	[Flurry logEvent:@"launch"];
+	//[Flurry logEvent:@"launch"];
 	
 	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 	
@@ -663,6 +642,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Actives - background"];
+	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
 //									 withProperties:@{@"total"		: @([[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]),
 //													  @"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appEntryTimestamp]])}];
@@ -740,11 +721,15 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	[[HONStateMitigator sharedInstance] updateLastTrackingCallTimestamp:[NSDate date]];
 	
-	[Flurry logEvent:@"App_Active"];
+	//[Flurry logEvent:@"App_Active"];
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 	
+	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - install"];
+	}
+	
 	if (_isFromBackground) {
-		[Flurry logEvent:@"resume"];
+		//[Flurry logEvent:@"resume"];
 		
 		if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
 			self.window.userInteractionEnabled = YES;
@@ -989,14 +974,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
 	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
 	
-	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
-		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
-				if (![result isEqual:[NSNull null]])
-					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-			}];
-		}];
-	}
+//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
+//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
+//				if (![result isEqual:[NSNull null]])
+//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//			}];
+//		}];
+//	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
@@ -1012,14 +997,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - deniedPush"];
 	
-	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
-		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
-				if (![result isEqual:[NSNull null]])
-					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-			}];
-		}];
-	}
+//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
+//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
+//				if (![result isEqual:[NSNull null]])
+//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//			}];
+//		}];
+//	}
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:@"didFailToRegisterForRemoteNotificationsWithError"

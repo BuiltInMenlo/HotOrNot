@@ -699,7 +699,7 @@ PBJMediaWriterDelegate>
 		}
 		[self _setupGL];
 		
-		_captureSessionPreset = AVCaptureSessionPresetLow;//-- AVCaptureSessionPreset640x480;
+		_captureSessionPreset = AVCaptureSessionPreset640x480;
 		_captureDirectory = nil;
 		
 		_autoUpdatePreviewOrientation = YES;
@@ -708,7 +708,7 @@ PBJMediaWriterDelegate>
 		
 		// Average bytes per second based on video dimensions
 		// lower the bitRate, higher the compression
-		_videoBitRate = PBJVideoBitRate1280x720; //-- PBJVideoBitRate640x480;
+		_videoBitRate = PBJVideoBitRate640x480;
 		
 		// default audio/video configuration
 		_audioBitRate = 64000;

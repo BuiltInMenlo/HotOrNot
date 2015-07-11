@@ -251,11 +251,11 @@
 		_expireTimer = nil;
 	}
 	
-	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
+//	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 //	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 		
-		_statusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-		
+//		_statusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+	
 		if (_channel == nil || [[_channel.name lastComponentByDelimeter:@"_"] intValue] != _statusUpdateVO.statusUpdateID) {
 			_channel = [self _channelSetupForStatusUpdate];
 		
@@ -272,9 +272,9 @@
 //			}];
 		}
 		
-		_statusUpdateVO.replies = [_replies copy];
+//		_statusUpdateVO.replies = [_replies copy];
 		[self _didFinishDataRefresh];
-	}];
+//	}];
 }
 
 - (void)_submitTextComment {
@@ -449,6 +449,35 @@
 			_participants = 0;
 			_comments = 0;
 			
+//			PubNub *pubNub = [PubNub clientWithConfiguration:[PNConfiguration defaultConfiguration]];
+//			[pubNub connect];
+			
+			[[PubNub sharedInstance] requestHistoryForChannel:[PNChannel channelWithName:@"204614_278656"]
+										from:nil
+										  to:nil
+									   limit:100 reverseHistory:NO
+						 withCompletionBlock:^(NSArray *messages, PNChannel *channel, PNDate *startDate,
+											   PNDate *endDate, PNError *error) {
+							 
+							 if (error == nil) {
+								 
+								 // PubNub client successfully retrieved history for channel.
+								 NSLog(@"requestHistoryForChannel - messages:\n%@", messages);
+							 }
+							 else {
+								 
+								 NSLog(@"requestHistoryForChannel - error:\n%@", error);
+								 
+								 // PubNub did fail to retrieve history for specified channel and reason can be found in
+								 // error instance.
+								 //
+								 // Always check 'error.code' to find out what caused error (check PNErrorCodes header file
+								 // and use -localizedDescription / -localizedFailureReason and -localizedRecoverySuggestion
+								 // to get human readable description for error). 'error.associatedObject' contains PNChannel
+								 // instance for which PubNub client was unable to receive history.
+							 }
+						 }];
+			
 //			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 //				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 //			}];
@@ -460,6 +489,10 @@
 		} else if (state == PNSubscriptionProcessWillRestoreState) {
 		}
 	}];
+	
+	
+	
+	
 	
 	// APNS enabled already?
 	[PubNub enablePushNotificationsOnChannel:channel
@@ -886,7 +919,7 @@
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 31.0, self.view.frame.size.width - 160.0, 22.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:18];
-	_expireLabel.backgroundColor = [UIColor redColor];
+	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 	_expireLabel.text = @"1 person here…";
@@ -1302,14 +1335,14 @@
 	_comment = _nameTextField.text;
 	[_statusUpdateHeaderView changeTitle:@""];
 	
-	NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
-	[userInfo replaceObject:_comment forKey:@"username"];
-	[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
-	
-	[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
-		if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-	}];
+//	NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
+//	[userInfo replaceObject:_comment forKey:@"username"];
+//	[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
+//	
+//	[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
+//		if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+//			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+//	}];
 	
 	_cameraPreviewView.hidden = NO;
 	
@@ -1335,7 +1368,7 @@
 }
 
 - (void)_goTextComment {
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - comment"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - sendChat"];
 	
 	_isSubmitting = YES;
 	[_submitCommentButton setEnabled:NO];
@@ -1581,7 +1614,7 @@
 	}
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - videoView" withProperties:@{@"file"	: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - playVideo" withProperties:@{@"file"	: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
 																									 @"channel"	: _channel.name}];
 
 	}
