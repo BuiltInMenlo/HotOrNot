@@ -363,6 +363,8 @@
 		[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
 		[alertView show];
 	}
+	
+	[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
 }
 
 
@@ -412,8 +414,8 @@
 //																				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - joiniOS"];
 //																				[_loadingOverlayView outro];
 //																				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-//																				[keychain setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
 //																				
+//
 //																				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 //																					[[HONAPICaller sharedInstance] updateUsernameForUser:[[HONUserAssistant sharedInstance] activeUsername] completion:^(NSDictionary *result) {
 //																						NSLog(@"~*~*~*~*~*~* USERAME UPDATE !¡!¡!¡!¡!¡!¡!¡!");
@@ -480,7 +482,7 @@
 	[self.view addSubview:_loadingView];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, _loadingView.bounds.size.height * 0.5);
+	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
 	[activityIndicatorView startAnimating];
 	[_loadingView addSubview:activityIndicatorView];
 
@@ -588,14 +590,14 @@
 			HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
 			[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 //
-//			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//				[_loadingView removeFromSuperview];
-//				[_tintTimer invalidate];
-//				_tintTimer = nil;
-//				
-//				[_loadingOverlayView outro];
-//				_textField.text = @"What is on your mind?";
-//			});
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				[_loadingView removeFromSuperview];
+				[_tintTimer invalidate];
+				_tintTimer = nil;
+				
+				[_loadingOverlayView outro];
+				_textField.text = @"What is on your mind?";
+			});
 //		}]; // api submit
 	}
 }
@@ -949,10 +951,10 @@
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-//	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
-//	[UIView animateWithDuration:0.333 animations:^(void) {
-//		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
-//	} completion:nil];
+	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
+	[UIView animateWithDuration:0.333 animations:^(void) {
+		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
+	} completion:nil];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {

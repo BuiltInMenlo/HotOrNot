@@ -6,4 +6,6 @@ pod "AWSiOSSDKv2"
 pod 'PubNub', '3.7.1'
 pod 'PBJVision'
 pod "KikAPI"
+pod 'Hoko', '~> 2.0.2'
+
 end

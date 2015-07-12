@@ -15,12 +15,14 @@
 #import <Social/SLServiceTypes.h>
 #import <StoreKit/StoreKit.h>
 
+
 #import <sys/utsname.h>
 #import </usr/include/objc/objc-class.h>
 
 #import <AWSiOSSDKv2/AWSCore.h>
 #import <FBSDKMessengerShareKit/FBSDKMessengerShareKit.h>
 #import <HockeySDK/HockeySDK.h>
+#import "Hoko.h"
 #import <KakaoOpenSDK/KakaoOpenSDK.h>
 //#import <Tapjoy/Tapjoy.h>
 
@@ -39,9 +41,13 @@
 //#import "AWSCore.h"
 #import "BlowfishAlgorithm.h"
 #import "Flurry.h"
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
+#import "GAIFields.h"
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
+#import <Social/Social.h>
 #import "TSTapstream.h"
 #import "UIImageDebugger.h"
 //#import "WXApi.h"
@@ -293,7 +299,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
 //			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 	
-			NSDate *cohortDate = [[HONUserAssistant sharedInstance] activeUserSignupDate];
+			//NSDate *cohortDate = [[HONUserAssistant sharedInstance] activeUserSignupDate];
 			
 			
 //			[[HONAnalyticsReporter sharedInstance] trackEvent:@"ENGAGEMENT - day"
@@ -459,13 +465,60 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[KeenClient disableGeoLocation];
 	
+#if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+#endif
+	
+#if __FORCE_NEW_USER__ == 1
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecValueData)]; // device id
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrService)]; // phone #
+	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
+#endif
+	
+#if __FORCE_REGISTER__ == 1
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
+#endif
+	
+	id<GAITracker> tracker = [[GAI sharedInstance] trackerWithName:@"tracker"
+														trackingId:@"UA-65006670-1"];
+
+	GAIDictionaryBuilder *builder = [GAIDictionaryBuilder createScreenView];
+	[builder set:@"start" forKey:kGAISessionControl];
+	[tracker set:kGAIScreenName value:@"Launch"];
+	[tracker send:[builder build]];
+	
+//	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Barren Fields"
+//														  action:@"Rescue"
+//														   label:@"Dragon"
+//														   value:@1] build]];
+	
 	[Flurry setCrashReportingEnabled:YES];
 	[Flurry setShowErrorInLogEnabled:YES];
-	[Flurry setLogLevel:FlurryLogLevelAll];
+	[Flurry setLogLevel:FlurryLogLevelCriticalOnly];
 	[Flurry startSession:kFlurryAPIKey];
 	//[Flurry logEvent:@"launch"];
 	
+	[Hoko setupWithToken:@"501ae96a404f6bfbc6c3929846041a6915564f87"];
+	
 	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+	
+//	HOKDeeplink *deeplink = [HOKDeeplink deeplinkWithRoute:@"products/:product_id"
+//										   routeParameters:@{@"product_id": @(self.product.identifier)}
+//										   queryParameters:@{@"referrer": self.user.name}
+//												  metadata:@{@"coupon": @"20"}];
+//	[deeplink addURL:@"http://awesomeapp.com/the_perfect_product" forPlatform:HOKDeeplinkPlatformWeb];
+//	[deeplink addURL:@"http://awesomeapp.com/no_android_app_yet" forPlatform:HOKDeeplinkPlatformAndroid];
+//	
+//	[[Hoko deeplinking] generateSmartlinkForDeeplink:deeplink success:^(NSString *smartlink) {
+//  [[Social sharedInstance] shareProduct:self.product link:smartlink];
+//	} failure:^(NSError *error) {
+//  // Share web link instead
+//  [[Social sharedInstance] shareProduct:self.product link:self.product.webLink];
+//	}];
+	
+	
+	
 	
 	[[HONStateMitigator sharedInstance] updateAppEntryTimestamp:[NSDate date]];
 	[[HONStateMitigator sharedInstance] updateAppExitTimestamp:[NSDate date]];
@@ -515,21 +568,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	_isFromBackground = NO;
 	
 	
-#if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-#endif
-	
-#if __FORCE_NEW_USER__ == 1
-	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
-	[keychain setObject:@"" forKey:CFBridgingRelease(kSecValueData)]; // device id
-	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrService)]; // phone #
-//	[HONAppDelegate resetTotals];
-	[[HONStateMitigator sharedInstance] resetAllTotalCounters];
-#endif
-	
-#if __FORCE_REGISTER__ == 1
-	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
-#endif
+
 	
 	
 	[self _styleUIAppearance];
@@ -596,6 +635,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Actives - boot"
 									   withProperties:@{@"day"	: [NSDate utcNowDate]}];
+	
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)]);
+	
+	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - install"];
+		[keychain setObject:@([NSDate elapsedUTCSecondsSinceUnixEpoch]) forKey:CFBridgingRelease(kSecAttrService)];
+	}
 	
 	return (YES);
 }
@@ -724,12 +771,108 @@ NSString * const kTwilioSMS = @"6475577873";
 	//[Flurry logEvent:@"App_Active"];
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 	
-	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - install"];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)]);
+	
+	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
+		[[UIApplication sharedApplication] cancelAllLocalNotifications];
+		
+		NSDate *installDate = [NSDate dateFromUnixTimestamp:[[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] floatValue]];
+		NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+		
+		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 7) {
+			if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day7_push"] isEqualToString:@"YES"]) {
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				NSDateComponents *components = [[NSDateComponents alloc] init];
+				components.day = 7;
+				NSDate *targetDate = [calendar dateByAddingComponents:components toDate:installDate options:0];
+				
+				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+				localNotification.fireDate = targetDate;
+				localNotification.timeZone = [NSTimeZone systemTimeZone];
+				localNotification.alertAction = @"View";
+				localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+				localNotification.soundName = @"selfie_notification.caf";
+				localNotification.userInfo = @{};
+				
+				//[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			}
+		}
+		
+		
+		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 14) {
+			if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day30_push"] isEqualToString:@"YES"]) {
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				NSDateComponents *components = [[NSDateComponents alloc] init];
+				components.day = 14;
+				NSDate *targetDate = [calendar dateByAddingComponents:components toDate:installDate options:0];
+				
+				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+				localNotification.fireDate = targetDate;
+				localNotification.timeZone = [NSTimeZone systemTimeZone];
+				localNotification.alertAction = @"View";
+				localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+				localNotification.soundName = @"selfie_notification.caf";
+				localNotification.userInfo = @{};
+				
+				//[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			}
+			
+		}
+		
+		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] >= 14) {
+			if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day14_push"] isEqualToString:@"YES"]) {
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				NSDateComponents *components = [[NSDateComponents alloc] init];
+				components.day = 14;
+				NSDate *targetDate = [calendar dateByAddingComponents:components toDate:installDate options:0];
+				
+				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+				localNotification.fireDate = targetDate;
+				localNotification.timeZone = [NSTimeZone systemTimeZone];
+				localNotification.alertAction = @"View";
+				localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+				localNotification.soundName = @"selfie_notification.caf";
+				localNotification.userInfo = @{};
+				
+				//[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			}
+		}
 	}
+	
 	
 	if (_isFromBackground) {
 		//[Flurry logEvent:@"resume"];
+		
+		
+		if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+			NSLog(@"REMOTE PUSHES ENABLED:[%d]", [[UIApplication sharedApplication] isRegisteredForRemoteNotifications]);
+			
+			
+			if (![[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+				[[[UIAlertView alloc] initWithTitle:@"Push Notifications are Disabled!"
+											message:@"You'll only receive messages when Popup is open. Re-enable push notifications in Settings -> Notification Center -> Popup"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else {
+			NSLog(@"REMOTE PUSHES:[%d]", [[UIApplication sharedApplication] enabledRemoteNotificationTypes]);
+			if ([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone) {
+				[[[UIAlertView alloc] initWithTitle:@"Push Notifications are Disabled!"
+											message:@"You'll only receive messages when Popup is open. Re-enable push notifications in Settings -> Notification Center -> Popup"
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+			}
+		}
 		
 		if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
 			self.window.userInteractionEnabled = YES;

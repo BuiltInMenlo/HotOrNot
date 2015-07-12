@@ -22,8 +22,8 @@
 #define NAV_NORMAL_COLOR		[UIColor colorWithRed:0.110 green:0.608 blue:0.490 alpha:1.00]
 #define NAV_HIGHLIGHTED_COLOR	[UIColor colorWithRed:0.075 green:0.420 blue:0.337 alpha:1.00]
 
-#define NAV_LABEL_FONT			[UIFont fontWithName:@"HelveticaNeue" size:14.0]
-#define TITLE_LABEL_FONT		[UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0]
+#define NAV_LABEL_FONT			[UIFont fontWithName:@"HelveticaNeue" size:16.0]
+#define TITLE_LABEL_FONT		[UIFont fontWithName:@"HelveticaNeue-Bold" size:24.0]
 
 @interface GSCollectionViewController () <FBSDKMessengerURLHandlerDelegate, GSCollectionViewCellDelegate, WXApiDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
@@ -181,7 +181,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	
 	[super viewDidLoad];
 	CGSize collectionViewSize = CGSizeMake(([GSCollectionViewController collectionViewDimension].x * kGSCollectionViewCellSize.width) + (([GSCollectionViewController collectionViewDimension].x - 1) * kGSCollectionViewCellSpacing.width), ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSize.height) + ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSpacing.height));
-	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, (self.view.bounds.size.height - collectionViewSize.height) * 0.5);
+	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, 20.0 + ((self.view.bounds.size.height - collectionViewSize.height) * 0.5));
 	
 	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(collectionViewOrigin.x, collectionViewOrigin.y, collectionViewSize.width, collectionViewSize.height) collectionViewLayout:[[GSCollectionViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[GSCollectionViewCell class] forCellWithReuseIdentifier:[GSCollectionViewCell cellReuseIdentifier]];
@@ -201,7 +201,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	_lpGestureRecognizer.delaysTouchesBegan = YES;
 	[_collectionView addGestureRecognizer:_lpGestureRecognizer];
 	
-	_label = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 152.0) * 0.5, _collectionView.frame.origin.y - (20.0 + 15.0), 152.0, 20.0)];
+	_label = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 260.0) * 0.5, _collectionView.frame.origin.y - (28.0 + 17.0), 260.0, 28.0)];
 	_label.font = TITLE_LABEL_FONT;
 	_label.backgroundColor = VIEW_BG_COLOR;
 	_label.textAlignment = NSTextAlignmentCenter;
@@ -218,7 +218,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	[self.view addSubview:_closeButton];
 	
 	_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_skipButton.frame = CGRectMake((self.view.bounds.size.width - 99.0) * 0.5, self.view.bounds.size.height - (26.0 + 10.0), 99.0, 26.0);
+	_skipButton.frame = CGRectMake((self.view.bounds.size.width - 99.0) * 0.5, self.view.bounds.size.height - (26.0 + 23.0), 99.0, 26.0);
 	[_skipButton.titleLabel setFont:NAV_LABEL_FONT];
 	[_skipButton setTitleColor:NAV_NORMAL_COLOR forState:UIControlStateNormal];
 	[_skipButton setTitleColor:NAV_HIGHLIGHTED_COLOR forState:UIControlStateHighlighted];

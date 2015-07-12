@@ -64,9 +64,19 @@
 				<string>wxad3790468c7ae7dd</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.builtinmenlo.marsh</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>hoko</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>42773</string>
+	<string>42829</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>

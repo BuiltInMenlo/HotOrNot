@@ -16,11 +16,11 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithTarget:target action:action])) {
-		[self setFrame:CGRectMake(0.0, 0.0, 64.0, 44.0)];
+		[self setFrame:CGRectMake(256.0, 0.0, 64.0, 44.0)];
 		
 //		_button.frame = CGRectFromSize(CGSizeMake(44.0, 64.0));
-		[_button setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-		[_button setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+		[_button setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[_button setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	}
 	
 	return (self);

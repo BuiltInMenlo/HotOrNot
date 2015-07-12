@@ -236,6 +236,8 @@
 				_moviePlayer.view.alpha = 1.0;
 				_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:[result objectForKey:@"url"]]];
 				[_moviePlayer play];
+				
+				_nameImageView.hidden = YES;
 			}
 		}
 		
@@ -436,7 +438,8 @@
 - (PNChannel *)_channelSetupForStatusUpdate {
 //	PNChannel *channel = [PNChannel channelWithName:[NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID] shouldObservePresence:YES];
 	
-	PNChannel *channel = [[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
+	NSString *channelName = [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 	[PubNub subscribeOn:@[channel]];
 	
 	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
@@ -452,7 +455,7 @@
 //			PubNub *pubNub = [PubNub clientWithConfiguration:[PNConfiguration defaultConfiguration]];
 //			[pubNub connect];
 			
-			[[PubNub sharedInstance] requestHistoryForChannel:[PNChannel channelWithName:@"204614_278656"]
+			[[PubNub sharedInstance] requestHistoryForChannel:channel
 										from:nil
 										  to:nil
 									   limit:100 reverseHistory:NO
@@ -671,42 +674,42 @@
 			} else if (commentVO.messageType == HONChatMessageTypeTXT) {
 				[self _appendComment:commentVO];
 			
-			} else if (commentVO.messageType == HONChatMessageTypeIMG) {
-				if (commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]) {
-					void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-						NSLog(@"SOURCE IMAGE:[%@] (%.06f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
-						_imageView.image = image;
-						_imageView.hidden = NO;
-						[self _appendComment:commentVO];
-						
-						[UIView animateWithDuration:0.333 animations:^(void) {
-							_imageView.alpha = 1.0;
-						} completion:^(BOOL finished) {
-							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-								[UIView animateWithDuration:0.333
-												 animations:^(void) {
-													 _imageView.alpha = 0.0;
-												 } completion:^(BOOL finished) {
-													 _imageView.hidden = YES;
-													 _imageView.image = nil;
-													 _imageView.alpha = 1.0;
-												 }];
-							});
-						}];
-					};
-					
-					//NSLog(@"URL:[%@]", [commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]);
-					_imageView.alpha = 0.0;
-					[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]]
-																		cachePolicy:kOrthodoxURLCachePolicy
-																	timeoutInterval:[HONAPICaller timeoutInterval]]
-										placeholderImage:nil
-												 success:imageSuccessBlock
-												 failure:nil];
-				
-				} else
-					[self _appendComment:commentVO];
-				
+//			} else if (commentVO.messageType == HONChatMessageTypeIMG) {
+//				if (commentVO.userID != [[HONUserAssistant sharedInstance] activeUserID]) {
+//					void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//						NSLog(@"SOURCE IMAGE:[%@] (%.06f)", NSStringFromCGSize(image.size), [[HONImageBroker sharedInstance] aspectRatioForImage:image]);
+//						_imageView.image = image;
+//						_imageView.hidden = NO;
+//						[self _appendComment:commentVO];
+//						
+//						[UIView animateWithDuration:0.333 animations:^(void) {
+//							_imageView.alpha = 1.0;
+//						} completion:^(BOOL finished) {
+//							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//								[UIView animateWithDuration:0.333
+//												 animations:^(void) {
+//													 _imageView.alpha = 0.0;
+//												 } completion:^(BOOL finished) {
+//													 _imageView.hidden = YES;
+//													 _imageView.image = nil;
+//													 _imageView.alpha = 1.0;
+//												 }];
+//							});
+//						}];
+//					};
+//					
+//					//NSLog(@"URL:[%@]", [commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]);
+//					_imageView.alpha = 0.0;
+//					[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[commentVO.imagePrefix stringByAppendingString:kPhotoHDSuffix]]
+//																		cachePolicy:kOrthodoxURLCachePolicy
+//																	timeoutInterval:[HONAPICaller timeoutInterval]]
+//										placeholderImage:nil
+//												 success:imageSuccessBlock
+//												 failure:nil];
+//				
+//				} else
+//					[self _appendComment:commentVO];
+//				
 			} else if (commentVO.messageType == HONChatMessageTypeVID) {
 				[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - videoView" withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
 																											 @"channel"	: _channel.name}];
@@ -903,7 +906,8 @@
 	_moviePlayer.view.alpha = 0.0;
 	[self.view addSubview:_moviePlayer.view];
 	
-	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	
+	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
 	_imageView.hidden = YES;
 	[self.view addSubview:_imageView];
 	
@@ -919,7 +923,7 @@
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 31.0, self.view.frame.size.width - 160.0, 22.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:18];
-	_expireLabel.backgroundColor = [UIColor clearColor];
+	_expireLabel.backgroundColor = [UIColor redColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 	_expireLabel.text = @"1 person here…";
@@ -951,7 +955,7 @@
 	
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, _animationImageView.bounds.size.height * 0.5);
+	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, (_animationImageView.bounds.size.height + 50.0) * 0.5);
 	[activityIndicatorView startAnimating];
 	[_animationImageView addSubview:activityIndicatorView];
 	
@@ -1487,6 +1491,7 @@
 		
 		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
 			_tutorialView.hidden = YES;
+			_nameImageView.hidden = YES;
 			if ([_commentTextField isFirstResponder])
 				[_commentTextField resignFirstResponder];
 			
@@ -1605,11 +1610,14 @@
 	if (_moviePlayer.loadState == 0) {
 		_animationImageView.hidden = YES;
 		_moviePlayer.view.hidden = NO;
+		
 		[UIView animateKeyframesWithDuration:0.25 delay:0.00
 									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
 									animations:^(void) {
+										_imageView.alpha = 0.0;
 										_moviePlayer.view.alpha = 1.0;
 									} completion:^(BOOL finished) {
+										_imageView.hidden = YES;
 									}];
 	}
 	
@@ -1965,6 +1973,7 @@
 	_footerImageView.image = [UIImage imageNamed:@"commentInput3BG"];
 	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.20];
 	
+	_nameImageView.hidden = YES;
 	_tutorialView.hidden = YES;
 	_scrollView.hidden = NO;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + 216.0 + 10.0));
@@ -1976,7 +1985,7 @@
 			_cameraPreviewView.hidden = NO;
 		});
 		
-		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width * 0., self.view.frame.size.width * 0.62);
+		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.width * 0.62);
 		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.62);
 		
@@ -1986,7 +1995,7 @@
 		_commentTextField.placeholder = @"Type a message…";
 		_movieFillView.hidden = NO;
 		_scrollView.hidden = NO;
-		_takePhotoButton.frame = CGRectTranslateY(_takePhotoButton.frame, (_movieFillView.frame.size.height - 72.0));
+		//_takePhotoButton.frame = CGRectTranslateY(_takePhotoButton.frame, (_movieFillView.frame.size.height - 72.0));
 	
 	} else {
 		
@@ -2312,6 +2321,10 @@
 	NSString *path = [videoDict objectForKey:PBJVisionVideoPathKey];
 	_vidName = [[path pathComponents] lastObject];
 	
+	
+	_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject];
+	_imageView.hidden = NO;
+	_imageView.alpha = 1.0;
 	
 	NSDictionary *params = @{@"action"	: @(1),
 							 @"channel"	: _channel.name,

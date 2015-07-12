@@ -102,6 +102,39 @@
 		30B3096A19E292D80017ACBF /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B3096619E292D80017ACBF /* HockeySDK.framework */; };
 		30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30B3096919E292D80017ACBF /* HockeySDKResources.bundle */; };
 		30B3872C1B519DBE00521714 /* boot_sc0011.json in Resources */ = {isa = PBXBuildFile; fileRef = 30B3872B1B519DBE00521714 /* boot_sc0011.json */; };
+		30B387481B51AD7A00521714 /* Changelog.txt in Resources */ = {isa = PBXBuildFile; fileRef = 30B3872F1B51AD7A00521714 /* Changelog.txt */; };
+		30B387491B51AD7A00521714 /* Readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 30B3873B1B51AD7A00521714 /* Readme.txt */; };
+		30B3874A1B51AD7A00521714 /* Changelog.txt in Resources */ = {isa = PBXBuildFile; fileRef = 30B3873D1B51AD7A00521714 /* Changelog.txt */; };
+		30B3874B1B51AD7A00521714 /* Readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 30B387441B51AD7A00521714 /* Readme.txt */; };
+		30B3874C1B51AD7A00521714 /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B387451B51AD7A00521714 /* libAdIdAccess.a */; };
+		30B3874D1B51AD7A00521714 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B387461B51AD7A00521714 /* libGoogleAnalyticsServices.a */; };
+		30B3874E1B51AD7A00521714 /* Readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 30B387471B51AD7A00521714 /* Readme.txt */; };
+		30B387891B51C3D700521714 /* HOKApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387511B51C3D700521714 /* HOKApp.m */; };
+		30B3878A1B51C3D700521714 /* HOKDeeplink.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387541B51C3D700521714 /* HOKDeeplink.m */; };
+		30B3878B1B51C3D700521714 /* HOKDeeplinking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387571B51C3D700521714 /* HOKDeeplinking.m */; };
+		30B3878C1B51C3D700521714 /* HOKDeferredDeeplinking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387591B51C3D700521714 /* HOKDeferredDeeplinking.m */; };
+		30B3878D1B51C3D700521714 /* HOKDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3875B1B51C3D700521714 /* HOKDevice.m */; };
+		30B3878E1B51C3D700521714 /* HOKError.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3875D1B51C3D700521714 /* HOKError.m */; };
+		30B3878F1B51C3D700521714 /* HOKGZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3875F1B51C3D700521714 /* HOKGZip.m */; };
+		30B387901B51C3D700521714 /* HOKHandlerBlockWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387611B51C3D700521714 /* HOKHandlerBlockWrapper.m */; };
+		30B387911B51C3D700521714 /* HOKHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387631B51C3D700521714 /* HOKHandling.m */; };
+		30B387921B51C3D700521714 /* HOKLinkGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387651B51C3D700521714 /* HOKLinkGenerator.m */; };
+		30B387931B51C3D700521714 /* HOKLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387671B51C3D700521714 /* HOKLogger.m */; };
+		30B387941B51C3D700521714 /* HOKNavigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387691B51C3D700521714 /* HOKNavigation.m */; };
+		30B387951B51C3D700521714 /* HOKNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3876B1B51C3D700521714 /* HOKNetworking.m */; };
+		30B387961B51C3D700521714 /* HOKNetworkOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3876D1B51C3D700521714 /* HOKNetworkOperation.m */; };
+		30B387971B51C3D700521714 /* HOKNetworkOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387701B51C3D700521714 /* HOKNetworkOperationQueue.m */; };
+		30B387981B51C3D700521714 /* HOKNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387721B51C3D700521714 /* HOKNotificationObserver.m */; };
+		30B387991B51C3D700521714 /* Hoko.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387761B51C3D700521714 /* Hoko.m */; };
+		30B3879A1B51C3D700521714 /* HOKObjectObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387781B51C3D700521714 /* HOKObjectObserver.m */; };
+		30B3879B1B51C3D700521714 /* HOKObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3877A1B51C3D700521714 /* HOKObserver.m */; };
+		30B3879C1B51C3D700521714 /* HOKResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3877C1B51C3D700521714 /* HOKResolver.m */; };
+		30B3879D1B51C3D700521714 /* HOKRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B3877E1B51C3D700521714 /* HOKRoute.m */; };
+		30B3879E1B51C3D700521714 /* HOKRouting.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387801B51C3D700521714 /* HOKRouting.m */; };
+		30B3879F1B51C3D700521714 /* HOKSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387821B51C3D700521714 /* HOKSwizzling.m */; };
+		30B387A01B51C3D700521714 /* HOKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387841B51C3D700521714 /* HOKURL.m */; };
+		30B387A11B51C3D700521714 /* HOKUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387861B51C3D700521714 /* HOKUtils.m */; };
+		30B387A21B51C3D700521714 /* HOKVersionChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B387881B51C3D700521714 /* HOKVersionChecker.m */; };
 		30B6F34D1B445937000BBF12 /* libWeChatSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34A1B445937000BBF12 /* libWeChatSDK.a */; };
 		30B6F34F1B4463F1000BBF12 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 30B6F34E1B4463F1000BBF12 /* libc++.dylib */; };
 		30B6F35F1B44947C000BBF12 /* NSArray+GameShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 30B6F3551B44947C000BBF12 /* NSArray+GameShare.m */; };
@@ -474,6 +507,85 @@
 		30B3096819E292D80017ACBF /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		30B3096919E292D80017ACBF /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
 		30B3872B1B519DBE00521714 /* boot_sc0011.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = boot_sc0011.json; path = HotOrNot/Resources/boot_sc0011.json; sourceTree = SOURCE_ROOT; };
+		30B3872F1B51AD7A00521714 /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
+		30B387311B51AD7A00521714 /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
+		30B387321B51AD7A00521714 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
+		30B387331B51AD7A00521714 /* GAIEcommerceFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceFields.h; sourceTree = "<group>"; };
+		30B387341B51AD7A00521714 /* GAIEcommerceProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProduct.h; sourceTree = "<group>"; };
+		30B387351B51AD7A00521714 /* GAIEcommerceProductAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProductAction.h; sourceTree = "<group>"; };
+		30B387361B51AD7A00521714 /* GAIEcommercePromotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommercePromotion.h; sourceTree = "<group>"; };
+		30B387371B51AD7A00521714 /* GAIFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
+		30B387381B51AD7A00521714 /* GAILogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAILogger.h; sourceTree = "<group>"; };
+		30B387391B51AD7A00521714 /* GAITrackedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITrackedViewController.h; sourceTree = "<group>"; };
+		30B3873A1B51AD7A00521714 /* GAITracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
+		30B3873B1B51AD7A00521714 /* Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
+		30B3873D1B51AD7A00521714 /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
+		30B3873F1B51AD7A00521714 /* TAGContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGContainer.h; sourceTree = "<group>"; };
+		30B387401B51AD7A00521714 /* TAGContainerOpener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGContainerOpener.h; sourceTree = "<group>"; };
+		30B387411B51AD7A00521714 /* TAGDataLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGDataLayer.h; sourceTree = "<group>"; };
+		30B387421B51AD7A00521714 /* TAGLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGLogger.h; sourceTree = "<group>"; };
+		30B387431B51AD7A00521714 /* TAGManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGManager.h; sourceTree = "<group>"; };
+		30B387441B51AD7A00521714 /* Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
+		30B387451B51AD7A00521714 /* libAdIdAccess.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdIdAccess.a; sourceTree = "<group>"; };
+		30B387461B51AD7A00521714 /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
+		30B387471B51AD7A00521714 /* Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
+		30B387501B51C3D700521714 /* HOKApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKApp.h; sourceTree = "<group>"; };
+		30B387511B51C3D700521714 /* HOKApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKApp.m; sourceTree = "<group>"; };
+		30B387521B51C3D700521714 /* HOKDeeplink+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HOKDeeplink+Private.h"; sourceTree = "<group>"; };
+		30B387531B51C3D700521714 /* HOKDeeplink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKDeeplink.h; sourceTree = "<group>"; };
+		30B387541B51C3D700521714 /* HOKDeeplink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKDeeplink.m; sourceTree = "<group>"; };
+		30B387551B51C3D700521714 /* HOKDeeplinking+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HOKDeeplinking+Private.h"; sourceTree = "<group>"; };
+		30B387561B51C3D700521714 /* HOKDeeplinking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKDeeplinking.h; sourceTree = "<group>"; };
+		30B387571B51C3D700521714 /* HOKDeeplinking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKDeeplinking.m; sourceTree = "<group>"; };
+		30B387581B51C3D700521714 /* HOKDeferredDeeplinking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKDeferredDeeplinking.h; sourceTree = "<group>"; };
+		30B387591B51C3D700521714 /* HOKDeferredDeeplinking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKDeferredDeeplinking.m; sourceTree = "<group>"; };
+		30B3875A1B51C3D700521714 /* HOKDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKDevice.h; sourceTree = "<group>"; };
+		30B3875B1B51C3D700521714 /* HOKDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKDevice.m; sourceTree = "<group>"; };
+		30B3875C1B51C3D700521714 /* HOKError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKError.h; sourceTree = "<group>"; };
+		30B3875D1B51C3D700521714 /* HOKError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKError.m; sourceTree = "<group>"; };
+		30B3875E1B51C3D700521714 /* HOKGZip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKGZip.h; sourceTree = "<group>"; };
+		30B3875F1B51C3D700521714 /* HOKGZip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKGZip.m; sourceTree = "<group>"; };
+		30B387601B51C3D700521714 /* HOKHandlerBlockWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKHandlerBlockWrapper.h; sourceTree = "<group>"; };
+		30B387611B51C3D700521714 /* HOKHandlerBlockWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKHandlerBlockWrapper.m; sourceTree = "<group>"; };
+		30B387621B51C3D700521714 /* HOKHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKHandling.h; sourceTree = "<group>"; };
+		30B387631B51C3D700521714 /* HOKHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKHandling.m; sourceTree = "<group>"; };
+		30B387641B51C3D700521714 /* HOKLinkGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKLinkGenerator.h; sourceTree = "<group>"; };
+		30B387651B51C3D700521714 /* HOKLinkGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKLinkGenerator.m; sourceTree = "<group>"; };
+		30B387661B51C3D700521714 /* HOKLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKLogger.h; sourceTree = "<group>"; };
+		30B387671B51C3D700521714 /* HOKLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKLogger.m; sourceTree = "<group>"; };
+		30B387681B51C3D700521714 /* HOKNavigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKNavigation.h; sourceTree = "<group>"; };
+		30B387691B51C3D700521714 /* HOKNavigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKNavigation.m; sourceTree = "<group>"; };
+		30B3876A1B51C3D700521714 /* HOKNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKNetworking.h; sourceTree = "<group>"; };
+		30B3876B1B51C3D700521714 /* HOKNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKNetworking.m; sourceTree = "<group>"; };
+		30B3876C1B51C3D700521714 /* HOKNetworkOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKNetworkOperation.h; sourceTree = "<group>"; };
+		30B3876D1B51C3D700521714 /* HOKNetworkOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKNetworkOperation.m; sourceTree = "<group>"; };
+		30B3876E1B51C3D700521714 /* HOKNetworkOperationQueue+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HOKNetworkOperationQueue+Private.h"; sourceTree = "<group>"; };
+		30B3876F1B51C3D700521714 /* HOKNetworkOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKNetworkOperationQueue.h; sourceTree = "<group>"; };
+		30B387701B51C3D700521714 /* HOKNetworkOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKNetworkOperationQueue.m; sourceTree = "<group>"; };
+		30B387711B51C3D700521714 /* HOKNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKNotificationObserver.h; sourceTree = "<group>"; };
+		30B387721B51C3D700521714 /* HOKNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKNotificationObserver.m; sourceTree = "<group>"; };
+		30B387731B51C3D700521714 /* Hoko+Nullability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Hoko+Nullability.h"; sourceTree = "<group>"; };
+		30B387741B51C3D700521714 /* Hoko+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Hoko+Private.h"; sourceTree = "<group>"; };
+		30B387751B51C3D700521714 /* Hoko.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hoko.h; sourceTree = "<group>"; };
+		30B387761B51C3D700521714 /* Hoko.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Hoko.m; sourceTree = "<group>"; };
+		30B387771B51C3D700521714 /* HOKObjectObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKObjectObserver.h; sourceTree = "<group>"; };
+		30B387781B51C3D700521714 /* HOKObjectObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKObjectObserver.m; sourceTree = "<group>"; };
+		30B387791B51C3D700521714 /* HOKObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKObserver.h; sourceTree = "<group>"; };
+		30B3877A1B51C3D700521714 /* HOKObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKObserver.m; sourceTree = "<group>"; };
+		30B3877B1B51C3D700521714 /* HOKResolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKResolver.h; sourceTree = "<group>"; };
+		30B3877C1B51C3D700521714 /* HOKResolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKResolver.m; sourceTree = "<group>"; };
+		30B3877D1B51C3D700521714 /* HOKRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKRoute.h; sourceTree = "<group>"; };
+		30B3877E1B51C3D700521714 /* HOKRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKRoute.m; sourceTree = "<group>"; };
+		30B3877F1B51C3D700521714 /* HOKRouting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKRouting.h; sourceTree = "<group>"; };
+		30B387801B51C3D700521714 /* HOKRouting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKRouting.m; sourceTree = "<group>"; };
+		30B387811B51C3D700521714 /* HOKSwizzling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKSwizzling.h; sourceTree = "<group>"; };
+		30B387821B51C3D700521714 /* HOKSwizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKSwizzling.m; sourceTree = "<group>"; };
+		30B387831B51C3D700521714 /* HOKURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKURL.h; sourceTree = "<group>"; };
+		30B387841B51C3D700521714 /* HOKURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKURL.m; sourceTree = "<group>"; };
+		30B387851B51C3D700521714 /* HOKUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKUtils.h; sourceTree = "<group>"; };
+		30B387861B51C3D700521714 /* HOKUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKUtils.m; sourceTree = "<group>"; };
+		30B387871B51C3D700521714 /* HOKVersionChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOKVersionChecker.h; sourceTree = "<group>"; };
+		30B387881B51C3D700521714 /* HOKVersionChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOKVersionChecker.m; sourceTree = "<group>"; };
 		30B6F34A1B445937000BBF12 /* libWeChatSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWeChatSDK.a; sourceTree = "<group>"; };
 		30B6F34B1B445937000BBF12 /* WXApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApi.h; sourceTree = "<group>"; };
 		30B6F34C1B445937000BBF12 /* WXApiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WXApiObject.h; sourceTree = "<group>"; };
@@ -923,9 +1035,11 @@
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */,
 				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
+				30B3874D1B51AD7A00521714 /* libGoogleAnalyticsServices.a in Frameworks */,
 				30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */,
 				308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */,
 				F7E6D20B72A5177C54C052C6 /* libPods-HotOrNot.a in Frameworks */,
+				30B3874C1B51AD7A00521714 /* libAdIdAccess.a in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 			);
@@ -1308,6 +1422,131 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		30B3872D1B51AD7A00521714 /* GoogleAnalyticsServicesiOS_3.12 */ = {
+			isa = PBXGroup;
+			children = (
+				30B3872E1B51AD7A00521714 /* GoogleAnalytics */,
+				30B3873C1B51AD7A00521714 /* GoogleTagManager */,
+				30B387451B51AD7A00521714 /* libAdIdAccess.a */,
+				30B387461B51AD7A00521714 /* libGoogleAnalyticsServices.a */,
+				30B387471B51AD7A00521714 /* Readme.txt */,
+			);
+			path = GoogleAnalyticsServicesiOS_3.12;
+			sourceTree = "<group>";
+		};
+		30B3872E1B51AD7A00521714 /* GoogleAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				30B3872F1B51AD7A00521714 /* Changelog.txt */,
+				30B387301B51AD7A00521714 /* Library */,
+				30B3873B1B51AD7A00521714 /* Readme.txt */,
+			);
+			path = GoogleAnalytics;
+			sourceTree = "<group>";
+		};
+		30B387301B51AD7A00521714 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				30B387311B51AD7A00521714 /* GAI.h */,
+				30B387321B51AD7A00521714 /* GAIDictionaryBuilder.h */,
+				30B387331B51AD7A00521714 /* GAIEcommerceFields.h */,
+				30B387341B51AD7A00521714 /* GAIEcommerceProduct.h */,
+				30B387351B51AD7A00521714 /* GAIEcommerceProductAction.h */,
+				30B387361B51AD7A00521714 /* GAIEcommercePromotion.h */,
+				30B387371B51AD7A00521714 /* GAIFields.h */,
+				30B387381B51AD7A00521714 /* GAILogger.h */,
+				30B387391B51AD7A00521714 /* GAITrackedViewController.h */,
+				30B3873A1B51AD7A00521714 /* GAITracker.h */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		30B3873C1B51AD7A00521714 /* GoogleTagManager */ = {
+			isa = PBXGroup;
+			children = (
+				30B3873D1B51AD7A00521714 /* Changelog.txt */,
+				30B3873E1B51AD7A00521714 /* Library */,
+				30B387441B51AD7A00521714 /* Readme.txt */,
+			);
+			path = GoogleTagManager;
+			sourceTree = "<group>";
+		};
+		30B3873E1B51AD7A00521714 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				30B3873F1B51AD7A00521714 /* TAGContainer.h */,
+				30B387401B51AD7A00521714 /* TAGContainerOpener.h */,
+				30B387411B51AD7A00521714 /* TAGDataLayer.h */,
+				30B387421B51AD7A00521714 /* TAGLogger.h */,
+				30B387431B51AD7A00521714 /* TAGManager.h */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		30B3874F1B51C3D700521714 /* Hoko */ = {
+			isa = PBXGroup;
+			children = (
+				30B387501B51C3D700521714 /* HOKApp.h */,
+				30B387511B51C3D700521714 /* HOKApp.m */,
+				30B387521B51C3D700521714 /* HOKDeeplink+Private.h */,
+				30B387531B51C3D700521714 /* HOKDeeplink.h */,
+				30B387541B51C3D700521714 /* HOKDeeplink.m */,
+				30B387551B51C3D700521714 /* HOKDeeplinking+Private.h */,
+				30B387561B51C3D700521714 /* HOKDeeplinking.h */,
+				30B387571B51C3D700521714 /* HOKDeeplinking.m */,
+				30B387581B51C3D700521714 /* HOKDeferredDeeplinking.h */,
+				30B387591B51C3D700521714 /* HOKDeferredDeeplinking.m */,
+				30B3875A1B51C3D700521714 /* HOKDevice.h */,
+				30B3875B1B51C3D700521714 /* HOKDevice.m */,
+				30B3875C1B51C3D700521714 /* HOKError.h */,
+				30B3875D1B51C3D700521714 /* HOKError.m */,
+				30B3875E1B51C3D700521714 /* HOKGZip.h */,
+				30B3875F1B51C3D700521714 /* HOKGZip.m */,
+				30B387601B51C3D700521714 /* HOKHandlerBlockWrapper.h */,
+				30B387611B51C3D700521714 /* HOKHandlerBlockWrapper.m */,
+				30B387621B51C3D700521714 /* HOKHandling.h */,
+				30B387631B51C3D700521714 /* HOKHandling.m */,
+				30B387641B51C3D700521714 /* HOKLinkGenerator.h */,
+				30B387651B51C3D700521714 /* HOKLinkGenerator.m */,
+				30B387661B51C3D700521714 /* HOKLogger.h */,
+				30B387671B51C3D700521714 /* HOKLogger.m */,
+				30B387681B51C3D700521714 /* HOKNavigation.h */,
+				30B387691B51C3D700521714 /* HOKNavigation.m */,
+				30B3876A1B51C3D700521714 /* HOKNetworking.h */,
+				30B3876B1B51C3D700521714 /* HOKNetworking.m */,
+				30B3876C1B51C3D700521714 /* HOKNetworkOperation.h */,
+				30B3876D1B51C3D700521714 /* HOKNetworkOperation.m */,
+				30B3876E1B51C3D700521714 /* HOKNetworkOperationQueue+Private.h */,
+				30B3876F1B51C3D700521714 /* HOKNetworkOperationQueue.h */,
+				30B387701B51C3D700521714 /* HOKNetworkOperationQueue.m */,
+				30B387711B51C3D700521714 /* HOKNotificationObserver.h */,
+				30B387721B51C3D700521714 /* HOKNotificationObserver.m */,
+				30B387731B51C3D700521714 /* Hoko+Nullability.h */,
+				30B387741B51C3D700521714 /* Hoko+Private.h */,
+				30B387751B51C3D700521714 /* Hoko.h */,
+				30B387761B51C3D700521714 /* Hoko.m */,
+				30B387771B51C3D700521714 /* HOKObjectObserver.h */,
+				30B387781B51C3D700521714 /* HOKObjectObserver.m */,
+				30B387791B51C3D700521714 /* HOKObserver.h */,
+				30B3877A1B51C3D700521714 /* HOKObserver.m */,
+				30B3877B1B51C3D700521714 /* HOKResolver.h */,
+				30B3877C1B51C3D700521714 /* HOKResolver.m */,
+				30B3877D1B51C3D700521714 /* HOKRoute.h */,
+				30B3877E1B51C3D700521714 /* HOKRoute.m */,
+				30B3877F1B51C3D700521714 /* HOKRouting.h */,
+				30B387801B51C3D700521714 /* HOKRouting.m */,
+				30B387811B51C3D700521714 /* HOKSwizzling.h */,
+				30B387821B51C3D700521714 /* HOKSwizzling.m */,
+				30B387831B51C3D700521714 /* HOKURL.h */,
+				30B387841B51C3D700521714 /* HOKURL.m */,
+				30B387851B51C3D700521714 /* HOKUtils.h */,
+				30B387861B51C3D700521714 /* HOKUtils.m */,
+				30B387871B51C3D700521714 /* HOKVersionChecker.h */,
+				30B387881B51C3D700521714 /* HOKVersionChecker.m */,
+			);
+			path = Hoko;
+			sourceTree = "<group>";
+		};
 		30B6F3491B445936000BBF12 /* WeChatSDK */ = {
 			isa = PBXGroup;
 			children = (
@@ -1621,6 +1860,8 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30B3874F1B51C3D700521714 /* Hoko */,
+				30B3872D1B51AD7A00521714 /* GoogleAnalyticsServicesiOS_3.12 */,
 				30AD79201B43A0E400F9C634 /* GameShare */,
 				30B7E0721A73E5E500E52071 /* BuiltInMenlo */,
 				30B308B819E20B510017ACBF /* AFNetworking */,
@@ -2317,6 +2558,7 @@
 				30AD79351B43A1AE00F9C634 /* GSMessengerShareInfo.plist in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */,
+				30B387491B51AD7A00521714 /* Readme.txt in Resources */,
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
 				4C639A30195502E90059E444 /* HomeElements.xcassets in Resources */,
 				308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */,
@@ -2327,6 +2569,8 @@
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
+				30B387481B51AD7A00521714 /* Changelog.txt in Resources */,
+				30B3874A1B51AD7A00521714 /* Changelog.txt in Resources */,
 				30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */,
 				4C01BAD3190CAAD1006CD80D /* StatusUpdateElements.xcassets in Resources */,
 				3073BB391ACB97EA00CE2441 /* iTunesArtwork@2x.png in Resources */,
@@ -2341,11 +2585,13 @@
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
 				3010D7831A2439090078164F /* HotOrNot.entitlements in Resources */,
+				30B3874E1B51AD7A00521714 /* Readme.txt in Resources */,
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
 				30AD79301B43A1AE00F9C634 /* GameShareRecources.bundle in Resources */,
 				30CAD5011A2FBC06002E61D4 /* Texas State.gpx in Resources */,
+				30B3874B1B51AD7A00521714 /* Readme.txt in Resources */,
 				30B3872C1B519DBE00521714 /* boot_sc0011.json in Resources */,
 				3096E6E51B437079002EAD0B /* popup_share.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
@@ -2408,6 +2654,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
+				30B387911B51C3D700521714 /* HOKHandling.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
@@ -2435,6 +2682,7 @@
 				4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */,
 				30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */,
 				4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */,
+				30B3878A1B51C3D700521714 /* HOKDeeplink.m in Sources */,
 				30CFAD471A549C6600FD25CF /* HONCommentItemView.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONComposeNavButtonView.m in Sources */,
@@ -2442,6 +2690,7 @@
 				4CEC303D17DA5E270016AAE1 /* HONComposeTopicViewController.m in Sources */,
 				300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */,
 				4CBDDBAC1913354E002F9723 /* HONContactsViewController.m in Sources */,
+				30B387891B51C3D700521714 /* HOKApp.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
 				4CEF9204196DFFE3007D56BE /* HONCountryVO.m in Sources */,
 				4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */,
@@ -2455,17 +2704,20 @@
 				3010D7811A24109E0078164F /* HONHomeFeedToggleView.m in Sources */,
 				30AD79341B43A1AE00F9C634 /* GSMessengerShare.m in Sources */,
 				3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */,
+				30B387A21B51C3D700521714 /* HOKVersionChecker.m in Sources */,
 				3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
 				30B6F3611B44947C000BBF12 /* NSData+GameShare.m in Sources */,
+				30B387901B51C3D700521714 /* HOKHandlerBlockWrapper.m in Sources */,
 				4CC13E71198543F5000B41C2 /* HONImageBroker.m in Sources */,
 				30C7C62019E0DBE70038B22C /* HONLineButtonView.m in Sources */,
 				3024A5E61A7B769500231BA5 /* HONLoadingOverlayView.m in Sources */,
 				300D1B881A0C30F100D1D9A7 /* HONMapAnnotation.m in Sources */,
 				300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */,
 				3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */,
+				30B3878E1B51C3D700521714 /* HOKError.m in Sources */,
 				30CA9CC91A033C1800A0A703 /* HONNavButtonView.m in Sources */,
 				302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */,
 				4CD5616719775FCB006F1DB5 /* HONInviteViewController.m in Sources */,
@@ -2477,6 +2729,8 @@
 				4C7DBBC8195004C200F7A487 /* HONRefreshControl.m in Sources */,
 				307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
+				30B387951B51C3D700521714 /* HOKNetworking.m in Sources */,
+				30B3878C1B51C3D700521714 /* HOKDeferredDeeplinking.m in Sources */,
 				30CFAD411A54881100FD25CF /* HONReplySubjectsViewController.m in Sources */,
 				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
 				304CB4711A79B3670042BBE5 /* HONRestrictedViewController.m in Sources */,
@@ -2495,15 +2749,20 @@
 				30E26CFB1A1EBF0600281486 /* HONStatusUpdateViewController.m in Sources */,
 				3030DF5C1A6348ED00406AAF /* HONSubjectsViewController.m in Sources */,
 				30B256171A3CBA9C00C789E1 /* HONStatusUpdateVO.m in Sources */,
+				30B3879F1B51C3D700521714 /* HOKSwizzling.m in Sources */,
+				30B387A01B51C3D700521714 /* HOKURL.m in Sources */,
 				4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */,
 				30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */,
 				30B256111A3C61B100C789E1 /* HONSubjectViewCell.m in Sources */,
 				30B256141A3C61D200C789E1 /* HONSubjectVO.m in Sources */,
+				30B3879E1B51C3D700521714 /* HOKRouting.m in Sources */,
 				4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */,
+				30B387931B51C3D700521714 /* HOKLogger.m in Sources */,
 				4C7DBBBE194FF43D00F7A487 /* HONTableView.m in Sources */,
 				4CA34C5516F6B6550000751E /* HONTableViewCell.m in Sources */,
 				4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsViewController.m in Sources */,
+				30B387961B51C3D700521714 /* HOKNetworkOperation.m in Sources */,
 				30AD79331B43A1AE00F9C634 /* GSCollectionViewFlowLayout.m in Sources */,
 				305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */,
 				301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */,
@@ -2520,9 +2779,12 @@
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
+				30B3879D1B51C3D700521714 /* HOKRoute.m in Sources */,
 				30AD79321B43A1AE00F9C634 /* GSCollectionViewController.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
 				3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */,
+				30B3879A1B51C3D700521714 /* HOKObjectObserver.m in Sources */,
+				30B3878D1B51C3D700521714 /* HOKDevice.m in Sources */,
 				30727F7F1ABA4F7B00524075 /* NSArray+BuiltInMenlo.m in Sources */,
 				30727F801ABA4F7B00524075 /* NSCharacterSet+BuiltInMenlo.m in Sources */,
 				30727F811ABA4F7B00524075 /* NSData+BuiltInMenlo.m in Sources */,
@@ -2530,12 +2792,18 @@
 				30727F831ABA4F7B00524075 /* NSDictionary+BuiltInMenlo.m in Sources */,
 				30727F841ABA4F7B00524075 /* NSNumber+BuiltInMenlo.m in Sources */,
 				30727F851ABA4F7B00524075 /* NSString+BuiltInMenlo.m in Sources */,
+				30B387981B51C3D700521714 /* HOKNotificationObserver.m in Sources */,
 				30727F9D1ABAA8E200524075 /* HONPubNubOverseer.m in Sources */,
 				30727F871ABA4F7B00524075 /* UILabel+BuiltInMenlo.m in Sources */,
 				30727F861ABA4F7B00524075 /* UIImage+BuiltInMenlo.m in Sources */,
 				30727F881ABA4F7B00524075 /* UIScrollView+BuiltInMenlo.m in Sources */,
+				30B3878B1B51C3D700521714 /* HOKDeeplinking.m in Sources */,
+				30B3879C1B51C3D700521714 /* HOKResolver.m in Sources */,
+				30B387941B51C3D700521714 /* HOKNavigation.m in Sources */,
 				30727F891ABA4F7B00524075 /* UIView+BuiltInMenlo.m in Sources */,
 				30727F8A1ABA4F7B00524075 /* UIViewController+BuiltInMenlo.m in Sources */,
+				30B387991B51C3D700521714 /* Hoko.m in Sources */,
+				30B3878F1B51C3D700521714 /* HOKGZip.m in Sources */,
 				30727F9A1ABA99AE00524075 /* PubNub+BuiltInMenlo.m in Sources */,
 				30B308CC19E20B510017ACBF /* AFHTTPClient.m in Sources */,
 				30B308CD19E20B510017ACBF /* AFHTTPRequestOperation.m in Sources */,
@@ -2553,6 +2821,7 @@
 				308F361819E337AA00EE9512 /* FLAnimatedImageView.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
+				30B387971B51C3D700521714 /* HOKNetworkOperationQueue.m in Sources */,
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
 				30B6F3621B44947C000BBF12 /* NSDate+GameShare.m in Sources */,
@@ -2567,6 +2836,7 @@
 				30AD79311B43A1AE00F9C634 /* GSCollectionViewCell.m in Sources */,
 				30AFF5721A79AB43005F408B /* KeychainItemWrapper.m in Sources */,
 				4C4328C818E3A9FA0035FF06 /* MBProgressHUD.m in Sources */,
+				30B3879B1B51C3D700521714 /* HOKObserver.m in Sources */,
 				300641C31A5EF29C0078BCE9 /* RegExCategories.m in Sources */,
 				30D8A23A1AB683BC00EC57C8 /* TSAppEventSourceImpl.m in Sources */,
 				30D8A23B1AB683BC00EC57C8 /* TSConfig.m in Sources */,
@@ -2578,11 +2848,13 @@
 				30D8A23F1AB683BC00EC57C8 /* TSHit.m in Sources */,
 				30D8A2401AB683BC00EC57C8 /* TSLogging.m in Sources */,
 				30D8A2411AB683BC00EC57C8 /* TSPlatformImpl.m in Sources */,
+				30B387921B51C3D700521714 /* HOKLinkGenerator.m in Sources */,
 				30D8A2421AB683BC00EC57C8 /* TSResponse.m in Sources */,
 				30D8A2431AB683BC00EC57C8 /* TSTapstream.m in Sources */,
 				30D8A2441AB683BC00EC57C8 /* TSUtils.m in Sources */,
 				302C9AB91A86AE5C009E7DD6 /* AnimatedTransitioning.m in Sources */,
 				302C9ABA1A86AE5C009E7DD6 /* TransitionDelegate.m in Sources */,
+				30B387A11B51C3D700521714 /* HOKUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2761,6 +3033,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/WeChatSDK",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/GoogleAnalyticsServicesiOS_3.12",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2811,6 +3084,7 @@
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/Pods",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HotOrNot-buaruqoxljhbcpfdzsrhwfomzhxq/Build/Products/Debug-iphoneos",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/WeChatSDK",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/GoogleAnalyticsServicesiOS_3.12",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (

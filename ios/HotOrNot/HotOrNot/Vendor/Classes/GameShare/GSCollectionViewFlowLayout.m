@@ -8,8 +8,8 @@
 
 #import "GSCollectionViewFlowLayout.h"
 
-const CGSize kGSCollectionViewCellSize = {70.0, 70.0};
-const CGSize kGSCollectionViewCellSpacing = {20.0, 20.0};
+const CGSize kGSCollectionViewCellSize = {80.0, 80.0};
+const CGSize kGSCollectionViewCellSpacing = {23.0, 23.0};
 
 @implementation GSCollectionViewFlowLayout
 - (id)init {

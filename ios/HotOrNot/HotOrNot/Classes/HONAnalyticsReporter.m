@@ -6,6 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
+#import "GAIFields.h"
+
 #import "NSDate+BuiltinMenlo.h"
 
 #import "HONAnalyticsReporter.h"
@@ -174,7 +178,13 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	[eventName addEntriesFromDictionary:@{@"action"	: [[event componentsSeparatedByString:@" - "] lastObject]}];
 	
 	
-	//NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
+	NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
+	id tracker = [[GAI sharedInstance] defaultTracker];
+	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:eventCollection
+														  action:[[event componentsSeparatedByString:@" - "] lastObject]
+														   label:@"Event"
+														   value:@1] build]];
+
 	
 	
 	NSError *error = nil;
