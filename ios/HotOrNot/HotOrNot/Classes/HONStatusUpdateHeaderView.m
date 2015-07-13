@@ -42,7 +42,7 @@
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(5.0, 5.0, 99.0, 46.0);
-		backButton.backgroundColor = [UIColor greenColor];
+//		backButton.backgroundColor = [UIColor greenColor];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
@@ -65,7 +65,7 @@
 		
 		HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
 		linkButton.frame = CGRectMake(self.frame.size.width - 54.0, 4.0, 52.0, 46.0);
-		linkButton.backgroundColor = [UIColor greenColor];
+//		linkButton.backgroundColor = [UIColor greenColor];
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];

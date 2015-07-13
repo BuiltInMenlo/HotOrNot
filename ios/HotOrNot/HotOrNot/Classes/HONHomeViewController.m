@@ -280,7 +280,7 @@
 	[self.view addSubview:_headerView];
 	
 	HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	linkButton.frame = CGRectMake(6.0, 22.0, 52.0, 46.0);
+	linkButton.frame = CGRectMake(6.0, 23.0, 52.0, 46.0);
 	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
 	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[linkButton addTarget:self action:@selector(_goPrivacy) forControlEvents:UIControlEventTouchUpInside];
@@ -608,7 +608,7 @@
 	[self.view addSubview:_loadingView];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, _loadingView.bounds.size.height * 0.5);
+	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
 	[activityIndicatorView startAnimating];
 	[_loadingView addSubview:activityIndicatorView];
 	
@@ -617,93 +617,17 @@
 //												selector:@selector(_changeLoadTint)
 //												userInfo:nil repeats:YES];
 	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com"]];
-	[httpClient getPath:@"popupsfixB.txt" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+	HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"];
+	[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[_loadingView removeFromSuperview];
+		[_tintTimer invalidate];
+		_tintTimer = nil;
 		
-		if (error != nil) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			
-		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			int statusUpdateID = [[[[result objectForKey:@"id"] componentsSeparatedByString:@"_"] lastObject] intValue];
-			[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:statusUpdateID completion:^(NSDictionary *result) {
-				if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-					_selectedStatusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-					_selectedStatusUpdateVO.comment = NSStringFromBOOL(NO);
-					
-					[[NSUserDefaults standardUserDefaults] setObject:NSStringFromInt(statusUpdateID) forKey:@"challenge_id"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-					
-					AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-					[httpClient getPath:@"captureIDfix.php" parameters:@{@"id"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-						NSError *error = nil;
-						NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						
-						if (error != nil) {
-							SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-							[[HONAPICaller sharedInstance] showDataErrorHUD];
-							
-						} else {
-							SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-						}
-						
-					} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-						SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-						[[HONAPICaller sharedInstance] showDataErrorHUD];
-					}];
-					
-					httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-					[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
-																		@"channel"	: [NSString stringWithFormat:@"%d_%d", _selectedStatusUpdateVO.userID, _selectedStatusUpdateVO.statusUpdateID],
-																		@"message"	: @"created popup"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-																			NSError *error = nil;
-																			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-																			
-																			if (error != nil) {
-																				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-																				[[HONAPICaller sharedInstance] showDataErrorHUD];
-																				
-																			} else {
-																				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-																			}
-																			
-																		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-																			[[HONAPICaller sharedInstance] showDataErrorHUD];
-																		}];
-					
-					HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithStatusUpdate:_selectedStatusUpdateVO forClub:[[HONClubAssistant sharedInstance] currentLocationClub]];
-					[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-					
-					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-						[_loadingView removeFromSuperview];
-						[_tintTimer invalidate];
-						_tintTimer = nil;
-						
-						[_loadingOverlayView outro];
-						_textField.text = @"What is on your mind?";
-					});
-					
-				} else {
-					[_loadingView removeFromSuperview];
-					[_tintTimer invalidate];
-					_tintTimer = nil;
-					_textField.text = @"";
-					
-					if (![_textField isFirstResponder])
-						[_textField becomeFirstResponder];
-				}
-			}];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
+		[_loadingOverlayView outro];
+		_textField.text = @"What is on your mind?";
+	});
 }
 
 - (void)_goCancelCompose {
@@ -951,10 +875,10 @@
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
-	[UIView animateWithDuration:0.333 animations:^(void) {
-		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
-	} completion:nil];
+//	UIColor *color = [_colors objectAtIndex:(int)(scrollView.contentOffset.x / scrollView.frame.size.width)];
+//	[UIView animateWithDuration:0.333 animations:^(void) {
+//		[[HONViewDispensor sharedInstance] tintView:scrollView withColor:color];
+//	} completion:nil];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
