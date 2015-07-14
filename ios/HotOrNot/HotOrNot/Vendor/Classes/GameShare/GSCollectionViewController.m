@@ -284,8 +284,19 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 													 encoding:NSUTF8StringEncoding];
 			options.contextOverride = [[FBSDKMessengerBroadcastContext alloc] init];
 			
-			[FBSDKMessengerSharer shareImage:[shareInfo objectForKey:@"share_image"]
-								 withOptions:options];
+			_selectedMessengerContent = @{@"share_image"	: [shareInfo objectForKey:@"share_image"],
+										  @"options"		: options};
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Popup share details copied to clipboard"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:GSMessengerShareTypeFBMessenger];
+			[alertView show];
 		
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"FB Messenger Not Available!"
@@ -298,7 +309,19 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	} else if (_selectedMessengerType == GSMessengerShareTypeKakaoTalk) {
 		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeKakaoTalk];
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
-			[KOAppCall openKakaoTalkAppLink:[shareInfo objectForKey:@"link_objs"]];
+			
+			_selectedMessengerContent = @{@"link_objs"	: [shareInfo objectForKey:@"link_objs"]};
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Popup share details copied to clipboard"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:GSMessengerShareTypeKakaoTalk];
+			[alertView show];
 			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"KakaoTalk Not Available!"
@@ -311,7 +334,19 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	} else if (_selectedMessengerType == GSMessengerShareTypeKik) {
 		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeKik] ;
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], @"kik.popup.rocks"]]];
+			
+			_selectedMessengerContent = @{@"link"	: [[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], @"kik.popup.rocks"]};
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"outbound_url"]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Popup share details copied to clipboard"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:GSMessengerShareTypeKik];
+			[alertView show];
 			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"Kik Not Available!"
@@ -324,7 +359,19 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	} else if (_selectedMessengerType == GSMessengerShareTypeLine) {
 		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeLine];
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [[[shareInfo objectForKey:@"body_text"] stringByAppendingString:[shareInfo objectForKey:@"link"]] urlEncodedString]]]];
+			
+			_selectedMessengerContent = @{@"link"	: [[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [[[shareInfo objectForKey:@"body_text"] stringByAppendingString:[shareInfo objectForKey:@"link"]] urlEncodedString]]};
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Popup share details copied to clipboard"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:GSMessengerShareTypeLine];
+			[alertView show];
 			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"LINE Not Available!"
@@ -336,10 +383,20 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		
 	} else if (_selectedMessengerType == GSMessengerShareTypeSMS) {
 		if ([MFMessageComposeViewController canSendText]) {
-			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:@"%@\n%@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
-			messageComposeViewController.messageComposeDelegate = self;
-			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+			
+			_selectedMessengerContent = @{@"body_text"	: [shareInfo objectForKey:@"body_text"],
+										  @"link"		: [shareInfo objectForKey:@"link"]};
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Popup share details copied to clipboard"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:GSMessengerShareTypeSMS];
+			[alertView show];
 		
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"SMS Not Available!"
@@ -352,7 +409,19 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	} else if (_selectedMessengerType == GSMessengerShareTypeWhatsApp) {
 		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeWhatsApp];
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [[NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]] urlEncodedString]]]];
+			
+			_selectedMessengerContent = @{@"link"	: [[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [[NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]] urlEncodedString]]};
+			
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Popup share details copied to clipboard"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:GSMessengerShareTypeWhatsApp];
+			[alertView show];
 			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"WhatsApp Not Available!"
@@ -364,14 +433,13 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		
 	} else if (_selectedMessengerType == GSMessengerShareTypeWeChat) {
 		if ([WXApi isWXAppSupportApi]) {
-//		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]]) {
 			_selectedMessengerContent = @{@"title"		: [shareInfo objectForKey:@"title"],
 										  @"body_text"	: [shareInfo objectForKey:@"body_text"],
 										  @"image"		: [shareInfo objectForKey:@"image"],
 										  @"url"		: [shareInfo objectForKey:@"link"]};
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"%@ %@ %@", [shareInfo objectForKey:@"title"], [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
 																message:@"Popup share details copied to clipboard"
@@ -447,12 +515,6 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	if ([shareInfo count] > 0) {
 		if ([self.delegate respondsToSelector:@selector(gsCollectionView:didSelectMessenger:)])
 			[self.delegate gsCollectionView:self didSelectMessenger:_selectedMessengerVO];
-		
-		if (_selectedMessengerType != GSMessengerShareTypeSMS) {
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				[self dismissViewControllerAnimated:NO completion:^(void) {}];
-			});
-		}
 	}
 }
 
@@ -561,7 +623,29 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	NSLog(@"alertView:%d didDismissWithButtonIndex:%d", (int)alertView.tag, (int)buttonIndex);
 	
-	if (alertView.tag == GSMessengerShareTypeWeChat) {
+	if (alertView.tag == GSMessengerShareTypeFBMessenger) {
+		[FBSDKMessengerSharer shareImage:[_selectedMessengerContent objectForKey:@"share_image"]
+							 withOptions:[_selectedMessengerContent objectForKey:@"options"]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeKakaoTalk) {
+		[KOAppCall openKakaoTalkAppLink:[_selectedMessengerContent objectForKey:@"link_objs"]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeKik) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
+	
+	} else if (alertView.tag == GSMessengerShareTypeLine) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
+	
+	} else if (alertView.tag == GSMessengerShareTypeSMS) {
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.body = [NSString stringWithFormat:@"%@\n%@", [_selectedMessengerContent objectForKey:@"body_text"], [_selectedMessengerContent objectForKey:@"link"]];
+		messageComposeViewController.messageComposeDelegate = self;
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else if (alertView.tag == GSMessengerShareTypeWhatsApp) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeWeChat) {
 		[WXApi registerApp:@"ID:wxad3790468c7ae7dd"
 		   withDescription:[[NSBundle mainBundle] bundleIdentifier]];
 		
@@ -593,6 +677,13 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeViber];
 //		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"Viber://" stringByAppendingString:_selectedMessengerText]]];
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [@" " urlEncodedString]]]];
+	}
+	
+	
+	if (alertView.tag != GSMessengerShareTypeSMS) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+			[self dismissViewControllerAnimated:NO completion:^(void) {}];
+		});
 	}
 }
 
@@ -652,6 +743,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		NSLog(@"fbShareInfo:\n%@", fbShareInfo);
 		BOOL isOverride = (BOOL)[[fbShareInfo objectForKey:@"override"] intValue];
 		
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[fbShareInfo objectForKey:@"outbound_url"] length] > 0) ? [fbShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([[fbShareInfo objectForKey:@"body_text"] length] > 0) ? [fbShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
 		[shareInfo setObject:[UIImage imageNamed:([[fbShareInfo objectForKey:@"share_image"] length] > 0) ? [fbShareInfo objectForKey:@"share_image"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image"] : @""] forKey:@"share_image"];
 		[shareInfo setObject:([[fbShareInfo objectForKey:@"options"] count] > 0) ? [fbShareInfo objectForKey:@"options"] : (!isOverride) ? [_baseShareInfo objectForKey:@"options"] : @{} forKey:@"options"];
 	
@@ -681,6 +774,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		}
 		
 		[shareInfo setObject:[linkObjs copy] forKey:@"link_objs"];
+		[shareInfo setObject:[kakaoShareInfo objectForKey:@"button_text"] forKey:@"body_text"];
+		[shareInfo setObject:url forKey:@"link"];
 		
 //		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"main_image_url"]];
 //		shareInfo = @{@"link_objs"	: @[[KakaoTalkLinkObject createLabel:[_baseShareInfo objectForKey:@"title"]],

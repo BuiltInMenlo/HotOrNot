@@ -26,6 +26,10 @@
 		<false/>
 		<key>share_image</key>
 		<string>popup_share</string>
+		<key>body_text</key>
+		<string>Your friend has shared a Popup on Messenger</string>
+		<key>outbound_url</key>
+		<string></string>
 		<key>options</key>
 		<dict>
 			<key>channel</key>

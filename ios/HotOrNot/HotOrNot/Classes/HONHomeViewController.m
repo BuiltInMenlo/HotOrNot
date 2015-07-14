@@ -491,11 +491,6 @@
 
 	//[_loadingView addSubview:animationImageView];
 	
-//	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-//												  target:self
-//												selector:@selector(_changeLoadTint)
-//												userInfo:nil repeats:YES];
-	
 	int challenge_id = ([[NSUserDefaults standardUserDefaults] hasObjectForKey:@"challenge_id"]) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"challenge_id"] intValue] : 0;
 	
 	NSString *statusUpdateAffix = @"/";
@@ -525,8 +520,8 @@
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					[_loadingView removeFromSuperview];
-					[_tintTimer invalidate];
-					_tintTimer = nil;
+					//[_tintTimer invalidate];
+					//_tintTimer = nil;
 					
 					[_loadingOverlayView outro];
 					_textField.text = @"What is on your mind?";
@@ -534,8 +529,8 @@
 				
 			} else {
 				[_loadingView removeFromSuperview];
-				[_tintTimer invalidate];
-				_tintTimer = nil;
+				//[_tintTimer invalidate];
+				//_tintTimer = nil;
 				
 //				[_loadingOverlayView outro];
 				_textField.text = @"";
@@ -595,8 +590,8 @@
 //
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[_loadingView removeFromSuperview];
-				[_tintTimer invalidate];
-				_tintTimer = nil;
+				//[_tintTimer invalidate];
+				//_tintTimer = nil;
 				
 				[_loadingOverlayView outro];
 				_textField.text = @"What is on your mind?";
@@ -615,18 +610,13 @@
 	[activityIndicatorView startAnimating];
 	[_loadingView addSubview:activityIndicatorView];
 	
-//	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-//												  target:self
-//												selector:@selector(_changeLoadTint)
-//												userInfo:nil repeats:YES];
-	
 	HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"];
 	[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 		[_loadingView removeFromSuperview];
-		[_tintTimer invalidate];
-		_tintTimer = nil;
+		//[_tintTimer invalidate];
+		//_tintTimer = nil;
 		
 		[_loadingOverlayView outro];
 		_textField.text = @"What is on your mind?";

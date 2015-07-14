@@ -463,31 +463,34 @@
 	[PubNub subscribeOn:@[channel]];
 	
 	
-	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
+	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
 	
-	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
-	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
-	[httpClient setParameterEncoding:AFJSONParameterEncoding];
-	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			
-		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
+	
+//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
+//	
+//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//		NSError *error = nil;
+//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//		
+//		if (error != nil) {
+//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+//			
+//		} else {
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+//		}
+//		
+//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+//		[[HONAPICaller sharedInstance] showDataErrorHUD];
+//	}];
 	
 	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 		PNChannel *channel = [channels firstObject];
@@ -638,7 +641,7 @@
 									   @"content_type"		: @((int)HONChatMessageTypeVID),
 									   
 									   @"owner_member"		: @{@"id"	: @(2392),
-																@"name"	: @"Popup"},
+																@"name"	: @""},
 									   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
 									   @"text"				: txtContent,
 									   
@@ -672,7 +675,7 @@
 									   @"content_type"		: @((int)HONChatMessageTypeTXT),
 									   
 									   @"owner_member"		: @{@"id"	: @(2392),
-																@"name"	: @"Popup"},
+																@"name"	: @""},
 									   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
 									   @"text"				: txtContent,
 									   
@@ -1367,49 +1370,34 @@
 - (void)_goShare {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
+	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]];
+	[_messengerShare showMessengerSharePickerOnViewController:self];
 	
-	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]};
-	
-	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
-	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
-	[httpClient setParameterEncoding:AFJSONParameterEncoding];
-	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			
-		} else {
-			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
-			[_messengerShare showMessengerSharePickerOnViewController:self];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
-	
-//	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
-//								 @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),
-//								 @"title"		: [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID],
-//								 @"message"	: [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID]};
-//	
-//	[UIPasteboard generalPasteboard].string = [metaData objectForKey:@"message"];
-//	[[NSUserDefaults standardUserDefaults] replaceObject:metaData forKey:@"share_props"];
-//	
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-//														message:nil
-//														 delegate:self
-//												cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
-//												otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", @"Share on Kik", @"Post to Kik Wall", @"Share FB", nil];//, @"Share Line", @"Share Kakao", nil];
-//	[alertView setTag:HONStatusUpdateAlertViewTypeShare];
-//	[alertView show];
+//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]};
+//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//		NSError *error = nil;
+//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//		
+//		if (error != nil) {
+//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+//			
+//		} else {
+//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+//			[_messengerShare showMessengerSharePickerOnViewController:self];
+//		}
+//		
+//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+//		[[HONAPICaller sharedInstance] showDataErrorHUD];
+//	}];
 }
 
 - (void)_goFlag {
