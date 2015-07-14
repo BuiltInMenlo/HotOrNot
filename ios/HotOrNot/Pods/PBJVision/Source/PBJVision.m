@@ -699,7 +699,7 @@ PBJMediaWriterDelegate>
 		}
 		[self _setupGL];
 		
-		_captureSessionPreset = AVCaptureSessionPreset640x480;
+		_captureSessionPreset = AVCaptureSessionPresetLow;
 		_captureDirectory = nil;
 		
 		_autoUpdatePreviewOrientation = YES;

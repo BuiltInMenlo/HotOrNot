@@ -88,6 +88,10 @@ static GSMessengerShare *sharedInstance = nil;
 
 
 #pragma mark - UI Presentation
+- (void)dismissMessengerSharePicker {
+	[_gsViewController dismissViewControllerAnimated:NO completion:^(void){}];
+}
+
 - (void)showMessengerSharePickerOnViewController:(UIViewController *)viewController  {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_gsViewController];
 	[navigationController setNavigationBarHidden:YES];

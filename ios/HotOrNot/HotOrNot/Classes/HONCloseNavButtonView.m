@@ -16,7 +16,7 @@
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithTarget:target action:action])) {
-		[self setFrame:CGRectMake(256.0, 0.0, 64.0, 44.0)];
+		[self setFrame:CGRectMake(5.0, 3.0, 33.0, 33.0)];
 		
 //		_button.frame = CGRectFromSize(CGSizeMake(44.0, 64.0));
 		[_button setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];

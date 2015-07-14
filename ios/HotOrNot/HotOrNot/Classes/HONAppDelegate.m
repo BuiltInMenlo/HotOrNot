@@ -499,7 +499,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[Flurry startSession:kFlurryAPIKey];
 	//[Flurry logEvent:@"launch"];
 	
-	[Hoko setupWithToken:@"501ae96a404f6bfbc6c3929846041a6915564f87"];
+	//[Hoko setupWithToken:@"501ae96a404f6bfbc6c3929846041a6915564f87"];
 	
 	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 	
@@ -633,15 +633,36 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	//[UIImageDebugger startDebugging];
 	
+	
+//	[[Hoko deeplinking] mapDefaultRouteToTarget:^(HOKDeeplink *deeplink) {
+//		NSLog(@"HOKO ROUTE:[%@]", deeplink);
+//	}];
+//	
+//	
+//	
+//	HOKDeeplink *deeplink = [HOKDeeplink deeplinkWithRoute:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"
+//										   routeParameters:@{@"channel_name": @"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"}
+//										   queryParameters:@{@"referrer": @"derp"}
+//												  metadata:@{@"coupon": @"20"}];
+//	[deeplink addURL:@"http://popup.rocks/router.php?channel=4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103" forPlatform:HOKDeeplinkPlatformWeb];
+//	[deeplink addURL:@"http://popup.rocks/router.php?channel=4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103" forPlatform:HOKDeeplinkPlatformAndroid];
+//	
+//	[[Hoko deeplinking] generateSmartlinkForDeeplink:deeplink success:^(NSString *smartlink) {
+//		NSLog(@"HOKO:[%@]", smartlink);
+//	} failure:^(NSError *error) {
+//		NSLog(@"HOKO ERROR:[%@]", error);
+//	}];
+	
+	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Actives - boot"
 									   withProperties:@{@"day"	: [NSDate utcNowDate]}];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)]);
-	
-	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0) {
+	NSLog(@"KC VAL:[%d]", ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] == 0));
+	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] == 0) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - install"];
 		[keychain setObject:@([NSDate elapsedUTCSecondsSinceUnixEpoch]) forKey:CFBridgingRelease(kSecAttrService)];
+		NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 	}
 	
 	return (YES);
@@ -709,22 +730,22 @@ NSString * const kTwilioSMS = @"6475577873";
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
-	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
-		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Backgrounding First Run"];
-		
-		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
-		localNotification.timeZone = [NSTimeZone systemTimeZone];
-		localNotification.alertAction = @"View";
-		localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
-		localNotification.soundName = @"selfie_notification.caf";
-		localNotification.userInfo = @{};
-		
-		[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"local_reg"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+//	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
+//		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Backgrounding First Run"];
+//		
+//		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+//		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
+//		localNotification.timeZone = [NSTimeZone systemTimeZone];
+//		localNotification.alertAction = @"View";
+//		localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+//		localNotification.soundName = @"selfie_notification.caf";
+//		localNotification.userInfo = @{};
+//		
+//		[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+//		
+//		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"local_reg"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+//	}
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -772,16 +793,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)]);
+	NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 	
-	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
+	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] != 0) {
 		[[UIApplication sharedApplication] cancelAllLocalNotifications];
 		
-		NSDate *installDate = [NSDate dateFromUnixTimestamp:[[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] floatValue]];
+		NSDate *installDate = [NSDate dateFromUnixTimestamp:[[keychain objectForKey:CFBridgingRelease(kSecAttrService)] floatValue]];
 		NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 		
 		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 7) {
-			if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day7_push"] isEqualToString:@"YES"]) {
+			//if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day7_push"] isEqualToString:@"YES"]) {
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
@@ -793,17 +814,17 @@ NSString * const kTwilioSMS = @"6475577873";
 				localNotification.fireDate = targetDate;
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
 				localNotification.alertAction = @"View";
-				localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+				localNotification.alertBody = @"Someone has joined your Popup";
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
-				//[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-			}
+				[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			//}
 		}
 		
 		
 		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 14) {
-			if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day30_push"] isEqualToString:@"YES"]) {
+			//if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day30_push"] isEqualToString:@"YES"]) {
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
@@ -815,17 +836,17 @@ NSString * const kTwilioSMS = @"6475577873";
 				localNotification.fireDate = targetDate;
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
 				localNotification.alertAction = @"View";
-				localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+				localNotification.alertBody = @"Someone has joined your Popup";
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
-				//[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-			}
+				[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			//}
 			
 		}
 		
-		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] >= 14) {
-			if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day14_push"] isEqualToString:@"YES"]) {
+		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 30) {
+			//if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day14_push"] isEqualToString:@"YES"]) {
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
@@ -837,12 +858,12 @@ NSString * const kTwilioSMS = @"6475577873";
 				localNotification.fireDate = targetDate;
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
 				localNotification.alertAction = @"View";
-				localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
+				localNotification.alertBody = @"Someone has joined your Popup";
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
-				//[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-			}
+				[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+			//}
 		}
 	}
 	
@@ -953,7 +974,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSLog(@"currentViewController:[%@]", [UIViewController currentViewController].class);
 		
 		
-		NSString *channelName = ([[path firstObject] length] > 0) ? [path firstObject] : @"";
+		NSString *channelName = ([[path lastObject] length] > 0) ? [path lastObject] : @"";
 		
 		if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
 			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
@@ -1019,7 +1040,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //																		  target:self
 //																		selector:@selector(_changeLoadTint)
 //																		userInfo:nil repeats:YES];
-//							
+//
 //							HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
 //							[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
 //							

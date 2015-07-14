@@ -3,22 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "cancelButton_Active@2x.png"
+      "filename" : "closeButtonDark_Active@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "cancelButton_Active@2x-1.png"
+      "filename" : "closeButtonDark_Active@2x.png"
     },
     {
       "idiom" : "iphone",
+      "filename" : "closeButtonDark_Active@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "cancelButton_Active@2x-2.png"
+      "filename" : "closeButtonDark_Active@3x.png"
     }
   ],
   "info" : {

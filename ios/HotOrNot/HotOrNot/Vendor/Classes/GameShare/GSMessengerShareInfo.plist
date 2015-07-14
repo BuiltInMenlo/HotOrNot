@@ -7,15 +7,15 @@
 	<key>subtitle</key>
 	<string>Join Popup!</string>
 	<key>body_text</key>
-	<string>Tap here to join my Popup</string>
+	<string>Your friend has shared a Popup</string>
 	<key>main_image</key>
 	<string>popup_share</string>
 	<key>main_image_url</key>
-	<string>http://j79ydv.com/images/ads/300x250_ja.jpg</string>
+	<string> http://i.imgur.com/8FA97mK.png</string>
 	<key>sub_image</key>
 	<string></string>
 	<key>sub_image_url</key>
-	<string>http://j79ydv.com/images/icons/kikpeeps.jpg</string>
+	<string> http://i.imgur.com/8FA97mK.png</string>
 	<key>outbound_url</key>
 	<string>http://j79ydv.com/s.php</string>
 	<key>options</key>
@@ -23,7 +23,7 @@
 	<key>FB_MESSENGER</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>share_image</key>
 		<string>popup_share</string>
 		<key>options</key>
@@ -35,22 +35,22 @@
 	<key>KAKAO_TALK</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>title</key>
 		<string></string>
 		<key>image_url</key>
-		<string>http://j79ydv.com/images/ads/300x250_ja.jpg</string>
+		<string> http://i.imgur.com/8FA97mK.jpg</string>
 		<key>button_icon_url</key>
-		<string>http://j79ydv.com/images/icons/kikpeeps.jpg</string>
+		<string> http://i.imgur.com/8FA97mK.jpg</string>
 		<key>button_text</key>
-		<string>Tap here to join my Popup</string>
+		<string>Your friend has shared a Popup on Kakao</string>
 		<key>outbound_url</key>
 		<string>http://j79ydv.com/s.php</string>
 	</dict>
 	<key>KIK</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>title</key>
 		<string></string>
 		<key>subtitle</key>
@@ -60,16 +60,16 @@
 		<key>image_url</key>
 		<string></string>
 		<key>body_text</key>
-		<string></string>
+		<string>Your friend has shared a Popup on Kik</string>
 		<key>outbound_url</key>
 		<string></string>
 	</dict>
 	<key>LINE</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>body_text</key>
-		<string></string>
+		<string>Your friend has shared a Popup on LINE </string>
 		<key>link</key>
 		<string></string>
 	</dict>
@@ -78,7 +78,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Check out Skout</string>
+		<string>Your friend has shared a Popup on SMS</string>
 		<key>link</key>
 		<string>http://taps.io/trySkout</string>
 	</dict>
@@ -87,18 +87,18 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string></string>
+		<string>Your friend has shared a Popup on WhatsApp</string>
 		<key>link</key>
 		<string></string>
 	</dict>
 	<key>WE_CHAT</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>title</key>
 		<string>Popup on iOS - WeChat</string>
 		<key>body_text</key>
-		<string>Join my Popup!</string>
+		<string>Your friend has shared a Popup on WeChat</string>
 		<key>image</key>
 		<string>popup_share</string>
 		<key>link</key>
@@ -107,27 +107,27 @@
 	<key>HIKE</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>body_text</key>
-		<string></string>
+		<string>Your friend has shared a Popup on Hike</string>
 		<key>link</key>
 		<string></string>
 	</dict>
 	<key>VIBER</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>body_text</key>
-		<string></string>
+		<string>Your friend has shared a Popup on Viber</string>
 		<key>link</key>
 		<string></string>
 	</dict>
 	<key>OTHER</key>
 	<dict>
 		<key>override</key>
-		<true/>
+		<false/>
 		<key>body_text</key>
-		<string></string>
+		<string>Your friend has shared a Popup</string>
 		<key>link</key>
 		<string></string>
 	</dict>

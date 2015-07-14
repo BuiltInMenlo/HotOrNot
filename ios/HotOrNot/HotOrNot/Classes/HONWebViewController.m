@@ -56,10 +56,10 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	
 	_webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight - 20.0), [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight - 20.0))];
-	[_webView setBackgroundColor:[UIColor whiteColor]];
+	[_webView setBackgroundColor:[UIColor clearColor]];
 	_webView.delegate = self;
 	[_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
 	[self.view addSubview:_webView];

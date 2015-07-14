@@ -139,11 +139,11 @@
 		_progressHUD = nil;
 	}
 	
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
-		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
-		_voteScore = [[result objectForKey:@"count"] intValue];
-		[_headerView updateActivityScore:_voteScore];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
+//		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
+//		_voteScore = [[result objectForKey:@"count"] intValue];
+//		[_headerView updateActivityScore:_voteScore];
+//	}];
 	
 	
 //	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSNumber *result){
@@ -201,6 +201,9 @@
 	_scrollView.pagingEnabled = YES;
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
+	
+	
+	[self performSelector:@selector(_startTint) withObject:nil afterDelay:3.0];
 	
 	_tintView = [[UIView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height)];
 	_tintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
@@ -286,7 +289,7 @@
 	[linkButton addTarget:self action:@selector(_goPrivacy) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:linkButton];
 	
-	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 44.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 40.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
 }
@@ -343,11 +346,11 @@
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
-		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
-		_voteScore = [[result objectForKey:@"count"] intValue];
-		[_headerView updateActivityScore:_voteScore];
-	}];
+//	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
+//		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
+//		_voteScore = [[result objectForKey:@"count"] intValue];
+//		[_headerView updateActivityScore:_voteScore];
+//	}];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -767,15 +770,22 @@
 
 
 #pragma mark - UI Presentation
-- (void)_changeLoadTint {
+- (void)_startTint {
+	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:3.0
+												  target:self
+												selector:@selector(_changeTint)
+												userInfo:nil repeats:YES];
+}
+
+- (void)_changeTint {
 	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
 						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
 						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
 						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
 	
 	UIColor *color = [colors randomElement];
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		[[HONViewDispensor sharedInstance] tintView:_loadingView withColor:color];
+	[UIView animateWithDuration:0.3333 animations:^(void) {
+		[[HONViewDispensor sharedInstance] tintView:_scrollView withColor:color];
 	} completion:nil];
 }
 
@@ -865,9 +875,9 @@
 			}];
 		}
 		
-		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 44.0) - (_composeButton.frame.size.height + 7.0)) {
+		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 7.0)) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 44.0);
+				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 40.0);
 			} completion:^(BOOL finished) {
 			}];
 		}
@@ -897,9 +907,9 @@
 			}];
 		}
 		
-		if (_paginationView.frame.origin.y == self.view.frame.size.height - 44.0) {
+		if (_paginationView.frame.origin.y == self.view.frame.size.height - 40.0) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 44.0) - (_composeButton.frame.size.height + 7.0));
+				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 7.0));
 			} completion:^(BOOL finished) {
 			}];
 		}

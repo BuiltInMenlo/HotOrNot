@@ -67,13 +67,14 @@
 @property (nonatomic, strong) UILabel *countdownLabel;
 @property (nonatomic) int countdown;
 @property (nonatomic, strong) UIButton *flagButton;
+@property (nonatomic, strong) UIButton *cameraFlipButton;
 @property (nonatomic, strong) UIView *tintBGView;
 @property (nonatomic, strong) UIImageView *nameImageView;
 @property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) NSTimer *countdownTimer;
 @property (nonatomic, strong) UIView *movieFillView;
 @property (nonatomic, strong) UIButton *takePhotoButton;
-@property (nonatomic, strong) UIButton *cameraFlipButton;
+@property (nonatomic, strong) UIButton *messengerButton;
 @property (nonatomic, strong) UIButton *openCommentButton;
 @property (nonatomic, strong) UIImageView *animationImageView;
 @property (nonatomic, strong) UITextField *nameTextField;
@@ -85,6 +86,7 @@
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 
 @property (nonatomic, strong) HONMediaRevealerView *revealerView;
+@property (nonatomic, strong) GSMessengerShare *messengerShare;
 
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) BOOL isActive;
@@ -460,6 +462,33 @@
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 	[PubNub subscribeOn:@[channel]];
 	
+	
+	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+	
 	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 		PNChannel *channel = [channels firstObject];
 		
@@ -577,7 +606,7 @@
 			NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 		}
 		
-		_expireLabel.text = [NSString stringWithFormat:@"%d %@ here…", _participants, (_participants == 1) ? @"person" : @"people"];
+		_expireLabel.text = [NSString stringWithFormat:@"%d %@ here", _participants, (_participants == 1) ? @"person" : @"people"];
 	}];
 	
 //	[PubNub requestParticipantsListForChannel:[PNChannel channelWithName:@"my_channel"]
@@ -997,12 +1026,12 @@
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
-	_expireLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1.0];
-	_expireLabel.text = @"1 person here…";
+	_expireLabel.textColor = [UIColor whiteColor];
+	_expireLabel.text = @"1 person here";
 	[self.view addSubview:_expireLabel];
 	
 //	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, (self.view.frame.size.height * 0.5) - _commentFooterView.frame.size.height)];
-	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 30.0 + [UIApplication sharedApplication].statusBarFrame.size.height))];
+	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height))];
 //	_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, 10.0, _scrollView.contentInset.right);
@@ -1048,6 +1077,12 @@
 	_nameImageView.frame = CGRectOffset(_nameImageView.frame, 0.0, self.view.frame.size.height * 0.55);
 	[self.view addSubview:_nameImageView];
 	
+	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 65.0, (self.view.frame.size.height * 0.62) + 5.0, 60.0, 60.0);
+	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+	[_cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_cameraFlipButton];
 	
 	
 	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1111,13 +1146,13 @@
 	NSLog(@"FRAME:%@", NSStringFromCGRect(_cameraPreviewView.frame));
 	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	
-	_cameraFlipButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 88.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
-	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	[_cameraFlipButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	_cameraFlipButton.alpha = 0.0;
-	[self.view addSubview:_cameraFlipButton];
+	_messengerButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_messengerButton.frame = CGRectMake(self.view.frame.size.width - 88.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
+	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	_messengerButton.alpha = 0.0;
+	[self.view addSubview:_messengerButton];
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
@@ -1163,17 +1198,16 @@
 	
 	
 	_lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	_lpGestureRecognizer.minimumPressDuration = 0.50;
+	_lpGestureRecognizer.minimumPressDuration = 0.125;
 	_lpGestureRecognizer.delaysTouchesBegan = YES;
 	[self.view addGestureRecognizer:_lpGestureRecognizer];
 	
 	[self _goSetName];
 	
-	GSMessengerShare *messengerShare = [GSMessengerShare sharedInstance];
-	[messengerShare addAllMessengerShareTypes];
-	[messengerShare overrrideWithOutboundURL:@"http://gs.trydood.com/"];
-	messengerShare.delegate = self;
-	[messengerShare showMessengerSharePickerOnViewController:self];
+	_messengerShare = [GSMessengerShare sharedInstance];
+	[_messengerShare addAllMessengerShareTypes];
+	_messengerShare.delegate = self;
+	[_messengerShare showMessengerSharePickerOnViewController:self];
 	
 //	_shareHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 //	[self.view addSubview:_shareHolderView];
@@ -1333,12 +1367,33 @@
 - (void)_goShare {
 	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
-	GSMessengerShare *messengerShare = [GSMessengerShare sharedInstance];
-//	[messengerShare addMessengerShareTypes:@[@(GSMessengerTypeFBMessenger), @(GSMessengerTypeKakaoTalk), @(GSMessengerTypeKik), @(GSMessengerTypeLine)]];
-	[messengerShare addAllMessengerShareTypes];
-	[messengerShare overrrideWithOutboundURL:@"http://gs.trydood.com"];
-	messengerShare.delegate = self;
-	[messengerShare showMessengerSharePickerOnViewController:self];
+	
+	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+			[_messengerShare showMessengerSharePickerOnViewController:self];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
 	
 //	NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeShare),
 //								 @"deeplink"	: NSStringFromInt(_statusUpdateVO.statusUpdateID),
@@ -1503,6 +1558,7 @@
 	_takePhotoButton.hidden = NO;
 	_openCommentButton.hidden = NO;
 	_scrollView.hidden = YES;
+	_cameraFlipButton.hidden = NO;
 	_lpGestureRecognizer.enabled = YES;
 	
 	[_tintBGView removeFromSuperview];
@@ -1522,7 +1578,7 @@
 	_commentTextField.placeholder = @"";
 	_commentFooterView.backgroundColor = [UIColor clearColor];
 	_scrollView.hidden = YES;
-	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 30.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
+	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
 	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 729.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	_submitCommentButton.hidden = YES;
@@ -1545,7 +1601,7 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_flagButton.alpha = 1.0;
-		_cameraFlipButton.alpha = 1.0;
+		_messengerButton.alpha = 1.0;
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 //		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
@@ -1564,6 +1620,8 @@
 		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
 			_tutorialView.hidden = YES;
 			_nameImageView.hidden = YES;
+			_cameraFlipButton.hidden = YES;
+			
 			if ([_commentTextField isFirstResponder])
 				[_commentTextField resignFirstResponder];
 			
@@ -1603,7 +1661,7 @@
 			_commentFooterView.hidden = YES;
 			_scrollView.hidden = YES;
 			_flagButton.hidden = YES;
-			_cameraFlipButton.hidden = YES;
+			_messengerButton.hidden = YES;
 			
 //			[UIView animateKeyframesWithDuration:3.00 delay:0.00
 //										 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveLinear)
@@ -1630,11 +1688,11 @@
 			_statusUpdateHeaderView.hidden = NO;
 			_commentFooterView.hidden = NO;
 			_openCommentButton.hidden = NO;
-			_scrollView.hidden = NO;
 			_flagButton.hidden = NO;
-			_cameraFlipButton.hidden = NO;
+			_messengerButton.hidden = NO;
 			_countdownLabel.text = @"";
 			_countdownLabel.hidden = YES;
+			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
 			gestureRecognizer.enabled = YES;
 		
@@ -1805,7 +1863,7 @@
 //		_commentFooterView.hidden = NO;
 //		_scrollView.hidden = NO;
 //		_flagButton.hidden = NO;
-//		_cameraFlipButton.hidden = NO;
+//		_messengerButton.hidden = NO;
 	}
 	
 	_countdownLabel.text = NSStringFromInt(_countdown);
@@ -1849,8 +1907,8 @@
 //	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		//if (messageState == PNMessageSent) {
 		//	NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-			[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
-			}];
+			//[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+			//}];
 			
 			[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
 			[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
@@ -1874,10 +1932,12 @@
 #pragma mark - GSMessengerShare Delegates
 - (void)didCloseMessengerShare {
 	NSLog(@"[*:*] didCloseMessengerShare [*:*]");
+	[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)didSelectMessengerShareWithType:(GSMessengerShareType)messengerType {
 	NSLog(@"[*:*] didSelectMessengerShareWithType:[%d] [*:*]", (int)messengerType);
+	[[GSMessengerShare sharedInstance] dismissMessengerSharePicker];
 }
 
 - (void)didSkipMessengerShare {
@@ -2048,6 +2108,7 @@
 	_nameImageView.hidden = YES;
 	_tutorialView.hidden = YES;
 	_scrollView.hidden = NO;
+	_cameraFlipButton.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + 216.0 + 10.0));
 	_submitCommentButton.hidden = NO;
 	
@@ -2085,7 +2146,7 @@
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
 //		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0));
-		_cameraFlipButton.alpha = 0.0;
+		_messengerButton.alpha = 0.0;
 		_flagButton.alpha = 0.0;
 	 } completion:^(BOOL finished) {
 	 }];

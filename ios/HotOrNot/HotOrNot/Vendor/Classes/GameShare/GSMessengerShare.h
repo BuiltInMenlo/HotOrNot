@@ -48,6 +48,7 @@ extern NSString * const kOTHERKey;
 - (void)addMessengerShareTypes:(NSArray *)messengerShareTypes;
 - (void)overrrideWithOutboundURL:(NSString *)outboundURL;
 - (void)showMessengerSharePickerOnViewController:(UIViewController *)viewController;
+- (void)dismissMessengerSharePicker;
 
 @property (nonatomic, assign) id<GSMessengerShareDelegate> delegate;
 @end
