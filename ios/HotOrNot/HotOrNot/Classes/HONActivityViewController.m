@@ -31,7 +31,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVITY - enter"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVITY - enter"];
 		
 		_viewStateType = HONStateMitigatorViewStateTypeActivity;
 		_totalType = HONStateMitigatorTotalTypeActivity;
@@ -275,7 +275,7 @@
 	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Activity - Selected Row"];
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVITY - copied_id"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVITY - copied_id"];
 	
 	NSLog(@"vo:[%@]", vo.dictionary);
 	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : @"UNKNOWN");

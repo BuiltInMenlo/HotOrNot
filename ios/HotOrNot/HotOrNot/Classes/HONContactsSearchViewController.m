@@ -231,8 +231,8 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Submit"
-									 withProperties:@{@"query"	: [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text]}];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"User Search Phone - Submit"
+//									 withProperties:@{@"query"	: [_countryCodeLabel.text stringByAppendingString:_phoneTextField.text]}];
 	[_phoneTextField resignFirstResponder];
 }
 

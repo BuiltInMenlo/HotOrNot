@@ -38,7 +38,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - enter"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - enter"];
 		
 		_totalType = HONStateMitigatorTotalTypeCompose;
 		_viewStateType = HONStateMitigatorViewStateTypeCompose;
@@ -184,8 +184,8 @@
 #pragma mark - Navigation
 - (void)_goClose {
 	NSLog(@"[*:*] _goClose");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - exit_button"];
-	
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - exit_button"];
+//
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 	}];
 	
@@ -196,7 +196,7 @@
 }
 
 - (void)_goNext {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_1_select"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_1_select"];
 	
 	NSError *error;
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[_selectedTopicVO.topicName] options:0 error:&error]

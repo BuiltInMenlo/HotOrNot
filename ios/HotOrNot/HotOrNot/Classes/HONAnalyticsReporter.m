@@ -14,6 +14,7 @@
 
 #import "HONAnalyticsReporter.h"
 
+NSString * const kAnalyticsCohort = @"0714Cohort";
 
 @implementation HONAnalyticsReporter
 static HONAnalyticsReporter *sharedInstance = nil;
@@ -40,15 +41,16 @@ static HONAnalyticsReporter *sharedInstance = nil;
 
 - (NSDictionary *)orthodoxProperties {
 	return (@{@"user"			: [[HONAnalyticsReporter sharedInstance] userProperties],
-			  @"device"			: [[HONAnalyticsReporter sharedInstance] deviceProperties],
-			  @"location"		: [[HONAnalyticsReporter sharedInstance] locationProperties],
+			  @"device"			: [[HONAnalyticsReporter sharedInstance] deviceProperties]});
+//			  @"location"		: [[HONAnalyticsReporter sharedInstance] locationProperties],
 //			  @"session"		: [[HONAnalyticsReporter sharedInstance] sessionProperties],
-			  @"application"	: [[HONAnalyticsReporter sharedInstance] applicationProperties]});//,
+//			  @"application"	: [[HONAnalyticsReporter sharedInstance] applicationProperties]});//,
 //			  @"screen_state"	: [[HONAnalyticsReporter sharedInstance] screenStateProperties]});
 }
 
 - (NSDictionary *)applicationProperties {
-	return (@{@"sku"			: [[NSBundle mainBundle] bundleIdentifier]});//,
+	return (@{});
+//	return (@{@"sku"			: [[NSBundle mainBundle] bundleIdentifier]});//,
 //			  @"version"		: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
 //			  @"build"			: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
 //			  @"service_env"	: ([HONAppDelegate apiServerPath] != nil) ? ([[HONAppDelegate apiServerPath] rangeOfString:@"devint"].location != NSNotFound) ? @"devint" : @"prod" : @"N/A",
@@ -178,7 +180,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	[eventName addEntriesFromDictionary:@{@"action"	: [[event componentsSeparatedByString:@" - "] lastObject]}];
 	
 	
-	//NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
+	NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
 	id tracker = [[GAI sharedInstance] defaultTracker];
 	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:eventCollection
 														  action:[[event componentsSeparatedByString:@" - "] lastObject]

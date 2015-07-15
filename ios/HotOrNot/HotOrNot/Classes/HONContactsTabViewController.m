@@ -340,7 +340,7 @@
 			[_locationManager requestWhenInUseAuthorization];
 		[_locationManager startUpdatingLocation];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
 	
 	} else {
 		[self _goRegistration];
@@ -488,7 +488,7 @@
 
 - (void)_completedFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _completedFirstRun <|::");
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - enter"];
 	
 	_locationManager = [[CLLocationManager alloc] init];
 	_locationManager.delegate = self;
@@ -543,7 +543,7 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Next Update"
 //										withClubPhoto:cell.clubPhotoVO];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - next_image"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - next_image"];
 	
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	int index = MIN(MAX(0, (int)[_tableView indexPathForCell:(UITableViewCell *)cell].section + rows), ((int)[_clubPhotos count] - 1));
@@ -593,7 +593,7 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Upvote"
 //										withClubPhoto:clubPhotoVO];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - up"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - up"];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[self _advanceTimelineFromCell:cell byAmount:1];
@@ -617,7 +617,7 @@
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Down Vote"
 //										  withClubPhoto:clubPhotoVO];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - down"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"HOME - down"];
 	[self _advanceTimelineFromCell:cell byAmount:1];
 	[[HONAPICaller sharedInstance] voteStatusUpdateWithStatusUpdateID:clubPhotoVO.challengeID isUpVote:NO completion:^(NSDictionary *result) {
 		[self _updateScoreForClubPhoto:clubPhotoVO isIncrement:NO];

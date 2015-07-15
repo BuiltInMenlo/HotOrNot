@@ -84,7 +84,7 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - exit_fr"];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];

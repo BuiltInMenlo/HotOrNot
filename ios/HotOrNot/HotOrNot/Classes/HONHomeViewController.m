@@ -176,7 +176,9 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	// blue
 	self.view.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	
 	
 	_transitionController = [[TransitionDelegate alloc] init];
 	
@@ -195,6 +197,7 @@
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
 	_scrollView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	_scrollView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.alwaysBounceHorizontal = YES;
@@ -311,26 +314,26 @@
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0) {
-		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
-			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
-																	@"state"	: [result objectForKey:@"state"],
-																	@"region"	: [result objectForKeyedSubscript:@"region"]}];
-			
-			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] floatValue] longitude:[[result objectForKey:@"lon"] floatValue]]];
-
-			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
-				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
-				
-				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
-				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
-				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
-				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
-					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
-				}
-				
-				[self _goReloadContents];
-			}];
-		}];
+//		[[HONAPICaller sharedInstance] retrieveLocationFromIPAddressWithCompletion:^(NSDictionary *result) {
+//			[[HONDeviceIntrinsics sharedInstance] updateGeoLocale:@{@"city"		: [result objectForKey:@"city"],
+//																	@"state"	: [result objectForKey:@"state"],
+//																	@"region"	: [result objectForKeyedSubscript:@"region"]}];
+//			
+//			[[HONDeviceIntrinsics sharedInstance] updateDeviceLocation:[[CLLocation alloc] initWithLatitude:[[result objectForKey:@"lat"] floatValue] longitude:[[result objectForKey:@"lon"] floatValue]]];
+//
+//			[[HONClubAssistant sharedInstance] joinGlobalClubWithCompletion:^(HONUserClubVO *clubVO) {
+//				[[HONClubAssistant sharedInstance] writeHomeLocationClub:clubVO];
+//				
+//				HONUserClubVO *homeClubVO = [[HONClubAssistant sharedInstance] homeLocationClub];
+//				HONUserClubVO *locationClubVO = [[HONClubAssistant sharedInstance] currentLocationClub];
+//				NSLog(@"HOME CLUB:[%d - %@] CURRENT_CLUB:[%d - %@] RADIUS CLUB:[%d - %@]", homeClubVO.clubID, homeClubVO.clubName, locationClubVO.clubID, locationClubVO.clubName, clubVO.clubID, clubVO.clubName);
+//				if (locationClubVO.clubID == 0 || (clubVO.clubID != locationClubVO.clubID && clubVO.clubID != homeClubVO.clubID)) {
+//					[[HONClubAssistant sharedInstance] writeCurrentLocationClub:clubVO];
+//				}
+//				
+//				[self _goReloadContents];
+//			}];
+//		}];
 		
 	} else {
 		[self _goRegistration];
@@ -498,7 +501,7 @@
 	
 	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:[statusUpdateAffix length]] intValue] : 0;
 	if (statusUpdateID > 0) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - joinPopup"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"]];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -541,7 +544,7 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - create"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - createPopup"]];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -644,7 +647,7 @@
 }
 
 - (void)_goInvite {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareApp"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareApp"];
 	
 //	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
 //	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
@@ -761,21 +764,25 @@
 
 #pragma mark - UI Presentation
 - (void)_startTint {
-	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:3.0
-												  target:self
-												selector:@selector(_changeTint)
-												userInfo:nil repeats:YES];
+//	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:3.0
+//												  target:self
+//												selector:@selector(_changeTint)
+//												userInfo:nil repeats:YES];
 }
 
 - (void)_changeTint {
-	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
-						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
-						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
-						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+//	NSArray *colors = @[[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+//						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+//						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+//						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+//	
+//	UIColor *color = [colors randomElement];
+//	[UIView animateWithDuration:0.3333 animations:^(void) {
+//		[[HONViewDispensor sharedInstance] tintView:_scrollView withColor:color];
+//	} completion:nil];
 	
-	UIColor *color = [colors randomElement];
-	[UIView animateWithDuration:0.3333 animations:^(void) {
-		[[HONViewDispensor sharedInstance] tintView:_scrollView withColor:color];
+	[UIView animateWithDuration:0.5 animations:^(void) {
+		[[HONViewDispensor sharedInstance] tintView:_scrollView withColor:[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00]];
 	} completion:nil];
 }
 
@@ -883,11 +890,17 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 //	NSLog(@"[*:*] scrollViewDidEndDecelerating:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - swipe_%d", (int)(scrollView.contentOffset.x / scrollView.frame.size.width)]];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - swipe_%d", (int)(scrollView.contentOffset.x / scrollView.frame.size.width)]];
 	
 	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
 	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
 		[self _registerPushNotifications];
+		
+		
+//		if (!_isLoading) {
+//			_isLoading = YES;
+//			[self _changeTint];
+//		}
 		
 		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
@@ -976,7 +989,7 @@
 	} else if (alertView.tag == HONHomeAlertViewTypeShare) {
 	} else if (alertView.tag == HONHomeAlertViewTypeInvite) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareClipboard"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
@@ -985,7 +998,7 @@
 							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareSMS"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareSMS"];
 			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -1003,7 +1016,7 @@
 			}
 			
 		} else if (buttonIndex == 3) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKik"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKik"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -1027,7 +1040,7 @@
 			}
 			
 		} else if (buttonIndex == 4) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareLine"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareLine"];
 			
 			NSString *typeName = @"Line";
 			NSString *urlSchema = @"line://";
@@ -1044,7 +1057,7 @@
 			}
 			
 		} else if (buttonIndex == 5) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKakao"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKakao"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";

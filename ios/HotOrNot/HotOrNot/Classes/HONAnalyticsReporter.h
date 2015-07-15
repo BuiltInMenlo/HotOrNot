@@ -21,6 +21,9 @@
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
 
+extern NSString * const kAnalyticsCohort;
+
+
 @interface HONAnalyticsReporter : NSObject
 + (HONAnalyticsReporter *)sharedInstance;
 

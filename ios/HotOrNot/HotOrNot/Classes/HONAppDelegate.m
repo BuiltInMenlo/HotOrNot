@@ -73,10 +73,10 @@ NSString * const kKeenIOMasterKey = @"9AD6705D760DE306DEA59827D0CF1D62";//@"980A
 NSString * const kKeenIOReadKey = @"a704d1b101e28221727b7b5e97bad1a5c7aa4deca37ad6ea0b03f676557a44b18e4e9918c52fc3019b6f63c73022d9f3fff37800b34e483513f1fffc5281551b6bcfef2f03309fa556f95f9fd0925ad43d1d52a70857a65d185d143a93f9867c7d8a9a3bcf311119438d1c26e838f59e";//@"0b7a1444ba73e7584da531247968ecde3b54733993fece6cb9827dca50248f8df1b3cfd888d39ab9dc326d3c25fabf023a30995b66fe34679d174e2fd56c2cc66039123ae17ad192c4024fc3169922b560616b355d9a7263fac1b37189ad628537a9fd2378ded658cbcf66128ce14dea";//@"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
 NSString * const kKeenIOWriteKey = @"be8e83a45f01146d0bf9e569e73c9ebac017da3a37eaa6d01483bddf0ac93c43ff7c67b1a93cf22cca9b6a5d44f443c12b5654a9e3e47d53b970d11a1ddb0e3f44c405a07f13bc94fbdf8c7a3af3b861b04b5797a863b3686947ec9ee96768409703d2572fd903e761a8ff3768d5cb02";//@"42e6a5311c254b6030c0f2d9f035377e2be399b744c55e09a6c3cfb8c682917f1f02c6d237f3c1b7d160df58b09ce8648de7bbeff3dd189da67e496fbd25312fcea72f189bc21c1bdafe01db17aef22cfd606985acea4e43f184210e588f64fedfecbe041301ab7436e8982dec4e955f";//@"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
 #else
-NSString * const kKeenIOProjectID = @"54bb1391e0855733be551306";
-NSString * const kKeenIOMasterKey = @"D805BE8BA8AF8F65F7C4825CA31C58E1";
-NSString * const kKeenIOReadKey = @"984990cfc1ba74d560bc85d2fe78ebb4d3595d9d14169a041ac7a3c80d6710c4a43dbcc1b1556f4361e8097cfd11e62bbdcf43be2c612f296225c52d32e12762864d9c569aa277632c08ee6b82783118a9d5052c0dccdf8d364993e184b23a1367e5de9b742b848a9f4f9ded7e58b186";
-NSString * const kKeenIOWriteKey = @"3765f6e50fdb595882038fb5c336dd31cbe55a2977ae03aa25d32fa0ef09b5ef9249a383dc54557c2eafbb539301094b347d97bafd67e948f33ff5df60aa438c02e1be7c06abdeafa468ca8e8cde4dafd54872f82fc21ac1e64d82f4522a86820e20f226253006b2aa713c9ac211ba83";
+NSString * const kKeenIOProjectID = @"559fbb4f672e6c4e2cea1bab";
+NSString * const kKeenIOMasterKey = @"9AD6705D760DE306DEA59827D0CF1D62";
+NSString * const kKeenIOReadKey = @"a704d1b101e28221727b7b5e97bad1a5c7aa4deca37ad6ea0b03f676557a44b18e4e9918c52fc3019b6f63c73022d9f3fff37800b34e483513f1fffc5281551b6bcfef2f03309fa556f95f9fd0925ad43d1d52a70857a65d185d143a93f9867c7d8a9a3bcf311119438d1c26e838f59e";
+NSString * const kKeenIOWriteKey = @"be8e83a45f01146d0bf9e569e73c9ebac017da3a37eaa6d01483bddf0ac93c43ff7c67b1a93cf22cca9b6a5d44f443c12b5654a9e3e47d53b970d11a1ddb0e3f44c405a07f13bc94fbdf8c7a3af3b861b04b5797a863b3686947ec9ee96768409703d2572fd903e761a8ff3768d5cb02";
 #endif
 
 NSString * const kFacebookAppID = @"600550136636754";
@@ -483,6 +483,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	id<GAITracker> tracker = [[GAI sharedInstance] trackerWithName:@"tracker"
 														trackingId:@"UA-65006670-1"];
 
+	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	GAIDictionaryBuilder *builder = [GAIDictionaryBuilder createScreenView];
 	[builder set:@"start" forKey:kGAISessionControl];
 	[tracker set:kGAIScreenName value:@"Launch"];
@@ -654,13 +657,13 @@ NSString * const kTwilioSMS = @"6475577873";
 //	}];
 	
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Actives - boot"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - boot"]
 									   withProperties:@{@"day"	: [NSDate utcNowDate]}];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	NSLog(@"KC VAL:[%d]", ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] == 0));
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] == 0) {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - install"];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - install"]];
 		[keychain setObject:@([NSDate elapsedUTCSecondsSinceUnixEpoch]) forKey:CFBridgingRelease(kSecAttrService)];
 		NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 	}
@@ -710,7 +713,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Actives - background"];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - background"]];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Entering Background"
 //									 withProperties:@{@"total"		: @([[HONStateMitigator sharedInstance] incrementTotalCounterForType:HONStateMitigatorTotalTypeBackground]),
@@ -758,7 +761,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //									 withProperties:@{@"duration"	: @([NSDate elapsedSecondsSinceDate:[[HONStateMitigator sharedInstance] appExitTimestamp]]),
 //													  @"total"		: @([[HONStateMitigator sharedInstance] totalCounterForType:HONStateMitigatorTotalTypeBackground])}];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0512Actives - resume"
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - resume"]
 									   withProperties:@{@"day"	: [NSDate utcNowDate]}];
 	
 	_isFromBackground = YES;
@@ -781,7 +784,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
 	[KeenClient disableGeoLocation];
-//	[KeenClient enableLogging];
+	[KeenClient enableLogging];
 	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
@@ -940,6 +943,9 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationWillTerminate:(UIApplication *)application {
 	//NSLog(@"[:|:] [applicationWillTerminate] [:|:]");
 	
+	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 //	[FBSession.activeSession close];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
@@ -976,7 +982,11 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		NSString *channelName = ([[path lastObject] length] > 0) ? [path lastObject] : @"";
 		
-		if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+//		if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+		if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
+			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - deeplink"] withProperties:@{@"channel"	: channelName}];
+			
+			
 			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
 			_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 			[self.window addSubview:_loadingView];
@@ -995,149 +1005,14 @@ NSString * const kTwilioSMS = @"6475577873";
 				
 				[_loadingOverlayView outro];
 			});
+		
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"Already in a Popup"
+										message:@"Leave this popup to open a different one."
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
 		}
-		
-		
-		
-		
-//		if ([[path firstObject] isEqualToString:@"username"]) {
-//			NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
-//			[userInfo replaceObject:[path lastObject] forKey:@"username"];
-//			[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
-//			
-//			[[HONAPICaller sharedInstance] updateUsernameForUser:[path lastObject] completion:^(NSDictionary *result) {
-//				if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//			}];
-//		}
-//		
-//		if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - fromDeep"];
-//			if ([[path firstObject] isNumeric]) {
-//				[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path firstObject] intValue] completion:^(NSDictionary *result) {
-//					if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-//						
-//						if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
-//							_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-//							_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-//							[self.window addSubview:_loadingView];
-//							
-//							UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
-//							animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-//																   [UIImage imageNamed:@"loading_02"],
-//																   [UIImage imageNamed:@"loading_03"],
-//																   [UIImage imageNamed:@"loading_04"],
-//																   [UIImage imageNamed:@"loading_05"],
-//																   [UIImage imageNamed:@"loading_06"],
-//																   [UIImage imageNamed:@"loading_07"],
-//																   [UIImage imageNamed:@"loading_08"]];
-//							animationImageView.animationDuration = 0.75;
-//							animationImageView.animationRepeatCount = 0;
-//							[animationImageView startAnimating];
-//							[_loadingView addSubview:animationImageView];
-//							
-//							_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-//																		  target:self
-//																		selector:@selector(_changeLoadTint)
-//																		userInfo:nil repeats:YES];
-//
-//							HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-//							[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
-//							
-//							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//								[_tintTimer invalidate];
-//								_tintTimer = nil;
-//								[_loadingView removeFromSuperview];
-//								
-//								[_loadingOverlayView outro];
-//							});
-//						}
-//					
-//					} else {
-//						[_tintTimer invalidate];
-//						_tintTimer = nil;
-//						[_loadingView removeFromSuperview];
-//						
-//						[_loadingOverlayView outro];
-//
-//						
-//						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
-//																			message:@"Would you like to start a new chat?"
-//																		   delegate:self
-//																  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-//																  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-//						[alertView setTag:HONAppDelegateAlertTypeCreateChat];
-//						[alertView show];
-//					}
-//				}];
-//				
-//			} else if ([[path lastObject] isNumeric]) {
-//				[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:[[path lastObject] intValue] completion:^(NSDictionary *result) {
-//					if (![[result objectForKey:@"detail"] isEqualToString:@"Not found"]) {
-//						if (![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
-//							
-//							_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-//							_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-//							[self.window addSubview:_loadingView];
-//							
-//							UIImageView *animationImageView = [[UIImageView alloc] initWithFrame:self.window.frame];
-//							animationImageView.animationImages = @[[UIImage imageNamed:@"loading_01"],
-//																   [UIImage imageNamed:@"loading_02"],
-//																   [UIImage imageNamed:@"loading_03"],
-//																   [UIImage imageNamed:@"loading_04"],
-//																   [UIImage imageNamed:@"loading_05"],
-//																   [UIImage imageNamed:@"loading_06"],
-//																   [UIImage imageNamed:@"loading_07"],
-//																   [UIImage imageNamed:@"loading_08"]];
-//							animationImageView.animationDuration = 0.75;
-//							animationImageView.animationRepeatCount = 0;
-//							[animationImageView startAnimating];
-//							[_loadingView addSubview:animationImageView];
-//							
-//							_tintTimer = [NSTimer scheduledTimerWithTimeInterval:0.333
-//																		  target:self
-//																		selector:@selector(_changeLoadTint)
-//																		userInfo:nil repeats:YES];
-//							
-//							HONStatusUpdateVO *vo = [HONStatusUpdateVO statusUpdateWithDictionary:result];
-//							[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
-//							
-//							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//								[_tintTimer invalidate];
-//								_tintTimer = nil;
-//								[_loadingView removeFromSuperview];
-//								
-//								[_loadingOverlayView outro];
-//							});
-//						}
-//					
-//					} else {
-//						[_tintTimer invalidate];
-//						_tintTimer = nil;
-//						[_loadingView removeFromSuperview];
-//						
-//						[_loadingOverlayView outro];
-//
-//						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
-//																			message:@"Would you like to start a new chat?"
-//																		   delegate:self
-//																  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-//																  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-//						[alertView setTag:HONAppDelegateAlertTypeCreateChat];
-//						[alertView show];
-//					}
-//				}];
-//				
-//			} else {
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Chat Link not found!"
-//																	message:@"Would you like to start a new chat?"
-//																   delegate:self
-//														  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-//														  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-//				[alertView setTag:HONAppDelegateAlertTypeCreateChat];
-//				[alertView show];
-//			}
-//		}
 	}
 	
 	return (YES);
@@ -1150,6 +1025,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	notification.soundName = UILocalNotificationDefaultSoundName;
 	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - localPush"]];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+														message:notification.alertBody
+													   delegate:self
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+	[alertView setTag:666];
+	[alertView show];
+	
 	[self _showOKAlert:nil withMessage:notification.alertBody];
 }
 
@@ -1159,7 +1044,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	pushToken = [pushToken substringToIndex:[pushToken length] - 1];
 	pushToken = [pushToken stringByReplacingOccurrencesOfString:@" " withString:@""];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - acceptPush"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - acceptPush"]];
 	
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
@@ -1186,7 +1071,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
 	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - deniedPush"];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@"0527Cohort - deniedPush"]];
 	
 //	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
 //		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
@@ -1209,12 +1094,15 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[HONLayerKitAssistant sharedInstance] notifyClientRemotePushWasReceived:userInfo withCompletionHandler:completionHandler];
 	
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification - BG] (%@)", self.class, userInfo);
-	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
+//	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	
 	NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : @"";
 	
-	if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+	//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
+		
 		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
 		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 		[self.window addSubview:_loadingView];
@@ -1260,7 +1148,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : @"";
 	
-	if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+	//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
 		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
 		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 		[self.window addSubview:_loadingView];
@@ -1569,7 +1458,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 		
 	} else if (alertView.tag == HONAppDelegateAlertTypeCreateChat) {
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - compose"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"DEEPLINK - compose"];
 			
 			_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
 			_loadingOverlayView.delegate = self;

@@ -67,7 +67,7 @@
 }
 
 - (void)_submitStatusUpdate {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - submit"];
 	
 	
 //	[_submitParams setValue:channelName forKey:@"img_url"];
@@ -165,7 +165,7 @@
 
 #pragma mark - UI Presentation
 - (void)_goCustomTopic {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_custom"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_custom"];
 
 	[self.view addSubview:_customTopicTextField];
 	[_customTopicTextField becomeFirstResponder];
@@ -257,7 +257,7 @@
 		[self _goCustomTopic];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
 		_selectedTopicVO = topicVO;
 		[self _goSubmit];
 	}
@@ -318,7 +318,7 @@
 		[self _goCustomTopic];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"COMPOSE - step_2_select"];
 		[self _goSubmit];
 	}
 }

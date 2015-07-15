@@ -372,7 +372,7 @@
 	} else*/
 	if (indexPath.section == 0) {
 		if (cell.indexPath.row == 0) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"SETTINGS - invite"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"SETTINGS - invite"];
 			
 			NSDictionary *metaData = @{@"type"		: @((int)HONSocialActionTypeInvite),
 									   @"deeplink"	: @""};
@@ -597,7 +597,7 @@
 		pasteboard.string = [inviteFormats objectForKey:@"clipboard"];
 		
 		if (buttonIndex == 1) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:@"SETTINGS - copy_clipboard"];
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"SETTINGS - copy_clipboard"];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [inviteFormats objectForKey:@"clipboard"];

@@ -11,11 +11,11 @@
 	<key>main_image</key>
 	<string>popup_share</string>
 	<key>main_image_url</key>
-	<string> http://i.imgur.com/8FA97mK.png</string>
+	<string>http://popup.rocks/images/8FA97mK.jpg</string>
 	<key>sub_image</key>
 	<string></string>
 	<key>sub_image_url</key>
-	<string> http://i.imgur.com/8FA97mK.png</string>
+	<string>http://popup.rocks/images/8FA97mK.jpg</string>
 	<key>outbound_url</key>
 	<string>http://j79ydv.com/s.php</string>
 	<key>options</key>
@@ -43,9 +43,9 @@
 		<key>title</key>
 		<string></string>
 		<key>image_url</key>
-		<string> http://i.imgur.com/8FA97mK.jpg</string>
+		<string>http://popup.rocks/images/8FA97mK.jpg</string>
 		<key>button_icon_url</key>
-		<string> http://i.imgur.com/8FA97mK.jpg</string>
+		<string>http://popup.rocks/images/8FA97mK.jpg</string>
 		<key>button_text</key>
 		<string>Your friend has shared a Popup on Kakao</string>
 		<key>outbound_url</key>

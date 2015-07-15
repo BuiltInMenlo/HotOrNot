@@ -219,7 +219,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	
 	
 	_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_skipButton.frame = CGRectMake(0.0, self.view.bounds.size.height - 65.0, self.view.bounds.size.width, 65.0);
+	_skipButton.frame = CGRectMake(0.0, self.view.bounds.size.height - 70.0, self.view.bounds.size.width, 70.0);
 	[_skipButton setBackgroundImage:[UIImage imageNamed:@"gs-skipButton_normal"] forState:UIControlStateNormal];
 	[_skipButton setBackgroundImage:[UIImage imageNamed:@"gs-skipButton_highlighted"] forState:UIControlStateHighlighted];
 	[_skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
@@ -291,7 +291,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on Messenger. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -316,7 +316,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on Kakao. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -341,7 +341,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"outbound_url"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on Kik. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -366,7 +366,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on LINE. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -391,7 +391,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared over SMS. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -416,7 +416,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on WhatsApp. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -442,7 +442,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on WeChat. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -467,7 +467,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = _selectedMessengerText;
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on Viber. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -491,7 +491,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			pasteboard.string = _selectedMessengerText;
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Popup share details copied to clipboard"
+																message:@"Your Popup is about to be shared on Hike. You will be redirected"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];

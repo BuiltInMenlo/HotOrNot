@@ -43,7 +43,7 @@
 		_totalType = HONStateMitigatorTotalTypeRegistration;
 		_viewStateType = HONStateMitigatorViewStateTypeRegistration;
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter"];
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - enter"];
 	}
 	
 	return (self);
@@ -109,7 +109,7 @@
 					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
 					[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]]];
 					
-					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
+//					[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - complete"];
 					[_loadingOverlayView outro];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 						KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -338,7 +338,7 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - nickname"];
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"ACTIVATION - nickname"];
 	
 	_usernameTextField.text = _username;
 	[_usernameTextField selectAll:nil];
