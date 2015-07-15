@@ -86,6 +86,7 @@
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @property (nonatomic, strong) NSTimer *gestureTimer;
 @property (nonatomic) int gestureDur;
+@property (nonatomic) BOOL isIntro;
 
 @property (nonatomic, strong) HONMediaRevealerView *revealerView;
 @property (nonatomic, strong) GSMessengerShare *messengerShare;
@@ -158,12 +159,12 @@
 //																 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 //															 }
 //															 
-////															 [[[UIAlertView alloc] initWithTitle:@"PUSH"
-////																						 message:[[[operation request] URL] absoluteString]
-////																						delegate:nil
-////																				 cancelButtonTitle:@"OK"
-////																				 otherButtonTitles:nil] show];
-//															 
+//															 [[[UIAlertView alloc] initWithTitle:@"PUSH"
+//																						 message:[[[operation request] URL] absoluteString]
+//																						delegate:nil
+//																				 cancelButtonTitle:@"OK"
+//																				 otherButtonTitles:nil] show];
+//
 //														 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 //															 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
 //															 [[HONAPICaller sharedInstance] showDataErrorHUD];
@@ -220,13 +221,6 @@
 	}];
 	
 	[super destroy];
-}
-
-- (void)leaveActiveChat {
-	[self _popBack];
-}
-
-- (void)deeplinkNameSet {
 }
 
 
@@ -559,14 +553,14 @@
 				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
 																											 @"channel"	: _channel.name}];
 				
-				[UIView animateKeyframesWithDuration:0.25 delay:0.00
-											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-												animations:^(void) {
-													//_moviePlayer.view.alpha = 0.0;
-												} completion:^(BOOL finished) {
+//				[UIView animateKeyframesWithDuration:0.25 delay:0.00
+//											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+//												animations:^(void) {
+//													//_moviePlayer.view.alpha = 0.0;
+//												} completion:^(BOOL finished) {
 													_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:txtContent]];
 													[_moviePlayer play];
-												}];
+//												}];
 				
 				_animationImageView.hidden = NO;
 				_statusLabel.text = @"Loading video…";
@@ -703,6 +697,7 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];// [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	
+	_isIntro = YES;
 	_isActive = YES;
 	_isSubmitting = NO;
 	
@@ -954,7 +949,8 @@
 	[self _goSetName];
 	
 	_messengerShare = [GSMessengerShare sharedInstance];
-	[_messengerShare addAllMessengerShareTypes];
+//	[_messengerShare addAllMessengerShareTypes];
+	[_messengerShare addMessengerShareTypes:@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)]];
 	_messengerShare.delegate = self;
 	[_messengerShare showMessengerSharePickerOnViewController:self];
 	
@@ -1114,6 +1110,7 @@
 - (void)_goShare {
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
+	_isIntro = NO;
 //	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]];
 	[_messengerShare showMessengerSharePickerOnViewController:self];
 	
@@ -1320,7 +1317,7 @@
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		if ([_moviePlayer isPreparedToPlay])
+//		if ([_moviePlayer isPreparedToPlay])
 			_moviePlayer.view.alpha = 1.0;
 		
 		_cameraPreviewView.alpha = 1.0;
@@ -1349,7 +1346,9 @@
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
 		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
-			[[PBJVision sharedInstance] startVideoCapture];
+//			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				[[PBJVision sharedInstance] startVideoCapture];
+//			});
 			
 			_gestureDur = 0;
 			_tutorialView.hidden = YES;
@@ -1412,7 +1411,7 @@
 			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 			
 			NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-			_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+			//_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
 			_commentFooterView.backgroundColor = [UIColor clearColor];
 			
@@ -1476,14 +1475,14 @@
 	if (_moviePlayer.loadState == 0) {
 		_animationImageView.hidden = YES;
 		
-		[UIView animateKeyframesWithDuration:0.25 delay:0.00
-									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-									animations:^(void) {
+//		[UIView animateKeyframesWithDuration:0.25 delay:0.00
+//									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+//									animations:^(void) {
 										_imageView.alpha = 0.0;
 										_moviePlayer.view.alpha = 1.0;
-									} completion:^(BOOL finished) {
+//									} completion:^(BOOL finished) {
 										_imageView.hidden = YES;
-									}];
+//									}];
 	}
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
@@ -1645,11 +1644,10 @@
 	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC);
-	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void) {
+//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 		[[PBJVision sharedInstance] stopPreview];
 		[self.navigationController popToRootViewControllerAnimated:YES];
-	});
+//	});
 	
 	[_moviePlayer stop];
 //	_moviePlayer.view.hidden = YES;
@@ -1662,7 +1660,9 @@
 #pragma mark - GSMessengerShare Delegates
 - (void)didCloseMessengerShare {
 	NSLog(@"[*:*] didCloseMessengerShare [*:*]");
-	[self.navigationController popToRootViewControllerAnimated:YES];
+	
+	if (_isIntro)
+		[self _popBack];
 }
 
 - (void)didSelectMessengerShareWithType:(GSMessengerShareType)messengerType {
@@ -2285,26 +2285,26 @@
 - (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
 	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
 	
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
-	_commentFooterView.backgroundColor = [UIColor clearColor];
-	
-	_statusLabel.text = @"Sending popup…";
-	_animationImageView.hidden = NO;
-	_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
-	
-	[[PBJVision sharedInstance] endVideoCapture];
-	_statusUpdateHeaderView.hidden = NO;
-	_commentFooterView.hidden = NO;
-	_openCommentButton.hidden = NO;
-	_flagButton.hidden = NO;
-	_messengerButton.hidden = NO;
-	_countdownLabel.text = @"";
-	_countdownLabel.hidden = YES;
-	_moviePlayer.view.hidden = NO;
-	_cameraFlipButton.hidden = NO;
-	_expireLabel.hidden = NO;
-	_lpGestureRecognizer.enabled = YES;
+//	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
+//	_commentFooterView.backgroundColor = [UIColor clearColor];
+//	
+//	_statusLabel.text = @"Sending popup…";
+//	_animationImageView.hidden = NO;
+//	_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
+//	
+//	[[PBJVision sharedInstance] endVideoCapture];
+//	_statusUpdateHeaderView.hidden = NO;
+//	_commentFooterView.hidden = NO;
+//	_openCommentButton.hidden = NO;
+//	_flagButton.hidden = NO;
+//	_messengerButton.hidden = NO;
+//	_countdownLabel.text = @"";
+//	_countdownLabel.hidden = YES;
+//	_moviePlayer.view.hidden = NO;
+//	_cameraFlipButton.hidden = NO;
+//	_expireLabel.hidden = NO;
+//	_lpGestureRecognizer.enabled = YES;
 }
 
 - (void)vision:(PBJVision *)vision didCaptureAudioSample:(CMSampleBufferRef)sampleBuffer {

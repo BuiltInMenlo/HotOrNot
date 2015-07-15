@@ -7,8 +7,8 @@
 //
 
 typedef NS_ENUM(NSUInteger, GSMessengerShareType) {
-	GSMessengerShareTypeKik = 1,
-	GSMessengerShareTypeFBMessenger,
+	GSMessengerShareTypeFBMessenger = 1,
+	GSMessengerShareTypeKik,
 	GSMessengerShareTypeWhatsApp,
 	GSMessengerShareTypeLine,
 	GSMessengerShareTypeKakaoTalk,

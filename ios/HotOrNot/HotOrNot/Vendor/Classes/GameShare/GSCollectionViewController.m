@@ -60,8 +60,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 }
 
 + (NSArray *)supportedTypes {
-	return ([@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)] sortedArrayUsingSelector:@selector(compare:)]);
-//	return (@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)]);
+	return ([NSArray arrayWithObjects:@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber), nil]);
 }
 
 
@@ -334,8 +333,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	} else if (_selectedMessengerType == GSMessengerShareTypeKik) {
 		NSDictionary *schema = [self _schemaForMessengerShareType:GSMessengerShareTypeKik] ;
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[schema objectForKey:@"protocol"]]]) {
-			
-			_selectedMessengerContent = @{@"link"	: [[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], @"kik.popup.rocks"]};
+			_selectedMessengerContent = @{@"link"	: [[schema objectForKey:@"protocol"] stringByAppendingFormat:[schema objectForKey:@"format"], [NSString stringWithFormat:@"kik.popup.rocks/index.php?d=%@&a=popup", [[[_outboundURL componentsSeparatedByString:@"="] objectAtIndex:1] stringByReplacingOccurrencesOfString:@"&a" withString:@""]]]};
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"outbound_url"]];

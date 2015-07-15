@@ -27,6 +27,4 @@ typedef NS_ENUM(NSUInteger, HONStatusUpdateAlertViewType) {
 @interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 - (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO;
 - (id)initWithChannelName:(NSString *)channelName;
-- (void)leaveActiveChat;
-- (void)deeplinkNameSet;
 @end
