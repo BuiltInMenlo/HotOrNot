@@ -296,10 +296,10 @@
 						   @"challenge_id"		: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
-	[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has messaged you\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-			  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-				  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-			  }];
+//	[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has messaged you\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+//			  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//				  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//			  }];
 
 	[PubNub sendMessage:_comment toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
@@ -386,6 +386,10 @@
 	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 	[PubNub subscribeOn:@[channel]];
+    
+    
+    [[NSUserDefaults standardUserDefaults] setObject:channelName forKey:@"channel_name"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 	
 	
 	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
@@ -426,6 +430,14 @@
 			_channel = channel;
 			_participants = 0;
 			_comments = 0;
+            
+            
+            
+            [PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone joined your Popup!\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+                      toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+                          NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+                      }];
+            
 			
 			[[PubNub sharedInstance] requestHistoryForChannel:channel
 										from:nil
@@ -2257,20 +2269,20 @@
 				
 				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 				
-				[PubNub sendMessage:@"Somebody posted a video!"
-						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-						  }];
+//				[PubNub sendMessage:@"Somebody posted a video!"
+//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//						  }];
 				
 				[PubNub sendMessage:[[path pathComponents] lastObject]
 							toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 								NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 							}];
 				
-				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has sent a video moment.\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-						  }];
+//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has sent a video moment.\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//						  }];
 			}
 			
 			return (nil);

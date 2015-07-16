@@ -1096,8 +1096,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification - BG] (%@)", self.class, userInfo);
 //	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
-	
-	NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : @"";
+    NSDictionary *apsDict = [userInfo objectForKey:@"aps"];
+    NSString *channelName = ([apsDict objectForKey:@"channel"]) ? [apsDict objectForKey:@"channel"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"];
 	
 	//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
 	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
@@ -1112,7 +1112,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[activityIndicatorView startAnimating];
 		[_loadingView addSubview:activityIndicatorView];
 		
-		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
+		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:NO];
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 			[_tintTimer invalidate];
