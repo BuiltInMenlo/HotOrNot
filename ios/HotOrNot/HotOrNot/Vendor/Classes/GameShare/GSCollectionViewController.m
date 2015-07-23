@@ -41,6 +41,7 @@
 @property (nonatomic) GSMessengerShareType selectedMessengerType;
 @property (nonatomic, strong) NSString *selectedMessengerText;
 @property (nonatomic, strong) NSDictionary *selectedMessengerContent;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 
 @property (nonatomic, strong) FBSDKMessengerURLHandler *messengerURLHandler;
 
@@ -179,6 +180,9 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	NSLog(@"[:|:] [%@ - viewDidLoad] [:|:]", self.class);
 	
 	[super viewDidLoad];
+	
+	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"gs-selectTutorial"]];
+	
 	CGSize collectionViewSize = CGSizeMake(([GSCollectionViewController collectionViewDimension].x * kGSCollectionViewCellSize.width) + (([GSCollectionViewController collectionViewDimension].x - 1) * kGSCollectionViewCellSpacing.width), ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSize.height) + ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSpacing.height));
 	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, 20.0 + ((self.view.bounds.size.height - collectionViewSize.height) * 0.5));
 	
@@ -210,7 +214,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	
 	//GameShareRecources.bundle/gs-backButton_normal
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_closeButton.frame = CGRectMake(5.0, 25.0, 39.0, 39.0);
+	_closeButton.frame = CGRectMake(5.0, 25.0 + ((![[NSUserDefaults standardUserDefaults] objectForKey:@"gs_tutorial"]) * 27.0), 39.0, 39.0);
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"gs-backButton_normal"] forState:UIControlStateNormal];
 	[_closeButton setBackgroundImage:[UIImage imageNamed:@"gs-backButton_highlighted"] forState:UIControlStateHighlighted];
 	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
@@ -218,7 +222,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	
 	
 	_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_skipButton.frame = CGRectMake(0.0, self.view.bounds.size.height - 70.0, self.view.bounds.size.width, 70.0);
+	_skipButton.frame = CGRectMake(0.0, self.view.bounds.size.height - 74.0, self.view.bounds.size.width, 74.0);
 	[_skipButton setBackgroundImage:[UIImage imageNamed:@"gs-skipButton_normal"] forState:UIControlStateNormal];
 	[_skipButton setBackgroundImage:[UIImage imageNamed:@"gs-skipButton_highlighted"] forState:UIControlStateHighlighted];
 	[_skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
@@ -235,6 +239,27 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 //	[self.view addSubview:_skipButton];
 	
 	[_collectionView reloadData];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	NSLog(@"[:|:] [%@ - viewWillAppear] [:|:]", self.class);
+	
+	[super viewWillAppear:animated];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"gs_tutorial"])
+		[self.view addSubview:_tutorialImageView];
+	
+	_closeButton.frame = CGRectMake(5.0, 25.0 + ((![[NSUserDefaults standardUserDefaults] objectForKey:@"gs_tutorial"]) * 27.0), 39.0, 39.0);
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"gs_tutorial"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	
+	[_tutorialImageView removeFromSuperview];
+	_closeButton.frame = CGRectMake(5.0, 25.0 + ((![[NSUserDefaults standardUserDefaults] objectForKey:@"gs_tutorial"]) * 27.0), 39.0, 39.0);
 }
 
 
@@ -510,10 +535,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		shareInfo = @{};
 	}
 	
-	if ([shareInfo count] > 0) {
+	//if ([shareInfo count] > 0) {
 		if ([self.delegate respondsToSelector:@selector(gsCollectionView:didSelectMessenger:)])
 			[self.delegate gsCollectionView:self didSelectMessenger:_selectedMessengerVO];
-	}
+	//}
 }
 
 - (void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -732,9 +757,18 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 - (NSDictionary *)_shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
 	NSMutableDictionary *shareInfo = [NSMutableDictionary dictionary];
 	
+	if ([_outboundURL rangeOfString:@"&m="].location == NSNotFound)
+		_outboundURL = [_outboundURL stringByAppendingFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""];
+	
+	else {
+		NSRange range = [_outboundURL rangeOfString:@"&m="];
+		_outboundURL = [_outboundURL stringByReplacingCharactersInRange:NSMakeRange(range.location, [_outboundURL length] - range.location) withString:[NSString stringWithFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""]];
+	}
+	
 	NSLog(@"[:|:] [%@ - _shareInfoForMessengerType:%d] [:|:]", self.class, (int)messengerShareType);
 	NSLog(@"_baseShareInfo:\n%@", _baseShareInfo);
 	NSLog(@"_outboundURL:\n%@", _outboundURL);
+	
 	
 	if (messengerShareType == GSMessengerShareTypeFBMessenger) {
 		NSDictionary *fbShareInfo = [_baseShareInfo objectForKey:kFBMessengerKey];

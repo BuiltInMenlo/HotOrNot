@@ -42,11 +42,17 @@ static HONUserAssistant *sharedInstance = nil;
 }
 
 - (NSString *)activeUserAvatarURL {
-	return ([[HONUserAssistant sharedInstance] avatarURLForUserID:[[HONUserAssistant sharedInstance] activeUserID]]);
+	return ([[HONUserAssistant sharedInstance] avatarURLForUserID:[[[HONUserAssistant sharedInstance] activeUserID] intValue]]);
 }
 
-- (int)activeUserID {
-	return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"id"]) ? [[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"id"] intValue] : -1);
+- (NSString *)activeUserID {
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"user_id"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"user_id"] : @"");
+	//return (([[[HONUserAssistant sharedInstance] activeUserInfo] hasObjectForKey:@"id"]) ? [[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"id"] intValue] : -1);
+}
+
+- (void)writeUserID:(NSString *)userID {
+	[[NSUserDefaults standardUserDefaults] replaceObject:userID forKey:@"user_id"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSString *)activeUsername {

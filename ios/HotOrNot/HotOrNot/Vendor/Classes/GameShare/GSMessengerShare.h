@@ -33,6 +33,7 @@ extern NSString * const kOTHERKey;
 	
 	NSArray *_supportedTypes;
 	NSMutableArray *_selectedTypes;
+	NSString *_outboundURL;
 	
 	GSCollectionViewController *_gsViewController;
 	id<GSCollectionViewControllerDelegate> _vcDelegate;

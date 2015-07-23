@@ -31,6 +31,7 @@
 		3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5DC1A7B200500231BA5 /* UIImageDebugger.m */; };
 		3024A5E61A7B769500231BA5 /* HONLoadingOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5E51A7B769500231BA5 /* HONLoadingOverlayView.m */; };
 		302588EA1B56F0F40036D2D7 /* selfie_notification.aif in Resources */ = {isa = PBXBuildFile; fileRef = 302588E91B56F0F40036D2D7 /* selfie_notification.aif */; };
+		30283B9A1B60BBEC00317EFE /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		302C9AB91A86AE5C009E7DD6 /* AnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = 302C9AB61A86AE5C009E7DD6 /* AnimatedTransitioning.m */; };
 		302C9ABA1A86AE5C009E7DD6 /* TransitionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 302C9AB81A86AE5C009E7DD6 /* TransitionDelegate.m */; };
@@ -350,6 +351,7 @@
 		3024A5E41A7B769500231BA5 /* HONLoadingOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONLoadingOverlayView.h; sourceTree = "<group>"; };
 		3024A5E51A7B769500231BA5 /* HONLoadingOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLoadingOverlayView.m; sourceTree = "<group>"; };
 		302588E91B56F0F40036D2D7 /* selfie_notification.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.aif; sourceTree = "<group>"; };
+		30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
 		302C9AB51A86AE5C009E7DD6 /* AnimatedTransitioning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedTransitioning.h; sourceTree = "<group>"; };
@@ -1042,6 +1044,7 @@
 				308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */,
 				F7E6D20B72A5177C54C052C6 /* libPods-HotOrNot.a in Frameworks */,
 				30B3874C1B51AD7A00521714 /* libAdIdAccess.a in Frameworks */,
+				30283B9A1B60BBEC00317EFE /* FBSDKCoreKit.framework in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 			);
@@ -1968,6 +1971,7 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */,
 				30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */,
 				30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */,
 				30DD5A9A1A11CDE300A571DA /* KakaoOpenSDK.framework */,

@@ -74,7 +74,7 @@
 	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userVO.userID completion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:result];
-			_userProfileType = ([[HONUserAssistant sharedInstance] activeUserID] == _userVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
+			_userProfileType = ([[[HONUserAssistant sharedInstance] activeUserID] intValue] == _userVO.userID) ? HONActivityProfileTypeUser : HONActivityProfileTypeOpponent;
 			[self _retrieveActivityItems];
 			
 		} else {
@@ -92,7 +92,7 @@
 
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONUserAssistant sharedInstance] activeUserID] intValue] completion:^(NSArray *result) {
 		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSDictionary *dict = (NSDictionary *)obj;
 			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];

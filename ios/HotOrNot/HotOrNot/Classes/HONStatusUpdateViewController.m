@@ -289,10 +289,10 @@
 }
 
 - (void)_submitTextComment {
-	NSDictionary *dict = @{@"user_id"			: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+	NSDictionary *dict = @{@"user_id"			: [[HONUserAssistant sharedInstance] activeUserID],
 						   @"club_id"			: @(_clubVO.clubID),
 						   @"img_url"			: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-						   @"subject"			: [NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__TXT__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
+						   @"subject"			: [NSString stringWithFormat:@"%@;%@|%.04f_%.04f|__TXT__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment],
 						   @"challenge_id"		: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -324,7 +324,7 @@
 		NSLog(@"S3 UPLOADED:[%@]\n%@", NSStringFromBOOL(success), error);
 		
 		if (success) {
-			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
+			[PubNub sendMessage:[NSString stringWithFormat:@"%@|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
 						toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 							NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 							
@@ -350,11 +350,11 @@
 }
 
 - (void)_submitPhotoReplyWithURLPrefix:(NSString *)urlPrefix {
-	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+	NSDictionary *dict = @{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 							 @"club_id"		: @(_clubVO.clubID),
 							 @"img_url"		: urlPrefix,
 //							 @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-							 @"subject"		: [NSString stringWithFormat:@"%d;%@|%.04f_%.04f|__IMG__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
+							 @"subject"		: [NSString stringWithFormat:@"%@;%@|%.04f_%.04f|__IMG__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
 							 @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
@@ -382,9 +382,11 @@
 
 - (PNChannel *)_channelSetupForStatusUpdate {
 //	PNChannel *channel = [PNChannel channelWithName:[NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID] shouldObservePresence:YES];
-	
 	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
+	
+	[PubNub unsubscribeFrom:@[[PNChannel channelWithName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"]] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+	
 	[PubNub subscribeOn:@[channel]];
 	
 	
@@ -588,7 +590,7 @@
 			}
 		}
 	}];
-		 
+	}];
 		 
 	
 //	[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
@@ -600,7 +602,7 @@
 }
 
 - (void)_flagStatusUpdate {
-	NSDictionary *dict = @{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+	NSDictionary *dict = @{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 							 @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
 							 @"club_id"		: @(_statusUpdateVO.clubID),
 							 @"subject"		: @"__FLAG__",
@@ -816,7 +818,7 @@
 	
 	
 	_nameImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
-	_nameImageView.frame = CGRectOffset(_nameImageView.frame, 0.0, self.view.frame.size.height * 0.55);
+	_nameImageView.frame = CGRectOffset(_nameImageView.frame, 0.0, self.view.frame.size.height * 0.75);
 	[self.view addSubview:_nameImageView];
 	
 	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -886,7 +888,7 @@
 	[self.view addSubview:_takePhotoButton];
 	
 	NSLog(@"FRAME:%@", NSStringFromCGRect(_cameraPreviewView.frame));
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	
 	_messengerButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_messengerButton.frame = CGRectMake(self.view.frame.size.width - 88.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
@@ -1029,7 +1031,7 @@
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://tap2install.com/ios-app.php"]];
 	
 	//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 		_cameraPreviewView.frame =CGRectMake(_cameraPreviewView.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 333.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 368.0 : 284.0, _cameraPreviewView.frame.size.width, _cameraPreviewView.frame.size.height);
 		//_takePhotoButton.frame = CGRectOffset(_takePhotoButton.frame, _takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0);
 		
@@ -1225,7 +1227,7 @@
 }
 
 - (void)_goTextComment {
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendChat"]];
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendChat"] withProperties:@{@"channel"	: _channel.name}];
 	
 	_isSubmitting = YES;
 	[_submitCommentButton setEnabled:NO];
@@ -1307,7 +1309,7 @@
 	_scrollView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 729.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	_submitCommentButton.hidden = YES;
 	_movieFillView.hidden = YES;
 	
@@ -2255,7 +2257,7 @@
 //																			[[HONAPICaller sharedInstance] showDataErrorHUD];
 //																		}];
 				
-				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
+				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name}];
 				
 				[PubNub sendMessage:@"Somebody posted a video!"
 						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {

@@ -14,7 +14,9 @@
 
 #import "HONAnalyticsReporter.h"
 
-NSString * const kAnalyticsCohort = @"0714Cohort";
+//NSString * const kAnalyticsCohort = @"0714Cohort";
+NSString * const kAnalyticsCohort = @"Popup Canada Beta";
+//NSString * const kAnalyticsCohort = @"DEV";
 
 @implementation HONAnalyticsReporter
 static HONAnalyticsReporter *sharedInstance = nil;
@@ -104,7 +106,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 - (NSDictionary *)userProperties {
 	NSDate *cohortDate = [[HONUserAssistant sharedInstance] activeUserSignupDate];
 	
-	return(@{@"identifier"	: (NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) != nil) ? NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]) : @"0",
+	return(@{@"identifier"	: ([[HONUserAssistant sharedInstance] activeUserID] != nil) ? [[HONUserAssistant sharedInstance] activeUserID] : @"0",
 //			 @"name"		: ([[HONUserAssistant sharedInstance] activeUsername] != nil) ? [[HONUserAssistant sharedInstance] activeUsername] : @"",
 //			 @"phone"		: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
 			 @"time"		: [[NSDate utcNowDate] formattedISO8601String],
@@ -182,7 +184,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	
 	NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
 	id tracker = [[GAI sharedInstance] defaultTracker];
-	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:eventCollection
+	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:kAnalyticsCohort
 														  action:[[event componentsSeparatedByString:@" - "] lastObject]
 														   label:@"Event"
 														   value:@1] build]];

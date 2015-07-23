@@ -46,6 +46,7 @@ static HONPubNubOverseer *sharedInstance = nil;
 	[PubNub connectWithSuccessBlock:^(NSString *origin) {
 		PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
 		NSLog(@"PubNub CONNECT:[%@]", origin);
+		[[HONUserAssistant sharedInstance] writeUserID:[PubNub sharedInstance].clientIdentifier];
 		
 	} errorBlock:^(PNError *connectionError) {
 		NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);

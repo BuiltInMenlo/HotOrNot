@@ -30,7 +30,7 @@
 	vo.sentDate = [dateFormatter dateFromString:[dictionary objectForKey:@"time"]];//[NSDate dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
 	
 	vo.originUserID = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[[dictionary objectForKey:@"subject_member"] objectForKey:@"id"] intValue] : 0;
-	vo.originUsername = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? (vo.originUserID == [[HONUserAssistant sharedInstance] activeUserID]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"subject_member"] objectForKey:@"name"] : @"";
+	vo.originUsername = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? (vo.originUserID == [[[HONUserAssistant sharedInstance] activeUserID] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"subject_member"] objectForKey:@"name"] : @"";
 	vo.originAvatarPrefix = ([dictionary objectForKey:@"subject_member"] != [NSNull null]) ? [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"subject_member"] objectForKey:@"avatar_url"]] : @"";
 	
 	vo.recipientUserID = [[[dictionary objectForKey:@"member"] objectForKey:@"id"] intValue];//([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONUserAssistant sharedInstance] activeUserID] : [[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] : 0;

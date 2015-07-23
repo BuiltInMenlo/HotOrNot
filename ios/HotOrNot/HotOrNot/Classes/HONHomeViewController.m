@@ -58,6 +58,7 @@
 @property (nonatomic, strong) NSArray *colors;
 @property (nonatomic, strong) UIButton *supportButton;
 @property (nonatomic, strong) UIView *tintView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, strong) NSTimer *tintTimer;
@@ -295,6 +296,17 @@
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 40.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
+	
+	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createTutorial"]];
+	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, (_scrollView.frame.size.height + 5.0) - (_composeButton.frame.size.height + _tutorialImageView.frame.size.height));
+	_tutorialImageView.hidden = YES;
+	_tutorialImageView.alpha = 0.0;
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"home_tutorial"])
+		[self.view addSubview:_tutorialImageView];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"home_tutorial"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)viewDidLoad {
@@ -553,9 +565,9 @@
 		NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
 													 encoding:NSUTF8StringEncoding];
 		
-		NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+		NSDictionary *submitParams = @{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 									   @"img_url"		: @"",
-									   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+									   @"club_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 									   @"challenge_id"	: @(0),
 									   @"topic_id"		: @(0),
 									   @"subject"		: _textField.text,
@@ -593,6 +605,7 @@
 //
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[_loadingView removeFromSuperview];
+				[_tutorialImageView removeFromSuperview];
 				//[_tintTimer invalidate];
 				//_tintTimer = nil;
 				
@@ -618,6 +631,7 @@
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 		[_loadingView removeFromSuperview];
+		[_tutorialImageView removeFromSuperview];
 		//[_tintTimer invalidate];
 		//_tintTimer = nil;
 		
@@ -866,13 +880,16 @@
 		
 		if (_composeButton.frame.origin.y == scrollView.frame.size.height - _composeButton.frame.size.height) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+				_tutorialImageView.alpha = 0.0;
+				
 				_composeButton.alpha = 0.0;
 				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height);
 			} completion:^(BOOL finished) {
+				_tutorialImageView.hidden = YES;
 			}];
 		}
 		
-		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 7.0)) {
+		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 1.0)) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 40.0);
 			} completion:^(BOOL finished) {
@@ -907,12 +924,18 @@
 				_composeButton.alpha = 1.0;
 				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
 			} completion:^(BOOL finished) {
+				_tutorialImageView.alpha = 0.0;
+				_tutorialImageView.hidden = NO;
+				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+					_tutorialImageView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+				}];
 			}];
 		}
 		
 		if (_paginationView.frame.origin.y == self.view.frame.size.height - 40.0) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 7.0));
+				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 1.0));
 			} completion:^(BOOL finished) {
 			}];
 		}
@@ -936,8 +959,12 @@
 				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
 				
 			} completion:^(BOOL finished) {
-//				if (![_textField isFirstResponder])
-//					[_textField becomeFirstResponder];
+				_tutorialImageView.alpha = 0.0;
+				_tutorialImageView.hidden = NO;
+				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+					_tutorialImageView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+				}];
 			}];
 		}
 		

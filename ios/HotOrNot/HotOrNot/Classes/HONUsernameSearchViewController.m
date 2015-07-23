@@ -405,7 +405,7 @@
 //			} else {
 				
 				NSMutableDictionary *dict = [[HONClubAssistant sharedInstance] clubDictionaryWithOwner:@{} activeMembers:@[] pendingMembers:_selectedUsers];
-				[dict setValue:[NSString stringWithFormat:@"%d_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
+				[dict setValue:[NSString stringWithFormat:@"%@_%d", [[HONUserAssistant sharedInstance] activeUserID], [NSDate elapsedUTCSecondsSinceUnixEpoch]] forKey:@"name"];
 				[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
 				HONUserClubVO *clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 			

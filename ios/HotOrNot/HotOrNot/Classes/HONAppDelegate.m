@@ -20,6 +20,7 @@
 #import </usr/include/objc/objc-class.h>
 
 #import <AWSiOSSDKv2/AWSCore.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKMessengerShareKit/FBSDKMessengerShareKit.h>
 #import <HockeySDK/HockeySDK.h>
 #import "Hoko.h"
@@ -465,6 +466,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[KeenClient disableGeoLocation];
 	
+	[KeenClient sharedClientWithProjectId:kKeenIOProjectID
+							  andWriteKey:kKeenIOWriteKey
+							   andReadKey:kKeenIOReadKey];
+	[KeenClient disableGeoLocation];
+	[KeenClient enableLogging];
+	
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"home_tutorial"];
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"gs_tutorial"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 #if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 #endif
@@ -656,10 +667,6 @@ NSString * const kTwilioSMS = @"6475577873";
 //		NSLog(@"HOKO ERROR:[%@]", error);
 //	}];
 	
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - boot"]
-									   withProperties:@{@"day"	: [NSDate utcNowDate]}];
-	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	NSLog(@"KC VAL:[%d]", ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] == 0));
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] == 0) {
@@ -667,6 +674,10 @@ NSString * const kTwilioSMS = @"6475577873";
 		[keychain setObject:@([NSDate elapsedUTCSecondsSinceUnixEpoch]) forKey:CFBridgingRelease(kSecAttrService)];
 		NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 	}
+	
+	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - boot"]
+									   withProperties:@{@"day"	: [NSDate utcNowDate]}];
 	
 	return (YES);
 }
@@ -705,6 +716,8 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
+	
+	NSLog(@"LocalNotifications:\n%@", [[UIApplication sharedApplication] scheduledLocalNotifications]);
 	
 //	if ([MPMusicPlayerController applicationMusicPlayer].volume == 0.0)
 //		[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
@@ -770,6 +783,8 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
 	
+	[FBSDKAppEvents activateApp];
+	
 	if (_taskImageView != nil) {
 		[UIView animateWithDuration:0.125 delay:0.00 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 			_taskImageView.alpha = 0.0;
@@ -780,12 +795,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 //	[FBAppEvents activateApp];
 	
-	[KeenClient sharedClientWithProjectId:kKeenIOProjectID
-							  andWriteKey:kKeenIOWriteKey
-							   andReadKey:kKeenIOReadKey];
-	[KeenClient disableGeoLocation];
-	[KeenClient enableLogging];
-	
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
 	[[HONStateMitigator sharedInstance] resetTotalCounterForType:HONStateMitigatorTotalTypeTrackingCalls withValue:0];
@@ -795,16 +804,26 @@ NSString * const kTwilioSMS = @"6475577873";
 	//[Flurry logEvent:@"App_Active"];
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 	
+//	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+//	localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:20.0];
+//	localNotification.timeZone = [NSTimeZone systemTimeZone];
+//	localNotification.alertAction = @"View";
+//	localNotification.alertBody = @"TEST PUSH";
+//	localNotification.soundName = @"selfie_notification.caf";
+//	localNotification.userInfo = @{};
+//	
+//	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	NSLog(@"KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
+	NSDate *installDate = [NSDate dateFromUnixTimestamp:[[keychain objectForKey:CFBridgingRelease(kSecAttrService)] floatValue]];
+	NSLog(@"DAYS SINCE INSTALL:[%d]", -[installDate elapsedDaysSincenDate:[NSDate utcNowDate]]);
 	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrService)] intValue] != 0) {
-		[[UIApplication sharedApplication] cancelAllLocalNotifications];
 		
-		NSDate *installDate = [NSDate dateFromUnixTimestamp:[[keychain objectForKey:CFBridgingRelease(kSecAttrService)] floatValue]];
 		NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 		
-		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 7) {
+		if (-[installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 7) {
 			//if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day7_push"] isEqualToString:@"YES"]) {
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
 				[[NSUserDefaults standardUserDefaults] synchronize];
@@ -816,8 +835,8 @@ NSString * const kTwilioSMS = @"6475577873";
 				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 				localNotification.fireDate = targetDate;
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
-				localNotification.alertAction = @"View";
-				localNotification.alertBody = @"Someone has joined your Popup";
+				localNotification.alertAction = nil;
+				localNotification.alertBody = @"Someone has joined your Popup (7)";
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
@@ -826,7 +845,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		}
 		
 		
-		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 14) {
+		if (-[installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 14) {
 			//if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day30_push"] isEqualToString:@"YES"]) {
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
 				[[NSUserDefaults standardUserDefaults] synchronize];
@@ -838,8 +857,8 @@ NSString * const kTwilioSMS = @"6475577873";
 				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 				localNotification.fireDate = targetDate;
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
-				localNotification.alertAction = @"View";
-				localNotification.alertBody = @"Someone has joined your Popup";
+				localNotification.alertAction = nil;
+				localNotification.alertBody = @"Someone has joined your Popup (14)";
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
@@ -848,20 +867,20 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 		}
 		
-		if ([installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 30) {
+		if (-[installDate elapsedDaysSincenDate:[NSDate utcNowDate]] < 30) {
 			//if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"day14_push"] isEqualToString:@"YES"]) {
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@""];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				NSDateComponents *components = [[NSDateComponents alloc] init];
-				components.day = 14;
+				components.day = 30;
 				NSDate *targetDate = [calendar dateByAddingComponents:components toDate:installDate options:0];
 				
 				UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 				localNotification.fireDate = targetDate;
 				localNotification.timeZone = [NSTimeZone systemTimeZone];
-				localNotification.alertAction = @"View";
-				localNotification.alertBody = @"Someone has joined your Popup";
+				localNotification.alertAction = nil;
+				localNotification.alertBody = @"Someone has joined your Popup (30)";
 				localNotification.soundName = @"selfie_notification.caf";
 				localNotification.userInfo = @{};
 				
@@ -1019,23 +1038,21 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)notification {
-	[[UIApplication sharedApplication]cancelAllLocalNotifications];
+//	[[UIApplication sharedApplication]cancelAllLocalNotifications];
 	app.applicationIconBadgeNumber = notification.applicationIconBadgeNumber -1;
 	
 	notification.soundName = UILocalNotificationDefaultSoundName;
-	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
+	//[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - localPush"]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-														message:notification.alertBody
-													   delegate:self
-											  cancelButtonTitle:@"OK"
-											  otherButtonTitles:nil];
-	[alertView setTag:666];
-	[alertView show];
-	
-	[self _showOKAlert:nil withMessage:notification.alertBody];
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+//														message:notification.alertBody
+//													   delegate:self
+//											  cancelButtonTitle:@"OK"
+//											  otherButtonTitles:nil];
+//	[alertView setTag:666];
+//	[alertView show];
 }
 
 
@@ -1103,24 +1120,24 @@ NSString * const kTwilioSMS = @"6475577873";
 	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
 		
-		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-		[self.window addSubview:_loadingView];
-		
-		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
-		[activityIndicatorView startAnimating];
-		[_loadingView addSubview:activityIndicatorView];
-		
-		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
-		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-			[_tintTimer invalidate];
-			_tintTimer = nil;
-			[_loadingView removeFromSuperview];
-			
-			[_loadingOverlayView outro];
-		});
+//		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+//		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+//		[self.window addSubview:_loadingView];
+//		
+//		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+//		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+//		[activityIndicatorView startAnimating];
+//		[_loadingView addSubview:activityIndicatorView];
+//		
+//		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
+//		
+//		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//			[_tintTimer invalidate];
+//			_tintTimer = nil;
+//			[_loadingView removeFromSuperview];
+//			
+//			[_loadingOverlayView outro];
+//		});
 	}
 	
 	// Increment badge count if a message
@@ -1138,7 +1155,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification - FG] (%@)", self.class, userInfo);
-	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
+	//[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 //	// Increment badge count if a message
 //	if ([[userInfo valueForKeyPath:@"aps.content-available"] integerValue] != 0) {
@@ -1150,24 +1167,25 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
 	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
-		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-		[self.window addSubview:_loadingView];
-		
-		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
-		[activityIndicatorView startAnimating];
-		[_loadingView addSubview:activityIndicatorView];
-		
-		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
-		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-			[_tintTimer invalidate];
-			_tintTimer = nil;
-			[_loadingView removeFromSuperview];
-			
-			[_loadingOverlayView outro];
-		});
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
+//		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+//		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+//		[self.window addSubview:_loadingView];
+//		
+//		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+//		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+//		[activityIndicatorView startAnimating];
+//		[_loadingView addSubview:activityIndicatorView];
+//		
+//		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
+//		
+//		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//			[_tintTimer invalidate];
+//			_tintTimer = nil;
+//			[_loadingView removeFromSuperview];
+//			
+//			[_loadingOverlayView outro];
+//		});
 	}
 }
 
@@ -1467,9 +1485,9 @@ void uncaughtExceptionHandler(NSException *exception) {
 			NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[@""] options:0 error:&error]
 														 encoding:NSUTF8StringEncoding];
 			
-			NSDictionary *submitParams = @{@"user_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+			NSDictionary *submitParams = @{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 										   @"img_url"		: @"",
-										   @"club_id"		: @([[HONUserAssistant sharedInstance] activeUserID]),
+										   @"club_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 										   @"challenge_id"	: @(0),
 										   @"topic_id"		: @(0),
 										   @"subject"		: @"using|",

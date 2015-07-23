@@ -55,7 +55,7 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	NSLog(@"_checkUsername -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+	NSLog(@"_checkUsername -- ID:[%@]", [[HONUserAssistant sharedInstance] activeUserID]);
 	NSLog(@"_checkUsername -- USERNAME:[%@]", _username);
 	NSLog(@"_checkUsername -- PHONE:[%@]", [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 	
@@ -93,12 +93,12 @@
 			
 			_submitButton.userInteractionEnabled = NO;
 			
-			NSLog(@"_finalizeUser -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+			NSLog(@"_finalizeUser -- ID:[%@]", [[HONUserAssistant sharedInstance] activeUserID]);
 			NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONUserAssistant sharedInstance] activeUsername]);
 			NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 			
 			NSLog(@"\n\n******** FINALIZE W/ API **********");
-			[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID]),
+			[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
 																		@"username"		: _username,
 																		@"phone"		: [[NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]] stringByAppendingString:@"@selfieclub.com"]} completion:^(NSDictionary *result) {
 				
@@ -222,7 +222,7 @@
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
 	
-	NSLog(@"loadView -- ID:[%d]", [[HONUserAssistant sharedInstance] activeUserID]);
+	NSLog(@"loadView -- ID:[%@]", [[HONUserAssistant sharedInstance] activeUserID]);
 	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", [[HONUserAssistant sharedInstance] activeUsername], [[HONUserAssistant sharedInstance] activeUsername]);
 	NSLog(@"loadView -- PHONE_TXT:[%@] -=- PREV[%@]", [NSString stringWithFormat:@"+1%d", [[[HONUserAssistant sharedInstance] activeUserSignupDate] unixEpochTimestamp]], [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 }

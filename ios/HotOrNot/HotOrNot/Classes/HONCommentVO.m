@@ -31,7 +31,7 @@
 	vo.username = ([dictionary objectForKey:@"owner_member"] != nil) ? [[dictionary objectForKey:@"owner_member"] objectForKey:@"name"] : [dictionary objectForKey:@"username"];
 
 	NSLog(@"content_type:[%d] // [%d]", [[dictionary objectForKey:@"content_type"] intValue], (int)vo.messageType);
-	vo.avatarPrefix = (vo.userID == [[HONUserAssistant sharedInstance] activeUserID]) ? [[HONUserAssistant sharedInstance] activeUserAvatarURL] : [[HONUserAssistant sharedInstance] rndAvatarURL];
+	vo.avatarPrefix = (vo.userID == [[[HONUserAssistant sharedInstance] activeUserID] intValue]) ? [[HONUserAssistant sharedInstance] activeUserAvatarURL] : [[HONUserAssistant sharedInstance] rndAvatarURL];
 	vo.messageType = ([dictionary objectForKey:@"content_type"] != nil) ? (HONChatMessageType)[[dictionary objectForKey:@"content_type"] intValue] : HONChatMessageTypeUndefined;
 	vo.textContent = ([[dictionary objectForKey:@"text"] length] > 0) ? [dictionary objectForKey:@"text"] : @"";
 //	vo.imageContent = ([dictionary objectForKey:@"image"] != nil) ? [UIImage imageWithData:[dictionary objectForKey:@"image"]] : [[UIImage alloc] init];

@@ -42,7 +42,7 @@
 												  forKeys:@[@"owned",
 															@"member"]];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONUserAssistant sharedInstance] activeUserID] intValue] completion:^(NSDictionary *result) {
 		
 		for (NSString *key in @[@"owned", @"member"]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];

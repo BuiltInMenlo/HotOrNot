@@ -7,7 +7,7 @@
 	<key>subtitle</key>
 	<string>Join Popup!</string>
 	<key>body_text</key>
-	<string>Your friend has shared a Popup</string>
+	<string>Join my popup, I am live now.</string>
 	<key>main_image</key>
 	<string>popup_share</string>
 	<key>main_image_url</key>
@@ -27,7 +27,7 @@
 		<key>share_image</key>
 		<string>popup_share</string>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on Messenger</string>
+		<string>Join my popup, I am live now.</string>
 		<key>outbound_url</key>
 		<string></string>
 		<key>options</key>
@@ -47,7 +47,7 @@
 		<key>button_icon_url</key>
 		<string>http://popup.rocks/images/8FA97mK.jpg</string>
 		<key>button_text</key>
-		<string>Your friend has shared a Popup on Kakao</string>
+		<string>Join my popup, I am live now.</string>
 		<key>outbound_url</key>
 		<string>http://j79ydv.com/s.php</string>
 	</dict>
@@ -64,7 +64,7 @@
 		<key>image_url</key>
 		<string></string>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on Kik</string>
+		<string>Join my popup, I am live now.</string>
 		<key>outbound_url</key>
 		<string></string>
 	</dict>
@@ -73,7 +73,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on LINE </string>
+		<string>Join my popup, I am live now.</string>
 		<key>link</key>
 		<string></string>
 	</dict>
@@ -82,7 +82,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on SMS</string>
+		<string>Join my popup, I am live now.</string>
 		<key>link</key>
 		<string>http://taps.io/trySkout</string>
 	</dict>
@@ -91,7 +91,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on WhatsApp</string>
+		<string>Join my popup, I am live now.</string>
 		<key>link</key>
 		<string></string>
 	</dict>
@@ -102,7 +102,7 @@
 		<key>title</key>
 		<string>Popup on iOS - WeChat</string>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on WeChat</string>
+		<string>Join my popup, I am live now.</string>
 		<key>image</key>
 		<string>popup_share</string>
 		<key>link</key>
@@ -113,7 +113,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on Hike</string>
+		<string>Join my popup, I am live now.</string>
 		<key>link</key>
 		<string></string>
 	</dict>
@@ -122,7 +122,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup on Viber</string>
+		<string>Join my popup, I am live now.</string>
 		<key>link</key>
 		<string></string>
 	</dict>
@@ -131,7 +131,7 @@
 		<key>override</key>
 		<false/>
 		<key>body_text</key>
-		<string>Your friend has shared a Popup</string>
+		<string>Join my popup, I am live now.</string>
 		<key>link</key>
 		<string></string>
 	</dict>

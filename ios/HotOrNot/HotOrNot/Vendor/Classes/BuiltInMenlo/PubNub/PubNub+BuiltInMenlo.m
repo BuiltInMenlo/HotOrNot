@@ -35,7 +35,7 @@ NSString * const kHONChatMessageCoordsRoot		= @"coords://";
 NSString * const kHONChatMessageImageRoot		= @"https://";
 
 
-NSString * const kHONChatMessageFormat			= @"%d;%@|%@|%@:%@";
+NSString * const kHONChatMessageFormat			= @"%@;%@|%@|%@:%@";
 NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 
 
@@ -147,7 +147,7 @@ NSString * const kHONChatMessageCoordsFormat	= @"%.04f_%.04f";
 	return ([[self.message firstComponentByDelimeter:@"|"] lastComponentByDelimeter:@";"]);
 	
 	NSString *username = [NSString stringWithFormat:@"anon%d", (rand() % 10) + 1];
-	return ((self.originUserID == [[HONUserAssistant sharedInstance] activeUserID]) ? @"You" : (self.messageType == HONChatMessageTypeBOT || self.messageType == HONChatMessageTypeAUT) ? [[self.message firstComponentByDelimeter:@"|"] lastComponentByDelimeter:@";"] : username);
+	return ((self.originUserID == [[[HONUserAssistant sharedInstance] activeUserID] intValue]) ? @"You" : (self.messageType == HONChatMessageTypeBOT || self.messageType == HONChatMessageTypeAUT) ? [[self.message firstComponentByDelimeter:@"|"] lastComponentByDelimeter:@";"] : username);
 }
 
 
