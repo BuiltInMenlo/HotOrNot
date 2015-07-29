@@ -56,6 +56,7 @@
 @property (nonatomic, strong) NSString *composeSubject;
 @property (nonatomic, strong) TransitionDelegate *transitionController;
 @property (nonatomic, strong) NSArray *colors;
+@property (nonatomic, strong) UIButton *recentButton;
 @property (nonatomic, strong) UIButton *supportButton;
 @property (nonatomic, strong) UIView *tintView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
@@ -245,10 +246,22 @@
 //		[_scrollView addSubview:linkButton];
 //	}];
 	
+	NSLog(@"LAST CHANNEL:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"]);
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) {
+		_recentButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		_recentButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), 249.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
+		[_recentButton setBackgroundImage:[UIImage imageNamed:@"recentButton_nonActive"] forState:UIControlStateNormal];
+		[_recentButton setBackgroundImage:[UIImage imageNamed:@"recentButton_Active"] forState:UIControlStateHighlighted];
+		_recentButton.frame = CGRectOffset(_recentButton.frame, (_scrollView.frame.size.width - _recentButton.frame.size.width) * 0.5, 0.0);
+		[_recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:_recentButton];
+	}
+	
 	_supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), 410.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
+	_supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), (([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? 348.0 : 249) * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
 	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_nonActive"] forState:UIControlStateNormal];
 	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_Active"] forState:UIControlStateHighlighted];
+	_supportButton.frame = CGRectOffset(_supportButton.frame, (_scrollView.frame.size.width - _supportButton.frame.size.width) * 0.5, 0.0);
 	[_supportButton addTarget:self action:@selector(_goRandom) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:_supportButton];
 	
@@ -270,7 +283,7 @@
 	_textField.textAlignment = NSTextAlignmentCenter;
 	_textField.text = @"What is on your mind?";
 	_textField.delegate = self;
-	[_scrollView addSubview:_textField];
+	//[_scrollView addSubview:_textField];
 	
 	_composeButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_composeButton.frame = CGRectMake(0.0, _scrollView.frame.size.height, _scrollView.frame.size.width, 76.0);
@@ -616,6 +629,28 @@
 	}
 }
 
+- (void)_goRecent {
+	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+	[self.view addSubview:_loadingView];
+	
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+	[activityIndicatorView startAnimating];
+	[_loadingView addSubview:activityIndicatorView];
+	
+	HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"]];
+	[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		[_loadingView removeFromSuperview];
+		[_tutorialImageView removeFromSuperview];
+		
+		[_loadingOverlayView outro];
+		_textField.text = @"What is on your mind?";
+	});
+}
+
 - (void)_goRandom {
 	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
@@ -632,8 +667,6 @@
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 		[_loadingView removeFromSuperview];
 		[_tutorialImageView removeFromSuperview];
-		//[_tintTimer invalidate];
-		//_tintTimer = nil;
 		
 		[_loadingOverlayView outro];
 		_textField.text = @"What is on your mind?";
@@ -889,7 +922,7 @@
 			}];
 		}
 		
-		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 1.0)) {
+		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 10.0)) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 40.0);
 			} completion:^(BOOL finished) {
@@ -935,7 +968,7 @@
 		
 		if (_paginationView.frame.origin.y == self.view.frame.size.height - 40.0) {
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 1.0));
+				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 10.0));
 			} completion:^(BOOL finished) {
 			}];
 		}

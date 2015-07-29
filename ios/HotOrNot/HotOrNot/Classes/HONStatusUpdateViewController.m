@@ -67,15 +67,14 @@
 @property (nonatomic, strong) UILabel *countdownLabel;
 @property (nonatomic) int countdown;
 @property (nonatomic, strong) UIButton *flagButton;
+@property (nonatomic, strong) UIButton *toggleMicButton;
 @property (nonatomic, strong) UIButton *cameraFlipButton;
-@property (nonatomic, strong) UIView *tintBGView;
-@property (nonatomic, strong) UIImageView *nameImageView;
 @property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) NSTimer *countdownTimer;
-@property (nonatomic, strong) UIView *movieFillView;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIButton *messengerButton;
 @property (nonatomic, strong) UIButton *openCommentButton;
+@property (nonatomic, strong) UIView *tintView;
 @property (nonatomic, strong) UIImageView *animationImageView;
 @property (nonatomic, strong) UITextField *nameTextField;
 @property (nonatomic, strong) UIButton *nameButton;
@@ -245,8 +244,6 @@
 				_moviePlayer.view.alpha = 1.0;
 				_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:[result objectForKey:@"url"]]];
 				[_moviePlayer play];
-				
-				_nameImageView.hidden = YES;
 			}
 		}
 		
@@ -461,7 +458,6 @@
 									 if ([txtContent length] > 0) {
 										 if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
 											 
-											 _nameImageView.hidden = YES;
 											 _moviePlayer.view.hidden = NO;
 											 _moviePlayer.view.alpha = 1.0;
 											 _moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:txtContent]];
@@ -470,7 +466,7 @@
 //											 _moviePlayer.view.frame = CGRectZero;
 //											 
 //											 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//												 _moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
+//												 _moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
 //											 });
 											 
 											 *stop = YES;
@@ -533,7 +529,11 @@
 			NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 		}
 		
-		_expireLabel.text = [NSString stringWithFormat:@"%d %@ here", _participants, (_participants == 1) ? @"person" : @"people"];
+		_expireLabel.text = (_participants == 1) ? @"no one is here yet :(" : [NSString stringWithFormat:@"%d %@ here, invite more +", (_participants - 1), (_participants == 2) ? @"person is" : @"people are"];
+		
+		_animationImageView.hidden = YES;
+		_openCommentButton.hidden = (_participants == 1);
+		_messengerButton.hidden = (_participants > 1);
 	}];
 	
 	
@@ -707,7 +707,7 @@
 	_messageTotal = 0;
 	
 	
-	self.view.backgroundColor = [UIColor blackColor];// [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
+	self.view.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	
 	_isIntro = YES;
 	_isActive = YES;
@@ -717,22 +717,8 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
-	_tintBGView = [[UIView alloc] initWithFrame:self.view.frame];
-	_tintBGView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
-	[self.view addSubview:_tintBGView];
-	
-//	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:1.25
-//													target:self
-//												selector:@selector(_updateTint)
-//												userInfo:nil repeats:YES];
-	
-	_movieFillView = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.5)];
-	_movieFillView.backgroundColor = [UIColor blackColor];
-	_movieFillView.hidden = YES;
-	[self.view addSubview:_movieFillView];
-	
-	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62)];
-	_cameraPreviewView.backgroundColor = [UIColor blackColor];
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.6269, self.view.frame.size.width, self.view.frame.size.height * 0.6271)];
+	_cameraPreviewView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.022 alpha:1.00];
 	_cameraPreviewView.alpha = 0.0;
 	
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
@@ -755,12 +741,11 @@
 	
 	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-//	_moviePlayer.view.backgroundColor = [UIColor redColor];
+	_moviePlayer.view.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_moviePlayer.shouldAutoplay = YES;
 	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
 	_moviePlayer.scalingMode = MPMovieScalingModeFill;
-	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
-	//_moviePlayer.view.alpha = 0.0;
+	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
 	[self.view addSubview:_moviePlayer.view];
 	
 	
@@ -772,69 +757,60 @@
 	_statusUpdateHeaderView.delegate = self;
 	
 	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 55.0, self.view.frame.size.width, 55.0)];
-	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.40];
+	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 	_commentFooterView.hidden = YES;
 	
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInput2BG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(80.0, 31.0, self.view.frame.size.width - 160.0, 22.0)];
-	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:18];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6271) - 56.0, self.view.frame.size.width - 20.0, 20.0)];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.text = @"1 person here";
+	_expireLabel.text = @"no one is here yet :(";
 	[self.view addSubview:_expireLabel];
 	
-//	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, (self.view.frame.size.height * 0.5) - _commentFooterView.frame.size.height)];
+	UIButton *invite2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+	invite2Button.frame = _expireLabel.frame;
+	[invite2Button addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:invite2Button];
+	
+	_tintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0))];
+	_tintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_tintView.alpha = 0.0;
+	[self.view addSubview:_tintView];
+	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height))];
-//	_scrollView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
+//	_scrollView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, 10.0, _scrollView.contentInset.right);
 	_scrollView.alwaysBounceVertical = YES;
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
-	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0)];
-//	_animationImageView.animationImages = @[[UIImage imageNamed:@"contentLoader_01"],
-//											[UIImage imageNamed:@"contentLoader_02"],
-//											[UIImage imageNamed:@"contentLoader_03"],
-//											[UIImage imageNamed:@"contentLoader_04"],
-//											[UIImage imageNamed:@"contentLoader_05"],
-//											[UIImage imageNamed:@"contentLoader_06"],
-//											[UIImage imageNamed:@"contentLoader_07"],
-//											[UIImage imageNamed:@"contentLoader_08"]];
-//	_animationImageView.animationDuration = 0.75;
-//	_animationImageView.animationRepeatCount = 0;
-	_animationImageView.hidden = YES;
-//	[_animationImageView startAnimating];
+	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 5.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0)];
+	_animationImageView.hidden = NO;
 	[self.view addSubview:_animationImageView];
 	
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, (_animationImageView.bounds.size.height + 50.0) * 0.5);
+	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, (_animationImageView.bounds.size.height + 45.0) * 0.5);
 	[activityIndicatorView startAnimating];
 	[_animationImageView addSubview:activityIndicatorView];
-	
-//	UIView *maskView = [[UIView alloc] initWithFrame:self.view.frame];
-//	maskView.layer.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-//	maskView.backgroundColor = [UIColor blackColor];
-//	
-//	_maskLayer = maskView.layer;
-//	_scrollView.layer.mask = _maskLayer;
-//	_scrollView.layer.masksToBounds = YES;
-
 	
 	[self.view addSubview:_statusUpdateHeaderView];
 	[self.view addSubview:_commentFooterView];
 	
-	
-	_nameImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
-	_nameImageView.frame = CGRectOffset(_nameImageView.frame, 0.0, self.view.frame.size.height * 0.75);
-	[self.view addSubview:_nameImageView];
+	_toggleMicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_toggleMicButton.frame = CGRectMake(2.0, (self.view.frame.size.height * 0.6271) + 10.0, 44.0, 44.0);
+	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_nonActive"] forState:UIControlStateNormal];
+	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_Active"] forState:UIControlStateHighlighted];
+	[_toggleMicButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+	//[self.view addSubview:_toggleMicButton];
 	
 	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 65.0, (self.view.frame.size.height * 0.62) + 5.0, 60.0, 60.0);
+	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 53.0, (self.view.frame.size.height * 0.6271) + 6.0, 44.0, 44.0);
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 	[_cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -880,35 +856,31 @@
 //	[_bgView addSubview:_statusLabel];
 	
 	_openCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_openCommentButton.frame = CGRectMake(27.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
+	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
+	_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 0.0 + (((self.view.frame.size.height * 0.6271) - _openCommentButton.frame.size.width) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
 	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
 	_openCommentButton.hidden = YES;
 	[self.view addSubview:_openCommentButton];
 	
-	_tutorialView = [[UIView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 200.0) * 0.5, self.view.frame.size.height - 130.0, 200.0, 50.0)];
-	_tutorialView.hidden = YES;
-	//[self.view addSubview:_tutorialView];
+	_messengerButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
+	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	_messengerButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 0.0 + (((self.view.frame.size.height * 0.6271) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	_messengerButton.hidden = YES;
+	[self.view addSubview:_messengerButton];
 	
 	_takePhotoButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, self.view.frame.size.height - 82.0, 72.0, 72.0);
+	_takePhotoButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
+	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 517.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 618.0 : 451.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	_takePhotoButton.hidden = YES;
 	[self.view addSubview:_takePhotoButton];
-	
-	NSLog(@"FRAME:%@", NSStringFromCGRect(_cameraPreviewView.frame));
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-	
-	_messengerButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_messengerButton.frame = CGRectMake(self.view.frame.size.width - 88.0, self.view.frame.size.height - 80.0, 72.0, 72.0);
-	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	_messengerButton.alpha = 0.0;
-	[self.view addSubview:_messengerButton];
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
@@ -943,8 +915,8 @@
 	_commentCloseButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
-	_countdownLabel = [[UILabel alloc] initWithFrame:_expireLabel.frame];
-	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 200.0, 20.0)];
+	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 	_countdownLabel.backgroundColor = [UIColor clearColor];
 	_countdownLabel.textAlignment = NSTextAlignmentCenter;
 	_countdownLabel.textColor = [UIColor whiteColor];
@@ -961,43 +933,8 @@
 	[self _goSetName];
 	
 	_messengerShare = [GSMessengerShare sharedInstance];
-//	[_messengerShare addAllMessengerShareTypes];
 	[_messengerShare addMessengerShareTypes:@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)]];
 	_messengerShare.delegate = self;
-	[_messengerShare showMessengerSharePickerOnViewController:self];
-	
-//	_shareHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-//	[self.view addSubview:_shareHolderView];
-//	
-//	[_shareHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareBG"]]];
-//	
-//	HONButton *kikButton = [HONButton buttonWithType:UIButtonTypeCustom];
-//	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_nonActive"] forState:UIControlStateNormal];
-//	[kikButton setBackgroundImage:[UIImage imageNamed:@"kikButton_Active"] forState:UIControlStateHighlighted];
-//	[kikButton addTarget:self action:@selector(_goKik) forControlEvents:UIControlEventTouchUpInside];
-//	kikButton.frame = CGRectMake(55.0, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
-//	[_shareHolderView addSubview:kikButton];
-//	
-//	HONButton *fbButton = [HONButton buttonWithType:UIButtonTypeCustom];
-//	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_nonActive"] forState:UIControlStateNormal];
-//	[fbButton setBackgroundImage:[UIImage imageNamed:@"fbButton_Active"] forState:UIControlStateHighlighted];
-//	[fbButton addTarget:self action:@selector(_goFB) forControlEvents:UIControlEventTouchUpInside];
-//	fbButton.frame = CGRectMake((self.view.frame.size.width - fbButton.frame.size.width) * 0.5, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), fbButton.frame.size.width, fbButton.frame.size.height);
-//	[_shareHolderView addSubview:fbButton];
-//	
-//	HONButton *kakaoButton = [HONButton buttonWithType:UIButtonTypeCustom];
-//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_nonActive"] forState:UIControlStateNormal];
-//	[kakaoButton setBackgroundImage:[UIImage imageNamed:@"kakaoButton_Active"] forState:UIControlStateHighlighted];
-//	[kakaoButton addTarget:self action:@selector(_goKakao) forControlEvents:UIControlEventTouchUpInside];
-//	kakaoButton.frame = CGRectMake((self.view.frame.size.width - 55.0) - kikButton.frame.size.width, 280.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), kikButton.frame.size.width, kikButton.frame.size.height);
-//	[_shareHolderView addSubview:kakaoButton];
-//	
-//	HONButton *skipButton = [HONButton buttonWithType:UIButtonTypeCustom];
-//	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipNameButton_nonActive"] forState:UIControlStateNormal];
-//	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipNameButton_Active"] forState:UIControlStateHighlighted];
-//	[skipButton addTarget:self action:@selector(_goSkipName) forControlEvents:UIControlEventTouchUpInside];
-//	skipButton.frame = CGRectMake(0.0, self.view.frame.size.height - skipButton.frame.size.height, skipButton.frame.size.width, skipButton.frame.size.height);
-//	[_shareHolderView addSubview:skipButton];
 }
 
 - (void)viewDidLoad {
@@ -1037,86 +974,6 @@
 		[_statusUpdateHeaderView changeTitle:@"Cleaning up…"];
 		[self _popBack];
 	}
-}
-
-- (void)_goKik {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://tap2install.com/ios-app.php"]];
-	
-	//dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-		_cameraPreviewView.frame =CGRectMake(_cameraPreviewView.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 333.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 368.0 : 284.0, _cameraPreviewView.frame.size.width, _cameraPreviewView.frame.size.height);
-		//_takePhotoButton.frame = CGRectOffset(_takePhotoButton.frame, _takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0);
-		
-		NSLog(@"TAKEPHOTO:[%@]", NSStringFromCGRect(_takePhotoButton.frame));
-		
-		_shareHolderView.hidden = YES;
-		
-		[_statusUpdateHeaderView changeTitle:@""];
-		_cameraPreviewView.hidden = NO;
-		
-		if ([_nameTextField isFirstResponder])
-			[_nameTextField resignFirstResponder];
-		
-		_nameButton.hidden = YES;
-		_nameTextField.hidden = YES;
-		
-		_commentTextField.hidden = NO;
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_cameraPreviewView.alpha = 1.0;
-			_nameImageView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_nameImageView removeFromSuperview];
-		}];
-	
-		_cameraPreviewView.hidden = NO;
-		
-		[self _goCancelComment];
-	//});
-}
-
-- (void)_goKakao {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"kakaolink"]];
-	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[self _goSkipName];
-	});
-}
-
-- (void)_goFB {
-	FBSDKMessengerShareOptions *options = [[FBSDKMessengerShareOptions alloc] init];
-	options.metadata = [NSString stringWithFormat:@"{\"channel\":\"%@\"}", _channel.name];
-	options.contextOverride = [[FBSDKMessengerBroadcastContext alloc] init];
-	
-	[FBSDKMessengerSharer shareAnimatedGIF:[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"popup_sharefb" ofType:@"gif"]]
-								 withOptions:options];
-	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-		[self _goSkipName];
-	});
-}
-
-- (void)_goSkipName {
-	_nameTextField.text = @"anon";
-	_shareHolderView.hidden = YES;
-	
-	[self _goSetName];
-	
-//	if (![_nameTextField isFirstResponder])
-//		[_nameTextField becomeFirstResponder];
-//	
-//	_nameButton = [HONButton buttonWithType:UIButtonTypeCustom];
-//	_nameButton.frame = CGRectMake(0.0, self.view.frame.size.height - (65.0), self.view.frame.size.width, 65.0);
-//	[_nameButton setBackgroundImage:[UIImage imageNamed:@"nameButton_nonActive"] forState:UIControlStateNormal];
-//	[_nameButton setBackgroundImage:[UIImage imageNamed:@"nameButton_Active"] forState:UIControlStateHighlighted];
-//	[_nameButton addTarget:self action:@selector(_goSetName) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:_nameButton];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_nameButton.frame = CGRectMake(0.0, self.view.frame.size.height - (216.0 + _nameButton.frame.size.height), self.view.frame.size.width, _nameButton.frame.size.height);
-//	} completion:^(BOOL finished) {
-//		[_nameImageView removeFromSuperview];
-//	}];
 }
 
 - (void)_goShare {
@@ -1223,7 +1080,6 @@
 	
 	_nameButton.hidden = YES;
 	_nameTextField.hidden = YES;
-	_tutorialView.hidden = NO;
 	_commentTextField.hidden = NO;
 	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -1295,14 +1151,14 @@
 - (void)_goCancelComment {
 	_commentTextField.text = @"";
 	_footerImageView.image = [UIImage imageNamed:@"commentInputBG"];
+	_expireLabel.hidden = NO;
 	_commentFooterView.hidden = NO;
 	_takePhotoButton.hidden = NO;
-	_openCommentButton.hidden = NO;
 	_scrollView.hidden = YES;
+	_toggleMicButton.hidden = NO;
 	_cameraFlipButton.hidden = NO;
 	_lpGestureRecognizer.enabled = YES;
-	
-	[_tintBGView removeFromSuperview];
+	_openCommentButton.alpha = 1.0;
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"text"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1321,13 +1177,12 @@
 	_scrollView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
-	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+//	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	_submitCommentButton.hidden = YES;
-	_movieFillView.hidden = YES;
 	
-	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
-	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
-	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+//	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
+//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
+//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 //		if ([_moviePlayer isPreparedToPlay])
@@ -1341,10 +1196,10 @@
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tintView.alpha = 0.0;
 		_flagButton.alpha = 1.0;
 		_messengerButton.alpha = 1.0;
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
-//		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
 	} completion:^(BOOL finished) {
 		//[_commentCloseButton removeFromSuperview];
@@ -1363,8 +1218,12 @@
 				[[PBJVision sharedInstance] startVideoCapture];
 //			});
 			
-			_tutorialView.hidden = YES;
-			_nameImageView.hidden = YES;
+			_imageView.alpha = 0.0;
+			
+			_openCommentButton.alpha = 0.0;
+			_messengerButton.alpha = 0.0;
+			
+			_toggleMicButton.hidden = YES;
 			_cameraFlipButton.hidden = YES;
 			
 			if ([_commentTextField isFirstResponder])
@@ -1393,14 +1252,13 @@
 			//_animationImageView.frame = CGRectMake(20.0, 20.0, 50.0, 50.0);
 			//_animationImageView.hidden = NO;
 			
-			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.62);
-			_openCommentButton.hidden = YES;
+//			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
+//			_openCommentButton.hidden = YES;
 			_submitCommentButton.hidden = YES;
-			_movieFillView.hidden = YES;
 			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 			
 			[_moviePlayer stop];
-			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.62);
+			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
 			
@@ -1420,26 +1278,23 @@
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
 		if (gestureRecognizer.enabled) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
+			//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 			
 			NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-			//_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
-			_commentFooterView.backgroundColor = [UIColor clearColor];
+			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
 			
 			_statusLabel.text = @"Sending popup…";
 			_animationImageView.hidden = NO;
-			_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
+			//_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
 			
 			[[PBJVision sharedInstance] endVideoCapture];
 			_statusUpdateHeaderView.hidden = NO;
 			_commentFooterView.hidden = NO;
-			_openCommentButton.hidden = NO;
 			_flagButton.hidden = NO;
-			_messengerButton.hidden = NO;
 			_countdownLabel.text = @"";
 			_countdownLabel.hidden = YES;
 			_moviePlayer.view.hidden = NO;
+			_toggleMicButton.hidden = NO;
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
 			gestureRecognizer.enabled = YES;
@@ -1484,8 +1339,16 @@
 - (void)_playbackStateChanged:(NSNotification *)notification {
 	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
 	
-	if (_moviePlayer.loadState == 0) {
+	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
 		_animationImageView.hidden = YES;
+		
+		if (![_commentTextField isFirstResponder]) {
+			_openCommentButton.alpha = 1.0;
+			_messengerButton.alpha = 1.0;
+		}
+		
+		_openCommentButton.hidden = NO;
+		_messengerButton.hidden = YES;
 		
 //		[UIView animateKeyframesWithDuration:0.25 delay:0.00
 //									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
@@ -1583,10 +1446,8 @@
 //		_openCommentButton.hidden = NO;
 //		
 //		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - sendVideo" withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
-//		
-//		_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 595.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 736.0 : 496.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+//
 //		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-//		_commentFooterView.backgroundColor = [UIColor clearColor];
 //		
 //		if (_lpGestureRecognizer.enabled) {
 //			_statusLabel.text = @"Sending popup…";
@@ -1616,7 +1477,6 @@
 	
 	UIColor *color = [colors randomElement];
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		[[HONViewDispensor sharedInstance] tintView:_tintBGView withColor:color];
 	} completion:nil];
 }
 
@@ -1645,8 +1505,8 @@
 //	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		//if (messageState == PNMessageSent) {
 		//	NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//			[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
-//			}];
+			[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+			}];
 	
 			[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
 			[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
@@ -1688,7 +1548,6 @@
 	NSLog(@"[*:*] didSkipMessengerShare [*:*]");
 	
 	if ([[_moviePlayer.contentURL absoluteString] length] > 0) {
-		_nameImageView.hidden = YES;
 		[_moviePlayer stop];
 		[_moviePlayer play];
 	}
@@ -1853,14 +1712,15 @@
 												 object:textField];
 	
 	_footerImageView.image = [UIImage imageNamed:@"commentInput3BG"];
-	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.20];
+	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	
-	_nameImageView.hidden = YES;
-	_tutorialView.hidden = YES;
+	_expireLabel.hidden = YES;
 	_scrollView.hidden = NO;
+	_toggleMicButton.hidden = YES;
 	_cameraFlipButton.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + 216.0 + 10.0));
 	_submitCommentButton.hidden = NO;
+	_openCommentButton.alpha = 0.0;
 	
 	if (textField.tag == 1) {
 		_cameraPreviewView.hidden = YES;
@@ -1868,17 +1728,15 @@
 			_cameraPreviewView.hidden = NO;
 		});
 		
-		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.width * 0.62);
-		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.62);
+//		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.width * 0.6271);
+//		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+//		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.6271);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"text"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		_commentTextField.placeholder = @"Type a message…";
-		_movieFillView.hidden = NO;
 		_scrollView.hidden = NO;
-		//_takePhotoButton.frame = CGRectTranslateY(_takePhotoButton.frame, (_movieFillView.frame.size.height - 72.0));
 	
 	} else {
 	}
@@ -1887,8 +1745,8 @@
 		[_scrollView setContentOffset:CGPointMake(0.0, MAX(0.0, _scrollView.contentSize.height - _scrollView.frame.size.height)) animated:YES];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tintView.alpha = 1.0;
 		[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
-//		_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, _scrollView.frameEdges.bottom);
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0));
 		_messengerButton.alpha = 0.0;
 		_flagButton.alpha = 0.0;
@@ -2199,7 +2057,10 @@
 	_vidName = [[path pathComponents] lastObject];
 	
 	
-	_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject];
+	PNChannel *vidChannel = [PNChannel channelWithName:[NSString stringWithFormat:@"%@_%@", [PubNub sharedInstance].clientIdentifier, [[[[path pathComponents] lastObject] componentsSeparatedByString:@"_"] lastObject]]];
+	[PubNub subscribeOn:@[vidChannel]];
+	
+	_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
 	_imageView.hidden = NO;
 	_imageView.alpha = 1.0;
 	
@@ -2269,7 +2130,8 @@
 //																			[[HONAPICaller sharedInstance] showDataErrorHUD];
 //																		}];
 				
-				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name}];
+				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name,
+																																			  @"file"		: [[path pathComponents] lastObject]}];
 				
 //				[PubNub sendMessage:@"Somebody posted a video!"
 //						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
@@ -2297,8 +2159,7 @@
 - (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
 	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
 	
-//	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 728.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.62, self.view.frame.size.width, self.view.frame.size.height * 0.62);
+//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
 //	_commentFooterView.backgroundColor = [UIColor clearColor];
 //	
 //	_statusLabel.text = @"Sending popup…";

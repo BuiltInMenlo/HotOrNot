@@ -623,7 +623,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		UIView *noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
 		[noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
-		[self.window addSubview:noNetworkView];
+		//[self.window addSubview:noNetworkView];
 		
 		UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
 		noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
@@ -1163,7 +1163,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber + 1];
 //	}
 	
-	NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : @"";
+	NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] : @"";
 	
 	//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
 	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {

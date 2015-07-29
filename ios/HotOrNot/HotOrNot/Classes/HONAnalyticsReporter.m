@@ -15,8 +15,8 @@
 #import "HONAnalyticsReporter.h"
 
 //NSString * const kAnalyticsCohort = @"0714Cohort";
-NSString * const kAnalyticsCohort = @"Popup Canada Beta";
-//NSString * const kAnalyticsCohort = @"DEV";
+//NSString * const kAnalyticsCohort = @"Popup Canada Beta";
+NSString * const kAnalyticsCohort = @"DEV";
 
 @implementation HONAnalyticsReporter
 static HONAnalyticsReporter *sharedInstance = nil;
