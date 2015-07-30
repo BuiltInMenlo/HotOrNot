@@ -19,7 +19,6 @@
 		3010D7831A2439090078164F /* HotOrNot.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 3010D7821A2439090078164F /* HotOrNot.entitlements */; };
 		3010D78E1A24BADB0078164F /* HONClubToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C11908178B00512295 /* HONClubToggleViewCell.m */; };
 		3010D78F1A24BAED0078164F /* HONClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */; };
-		3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */; };
 		3010D7931A24BDDD0078164F /* HONScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3010D7921A24BDDD0078164F /* HONScrollView.m */; };
 		30119BE219F8527800DE9B16 /* HONCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 30119BE119F8527800DE9B16 /* HONCollectionViewCell.m */; };
 		301C96531A5B2F8D002EAF3A /* HONToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 301C96521A5B2F8D002EAF3A /* HONToggleViewCell.m */; };
@@ -68,6 +67,7 @@
 		3073BB381ACB97EA00CE2441 /* iTunesArtwork.png in Resources */ = {isa = PBXBuildFile; fileRef = 3073BB361ACB97EA00CE2441 /* iTunesArtwork.png */; };
 		3073BB391ACB97EA00CE2441 /* iTunesArtwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3073BB371ACB97EA00CE2441 /* iTunesArtwork@2x.png */; };
 		3073BB3C1ACCB72B00CE2441 /* HONInviteNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3073BB3B1ACCB72B00CE2441 /* HONInviteNavButtonView.m */; };
+		3077D3A11B69D5DF0076506C /* HONHomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3077D3A01B69D5DF0076506C /* HONHomeViewCell.m */; };
 		307A11261A310B1A0089D5A2 /* HONRefreshingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */; };
 		308D455E19D4D4A900E832D7 /* HONAudioMaestro.m in Sources */ = {isa = PBXBuildFile; fileRef = 308D455D19D4D4A900E832D7 /* HONAudioMaestro.m */; };
 		308F35E119E301E300EE9512 /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308F35E019E301E300EE9512 /* libKeenClient-Aggregate.a */; };
@@ -375,8 +375,6 @@
 		3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewController.m; sourceTree = "<group>"; };
 		3045F9BE1A1E621000F4FA88 /* HONHomeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewFlowLayout.h; sourceTree = "<group>"; };
 		3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewFlowLayout.m; sourceTree = "<group>"; };
-		3045F9C11A1E624300F4FA88 /* HONHomeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewCell.h; sourceTree = "<group>"; };
-		3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewCell.m; sourceTree = "<group>"; };
 		304CB46F1A79B3670042BBE5 /* HONRestrictedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRestrictedViewController.h; sourceTree = "<group>"; };
 		304CB4701A79B3670042BBE5 /* HONRestrictedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRestrictedViewController.m; sourceTree = "<group>"; };
 		305001401A5E222800E8F303 /* HONStatusUpdateHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStatusUpdateHeaderView.h; sourceTree = "<group>"; };
@@ -439,6 +437,8 @@
 		3073BB3B1ACCB72B00CE2441 /* HONInviteNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteNavButtonView.m; sourceTree = "<group>"; };
 		3075E02D19D66107007B3346 /* HONCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraOverlayView.h; sourceTree = "<group>"; };
 		3075E02E19D66107007B3346 /* HONCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraOverlayView.m; sourceTree = "<group>"; };
+		3077D39F1B69D5DF0076506C /* HONHomeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHomeViewCell.h; sourceTree = "<group>"; };
+		3077D3A01B69D5DF0076506C /* HONHomeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHomeViewCell.m; sourceTree = "<group>"; };
 		307A11241A310B1A0089D5A2 /* HONRefreshingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshingLabel.h; sourceTree = "<group>"; };
 		307A11251A310B1A0089D5A2 /* HONRefreshingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRefreshingLabel.m; sourceTree = "<group>"; };
 		308407421A6C980E009F38E0 /* libPods-HotOrNot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPods-HotOrNot.a"; sourceTree = "<group>"; };
@@ -1640,8 +1640,6 @@
 		30E4AFB01ABBA4600016B731 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				3045F9C11A1E624300F4FA88 /* HONHomeViewCell.h */,
-				3045F9C21A1E624300F4FA88 /* HONHomeViewCell.m */,
 				3010D77F1A24109E0078164F /* HONHomeFeedToggleView.h */,
 				3010D7801A24109E0078164F /* HONHomeFeedToggleView.m */,
 			);
@@ -1757,6 +1755,8 @@
 		4C2DD82F18E3B41900BC8759 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				3077D39F1B69D5DF0076506C /* HONHomeViewCell.h */,
+				3077D3A01B69D5DF0076506C /* HONHomeViewCell.m */,
 				3045F9BB1A1E61AD00F4FA88 /* HONHomeViewController.h */,
 				3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */,
 				4CD5616519775FCB006F1DB5 /* HONInviteViewController.h */,
@@ -2371,8 +2371,6 @@
 				3075E02E19D66107007B3346 /* HONCameraOverlayView.m */,
 				30B256021A3BB12100C789E1 /* HONComposeViewFlowLayout.h */,
 				30B256031A3BB12100C789E1 /* HONComposeViewFlowLayout.m */,
-				4C99EB5B194D5FC100283C1A /* HONClubPhotoViewCell.h */,
-				4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */,
 				4CC94FEA19079D4900347A34 /* HONComposeDisplayView.h */,
 				4CC94FEB19079D4900347A34 /* HONComposeDisplayView.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
@@ -2383,6 +2381,8 @@
 				4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */,
 				4C2DD83618E3B4B100BC8759 /* HONContactsTabViewController.h */,
 				4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */,
+				4C99EB5B194D5FC100283C1A /* HONClubPhotoViewCell.h */,
+				4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */,
 				4C99EB58194D5B1700283C1A /* HONClubTimelineViewController.h */,
 				4C99EB59194D5B1700283C1A /* HONClubTimelineViewController.m */,
 				300D1B831A0B93C900D1D9A7 /* HONTimelineMapViewController.h */,
@@ -2713,7 +2713,6 @@
 				30AD79341B43A1AE00F9C634 /* GSMessengerShare.m in Sources */,
 				3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */,
 				30B387A21B51C3D700521714 /* HOKVersionChecker.m in Sources */,
-				3010D7901A24BB7F0078164F /* HONHomeViewCell.m in Sources */,
 				3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
@@ -2740,6 +2739,7 @@
 				30B387951B51C3D700521714 /* HOKNetworking.m in Sources */,
 				30B3878C1B51C3D700521714 /* HOKDeferredDeeplinking.m in Sources */,
 				30CFAD411A54881100FD25CF /* HONReplySubjectsViewController.m in Sources */,
+				3077D3A11B69D5DF0076506C /* HONHomeViewCell.m in Sources */,
 				30CFAD441A54905E00FD25CF /* HONReplySubmitViewController.m in Sources */,
 				304CB4711A79B3670042BBE5 /* HONRestrictedViewController.m in Sources */,
 				3010D7931A24BDDD0078164F /* HONScrollView.m in Sources */,

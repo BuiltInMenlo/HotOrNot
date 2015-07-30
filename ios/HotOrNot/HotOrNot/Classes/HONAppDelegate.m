@@ -208,7 +208,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"alert_formats"] forKey:@"alert_formats"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_formats"] forKey:@"invite_formats"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"cross_post"] forKey:@"cross_post"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"channels"] forKey:@"channels"];
+		//[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"channels"] forKey:@"channels"];
+	//[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"channels"];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"default"	: [[result objectForKey:@"share_formats"] objectForKey:@"default"],

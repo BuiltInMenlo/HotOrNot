@@ -21,14 +21,11 @@
 
 #import "HONHomeViewController.h"
 #import "HONHomeViewFlowLayout.h"
-#import "HONActivityViewController.h"
-#import "HONRegisterViewController.h"
-#import "HONRestrictedViewController.h"
-#import "HONInviteViewController.h"
 #import "HONPrivacyPolicyViewController.h"
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONHomeViewCell.h"
 #import "HONTermsViewController.h"
 #import "HONLoadingOverlayView.h"
 #import "HONPaginationView.h"
@@ -39,12 +36,13 @@
 #import "HONClubPhotoVO.h"
 #import "HONCommentVO.h"
 
-@interface HONHomeViewController () <HONLoadingOverlayViewDelegate>
+@interface HONHomeViewController () <HONHomeViewCellDelegate, HONLoadingOverlayViewDelegate>
 @property (nonatomic, strong) HONScrollView *scrollView;
 @property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic, strong) UITextField *textField;
 @property (nonatomic, strong) HONButton *composeButton;
 @property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
+@property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
 @property (nonatomic, strong) UIButton *overlayButton;
 @property (nonatomic) int voteScore;
@@ -154,6 +152,7 @@
 	_scrollView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
 	_scrollView.contentInset = UIEdgeInsetsZero;
+//	_scrollView.bounces = NO;
 	_scrollView.alwaysBounceHorizontal = YES;
 	_scrollView.pagingEnabled = YES;
 	_scrollView.delegate = self;
@@ -184,7 +183,7 @@
 	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
 	[_scrollView addSubview:tutorial4ImageView];
 	
-//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"channels"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"@"channel_history""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 //		int channelID = [obj intValue];
 //		
 //		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
@@ -197,6 +196,7 @@
 //		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
 //		[_scrollView addSubview:linkButton];
 //	}];
+	
 	
 	NSLog(@"LAST CHANNEL:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"]);
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) {
@@ -222,6 +222,14 @@
 	[_overlayButton addTarget:self action:@selector(_goCancelCompose) forControlEvents:UIControlEventTouchUpInside];
 	_overlayButton.hidden = YES;
 	[_scrollView addSubview:_overlayButton];
+	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 3.0, 64.0, _scrollView.frame.size.width, _scrollView.frame.size.height - (64.0 + 74.0))];
+	[_tableView setBackgroundColor:[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00]];
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.alwaysBounceVertical = YES;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[_scrollView addSubview:_tableView];
 	
 	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 302.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -645,21 +653,6 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goInvite {
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareApp"];
-	
-//	[UIPasteboard generalPasteboard].string = @"Join my Popup! (expires in 10 mins) http://popup.vlly.im";
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Popup link has been copied to your clipboard!"
-//														message:@"http://popup.vlly.im\nShare now for people to join."
-//													   delegate:self
-//											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", @"Cancel")
-//											  otherButtonTitles:@"Copy to Clipboard", @"Share on SMS", nil];//@"Share Kik", @"Share Line", @"Share Kakao", nil];
-//	[alertView setTag:HONHomeAlertViewTypeInvite];
-//	[alertView show];
-	
-	[self.navigationController pushViewController:[[HONInviteViewController alloc] init] animated:YES];
-}
-
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
 	NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
 //	if (gestureRecognizer.state != UIGestureRecognizerStateBegan && gestureRecognizer.state != UIGestureRecognizerStateCancelled && gestureRecognizer.state != UIGestureRecognizerStateEnded)
@@ -855,9 +848,74 @@
 }
 
 
+#pragma mark - TableView DataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (2);
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return ((section == 0) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] : 1);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONHomeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil)
+		cell = [[HONHomeViewCell alloc] init];
+	[cell setSize:[tableView rectForRowAtIndexPath:indexPath].size];
+	[cell setIndexPath:indexPath];
+	cell.delegate = self;
+	
+	[cell populateFields:@{@"title"		: @"Random",
+						   @"timestamp"	: @"Now",
+						   @"occupants"	: @"1"}];
+	
+//	[cell populateFields:(indexPath.section == 0) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] objectAtIndex:indexPath.row] : @{@"name"		: @"Random",
+//																																					   @"timestamp"	: [NSDate date],
+//																																					   @"occupants"	: @(0)}];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	return (cell);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	return (nil);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (64.0);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (24.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+
+	if (indexPath.section == 0) {
+		
+		
+	} else {
+		[self _goRandom];
+	}
+}
+
+
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 //	NSLog(@"[*:*] scrollViewDidScroll:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
+	
+	if (scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height || scrollView.contentOffset.y < 0.0) {
+		[scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, scrollView.contentSize.height - scrollView.frame.size.height)];
+	}
 	
 	if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
 		if ([_textField isFirstResponder])

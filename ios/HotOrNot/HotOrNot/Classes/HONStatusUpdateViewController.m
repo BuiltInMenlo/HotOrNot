@@ -459,7 +459,8 @@
 													  // PubNub client successfully retrieved history for channel.
 													  NSLog(@"requestHistoryForChannel - messages:\n%@", messages);
 													  
-													  [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+													  [messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//													  [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 														  PNMessage *message = (PNMessage *)obj;
 														  
 														  NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
@@ -468,7 +469,8 @@
 														  if ([txtContent length] > 0) {
 															  if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
 																  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
-																  [_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
+																  //[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
+																  [_queuePlayer insertItem:playerItem afterItem:nil];
 																  
 //																  _moviePlayer.view.hidden = NO;
 //																  _moviePlayer.view.alpha = 1.0;
@@ -1538,6 +1540,14 @@
 		_tintTimer = nil;
 	}
 	
+	NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
+	[channels addObject:@{@"title"		: _channel.name,
+						  @"timestamp"	: [NSDate date],
+						  @"occupants"	: @(_participants)}];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	//	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(40.0, 44.0))];
 	//	matteView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 	//	[_statusUpdateHeaderView addSubview:matteView];
@@ -1566,6 +1576,7 @@
 	[self.navigationController popToRootViewControllerAnimated:YES];
 	//	});
 	
+//	[_queuePlayer ]
 	[_moviePlayer stop];
 	//	_moviePlayer.view.hidden = YES;
 	
