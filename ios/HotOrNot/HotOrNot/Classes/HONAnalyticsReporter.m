@@ -182,7 +182,7 @@ static HONAnalyticsReporter *sharedInstance = nil;
 	[eventName addEntriesFromDictionary:@{@"action"	: [[event componentsSeparatedByString:@" - "] lastObject]}];
 	
 	
-	NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
+	//NSLog(@"TRACK EVENT:[%@] (%@)", eventCollection, eventName);
 	id tracker = [[GAI sharedInstance] defaultTracker];
 	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:kAnalyticsCohort
 														  action:[[event componentsSeparatedByString:@" - "] lastObject]

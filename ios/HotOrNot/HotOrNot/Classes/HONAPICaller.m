@@ -173,8 +173,8 @@ static HONAPICaller *sharedInstance = nil;
 
 #pragma mark - Utility
 + (NSDictionary *)s3Credentials {
-	return (@{@"key"		: @"AKIAIHUQ42RE7R7CIMEA",
-			  @"secret"		: @"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"});
+	return (@{@"key"		: @"AKIAJH4DRAN5YPWCOCUA",//@"AKIAIHUQ42RE7R7CIMEA",
+			  @"secret"		: @"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"});//@"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ"});
 }
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {

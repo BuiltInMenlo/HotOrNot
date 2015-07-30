@@ -143,34 +143,34 @@
 		_statusUpdateVO = statusUpdateVO;
 		_clubVO = clubVO;
 		
-//		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-//		[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
-//														 @"channel"	: [NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID],
-//														 @"message"	: @"joined"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//															 NSError *error = nil;
-//															 NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//															 
-//															 if (error != nil) {
-//																 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//																 [[HONAPICaller sharedInstance] showDataErrorHUD];
-//																 
-//															 } else {
-//																 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//															 }
-//															 
-//															 [[[UIAlertView alloc] initWithTitle:@"PUSH"
-//																						 message:[[[operation request] URL] absoluteString]
-//																						delegate:nil
-//																				 cancelButtonTitle:@"OK"
-//																				 otherButtonTitles:nil] show];
-//
-//														 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//															 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-//															 [[HONAPICaller sharedInstance] showDataErrorHUD];
-//														 }];
+		//		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+		//		[httpClient getPath:@"sendpushfix.php" parameters:@{@"user"	: [[HONUserAssistant sharedInstance] activeUsername],
+		//														 @"channel"	: [NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID],
+		//														 @"message"	: @"joined"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		//															 NSError *error = nil;
+		//															 NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		//
+		//															 if (error != nil) {
+		//																 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+		//																 [[HONAPICaller sharedInstance] showDataErrorHUD];
+		//
+		//															 } else {
+		//																 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+		//															 }
+		//
+		//															 [[[UIAlertView alloc] initWithTitle:@"PUSH"
+		//																						 message:[[[operation request] URL] absoluteString]
+		//																						delegate:nil
+		//																				 cancelButtonTitle:@"OK"
+		//																				 otherButtonTitles:nil] show];
+		//
+		//														 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		//															 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+		//															 [[HONAPICaller sharedInstance] showDataErrorHUD];
+		//														 }];
 		
-//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//		pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
+		//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		//		pasteboard.string = [NSString stringWithFormat:@"http://popup.vlly.im/%d/", _statusUpdateVO.statusUpdateID];
 	}
 	
 	return (self);
@@ -184,9 +184,9 @@
 //- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 //	[super touchesBegan:touches withEvent:event];
 //	UITouch *touch = [touches anyObject];
-//	
+//
 //	NSLog(@"touchesBegan: %@", touch.view);
-//	
+//
 //	if (_statusUpdateHeaderView.alpha == 1.0) {
 //		_statusUpdateHeaderView.alpha = 0.0;
 //		_statusLabel.alpha = 0.0;
@@ -194,7 +194,7 @@
 //		_expireLabel.alpha = 0.0;
 //		_hudView.alpha = 0.0;
 //		_footerImageView.alpha = 0.0;
-//	
+//
 //	} else {
 //		_statusUpdateHeaderView.alpha = 1.0;
 //		_takePhotoButton.alpha = 1.0;
@@ -207,7 +207,7 @@
 //
 //- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 //	[super touchesEnded:touches withEvent:event];
-//	
+//
 //	NSLog(@"touchesEnded");
 //}
 
@@ -242,7 +242,7 @@
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			if ([[result objectForKey:@"url"] length] > 0) {
 				_moviePlayer.view.alpha = 1.0;
-				_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:[result objectForKey:@"url"]]];
+				_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:[result objectForKey:@"url"]]];
 				[_moviePlayer play];
 			}
 		}
@@ -259,30 +259,30 @@
 		_expireTimer = nil;
 	}
 	
-//	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
-//	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
-		
-//		_statusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+	//	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
+	//	[[HONAPICaller sharedInstance] retrieveStatusUpdateByStatusUpdateID:_statusUpdateVO.statusUpdateID completion:^(NSDictionary *result) {
 	
-		if (_channel == nil || [[_channel.name lastComponentByDelimeter:@"_"] intValue] != _statusUpdateVO.statusUpdateID) {
-			_channel = [self _channelSetupForStatusUpdate];
+	//		_statusUpdateVO = [HONStatusUpdateVO statusUpdateWithDictionary:result];
+	
+	if (_channel == nil || [[_channel.name lastComponentByDelimeter:@"_"] intValue] != _statusUpdateVO.statusUpdateID) {
+		_channel = [self _channelSetupForStatusUpdate];
 		
-		} else {
-//			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//				if (messageState == PNMessageSent) {
-//					NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//					[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
-//					}];
-//
-//					[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
-//					[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
-//				}
-//			}];
-		}
-		
-//		_statusUpdateVO.replies = [_replies copy];
-		[self _didFinishDataRefresh];
-//	}];
+	} else {
+		//			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+		//				if (messageState == PNMessageSent) {
+		//					NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+		//					[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+		//					}];
+		//
+		//					[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
+		//					[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
+		//				}
+		//			}];
+	}
+	
+	//		_statusUpdateVO.replies = [_replies copy];
+	[self _didFinishDataRefresh];
+	//	}];
 }
 
 - (void)_submitTextComment {
@@ -293,11 +293,11 @@
 						   @"challenge_id"		: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
-//	[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has messaged you\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-//			  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//				  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//			  }];
-
+	//	[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has messaged you\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+	//			  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+	//				  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+	//			  }];
+	
 	[PubNub sendMessage:_comment toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 		NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 	}];
@@ -322,16 +322,16 @@
 		
 		if (success) {
 			[PubNub sendMessage:[NSString stringWithFormat:@"%@|%.04f_%.04f|__FIN__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, filename]
-						toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-							NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-							
-							dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-								[_loadingOverlayView outro];
-							});
-			}];
-
+					  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+						  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+						  
+						  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+							  [_loadingOverlayView outro];
+						  });
+					  }];
+			
 			[self _submitPhotoReplyWithURLPrefix:imageURLPrefix];
-		
+			
 		} else {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -348,11 +348,11 @@
 
 - (void)_submitPhotoReplyWithURLPrefix:(NSString *)urlPrefix {
 	NSDictionary *dict = @{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
-							 @"club_id"		: @(_clubVO.clubID),
-							 @"img_url"		: urlPrefix,
-//							 @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-							 @"subject"		: [NSString stringWithFormat:@"%@;%@|%.04f_%.04f|__IMG__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
-							 @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+						   @"club_id"		: @(_clubVO.clubID),
+						   @"img_url"		: urlPrefix,
+						   //							 @"img_url"		: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+						   @"subject"		: [NSString stringWithFormat:@"%@;%@|%.04f_%.04f|__IMG__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONUserAssistant sharedInstance] activeUsername], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, [urlPrefix lastComponentByDelimeter:@"/"]],
+						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	NSLog(@"|:|◊≈◊~~◊~~◊≈◊~~◊~~◊≈◊| SUBMIT PARAMS:[%@]", dict);
 	
 	NSLog(@"*^*|~|*|~|*|~|*|~|*|~|*|~| SUBMITTING -=- [%@] |~|*|~|*|~|*|~|*|~|*|~|*^*", dict);
@@ -378,236 +378,236 @@
 }
 
 - (PNChannel *)_channelSetupForStatusUpdate {
-//	PNChannel *channel = [PNChannel channelWithName:[NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID] shouldObservePresence:YES];
+	//	PNChannel *channel = [PNChannel channelWithName:[NSString stringWithFormat:@"%d_%d", _statusUpdateVO.userID, _statusUpdateVO.statusUpdateID] shouldObservePresence:YES];
 	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 	
 	[PubNub unsubscribeFrom:@[[PNChannel channelWithName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"]] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
-	
-	[PubNub subscribeOn:@[channel]];
-    
-    
-    [[NSUserDefaults standardUserDefaults] setObject:channelName forKey:@"channel_name"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-	
-	
-	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
-	
-	
-//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
-//	
-//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
-//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
-//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
-//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
-//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//		NSError *error = nil;
-//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//		
-//		if (error != nil) {
-//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//			[[HONAPICaller sharedInstance] showDataErrorHUD];
-//			
-//		} else {
-//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
-//		}
-//		
-//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
-//		[[HONAPICaller sharedInstance] showDataErrorHUD];
-//	}];
-	
-	[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
-		PNChannel *channel = [channels firstObject];
 		
-		NSLog(@"\n::: SUBSCRIPTION OBSERVER - [%@](%@)\n", (state == PNSubscriptionProcessSubscribedState) ? @"Subscribed" : (state == PNSubscriptionProcessRestoredState) ? @"Restored" : (state == PNSubscriptionProcessNotSubscribedState) ? @"NotSubscribed" : (state == PNSubscriptionProcessWillRestoreState) ? @"WillRestore" : @"UNKNOWN", channel.name);
+		[PubNub subscribeOn:@[channel]];
 		
-		if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
-			_channel = channel;
-			_participants = 0;
-			_comments = 0;
-            
-            
-            
-            [PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone joined your Popup!\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-                      toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-                          NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-                      }];
-            
-			
-			[[PubNub sharedInstance] requestHistoryForChannel:channel
-										from:nil
-										  to:nil
-									   limit:100 reverseHistory:NO
-						 withCompletionBlock:^(NSArray *messages, PNChannel *channel, PNDate *startDate,
-											   PNDate *endDate, PNError *error) {
-							 
-							 if (error == nil) {
-								 // PubNub client successfully retrieved history for channel.
-								 NSLog(@"requestHistoryForChannel - messages:\n%@", messages);
-								 
-								 [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-									 PNMessage *message = (PNMessage *)obj;
-									 
-									 NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
-									 NSLog(@"txtContent:[%@]", txtContent);
-									 
-									 if ([txtContent length] > 0) {
-										 if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
-											 
-											 _moviePlayer.view.hidden = NO;
-											 _moviePlayer.view.alpha = 1.0;
-											 _moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:txtContent]];
-											 [_moviePlayer play];
-											 
-//											 _moviePlayer.view.frame = CGRectZero;
-//											 
-//											 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//												 _moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
-//											 });
-											 
-											 *stop = YES;
-										 }
-									 }
-								 }];
-								 
-							 } else {
-								 NSLog(@"requestHistoryForChannel - error:\n%@", error);
-								 
-								 // PubNub did fail to retrieve history for specified channel and reason can be found in
-								 // error instance.
-								 //
-								 // Always check 'error.code' to find out what caused error (check PNErrorCodes header file
-								 // and use -localizedDescription / -localizedFailureReason and -localizedRecoverySuggestion
-								 // to get human readable description for error). 'error.associatedObject' contains PNChannel
-								 // instance for which PubNub client was unable to receive history.
-							 }
-						 }];
-			
-//			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//			}];
-			
-			//[self _retrieveLastVideo];
-
-			
-		} else if (state == PNSubscriptionProcessNotSubscribedState) {
-		} else if (state == PNSubscriptionProcessWillRestoreState) {
-		}
-	}];
-	
-	// APNS enabled already?
-	[PubNub enablePushNotificationsOnChannel:channel
-						 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
-					andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
-						NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
-					}];
-
-	[[PNObservationCenter defaultCenter] addPresenceEventObserver:self withBlock:^(PNPresenceEvent *event) {
-		NSLog(@"::: PRESENCE OBSERVER - [%@] :::", event);
-		NSLog(@"PARTICIPANTS:[%d]", (int)event.channel.participantsCount);
 		
-		PNChannel *channel = event.channel;
-		_participants = channel.participantsCount;
+		[[NSUserDefaults standardUserDefaults] setObject:channelName forKey:@"channel_name"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		if (event.type == PNPresenceEventChanged) {
-			NSLog(@"PRESENCE OBSERVER: Changed Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+		
+		[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
+		
+		
+		//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
+		//
+		//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+		//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+		//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+		//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+		//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+		//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		//		NSError *error = nil;
+		//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		//
+		//		if (error != nil) {
+		//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+		//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+		//
+		//		} else {
+		//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+		//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+		//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+		//		}
+		//
+		//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+		//		[[HONAPICaller sharedInstance] showDataErrorHUD];
+		//	}];
+		
+		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
+			PNChannel *channel = [channels firstObject];
 			
-		} else if (event.type == PNPresenceEventJoin) {
-			NSLog(@"PRESENCE OBSERVER: Join Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+			NSLog(@"\n::: SUBSCRIPTION OBSERVER - [%@](%@)\n", (state == PNSubscriptionProcessSubscribedState) ? @"Subscribed" : (state == PNSubscriptionProcessRestoredState) ? @"Restored" : (state == PNSubscriptionProcessNotSubscribedState) ? @"NotSubscribed" : (state == PNSubscriptionProcessWillRestoreState) ? @"WillRestore" : @"UNKNOWN", channel.name);
 			
-		} else if (event.type == PNPresenceEventLeave) {
-			NSLog(@"PRESENCE OBSERVER: Leave Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-			
-		} else if (event.type == PNPresenceEventStateChanged) {
-			NSLog(@"PRESENCE OBSERVER: State Changed Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-			
-		} else if (event.type == PNPresenceEventTimeout) {
-			NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-		}
-		
-		_expireLabel.text = (_participants == 1) ? @"no one is here yet :(" : [NSString stringWithFormat:@"%d %@ here, invite more +", (_participants - 1), (_participants == 2) ? @"person is" : @"people are"];
-		
-		_animationImageView.hidden = YES;
-		_openCommentButton.hidden = (_participants == 1);
-		_messengerButton.hidden = (_participants > 1);
-	}];
-	
-	
-	// Observer looks for message received events
-	[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
-		NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
-		
-		_messageTotal++;
-		
-		NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
-		
-		if ([txtContent length] > 0) {
-			if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
-				NSDictionary *dict = @{@"id"				: @"0",
-									   @"msg_id"			: @"0",
-									   @"content_type"		: @((int)HONChatMessageTypeVID),
-									   
-									   @"owner_member"		: @{@"id"	: @(2392),
-																@"name"	: @""},
-									   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-									   @"text"				: @"Posted a video!",
-									   
-									   @"net_vote_score"	: @(0),
-									   @"status"			: NSStringFromInt(0),
-									   @"added"				: [NSDate stringFormattedISO8601],
-									   @"updated"			: [NSDate stringFormattedISO8601]};
-				
-				HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
-				NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
-				
-				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
-																											 @"channel"	: _channel.name}];
-				
-//				[UIView animateKeyframesWithDuration:0.25 delay:0.00
-//											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-//												animations:^(void) {
-//													//_moviePlayer.view.alpha = 0.0;
-//												} completion:^(BOOL finished) {
-													_moviePlayer.contentURL = [NSURL URLWithString:[@"https://d1fqnfrnudpaz6.cloudfront.net/" stringByAppendingString:txtContent]];
-													[_moviePlayer play];
-//												}];
-				
-				_animationImageView.hidden = NO;
-				_statusLabel.text = @"Loading video…";
-				//[self _appendComment:commentVO];
-			
-			} else {
-				NSDictionary *dict = @{@"id"				: @"0",
-									   @"msg_id"			: @"0",
-									   @"content_type"		: @((int)HONChatMessageTypeTXT),
-									   
-									   @"owner_member"		: @{@"id"	: @(2392),
-																@"name"	: @""},
-									   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-									   @"text"				: txtContent,
-									   
-									   @"net_vote_score"	: @(0),
-									   @"status"			: NSStringFromInt(0),
-									   @"added"				: [NSDate stringFormattedISO8601],
-									   @"updated"			: [NSDate stringFormattedISO8601]};
+			if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
+				_channel = channel;
+				_participants = 0;
+				_comments = 0;
 				
 				
-				HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
-				NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
-				[self _appendComment:commentVO];
+				
+//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone joined your Popup!\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//						  }];
+				
+				
+				[[PubNub sharedInstance] requestHistoryForChannel:channel
+															 from:nil
+															   to:nil
+															limit:100 reverseHistory:NO
+											  withCompletionBlock:^(NSArray *messages, PNChannel *channel, PNDate *startDate,
+																	PNDate *endDate, PNError *error) {
+												  
+												  if (error == nil) {
+													  // PubNub client successfully retrieved history for channel.
+													  NSLog(@"requestHistoryForChannel - messages:\n%@", messages);
+													  
+													  [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+														  PNMessage *message = (PNMessage *)obj;
+														  
+														  NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
+														  NSLog(@"txtContent:[%@]", txtContent);
+														  
+														  if ([txtContent length] > 0) {
+															  if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
+																  
+																  _moviePlayer.view.hidden = NO;
+																  _moviePlayer.view.alpha = 1.0;
+																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
+																  [_moviePlayer play];
+																  
+																  //											 _moviePlayer.view.frame = CGRectZero;
+																  //
+																  //											 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+																  //												 _moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
+																  //											 });
+																  
+																  *stop = YES;
+															  }
+														  }
+													  }];
+													  
+												  } else {
+													  NSLog(@"requestHistoryForChannel - error:\n%@", error);
+													  
+													  // PubNub did fail to retrieve history for specified channel and reason can be found in
+													  // error instance.
+													  //
+													  // Always check 'error.code' to find out what caused error (check PNErrorCodes header file
+													  // and use -localizedDescription / -localizedFailureReason and -localizedRecoverySuggestion
+													  // to get human readable description for error). 'error.associatedObject' contains PNChannel
+													  // instance for which PubNub client was unable to receive history.
+												  }
+											  }];
+				
+				//			[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__SYN__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+				//				//NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+				//			}];
+				
+				//[self _retrieveLastVideo];
+				
+				
+			} else if (state == PNSubscriptionProcessNotSubscribedState) {
+			} else if (state == PNSubscriptionProcessWillRestoreState) {
 			}
-		}
+		}];
+		
+		// APNS enabled already?
+		[PubNub enablePushNotificationsOnChannel:channel
+							 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+					  andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
+						  NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
+					  }];
+		
+		[[PNObservationCenter defaultCenter] addPresenceEventObserver:self withBlock:^(PNPresenceEvent *event) {
+			NSLog(@"::: PRESENCE OBSERVER - [%@] :::", event);
+			NSLog(@"PARTICIPANTS:[%d]", (int)event.channel.participantsCount);
+			
+			PNChannel *channel = event.channel;
+			_participants = channel.participantsCount;
+			
+			if (event.type == PNPresenceEventChanged) {
+				NSLog(@"PRESENCE OBSERVER: Changed Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+				
+			} else if (event.type == PNPresenceEventJoin) {
+				NSLog(@"PRESENCE OBSERVER: Join Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+				
+			} else if (event.type == PNPresenceEventLeave) {
+				NSLog(@"PRESENCE OBSERVER: Leave Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+				
+			} else if (event.type == PNPresenceEventStateChanged) {
+				NSLog(@"PRESENCE OBSERVER: State Changed Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+				
+			} else if (event.type == PNPresenceEventTimeout) {
+				NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
+			}
+			
+			_expireLabel.text = (_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"];
+			
+			_animationImageView.hidden = YES;
+			_openCommentButton.hidden = (_participants == 1);
+			_messengerButton.hidden = (_participants > 1);
+		}];
+		
+		
+		// Observer looks for message received events
+		[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
+			NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
+			
+			_messageTotal++;
+			
+			NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
+			
+			if ([txtContent length] > 0) {
+				if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
+					NSDictionary *dict = @{@"id"				: @"0",
+										   @"msg_id"			: @"0",
+										   @"content_type"		: @((int)HONChatMessageTypeVID),
+										   
+										   @"owner_member"		: @{@"id"	: @(2392),
+																	@"name"	: @""},
+										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+										   @"text"				: @"Posted a video!",
+										   
+										   @"net_vote_score"	: @(0),
+										   @"status"			: NSStringFromInt(0),
+										   @"added"				: [NSDate stringFormattedISO8601],
+										   @"updated"			: [NSDate stringFormattedISO8601]};
+					
+					HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
+					NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
+					
+					[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
+																																				  @"channel"	: _channel.name}];
+					
+					//				[UIView animateKeyframesWithDuration:0.25 delay:0.00
+					//											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+					//												animations:^(void) {
+					//													//_moviePlayer.view.alpha = 0.0;
+					//												} completion:^(BOOL finished) {
+					_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
+					[_moviePlayer play];
+					//												}];
+					
+					_animationImageView.hidden = NO;
+					_statusLabel.text = @"Loading video…";
+					//[self _appendComment:commentVO];
+					
+				} else {
+					NSDictionary *dict = @{@"id"				: @"0",
+										   @"msg_id"			: @"0",
+										   @"content_type"		: @((int)HONChatMessageTypeTXT),
+										   
+										   @"owner_member"		: @{@"id"	: @(2392),
+																	@"name"	: @""},
+										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+										   @"text"				: txtContent,
+										   
+										   @"net_vote_score"	: @(0),
+										   @"status"			: NSStringFromInt(0),
+										   @"added"				: [NSDate stringFormattedISO8601],
+										   @"updated"			: [NSDate stringFormattedISO8601]};
+					
+					
+					HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
+					NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
+					[self _appendComment:commentVO];
+				}
+			}
+		}];
 	}];
-	}];
-		 
 	
-//	[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
-//		NSLog(@"\n::: MESSAGE PROC OBSERVER - [%@](%@)\n", (state == PNMessageSent) ? @"MessageSent" : (state == PNMessageSending) ? @"MessageSending" : (state == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//	}];
+	
+	//	[[PNObservationCenter defaultCenter] addMessageProcessingObserver:self withBlock:^(PNMessageState state, id data) {
+	//		NSLog(@"\n::: MESSAGE PROC OBSERVER - [%@](%@)\n", (state == PNMessageSent) ? @"MessageSent" : (state == PNMessageSending) ? @"MessageSending" : (state == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+	//	}];
 	
 	
 	return (channel);
@@ -615,10 +615,10 @@
 
 - (void)_flagStatusUpdate {
 	NSDictionary *dict = @{@"user_id"		: [[HONUserAssistant sharedInstance] activeUserID],
-							 @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
-							 @"club_id"		: @(_statusUpdateVO.clubID),
-							 @"subject"		: @"__FLAG__",
-							 @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
+						   @"img_url"		: [[HONClubAssistant sharedInstance] defaultStatusUpdatePhotoURL],
+						   @"club_id"		: @(_statusUpdateVO.clubID),
+						   @"subject"		: @"__FLAG__",
+						   @"challenge_id"	: @(_statusUpdateVO.statusUpdateID)};
 	
 	[[HONAPICaller sharedInstance] submitStatusUpdateWithDictionary:dict completion:^(NSDictionary *result) {
 		if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
@@ -663,19 +663,19 @@
 //		if (--_expireSeconds >= 0) {
 //		} else
 //			[self _popBack];
-//		
+//
 //	} else {
 //		if (_expireTimer != nil) {
 //			[_expireTimer invalidate];
 //			_expireTimer = nil;
 //		}
 //	}
-//	
+//
 //	if (_expireSeconds % 86400 == 0) {
 //		int secs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"occupancy_timeout"] intValue];
 //		int mins = [NSDate elapsedMinutesFromSeconds:secs];
 //		int hours = [NSDate elapsedHoursFromSeconds:secs];
-//		
+//
 //		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 //		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:0];
 //		localNotification.timeZone = [NSTimeZone systemTimeZone];
@@ -683,7 +683,7 @@
 //		localNotification.alertBody = [NSString stringWithFormat:@"Chat link expires in less than %@!", (hours > 0) ? [NSString stringWithFormat:@"%d hour%@", hours, (hours == 1) ? @"" : @"s"] : (mins > 0) ? [NSString stringWithFormat:@"%d minute%@", mins, (mins == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%d second%@", secs, (secs == 1) ? @"" : @"s"]];	//[[[[NSUserDefaults standardUserDefaults] objectForKey:@"alert_formats"] objectForKey:@"participant_push"] objectForKey:@"msg"];
 //		localNotification.soundName = @"selfie_notification.caf";
 //		localNotification.userInfo = @{};
-//		
+//
 //		[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 //	}
 //}
@@ -699,7 +699,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - enter"];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -731,15 +731,15 @@
 	
 	
 	
-//	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
-//	playerViewController.player = [AVPlayer playerWithURL:];
-//	self.avPlayerViewcontroller = playerViewController;
-//	[self resizePlayerToViewSize];
-//	[view addSubview:playerViewController.view];
-//	view.autoresizesSubviews = TRUE;
+	//	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
+	//	playerViewController.player = [AVPlayer playerWithURL:];
+	//	self.avPlayerViewcontroller = playerViewController;
+	//	[self resizePlayerToViewSize];
+	//	[view addSubview:playerViewController.view];
+	//	view.autoresizesSubviews = TRUE;
 	
 	
-	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://d1fqnfrnudpaz6.cloudfront.net/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
 	_moviePlayer.view.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_moviePlayer.shouldAutoplay = YES;
@@ -768,7 +768,7 @@
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.text = @"no one is here yet :(";
+	_expireLabel.text = @"You are the only one here, invite more +";
 	[self.view addSubview:_expireLabel];
 	
 	UIButton *invite2Button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -782,7 +782,7 @@
 	[self.view addSubview:_tintView];
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectMake(0.0, _statusUpdateHeaderView.frameEdges.bottom, self.view.frame.size.width, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height))];
-//	_scrollView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	//	_scrollView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, 0.0);
 	_scrollView.contentInset = UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, 10.0, _scrollView.contentInset.right);
 	_scrollView.alwaysBounceVertical = YES;
@@ -806,8 +806,8 @@
 	_toggleMicButton.frame = CGRectMake(2.0, (self.view.frame.size.height * 0.6271) + 10.0, 44.0, 44.0);
 	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_nonActive"] forState:UIControlStateNormal];
 	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_Active"] forState:UIControlStateHighlighted];
-	[_toggleMicButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-	//[self.view addSubview:_toggleMicButton];
+	[_toggleMicButton addTarget:self action:@selector(_goToggleMic) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_toggleMicButton];
 	
 	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 53.0, (self.view.frame.size.height * 0.6271) + 6.0, 44.0, 44.0);
@@ -825,9 +825,9 @@
 	_flagButton.alpha = 0.0;
 	//[self.view addSubview:_flagButton];
 	
-//	UIImageView *participantsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"participantsIcon"]];
-//	participantsImageView.frame = CGRectOffset(participantsImageView.frame, 7.0, (self.view.frame.size.height * 0.5) + 9.0);
-//	[_hudView addSubview:participantsImageView];
+	//	UIImageView *participantsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"participantsIcon"]];
+	//	participantsImageView.frame = CGRectOffset(participantsImageView.frame, 7.0, (self.view.frame.size.height * 0.5) + 9.0);
+	//	[_hudView addSubview:participantsImageView];
 	
 	_nameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 181.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width - 40.0, 30.0)];
 	_nameTextField.backgroundColor = [UIColor clearColor];
@@ -847,13 +847,13 @@
 	_nameTextField.delegate = self;
 	[self.view addSubview:_nameTextField];
 	
-//	_statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 165.0, self.view.frame.size.width - 40.0, 30.0)];
-//	_statusLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
-//	_statusLabel.backgroundColor = [UIColor clearColor];
-//	_statusLabel.textAlignment = NSTextAlignmentCenter;
-//	_statusLabel.textColor = [UIColor whiteColor];
-//	_statusLabel.text = @"Enter your name";
-//	[_bgView addSubview:_statusLabel];
+	//	_statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 165.0, self.view.frame.size.width - 40.0, 30.0)];
+	//	_statusLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:26];
+	//	_statusLabel.backgroundColor = [UIColor clearColor];
+	//	_statusLabel.textAlignment = NSTextAlignmentCenter;
+	//	_statusLabel.textColor = [UIColor whiteColor];
+	//	_statusLabel.text = @"Enter your name";
+	//	[_bgView addSubview:_statusLabel];
 	
 	_openCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
@@ -964,9 +964,9 @@
 	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"back_chat"] isEqualToString:@"YES"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 															message:@"This will delete your conversation."
-															 delegate:self
-													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
-													otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+														   delegate:self
+												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 		[alertView setTag:HONStatusUpdateAlertViewTypeBack];
 		[alertView show];
 		
@@ -977,85 +977,89 @@
 }
 
 - (void)_goShare {
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
 	_isIntro = NO;
-//	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]];
+	//	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]];
 	[_messengerShare showMessengerSharePickerOnViewController:self];
 	
-//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]};
-//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
-//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
-//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
-//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
-//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//		NSError *error = nil;
-//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//		
-//		if (error != nil) {
-//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//			[[HONAPICaller sharedInstance] showDataErrorHUD];
-//			
-//		} else {
-//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
-//			[_messengerShare showMessengerSharePickerOnViewController:self];
-//		}
-//		
-//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
-//		[[HONAPICaller sharedInstance] showDataErrorHUD];
-//	}];
+	//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]};
+	//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+	//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+	//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+	//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+	//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+	//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	//		NSError *error = nil;
+	//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+	//
+	//		if (error != nil) {
+	//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+	//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+	//
+	//		} else {
+	//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+	//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+	//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+	//			[_messengerShare showMessengerSharePickerOnViewController:self];
+	//		}
+	//
+	//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+	//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+	//		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	//	}];
+}
+
+- (void)_goToggleMic {
+	//[[PBJVision sharedInstance] setAudioCaptureEnabled:![PBJVision sharedInstance].isAudioCaptureEnabled];
 }
 
 - (void)_goFlag {
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - flag"]];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - flag"]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
 														message:NSLocalizedString(@"alert_flag_m", nil)
-														 delegate:self
-												cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-												otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 	[alertView setTag:HONStatusUpdateAlertViewTypeFlag];
 	[alertView show];
 	
-//	[[KikClient sharedInstance] openProfileForKikUsername:@"kikteam"];
+	//	[[KikClient sharedInstance] openProfileForKikUsername:@"kikteam"];
 	
-//	KikMessage *message = [KikMessage photoMessageWithImageURL:@"http://popup.rocks/images/my_icon.png"
-//													previewURL:@"http://popup.rocks/images/my_icon.png"];
-//	[[KikClient sharedInstance] sendKikMessage:message];
+	//	KikMessage *message = [KikMessage photoMessageWithImageURL:@"http://popup.rocks/images/my_icon.png"
+	//													previewURL:@"http://popup.rocks/images/my_icon.png"];
+	//	[[KikClient sharedInstance] sendKikMessage:message];
 	
-//	UIImage *image = [UIImage imageNamed:@"noNetworkBG"];
-//	KikMessage *message = [KikMessage photoMessageWithImage:image];
-//	[[KikClient sharedInstance] sendKikMessage:message];
+	//	UIImage *image = [UIImage imageNamed:@"noNetworkBG"];
+	//	KikMessage *message = [KikMessage photoMessageWithImage:image];
+	//	[[KikClient sharedInstance] sendKikMessage:message];
 }
 
 - (void)_goImageComment {
 	[[[UIAlertView alloc] initWithTitle:nil
 								message:@"Tan and hold to record"
-								 delegate:nil
-						cancelButtonTitle:NSLocalizedString(@"alert_ok", @"Cancel")
-						otherButtonTitles:nil] show];
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", @"Cancel")
+					  otherButtonTitles:nil] show];
 	
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - image"];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - image"];
 	
-//	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
-//	_loadingOverlayView.delegate = self;
-//	[[PBJVision sharedInstance] capturePhoto];
+	//	_loadingOverlayView = [[HONLoadingOverlayView alloc] init];
+	//	_loadingOverlayView.delegate = self;
+	//	[[PBJVision sharedInstance] capturePhoto];
 	
-//	[[PBJVision sharedInstance] startVideoCapture];
-//	_statusUpdateHeaderView.hidden = YES;
-//	_scrollView.hidden = YES;
-//	_expireLabel.hidden = YES;
+	//	[[PBJVision sharedInstance] startVideoCapture];
+	//	_statusUpdateHeaderView.hidden = YES;
+	//	_scrollView.hidden = YES;
+	//	_expireLabel.hidden = YES;
 	
-//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//		[[PBJVision sharedInstance] endVideoCapture];
-//		_statusUpdateHeaderView.hidden = NO;
-//		_scrollView.hidden = NO;
-//		_expireLabel.hidden = NO;
-//	});
+	//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+	//		[[PBJVision sharedInstance] endVideoCapture];
+	//		_statusUpdateHeaderView.hidden = NO;
+	//		_scrollView.hidden = NO;
+	//		_expireLabel.hidden = NO;
+	//	});
 	
 }
 
@@ -1064,14 +1068,14 @@
 	_comment = _nameTextField.text;
 	[_statusUpdateHeaderView changeTitle:@""];
 	
-//	NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
-//	[userInfo replaceObject:_comment forKey:@"username"];
-//	[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
-//	
-//	[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
-//		if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-//			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//	}];
+	//	NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
+	//	[userInfo replaceObject:_comment forKey:@"username"];
+	//	[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
+	//
+	//	[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
+	//		if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+	//			[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+	//	}];
 	
 	_cameraPreviewView.hidden = NO;
 	
@@ -1082,12 +1086,12 @@
 	_nameTextField.hidden = YES;
 	_commentTextField.hidden = NO;
 	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_cameraPreviewView.alpha = 1.0;
-//		_nameImageView.alpha = 0.0;
-//	} completion:^(BOOL finished) {
-//		[_nameImageView removeFromSuperview];
-//	}];
+	//	[UIView animateWithDuration:0.25 animations:^(void) {
+	//		_cameraPreviewView.alpha = 1.0;
+	//		_nameImageView.alpha = 0.0;
+	//	} completion:^(BOOL finished) {
+	//		[_nameImageView removeFromSuperview];
+	//	}];
 	
 	_cameraPreviewView.hidden = NO;
 	
@@ -1104,43 +1108,43 @@
 	_commentTextField.text = @"";
 	[self _submitTextComment];
 	
-//	if ([_comment isSuffixedByString:@".mp4"]) {
-//		[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__VID__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment]
-//					toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//						NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//					}];
-//	} else {
-//		[self _submitTextComment];
-//	}
+	//	if ([_comment isSuffixedByString:@".mp4"]) {
+	//		[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__VID__:%@", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude, _comment]
+	//					toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+	//						NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+	//					}];
+	//	} else {
+	//		[self _submitTextComment];
+	//	}
 	
-//	if (++_comments == 1) {
-//		[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
-//			if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
-//				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//		}];
-//
-//		NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
-//		[userInfo replaceObject:_comment forKey:@"username"];
-//		[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
-//
-//		NSDictionary *dict = @{@"id"				: @"0",
-//								 @"msg_id"			: @"0",
-//								 @"content_type"		: @((int)HONChatMessageTypeBOT),
-//								 
-//								 @"owner_member"		: @{@"id"	: @(2392),
-//														@"name"	: @"Botly"},
-//								 @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-//								 @"text"				: [NSString stringWithFormat:@"You changed your name to “%@”", _comment],
-//								 
-//								 @"net_vote_score"	: @(0),
-//								 @"status"			: NSStringFromInt(0),
-//								 @"added"				: [NSDate stringFormattedISO8601],
-//								 @"updated"			: [NSDate stringFormattedISO8601]};
-//		
-//		[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
-//
-//	} else
-//		[self _submitTextComment];
+	//	if (++_comments == 1) {
+	//		[[HONAPICaller sharedInstance] updateUsernameForUser:_comment completion:^(NSDictionary *result) {
+	//			if (![[result objectForKey:@"result"] isEqualToString:@"fail"])
+	//				[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
+	//		}];
+	//
+	//		NSMutableDictionary *userInfo = [[[HONUserAssistant sharedInstance] activeUserInfo] mutableCopy];
+	//		[userInfo replaceObject:_comment forKey:@"username"];
+	//		[[HONUserAssistant sharedInstance] writeActiveUserInfo:[userInfo copy]];
+	//
+	//		NSDictionary *dict = @{@"id"				: @"0",
+	//								 @"msg_id"			: @"0",
+	//								 @"content_type"		: @((int)HONChatMessageTypeBOT),
+	//
+	//								 @"owner_member"		: @{@"id"	: @(2392),
+	//														@"name"	: @"Botly"},
+	//								 @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+	//								 @"text"				: [NSString stringWithFormat:@"You changed your name to “%@”", _comment],
+	//
+	//								 @"net_vote_score"	: @(0),
+	//								 @"status"			: NSStringFromInt(0),
+	//								 @"added"				: [NSDate stringFormattedISO8601],
+	//								 @"updated"			: [NSDate stringFormattedISO8601]};
+	//
+	//		[self _appendComment:[HONCommentVO commentWithDictionary:dict]];
+	//
+	//	} else
+	//		[self _submitTextComment];
 }
 
 - (void)_goOpenComment {
@@ -1177,16 +1181,16 @@
 	_scrollView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
-//	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	//	_takePhotoButton.frame = CGRectMake(_takePhotoButton.frame.origin.x, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 588.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 656.0 : 489.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	_submitCommentButton.hidden = YES;
 	
-//	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
-//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
-//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+	//	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
+	//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
+	//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-//		if ([_moviePlayer isPreparedToPlay])
-			_moviePlayer.view.alpha = 1.0;
+		//		if ([_moviePlayer isPreparedToPlay])
+		_moviePlayer.view.alpha = 1.0;
 		
 		_cameraPreviewView.alpha = 1.0;
 	} completion:^(BOOL finished) {
@@ -1214,9 +1218,9 @@
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
 		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
-//			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				[[PBJVision sharedInstance] startVideoCapture];
-//			});
+			//			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+			[[PBJVision sharedInstance] startVideoCapture];
+			//			});
 			
 			_imageView.alpha = 0.0;
 			
@@ -1239,21 +1243,21 @@
 			_moviePlayer.view.hidden = YES;
 			
 			_countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.00
-																 target:self
+															   target:self
 															 selector:@selector(_updateCountdown)
 															 userInfo:nil repeats:YES];
 			
 			
-//			_gestureTimer = [NSTimer scheduledTimerWithTimeInterval:1.00
-//															 target:self
-//														   selector:@selector(_updateGesture)
-//														   userInfo:nil repeats:NO];
+			//			_gestureTimer = [NSTimer scheduledTimerWithTimeInterval:1.00
+			//															 target:self
+			//														   selector:@selector(_updateGesture)
+			//														   userInfo:nil repeats:NO];
 			
 			//_animationImageView.frame = CGRectMake(20.0, 20.0, 50.0, 50.0);
 			//_animationImageView.hidden = NO;
 			
-//			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
-//			_openCommentButton.hidden = YES;
+			//			_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
+			//			_openCommentButton.hidden = YES;
 			_submitCommentButton.hidden = YES;
 			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 			
@@ -1268,12 +1272,12 @@
 			_flagButton.hidden = YES;
 			_messengerButton.hidden = YES;
 			
-//			[UIView animateKeyframesWithDuration:3.00 delay:0.00
-//										 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveLinear)
-//										animations:^(void) {
-//											_bgView.frame = CGRectResizeWidth(_bgView.frame, self.view.frame.size.width);
-//										} completion:^(BOOL finished) {
-//										}];
+			//			[UIView animateKeyframesWithDuration:3.00 delay:0.00
+			//										 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveLinear)
+			//										animations:^(void) {
+			//											_bgView.frame = CGRectResizeWidth(_bgView.frame, self.view.frame.size.width);
+			//										} completion:^(BOOL finished) {
+			//										}];
 		}
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
@@ -1298,21 +1302,21 @@
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
 			gestureRecognizer.enabled = YES;
-		
+			
 		} else
 			gestureRecognizer.enabled = YES;
 	}
 }
 
 - (void)_goFlipCamera {
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - flip_camera"]];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - flip_camera"]];
 	
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
 }
 
 - (void)_goPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
-//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
+	//	NSLog(@"[:|:] _goPanGesture:[%@]-=(%@)=-", NSStringFromCGPoint([gestureRecognizer velocityInView:self.view]), (gestureRecognizer.state == UIGestureRecognizerStateBegan) ? @"BEGAN" : (gestureRecognizer.state == UIGestureRecognizerStateCancelled) ? @"CANCELED" : (gestureRecognizer.state == UIGestureRecognizerStateEnded) ? @"ENDED" : (gestureRecognizer.state == UIGestureRecognizerStateFailed) ? @"FAILED" : (gestureRecognizer.state == UIGestureRecognizerStatePossible) ? @"POSSIBLE" : (gestureRecognizer.state == UIGestureRecognizerStateChanged) ? @"CHANGED" : (gestureRecognizer.state == UIGestureRecognizerStateRecognized) ? @"RECOGNIZED" : @"N/A");
 	[super _goPanGesture:gestureRecognizer];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Club Row Swipe"
@@ -1350,20 +1354,20 @@
 		_openCommentButton.hidden = NO;
 		_messengerButton.hidden = YES;
 		
-//		[UIView animateKeyframesWithDuration:0.25 delay:0.00
-//									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-//									animations:^(void) {
-										_imageView.alpha = 0.0;
-										_moviePlayer.view.alpha = 1.0;
-//									} completion:^(BOOL finished) {
-										_imageView.hidden = YES;
-//									}];
+		//		[UIView animateKeyframesWithDuration:0.25 delay:0.00
+		//									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
+		//									animations:^(void) {
+		_imageView.alpha = 0.0;
+		_moviePlayer.view.alpha = 1.0;
+		//									} completion:^(BOOL finished) {
+		_imageView.hidden = YES;
+		//									}];
 	}
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
-																									 @"channel"	: _channel.name}];
-
+																																	  @"channel"	: _channel.name}];
+		
 	}
 }
 
@@ -1372,7 +1376,7 @@
 }
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	UITextField *textField = (UITextField *)[notification object];
 	
 #if __APPSTORE_BUILD__ == 0
@@ -1394,7 +1398,7 @@
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
 	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
-//	vision.cameraMode = PBJCameraModePhoto;
+	//	vision.cameraMode = PBJCameraModePhoto;
 	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
 	vision.focusMode = PBJFocusModeContinuousAutoFocus;
@@ -1416,19 +1420,19 @@
 	
 	_commentsHolderView.frame = CGRectExtendHeight(_commentsHolderView.frame, itemView.frame.size.height);
 	
-//	for (UIView *view in _commentsHolderView.subviews) {
-//		view.alpha = MIN(1.0, (1.0 - (((_commentsHolderView.frameEdges.bottom - view.frame.origin.y) - 22.0) / 55.0)) + 0.33);
-//		view.alpha = MIN(1.0, (1.0 - (((_commentsHolderView.frameEdges.bottom - view.frame.origin.y) - 22.0) / 198.352)) + 0.33);
-//	}
+	//	for (UIView *view in _commentsHolderView.subviews) {
+	//		view.alpha = MIN(1.0, (1.0 - (((_commentsHolderView.frameEdges.bottom - view.frame.origin.y) - 22.0) / 55.0)) + 0.33);
+	//		view.alpha = MIN(1.0, (1.0 - (((_commentsHolderView.frameEdges.bottom - view.frame.origin.y) - 22.0) / 198.352)) + 0.33);
+	//	}
 	
 	[UIView animateKeyframesWithDuration:0.25 delay:0.00
 								 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-								animations:^(void) {
-		itemView.alpha = 1.0;
-		itemView.frame = CGRectOffsetY(itemView.frame, -offset);
-	} completion:^(BOOL finished) {
-	}];
-
+							  animations:^(void) {
+								  itemView.alpha = 1.0;
+								  itemView.frame = CGRectOffsetY(itemView.frame, -offset);
+							  } completion:^(BOOL finished) {
+							  }];
+	
 	_scrollView.contentSize = _commentsHolderView.frame.size;
 	[_scrollView setContentInset:UIEdgeInsetsMake(MAX(0.0, (_scrollView.frame.size.height - _commentsHolderView.frame.size.height)), _scrollView.contentInset.left, _scrollView.contentInset.bottom, _scrollView.contentInset.right)];
 	if (_scrollView.frame.size.height - _commentsHolderView.frame.size.height < 0)
@@ -1443,26 +1447,26 @@
 		_countdownLabel.text = @"";
 		_countdownLabel.hidden = YES;
 		_expireLabel.hidden = NO;
-//		_openCommentButton.hidden = NO;
-//		
-//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - sendVideo" withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
-//
-//		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
-//		
-//		if (_lpGestureRecognizer.enabled) {
-//			_statusLabel.text = @"Sending popup…";
-//			_animationImageView.hidden = NO;
-//			_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
-//			
-//			[[PBJVision sharedInstance] endVideoCapture];
-//		}
-//		
-//		_lpGestureRecognizer.enabled = NO;
-//		_statusUpdateHeaderView.hidden = NO;
-//		_commentFooterView.hidden = NO;
-//		_scrollView.hidden = NO;
-//		_flagButton.hidden = NO;
-//		_messengerButton.hidden = NO;
+		//		_openCommentButton.hidden = NO;
+		//
+		//		[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - sendVideo" withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
+		//
+		//		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.5, self.view.frame.size.width, self.view.frame.size.height * 0.5);
+		//
+		//		if (_lpGestureRecognizer.enabled) {
+		//			_statusLabel.text = @"Sending popup…";
+		//			_animationImageView.hidden = NO;
+		//			_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
+		//
+		//			[[PBJVision sharedInstance] endVideoCapture];
+		//		}
+		//
+		//		_lpGestureRecognizer.enabled = NO;
+		//		_statusUpdateHeaderView.hidden = NO;
+		//		_commentFooterView.hidden = NO;
+		//		_scrollView.hidden = NO;
+		//		_flagButton.hidden = NO;
+		//		_messengerButton.hidden = NO;
 	}
 	
 	_countdownLabel.text = NSStringFromInt(_countdown);
@@ -1493,36 +1497,36 @@
 		_tintTimer = nil;
 	}
 	
-//	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(40.0, 44.0))];
-//	matteView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
-//	[_statusUpdateHeaderView addSubview:matteView];
-
-//	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-//	activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
-//	[activityIndicatorView startAnimating];
-//	[_statusUpdateHeaderView addSubview:activityIndicatorView];
-//	
-//	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-		//if (messageState == PNMessageSent) {
-		//	NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-			[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
-			}];
+	//	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(40.0, 44.0))];
+	//	matteView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
+	//	[_statusUpdateHeaderView addSubview:matteView];
 	
-			[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
-			[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
-		//}
-//	}];
+	//	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	//	activityIndicatorView.frame = CGRectOffset(activityIndicatorView.frame, 11.0, 11.0);
+	//	[activityIndicatorView startAnimating];
+	//	[_statusUpdateHeaderView addSubview:activityIndicatorView];
+	//
+	//	[PubNub sendMessage:[NSString stringWithFormat:@"%d|%.04f_%.04f|__BYE__:", [[HONUserAssistant sharedInstance] activeUserID], [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude] toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+	//if (messageState == PNMessageSent) {
+	//	NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+	[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+	}];
+	
+	[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
+	[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
+	//}
+	//	}];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-		[[PBJVision sharedInstance] stopPreview];
-		[self.navigationController popToRootViewControllerAnimated:YES];
-//	});
+	//	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.125 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+	[[PBJVision sharedInstance] stopPreview];
+	[self.navigationController popToRootViewControllerAnimated:YES];
+	//	});
 	
 	[_moviePlayer stop];
-//	_moviePlayer.view.hidden = YES;
+	//	_moviePlayer.view.hidden = YES;
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1569,9 +1573,9 @@
 		
 		[[[UIAlertView alloc] initWithTitle:@"Chat link copied to clipboard!"
 									message:nil
-									 delegate:nil
-							cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							otherButtonTitles:nil] show];
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
 		
 		
 	} else if (buttonType == HONChannelInviteButtonTypeSMS) {
@@ -1603,9 +1607,9 @@
 	if (!hasSchema) {
 		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
 									message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-									 delegate:nil
-							cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							otherButtonTitles:nil] show];
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
 		
 	} else {
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlSchema]]) {
@@ -1613,7 +1617,7 @@
 		}
 	}
 	
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:[@"DETAILS - " stringByAppendingString:typeName]];
 }
 
 
@@ -1646,9 +1650,9 @@
 	if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb-messenger://"]]) {
 		[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
 									message:@"This device isn't allowed or doesn't recognize FB Messenger!"
-									 delegate:nil
-							cancelButtonTitle:NSLocalizedString(@"alert_ok", nil) 
-							otherButtonTitles:nil] show];
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
 		
 	} else {
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"fb-messenger://"]];
@@ -1676,7 +1680,7 @@
 #pragma mark - StatusUpdateHeaderView Delegates
 - (void)statusUpdateHeaderViewChangeCamera:(HONStatusUpdateHeaderView *)statusUpdateHeaderView {
 	NSLog(@"[*:*] statusUpdateHeaderViewChangeCamera [*:*]");
-//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flip_camera"];
+	//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"DETAILS - flip_camera"];
 	
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
@@ -1709,7 +1713,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
 												 name:UITextFieldTextDidChangeNotification
-												 object:textField];
+											   object:textField];
 	
 	_footerImageView.image = [UIImage imageNamed:@"commentInput3BG"];
 	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
@@ -1728,16 +1732,16 @@
 			_cameraPreviewView.hidden = NO;
 		});
 		
-//		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.width * 0.6271);
-//		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-//		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.6271);
+		//		_cameraPreviewView.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.width * 0.6271);
+		//		_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+		//		_moviePlayer.view.frame = CGRectMake(self.view.frame.size.width * 0.5, 0.0, self.view.frame.size.width * 0.5, self.view.frame.size.width * 0.6271);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"text"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		_commentTextField.placeholder = @"Type a message…";
 		_scrollView.hidden = NO;
-	
+		
 	} else {
 	}
 	
@@ -1750,8 +1754,8 @@
 		_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0));
 		_messengerButton.alpha = 0.0;
 		_flagButton.alpha = 0.0;
-	 } completion:^(BOOL finished) {
-	 }];
+	} completion:^(BOOL finished) {
+	}];
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -1774,11 +1778,11 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
-													object:textField];
+												  object:textField];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
-//	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
+	//	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
 }
 
 
@@ -1789,15 +1793,15 @@
 			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kik://"]]) {
 				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
 											message:@"This device isn't allowed or doesn't recognize Kik!"
-											 delegate:nil
-									cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									otherButtonTitles:nil] show];
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
 				
 			} else {
 				KikMessage *message = [KikMessage articleMessageWithTitle:@"[LIVE NOW]"
 																	 text:@"Walkie talkie style video chat."
-																 contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
-																 previewURL:@"http://popup.rocks/images/my_icon.png"];
+															   contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
+															   previewURL:@"http://popup.rocks/images/my_icon.png"];
 				[[KikClient sharedInstance] sendKikMessage:message];
 				
 				//_comment = @"Shared on Kik!";
@@ -1819,19 +1823,19 @@
 			[self _flagStatusUpdate];
 			[self _popBack];
 		}
-	
+		
 	} else if (alertView.tag == HONStatusUpdateAlertViewTypeShare) {
 		if (buttonIndex == 1) {
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareClipboard"];
+			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareClipboard"];
 			
 			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
 										message:@""
-										 delegate:nil
-								cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								otherButtonTitles:nil] show];
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
 			
 		} else if (buttonIndex == 2) {
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareSMS"];
+			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareSMS"];
 			
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -1843,13 +1847,13 @@
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
 											message:@"Cannot send SMS from this device!"
-											 delegate:nil
-									cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									otherButtonTitles:nil] show];
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
 			}
 			
 		} else if (buttonIndex == 3) {
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKik"];
+			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKik"];
 			
 			NSString *typeName = @"";
 			NSString *urlSchema = @"";
@@ -1860,15 +1864,15 @@
 			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kik://"]]) {
 				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
 											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-											 delegate:nil
-									cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									otherButtonTitles:nil] show];
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
 				
 			} else {
 				KikMessage *message = [KikMessage articleMessageWithTitle:@"[LIVE POPUP]"
 																	 text:@"Join my Popup."
-																 contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
-																 previewURL:@"http://popup.rocks/images/my_icon.png"];
+															   contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
+															   previewURL:@"http://popup.rocks/images/my_icon.png"];
 				[[KikClient sharedInstance] sendKikMessage:message];
 				
 				//_comment = @"Shared on Kik!";
@@ -1876,29 +1880,29 @@
 			}
 			
 		} else if (buttonIndex == 4) {
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareLine"];
+			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareLine"];
 			
-//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-//			[httpClient getPath:@"popupapp.php" parameters:@{@"url"	: [NSString stringWithFormat:@"popup.vlly.im/%d", _statusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//				NSError *error = nil;
-//				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//				
-//				if (error != nil) {
-//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//					[[HONAPICaller sharedInstance] showDataErrorHUD];
-//					
-//				} else {
-//					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//				}
-//				
-//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-//				[[HONAPICaller sharedInstance] showDataErrorHUD];
-//			}];
-
+			//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+			//			[httpClient getPath:@"popupapp.php" parameters:@{@"url"	: [NSString stringWithFormat:@"popup.vlly.im/%d", _statusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			//				NSError *error = nil;
+			//				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//
+			//				if (error != nil) {
+			//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			//					[[HONAPICaller sharedInstance] showDataErrorHUD];
+			//
+			//				} else {
+			//					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			//				}
+			//
+			//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+			//				[[HONAPICaller sharedInstance] showDataErrorHUD];
+			//			}];
+			
 			
 		} else if (buttonIndex == 5) {
-//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKakao"];
+			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKakao"];
 			
 			if ([FBSDKMessengerSharer messengerPlatformCapabilities] & FBSDKMessengerPlatformCapabilityImage) {
 				
@@ -1907,7 +1911,7 @@
 				options.contextOverride = [[FBSDKMessengerBroadcastContext alloc] init];
 				
 				[FBSDKMessengerSharer shareAnimatedGIF:[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"popup_sharefb" ofType:@"gif"]]
-											 withOptions:options];
+										   withOptions:options];
 			}
 		}
 	}
@@ -1937,8 +1941,8 @@
 - (void)visionSessionDidStart:(PBJVision *)vision {
 	NSLog(@"[*:*] visionSessionDidStart [*:*]");
 	
-//	if (![_cameraPreviewView superview])
-//		[self.view addSubview:_cameraPreviewView];
+	//	if (![_cameraPreviewView superview])
+	//		[self.view addSubview:_cameraPreviewView];
 }
 
 - (void)visionSessionDidStop:(PBJVision *)vision {
@@ -1999,9 +2003,9 @@
 - (void)visionDidStopFocus:(PBJVision *)vision {
 	//NSLog(@"[*:*] visionDidStopFocus [*:*]");
 	
-//	if (_cameraFocusView && [_cameraFocusView superview]) {
-//		[_cameraFocusView stopAnimation];
-//	}
+	//	if (_cameraFocusView && [_cameraFocusView superview]) {
+	//		[_cameraFocusView stopAnimation];
+	//	}
 }
 
 - (void)visionWillChangeExposure:(PBJVision *)vision {
@@ -2011,9 +2015,9 @@
 - (void)visionDidChangeExposure:(PBJVision *)vision {
 	//NSLog(@"[*:*] visionDidChangeExposure [*:*]");
 	
-//	if (_cameraFocusView && [_cameraFocusView superview]) {
-//		[_cameraFocusView stopAnimation];
-//	}
+	//	if (_cameraFocusView && [_cameraFocusView superview]) {
+	//		[_cameraFocusView stopAnimation];
+	//	}
 }
 
 // flash
@@ -2034,13 +2038,13 @@
 	NSLog(@"[*:*] vision:capturedPhoto:[%lu] error:[%@] [*:*]", (unsigned long)[[photoDict objectForKey:PBJVisionPhotoMetadataKey] count], error);
 	
 	[[PBJVision sharedInstance] stopPreview];
-//
+	//
 	if (error != nil) {
 		[[[UIAlertView alloc] initWithTitle:@"Error taking photo!"
 									message:nil
-									 delegate:nil
-							cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							otherButtonTitles:nil] show];
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
 		
 	} else {
 		[self _uploadPhoto:[photoDict objectForKey:PBJVisionPhotoImageKey]];
@@ -2051,107 +2055,107 @@
 	NSLog(@"[*:*] vision:capturedVideo:[%@] [*:*]", videoDict);
 	_lpGestureRecognizer.enabled = NO;
 	
-	NSString *bucketName = @"hotornot-challenges";
+	NSString *bucketName = @"popup-vids";//@"hotornot-challenges";
 	
 	NSString *path = [videoDict objectForKey:PBJVisionVideoPathKey];
 	_vidName = [[path pathComponents] lastObject];
 	
 	
-	PNChannel *vidChannel = [PNChannel channelWithName:[NSString stringWithFormat:@"%@_%@", [PubNub sharedInstance].clientIdentifier, [[[[path pathComponents] lastObject] componentsSeparatedByString:@"_"] lastObject]]];
-	[PubNub subscribeOn:@[vidChannel]];
+//	PNChannel *vidChannel = [PNChannel channelWithName:[NSString stringWithFormat:@"%@_%@", [PubNub sharedInstance].clientIdentifier, [[[[path pathComponents] lastObject] componentsSeparatedByString:@"_"] lastObject]]];
+//	[PubNub subscribeOn:@[vidChannel]];
 	
 	_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
 	_imageView.hidden = NO;
 	_imageView.alpha = 1.0;
 	
-//	NSDictionary *params = @{@"action"	: @(1),
-//							 @"channel"	: _channel.name,
-//							 @"userID"	: @([[HONUserAssistant sharedInstance] activeUserID]),
-//							 @"vidURL"	: _vidName};
-//	
-//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"http://gs.trydood.com", @"popup.php", params);
-//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://gs.trydood.com"]];
-//	[httpClient postPath:@"popup.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//		NSError *error = nil;
-//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//		
-//		if (error != nil) {
-//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//			[[HONAPICaller sharedInstance] showDataErrorHUD];
-//			
-//		} else {
-//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-//			
-//			
-//		}
-//		
-//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"http://gs.trydood.com", @"popup.php", [error localizedDescription]);
-//		[[HONAPICaller sharedInstance] showDataErrorHUD];
-//	}];
+	//	NSDictionary *params = @{@"action"	: @(1),
+	//							 @"channel"	: _channel.name,
+	//							 @"userID"	: @([[HONUserAssistant sharedInstance] activeUserID]),
+	//							 @"vidURL"	: _vidName};
+	//
+	//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"http://gs.trydood.com", @"popup.php", params);
+	//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://gs.trydood.com"]];
+	//	[httpClient postPath:@"popup.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	//		NSError *error = nil;
+	//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+	//
+	//		if (error != nil) {
+	//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+	//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+	//
+	//		} else {
+	//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+	//
+	//
+	//		}
+	//
+	//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+	//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"http://gs.trydood.com", @"popup.php", [error localizedDescription]);
+	//		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	//	}];
 	
 	
-//	if (_gestureDur >= 1) {
+	//	if (_gestureDur >= 1) {
+	
+	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
+	
+	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
+	uploadRequest.bucket = bucketName;
+	uploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+	uploadRequest.key = [[path pathComponents] lastObject];
+	uploadRequest.contentType = @"video/mp4";
+	uploadRequest.body = url;
+	
+	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
+	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+		_lpGestureRecognizer.enabled = YES;
+		if (task.error)
+			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
 		
-		NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
-		
-		AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
-		uploadRequest.bucket = bucketName;
-		uploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
-		uploadRequest.key = [[path pathComponents] lastObject];
-		uploadRequest.contentType = @"video/mp4";
-		uploadRequest.body = url;
-		
-		AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
-		[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-			_lpGestureRecognizer.enabled = YES;
-			if (task.error)
-				NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+		else {
+			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
 			
-			else {
-				NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
-				
-//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-//				[httpClient getPath:@"postVideo.php" parameters:@{@"channel"	: _channel.name,
-//																	@"file"		: [[path pathComponents] lastObject]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//																		 NSError *error = nil;
-//																		 NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//																		 
-//																		 if (error != nil) {
-//																			 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//																			 [[HONAPICaller sharedInstance] showDataErrorHUD];
-//																			 
-//																		 } else {
-//																			 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-//																		 }
-//																		 
-//																		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-//																			[[HONAPICaller sharedInstance] showDataErrorHUD];
-//																		}];
-				
-				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name,
-																																			  @"file"		: [[path pathComponents] lastObject]}];
-				
-//				[PubNub sendMessage:@"Somebody posted a video!"
-//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//						  }];
-				
-				[PubNub sendMessage:[[path pathComponents] lastObject]
+			//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
+			//				[httpClient getPath:@"postVideo.php" parameters:@{@"channel"	: _channel.name,
+			//																	@"file"		: [[path pathComponents] lastObject]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			//																		 NSError *error = nil;
+			//																		 NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//
+			//																		 if (error != nil) {
+			//																			 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			//																			 [[HONAPICaller sharedInstance] showDataErrorHUD];
+			//
+			//																		 } else {
+			//																			 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			//																		 }
+			//
+			//																		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			//																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
+			//																			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			//																		}];
+			
+			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name,
+																																		  @"file"		: [[path pathComponents] lastObject]}];
+			
+			//				[PubNub sendMessage:@"Somebody posted a video!"
+			//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+			//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+			//						  }];
+			
+			[PubNub sendMessage:[[path pathComponents] lastObject]
 							toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 								NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
 							}];
-				
-//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has sent a video moment.\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//						  }];
-			}
 			
-			return (nil);
-		}];
-//	}
+			//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has sent a video moment.\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+			//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+			//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+			//						  }];
+		}
+		
+		return (nil);
+	}];
+	//	}
 }
 
 
@@ -2159,25 +2163,25 @@
 - (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
 	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
 	
-//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
-//	_commentFooterView.backgroundColor = [UIColor clearColor];
-//	
-//	_statusLabel.text = @"Sending popup…";
-//	_animationImageView.hidden = NO;
-//	_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
-//	
-//	[[PBJVision sharedInstance] endVideoCapture];
-//	_statusUpdateHeaderView.hidden = NO;
-//	_commentFooterView.hidden = NO;
-//	_openCommentButton.hidden = NO;
-//	_flagButton.hidden = NO;
-//	_messengerButton.hidden = NO;
-//	_countdownLabel.text = @"";
-//	_countdownLabel.hidden = YES;
-//	_moviePlayer.view.hidden = NO;
-//	_cameraFlipButton.hidden = NO;
-//	_expireLabel.hidden = NO;
-//	_lpGestureRecognizer.enabled = YES;
+	//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
+	//	_commentFooterView.backgroundColor = [UIColor clearColor];
+	//	
+	//	_statusLabel.text = @"Sending popup…";
+	//	_animationImageView.hidden = NO;
+	//	_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
+	//	
+	//	[[PBJVision sharedInstance] endVideoCapture];
+	//	_statusUpdateHeaderView.hidden = NO;
+	//	_commentFooterView.hidden = NO;
+	//	_openCommentButton.hidden = NO;
+	//	_flagButton.hidden = NO;
+	//	_messengerButton.hidden = NO;
+	//	_countdownLabel.text = @"";
+	//	_countdownLabel.hidden = YES;
+	//	_moviePlayer.view.hidden = NO;
+	//	_cameraFlipButton.hidden = NO;
+	//	_expireLabel.hidden = NO;
+	//	_lpGestureRecognizer.enabled = YES;
 }
 
 - (void)vision:(PBJVision *)vision didCaptureAudioSample:(CMSampleBufferRef)sampleBuffer {
