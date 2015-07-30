@@ -48,6 +48,7 @@
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
+@property (nonatomic, strong) AVQueuePlayer *queuePlayer;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 @property (nonatomic, strong) UIButton *commentOpenButton;
@@ -84,6 +85,7 @@
 @property (nonatomic, strong) NSString *channelName;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @property (nonatomic, strong) NSTimer *gestureTimer;
+@property (nonatomic, strong) NSMutableArray *videoPlaylist;
 @property (nonatomic) int messageTotal;
 @property (nonatomic) BOOL isIntro;
 
@@ -95,6 +97,7 @@
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
+@property (nonatomic) int videoQueue;
 @end
 
 @implementation HONStatusUpdateViewController
@@ -119,6 +122,11 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_playbackEnded:)
 													 name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayer];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_playerItemEnded:)
+													 name:AVPlayerItemDidPlayToEndTimeNotification
+												   object:nil];
 		
 		[self _setupCamera];
 		[[PBJVision sharedInstance] startPreview];
@@ -386,6 +394,8 @@
 		
 		[PubNub subscribeOn:@[channel]];
 		
+		_videoQueue = 0;
+		_videoPlaylist = [NSMutableArray array];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:channelName forKey:@"channel_name"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -457,22 +467,21 @@
 														  
 														  if ([txtContent length] > 0) {
 															  if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
+																  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
+																  [_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
 																  
-																  _moviePlayer.view.hidden = NO;
-																  _moviePlayer.view.alpha = 1.0;
-																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-																  [_moviePlayer play];
+//																  _moviePlayer.view.hidden = NO;
+//																  _moviePlayer.view.alpha = 1.0;
+//																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
+//																  [_moviePlayer play];
 																  
-																  //											 _moviePlayer.view.frame = CGRectZero;
-																  //
-																  //											 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-																  //												 _moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
-																  //											 });
-																  
-																  *stop = YES;
+																  //*stop = YES;
 															  }
 														  }
 													  }];
+													  
+													  if ([_queuePlayer.items count] > 0)
+														  [_queuePlayer play];
 													  
 												  } else {
 													  NSLog(@"requestHistoryForChannel - error:\n%@", error);
@@ -567,17 +576,28 @@
 					[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
 																																				  @"channel"	: _channel.name}];
 					
-					//				[UIView animateKeyframesWithDuration:0.25 delay:0.00
-					//											 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-					//												animations:^(void) {
-					//													//_moviePlayer.view.alpha = 0.0;
-					//												} completion:^(BOOL finished) {
-					_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-					[_moviePlayer play];
-					//												}];
+//					_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
+//					[_moviePlayer play];
 					
-					_animationImageView.hidden = NO;
-					_statusLabel.text = @"Loading video…";
+					AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
+					[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
+					[_queuePlayer play];
+					
+					_animationImageView.hidden = YES;
+					
+					if (![_commentTextField isFirstResponder]) {
+						_openCommentButton.alpha = 1.0;
+						_messengerButton.alpha = 1.0;
+					}
+					
+					_openCommentButton.hidden = NO;
+					_messengerButton.hidden = YES;
+					
+					_imageView.alpha = 0.0;
+					_imageView.hidden = YES;
+					
+//					_animationImageView.hidden = NO;
+//					_statusLabel.text = @"Loading video…";
 					//[self _appendComment:commentVO];
 					
 				} else {
@@ -739,6 +759,13 @@
 	//	view.autoresizesSubviews = TRUE;
 	
 	
+	_queuePlayer = [[AVQueuePlayer alloc] initWithItems:@[[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
+	AVPlayerLayer *playerLayer = [AVPlayerLayer playerLayerWithPlayer:_queuePlayer];
+	[self.view.layer insertSublayer:playerLayer atIndex:0];
+	playerLayer.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
+	playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+	_queuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+	
 	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
 	_moviePlayer.view.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
@@ -746,7 +773,7 @@
 	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
 	_moviePlayer.scalingMode = MPMovieScalingModeFill;
 	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
-	[self.view addSubview:_moviePlayer.view];
+	//[self.view addSubview:_moviePlayer.view];
 	
 	
 	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
@@ -1354,14 +1381,9 @@
 		_openCommentButton.hidden = NO;
 		_messengerButton.hidden = YES;
 		
-		//		[UIView animateKeyframesWithDuration:0.25 delay:0.00
-		//									 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut)
-		//									animations:^(void) {
 		_imageView.alpha = 0.0;
-		_moviePlayer.view.alpha = 1.0;
-		//									} completion:^(BOOL finished) {
 		_imageView.hidden = YES;
-		//									}];
+		_moviePlayer.view.alpha = 1.0;
 	}
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
@@ -1369,6 +1391,25 @@
 																																	  @"channel"	: _channel.name}];
 		
 	}
+}
+
+- (void)_playerItemEnded:(NSNotification *)notification {
+	NSLog(@"_playerItemEndedNotification:[%@]", [notification object]);
+	
+	_videoQueue = ++_videoQueue % [_queuePlayer.items count];
+	NSLog(@"QueuePlayerItems:[%d]\n%@", _videoQueue, _queuePlayer.items);
+	
+//	AVPlayerItem *playerItem = [_queuePlayer currentItem];
+	AVPlayerItem *playerItem = ([_queuePlayer.items count] > 1) ? [_queuePlayer.items lastObject] : [_queuePlayer currentItem];
+	[playerItem seekToTime:kCMTimeZero];
+	
+	if ([_queuePlayer.items count] > 1)
+		[_queuePlayer advanceToNextItem];
+//	[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
+	
+//	if (_videoQueue == 0)
+//		[_queuePlayer play];
+	
 }
 
 - (void)_playbackEnded:(NSNotification *)notification {

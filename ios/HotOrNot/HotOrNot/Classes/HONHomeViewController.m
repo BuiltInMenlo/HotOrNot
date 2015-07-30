@@ -44,11 +44,8 @@
 @property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic, strong) UITextField *textField;
 @property (nonatomic, strong) HONButton *composeButton;
-@property (nonatomic, strong) NSMutableArray *retrievedStatusUpdates;
-@property (nonatomic, strong) NSMutableArray *statusUpdates;
 @property (nonatomic, strong) HONStatusUpdateVO *selectedStatusUpdateVO;
 @property (nonatomic, strong) HONLoadingOverlayView *loadingOverlayView;
-@property (nonatomic, strong) UIView *noNetworkView;
 @property (nonatomic, strong) UIButton *overlayButton;
 @property (nonatomic) int voteScore;
 @property (nonatomic) int totStatusUpdates;
@@ -119,42 +116,10 @@
 #pragma mark - Data Calls
 #pragma mark - Data Handling
 - (void)_goReloadContents {
-	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
-		
-		_noNetworkView.hidden = YES;
-		
-		_retrievedStatusUpdates = [NSMutableArray array];
-		_statusUpdates = [NSMutableArray array];
-		
-		[self _didFinishDataRefresh];
-		
-	} else {
-		_noNetworkView.hidden = NO;
-	}
+	[self _didFinishDataRefresh];
 }
 
 - (void)_didFinishDataRefresh {
-	[_loadingOverlayView outro];
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
-//	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
-//		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
-//		_voteScore = [[result objectForKey:@"count"] intValue];
-//		[_headerView updateActivityScore:_voteScore];
-//	}];
-	
-	
-//	[[HONUserAssistant sharedInstance] retrieveActivityScoreByUserID:[[HONUserAssistant sharedInstance] activeUserID] completion:^(NSNumber *result){
-//		NSLog(@"ACTIVITY:[%@]", result);
-//		_voteScore = [result intValue];
-//		[_headerView updateActivityScore:_voteScore];
-//	}];
-	
-	NSLog(@"%@._didFinishDataRefresh - CLAuthorizationStatus() = [%@]", self.class, NSStringFromCLAuthorizationStatus([CLLocationManager authorizationStatus]));
 }
 
 - (void)_registerPushNotifications {
@@ -183,19 +148,6 @@
 	
 	
 	_transitionController = [[TransitionDelegate alloc] init];
-	
-	_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
-	_noNetworkView.hidden = YES;
-	[_noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
-	[self.view addSubview:_noNetworkView];
-	
-	UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
-	noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
-	noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	noNetworkLabel.backgroundColor = [UIColor clearColor];
-	noNetworkLabel.textAlignment = NSTextAlignmentCenter;
-	noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
-	[_noNetworkView addSubview:noNetworkLabel];
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
 	_scrollView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
