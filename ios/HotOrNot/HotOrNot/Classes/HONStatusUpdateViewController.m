@@ -87,7 +87,7 @@
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @property (nonatomic, strong) NSTimer *gestureTimer;
 @property (nonatomic, strong) NSMutableArray *videoPlaylist;
-@property (nonatomic, strong) NSString *outboundURL;
+@property (nonatomic, strong) NSString *lastVideo;
 @property (nonatomic) int messageTotal;
 @property (nonatomic) BOOL isIntro;
 
@@ -141,6 +141,7 @@
 	NSLog(@"%@ - initWithChannelName:[%@]", [self description], channelName);
 	if ((self = [self init])) {
 		_channelName = channelName;
+		_lastVideo = @"";
 	}
 	
 	return (self);
@@ -365,6 +366,7 @@
 		
 		[PubNub subscribeOn:@[channel]];
 		
+		_lastVideo = @"";
 		_videoQueue = 0;
 		_videoPlaylist = [NSMutableArray array];
 		
@@ -442,6 +444,7 @@
 //																  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
 //																  [_queuePlayer insertItem:playerItem afterItem:nil];
 																  
+																  _lastVideo = txtContent;
 																  _moviePlayer.view.hidden = NO;
 																  _moviePlayer.view.alpha = 1.0;
 																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
@@ -548,6 +551,7 @@
 					[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
 																																				  @"channel"	: _channel.name}];
 					
+					_lastVideo = [commentVO.imagePrefix lastComponentByDelimeter:@"/"];
 					_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
 					[_moviePlayer play];
 					
@@ -710,7 +714,7 @@
 	_participants = 0;
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.6269, self.view.frame.size.width, self.view.frame.size.height * 0.6271)];
-	_cameraPreviewView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.022 alpha:1.00];
+	_cameraPreviewView.backgroundColor = [UIColor blackColor];
 	_cameraPreviewView.alpha = 0.0;
 	
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
@@ -762,7 +766,7 @@
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6271) - 55.0, self.view.frame.size.width - 20.0, 35.0)];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6271) - 55.0, self.view.frame.size.width - 20.0, 40.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.numberOfLines = 2;
@@ -807,7 +811,7 @@
 	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_nonActive"] forState:UIControlStateNormal];
 	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_Active"] forState:UIControlStateHighlighted];
 	[_toggleMicButton addTarget:self action:@selector(_goToggleMic) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_toggleMicButton];
+	//[self.view addSubview:_toggleMicButton];
 	
 	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 53.0, (self.view.frame.size.height * 0.6271) + 6.0, 44.0, 44.0);
@@ -868,7 +872,7 @@
 	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	_messengerButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 0.0 + (((self.view.frame.size.height * 0.6271) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	_messengerButton.frame = CGRectMake((self.view.frame.size.width - _messengerButton.frame.size.width) * 0.5, 0.0 + (((self.view.frame.size.height * 0.6271) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
 	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	_messengerButton.hidden = YES;
 	[self.view addSubview:_messengerButton];
@@ -877,7 +881,7 @@
 	_takePhotoButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
-	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, ([[HONDeviceIntrinsics sharedInstance] isPhoneType6]) ? 517.0 : ([[HONDeviceIntrinsics sharedInstance] isPhoneType6Plus]) ? 618.0 : 451.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 10.0 + ((self.view.frame.size.height * 0.6271) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6271)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	_takePhotoButton.hidden = YES;
 	[self.view addSubview:_takePhotoButton];
@@ -980,7 +984,7 @@
 	//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
 	
 	_isIntro = NO;
-	//	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]];
+	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&v=%@&a=popup", _channel.name, _lastVideo]];
 	[_messengerShare showMessengerSharePickerOnViewController:self];
 	
 	//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channel.name]};
@@ -1341,7 +1345,7 @@
 }
 
 - (void)_playbackStateChanged:(NSNotification *)notification {
-	//NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
+	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
 		_animationImageView.hidden = YES;

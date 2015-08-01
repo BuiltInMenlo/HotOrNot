@@ -69,15 +69,15 @@ NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRD
 NSString * const kBlowfishIV = @"„7ì”~ís";
 
 #if __APPSTORE_BUILD__ == 1
-NSString * const kKeenIOProjectID = @"559fbb4f672e6c4e2cea1bab";//@"551054dfe085576f3fb24cfd";//@"54bb13196f31a230ad1cfef9";
-NSString * const kKeenIOMasterKey = @"9AD6705D760DE306DEA59827D0CF1D62";//@"980A6532BC7AB5B6489BBA2458BBFBCF";//@"3DB8C226B5D919804F9A08D6413D4CE2";
-NSString * const kKeenIOReadKey = @"a704d1b101e28221727b7b5e97bad1a5c7aa4deca37ad6ea0b03f676557a44b18e4e9918c52fc3019b6f63c73022d9f3fff37800b34e483513f1fffc5281551b6bcfef2f03309fa556f95f9fd0925ad43d1d52a70857a65d185d143a93f9867c7d8a9a3bcf311119438d1c26e838f59e";//@"0b7a1444ba73e7584da531247968ecde3b54733993fece6cb9827dca50248f8df1b3cfd888d39ab9dc326d3c25fabf023a30995b66fe34679d174e2fd56c2cc66039123ae17ad192c4024fc3169922b560616b355d9a7263fac1b37189ad628537a9fd2378ded658cbcf66128ce14dea";//@"683f55a5dff7cef2d6ac81dbf83d2c8ca51e8575f67d6f0d00011b160893026a4bd2641020530cd38472cea9decd9c372ee72b430758167e5875f2bfe35e8a406ae844d79a56c7f2852b71953623c4d52447be7f72478ae25605313828b59a39d9755456f8a932c91d6571f452228ef9";
-NSString * const kKeenIOWriteKey = @"be8e83a45f01146d0bf9e569e73c9ebac017da3a37eaa6d01483bddf0ac93c43ff7c67b1a93cf22cca9b6a5d44f443c12b5654a9e3e47d53b970d11a1ddb0e3f44c405a07f13bc94fbdf8c7a3af3b861b04b5797a863b3686947ec9ee96768409703d2572fd903e761a8ff3768d5cb02";//@"42e6a5311c254b6030c0f2d9f035377e2be399b744c55e09a6c3cfb8c682917f1f02c6d237f3c1b7d160df58b09ce8648de7bbeff3dd189da67e496fbd25312fcea72f189bc21c1bdafe01db17aef22cfd606985acea4e43f184210e588f64fedfecbe041301ab7436e8982dec4e955f";//@"d398f1a3a660a1420b6bcd827370458d57249a373393b17ed022aabb8b5f7cf25ffaf34994285c6a0d9d776c4316ffc48cdf514fcc3d4c3e5166b4e2a30ba9b0b029dc536872ca36c50516ae38c396f42b1394244360226e173f6938dc541e6759915a45e5d32f1b72e9aaefbf1c49d2";
+NSString * const kKeenIOProjectID = @"55bd168946f9a762d5a1aa66";
+NSString * const kKeenIOMasterKey = @"AFA68C393DFD2B04DB8825326EB56BF0";
+NSString * const kKeenIOReadKey = @"0b89fffc8e88cbfc8117fe369bbf0c6514839a33975c2de3f96ba6042408ab72bc1ee55c8957e6b0b054095e87213b09703b3ed9c6ff3ecb2d6ff78eabf88ad7e3243171321d03e403f79e59c36077990de2bc84fcdfce39cf03bbac07862246c5c52b33e461450f9a34226cbf92fef3";
+NSString * const kKeenIOWriteKey = @"159490202f500ba0cf4de4a8e1dafd76f16999461938867ad371eee031bd71612192892dd33ad36ae4e4ade2ee2f0cd059e18acba7fdc784173eb075f924e7a8f6742c54bac360793cacc1c626ba7a7a2f78422bcd7e8d8eb42ed3376c79a8fab85c4d103b52c6d8816f651e7e3b8e3b";
 #else
-NSString * const kKeenIOProjectID = @"559fbb4f672e6c4e2cea1bab";
-NSString * const kKeenIOMasterKey = @"9AD6705D760DE306DEA59827D0CF1D62";
-NSString * const kKeenIOReadKey = @"a704d1b101e28221727b7b5e97bad1a5c7aa4deca37ad6ea0b03f676557a44b18e4e9918c52fc3019b6f63c73022d9f3fff37800b34e483513f1fffc5281551b6bcfef2f03309fa556f95f9fd0925ad43d1d52a70857a65d185d143a93f9867c7d8a9a3bcf311119438d1c26e838f59e";
-NSString * const kKeenIOWriteKey = @"be8e83a45f01146d0bf9e569e73c9ebac017da3a37eaa6d01483bddf0ac93c43ff7c67b1a93cf22cca9b6a5d44f443c12b5654a9e3e47d53b970d11a1ddb0e3f44c405a07f13bc94fbdf8c7a3af3b861b04b5797a863b3686947ec9ee96768409703d2572fd903e761a8ff3768d5cb02";
+NSString * const kKeenIOProjectID = @"55bd168946f9a762d5a1aa66";
+NSString * const kKeenIOMasterKey = @"AFA68C393DFD2B04DB8825326EB56BF0";
+NSString * const kKeenIOReadKey = @"0b89fffc8e88cbfc8117fe369bbf0c6514839a33975c2de3f96ba6042408ab72bc1ee55c8957e6b0b054095e87213b09703b3ed9c6ff3ecb2d6ff78eabf88ad7e3243171321d03e403f79e59c36077990de2bc84fcdfce39cf03bbac07862246c5c52b33e461450f9a34226cbf92fef3";
+NSString * const kKeenIOWriteKey = @"159490202f500ba0cf4de4a8e1dafd76f16999461938867ad371eee031bd71612192892dd33ad36ae4e4ade2ee2f0cd059e18acba7fdc784173eb075f924e7a8f6742c54bac360793cacc1c626ba7a7a2f78422bcd7e8d8eb42ed3376c79a8fab85c4d103b52c6d8816f651e7e3b8e3b";
 #endif
 
 NSString * const kFacebookAppID = @"600550136636754";
@@ -86,7 +86,7 @@ NSString * const kTapStreamSecretKey = @"Y0Xvvy5xTjuJFydsMeAmRA";//@"WTmu7AxOTDm
 //NSString * const kTapStreamSecretKey = @"WTmu7AxOTDmzwzo1xu-ESw"; //@"8Q6fJ5eKTbSOHxzGGrX8pA";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
-NSString * const kFlurryAPIKey = @"MK2QRHS5GHHMG7NC8F52";//@"QT9CV529T9WRJ9P9MP26";
+NSString * const kFlurryAPIKey = @"QBZ8GQ99TJTPR3VH3VSW";//@"QT9CV529T9WRJ9P9MP26";
 
 // view heights
 const CGFloat kNavHeaderHeight = 64.0;
@@ -493,7 +493,7 @@ NSString * const kTwilioSMS = @"6475577873";
 #endif
 	
 	id<GAITracker> tracker = [[GAI sharedInstance] trackerWithName:@"tracker"
-														trackingId:@"UA-65006670-1"];
+														trackingId:@"UA-65884502-1"];
 
 	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

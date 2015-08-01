@@ -476,6 +476,8 @@
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"Friends Tab - Create Status Update"
 	//									 withProperties:@{@"src"	: @"header"}];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - createPopup"]];
+	
 	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[self.view addSubview:_loadingView];
@@ -494,7 +496,7 @@
 	
 	int statusUpdateID = ([_textField.text isPrefixedByString:statusUpdateAffix]) ? [[_textField.text substringFromIndex:[statusUpdateAffix length]] intValue] : 0;
 	if (statusUpdateID > 0) {
-//		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"]];
+//
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -537,7 +539,6 @@
 		}];
 		
 	} else {
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - createPopup"]];
 		
 		if ([_textField isFirstResponder])
 			[_textField resignFirstResponder];
@@ -620,6 +621,8 @@
 }
 
 - (void)_goRandom {
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: @"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"}];
+	
 	_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 	_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 	[self.view addSubview:_loadingView];
@@ -931,6 +934,9 @@
 		[_loadingView addSubview:activityIndicatorView];
 		
 		NSDictionary *dictionary = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row];
+		
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: [dictionary objectForKey:@"title"]}];
+		
 		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"title"]];
 		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 		
@@ -946,6 +952,8 @@
 		[self _goRandom];
 	
 	} else if (indexPath.section == 2) {
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: @"e23d61a9-622c-45c1-b92e-fd7c5d586b3a_1438284321"}];
+		
 		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 		[self.view addSubview:_loadingView];
