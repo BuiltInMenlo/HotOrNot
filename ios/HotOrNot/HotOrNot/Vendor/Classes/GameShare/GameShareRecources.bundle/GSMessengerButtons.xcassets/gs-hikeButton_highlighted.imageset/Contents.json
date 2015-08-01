@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "hike_Active@1x-1.png"
+      "filename" : "hikeIcon_Active@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "hike_Active@2x.png"
+      "filename" : "hikeIcon_Active@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "hike_Active@1x.png",
+      "filename" : "hikeIcon_Active@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "hike_Active@3x.png"
+      "filename" : "hikeIcon_Active@3x.png"
     }
   ],
   "info" : {

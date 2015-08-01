@@ -716,7 +716,7 @@ PBJMediaWriterDelegate>
 		// default flags
 		_flags.thumbnailEnabled = YES;
 		_flags.defaultVideoThumbnails = YES;
-		_flags.audioCaptureEnabled = NO;
+		_flags.audioCaptureEnabled = YES;
 		
 		// setup queues
 		_captureSessionDispatchQueue = dispatch_queue_create("PBJVisionSession", DISPATCH_QUEUE_SERIAL); // protects session
@@ -854,7 +854,7 @@ typedef void (^PBJVisionBlock)();
 	[_captureOutputVideo setSampleBufferDelegate:self queue:_captureCaptureDispatchQueue];
 	
 	// capture device initial settings
-	_videoFrameRate = 12;//-- 30;
+	_videoFrameRate = 24;//-- 30;
 	
 	// add notification observers
 	NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];

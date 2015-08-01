@@ -184,11 +184,11 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"gs-selectTutorial"]];
 	
 	CGSize collectionViewSize = CGSizeMake(([GSCollectionViewController collectionViewDimension].x * kGSCollectionViewCellSize.width) + (([GSCollectionViewController collectionViewDimension].x - 1) * kGSCollectionViewCellSpacing.width), ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSize.height) + ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSpacing.height));
-	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, 20.0 + ((self.view.bounds.size.height - collectionViewSize.height) * 0.5));
+	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, 50.0 + ((self.view.bounds.size.height - collectionViewSize.height) * 0.5));
 	
 	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(collectionViewOrigin.x, collectionViewOrigin.y, collectionViewSize.width, collectionViewSize.height) collectionViewLayout:[[GSCollectionViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[GSCollectionViewCell class] forCellWithReuseIdentifier:[GSCollectionViewCell cellReuseIdentifier]];
-	[_collectionView setBackgroundColor:VIEW_BG_COLOR];
+	[_collectionView setBackgroundColor:[UIColor clearColor]];
 	[_collectionView setContentInset:UIEdgeInsetsZero];
 	_collectionView.showsHorizontalScrollIndicator = NO;
 	_collectionView.showsVerticalScrollIndicator = NO;
@@ -204,9 +204,9 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	_lpGestureRecognizer.delaysTouchesBegan = YES;
 	[_collectionView addGestureRecognizer:_lpGestureRecognizer];
 	
-	_label = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 260.0) * 0.5, _collectionView.frame.origin.y - (28.0 + 19.0), 260.0, 28.0)];
+	_label = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 260.0) * 0.5, _collectionView.frame.origin.y - (32.0 + 40.0), 260.0, 32.0)];
 	_label.font = TITLE_LABEL_FONT;
-	_label.backgroundColor = VIEW_BG_COLOR;
+	_label.backgroundColor = [UIColor clearColor];
 	_label.textAlignment = NSTextAlignmentCenter;
 	_label.textColor = [UIColor whiteColor];
 	_label.text = kGSTitleCaption;
@@ -226,7 +226,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	[_skipButton setBackgroundImage:[UIImage imageNamed:@"gs-skipButton_normal"] forState:UIControlStateNormal];
 	[_skipButton setBackgroundImage:[UIImage imageNamed:@"gs-skipButton_highlighted"] forState:UIControlStateHighlighted];
 	[_skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_skipButton];
+	//[self.view addSubview:_skipButton];
 	
 //	_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	_skipButton.frame = CGRectMake((self.view.bounds.size.width - 99.0) * 0.5, self.view.bounds.size.height - (26.0 + 23.0), 99.0, 26.0);
@@ -314,8 +314,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on Messenger. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Messenger."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -339,8 +339,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on Kakao. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Kakao."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -363,8 +363,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"outbound_url"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on Kik. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Kik."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -388,8 +388,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on LINE. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to LINE."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -413,8 +413,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared over SMS. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to SMS."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -438,8 +438,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on WhatsApp. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to WhatsApp."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -464,8 +464,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on WeChat. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to WeChat."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -489,8 +489,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = _selectedMessengerText;
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on Viber. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Viber."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -513,8 +513,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = _selectedMessengerText;
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:@"Your Popup is about to be shared on Hike. You will be redirected"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Hike."
+																message:@"Use the selected messenger to share your Popup with friends."
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -643,7 +643,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 
 
 #pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"alertView:%d didDismissWithButtonIndex:%d", (int)alertView.tag, (int)buttonIndex);
 	
 	if (alertView.tag == GSMessengerShareTypeFBMessenger) {

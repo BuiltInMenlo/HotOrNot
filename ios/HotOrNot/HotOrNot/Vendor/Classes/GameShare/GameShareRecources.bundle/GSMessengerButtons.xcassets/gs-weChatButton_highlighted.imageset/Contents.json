@@ -8,7 +8,7 @@
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "weChat_Active@2x.png"
+      "filename" : "weChatIcon_Active@2x.png"
     },
     {
       "idiom" : "iphone",
@@ -19,7 +19,7 @@
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "weChat_Active@3x.png"
+      "filename" : "weChatIcon_Active@3x.png"
     }
   ],
   "info" : {

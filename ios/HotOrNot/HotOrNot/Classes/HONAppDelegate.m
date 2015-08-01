@@ -599,8 +599,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[self _establishUserDefaults];
 	
-	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
-		
+//	if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+	
 		if (_noNetworkView != nil) {
 			[_noNetworkView removeFromSuperview];
 			_noNetworkView = nil;
@@ -616,24 +616,24 @@ NSString * const kTwilioSMS = @"6475577873";
 		[self.window makeKeyAndVisible];
 		[self _retrieveConfigJSON];
 		
-	} else {
-		[self.window makeKeyAndVisible];
-		
-		NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
-		self.window.backgroundColor = [UIColor redColor];
-		
-		UIView *noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
-		[noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
-		//[self.window addSubview:noNetworkView];
-		
-		UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
-		noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
-		noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		noNetworkLabel.backgroundColor = [UIColor clearColor];
-		noNetworkLabel.textAlignment = NSTextAlignmentCenter;
-		noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
-		[noNetworkView addSubview:noNetworkLabel];
-	}
+//	} else {
+//		[self.window makeKeyAndVisible];
+//		
+//		NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
+//		self.window.backgroundColor = [UIColor redColor];
+//		
+//		UIView *noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+//		[noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
+//		//[self.window addSubview:noNetworkView];
+//		
+//		UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+//		noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
+//		noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//		noNetworkLabel.backgroundColor = [UIColor clearColor];
+//		noNetworkLabel.textAlignment = NSTextAlignmentCenter;
+//		noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
+//		[noNetworkView addSubview:noNetworkLabel];
+//	}
 	
 //	NSLog(@"NSUserDefaults:[%@]", [[NSUserDefaults standardUserDefaults] objectDictionary]);
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Launching"
@@ -918,7 +918,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 		}
 		
-		if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
+		//if ([[HONDeviceIntrinsics sharedInstance] hasNetwork]) {
 			self.window.userInteractionEnabled = YES;
 			
 			if (_noNetworkView != nil) {
@@ -938,23 +938,23 @@ NSString * const kTwilioSMS = @"6475577873";
 //					[self _retrieveConfigJSON];
 			}
 			
-		} else {
-			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
-			
-			self.window.userInteractionEnabled = NO;
-			
-			_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
-			[_noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
-			[self.window addSubview:_noNetworkView];
-			
-			UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
-			noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
-			noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-			noNetworkLabel.backgroundColor = [UIColor clearColor];
-			noNetworkLabel.textAlignment = NSTextAlignmentCenter;
-			noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
-			[_noNetworkView addSubview:noNetworkLabel];
-		}
+//		} else {
+//			NSLog(@"!¡!¡!¡!¡!¡ AIN'T NO NETWORK HERE ¡!¡!¡!¡!¡!");
+//			
+//			self.window.userInteractionEnabled = NO;
+//			
+//			_noNetworkView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 233.0, 320.0, 90.0)];
+//			[_noNetworkView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noNetworkBG"]]];
+//			[self.window addSubview:_noNetworkView];
+//			
+//			UILabel *noNetworkLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 85.0, 220.0, 20.0)];
+//			noNetworkLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16.0];
+//			noNetworkLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//			noNetworkLabel.backgroundColor = [UIColor clearColor];
+//			noNetworkLabel.textAlignment = NSTextAlignmentCenter;
+//			noNetworkLabel.text = NSLocalizedString(@"no_network", @"");
+//			[_noNetworkView addSubview:noNetworkLabel];
+//		}
 	
 	} else {
 	}
@@ -1225,6 +1225,7 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"location_club"		: @{},
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},
+								   @"channel_history"	: @[],
 								   @"terms"				: @"",
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	

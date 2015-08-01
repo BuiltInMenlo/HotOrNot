@@ -144,18 +144,17 @@
 	// blue
 	self.view.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	
-	
 	_transitionController = [[TransitionDelegate alloc] init];
 	
 	_scrollView = [[HONScrollView alloc] initWithFrame:CGRectFromSize(self.view.frame.size)];
 	_scrollView.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_scrollView.backgroundColor = [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
-	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 4.0, _scrollView.frame.size.height);
+	_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width * 3.0, _scrollView.frame.size.height);
 	_scrollView.contentInset = UIEdgeInsetsZero;
-//	_scrollView.bounces = NO;
 	_scrollView.alwaysBounceHorizontal = YES;
 	_scrollView.pagingEnabled = YES;
 	_scrollView.delegate = self;
+	[_scrollView setTag:1];
 	[self.view addSubview:_scrollView];
 	
 	
@@ -167,6 +166,7 @@
 	[_scrollView addSubview:_tintView];
 	
 	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@](%.02f) // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size),[UIScreen mainScreen].scale, NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
+	NSLog(@"CHANNEL_HISTORY:\n%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"]);
 	
 	UIImageView *tutorial1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_01"]];
 	[_scrollView addSubview:tutorial1ImageView];
@@ -223,15 +223,14 @@
 	_overlayButton.hidden = YES;
 	[_scrollView addSubview:_overlayButton];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 3.0, 64.0, _scrollView.frame.size.width, _scrollView.frame.size.height - (64.0 + 74.0))];
-	[_tableView setBackgroundColor:[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00]];
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.alwaysBounceVertical = YES;
-	_tableView.showsVerticalScrollIndicator = YES;
-	[_scrollView addSubview:_tableView];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 2.0) + 55.0, 28.0, (self.view.frame.size.width - 110.0), 22.0)];
+	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	titleLabel.textColor = [UIColor colorWithRed:0.278 green:0.584 blue:0.486 alpha:1.00];
+	titleLabel.textAlignment = NSTextAlignmentCenter;
+	titleLabel.text = @"Recent";
+	[_scrollView addSubview:titleLabel];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 3.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 302.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 2.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 302.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -254,6 +253,15 @@
 	_composeButton.alpha = 1.0;
 	[self.view addSubview:_composeButton];
 	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 2.0, 64.0, _scrollView.frame.size.width, _scrollView.frame.size.height - (64.0 + _composeButton.frame.size.height))];
+	_tableView.backgroundColor = [UIColor whiteColor];//[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	[_tableView setTag:2];
+	_tableView.alwaysBounceVertical = YES;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[_scrollView addSubview:_tableView];
+	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 //	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
 //	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
@@ -266,7 +274,7 @@
 	[linkButton addTarget:self action:@selector(_goPrivacy) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:linkButton];
 	
-	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 40.0) withTotalPages:4 usingDiameter:7.0 andPadding:10.0];
+	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 40.0) withTotalPages:3 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
 	[self.view addSubview:_paginationView];
 	
@@ -850,7 +858,7 @@
 
 #pragma mark - TableView DataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (3);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -866,9 +874,20 @@
 	[cell setIndexPath:indexPath];
 	cell.delegate = self;
 	
-	[cell populateFields:@{@"title"		: @"Random",
-						   @"timestamp"	: @"Now",
-						   @"occupants"	: @"1"}];
+	if (indexPath.section == 0) {
+		[cell populateFields:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row]];
+		
+	} else if (indexPath.section == 1) {
+		[cell populateFields:@{@"title"		: @"New People",
+							   @"timestamp"	: [NSDate date],
+							   @"occupants"	: @"1"}];
+	} else {
+		[cell populateFields:@{@"title"		: @"Feedback",
+							   @"timestamp"	: [NSDate date],
+							   @"occupants"	: @"1"}];
+	}
+	
+	
 	
 //	[cell populateFields:(indexPath.section == 0) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] objectAtIndex:indexPath.row] : @{@"name"		: @"Random",
 //																																					   @"timestamp"	: [NSDate date],
@@ -889,7 +908,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (24.0);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -898,45 +917,91 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-
+	//HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	
+	
 	if (indexPath.section == 0) {
+		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+		[self.view addSubview:_loadingView];
 		
+		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+		[activityIndicatorView startAnimating];
+		[_loadingView addSubview:activityIndicatorView];
 		
-	} else {
+		NSDictionary *dictionary = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row];
+		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"title"]];
+		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+			[_loadingView removeFromSuperview];
+			[_tutorialImageView removeFromSuperview];
+			
+			[_loadingOverlayView outro];
+			_textField.text = @"What is on your mind?";
+		});
+		
+	} else if (indexPath.section == 1) {
 		[self _goRandom];
+	
+	} else if (indexPath.section == 2) {
+		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+		[self.view addSubview:_loadingView];
+		
+		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+		[activityIndicatorView startAnimating];
+		[_loadingView addSubview:activityIndicatorView];
+		
+		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:@"e23d61a9-622c-45c1-b92e-fd7c5d586b3a_1438284321"];
+		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+			[_loadingView removeFromSuperview];
+			[_tutorialImageView removeFromSuperview];
+			
+			[_loadingOverlayView outro];
+			_textField.text = @"What is on your mind?";
+		});
 	}
 }
 
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"[*:*] scrollViewDidScroll:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
+	NSLog(@"[*:*] scrollViewDidScroll:[%@](%d)", NSStringFromCGPoint(scrollView.contentOffset), scrollView.tag);
 	
-	if (scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height || scrollView.contentOffset.y < 0.0) {
-		[scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, scrollView.contentSize.height - scrollView.frame.size.height)];
-	}
+	if (scrollView.tag == 1) {
+		if (scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height || scrollView.contentOffset.y < 0.0)
+			[scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, scrollView.contentSize.height - scrollView.frame.size.height)];
 	
-	if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
-		if ([_textField isFirstResponder])
-			[_textField resignFirstResponder];
-		
-		if (_composeButton.frame.origin.y == scrollView.frame.size.height - _composeButton.frame.size.height) {
-			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
-				_tutorialImageView.alpha = 0.0;
-				
-				_composeButton.alpha = 0.0;
-				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height);
-			} completion:^(BOOL finished) {
-				_tutorialImageView.hidden = YES;
-			}];
-		}
-		
-		if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 10.0)) {
-			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 40.0);
-			} completion:^(BOOL finished) {
-			}];
+		if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
+			if ([_textField isFirstResponder])
+				[_textField resignFirstResponder];
+			
+			if (_composeButton.frame.origin.y == scrollView.frame.size.height - _composeButton.frame.size.height) {
+				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseOut) animations:^(void) {
+					_tutorialImageView.alpha = 0.0;
+					
+					_composeButton.alpha = 0.0;
+					_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height);
+				} completion:^(BOOL finished) {
+					_tutorialImageView.hidden = YES;
+				}];
+			}
+			
+			if (_paginationView.frame.origin.y == (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 10.0)) {
+				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+					_paginationView.frame = CGRectTranslateY(_paginationView.frame, self.view.frame.size.height - 40.0);
+					_paginationView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+				}];
+			}
+			
+		} else if (scrollView.contentOffset.x >= scrollView.contentSize.width - scrollView.frame.size.width) {
+			scrollView.scrollEnabled = NO;
 		}
 	}
 }
@@ -952,73 +1017,72 @@
 //	NSLog(@"[*:*] scrollViewDidEndDecelerating:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
 //	[[HONAnalyticsReporter sharedInstance] trackEvent:[NSString stringWithFormat:@"HOME - swipe_%d", (int)(scrollView.contentOffset.x / scrollView.frame.size.width)]];
 	
-	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
-	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
-		[self _registerPushNotifications];
-		
-		
-//		if (!_isLoading) {
-//			_isLoading = YES;
-//			[self _changeTint];
-//		}
-		
-		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
-			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_composeButton.alpha = 1.0;
-				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
-			} completion:^(BOOL finished) {
-				_tutorialImageView.alpha = 0.0;
-				_tutorialImageView.hidden = NO;
+	if (scrollView.tag == 1) {
+		[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
+		if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
+			[self _registerPushNotifications];
+			
+			if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-					_tutorialImageView.alpha = 1.0;
+					_composeButton.alpha = 1.0;
+					_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
+				} completion:^(BOOL finished) {
+					_tutorialImageView.alpha = 0.0;
+					_tutorialImageView.hidden = NO;
+					[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+						_tutorialImageView.alpha = 1.0;
+					} completion:^(BOOL finished) {
+					}];
+				}];
+			}
+			
+			if (_paginationView.frame.origin.y == self.view.frame.size.height - 40.0) {
+				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+					_paginationView.alpha = 0.0;
+					_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 10.0));
 				} completion:^(BOOL finished) {
 				}];
-			}];
+			}
+			
+		} else if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
+			if ([_textField isFirstResponder])
+				[_textField resignFirstResponder];
 		}
-		
-		if (_paginationView.frame.origin.y == self.view.frame.size.height - 40.0) {
-			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_paginationView.frame = CGRectTranslateY(_paginationView.frame, (self.view.frame.size.height - 40.0) - (_composeButton.frame.size.height + 10.0));
-			} completion:^(BOOL finished) {
-			}];
-		}
-		
-	} else if (scrollView.contentOffset.x < scrollView.contentSize.width - scrollView.frame.size.width) {
-		if ([_textField isFirstResponder])
-			[_textField resignFirstResponder];
 	}
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
 //	NSLog(@"[*:*] scrollViewDidEndScrollingAnimation:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
 	
-	[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
-	if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
-		[self _registerPushNotifications];
-		
-		if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
-			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-				_composeButton.alpha = 1.0;
-				_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
-				
-			} completion:^(BOOL finished) {
-				_tutorialImageView.alpha = 0.0;
-				_tutorialImageView.hidden = NO;
+	if (scrollView.tag == 1) {
+		[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
+		if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
+			[self _registerPushNotifications];
+			
+			if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-					_tutorialImageView.alpha = 1.0;
+					_composeButton.alpha = 1.0;
+					_composeButton.frame = CGRectTranslateY(_composeButton.frame, scrollView.frame.size.height - _composeButton.frame.size.height);
+					
 				} completion:^(BOOL finished) {
+					_tutorialImageView.alpha = 0.0;
+					_tutorialImageView.hidden = NO;
+					[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+						_tutorialImageView.alpha = 1.0;
+					} completion:^(BOOL finished) {
+					}];
 				}];
-			}];
-		}
-		
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-																message:@"You agree to the following terms."
-															   delegate:self
-													  cancelButtonTitle:@"View Terms"
-													  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-			[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-			[alertView show];
+			}
+			
+			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
+																	message:@"You agree to the following terms."
+																   delegate:self
+														  cancelButtonTitle:@"View Terms"
+														  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
+				[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
+				[alertView show];
+			}
 		}
 	}
 }

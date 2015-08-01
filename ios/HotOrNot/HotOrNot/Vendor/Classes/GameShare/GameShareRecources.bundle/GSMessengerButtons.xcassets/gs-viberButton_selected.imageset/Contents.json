@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "viber_nonActive@1x-1.png"
+      "filename" : "viberIcon_nonActive@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "viber_nonActive@2x.png"
+      "filename" : "viberIcon_nonActive@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "viber_nonActive@1x.png",
+      "filename" : "viberIcon_nonActive@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "viber_nonActive@3x.png"
+      "filename" : "viberIcon_nonActive@3x.png"
     }
   ],
   "info" : {

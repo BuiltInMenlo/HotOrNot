@@ -49,6 +49,7 @@
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
 @property (nonatomic, strong) AVQueuePlayer *queuePlayer;
+@property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 @property (nonatomic, strong) UIButton *commentOpenButton;
@@ -86,6 +87,7 @@
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @property (nonatomic, strong) NSTimer *gestureTimer;
 @property (nonatomic, strong) NSMutableArray *videoPlaylist;
+@property (nonatomic, strong) NSString *outboundURL;
 @property (nonatomic) int messageTotal;
 @property (nonatomic) BOOL isIntro;
 
@@ -123,10 +125,10 @@
 												 selector:@selector(_playbackEnded:)
 													 name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayer];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_playerItemEnded:)
-													 name:AVPlayerItemDidPlayToEndTimeNotification
-												   object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self
+//												 selector:@selector(_playerItemEnded:)
+//													 name:AVPlayerItemDidPlayToEndTimeNotification
+//												   object:nil];
 		
 		[self _setupCamera];
 		[[PBJVision sharedInstance] startPreview];
@@ -187,37 +189,6 @@
 - (void)dealloc {
 	[self destroy];
 }
-
-
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	[super touchesBegan:touches withEvent:event];
-//	UITouch *touch = [touches anyObject];
-//
-//	NSLog(@"touchesBegan: %@", touch.view);
-//
-//	if (_statusUpdateHeaderView.alpha == 1.0) {
-//		_statusUpdateHeaderView.alpha = 0.0;
-//		_statusLabel.alpha = 0.0;
-//		_takePhotoButton.alpha = 0.0;
-//		_expireLabel.alpha = 0.0;
-//		_hudView.alpha = 0.0;
-//		_footerImageView.alpha = 0.0;
-//
-//	} else {
-//		_statusUpdateHeaderView.alpha = 1.0;
-//		_takePhotoButton.alpha = 1.0;
-//		_expireLabel.alpha = 1.0;
-//		_statusLabel.alpha = 1.0;
-//		_hudView.alpha = 1.0;
-//		_footerImageView.alpha = 1.0;
-//	}
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	[super touchesEnded:touches withEvent:event];
-//
-//	NSLog(@"touchesEnded");
-//}
 
 
 #pragma mark - Public APIs
@@ -459,8 +430,8 @@
 													  // PubNub client successfully retrieved history for channel.
 													  NSLog(@"requestHistoryForChannel - messages:\n%@", messages);
 													  
-													  [messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//													  [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+													  //[messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+													  [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 														  PNMessage *message = (PNMessage *)obj;
 														  
 														  NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
@@ -468,16 +439,15 @@
 														  
 														  if ([txtContent length] > 0) {
 															  if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
-																  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
-																  //[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
-																  [_queuePlayer insertItem:playerItem afterItem:nil];
+//																  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
+//																  [_queuePlayer insertItem:playerItem afterItem:nil];
 																  
-//																  _moviePlayer.view.hidden = NO;
-//																  _moviePlayer.view.alpha = 1.0;
-//																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-//																  [_moviePlayer play];
+																  _moviePlayer.view.hidden = NO;
+																  _moviePlayer.view.alpha = 1.0;
+																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
+																  [_moviePlayer play];
 																  
-																  //*stop = YES;
+																  *stop = YES;
 															  }
 														  }
 													  }];
@@ -540,7 +510,7 @@
 				NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 			}
 			
-			_expireLabel.text = (_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"];
+			_expireLabel.text = [(_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"] stringByAppendingFormat:@"\nhttp://popup.rocks/route.php?d=%@&a=popup", _channel.name];
 			
 			_animationImageView.hidden = YES;
 			_openCommentButton.hidden = (_participants == 1);
@@ -578,12 +548,12 @@
 					[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
 																																				  @"channel"	: _channel.name}];
 					
-//					_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-//					[_moviePlayer play];
+					_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
+					[_moviePlayer play];
 					
-					AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
-					[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
-					[_queuePlayer play];
+//					AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
+//					[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
+//					[_queuePlayer play];
 					
 					_animationImageView.hidden = YES;
 					
@@ -729,7 +699,7 @@
 	_messageTotal = 0;
 	
 	
-	self.view.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	self.view.backgroundColor = [UIColor blackColor];// [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	
 	_isIntro = YES;
 	_isActive = YES;
@@ -749,7 +719,7 @@
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
-	[[PBJVision sharedInstance] setVideoFrameRate:12];
+	[[PBJVision sharedInstance] setVideoFrameRate:24];
 	
 	
 	
@@ -761,21 +731,22 @@
 	//	view.autoresizesSubviews = TRUE;
 	
 	
-	_queuePlayer = [[AVQueuePlayer alloc] initWithItems:@[[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
-	AVPlayerLayer *playerLayer = [AVPlayerLayer playerLayerWithPlayer:_queuePlayer];
-	[self.view.layer insertSublayer:playerLayer atIndex:0];
-	playerLayer.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
-	playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-	_queuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+//	_queuePlayer = [[AVQueuePlayer alloc] initWithItems:@[]];//[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
+//	_playerLayer = [AVPlayerLayer playerLayerWithPlayer:_queuePlayer];
+//	[self.view.layer insertSublayer:_playerLayer atIndex:0];
+//	_playerLayer.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
+//	_playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+//	_queuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+//	[_queuePlayer setMuted:YES];
 	
 	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-	_moviePlayer.view.backgroundColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	_moviePlayer.view.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_moviePlayer.shouldAutoplay = YES;
 	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
 	_moviePlayer.scalingMode = MPMovieScalingModeFill;
 	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6271) + 1.0);
-	//[self.view addSubview:_moviePlayer.view];
+	[self.view addSubview:_moviePlayer.view];
 	
 	
 	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
@@ -786,18 +757,18 @@
 	_statusUpdateHeaderView.delegate = self;
 	
 	_commentFooterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 55.0, self.view.frame.size.width, 55.0)];
-	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 	_commentFooterView.hidden = YES;
 	
-	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInput2BG"]];
+	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6271) - 56.0, self.view.frame.size.width - 20.0, 20.0)];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6271) - 55.0, self.view.frame.size.width - 20.0, 35.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_expireLabel.backgroundColor = [UIColor clearColor];
+	_expireLabel.numberOfLines = 2;
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.text = @"You are the only one here, invite more +";
+	_expireLabel.text = [@"You are the only one here, invite more +" stringByAppendingFormat:@"\nhttp://popup.rocks/route.php?d=%@&a=popup", _channel.name];
 	[self.view addSubview:_expireLabel];
 	
 	UIButton *invite2Button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -806,7 +777,7 @@
 	[self.view addSubview:invite2Button];
 	
 	_tintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - (_commentFooterView.frame.size.height + 216.0))];
-	_tintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_tintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.40];
 	_tintView.alpha = 0.0;
 	[self.view addSubview:_tintView];
 	
@@ -931,7 +902,7 @@
 	[_commentFooterView addSubview:_commentTextField];
 	
 	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitCommentButton.frame = CGRectMake(_commentFooterView.frame.size.width - 46.0, 6.0, 46.0, 46.0);
+	_submitCommentButton.frame = CGRectMake(_commentFooterView.frame.size.width - 49.0, 6.0, 46.0, 46.0);
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_nonActive"] forState:UIControlStateNormal];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Active"] forState:UIControlStateHighlighted];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Disabled"] forState:UIControlStateDisabled];
@@ -1041,6 +1012,8 @@
 
 - (void)_goToggleMic {
 	//[[PBJVision sharedInstance] setAudioCaptureEnabled:![PBJVision sharedInstance].isAudioCaptureEnabled];
+	
+	[_queuePlayer setMuted:!_queuePlayer.isMuted];
 }
 
 - (void)_goFlag {
@@ -1183,9 +1156,8 @@
 
 - (void)_goCancelComment {
 	_commentTextField.text = @"";
-	_footerImageView.image = [UIImage imageNamed:@"commentInputBG"];
 	_expireLabel.hidden = NO;
-	_commentFooterView.hidden = NO;
+	_commentFooterView.hidden = YES;
 	_takePhotoButton.hidden = NO;
 	_scrollView.hidden = YES;
 	_toggleMicButton.hidden = NO;
@@ -1206,7 +1178,6 @@
 	}
 	
 	_commentTextField.placeholder = @"";
-	_commentFooterView.backgroundColor = [UIColor clearColor];
 	_scrollView.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + 60.0 + [UIApplication sharedApplication].statusBarFrame.size.height));
 	
@@ -1265,6 +1236,7 @@
 			_commentTextField.text = @"";
 			//[self _goCancelComment];
 			
+			_playerLayer.hidden = YES;
 			_countdown = 5;
 			_countdownLabel.text = NSStringFromInt(_countdown);
 			_expireLabel.hidden = YES;
@@ -1296,7 +1268,6 @@
 			_cameraPreviewLayer.opacity = 1.0;
 			
 			_statusUpdateHeaderView.hidden = YES;
-			_commentFooterView.hidden = YES;
 			_scrollView.hidden = YES;
 			_flagButton.hidden = YES;
 			_messengerButton.hidden = YES;
@@ -1322,11 +1293,11 @@
 			
 			[[PBJVision sharedInstance] endVideoCapture];
 			_statusUpdateHeaderView.hidden = NO;
-			_commentFooterView.hidden = NO;
 			_flagButton.hidden = NO;
 			_countdownLabel.text = @"";
 			_countdownLabel.hidden = YES;
 			_moviePlayer.view.hidden = NO;
+			_playerLayer.hidden = NO;
 			_toggleMicButton.hidden = NO;
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
@@ -1370,7 +1341,7 @@
 }
 
 - (void)_playbackStateChanged:(NSNotification *)notification {
-	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
+	//NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
 		_animationImageView.hidden = YES;
@@ -1412,6 +1383,10 @@
 //	if (_videoQueue == 0)
 //		[_queuePlayer play];
 	
+	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: [[((AVURLAsset *)playerItem.asset).URL absoluteString] lastComponentByDelimeter:@"/"],
+																																  @"channel"	: _channel.name}];
+	
+	
 }
 
 - (void)_playbackEnded:(NSNotification *)notification {
@@ -1429,7 +1404,6 @@
 #endif
 	
 	[_submitCommentButton setEnabled:([textField.text length] > 0)];
-	//_footerImageView.hidden = ([textField.text length] > 0);
 	
 	if (textField.tag == 0 && [textField.text length] == 0)
 		textField.text = @"What is your name?";
@@ -1506,7 +1480,6 @@
 		//
 		//		_lpGestureRecognizer.enabled = NO;
 		//		_statusUpdateHeaderView.hidden = NO;
-		//		_commentFooterView.hidden = NO;
 		//		_scrollView.hidden = NO;
 		//		_flagButton.hidden = NO;
 		//		_messengerButton.hidden = NO;
@@ -1541,12 +1514,33 @@
 	}
 	
 	NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
-	[channels addObject:@{@"title"		: _channel.name,
-						  @"timestamp"	: [NSDate date],
-						  @"occupants"	: @(_participants)}];
+	__block BOOL isFound = NO;
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+		if ([[dict objectForKey:@"title"] isEqualToString:_channel.name]) {
+			[dict setObject:[NSDate date] forKey:@"timestamp"];
+			[dict setObject:@(_participants) forKey:@"occupants"];
+			[channels replaceObjectAtIndex:idx withObject:[dict copy]];
+			[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			isFound = YES;
+			*stop = YES;
+		}
+	}];
+	
+	
+	if (!isFound) {
+		[channels addObject:@{@"title"		: _channel.name,
+							  @"timestamp"	: [NSDate date],
+							  @"occupants"	: @(_participants)}];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	NSLog(@"CHANNEL_HISTORY:\n%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"]);
 	
 	//	UIView *matteView = [[UIView alloc] initWithFrame:CGRectFromSize(CGSizeMake(40.0, 44.0))];
 	//	matteView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
@@ -1577,6 +1571,7 @@
 	//	});
 	
 //	[_queuePlayer ]
+	[_queuePlayer removeAllItems];
 	[_moviePlayer stop];
 	//	_moviePlayer.view.hidden = YES;
 	
@@ -1767,9 +1762,7 @@
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
-	_footerImageView.image = [UIImage imageNamed:@"commentInput3BG"];
-	_commentFooterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	
+	_commentFooterView.hidden = NO;
 	_expireLabel.hidden = YES;
 	_scrollView.hidden = NO;
 	_toggleMicButton.hidden = YES;
@@ -2161,10 +2154,24 @@
 	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
 	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
 		_lpGestureRecognizer.enabled = YES;
-		if (task.error)
+		if (task.error) {
 			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+			
+			_animationImageView.hidden = YES;
+			
+			_openCommentButton.alpha = 1.0;
+			_messengerButton.alpha = 1.0;
+			
+			
+			_openCommentButton.hidden = NO;
+			_messengerButton.hidden = YES;
+			
+			[_moviePlayer play];
+			
+			_imageView.alpha = 0.0;
+			_imageView.hidden = YES;
 		
-		else {
+		} else {
 			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
 			
 			//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
@@ -2214,26 +2221,6 @@
 // progress
 - (void)vision:(PBJVision *)vision didCaptureVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
 	NSLog(@"[*:*] vision:didCaptureVideoSampleBuffer:[%.04f] [*:*]", vision.capturedVideoSeconds);
-	
-	//	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6271, self.view.frame.size.width, self.view.frame.size.height * 0.6271);
-	//	_commentFooterView.backgroundColor = [UIColor clearColor];
-	//	
-	//	_statusLabel.text = @"Sending popup…";
-	//	_animationImageView.hidden = NO;
-	//	_animationImageView.frame = CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0);
-	//	
-	//	[[PBJVision sharedInstance] endVideoCapture];
-	//	_statusUpdateHeaderView.hidden = NO;
-	//	_commentFooterView.hidden = NO;
-	//	_openCommentButton.hidden = NO;
-	//	_flagButton.hidden = NO;
-	//	_messengerButton.hidden = NO;
-	//	_countdownLabel.text = @"";
-	//	_countdownLabel.hidden = YES;
-	//	_moviePlayer.view.hidden = NO;
-	//	_cameraFlipButton.hidden = NO;
-	//	_expireLabel.hidden = NO;
-	//	_lpGestureRecognizer.enabled = YES;
 }
 
 - (void)vision:(PBJVision *)vision didCaptureAudioSample:(CMSampleBufferRef)sampleBuffer {

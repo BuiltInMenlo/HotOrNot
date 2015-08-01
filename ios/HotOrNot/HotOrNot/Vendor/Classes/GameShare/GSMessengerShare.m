@@ -56,6 +56,7 @@ static GSMessengerShare *sharedInstance = nil;
 		
 		_vcDelegate = self;
 		_gsViewController.delegate = _vcDelegate;
+		_gsViewController.view.backgroundColor = [UIColor clearColor];
 	}
 	
 	return (self);
@@ -94,6 +95,7 @@ static GSMessengerShare *sharedInstance = nil;
 
 - (void)showMessengerSharePickerOnViewController:(UIViewController *)viewController  {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_gsViewController];
+	navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
 	[navigationController setNavigationBarHidden:YES];
 	[viewController presentViewController:navigationController animated:NO completion:^(void) {
 	}];
