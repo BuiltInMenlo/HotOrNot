@@ -2515,7 +2515,7 @@
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 				TargetAttributes = {
 					4C62652415F96C7100AA7FCE = {
-						DevelopmentTeam = 9549ESJ5ZU;
+						DevelopmentTeam = 9WKT8E37QV;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
 								enabled = 1;
@@ -2929,8 +2929,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (GC777H9RV6)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (GC777H9RV6)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2956,8 +2956,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
-				PROVISIONING_PROFILE = "60fe3f48-237c-4228-a3b1-7066c7ca6d48";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "60fe3f48-237c-4228-a3b1-7066c7ca6d48";
+				PROVISIONING_PROFILE = "57d38e2f-9a04-4757-8ca1-9c83993ca99d";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "57d38e2f-9a04-4757-8ca1-9c83993ca99d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7 armv7s";
@@ -2975,8 +2975,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: BUILT IN MENLO INC";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: BUILT IN MENLO INC";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2999,7 +2999,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
 				PROVISIONING_PROFILE = "a78ca952-30f2-4635-8818-c24bfd1c8299";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a78ca952-30f2-4635-8818-c24bfd1c8299";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6cd4c7a5-cffc-4c04-a3bf-afc5ea131812";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -3015,7 +3015,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
@@ -3050,7 +3050,7 @@
 				);
 				PRODUCT_NAME = Popup;
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "60fe3f48-237c-4228-a3b1-7066c7ca6d48";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7 armv7s";
@@ -3065,8 +3065,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
@@ -3102,7 +3102,7 @@
 				);
 				PRODUCT_NAME = Popup;
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a78ca952-30f2-4635-8818-c24bfd1c8299";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7 armv7s";

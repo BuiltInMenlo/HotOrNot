@@ -513,7 +513,8 @@
 				NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 			}
 			
-			_expireLabel.text = [(_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"] stringByAppendingFormat:@"\nhttp://popup.rocks/route.php?d=%@&a=popup", _channel.name];
+//			_expireLabel.text = [(_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"] stringByAppendingFormat:@"\nhttp://popup.rocks/route.php?d=%@&a=popup", _channel.name];
+			_expireLabel.text = (_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"];
 			
 			_animationImageView.hidden = YES;
 			_openCommentButton.hidden = (_participants == 1);
@@ -772,7 +773,7 @@
 	_expireLabel.numberOfLines = 2;
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.text = [@"You are the only one here, invite more +" stringByAppendingFormat:@"\nhttp://popup.rocks/route.php?d=%@&a=popup", _channel.name];
+	_expireLabel.text = @"You are the only one here, invite more +";
 	[self.view addSubview:_expireLabel];
 	
 	UIButton *invite2Button = [UIButton buttonWithType:UIButtonTypeCustom];
