@@ -29,6 +29,9 @@ static HONFontAllocator *sharedInstance = nil;
 	return (self);
 }
 
+- (UIFont *)avenirHeavy {
+	return ([UIFont fontWithName:@"Avenir-Heavy" size:24.0]);
+}
 
 - (UIFont *)cartoGothicBold {
 	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);

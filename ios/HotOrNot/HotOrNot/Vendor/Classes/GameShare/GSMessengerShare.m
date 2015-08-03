@@ -56,7 +56,7 @@ static GSMessengerShare *sharedInstance = nil;
 		
 		_vcDelegate = self;
 		_gsViewController.delegate = _vcDelegate;
-		_gsViewController.view.backgroundColor = [UIColor clearColor];
+		_gsViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 	}
 	
 	return (self);

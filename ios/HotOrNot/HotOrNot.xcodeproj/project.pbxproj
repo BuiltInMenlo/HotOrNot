@@ -172,6 +172,7 @@
 		30E4AFAF1ABB9F850016B731 /* HONMediaRevealerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E4AFAE1ABB9F850016B731 /* HONMediaRevealerView.m */; };
 		30E6782A1AFC0B55000F56D8 /* popup_sharefb.gif in Resources */ = {isa = PBXBuildFile; fileRef = 30E678291AFC0B55000F56D8 /* popup_sharefb.gif */; };
 		30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E805171A15183300F0A130 /* libFlurry_5.4.0.a */; };
+		30ECB5D41B6E8616008F8666 /* Avenir.ttc in Resources */ = {isa = PBXBuildFile; fileRef = 30ECB5D31B6E8616008F8666 /* Avenir.ttc */; };
 		30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */; };
 		30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */; };
 		30FE37161A81D6AF00BAB7C9 /* HONDownloadNavButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FE37151A81D6AF00BAB7C9 /* HONDownloadNavButton.m */; };
@@ -668,6 +669,7 @@
 		30E678291AFC0B55000F56D8 /* popup_sharefb.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = popup_sharefb.gif; sourceTree = "<group>"; };
 		30E805161A15183300F0A130 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
 		30E805171A15183300F0A130 /* libFlurry_5.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_5.4.0.a; sourceTree = "<group>"; };
+		30ECB5D31B6E8616008F8666 /* Avenir.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Avenir.ttc; sourceTree = "<group>"; };
 		30FC08A319B3FFA200085E7C /* HONContactsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsSearchViewController.h; sourceTree = "<group>"; };
 		30FC08A519B4125200085E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchInputBG_contacts@2x.png"; sourceTree = "<group>"; };
 		30FC08AA19B4125500085E7C /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_contacts@2x.png"; sourceTree = "<group>"; };
@@ -2278,6 +2280,7 @@
 		4C83FD96190F62FB00CAEABB /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				30ECB5D31B6E8616008F8666 /* Avenir.ttc */,
 				4C83FD97190F62FB00CAEABB /* CartoGothicStd-Bold.otf */,
 				4C83FD98190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf */,
 				4C83FD99190F62FB00CAEABB /* CartoGothicStd-Book.otf */,
@@ -2570,6 +2573,7 @@
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
 				4C639A30195502E90059E444 /* HomeElements.xcassets in Resources */,
 				308F361B19E3389B00EE9512 /* 1lgZ0.gif in Resources */,
+				30ECB5D41B6E8616008F8666 /* Avenir.ttc in Resources */,
 				4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */,
 				4C0F3CB51988DDE300703D09 /* Localizable.strings in Resources */,
 				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
@@ -2998,7 +3002,7 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
-				PROVISIONING_PROFILE = "a78ca952-30f2-4635-8818-c24bfd1c8299";
+				PROVISIONING_PROFILE = "6cd4c7a5-cffc-4c04-a3bf-afc5ea131812";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6cd4c7a5-cffc-4c04-a3bf-afc5ea131812";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;

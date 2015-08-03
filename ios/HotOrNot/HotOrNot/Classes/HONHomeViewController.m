@@ -223,13 +223,6 @@
 	_overlayButton.hidden = YES;
 	[_scrollView addSubview:_overlayButton];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 2.0) + 55.0, 28.0, (self.view.frame.size.width - 110.0), 22.0)];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-	titleLabel.textColor = [UIColor colorWithRed:0.278 green:0.584 blue:0.486 alpha:1.00];
-	titleLabel.textAlignment = NSTextAlignmentCenter;
-	titleLabel.text = @"Recent";
-	[_scrollView addSubview:titleLabel];
-	
 	_textField = [[UITextField alloc] initWithFrame:CGRectMake((_scrollView.frame.size.width * 2.0) + ((_scrollView.frame.size.width - 300.0) * 0.5), 302.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), 300.0, 36.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -266,6 +259,10 @@
 //	[_headerView addPrivacyButtonWithTarget:self action:@selector(_goPrivacy)];
 //	[_headerView addInviteButtonWithTarget:self action:@selector(_goInvite)];
 	[self.view addSubview:_headerView];
+	
+	UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"brandingHeader"]];
+	brandingImageView.frame = CGRectOffset(brandingImageView.frame, (_scrollView.frame.size.width * 2.0) + (self.view.frame.size.width - brandingImageView.frame.size.width) * 0.5, 23.0);
+	[_scrollView addSubview:brandingImageView];
 	
 	HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	linkButton.frame = CGRectMake(6.0, 23.0, 52.0, 46.0);

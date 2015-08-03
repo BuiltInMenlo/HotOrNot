@@ -29,19 +29,13 @@
 		//self.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
 		_statusUpdateVO = statusUpdateVO;
 		
-		
-		
-		UIView *statusBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -20.0, self.frame.size.width, 20.0)];
-		statusBarView.backgroundColor = [UIColor colorWithRed:0.110 green:0.553 blue:0.984 alpha:1.00];
-		//[self addSubview:statusBarView];
-		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, 11.0, 13.0);
 		_activityIndicatorView.alpha = 0.0;
 		[self addSubview:_activityIndicatorView];
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(5.0, 5.0, 99.0, 46.0);
+		backButton.frame = CGRectMake(7.0, 5.0, 99.0, 46.0);
 //		backButton.backgroundColor = [UIColor greenColor];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
@@ -69,7 +63,7 @@
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
 		[linkButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 		[linkButton addTarget:self action:@selector(_goCopyLink) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:linkButton];
+		//[self addSubview:linkButton];
 		
 		UIView *bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 52.0, self.frame.size.width, 38.0)];
 		bannerView.backgroundColor = [UIColor colorWithRed:1.000 green:0.839 blue:0.000 alpha:1.00];

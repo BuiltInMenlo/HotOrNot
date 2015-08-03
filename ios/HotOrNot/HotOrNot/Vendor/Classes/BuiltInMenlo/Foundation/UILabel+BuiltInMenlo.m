@@ -63,7 +63,7 @@
 }
 
 - (int)numberOfLinesNeeded {
-	return ((int)round(MAX(1.0, (int)round([self sizeForText].height) / (int)round(self.font.lineHeight))));
+	return (1 + (int)round(MAX(1.0, (int)round([self sizeForText].height) / (int)round(self.font.lineHeight))));
 }
 
 - (void)resizeFrameForText {

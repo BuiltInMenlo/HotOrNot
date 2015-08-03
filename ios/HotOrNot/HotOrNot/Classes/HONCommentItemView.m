@@ -29,15 +29,13 @@
 		[self addSubview:_bgView];
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 20.0, self.frame.size.width - 74.0, 20.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:32];
 		_captionLabel.backgroundColor = [UIColor clearColor];
-//		_captionLabel.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugVioletColor];
 		_captionLabel.textColor = [UIColor whiteColor];
 		_captionLabel.lineBreakMode = NSLineBreakByWordWrapping;
 		[self addSubview:_captionLabel];
 		
 		_photoIconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_captionLabel.frameEdges.right, 20.0, 0.0, 0.0)];
-		//_photoIconImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
 		_photoIconImageView.image = [UIImage imageNamed:@"viewPhotoButton_Selected"];
 		[self addSubview:_photoIconImageView];
 	}
@@ -55,7 +53,7 @@
 	_captionLabel.numberOfLines = [_captionLabel numberOfLinesNeeded];
 	_captionLabel.textColor = (_commentVO.messageType == HONChatMessageTypeBOT) ? [[HONColorAuthority sharedInstance] percentGreyscaleColor:0.75] : _captionLabel.textColor;
 	[_captionLabel setTextColor:(_commentVO.messageType == HONChatMessageTypeBOT) ? [UIColor colorWithRed:1.000 green:0.635 blue:0.000 alpha:1.00] : [UIColor colorWithRed:1.000 green:0.847 blue:0.000 alpha:1.00] range:[_captionLabel.text rangeOfString:_commentVO.username]];
-//	NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
+	NSLog(@"SIZE:[%@] -=- %d", NSStringFromCGSize([_captionLabel sizeForText]), [_captionLabel numberOfLinesNeeded]);
 	[_captionLabel resizeFrameForText];
 	
 	_photoIconImageView.frame = CGRectTranslateX(_photoIconImageView.frame, _captionLabel.frameEdges.right);

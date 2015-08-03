@@ -17,7 +17,7 @@
 #import "GSCollectionViewFlowLayout.h"
 #import "GSCollectionViewCell.h"
 
-#define VIEW_BG_COLOR			[UIColor colorWithRed:0.133 green:0.875 blue:0.706 alpha:1.00]
+#define VIEW_BG_COLOR			[UIColor blackColor]//[UIColor colorWithRed:0.133 green:0.875 blue:0.706 alpha:1.00]
 #define WIDGET_COLOR			[UIColor colorWithRed:0.110 green:0.608 blue:0.490 alpha:1.00]
 #define NAV_NORMAL_COLOR		[UIColor colorWithRed:0.110 green:0.608 blue:0.490 alpha:1.00]
 #define NAV_HIGHLIGHTED_COLOR	[UIColor colorWithRed:0.075 green:0.420 blue:0.337 alpha:1.00]
@@ -173,7 +173,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	NSLog(@"[:|:] [%@ - loadView] [:|:]", self.class);
 	
 	[super loadView];
-	[self.view setBackgroundColor:VIEW_BG_COLOR];
+	//[self.view setBackgroundColor:VIEW_BG_COLOR];
 }
 
 - (void)viewDidLoad {

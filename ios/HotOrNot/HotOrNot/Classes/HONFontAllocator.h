@@ -9,6 +9,8 @@
 @interface HONFontAllocator : NSObject
 + (HONFontAllocator *)sharedInstance;
 
+
+- (UIFont *)avenirHeavy;
 - (UIFont *)cartoGothicBold;
 - (UIFont *)cartoGothicBoldItalic;
 - (UIFont *)cartoGothicBook;

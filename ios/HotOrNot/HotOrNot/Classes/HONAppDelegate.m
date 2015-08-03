@@ -643,9 +643,9 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
 	
 #ifdef FONTS
-	[self _showFonts];
+//	[self _showFonts];
 #endif
-	
+[self _showFonts];	
 	//[UIImageDebugger startDebugging];
 	
 	
