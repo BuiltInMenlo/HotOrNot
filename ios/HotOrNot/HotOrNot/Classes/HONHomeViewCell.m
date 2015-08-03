@@ -39,15 +39,15 @@
 	
 	NSString *caption = ([[dictionary objectForKey:@"title"] isEqualToString:@"Feedback"] || [[dictionary objectForKey:@"title"] isEqualToString:@"New People"]) ? [dictionary objectForKey:@"title"] : [NSString stringWithFormat:@"%@-%@", [[[dictionary objectForKey:@"title"] componentsSeparatedByString:@"-"] firstObject], [[[dictionary objectForKey:@"title"] componentsSeparatedByString:@"_"] lastObject]];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 7.0, 252.0, 28.0)];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:14];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, self.frame.size.width - 50.0, 28.0)];
+	titleLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
 	titleLabel.textColor = [UIColor blackColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.text = caption;
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 28.0, 252.0, 28.0)];
-	participantsLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:12];
+	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 36.0, self.frame.size.width - 50.0, 28.0)];
+	participantsLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:15];
 	participantsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	participantsLabel.backgroundColor = [UIColor clearColor];
 	participantsLabel.text = [NSString stringWithFormat:@"%@%@ with %d %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:[dictionary objectForKey:@"timestamp"]], ([[[HONDateTimeAlloter sharedInstance] intervalSinceDate:[dictionary objectForKey:@"timestamp"]] isEqualToString:@"Just now"]) ? @"" : @" ago", [[dictionary objectForKey:@"occupants"] intValue], ([[dictionary objectForKey:@"occupants"] intValue] == 1) ? @"person" : @"people"];

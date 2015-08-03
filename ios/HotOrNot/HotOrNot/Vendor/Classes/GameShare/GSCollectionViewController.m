@@ -23,7 +23,7 @@
 #define NAV_HIGHLIGHTED_COLOR	[UIColor colorWithRed:0.075 green:0.420 blue:0.337 alpha:1.00]
 
 #define NAV_LABEL_FONT			[UIFont fontWithName:@"HelveticaNeue" size:16.0]
-#define TITLE_LABEL_FONT		[UIFont fontWithName:@"CartoGothicStd-Bold" size:26.0]
+#define TITLE_LABEL_FONT		[UIFont fontWithName:@"Avenir-Heavy" size:26.0]
 
 @interface GSCollectionViewController () <FBSDKMessengerURLHandlerDelegate, GSCollectionViewCellDelegate, WXApiDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
@@ -51,7 +51,7 @@
 @synthesize delegate = _delegate;
 @synthesize metaInfo;
 
-static NSString * const kGSTitleCaption = @"Select a messenger";
+static NSString * const kGSTitleCaption = @"Invite friends,\nselect a messenger";
 static NSString * const kGSSkipButtonCaption = @"Skip";
 
 
@@ -173,7 +173,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	NSLog(@"[:|:] [%@ - loadView] [:|:]", self.class);
 	
 	[super loadView];
-	//[self.view setBackgroundColor:VIEW_BG_COLOR];
+	[self.view setBackgroundColor:VIEW_BG_COLOR];
 }
 
 - (void)viewDidLoad {
@@ -184,7 +184,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"gs-selectTutorial"]];
 	
 	CGSize collectionViewSize = CGSizeMake(([GSCollectionViewController collectionViewDimension].x * kGSCollectionViewCellSize.width) + (([GSCollectionViewController collectionViewDimension].x - 1) * kGSCollectionViewCellSpacing.width), ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSize.height) + ([GSCollectionViewController collectionViewDimension].y * kGSCollectionViewCellSpacing.height));
-	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, 50.0 + ((self.view.bounds.size.height - collectionViewSize.height) * 0.5));
+	CGPoint collectionViewOrigin = CGPointMake((self.view.bounds.size.width - collectionViewSize.width) * 0.5, 40.0 + ((self.view.bounds.size.height - collectionViewSize.height) * 0.5));
 	
 	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(collectionViewOrigin.x, collectionViewOrigin.y, collectionViewSize.width, collectionViewSize.height) collectionViewLayout:[[GSCollectionViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[GSCollectionViewCell class] forCellWithReuseIdentifier:[GSCollectionViewCell cellReuseIdentifier]];
@@ -204,9 +204,10 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	_lpGestureRecognizer.delaysTouchesBegan = YES;
 	[_collectionView addGestureRecognizer:_lpGestureRecognizer];
 	
-	_label = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 260.0) * 0.5, _collectionView.frame.origin.y - (32.0 + 40.0), 260.0, 32.0)];
+	_label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, _collectionView.frame.origin.y - (22.0 + 80.0), self.view.frame.size.width - 20.0, 80.0)];
 	_label.font = TITLE_LABEL_FONT;
 	_label.backgroundColor = [UIColor clearColor];
+	_label.numberOfLines = 2;
 	_label.textAlignment = NSTextAlignmentCenter;
 	_label.textColor = [UIColor whiteColor];
 	_label.text = kGSTitleCaption;

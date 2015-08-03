@@ -29,7 +29,7 @@
 		[self addSubview:_bgView];
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 20.0, self.frame.size.width - 74.0, 20.0)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:32];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:34];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textColor = [UIColor whiteColor];
 		_captionLabel.lineBreakMode = NSLineBreakByWordWrapping;

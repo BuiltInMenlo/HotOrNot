@@ -246,7 +246,7 @@
 	_composeButton.alpha = 1.0;
 	[self.view addSubview:_composeButton];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 2.0, 64.0, _scrollView.frame.size.width, _scrollView.frame.size.height - (64.0 + _composeButton.frame.size.height))];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 2.0, 74.0, _scrollView.frame.size.width, _scrollView.frame.size.height - (74.0 + _composeButton.frame.size.height))];
 	_tableView.backgroundColor = [UIColor whiteColor];//[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -261,11 +261,11 @@
 	[self.view addSubview:_headerView];
 	
 	UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"brandingHeader"]];
-	brandingImageView.frame = CGRectOffset(brandingImageView.frame, (_scrollView.frame.size.width * 2.0) + (self.view.frame.size.width - brandingImageView.frame.size.width) * 0.5, 23.0);
+	brandingImageView.frame = CGRectOffset(brandingImageView.frame, (_scrollView.frame.size.width * 2.0) + (self.view.frame.size.width - brandingImageView.frame.size.width) * 0.5, 28.0);
 	[_scrollView addSubview:brandingImageView];
 	
 	HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	linkButton.frame = CGRectMake(6.0, 23.0, 52.0, 46.0);
+	linkButton.frame = CGRectMake(8.0, 25.0, 52.0, 46.0);
 	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
 	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[linkButton addTarget:self action:@selector(_goPrivacy) forControlEvents:UIControlEventTouchUpInside];
@@ -904,7 +904,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (64.0);
+	return (74.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -414,6 +414,7 @@
 																  [_moviePlayer play];
 																  
 																  _openCommentButton.hidden = NO;
+																   _messengerButton.hidden = NO;
 																  _messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
 																  
 																  *stop = YES;
@@ -480,7 +481,11 @@
 			}
 			
 //			_expireLabel.text = (_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"];
-			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(1, _participants - 1)];
+			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
+			
+			_messengerButton.hidden = NO;
+			_messengerButton.frame = (_participants < 2) ? CGRectMake((self.view.frame.size.width - _messengerButton.frame.size.width) * 0.5, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height) : CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+			_openCommentButton.hidden = (_participants < 2);
 			
 			_animationImageView.hidden = YES;
 		}];
@@ -643,11 +648,11 @@
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.6830, self.view.frame.size.width, self.view.frame.size.height * 0.6830)];
 	_cameraPreviewView.backgroundColor = [UIColor blackColor];
-	_cameraPreviewView.alpha = 0.0;
 	
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+	_cameraPreviewLayer.opacity = 0.5;
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
@@ -790,7 +795,7 @@
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 	_messengerButton.frame = CGRectMake((self.view.frame.size.width - _messengerButton.frame.size.width) * 0.5, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
 	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-//	_messengerButton.hidden = YES;
+	_messengerButton.hidden = YES;
 	[self.view addSubview:_messengerButton];
 	
 	_takePhotoButton = [HONButton buttonWithType:UIButtonTypeCustom];
@@ -836,7 +841,7 @@
 	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
 	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 200.0, 20.0)];
-	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+	_countdownLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
 	_countdownLabel.backgroundColor = [UIColor clearColor];
 	_countdownLabel.textAlignment = NSTextAlignmentCenter;
 	_countdownLabel.textColor = [UIColor whiteColor];
@@ -1032,6 +1037,8 @@
 			_toggleMicButton.hidden = YES;
 			_cameraFlipButton.hidden = YES;
 			
+			_participantsLabel.hidden = YES;
+			
 			if ([_commentTextField isFirstResponder])
 				[_commentTextField resignFirstResponder];
 			
@@ -1078,6 +1085,7 @@
 			_countdownLabel.hidden = YES;
 			_moviePlayer.view.hidden = NO;
 			_playerLayer.hidden = NO;
+			_participantsLabel.hidden = NO;
 			_toggleMicButton.hidden = NO;
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
