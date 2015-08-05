@@ -115,10 +115,10 @@ static GSMessengerShare *sharedInstance = nil;
 #pragma mark - CollectionViewController Delegates
 - (void)gsCollectionView:(GSCollectionViewController *)viewController didSelectMessenger:(GSMessengerVO *)messengerVO {
 	NSLog(@"[*:*] gsCollectionView:didSelectMessenger:[%@] [*:*]", messengerVO.messengerName);
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sharePopup"] withProperties:@{@"channel"	: [[[_outboundURL componentsSeparatedByString:@"="] objectAtIndex:1] stringByReplacingOccurrencesOfString:@"&a" withString:@""], @"messenger"	: (messengerVO.messengerID == GSMessengerShareTypeFBMessenger) ? @"Messenger" : (messengerVO.messengerID == GSMessengerShareTypeHike) ? @"Hike" : (messengerVO.messengerID == GSMessengerShareTypeKakaoTalk) ? @"Kakao" : (messengerVO.messengerID == GSMessengerShareTypeKik) ? @"Kik" : (messengerVO.messengerID == GSMessengerShareTypeLine) ? @"Line" : (messengerVO.messengerID == GSMessengerShareTypeSMS) ? @"SMS" : (messengerVO.messengerID == GSMessengerShareTypeViber) ? @"Viber" : (messengerVO.messengerID == GSMessengerShareTypeWeChat) ? @"WeChat" : (messengerVO.messengerID == GSMessengerShareTypeWhatsApp) ? @"WhatsApp" : @"OTHER"}];
+	//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sharePopup"] withProperties:@{@"channel"	: [[[_outboundURL componentsSeparatedByString:@"="] objectAtIndex:1] stringByReplacingOccurrencesOfString:@"&a" withString:@""], @"messenger"	: (messengerVO.messengerID == GSMessengerShareTypeFBMessenger) ? @"Messenger" : (messengerVO.messengerID == GSMessengerShareTypeHike) ? @"Hike" : (messengerVO.messengerID == GSMessengerShareTypeKakaoTalk) ? @"Kakao" : (messengerVO.messengerID == GSMessengerShareTypeKik) ? @"Kik" : (messengerVO.messengerID == GSMessengerShareTypeLine) ? @"Line" : (messengerVO.messengerID == GSMessengerShareTypeSMS) ? @"SMS" : (messengerVO.messengerID == GSMessengerShareTypeViber) ? @"Viber" : (messengerVO.messengerID == GSMessengerShareTypeWeChat) ? @"WeChat" : (messengerVO.messengerID == GSMessengerShareTypeWhatsApp) ? @"WhatsApp" : @"OTHER"}];
 	
-	if ([self.delegate respondsToSelector:@selector(didSelectMessengerWithType:)])
-		[self.delegate didSelectMessengerWithType:(GSMessengerShareType)messengerVO.messengerID];
+	if ([self.delegate respondsToSelector:@selector(didSelectMessengerShareWithType:)])
+		[self.delegate didSelectMessengerShareWithType:(GSMessengerShareType)messengerVO.messengerID];
 }
 
 - (void)gsCollectionViewDidClose:(GSCollectionViewController *)viewController {

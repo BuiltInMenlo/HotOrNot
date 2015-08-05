@@ -25,7 +25,7 @@ extern NSString * const kOTHERKey;
 @required
 @optional
 - (void)didCloseMessengerShare;
-- (void)didSelectMessengerWithType:(GSMessengerShareType)messengerType;
+- (void)didSelectMessengerShareWithType:(GSMessengerShareType)messengerType;
 - (void)didSkipMessengerShare;
 @end
 @interface GSMessengerShare : NSObject <GSCollectionViewControllerDelegate> {

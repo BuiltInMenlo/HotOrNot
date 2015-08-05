@@ -1016,7 +1016,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[activityIndicatorView startAnimating];
 			[_loadingView addSubview:activityIndicatorView];
 			
-			[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
+			[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
 			
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[_tintTimer invalidate];
@@ -1130,7 +1130,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[activityIndicatorView startAnimating];
 		[_loadingView addSubview:activityIndicatorView];
 		
-		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
+		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 			[_tintTimer invalidate];
@@ -1178,7 +1178,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		[activityIndicatorView startAnimating];
 		[_loadingView addSubview:activityIndicatorView];
 		
-		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithChannelName:channelName] animated:YES];
+		[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 			[_tintTimer invalidate];

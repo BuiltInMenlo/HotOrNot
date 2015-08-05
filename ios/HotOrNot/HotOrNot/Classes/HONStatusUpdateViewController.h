@@ -24,7 +24,8 @@ typedef NS_ENUM(NSUInteger, HONStatusUpdateAlertViewType) {
 	HONStatusUpdateAlertViewTypeShare
 };
 
-@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
+@interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>
+- (id)initFromDeepLinkWithChannelName:(NSString *)channelName;
 - (id)initWithStatusUpdate:(HONStatusUpdateVO *)statusUpdateVO forClub:(HONUserClubVO *)clubVO;
 - (id)initWithChannelName:(NSString *)channelName;
 @end

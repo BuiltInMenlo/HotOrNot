@@ -80,6 +80,7 @@
 @property (nonatomic, strong) UIImageView *animationImageView;
 @property (nonatomic, strong) UITextField *nameTextField;
 @property (nonatomic, strong) UIButton *nameButton;
+@property (nonatomic, strong) UIView *previewTintView;
 @property (nonatomic, strong) UIView *shareHolderView;
 @property (nonatomic, strong) UIView *tutorialView;
 @property (nonatomic, strong) NSString *vidName;
@@ -88,8 +89,10 @@
 @property (nonatomic, strong) NSTimer *gestureTimer;
 @property (nonatomic, strong) NSMutableArray *videoPlaylist;
 @property (nonatomic, strong) NSString *lastVideo;
+@property (nonatomic, strong) UIImageView *logoImageView;
+@property (nonatomic, strong) NSMutableArray *shareTypes;
 @property (nonatomic) int messageTotal;
-@property (nonatomic) BOOL isIntro;
+@property (nonatomic) BOOL isDeepLink;
 
 @property (nonatomic, strong) HONMediaRevealerView *revealerView;
 @property (nonatomic, strong) GSMessengerShare *messengerShare;
@@ -137,9 +140,19 @@
 	return (self);
 }
 
+- (id)initFromDeepLinkWithChannelName:(NSString *)channelName {
+	NSLog(@"%@ - initFromDeepLinkWithChannelName:[%@]", [self description], channelName);
+	if ((self = [self initWithChannelName:channelName])) {
+		_isDeepLink = YES;
+	}
+	
+	return (self);
+}
+
 - (id)initWithChannelName:(NSString *)channelName {
 	NSLog(@"%@ - initWithChannelName:[%@]", [self description], channelName);
 	if ((self = [self init])) {
+		_isDeepLink = NO;
 		_channelName = channelName;
 		_lastVideo = @"";
 	}
@@ -330,6 +343,7 @@
 		[PubNub subscribeOn:@[channel]];
 		
 		_lastVideo = @"";
+		_expireLabel.text = @"alerting the channel…";
 		_videoQueue = 0;
 		_videoPlaylist = [NSMutableArray array];
 		
@@ -337,34 +351,32 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		
-		[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
-		
-		
-		//	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
-		//
-		//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
-		//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
-		//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-		//	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
-		//	[httpClient setParameterEncoding:AFJSONParameterEncoding];
-		//	[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		//		NSError *error = nil;
-		//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		//
-		//		if (error != nil) {
-		//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-		//			[[HONAPICaller sharedInstance] showDataErrorHUD];
-		//
-		//		} else {
-		//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-		//			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-		//			[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
-		//		}
-		//
-		//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
-		//		[[HONAPICaller sharedInstance] showDataErrorHUD];
-		//	}];
+		//[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
+		NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
+	
+		SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+		[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+		[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+		[httpClient setParameterEncoding:AFJSONParameterEncoding];
+		[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+	
+			if (error != nil) {
+				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+				[[HONAPICaller sharedInstance] showDataErrorHUD];
+	
+			} else {
+				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+				NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+				[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+			}
+	
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+		}];
 		
 		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
 			PNChannel *channel = [channels firstObject];
@@ -372,6 +384,8 @@
 			NSLog(@"\n::: SUBSCRIPTION OBSERVER - [%@](%@)\n", (state == PNSubscriptionProcessSubscribedState) ? @"Subscribed" : (state == PNSubscriptionProcessRestoredState) ? @"Restored" : (state == PNSubscriptionProcessNotSubscribedState) ? @"NotSubscribed" : (state == PNSubscriptionProcessWillRestoreState) ? @"WillRestore" : @"UNKNOWN", channel.name);
 			
 			if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
+				[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"fpo_push"];
+				
 				_channel = channel;
 				_participants = 0;
 				_comments = 0;
@@ -480,6 +494,7 @@
 				NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
 			}
 			
+			_expireLabel.text = (_participants == 1) ? @"no one has joined, invite now" : [NSString stringWithFormat:@"%d %@ been alerted!", MAX(1, (_participants - 1)), (_participants == 2) ? @"person has" : @"people have"];
 //			_expireLabel.text = (_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"];
 			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
 			
@@ -537,6 +552,7 @@
 					
 					_openCommentButton.hidden = NO;
 					_messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+					_messengerButton.hidden = NO;
 					
 					_imageView.alpha = 0.0;
 					_imageView.hidden = YES;
@@ -628,6 +644,8 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
+	NSLog(@"DEEPLINK:[%d]", _isDeepLink);
+	
 	[super loadView];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"in_chat"];
@@ -636,9 +654,8 @@
 	_messageTotal = 0;
 	
 	
-	self.view.backgroundColor = [UIColor blackColor];// [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	self.view.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];// [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	
-	_isIntro = YES;
 	_isActive = YES;
 	_isSubmitting = NO;
 	
@@ -647,24 +664,27 @@
 	_participants = 0;
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.6830, self.view.frame.size.width, self.view.frame.size.height * 0.6830)];
-	_cameraPreviewView.backgroundColor = [UIColor blackColor];
+	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
 	
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
 	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-	_cameraPreviewLayer.opacity = 0.5;
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
 	[[PBJVision sharedInstance] setVideoFrameRate:24];
 	
+	_previewTintView = [[UIView alloc] initWithFrame:_cameraPreviewView.frame];
+	_previewTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	[self.view addSubview:_previewTintView];
 	
-	//	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
-	//	playerViewController.player = [AVPlayer playerWithURL:];
-	//	self.avPlayerViewcontroller = playerViewController;
-	//	[self resizePlayerToViewSize];
-	//	[view addSubview:playerViewController.view];
-	//	view.autoresizesSubviews = TRUE;
+	
+//	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
+//	playerViewController.player = [AVPlayer playerWithURL:];
+//	self.avPlayerViewcontroller = playerViewController;
+//	[self resizePlayerToViewSize];
+//	[view addSubview:playerViewController.view];
+//	view.autoresizesSubviews = TRUE;
 	
 	
 //	_queuePlayer = [[AVQueuePlayer alloc] initWithItems:@[]];//[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
@@ -712,7 +732,7 @@
 	_expireLabel.numberOfLines = 2;
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.text = @"You are the only one here, invite more +";
+	_expireLabel.text = @"Loading channel…";
 	[self.view addSubview:_expireLabel];
 	
 	UIButton *invite2Button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -860,6 +880,11 @@
 	_messengerShare = [GSMessengerShare sharedInstance];
 	[_messengerShare addMessengerShareTypes:@[@(GSMessengerShareTypeFBMessenger), @(GSMessengerShareTypeKik), @(GSMessengerShareTypeWhatsApp), @(GSMessengerShareTypeLine), @(GSMessengerShareTypeKakaoTalk), @(GSMessengerShareTypeWeChat), @(GSMessengerShareTypeSMS), @(GSMessengerShareTypeHike), @(GSMessengerShareTypeViber)]];
 	_messengerShare.delegate = self;
+	
+	_logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"brandingHeader"]];
+	_logoImageView.frame = CGRectOffset(_logoImageView.frame, self.view.frame.size.width - _logoImageView.frame.size.width, self.view.frame.size.height - _logoImageView.frame.size.height);
+	_logoImageView.hidden = YES;
+	[self.view addSubview:_logoImageView];
 }
 
 - (void)viewDidLoad {
@@ -902,11 +927,20 @@
 }
 
 - (void)_goShare {
-	//	[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareiOS" withProperties:@{@"chat"	: @(_statusUpdateVO.statusUpdateID)}];
-	
-	_isIntro = NO;
-	[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&v=%@&a=popup", _channel.name, _lastVideo]];
 	[_messengerShare showMessengerSharePickerOnViewController:self];
+	
+	_shareTypes = [NSMutableArray array];
+	
+	
+	
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
 }
 
 - (void)_goToggleMic {
@@ -1031,8 +1065,11 @@
 			
 			_imageView.alpha = 0.0;
 			
-			_openCommentButton.alpha = 0.0;
-			_messengerButton.alpha = 0.0;
+			_previewTintView.hidden = YES;
+			_openCommentButton.hidden = YES;
+			_messengerButton.hidden = YES;
+			
+			_logoImageView.hidden = NO;
 			
 			_toggleMicButton.hidden = YES;
 			_cameraFlipButton.hidden = YES;
@@ -1060,7 +1097,8 @@
 			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 			
 			[_moviePlayer stop];
-			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.6830);
+			//_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.6830);
+			_cameraPreviewView.frame = self.view.frame;
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
 			
@@ -1083,10 +1121,12 @@
 			_statusUpdateHeaderView.hidden = NO;
 			_countdownLabel.text = @"";
 			_countdownLabel.hidden = YES;
+			_previewTintView.hidden = NO;
 			_moviePlayer.view.hidden = NO;
 			_playerLayer.hidden = NO;
 			_participantsLabel.hidden = NO;
 			_toggleMicButton.hidden = NO;
+			_logoImageView.hidden = NO;
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
 			gestureRecognizer.enabled = YES;
@@ -1326,9 +1366,6 @@
 #pragma mark - GSMessengerShare Delegates
 - (void)didCloseMessengerShare {
 	NSLog(@"[*:*] didCloseMessengerShare [*:*]");
-	
-	if (_isIntro)
-		[self _popBack];
 }
 
 - (void)didSelectMessengerShareWithType:(GSMessengerShareType)messengerType {
@@ -1566,6 +1603,12 @@
 	//	NSLog(@"[*:*] _onTextEditingDidEnd:[%@]", _commentTextField.text);
 }
 
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+	}
+}
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {

@@ -3002,8 +3002,8 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
-				PROVISIONING_PROFILE = "6cd4c7a5-cffc-4c04-a3bf-afc5ea131812";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6cd4c7a5-cffc-4c04-a3bf-afc5ea131812";
+				PROVISIONING_PROFILE = "68ae3b33-157c-4cdf-82f7-e19a635b54b7";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "68ae3b33-157c-4cdf-82f7-e19a635b54b7";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;

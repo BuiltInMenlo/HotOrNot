@@ -629,7 +629,7 @@
 	[activityIndicatorView startAnimating];
 	[_loadingView addSubview:activityIndicatorView];
 	
-	HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"];
+	HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"];
 	[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 	
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
