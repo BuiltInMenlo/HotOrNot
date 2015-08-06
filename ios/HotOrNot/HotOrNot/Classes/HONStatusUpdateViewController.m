@@ -12,6 +12,8 @@
 
 #import <AWSiOSSDKv2/S3.h>
 #import <FBSDKMessengerShareKit/FBSDKMessengerShareKit.h>
+#import <KakaoOpenSDK/KakaoOpenSDK.h>
+
 
 #import "NSArray+BuiltInMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
@@ -24,6 +26,7 @@
 
 #import "KikAPI.h"
 #import "PBJVision.h"
+#import "WXApi.h"
 
 #import "HONStatusUpdateViewController.h"
 #import "HONCommentItemView.h"
@@ -58,12 +61,14 @@
 @property (nonatomic, strong) UIImageView *footerImageView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) NSMutableArray *replies;
+@property (nonatomic, strong) NSDictionary *selectedMessengerContent;
+@property (nonatomic, strong) NSString *selectedMessengerText;
 @property (nonatomic, strong) UIView *commentsHolderView;
 @property (nonatomic, strong) UIView *commentFooterView;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) NSString *comment;
+@property (nonatomic, strong) NSString *outboundURL;
 @property (nonatomic, strong) NSTimer *expireTimer;
-@property (nonatomic, strong) NSTimer *durationTimer;
 @property (nonatomic, strong) UILabel *statusLabel;
 @property (nonatomic, strong) UILabel *expireLabel;
 @property (nonatomic, strong) UILabel *participantsLabel;
@@ -71,7 +76,6 @@
 @property (nonatomic) int countdown;
 @property (nonatomic, strong) UIButton *toggleMicButton;
 @property (nonatomic, strong) UIButton *cameraFlipButton;
-@property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) NSTimer *countdownTimer;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIButton *messengerButton;
@@ -83,6 +87,7 @@
 @property (nonatomic, strong) UIView *previewTintView;
 @property (nonatomic, strong) UIView *shareHolderView;
 @property (nonatomic, strong) UIView *tutorialView;
+@property (nonatomic, strong) NSDictionary *baseShareInfo;
 @property (nonatomic, strong) NSString *vidName;
 @property (nonatomic, strong) NSString *channelName;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
@@ -218,11 +223,6 @@
 }
 
 - (void)_retrieveStatusUpdate {
-	if (_expireTimer != nil) {
-		[_expireTimer invalidate];
-		_expireTimer = nil;
-	}
-	
 	if (_channel == nil || [[_channel.name lastComponentByDelimeter:@"_"] intValue] != _statusUpdateVO.statusUpdateID) {
 		_channel = [self _channelSetupForStatusUpdate];
 		
@@ -370,6 +370,7 @@
 			} else {
 				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 				NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+				_outboundURL = [result objectForKey:@"id"];
 				[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
 			}
 	
@@ -390,12 +391,30 @@
 				_participants = 0;
 				_comments = 0;
 				
+				NSMutableDictionary *pushes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"push_channels"] mutableCopy];
+				if (![pushes hasObjectForKey:_channel.name]) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Channel Pushes"
+																	   message:@"Recieve pushes for this popup?"
+																	  delegate:self
+															 cancelButtonTitle:@"No"
+															 otherButtonTitles:@"Yes", nil];
+					[alertView setTag:99];
+					[alertView show];
 				
+				} else {
+					if ([[pushes objectForKey:_channel.name] isEqualToString:@"YES"]) {
+						[PubNub enablePushNotificationsOnChannel:channel
+											 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+									  andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
+										  NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
+									  }];
+					}
+				}
 				
-//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone joined your Popup!\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//						  }];
+				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone joined your Popup!\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
+						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+						  }];
 				
 				
 				[[PubNub sharedInstance] requestHistoryForChannel:channel
@@ -464,12 +483,6 @@
 			}
 		}];
 		
-		// APNS enabled already?
-		[PubNub enablePushNotificationsOnChannel:channel
-							 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
-					  andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
-						  NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
-					  }];
 		
 		[[PNObservationCenter defaultCenter] addPresenceEventObserver:self withBlock:^(PNPresenceEvent *event) {
 			NSLog(@"::: PRESENCE OBSERVER - [%@] :::", event);
@@ -645,6 +658,9 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	NSLog(@"DEEPLINK:[%d]", _isDeepLink);
+	
+	_baseShareInfo = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GSMessengerShareInfo"
+																								ofType:@"plist"]];
 	
 	[super loadView];
 	
@@ -906,11 +922,6 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	if (_expireTimer != nil) {
-		[_expireTimer invalidate];
-		_expireTimer = nil;
-	}
-	
 	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"back_chat"] isEqualToString:@"YES"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 															message:@"This will delete your conversation."
@@ -927,18 +938,15 @@
 }
 
 - (void)_goShare {
-	[_messengerShare showMessengerSharePickerOnViewController:self];
+	//[_messengerShare showMessengerSharePickerOnViewController:self];
 	
 	_shareTypes = [NSMutableArray array];
 	
-	
-	
-	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Invite friends to this channel, select a messenger"
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"", nil];
+													otherButtonTitles:@"Messenger", @"Kik", @"WhatsApp", @"Line", @"KakaoTalk", @"WeChat", @"SMS", @"Hike", @"Viber", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 }
@@ -1005,6 +1013,11 @@
 }
 
 - (void)_goCancelComment {
+	if (_expireTimer != nil) {
+		[_expireTimer invalidate];
+		_expireTimer = nil;
+	}
+	
 	_commentTextField.text = @"";
 	_expireLabel.hidden = NO;
 	_commentFooterView.hidden = YES;
@@ -1300,17 +1313,18 @@
 	} completion:nil];
 }
 
+- (void)_pokeMessage {
+	[PubNub sendMessage:@"user has requested you to record a Popup" toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+		NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+	}];
+}
+
 - (void)_popBack {
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 	
 	if (_expireTimer != nil) {
 		[_expireTimer invalidate];
 		_expireTimer = nil;
-	}
-	
-	if (_tintTimer != nil) {
-		[_tintTimer invalidate];
-		_tintTimer = nil;
 	}
 	
 	NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
@@ -1549,6 +1563,11 @@
 	_openCommentButton.alpha = 0.0;
 	_messengerButton.alpha = 0.0;
 	
+	_expireTimer = [NSTimer scheduledTimerWithTimeInterval:(arc4random() % 25) + 5.0
+													target:self
+													 selector:@selector(_pokeMessage)
+													 userInfo:nil repeats:NO];
+	
 	if (textField.tag == 1) {
 		_cameraPreviewView.hidden = YES;
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
@@ -1607,10 +1626,338 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
+		
+		GSMessengerShareType _selectedMessengerType = (GSMessengerShareType)buttonIndex + 1;
+		
+		NSDictionary *shareInfo = [self _shareInfoForMessengerShareType:_selectedMessengerType];
+		NSLog(@"shareInfo:\n%@", shareInfo);
+		
+		if (_selectedMessengerType == GSMessengerShareTypeFBMessenger) {
+			NSError *error;
+			NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[shareInfo objectForKey:@"options"]
+															   options:0
+																 error:&error];
+			
+			if ([FBSDKMessengerSharer messengerPlatformCapabilities] & FBSDKMessengerPlatformCapabilityImage) {
+				FBSDKMessengerURLHandler *messengerURLHandler = [[FBSDKMessengerURLHandler alloc] init];
+				messengerURLHandler.delegate = self;
+				
+				FBSDKMessengerShareOptions *options = [[FBSDKMessengerShareOptions alloc] init];
+				options.metadata = [[NSString alloc] initWithData:jsonData
+														 encoding:NSUTF8StringEncoding];
+				options.contextOverride = [[FBSDKMessengerBroadcastContext alloc] init];
+				
+				_selectedMessengerContent = @{@"share_image"	: [shareInfo objectForKey:@"share_image"],
+											  @"options"		: options};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Messenger."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeFBMessenger];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"FB Messenger Not Available!"
+											message:@"Cannot open FB Messenger on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+			//	BOOL isFBMessenger = ([FBSDKMessengerSharer messengerPlatformCapabilities] & FBSDKMessengerPlatformCapabilityImage);
+			//	BOOL isKik = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]);
+			//	BOOL isWhatsApp = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"whatsapp://"]]);
+			//	BOOL isLine = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"line://"]]);
+			//	BOOL isKakaoTalk = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kakaotalk://"]]);
+			//	BOOL isWeChat = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]]);
+			//	BOOL isSMS = NO;
+			//	BOOL isHike = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"combsbhike://"]]);
+			//	BOOL isViber = ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"viber://"]]);
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeKakaoTalk) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kakaotalk://"]]) {
+				
+				_selectedMessengerContent = @{@"link_objs"	: [shareInfo objectForKey:@"link_objs"]};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Kakao."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeKakaoTalk];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"KakaoTalk Not Available!"
+											message:@"Cannot open KakaoTalk right now"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeKik) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
+				_selectedMessengerContent = @{@"link"	: [@"card://" stringByAppendingFormat:@"%@", [NSString stringWithFormat:@"kik.popup.rocks/index.php?d=%@&a=popup", [[[_outboundURL componentsSeparatedByString:@"="] objectAtIndex:1] stringByReplacingOccurrencesOfString:@"&a" withString:@""]]]};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"outbound_url"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Kik."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeKik];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Kik Not Available!"
+											message:@"Cannot open Kik on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeLine) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"line://"]]) {
+				
+				_selectedMessengerContent = @{@"link"	: [@"line://" stringByAppendingFormat:@"msg/text/%@", [[[shareInfo objectForKey:@"body_text"] stringByAppendingString:[shareInfo objectForKey:@"link"]] urlEncodedString]]};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to LINE."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeLine];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"LINE Not Available!"
+											message:@"Cannot open LINE on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeSMS) {
+			if ([MFMessageComposeViewController canSendText]) {
+				
+				_selectedMessengerContent = @{@"body_text"	: [shareInfo objectForKey:@"body_text"],
+											  @"link"		: [shareInfo objectForKey:@"link"]};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to SMS."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeSMS];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"SMS Not Available!"
+											message:@"SMS is not allowed for this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeWhatsApp) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"whatsapp://"]]) {
+				
+				_selectedMessengerContent = @{@"link"	: [@"whatsapp://" stringByAppendingFormat:@"send?text=%@&abid=", [[NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]] urlEncodedString]]};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to WhatsApp."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeWhatsApp];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"WhatsApp Not Available!"
+											message:@"Cannot open WhatsApp on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeWeChat) {
+			if ([WXApi isWXAppSupportApi]) {
+				_selectedMessengerContent = @{@"title"		: [shareInfo objectForKey:@"title"],
+											  @"body_text"	: [shareInfo objectForKey:@"body_text"],
+											  @"image"		: [shareInfo objectForKey:@"image"],
+											  @"url"		: [shareInfo objectForKey:@"link"]};
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to WeChat."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeWeChat];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"WeChat Not Available!"
+											message:@"Cannot open WeChat on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeViber) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"viber://"]]) {
+				_selectedMessengerText = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = _selectedMessengerText;
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Viber."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeViber];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Viber Not Available!"
+											message:@"Cannot open Viber on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeHike) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"combsbhike://"]]) {
+				_selectedMessengerText = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = _selectedMessengerText;
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Hike."
+																	message:@"Use the selected messenger to share your Popup with friends."
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:GSMessengerShareTypeHike];
+				[alertView show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Hike Not Available!"
+											message:@"Cannot open Hike on this device"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (_selectedMessengerType == GSMessengerShareTypeOTHER) {
+			
+		} else {
+			shareInfo = @{};
+		}
 	}
 }
 
 #pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	NSLog(@"alertView:%d didDismissWithButtonIndex:%d", (int)alertView.tag, (int)buttonIndex);
+	
+	if (alertView.tag == GSMessengerShareTypeFBMessenger) {
+		[FBSDKMessengerSharer shareImage:[_selectedMessengerContent objectForKey:@"share_image"]
+							 withOptions:[_selectedMessengerContent objectForKey:@"options"]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeKakaoTalk) {
+		[KOAppCall openKakaoTalkAppLink:[_selectedMessengerContent objectForKey:@"link_objs"]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeKik) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeLine) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeSMS) {
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.body = [NSString stringWithFormat:@"%@\n%@", [_selectedMessengerContent objectForKey:@"body_text"], [_selectedMessengerContent objectForKey:@"link"]];
+		messageComposeViewController.messageComposeDelegate = self;
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else if (alertView.tag == GSMessengerShareTypeWhatsApp) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeWeChat) {
+		[WXApi registerApp:@"ID:wxad3790468c7ae7dd"
+		   withDescription:[[NSBundle mainBundle] bundleIdentifier]];
+		
+		WXImageObject *imageObject = [WXImageObject object];
+		imageObject.imageData = UIImageJPEGRepresentation([_selectedMessengerContent objectForKey:@"image"], 0.85);
+		
+		WXWebpageObject *webpageObject = [WXWebpageObject object];
+		webpageObject.webpageUrl = [_selectedMessengerContent objectForKey:@"url"];
+		
+		WXMediaMessage *message = [WXMediaMessage message];
+		message.title = [_selectedMessengerContent objectForKey:@"title"];
+		message.description = [_selectedMessengerContent objectForKey:@"body_text"];
+		[message setThumbImage:[_selectedMessengerContent objectForKey:@"image"]];
+		message.mediaObject = webpageObject;
+		
+		SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
+		req.text = [NSString stringWithFormat:@"%@ %@", [_selectedMessengerContent objectForKey:@"title"], [_selectedMessengerContent objectForKey:@"body_text"]];
+		req.bText = NO;
+		req.message = message;
+		req.scene = WXSceneSession;
+		[WXApi sendReq:req];
+		
+	} else if (alertView.tag == GSMessengerShareTypeHike) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"combsbhike://" stringByAppendingString:_selectedMessengerText]]];
+		
+	} else if (alertView.tag == GSMessengerShareTypeViber) {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"Viber://" stringByAppendingString:_selectedMessengerText]]];
+	
+	} else if (alertView.tag == 99) {
+		NSMutableDictionary *pushes = [[[NSUserDefaults standardUserDefaults] objectForKey:@"push_channels"] mutableCopy];
+		[pushes setObject:(buttonIndex == 1) ? @"YES" : @"NO" forKey:_channel.name];
+		[[NSUserDefaults standardUserDefaults] replaceObject:[pushes copy] forKey:@"push_channels"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		if (buttonIndex == 1) {
+			[PubNub enablePushNotificationsOnChannel:_channel
+								 withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
+						  andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
+							  NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
+						  }];
+		}
+	}
+	
+	
+	
+	if (alertView.tag != GSMessengerShareTypeSMS) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+			[self dismissViewControllerAnimated:NO completion:^(void) {}];
+		});
+	}
+}
+
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONStatusUpdateAlertViewTypeEmpty) {
 		if (buttonIndex == 1) {
@@ -2006,5 +2353,149 @@
 	NSLog(@"[*:*] vision:didCaptureAudioSample:[%.04f] [*:*]", vision.capturedAudioSeconds);
 }
 
+
+
+
+
+- (NSDictionary *)_shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
+	NSMutableDictionary *shareInfo = [NSMutableDictionary dictionary];
+	
+	if ([_outboundURL rangeOfString:@"&m="].location == NSNotFound)
+		_outboundURL = [_outboundURL stringByAppendingFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""];
+	
+	else {
+		NSRange range = [_outboundURL rangeOfString:@"&m="];
+		_outboundURL = [_outboundURL stringByReplacingCharactersInRange:NSMakeRange(range.location, [_outboundURL length] - range.location) withString:[NSString stringWithFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""]];
+	}
+	
+	NSLog(@"[:|:] [%@ - _shareInfoForMessengerType:%d] [:|:]", self.class, (int)messengerShareType);
+	NSLog(@"_baseShareInfo:\n%@", _baseShareInfo);
+	NSLog(@"_outboundURL:\n%@", _outboundURL);
+	
+	
+	if (messengerShareType == GSMessengerShareTypeFBMessenger) {
+		NSDictionary *fbShareInfo = [_baseShareInfo objectForKey:kFBMessengerKey];
+		NSLog(@"fbShareInfo:\n%@", fbShareInfo);
+		BOOL isOverride = (BOOL)[[fbShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[fbShareInfo objectForKey:@"outbound_url"] length] > 0) ? [fbShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		[shareInfo setObject:([[fbShareInfo objectForKey:@"body_text"] length] > 0) ? [fbShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:[UIImage imageNamed:([[fbShareInfo objectForKey:@"share_image"] length] > 0) ? [fbShareInfo objectForKey:@"share_image"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image"] : @""] forKey:@"share_image"];
+		[shareInfo setObject:([[fbShareInfo objectForKey:@"options"] count] > 0) ? [fbShareInfo objectForKey:@"options"] : (!isOverride) ? [_baseShareInfo objectForKey:@"options"] : @{} forKey:@"options"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeKakaoTalk) {
+		NSDictionary *kakaoShareInfo = [_baseShareInfo objectForKey:kKakaoTalkKey];
+		NSLog(@"kakaoShareInfo:\n%@", kakaoShareInfo);
+		BOOL isOverride = (BOOL)[[kakaoShareInfo objectForKey:@"override"] intValue];
+		
+		NSMutableArray *linkObjs = [NSMutableArray array];
+		NSString *title = ([[kakaoShareInfo objectForKey:@"title"] length] > 0) ? [kakaoShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"";
+		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
+		NSString *url = ([_outboundURL length] > 0) ? _outboundURL : ([[kakaoShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"";
+		
+		if ([title length] > 0) {
+			[linkObjs addObject:[KakaoTalkLinkObject createLabel:title]];
+		}
+		
+		if (image != nil) {
+			[linkObjs addObject:[KakaoTalkLinkObject createImage:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @""
+														   width:image.size.width
+														  height:image.size.height]];
+		}
+		
+		if ([url length] > 0) {
+			[linkObjs addObject:[KakaoTalkLinkObject createWebButton:([[kakaoShareInfo objectForKey:@"button_text"] length] > 0) ? [kakaoShareInfo objectForKey:@"button_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @""
+																 url:url]];
+		}
+		
+		[shareInfo setObject:[linkObjs copy] forKey:@"link_objs"];
+		[shareInfo setObject:[kakaoShareInfo objectForKey:@"button_text"] forKey:@"body_text"];
+		[shareInfo setObject:url forKey:@"link"];
+		
+		//		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"main_image_url"]];
+		//		shareInfo = @{@"link_objs"	: @[[KakaoTalkLinkObject createLabel:[_baseShareInfo objectForKey:@"title"]],
+		//										[KakaoTalkLinkObject createImage:[_baseShareInfo objectForKey:@"main_image_url"]
+		//																   width:image.size.width
+		//																  height:image.size.height],
+		//										[KakaoTalkLinkObject createWebButton:[_baseShareInfo objectForKey:@"subtitle"]
+		//																		 url:[_baseShareInfo objectForKey:@"sub_image_url"]]]};
+		
+	} else if (messengerShareType == GSMessengerShareTypeKik) {
+		NSDictionary *kikShareInfo = [_baseShareInfo objectForKey:kKikKey];
+		NSLog(@"kikShareInfo:\n%@", kikShareInfo);
+		BOOL isOverride = (BOOL)[[kikShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[kikShareInfo objectForKey:@"title"] length] > 0) ? [kikShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"" forKey:@"title"];
+		[shareInfo setObject:([[kikShareInfo objectForKey:@"subtitle"] length] > 0) ? [kikShareInfo objectForKey:@"subtitle"] : (!isOverride) ? [_baseShareInfo objectForKey:@"subtitle"] : @"" forKey:@"subtitle"];
+		[shareInfo setObject:([[kikShareInfo objectForKey:@"icon_url"] length] > 0) ? [kikShareInfo objectForKey:@"icon_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"" forKey:@"icon_url"];
+		[shareInfo setObject:([[kikShareInfo objectForKey:@"image_url"] length] > 0) ? [kikShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @"" forKey:@"image_url"];
+		[shareInfo setObject:([[kikShareInfo objectForKey:@"body_text"] length] > 0) ? [kikShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[kikShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kikShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"outbound_url"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeLine) {
+		NSDictionary *lineShareInfo = [_baseShareInfo objectForKey:kLineKey];
+		NSLog(@"lineShareInfo:\n%@", lineShareInfo);
+		BOOL isOverride = (BOOL)[[lineShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[lineShareInfo objectForKey:@"body_text"] length] > 0) ? [lineShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[lineShareInfo objectForKey:@"link"] length] > 0) ? [lineShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeSMS) {
+		NSDictionary *smsShareInfo = [_baseShareInfo objectForKey:kSMSKey];
+		NSLog(@"smsShareInfo:\n%@", smsShareInfo);
+		BOOL isOverride = (BOOL)[[smsShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[smsShareInfo objectForKey:@"body_text"] length] > 0) ? [smsShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[smsShareInfo objectForKey:@"link"] length] > 0) ? [smsShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeWhatsApp) {
+		NSDictionary *whatsAppShareInfo = [_baseShareInfo objectForKey:kWhatsAppKey];
+		NSLog(@"whatsAppShareInfo:\n%@", whatsAppShareInfo);
+		BOOL isOverride = (BOOL)[[whatsAppShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[whatsAppShareInfo objectForKey:@"body_text"] length] > 0) ? [whatsAppShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[whatsAppShareInfo objectForKey:@"link"] length] > 0) ? [whatsAppShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeWeChat) {
+		NSDictionary *weChatShareInfo = [_baseShareInfo objectForKey:kWeChatKey];
+		NSLog(@"weChatShareInfo:\n%@", weChatShareInfo);
+		BOOL isOverride = (BOOL)[[weChatShareInfo objectForKey:@"override"] intValue];
+		[shareInfo setObject:([[weChatShareInfo objectForKey:@"title"] length] > 0) ? [weChatShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"" forKey:@"title"];
+		[shareInfo setObject:([[weChatShareInfo objectForKey:@"body_text"] length] > 0) ? [weChatShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:[UIImage imageNamed:([[weChatShareInfo objectForKey:@"image"] length] > 0) ? [weChatShareInfo objectForKey:@"image"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image"] : nil] forKey:@"image"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[weChatShareInfo objectForKey:@"link"] length] > 0) ? [weChatShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeHike) {
+		NSDictionary *hikeShareInfo = [_baseShareInfo objectForKey:kHikeKey];
+		NSLog(@"hikeShareInfo:\n%@", hikeShareInfo);
+		BOOL isOverride = (BOOL)[[hikeShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[hikeShareInfo objectForKey:@"body_text"] length] > 0) ? [hikeShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[hikeShareInfo objectForKey:@"link"] length] > 0) ? [hikeShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeViber) {
+		NSDictionary *viberShareInfo = [_baseShareInfo objectForKey:kOTHERKey];
+		NSLog(@"viberShareInfo:\n%@", viberShareInfo);
+		BOOL isOverride = (BOOL)[[viberShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[viberShareInfo objectForKey:@"body_text"] length] > 0) ? [viberShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[viberShareInfo objectForKey:@"link"] length] > 0) ? [viberShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else if (messengerShareType == GSMessengerShareTypeOTHER) {
+		NSDictionary *otherShareInfo = [_baseShareInfo objectForKey:kOTHERKey];
+		NSLog(@"otherShareInfo:\n%@", otherShareInfo);
+		BOOL isOverride = (BOOL)[[otherShareInfo objectForKey:@"override"] intValue];
+		
+		[shareInfo setObject:([[otherShareInfo objectForKey:@"body_text"] length] > 0) ? [otherShareInfo objectForKey:@"body_text"] : (!isOverride) ? [_baseShareInfo objectForKey:@"body_text"] : @"" forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : ([[otherShareInfo objectForKey:@"link"] length] > 0) ? [otherShareInfo objectForKey:@"link"] : (!isOverride) ? [_baseShareInfo objectForKey:@"outbound_url"] : @"" forKey:@"link"];
+		
+	} else {
+		[shareInfo setObject:[_baseShareInfo objectForKey:@"body_text"] forKey:@"body_text"];
+		[shareInfo setObject:([_outboundURL length] > 0) ? _outboundURL : [_baseShareInfo objectForKey:@"outbound_url"] forKey:@"link"];
+	}
+	
+	NSLog(@"shareInfo:\n%@", shareInfo);
+	return (shareInfo);
+}
 
 @end

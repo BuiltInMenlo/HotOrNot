@@ -999,7 +999,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSLog(@"isNumeric:[%@][%@] -=- %@/%@", [path firstObject], [path lastObject], NSStringFromBOOL([[path firstObject] isNumeric]), NSStringFromBOOL([[path lastObject] isNumeric]));
 		NSLog(@"currentViewController:[%@]", [UIViewController currentViewController].class);
 		
-		
 		NSString *channelName = ([[path lastObject] length] > 0) ? [path lastObject] : @"";
 		
 //		if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
@@ -1008,7 +1007,8 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			
 			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-			_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+			//_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+			_loadingView.backgroundColor = [UIColor blackColor];//
 			[self.window addSubview:_loadingView];
 			
 			UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -1122,7 +1122,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
 		
 		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+//		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+		_loadingView.backgroundColor = [UIColor blackColor];//
 		[self.window addSubview:_loadingView];
 		
 		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -1170,7 +1171,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
 		_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+		_loadingView.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 		[self.window addSubview:_loadingView];
 		
 		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -1226,6 +1227,7 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},
 								   @"channel_history"	: @[],
+								   @"push_channels"		: @{},
 								   @"terms"				: @"",
 								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	

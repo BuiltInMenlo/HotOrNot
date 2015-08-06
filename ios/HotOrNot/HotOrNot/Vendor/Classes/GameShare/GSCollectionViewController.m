@@ -291,7 +291,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 - (void)_goSelect {
 	NSLog(@"[:|:] [%@ - _goSelect] [:|:]", self.class);
 	
-	NSDictionary *shareInfo = [self _shareInfoForMessengerShareType:_selectedMessengerType];
+	NSDictionary *shareInfo = [self shareInfoForMessengerShareType:_selectedMessengerType];
 	NSLog(@"shareInfo:\n%@", shareInfo);
 	
 	if (_selectedMessengerType == GSMessengerShareTypeFBMessenger) {
@@ -536,10 +536,8 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 		shareInfo = @{};
 	}
 	
-	//if ([shareInfo count] > 0) {
-		if ([self.delegate respondsToSelector:@selector(gsCollectionView:didSelectMessenger:)])
-			[self.delegate gsCollectionView:self didSelectMessenger:_selectedMessengerVO];
-	//}
+	if ([self.delegate respondsToSelector:@selector(gsCollectionView:didSelectMessenger:)])
+		[self.delegate gsCollectionView:self didSelectMessenger:_selectedMessengerVO];
 }
 
 - (void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -755,7 +753,7 @@ static NSString * const kGSSkipButtonCaption = @"Skip";
 	return (schema);
 }
 
-- (NSDictionary *)_shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
+- (NSDictionary *)shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
 	NSMutableDictionary *shareInfo = [NSMutableDictionary dictionary];
 	
 	if ([_outboundURL rangeOfString:@"&m="].location == NSNotFound)

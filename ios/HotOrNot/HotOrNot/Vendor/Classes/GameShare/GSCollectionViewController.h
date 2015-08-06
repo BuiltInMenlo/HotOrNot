@@ -26,6 +26,8 @@
 - (void)addMessengerShareType:(GSMessengerShareType)messengerShareType;
 - (void)setOutboundURL:(NSString *)outboundURL;
 
+- (NSDictionary *)shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType;
+
 @property (nonatomic, retain) NSDictionary *metaInfo;
 
 @property (nonatomic, assign) id <GSCollectionViewControllerDelegate> delegate;
