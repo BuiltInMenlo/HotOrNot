@@ -12,16 +12,9 @@
 #import "HONStatusUpdateVO.h"
 #import "HONUserClubVO.h"
 
-typedef NS_ENUM(NSUInteger, HONStatusUpdateActionSheetType) {
-	HONStatusUpdateActionSheetTypeDownloadAvailable = 0,
-	HONStatusUpdateActionSheetTypeDownloadNotAvailable
-};
-
 typedef NS_ENUM(NSUInteger, HONStatusUpdateAlertViewType) {
-	HONStatusUpdateAlertViewTypeEmpty = 0,
-	HONStatusUpdateAlertViewTypeBack,
+	HONStatusUpdateAlertViewTypeBack = 20,
 	HONStatusUpdateAlertViewTypeFlag,
-	HONStatusUpdateAlertViewTypeShare
 };
 
 @interface HONStatusUpdateViewController : HONViewController <MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITextFieldDelegate>

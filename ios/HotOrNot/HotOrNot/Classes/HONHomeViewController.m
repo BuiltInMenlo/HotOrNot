@@ -338,6 +338,7 @@
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[_tableView reloadData];
 	
 //	[[HONAPICaller sharedInstance] retrieveStatusUpdatesForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] fromPage:1	completion:^(NSDictionary *result) {
 //		NSLog(@"TOTAL CREATED:[%d]", [[result objectForKey:@"count"] intValue]);
@@ -875,7 +876,10 @@
 	cell.delegate = self;
 	
 	if (indexPath.section == 0) {
-		[cell populateFields:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row]];
+		NSArray *sortedArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:NO]]];
+		[cell populateFields:[sortedArray objectAtIndex:indexPath.row]];
+		
+//		[cell populateFields:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row]];
 		
 	} else if (indexPath.section == 1) {
 		[cell populateFields:@{@"title"		: @"New People",
@@ -898,7 +902,16 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return (nil);
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
+	
+//	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, tableView.frame.size.width - 30.0, 15.0)];
+//	label.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:13];
+//	label.backgroundColor = [UIColor clearColor];
+//	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//	label.text = (section == 0) ? @"Recent" : @"Older";
+//	[imageView addSubview:label];
+
+	return (imageView);
 }
 
 
@@ -908,7 +921,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
+	return ((section == 0) ? [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

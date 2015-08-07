@@ -55,9 +55,7 @@
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
-@property (nonatomic, strong) UIButton *commentOpenButton;
-@property (nonatomic, strong) UIButton *commentCloseButton;
-@property (nonatomic, strong) UIButton *submitCommentButton;
+@property (nonatomic, strong) HONButton *submitCommentButton;
 @property (nonatomic, strong) UIImageView *footerImageView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) NSMutableArray *replies;
@@ -80,6 +78,7 @@
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIButton *messengerButton;
 @property (nonatomic, strong) UIButton *openCommentButton;
+@property (nonatomic, strong) UIButton *videoVisibleButton;
 @property (nonatomic, strong) UIView *tintView;
 @property (nonatomic, strong) UIImageView *animationImageView;
 @property (nonatomic, strong) UITextField *nameTextField;
@@ -210,7 +209,6 @@
 		} else {
 			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			if ([[result objectForKey:@"url"] length] > 0) {
-				_moviePlayer.view.alpha = 1.0;
 				_moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:[result objectForKey:@"url"]]];
 				[_moviePlayer play];
 			}
@@ -338,7 +336,7 @@
 	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 	
-	[PubNub unsubscribeFrom:@[[PNChannel channelWithName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"]] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
+	//[PubNub unsubscribeFrom:@[[PNChannel channelWithName:@"4c07fbc6-35a5-4d5c-87b1-1ccd5146893f_1436743103"]] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
 		
 		[PubNub subscribeOn:@[channel]];
 		
@@ -346,6 +344,7 @@
 		_expireLabel.text = @"alerting the channel…";
 		_videoQueue = 0;
 		_videoPlaylist = [NSMutableArray array];
+	_outboundURL = @"goo.gl/…";
 		
 		[[NSUserDefaults standardUserDefaults] setObject:channelName forKey:@"channel_name"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -354,12 +353,12 @@
 		//[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
 		NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
 	
-		SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", params);
+		SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g", params);
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
 		[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
 		[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
 		[httpClient setParameterEncoding:AFJSONParameterEncoding];
-		[httpClient postPath:@"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		[httpClient postPath:@"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 	
@@ -372,10 +371,46 @@
 				NSLog(@"short:[%@]", [result objectForKey:@"id"]);
 				_outboundURL = [result objectForKey:@"id"];
 				[_messengerShare overrrideWithOutboundURL:[result objectForKey:@"id"]];
+				
+				
+				
+				NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
+				__block BOOL isFound = NO;
+				
+				[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+					if ([[dict objectForKey:@"channel"] isEqualToString:_channel.name]) {
+						[dict setObject:_channel.name forKey:@"channel"];
+						[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""] forKey:@"url"];
+						[dict setObject:[NSDate date] forKey:@"timestamp"];
+						[dict setObject:@(_participants) forKey:@"occupants"];
+						
+						[channels replaceObjectAtIndex:idx withObject:[dict copy]];
+						[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+						[[NSUserDefaults standardUserDefaults] synchronize];
+						
+						isFound = YES;
+						*stop = YES;
+					}
+				}];
+				
+				
+				if (!isFound) {
+					[channels addObject:@{@"title"		: _channel.name,
+										  @"channel"	: _channel.name,
+										  @"url"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""],
+										  @"timestamp"	: [NSDate date],
+										  @"occupants"	: @(_participants)}];
+					
+					[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+				}
+				
+				
 			}
 	
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyBX_DeA87Df3IXHuARGaRjevIKoaT03FoU", [error localizedDescription]);
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g", [error localizedDescription]);
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 		}];
 		
@@ -441,14 +476,9 @@
 //																  [_queuePlayer insertItem:playerItem afterItem:nil];
 																  
 																  _lastVideo = txtContent;
-																  _moviePlayer.view.hidden = NO;
-																  _moviePlayer.view.alpha = 1.0;
+																  
 																  _moviePlayer.contentURL = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
 																  [_moviePlayer play];
-																  
-																  _openCommentButton.hidden = NO;
-																   _messengerButton.hidden = NO;
-																  _messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
 																  
 																  *stop = YES;
 															  }
@@ -481,7 +511,7 @@
 			} else if (state == PNSubscriptionProcessNotSubscribedState) {
 			} else if (state == PNSubscriptionProcessWillRestoreState) {
 			}
-		}];
+		//}];
 		
 		
 		[[PNObservationCenter defaultCenter] addPresenceEventObserver:self withBlock:^(PNPresenceEvent *event) {
@@ -511,9 +541,8 @@
 //			_expireLabel.text = (_participants == 1) ? @"You are the only one here, invite more +" : [NSString stringWithFormat:@"%d %@ here, invite more +", MAX(1, _participants - 1), (_participants == 2) ? @"other person is" : @"people are"];
 			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
 			
+			_openCommentButton.hidden = NO;
 			_messengerButton.hidden = NO;
-			_messengerButton.frame = (_participants < 2) ? CGRectMake((self.view.frame.size.width - _messengerButton.frame.size.width) * 0.5, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height) : CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
-			_openCommentButton.hidden = (_participants < 2);
 			
 			_animationImageView.hidden = YES;
 		}];
@@ -789,6 +818,14 @@
 	[_toggleMicButton addTarget:self action:@selector(_goToggleMic) forControlEvents:UIControlEventTouchUpInside];
 	//[self.view addSubview:_toggleMicButton];
 	
+	_videoVisibleButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 42.0, 44.0, 44.0);
+	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-on_nonActive"] forState:UIControlStateNormal];
+	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-on_Active"] forState:UIControlStateHighlighted];
+	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
+	[_videoVisibleButton addTarget:self action:@selector(_goToggleVideoVisible) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_videoVisibleButton];
+	
 	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 50.0, (self.view.frame.size.height * 0.6830) + 9.0, 44.0, 44.0);
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
@@ -807,7 +844,7 @@
 	[_nameTextField setTextColor:[UIColor whiteColor]];
 	[_nameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_nameTextField setTag:0];
-	_nameTextField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:29];
+	_nameTextField.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:30];
 	_nameTextField.keyboardType = UIKeyboardTypeDefault;
 	_nameTextField.placeholder = @"What is your name?";
 	_nameTextField.text = @"";
@@ -819,7 +856,6 @@
 	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-//	_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 0.0 + (((self.view.frame.size.height * 0.6830) - _openCommentButton.frame.size.width) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
 	_openCommentButton.frame = CGRectMake((self.view.frame.size.width * 0.5), -5.0 + (((self.view.frame.size.height * 0.6830) - _openCommentButton.frame.size.width) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
 	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
 	_openCommentButton.hidden = YES;
@@ -829,7 +865,7 @@
 	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	_messengerButton.frame = CGRectMake((self.view.frame.size.width - _messengerButton.frame.size.width) * 0.5, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	_messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, -5.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.width) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
 	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	_messengerButton.hidden = YES;
 	[self.view addSubview:_messengerButton];
@@ -862,19 +898,14 @@
 	_commentTextField.delegate = self;
 	[_commentFooterView addSubview:_commentTextField];
 	
-	_submitCommentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitCommentButton.frame = CGRectMake(_commentFooterView.frame.size.width - 62.0, 10.0, 50.0, 34.0);
+	_submitCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_submitCommentButton.frame = CGRectMake(_commentFooterView.frame.size.width - 65.0, 8.0, 50.0, 34.0);
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_nonActive"] forState:UIControlStateNormal];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Active"] forState:UIControlStateHighlighted];
 	[_submitCommentButton setBackgroundImage:[UIImage imageNamed:@"submitCommentButton_Disabled"] forState:UIControlStateDisabled];
 	[_submitCommentButton addTarget:self action:@selector(_goTextComment) forControlEvents:UIControlEventTouchUpInside];
 	_submitCommentButton.hidden = YES;
 	[_commentFooterView addSubview:_submitCommentButton];
-	
-	_commentCloseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_commentCloseButton.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - (216.0 + _commentFooterView.frame.size.height));
-	_commentCloseButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
-	[_commentCloseButton addTarget:self action:@selector(_goCancelComment) forControlEvents:UIControlEventTouchUpInside];
 	
 	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 200.0, 20.0)];
 	_countdownLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
@@ -906,12 +937,13 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-	[self _goReloadContent];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidAppear:animated];
+	
+	[self _goReloadContent];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -955,6 +987,13 @@
 	//[[PBJVision sharedInstance] setAudioCaptureEnabled:![PBJVision sharedInstance].isAudioCaptureEnabled];
 	
 	[_queuePlayer setMuted:!_queuePlayer.isMuted];
+}
+
+- (void)_goToggleVideoVisible {
+	_moviePlayer.view.alpha = !(BOOL)_moviePlayer.view.alpha;
+	
+	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_nonActive", (_moviePlayer.view.alpha == 1.0) ? @"on" : @"off"]] forState:UIControlStateNormal];
+	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_Active", (_moviePlayer.view.alpha == 1.0) ? @"on" : @"off"]] forState:UIControlStateHighlighted];
 }
 
 - (void)_goFlag {
@@ -1048,7 +1087,6 @@
 	_submitCommentButton.hidden = YES;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_moviePlayer.view.alpha = 1.0;
 		
 		_cameraPreviewView.alpha = 1.0;
 	} completion:^(BOOL finished) {
@@ -1139,7 +1177,7 @@
 			_playerLayer.hidden = NO;
 			_participantsLabel.hidden = NO;
 			_toggleMicButton.hidden = NO;
-			_logoImageView.hidden = NO;
+			_logoImageView.hidden = YES;
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
 			gestureRecognizer.enabled = YES;
@@ -1192,12 +1230,8 @@
 			_messengerButton.alpha = 1.0;
 		}
 		
-//		_openCommentButton.hidden = NO;
-//		_messengerButton.hidden = YES;
-		
 		_imageView.alpha = 0.0;
 		_imageView.hidden = YES;
-		_moviePlayer.view.alpha = 1.0;
 	}
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
@@ -1332,9 +1366,12 @@
 	
 	[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
-		if ([[dict objectForKey:@"title"] isEqualToString:_channel.name]) {
+		if ([[dict objectForKey:@"channel"] isEqualToString:_channel.name]) {
+			[dict setObject:_channel.name forKey:@"channel"];
+			[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""] forKey:@"url"];
 			[dict setObject:[NSDate date] forKey:@"timestamp"];
 			[dict setObject:@(_participants) forKey:@"occupants"];
+			
 			[channels replaceObjectAtIndex:idx withObject:[dict copy]];
 			[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1347,6 +1384,8 @@
 	
 	if (!isFound) {
 		[channels addObject:@{@"title"		: _channel.name,
+							  @"channel"	: _channel.name,
+							  @"url"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""],
 							  @"timestamp"	: [NSDate date],
 							  @"occupants"	: @(_participants)}];
 		
@@ -1628,6 +1667,7 @@
 	if (actionSheet.tag == 0) {
 		
 		GSMessengerShareType _selectedMessengerType = (GSMessengerShareType)buttonIndex + 1;
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sharePopup"] withProperties:@{@"channel"	: _channel.name, @"messenger"	: (_selectedMessengerType == GSMessengerShareTypeFBMessenger) ? @"Messenger" : (_selectedMessengerType == GSMessengerShareTypeHike) ? @"Hike" : (_selectedMessengerType == GSMessengerShareTypeKakaoTalk) ? @"Kakao" : (_selectedMessengerType == GSMessengerShareTypeKik) ? @"Kik" : (_selectedMessengerType == GSMessengerShareTypeLine) ? @"Line" : (_selectedMessengerType == GSMessengerShareTypeSMS) ? @"SMS" : (_selectedMessengerType == GSMessengerShareTypeViber) ? @"Viber" : (_selectedMessengerType == GSMessengerShareTypeWeChat) ? @"WeChat" : (_selectedMessengerType == GSMessengerShareTypeWhatsApp) ? @"WhatsApp" : @"OTHER"}];
 		
 		NSDictionary *shareInfo = [self _shareInfoForMessengerShareType:_selectedMessengerType];
 		NSLog(@"shareInfo:\n%@", shareInfo);
@@ -1705,7 +1745,7 @@
 			
 		} else if (_selectedMessengerType == GSMessengerShareTypeKik) {
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
-				_selectedMessengerContent = @{@"link"	: [@"card://" stringByAppendingFormat:@"%@", [NSString stringWithFormat:@"kik.popup.rocks/index.php?d=%@&a=popup", [[[_outboundURL componentsSeparatedByString:@"="] objectAtIndex:1] stringByReplacingOccurrencesOfString:@"&a" withString:@""]]]};
+				_selectedMessengerContent = @{@"link"	: [@"card://" stringByAppendingFormat:@"kik.popup.rocks/index.php?d=%@&a=popup", _channel.name]};
 				
 				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 				pasteboard.string = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"outbound_url"]];
@@ -1959,28 +1999,7 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == HONStatusUpdateAlertViewTypeEmpty) {
-		if (buttonIndex == 1) {
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kik://"]]) {
-				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-											message:@"This device isn't allowed or doesn't recognize Kik!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-			} else {
-				KikMessage *message = [KikMessage articleMessageWithTitle:@"[LIVE NOW]"
-																	 text:@"Walkie talkie style video chat."
-															   contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
-															   previewURL:@"http://popup.rocks/images/my_icon.png"];
-				[[KikClient sharedInstance] sendKikMessage:message];
-				
-				//_comment = @"Shared on Kik!";
-				//[self _submitTextComment];
-			}
-		}
-		
-	} else if (alertView.tag == HONStatusUpdateAlertViewTypeBack) {
+	if (alertView.tag == HONStatusUpdateAlertViewTypeBack) {
 		if (buttonIndex == 1) {
 			[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(YES) forKey:@"back_chat"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1993,97 +2012,6 @@
 		if (buttonIndex == 1) {
 			[self _flagStatusUpdate];
 			[self _popBack];
-		}
-		
-	} else if (alertView.tag == HONStatusUpdateAlertViewTypeShare) {
-		if (buttonIndex == 1) {
-			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareClipboard"];
-			
-			[[[UIAlertView alloc] initWithTitle:@"Paste anywhere to share!"
-										message:@""
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			
-		} else if (buttonIndex == 2) {
-			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareSMS"];
-			
-			if ([MFMessageComposeViewController canSendText]) {
-				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.body = [UIPasteboard generalPasteboard].string;
-				messageComposeViewController.messageComposeDelegate = self;
-				
-				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
-											message:@"Cannot send SMS from this device!"
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == 3) {
-			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKik"];
-			
-			NSString *typeName = @"";
-			NSString *urlSchema = @"";
-			
-			typeName = @"Kik";
-			urlSchema = @"kik://";
-			
-			if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"kik://"]]) {
-				[[[UIAlertView alloc] initWithTitle:@"Not Avialable"
-											message:[NSString stringWithFormat:@"This device isn't allowed or doesn't recognize %@!", typeName]
-										   delegate:nil
-								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-								  otherButtonTitles:nil] show];
-				
-			} else {
-				KikMessage *message = [KikMessage articleMessageWithTitle:@"[LIVE POPUP]"
-																	 text:@"Join my Popup."
-															   contentURL:[NSString stringWithFormat:@"http://popup.rocks/deep.php?id=%d", _statusUpdateVO.statusUpdateID]
-															   previewURL:@"http://popup.rocks/images/my_icon.png"];
-				[[KikClient sharedInstance] sendKikMessage:message];
-				
-				//_comment = @"Shared on Kik!";
-				//[self _submitTextComment];
-			}
-			
-		} else if (buttonIndex == 4) {
-			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareLine"];
-			
-			//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-			//			[httpClient getPath:@"popupapp.php" parameters:@{@"url"	: [NSString stringWithFormat:@"popup.vlly.im/%d", _statusUpdateVO.statusUpdateID]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			//				NSError *error = nil;
-			//				NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//
-			//				if (error != nil) {
-			//					SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-			//					[[HONAPICaller sharedInstance] showDataErrorHUD];
-			//
-			//				} else {
-			//					SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			//				}
-			//
-			//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-			//				[[HONAPICaller sharedInstance] showDataErrorHUD];
-			//			}];
-			
-			
-		} else if (buttonIndex == 5) {
-			//			[[HONAnalyticsReporter sharedInstance] trackEvent:@"0527Cohort - shareKakao"];
-			
-			if ([FBSDKMessengerSharer messengerPlatformCapabilities] & FBSDKMessengerPlatformCapabilityImage) {
-				
-				FBSDKMessengerShareOptions *options = [[FBSDKMessengerShareOptions alloc] init];
-				options.metadata = [NSString stringWithFormat:@"{\"channel\":\"%@\"}", _channel.name];
-				options.contextOverride = [[FBSDKMessengerBroadcastContext alloc] init];
-				
-				[FBSDKMessengerSharer shareAnimatedGIF:[NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"popup_sharefb" ofType:@"gif"]]
-										   withOptions:options];
-			}
 		}
 	}
 }
@@ -2360,13 +2288,13 @@
 - (NSDictionary *)_shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
 	NSMutableDictionary *shareInfo = [NSMutableDictionary dictionary];
 	
-	if ([_outboundURL rangeOfString:@"&m="].location == NSNotFound)
-		_outboundURL = [_outboundURL stringByAppendingFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""];
-	
-	else {
-		NSRange range = [_outboundURL rangeOfString:@"&m="];
-		_outboundURL = [_outboundURL stringByReplacingCharactersInRange:NSMakeRange(range.location, [_outboundURL length] - range.location) withString:[NSString stringWithFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""]];
-	}
+//	if ([_outboundURL rangeOfString:@"&m="].location == NSNotFound)
+//		_outboundURL = [_outboundURL stringByAppendingFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""];
+//	
+//	else {
+//		NSRange range = [_outboundURL rangeOfString:@"&m="];
+//		_outboundURL = [_outboundURL stringByReplacingCharactersInRange:NSMakeRange(range.location, [_outboundURL length] - range.location) withString:[NSString stringWithFormat:@"&m=%@", (messengerShareType == GSMessengerShareTypeFBMessenger) ? @"messenger" : (messengerShareType == GSMessengerShareTypeHike) ? @"hike" : (messengerShareType == GSMessengerShareTypeKakaoTalk) ? @"kakao" : (messengerShareType == GSMessengerShareTypeKik) ? @"kik" : (messengerShareType == GSMessengerShareTypeLine) ? @"line" : (messengerShareType == GSMessengerShareTypeSMS) ? @"sms" : (messengerShareType == GSMessengerShareTypeViber) ? @"viber" : (messengerShareType == GSMessengerShareTypeWeChat) ? @"wechat" : (messengerShareType == GSMessengerShareTypeWhatsApp) ? @"whatsapp" : @""]];
+//	}
 	
 	NSLog(@"[:|:] [%@ - _shareInfoForMessengerType:%d] [:|:]", self.class, (int)messengerShareType);
 	NSLog(@"_baseShareInfo:\n%@", _baseShareInfo);
