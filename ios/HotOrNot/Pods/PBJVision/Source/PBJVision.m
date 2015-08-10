@@ -854,7 +854,7 @@ typedef void (^PBJVisionBlock)();
 	[_captureOutputVideo setSampleBufferDelegate:self queue:_captureCaptureDispatchQueue];
 	
 	// capture device initial settings
-	_videoFrameRate = 24;//-- 30;
+	_videoFrameRate = 30;
 	
 	// add notification observers
 	NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];

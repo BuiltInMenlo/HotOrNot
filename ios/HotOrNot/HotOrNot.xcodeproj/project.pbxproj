@@ -14,6 +14,7 @@
 		300BA8B41A7C50FC0087DFE0 /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 300BA8B21A7C50FC0087DFE0 /* libz.1.2.5.dylib */; };
 		300D1B881A0C30F100D1D9A7 /* HONMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B871A0C30F100D1D9A7 /* HONMapAnnotation.m */; };
 		300D1B8B1A0C369700D1D9A7 /* HONMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 300D1B8A1A0C369700D1D9A7 /* HONMapAnnotationView.m */; };
+		300DBB751B75A86200C7B588 /* HONDiscoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300DBB741B75A86200C7B588 /* HONDiscoverViewController.m */; };
 		300FCF4219B391330009F5B5 /* HONContactsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */; };
 		3010D7811A24109E0078164F /* HONHomeFeedToggleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3010D7801A24109E0078164F /* HONHomeFeedToggleView.m */; };
 		3010D7831A2439090078164F /* HotOrNot.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 3010D7821A2439090078164F /* HotOrNot.entitlements */; };
@@ -320,6 +321,8 @@
 		300D1B871A0C30F100D1D9A7 /* HONMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMapAnnotation.m; sourceTree = "<group>"; };
 		300D1B891A0C369700D1D9A7 /* HONMapAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMapAnnotationView.h; sourceTree = "<group>"; };
 		300D1B8A1A0C369700D1D9A7 /* HONMapAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMapAnnotationView.m; sourceTree = "<group>"; };
+		300DBB731B75A86200C7B588 /* HONDiscoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDiscoverViewController.h; sourceTree = "<group>"; };
+		300DBB741B75A86200C7B588 /* HONDiscoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDiscoverViewController.m; sourceTree = "<group>"; };
 		300FCF3119B25D1E0009F5B5 /* HONClubViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubViewCell.h; sourceTree = "<group>"; };
 		300FCF3219B25D1E0009F5B5 /* HONClubViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubViewCell.m; sourceTree = "<group>"; };
 		300FCF4119B391330009F5B5 /* HONContactsSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactsSearchViewController.m; sourceTree = "<group>"; };
@@ -1757,6 +1760,8 @@
 		4C2DD82F18E3B41900BC8759 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				300DBB731B75A86200C7B588 /* HONDiscoverViewController.h */,
+				300DBB741B75A86200C7B588 /* HONDiscoverViewController.m */,
 				3077D39F1B69D5DF0076506C /* HONHomeViewCell.h */,
 				3077D3A01B69D5DF0076506C /* HONHomeViewCell.m */,
 				3045F9BB1A1E61AD00F4FA88 /* HONHomeViewController.h */,
@@ -2688,6 +2693,7 @@
 				30AD79361B43A1AE00F9C634 /* GSMessengerVO.m in Sources */,
 				3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */,
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
+				300DBB751B75A86200C7B588 /* HONDiscoverViewController.m in Sources */,
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
 				3010D78E1A24BADB0078164F /* HONClubToggleViewCell.m in Sources */,
 				3010D78F1A24BAED0078164F /* HONClubViewCell.m in Sources */,

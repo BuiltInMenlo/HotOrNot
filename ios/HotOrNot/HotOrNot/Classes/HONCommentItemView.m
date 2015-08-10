@@ -48,7 +48,7 @@
 - (void)setCommentVO:(HONCommentVO *)commentVO {
 	_commentVO = commentVO;
 	
-	NSString *caption = [NSString stringWithFormat:@"%@ %@", _commentVO.username, _commentVO.textContent];
+	NSString *caption = _commentVO.textContent;//[NSString stringWithFormat:@"%@ %@", _commentVO.username, _commentVO.textContent];
 	//_captionLabel.text = caption;
 	_captionLabel.attributedText = [[NSAttributedString alloc] initWithString:caption attributes:@{NSParagraphStyleAttributeName	: [[HONFontAllocator sharedInstance] forceLineSpacingParagraphStyle:-10.0 forFont:[[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:52]]}];
 	_captionLabel.numberOfLines = [_captionLabel numberOfLinesNeeded];

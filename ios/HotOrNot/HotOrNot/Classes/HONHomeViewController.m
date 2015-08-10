@@ -22,6 +22,7 @@
 #import "HONHomeViewController.h"
 #import "HONHomeViewFlowLayout.h"
 #import "HONPrivacyPolicyViewController.h"
+#import "HONDiscoverViewController.h"
 #import "HONComposeTopicViewController.h"
 #import "HONStatusUpdateViewController.h"
 #import "HONSettingsViewController.h"
@@ -276,7 +277,7 @@
 	[self.view addSubview:_paginationView];
 	
 	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createTutorial"]];
-	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, (_scrollView.frame.size.height + 5.0) - (_composeButton.frame.size.height + _tutorialImageView.frame.size.height));
+	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, (_scrollView.frame.size.height + 10.0) - (_composeButton.frame.size.height + _tutorialImageView.frame.size.height));
 	_tutorialImageView.hidden = YES;
 	_tutorialImageView.alpha = 0.0;
 	
@@ -859,7 +860,7 @@
 
 #pragma mark - TableView DataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (3);
+	return (2);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -882,7 +883,7 @@
 //		[cell populateFields:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row]];
 		
 	} else if (indexPath.section == 1) {
-		[cell populateFields:@{@"title"		: @"New People",
+		[cell populateFields:@{@"title"		: @"Discover",
 							   @"timestamp"	: [NSDate date],
 							   @"occupants"	: @"1"}];
 	} else {
@@ -902,7 +903,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(section == 0) ? @"tableHeaderBG" : @"featureTableHeaderBG"]];
 	
 //	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, tableView.frame.size.width - 30.0, 15.0)];
 //	label.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:13];
@@ -921,6 +922,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return ((section == 0) ? ([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] == 0) ? 0.0 : [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height : [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height);
 	return ((section == 0) ? [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height : 0.0);
 }
 
@@ -959,7 +961,16 @@
 		});
 		
 	} else if (indexPath.section == 1) {
-		[self _goRandom];
+		//[self _goRandom];
+		
+		
+//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://popup.rocks/route.php?d=01595d61-1934-40d0-a3c8-277f6f5098b8_1438926430&a=popup"]];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONDiscoverViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:^(void) {
+		}];
+		
 	
 	} else if (indexPath.section == 2) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: @"e23d61a9-622c-45c1-b92e-fd7c5d586b3a_1438284321"}];
@@ -989,7 +1000,7 @@
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	NSLog(@"[*:*] scrollViewDidScroll:[%@](%d)", NSStringFromCGPoint(scrollView.contentOffset), scrollView.tag);
+	//NSLog(@"[*:*] scrollViewDidScroll:[%@](%d)", NSStringFromCGPoint(scrollView.contentOffset), scrollView.tag);
 	
 	if (scrollView.tag == 1) {
 		if (scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height || scrollView.contentOffset.y < 0.0)

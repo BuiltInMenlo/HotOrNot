@@ -35,7 +35,7 @@
 		[self addSubview:_activityIndicatorView];
 		
 		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(7.0, 5.0, 99.0, 46.0);
+		backButton.frame = CGRectMake(7.0, 6.0, 99.0, 46.0);
 //		backButton.backgroundColor = [UIColor greenColor];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
