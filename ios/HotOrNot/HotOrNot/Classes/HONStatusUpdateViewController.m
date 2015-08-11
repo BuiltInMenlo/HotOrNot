@@ -369,8 +369,8 @@
 			} else {
 				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 				NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-				_outboundURL = [[result objectForKey:@"id"] stringByReplacingOccurrencesOfString:@"http://goo.gl" withString:@"pp1.link"];
-				[_messengerShare overrrideWithOutboundURL:[[result objectForKey:@"id"] stringByReplacingOccurrencesOfString:@"goo.gl" withString:@"pp1.link"]];
+				_outboundURL = [[result objectForKey:@"id"] stringByReplacingOccurrencesOfString:@"goo.gl" withString:@"pp1.link"];
+				[_messengerShare overrrideWithOutboundURL:_outboundURL];
 				
 				NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
 				__block BOOL isFound = NO;
@@ -378,8 +378,9 @@
 				[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 					NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
 					if ([[dict objectForKey:@"channel"] isEqualToString:_channel.name]) {
+						[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""] forKey:@"title"];
 						[dict setObject:_channel.name forKey:@"channel"];
-						[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://goo.gl" withString:@"pp1.link"] forKey:@"url"];
+						[dict setObject:_outboundURL forKey:@"url"];
 						[dict setObject:[NSDate date] forKey:@"timestamp"];
 						[dict setObject:@(_participants) forKey:@"occupants"];
 						
@@ -394,9 +395,9 @@
 				
 				
 				if (!isFound) {
-					[channels addObject:@{@"title"		: _channel.name,
+					[channels addObject:@{@"title"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""],
 										  @"channel"	: _channel.name,
-										  @"url"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://goo.gl" withString:@"pp1.link"],
+										  @"url"		: _outboundURL,
 										  @"timestamp"	: [NSDate date],
 										  @"occupants"	: @(_participants)}];
 					
@@ -527,7 +528,7 @@
 			}
 			
 			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] > 1) {
-				_expireLabel.text = (_participants == 1) ? @"no one is here, invite now" : [NSString stringWithFormat:@"%d %@ been alerted!", MAX(1, (_participants - 1)), (_participants == 2) ? @"person has" : @"people have"];
+				//_expireLabel.text = (_participants == 1) ? @"no one is here, invite now" : [NSString stringWithFormat:@"%d %@ been alerted!", MAX(1, (_participants - 1)), (_participants == 2) ? @"person has" : @"people have"];
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = _outboundURL;
@@ -543,6 +544,8 @@
 			
 			_animationImageView.hidden = YES;
 			
+			_takePhotoButton.enabled = YES;
+			
 			NSMutableDictionary *shares = [[[NSUserDefaults standardUserDefaults] objectForKey:@"share_channels"] mutableCopy];
 			NSLog(@"SHARE_HISTORY:[%@]", shares);
 			
@@ -553,15 +556,15 @@
 				[[NSUserDefaults standardUserDefaults] replaceObject:[shares copy] forKey:@"share_channels"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																		message:@"You are the first here do you want to share on Kik?"
-																	   delegate:self
-															  cancelButtonTitle:@"No"
-															  otherButtonTitles:@"Yes", nil];
-					[alertView setTag:99];
-					[alertView show];
-				});
+//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																		message:@"You are the first here do you want to share on Kik?"
+//																	   delegate:self
+//															  cancelButtonTitle:@"No"
+//															  otherButtonTitles:@"Yes", nil];
+//					[alertView setTag:99];
+//					[alertView show];
+//				});
 			}
 			
 			self.view.backgroundColor = [UIColor blackColor];
@@ -799,7 +802,7 @@
 	[self.view addSubview:_participantsLabel];
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6830) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
-	_expireLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:20];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.numberOfLines = 2;
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
@@ -847,8 +850,8 @@
 	
 	_videoVisibleButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 47.0, 44.0, 44.0);
-	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-on_nonActive"] forState:UIControlStateNormal];
-	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-on_Active"] forState:UIControlStateHighlighted];
+	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_nonActive"] forState:UIControlStateNormal];
+	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_Active"] forState:UIControlStateHighlighted];
 	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
 	[_videoVisibleButton addTarget:self action:@selector(_goToggleVideoVisible) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_videoVisibleButton];
@@ -912,6 +915,7 @@
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 4.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
+	_takePhotoButton.enabled = NO;
 	[self.view addSubview:_takePhotoButton];
 	
 	
@@ -1195,11 +1199,15 @@
 			_previewTintView.hidden = YES;
 			_openCommentButton.hidden = YES;
 			_messengerButton.hidden = YES;
+			_animationImageView.hidden = YES;
+			
+			_openCommentButton.alpha = 0.0;
+			_messengerButton.alpha = 0.0;
 			
 			[_cameraTutorialImageView removeFromSuperview];
 			
 			_tutorialImageView.hidden = YES;
-			_logoImageView.hidden = NO;
+			_logoImageView.hidden = YES;
 			_videoVisibleButton.hidden = YES;
 			_historyButton.hidden = YES;
 			
@@ -1236,7 +1244,6 @@
 			
 			_statusUpdateHeaderView.hidden = YES;
 			_scrollView.hidden = YES;
-			_messengerButton.hidden = YES;
 		}
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
@@ -1263,6 +1270,10 @@
 			_logoImageView.hidden = YES;
 			_cameraFlipButton.hidden = NO;
 			_expireLabel.hidden = NO;
+			
+			_openCommentButton.alpha = 1.0;
+			_messengerButton.alpha = 1.0;
+			
 			gestureRecognizer.enabled = YES;
 			
 		} else
@@ -1451,8 +1462,9 @@
 	[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
 		if ([[dict objectForKey:@"channel"] isEqualToString:_channel.name]) {
+			[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""] forKey:@"title"];
 			[dict setObject:_channel.name forKey:@"channel"];
-			[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://goo.gl" withString:@"pp1.link"] forKey:@"url"];
+			[dict setObject:_outboundURL forKey:@"url"];
 			[dict setObject:[NSDate date] forKey:@"timestamp"];
 			[dict setObject:@(_participants) forKey:@"occupants"];
 			
@@ -1467,9 +1479,9 @@
 	
 	
 	if (!isFound) {
-		[channels addObject:@{@"title"		: _channel.name,
+		[channels addObject:@{@"title"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""],
 							  @"channel"	: _channel.name,
-							  @"url"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://goo.gl" withString:@"pp1.link"],
+							  @"url"		: _outboundURL,
 							  @"timestamp"	: [NSDate date],
 							  @"occupants"	: @(_participants)}];
 		
@@ -2098,8 +2110,8 @@
 			_cameraPreviewView.alpha = !(BOOL)_cameraPreviewView.alpha;
 		}
 		
-		[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_nonActive", (_moviePlayer.view.alpha == 1.0) ? @"on" : @"off"]] forState:UIControlStateNormal];
-		[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_Active", (_moviePlayer.view.alpha == 1.0) ? @"on" : @"off"]] forState:UIControlStateHighlighted];
+		[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_nonActive", (_moviePlayer.view.alpha == 1.0) ? @"off" : @"on"]] forState:UIControlStateNormal];
+		[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_Active", (_moviePlayer.view.alpha == 1.0) ? @"off" : @"on"]] forState:UIControlStateHighlighted];
 	}
 }
 

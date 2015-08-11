@@ -52,13 +52,9 @@
 @property (nonatomic, strong) NSString *composeSubject;
 @property (nonatomic, strong) TransitionDelegate *transitionController;
 @property (nonatomic, strong) NSArray *colors;
-@property (nonatomic, strong) UIButton *recentButton;
-@property (nonatomic, strong) UIButton *supportButton;
-@property (nonatomic, strong) UIView *tintView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 
 @property (nonatomic, strong) UIView *loadingView;
-@property (nonatomic, strong) NSTimer *tintTimer;
 
 @end
 
@@ -161,11 +157,6 @@
 	
 	[self performSelector:@selector(_startTint) withObject:nil afterDelay:3.0];
 	
-	_tintView = [[UIView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height)];
-	_tintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	_tintView.alpha = 0.0;
-	[_scrollView addSubview:_tintView];
-	
 	NSLog(@"*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~\nSCREEN BOUNDS:[%@](%.02f) // VIEW FRAME:[%@] BOUNDS:[%@]\n*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~", NSStringFromCGSize([UIScreen mainScreen].bounds.size),[UIScreen mainScreen].scale, NSStringFromCGSize(self.view.frame.size), NSStringFromCGSize(self.view.bounds.size));
 	NSLog(@"CHANNEL_HISTORY:\n%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"]);
 	
@@ -178,45 +169,14 @@
 	
 	UIImageView *tutorial3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_03"]];
 	tutorial3ImageView.frame = CGRectOffset(tutorial3ImageView.frame, _scrollView.frame.size.width * 2.0, 0.0);
-	[_scrollView addSubview:tutorial3ImageView];
+	//[_scrollView addSubview:tutorial3ImageView];
 	
 	UIImageView *tutorial4ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_04"]];
 	tutorial4ImageView.frame = CGRectOffset(tutorial4ImageView.frame, _scrollView.frame.size.width * 3.0, 0.0);
-	[_scrollView addSubview:tutorial4ImageView];
-	
-//	[[[NSUserDefaults standardUserDefaults] objectForKey:@"@"channel_history""] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		int channelID = [obj intValue];
-//		
-//		UIButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
-//		linkButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0) + 50.0, 310.0 + (idx * 25.0), self.view.frame.size.width - 100.0, 18.0);
-//		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//		[linkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-//		linkButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
-//		[linkButton setTitle:[NSString stringWithFormat:@"/%d", channelID] forState:UIControlStateNormal];
-//		[linkButton setTitle:[NSString stringWithFormat:@"/%d", channelID] forState:UIControlStateHighlighted];
-//		[linkButton addTarget:self action:@selector(_goDeeplink) forControlEvents:UIControlEventTouchUpInside];
-//		[_scrollView addSubview:linkButton];
-//	}];
+	//[_scrollView addSubview:tutorial4ImageView];
 	
 	
 	NSLog(@"LAST CHANNEL:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"]);
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) {
-		_recentButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		_recentButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), 249.0 * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
-		[_recentButton setBackgroundImage:[UIImage imageNamed:@"recentButton_nonActive"] forState:UIControlStateNormal];
-		[_recentButton setBackgroundImage:[UIImage imageNamed:@"recentButton_Active"] forState:UIControlStateHighlighted];
-		_recentButton.frame = CGRectOffset(_recentButton.frame, (_scrollView.frame.size.width - _recentButton.frame.size.width) * 0.5, 0.0);
-		[_recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
-		[_scrollView addSubview:_recentButton];
-	}
-	
-	_supportButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_supportButton.frame = CGRectMake((_scrollView.frame.size.width * 3.0), (([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? 348.0 : 249) * (([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kScreenMult.height : 1.0), self.view.frame.size.width, 99.0);
-	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_nonActive"] forState:UIControlStateNormal];
-	[_supportButton setBackgroundImage:[UIImage imageNamed:@"randomButton_Active"] forState:UIControlStateHighlighted];
-	_supportButton.frame = CGRectOffset(_supportButton.frame, (_scrollView.frame.size.width - _supportButton.frame.size.width) * 0.5, 0.0);
-	[_supportButton addTarget:self action:@selector(_goRandom) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:_supportButton];
 	
 	_overlayButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_overlayButton.frame = CGRectMake(_scrollView.frame.size.width * 3.0, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -809,8 +769,6 @@
 	
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
-						 _tintView.alpha = 1.0;
-						 _supportButton.alpha = 0.0;
 						 //_scrollView.frame = CGRectTranslateY(_scrollView.frame, -58.0);
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, -216.0);
 						 
@@ -842,14 +800,9 @@
 	textField.text = ([textField.text length] == 0) ? @"What is on your mind?" : textField.text;
 	[UIView animateWithDuration:0.333
 					 animations:^(void) {
-						 _tintView.alpha = 0.0;
-						 _supportButton.alpha = 1.0;
 						 _composeButton.frame = CGRectOffsetY(_composeButton.frame, 216.0);
-						 //_scrollView.frame = CGRectTranslateY(_scrollView.frame, 0.0);
 					 } completion:^(BOOL finished) {
 						 _overlayButton.hidden = YES;
-						// [_composeButton removeTarget:self action:@selector(_goCompose) forControlEvents:UIControlEventTouchUpInside];
-						// [_composeButton addTarget:self action:@selector(_goTextField) forControlEvents:UIControlEventTouchUpInside];
 					 }];
 }
 
@@ -963,13 +916,22 @@
 	} else if (indexPath.section == 1) {
 		//[self _goRandom];
 		
-		
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/app.php"]];
+			
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"Kik Not Available!"
+										message:@"Cannot open Kik on this device"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		}
 //		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://popup.rocks/route.php?d=01595d61-1934-40d0-a3c8-277f6f5098b8_1438926430&a=popup"]];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONDiscoverViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:^(void) {
-		}];
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONDiscoverViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:^(void) {
+//		}];
 		
 	
 	} else if (indexPath.section == 2) {

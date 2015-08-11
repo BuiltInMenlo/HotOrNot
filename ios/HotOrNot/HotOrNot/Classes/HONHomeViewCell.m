@@ -38,7 +38,7 @@
 - (void)populateFields:(NSDictionary *)dictionary {
 	
 //	NSString *caption = ([[dictionary objectForKey:@"title"] isEqualToString:@"Feedback"] || [[dictionary objectForKey:@"title"] isEqualToString:@"New People"]) ? [dictionary objectForKey:@"title"] : ([dictionary objectForKey:@"url"] != nil) ? [[dictionary objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""] : @"pp1.link/…";
-	NSString *caption = (self.indexPath.section == 1) ? [dictionary objectForKey:@"title"] : ([dictionary objectForKey:@"url"] != nil) ? [[dictionary objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""] : @"pp1.link/…";
+	NSString *caption = [dictionary objectForKey:@"title"];//(self.indexPath.section == 1) ? [dictionary objectForKey:@"title"] : ([dictionary objectForKey:@"url"] != nil) ? [[dictionary objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""] : @"pp1.link/…";
 	
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 12.0, self.frame.size.width - 50.0, 28.0)];
 	titleLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
