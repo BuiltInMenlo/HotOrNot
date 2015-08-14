@@ -98,6 +98,7 @@
 @property (nonatomic, strong) NSMutableArray *videoPlaylist;
 @property (nonatomic, strong) NSString *lastVideo;
 @property (nonatomic, strong) UIImageView *logoImageView;
+@property (nonatomic, strong) UIImageView *loadingImageView;
 @property (nonatomic, strong) NSMutableArray *shareTypes;
 @property (nonatomic) int messageTotal;
 @property (nonatomic) BOOL isDeepLink;
@@ -609,6 +610,7 @@
 					NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
 					[_videoPlaylist addObject:url];
 					
+					_loadingImageView.hidden = NO;
 					
 					_lastVideo = [commentVO.imagePrefix lastComponentByDelimeter:@"/"];
 					_moviePlayer.contentURL = url;
@@ -616,7 +618,13 @@
 					
 					if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"] && _isTutorial) {
 						_isTutorial = NO;
+						_tutorialImageView.alpha = 0.0;
 						[self.view addSubview:_tutorialImageView];
+						
+						[UIView animateWithDuration:0.333 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+							_tutorialImageView.alpha = 1.0;
+						} completion:^(BOOL finished) {
+						}];
 					}
 					
 					[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"channel_tutorial"];
@@ -800,6 +808,13 @@
 	_moviePlayer.scalingMode = MPMovieScalingModeFill;
 	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6830) + 1.0);
 	[self.view addSubview:_moviePlayer.view];
+	
+	
+	_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
+	_loadingImageView.frame = _moviePlayer.view.frame;
+	_loadingImageView.backgroundColor = [UIColor redColor];
+	_loadingImageView.hidden = YES;
+	//[self.view addSubview:_loadingImageView];
 	
 	
 	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
@@ -1328,12 +1343,21 @@
 	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
-		_animationImageView.hidden = YES;
-		
+//		_animationImageView.hidden = YES;
+//		
 		if (![_commentTextField isFirstResponder]) {
 			_openCommentButton.alpha = 1.0;
 			_messengerButton.alpha = 1.0;
 		}
+//
+//		_imageView.alpha = 0.0;
+//		_imageView.hidden = YES;
+	}
+	
+	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 2) {
+		_loadingImageView.hidden = YES;
+		
+		_animationImageView.hidden = YES;
 		
 		_imageView.alpha = 0.0;
 		_imageView.hidden = YES;

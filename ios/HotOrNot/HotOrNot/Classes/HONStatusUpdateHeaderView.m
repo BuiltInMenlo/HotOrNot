@@ -95,7 +95,7 @@
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		
 	} else {
-		_backButton.frame = CGRectMake(7.0, 6.0, 46.0, 46.0);
+		_backButton.frame = CGRectMake(9.0, 8.0, 46.0, 46.0);
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	}
