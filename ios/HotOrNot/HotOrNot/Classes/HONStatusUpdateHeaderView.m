@@ -16,6 +16,7 @@
 
 @interface HONStatusUpdateHeaderView()
 @property (nonatomic, strong) HONStatusUpdateVO *statusUpdateVO;
+@property (nonatomic, strong) HONButton *backButton;
 @property (nonatomic, strong) UILabel *backLabel;
 @property (nonatomic, strong) UILabel *linkLabel;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
@@ -34,13 +35,12 @@
 		_activityIndicatorView.alpha = 0.0;
 		[self addSubview:_activityIndicatorView];
 		
-		HONButton *backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(7.0, 6.0, 99.0, 46.0);
-//		backButton.backgroundColor = [UIColor greenColor];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-		[backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:backButton];
+		_backButton = [HONButton buttonWithType:UIButtonTypeCustom];
+		_backButton.frame = CGRectMake(7.0, 6.0, 99.0, 46.0);
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+		[_backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_backButton];
 		
 		_backLabel = [[UILabel alloc] initWithFrame:CGRectMake(46.0, 10.0, 200.0, 24.0)];
 		_backLabel.backgroundColor = [UIColor clearColor];
@@ -88,6 +88,20 @@
 
 
 #pragma mark - Public APIs
+- (void)changeButton:(BOOL)isArrow {
+	if (isArrow) {
+		_backButton.frame = CGRectMake(7.0, 6.0, 99.0, 46.0);
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+		
+	} else {
+		_backButton.frame = CGRectMake(7.0, 6.0, 46.0, 46.0);
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+	}
+}
+
+
 #pragma mark - Navigation
 - (void)_goBack:(id)sender {
 	UIButton *button = (UIButton *)sender;

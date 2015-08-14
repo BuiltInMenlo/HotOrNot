@@ -1114,31 +1114,42 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	if (!application.applicationState == UIApplicationStateActive) {
-		NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] : @"";
+		if ([[[userInfo objectForKey:@"aps"] objectForKey:@"alert"] rangeOfString:@"Update"].location != NSNotFound) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Update to the latest version?"
+															   delegate:self
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"OK", nil];
+			[alertView setTag:69];
+			[alertView show];
 		
-		//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
-		if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
+		} else {
+			NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] : @"";
 			
-			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-	//		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-			_loadingView.backgroundColor = [UIColor blackColor];//
-			[self.window addSubview:_loadingView];
-			
-			UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-			activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
-			[activityIndicatorView startAnimating];
-			[_loadingView addSubview:activityIndicatorView];
-			
-			[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
-			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				[_tintTimer invalidate];
-				_tintTimer = nil;
-				[_loadingView removeFromSuperview];
+			//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+			if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
+				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
 				
-				[_loadingOverlayView outro];
-			});
+				_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+		//		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+				_loadingView.backgroundColor = [UIColor blackColor];//
+				[self.window addSubview:_loadingView];
+				
+				UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+				activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+				[activityIndicatorView startAnimating];
+				[_loadingView addSubview:activityIndicatorView];
+				
+				[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					[_tintTimer invalidate];
+					_tintTimer = nil;
+					[_loadingView removeFromSuperview];
+					
+					[_loadingOverlayView outro];
+				});
+			}
 		}
 	}
 	
@@ -1166,29 +1177,41 @@ NSString * const kTwilioSMS = @"6475577873";
 //	}
 	
 	if (!application.applicationState == UIApplicationStateActive) {
-		NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] : @"";
-		
-		//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
-		if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
-			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
-			_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
-			_loadingView.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-			[self.window addSubview:_loadingView];
+		if ([[[userInfo objectForKey:@"aps"] objectForKey:@"alert"] rangeOfString:@"Update"].location != NSNotFound) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																message:@"Update to the latest version?"
+															   delegate:self
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"OK", nil];
+			[alertView setTag:69];
+			[alertView show];
 			
-			UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-			activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
-			[activityIndicatorView startAnimating];
-			[_loadingView addSubview:activityIndicatorView];
+		} else {
 			
-			[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
+			NSString *channelName = ([[userInfo objectForKey:@"aps"] objectForKey:@"channel"] != nil) ? [[userInfo objectForKey:@"aps"] objectForKey:@"channel"] : ([[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_name"] : @"";
 			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				[_tintTimer invalidate];
-				_tintTimer = nil;
-				[_loadingView removeFromSuperview];
+			//if ([channelName length] > 0 && ![NSStringFromClass([UIViewController currentViewController].class) isEqualToString:NSStringFromClass([HONStatusUpdateViewController class])]) {
+			if ([channelName length] > 0 && ![[[NSUserDefaults standardUserDefaults] objectForKey:@"in_chat"] isEqualToString:@"YES"]) {
+				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - apnsPush"] withProperties:@{@"channel"	: channelName}];
+				_loadingView = [[UIView alloc] initWithFrame:self.window.frame];
+				_loadingView.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+				[self.window addSubview:_loadingView];
 				
-				[_loadingOverlayView outro];
-			});
+				UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+				activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+				[activityIndicatorView startAnimating];
+				[_loadingView addSubview:activityIndicatorView];
+				
+				[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initFromDeepLinkWithChannelName:channelName] animated:YES];
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+					[_tintTimer invalidate];
+					_tintTimer = nil;
+					[_loadingView removeFromSuperview];
+					
+					[_loadingOverlayView outro];
+				});
+			}
 		}
 	}
 	
@@ -1532,6 +1555,11 @@ void uncaughtExceptionHandler(NSException *exception) {
 				
 				[self.navController pushViewController:[[HONStatusUpdateViewController alloc] initWithStatusUpdate:vo forClub:[[HONClubAssistant sharedInstance] currentLocationClub]] animated:YES];
 			}]; // api submit
+		}
+	
+	} else if (alertView.tag == 69){
+		if (buttonIndex == 1) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-services://?action=download-manifest&url=https://pp1.link/Popup.plist"]];
 		}
 	}
 }

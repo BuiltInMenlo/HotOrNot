@@ -900,9 +900,9 @@
 		
 		NSDictionary *dictionary = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row];
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: [dictionary objectForKey:@"title"]}];
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: [dictionary objectForKey:@"channel"]}];
 		
-		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"title"]];
+		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"channel"]];
 		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {

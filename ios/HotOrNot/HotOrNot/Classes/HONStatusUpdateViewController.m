@@ -105,6 +105,7 @@
 
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) BOOL isActive;
+@property (nonatomic) BOOL isTutorial;
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
@@ -341,7 +342,7 @@
 	[PubNub subscribeOn:@[channel]];
 	
 	_lastVideo = @"";
-	_expireLabel.text = ([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] > 1) ? @"alerting the channel…" : _expireLabel.text;
+	_expireLabel.text = @"loading the channel…";//([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] > 1) ? @"loading the channel…" : _expireLabel.text;
 	_videoQueue = 0;
 	_videoPlaylist = [NSMutableArray array];
 	_outboundURL = @"pp1.link/…";
@@ -611,6 +612,15 @@
 					_moviePlayer.contentURL = url;
 					[_moviePlayer play];
 					
+					if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"] && _isTutorial) {
+						_isTutorial = NO;
+						[self.view addSubview:_tutorialImageView];
+					}
+					
+					[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"channel_tutorial"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+
+					
 //					AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
 //					[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
 //					[_queuePlayer play];
@@ -722,6 +732,16 @@
 	
 	[super loadView];
 	
+	//if ((BOOL)[[[_baseShareInfo objectForKey:kKakaoTalkKey] objectForKey:@"override"] intValue] && [[[_baseShareInfo objectForKey:kKakaoTalkKey] objectForKey:@"image_url"] length] > 0) {
+		[[HONImageBroker sharedInstance] writeImageFromWeb:[[_baseShareInfo objectForKey:kKakaoTalkKey] objectForKey:@"image_url"] withUserDefaultsKey:@"kakao_image"];
+	//}
+	
+	if ([[_baseShareInfo objectForKey:@"main_image_url"] length] > 0)
+		[[HONImageBroker sharedInstance] writeImageFromWeb:[_baseShareInfo objectForKey:@"main_image_url"] withUserDefaultsKey:@"main_image_url"];
+	
+	if ([[_baseShareInfo objectForKey:@"sub_image_url"] length] > 0)
+		[[HONImageBroker sharedInstance] writeImageFromWeb:[_baseShareInfo objectForKey:@"sub_image_url"] withUserDefaultsKey:@"sub_image_url"];
+	
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -747,7 +767,7 @@
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
-	[[PBJVision sharedInstance] setVideoFrameRate:30];
+	[[PBJVision sharedInstance] setVideoFrameRate:24];
 	
 	_previewTintView = [[UIView alloc] initWithFrame:_cameraPreviewView.frame];
 	_previewTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
@@ -807,7 +827,7 @@
 	_expireLabel.numberOfLines = 2;
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
-	_expireLabel.text = @"Loading channel…";
+	_expireLabel.text = @"Alerting channel…";
 	[self.view addSubview:_expireLabel];
 	
 	UIButton *invite2Button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -918,29 +938,16 @@
 	_takePhotoButton.enabled = NO;
 	[self.view addSubview:_takePhotoButton];
 	
+	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
+	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 25.0 + (_messengerButton.frame.origin.y - _tutorialImageView.frame.size.height));
 	
 	_cameraTutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTutorial"]];
 	_cameraTutorialImageView.frame = CGRectOffset(_cameraTutorialImageView.frame, 0.0, 13.0 + ((self.view.frame.size.height * 0.6830) - _cameraTutorialImageView.frame.size.height));
 	
-	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
-	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 25.0 + (_messengerButton.frame.origin.y - _tutorialImageView.frame.size.height));
-	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"]) {
+		_isTutorial = YES;
 		[self.view addSubview:_cameraTutorialImageView];
-		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-			[_cameraTutorialImageView removeFromSuperview];
-			[self.view addSubview:_tutorialImageView];
-			
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-				[_tutorialImageView removeFromSuperview];
-			});
-		});
 	}
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"channel_tutorial"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
 	[_scrollView addSubview:_commentsHolderView];
@@ -1042,7 +1049,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Messenger", @"Kik", @"WhatsApp", @"Line", @"KakaoTalk", @"WeChat", @"SMS", @"Hike", @"Viber", nil];
+													otherButtonTitles:@"Kik", @"Messenger", @"KakaoTalk", @"Line", @"WhatsApp", @"WeChat", @"SMS", nil];//@"Hike", @"Viber", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 }
@@ -1135,6 +1142,8 @@
 		_expireTimer = nil;
 	}
 	
+	[_statusUpdateHeaderView changeButton:YES];
+	
 	_videoVisibleButton.hidden = NO;
 	_historyButton.hidden = NO;
 	_commentTextField.text = @"";
@@ -1206,7 +1215,6 @@
 			
 			[_cameraTutorialImageView removeFromSuperview];
 			
-			_tutorialImageView.hidden = YES;
 			_logoImageView.hidden = YES;
 			_videoVisibleButton.hidden = YES;
 			_historyButton.hidden = YES;
@@ -1273,7 +1281,7 @@
 			
 			_openCommentButton.alpha = 1.0;
 			_messengerButton.alpha = 1.0;
-			
+		
 			gestureRecognizer.enabled = YES;
 			
 		} else
@@ -1381,12 +1389,13 @@
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
 	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
-	//	vision.cameraMode = PBJCameraModePhoto;
+//	[vision setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)];
 	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
 	vision.focusMode = PBJFocusModeContinuousAutoFocus;
+	vision.exposureMode = PBJExposureModeContinuousAutoExposure;
 	vision.outputFormat = PBJOutputFormatStandard;
-	vision.videoRenderingEnabled = NO;
+	vision.videoRenderingEnabled = YES;
 	vision.additionalCompressionProperties = @{AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel}; //-- AVVideoProfileLevelH264Baseline30}; // AVVideoProfileLevelKey requires specific captureSessionPreset
 }
 
@@ -1449,8 +1458,6 @@
 }
 
 - (void)_popBack {
-	[[UIApplication sharedApplication] cancelAllLocalNotifications];
-	
 	if (_expireTimer != nil) {
 		[_expireTimer invalidate];
 		_expireTimer = nil;
@@ -1701,6 +1708,8 @@
 	_openCommentButton.alpha = 0.0;
 	_messengerButton.alpha = 0.0;
 	
+	[_statusUpdateHeaderView changeButton:NO];
+	
 	_expireTimer = [NSTimer scheduledTimerWithTimeInterval:(arc4random() % 25) + 30.0
 													target:self
 													 selector:@selector(_pokeMessage)
@@ -1794,10 +1803,11 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching FB Messenger to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
 				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[FBSDKMessengerSharer shareImage:[_selectedMessengerContent objectForKey:@"share_image"]
 									 withOptions:[_selectedMessengerContent objectForKey:@"options"]];
 				
@@ -1808,6 +1818,7 @@
 //														  otherButtonTitles:nil];
 //				[alertView setTag:GSMessengerShareTypeFBMessenger];
 //				[alertView show];
+				});
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"FB Messenger Not Available!"
@@ -1827,10 +1838,11 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching Kakao to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
 				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[KOAppCall openKakaoTalkAppLink:[_selectedMessengerContent objectForKey:@"link_objs"]];
 				
 //				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Kakao."
@@ -1840,6 +1852,7 @@
 //														  otherButtonTitles:nil];
 //				[alertView setTag:GSMessengerShareTypeKakaoTalk];
 //				[alertView show];
+				});
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"KakaoTalk Not Available!"
@@ -1858,10 +1871,11 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching Kik to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
 				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
 				
 //				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Kik."
@@ -1871,6 +1885,7 @@
 //														  otherButtonTitles:nil];
 //				[alertView setTag:GSMessengerShareTypeKik];
 //				[alertView show];
+				});
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"Kik Not Available!"
@@ -1890,10 +1905,11 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching LINE to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
 				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
 				
 //				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to LINE."
@@ -1903,6 +1919,7 @@
 //														  otherButtonTitles:nil];
 //				[alertView setTag:GSMessengerShareTypeLine];
 //				[alertView show];
+				});
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"LINE Not Available!"
@@ -1923,7 +1940,7 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching SMS to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
 				
@@ -1958,10 +1975,11 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching WhatsApp to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
 				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_selectedMessengerContent objectForKey:@"link"]]];
 				
 //				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to WhatsApp."
@@ -1971,6 +1989,7 @@
 //														  otherButtonTitles:nil];
 //				[alertView setTag:GSMessengerShareTypeWhatsApp];
 //				[alertView show];
+				});
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"WhatsApp Not Available!"
@@ -1992,9 +2011,11 @@
 				
 				NSString *caption = _expireLabel.text;
 				_expireLabel.text = @"Launching WeChat to share…";
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = caption;
 				});
+				
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 				
 				[WXApi registerApp:@"ID:wxad3790468c7ae7dd"
 				   withDescription:[[NSBundle mainBundle] bundleIdentifier]];
@@ -2025,6 +2046,7 @@
 //														  otherButtonTitles:nil];
 //				[alertView setTag:GSMessengerShareTypeWeChat];
 //				[alertView show];
+				});
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"WeChat Not Available!"
@@ -2034,7 +2056,7 @@
 								  otherButtonTitles:nil] show];
 			}
 			
-		} else if (_selectedMessengerType == GSMessengerShareTypeViber) {
+		/*} else if (_selectedMessengerType == GSMessengerShareTypeViber) {
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"viber://"]]) {
 				_selectedMessengerText = [NSString stringWithFormat:@"%@ %@", [shareInfo objectForKey:@"body_text"], [shareInfo objectForKey:@"link"]];
 				
@@ -2047,7 +2069,7 @@
 					_expireLabel.text = caption;
 				});
 				
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"Viber://" stringByAppendingString:_selectedMessengerText]]];
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"viber://" stringByAppendingString:_selectedMessengerText]]];
 				
 //				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You are being directed to Viber."
 //																	message:@"Use the selected messenger to share your Popup with friends."
@@ -2097,7 +2119,7 @@
 			}
 			
 		} else if (_selectedMessengerType == GSMessengerShareTypeOTHER) {
-			
+		*/	
 		} else {
 			shareInfo = @{};
 		}
@@ -2492,12 +2514,19 @@
 			[PubNub sendMessage:[[path pathComponents] lastObject]
 							toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
 								NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+								
+								if (messageState == PNMessageSendingError) {
+									[PubNub connectWithSuccessBlock:^(NSString *origin) {
+										PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
+										NSLog(@"PubNub CONNECT:[%@]", origin);
+										[[HONUserAssistant sharedInstance] writeUserID:[PubNub sharedInstance].clientIdentifier];
+										[self _channelSetupForStatusUpdate];
+										
+									} errorBlock:^(PNError *connectionError) {
+										NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
+									}];
+								}
 							}];
-			
-			//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone on Popup has sent a video moment.\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channel.name]
-			//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-			//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-			//						  }];
 		}
 		
 		return (nil);
@@ -2516,7 +2545,7 @@
 }
 
 
-
+#pragma mark -
 
 
 - (NSDictionary *)_shareInfoForMessengerShareType:(GSMessengerShareType)messengerShareType {
@@ -2552,7 +2581,7 @@
 		
 		NSMutableArray *linkObjs = [NSMutableArray array];
 		NSString *title = ([[kakaoShareInfo objectForKey:@"title"] length] > 0) ? [kakaoShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"";
-		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
+		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"kakao_image"]];//([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
 		NSString *url = ([_outboundURL length] > 0) ? _outboundURL : ([[kakaoShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"";
 		
 		if ([title length] > 0) {
