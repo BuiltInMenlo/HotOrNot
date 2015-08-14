@@ -26,6 +26,7 @@
 
 #import "KikAPI.h"
 #import "PBJVision.h"
+#import "PBJVisionUtilities.h"
 #import "WXApi.h"
 
 #import "HONStatusUpdateViewController.h"
@@ -75,6 +76,7 @@
 @property (nonatomic, strong) UIButton *toggleMicButton;
 @property (nonatomic, strong) UIButton *cameraFlipButton;
 @property (nonatomic, strong) NSTimer *countdownTimer;
+@property (nonatomic, strong) NSTimer *focusTimer;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIButton *messengerButton;
 @property (nonatomic, strong) UIButton *openCommentButton;
@@ -532,11 +534,11 @@
 				//_expireLabel.text = (_participants == 1) ? @"no one is here, invite now" : [NSString stringWithFormat:@"%d %@ been alerted!", MAX(1, (_participants - 1)), (_participants == 2) ? @"person has" : @"people have"];
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-					_expireLabel.text = _outboundURL;
+					_expireLabel.text = [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""];
 				});
 			
 			} else
-				_expireLabel.text = _outboundURL;
+				_expireLabel.text = [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""];
 			
 			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
 			
@@ -1392,11 +1394,17 @@
 //	[vision setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)];
 	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
-	vision.focusMode = PBJFocusModeContinuousAutoFocus;
+	vision.focusMode = PBJFocusModeLocked;// PBJFocusModeContinuousAutoFocus;
 	vision.exposureMode = PBJExposureModeContinuousAutoExposure;
 	vision.outputFormat = PBJOutputFormatStandard;
 	vision.videoRenderingEnabled = YES;
 	vision.additionalCompressionProperties = @{AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel}; //-- AVVideoProfileLevelH264Baseline30}; // AVVideoProfileLevelKey requires specific captureSessionPreset
+	
+	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:2.50
+												   target:self
+												 selector:@selector(_updateFocus)
+												 userInfo:nil repeats:YES];
+	
 }
 
 - (void)_appendComment:(HONCommentVO *)vo {
@@ -1433,12 +1441,17 @@
 		
 		_countdownLabel.text = @"";
 		_countdownLabel.hidden = YES;
-		_expireLabel.hidden = NO;
+//		_expireLabel.hidden = NO;
 	}
 	
 	_countdownLabel.text = NSStringFromInt(_countdown);
 }
 
+
+- (void)_updateFocus {
+	CGPoint adjustPoint = [PBJVisionUtilities convertToPointOfInterestFromViewCoordinates:self.view.center inFrame:self.view.frame];
+	[[PBJVision sharedInstance] focusExposeAndAdjustWhiteBalanceAtAdjustedPoint:adjustPoint];
+}
 
 - (void)_updateTint {
 	NSArray *colors = @[//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
@@ -1458,6 +1471,9 @@
 }
 
 - (void)_popBack {
+	[_focusTimer invalidate];
+	_focusTimer = nil;
+	
 	if (_expireTimer != nil) {
 		[_expireTimer invalidate];
 		_expireTimer = nil;
