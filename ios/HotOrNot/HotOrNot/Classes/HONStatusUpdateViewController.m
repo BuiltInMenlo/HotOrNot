@@ -92,6 +92,7 @@
 @property (nonatomic, strong) UIImageView *cameraTutorialImageView;
 @property (nonatomic, strong) NSDictionary *baseShareInfo;
 @property (nonatomic, strong) NSString *vidName;
+@property (nonatomic, strong) NSString *thumbURL;
 @property (nonatomic, strong) NSString *channelName;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @property (nonatomic, strong) NSTimer *gestureTimer;
@@ -103,6 +104,7 @@
 @property (nonatomic) int messageTotal;
 @property (nonatomic) BOOL isDeepLink;
 @property (nonatomic) BOOL isInvite;
+@property (nonatomic) BOOL isShare;
 @property (nonatomic, strong) HONMediaRevealerView *revealerView;
 @property (nonatomic, strong) GSMessengerShare *messengerShare;
 
@@ -536,10 +538,20 @@
 				
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 					_expireLabel.text = [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+					
+					[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+						_expireLabel.alpha = 0.0;
+					} completion:^(BOOL finished) {
+					}];
 				});
 			
-			} else
+			} else {
 				_expireLabel.text = [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+				[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+					_expireLabel.alpha = 0.0;
+				} completion:^(BOOL finished) {
+				}];
+			}
 			
 			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
 			
@@ -548,7 +560,7 @@
 			
 			_animationImageView.hidden = YES;
 			
-			_takePhotoButton.enabled = YES;
+			_takePhotoButton.hidden = NO;
 			
 			NSMutableDictionary *shares = [[[NSUserDefaults standardUserDefaults] objectForKey:@"share_channels"] mutableCopy];
 			NSLog(@"SHARE_HISTORY:[%@]", shares);
@@ -636,7 +648,6 @@
 //					[_queuePlayer play];
 					
 					//_historyButton.alpha = ([_videoPlaylist count] > 0);
-					_animationImageView.hidden = YES;
 					
 					if (![_commentTextField isFirstResponder]) {
 						_openCommentButton.alpha = 1.0;
@@ -644,9 +655,6 @@
 					
 					_openCommentButton.hidden = NO;
 					_messengerButton.hidden = NO;
-					
-					_imageView.alpha = 0.0;
-					_imageView.hidden = YES;
 					
 				} else {
 					NSDictionary *dict = @{@"id"				: @"0",
@@ -760,6 +768,7 @@
 	
 	self.view.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];// [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	
+	_isShare = NO;
 	_isInvite = NO;
 	_isActive = YES;
 	_isSubmitting = NO;
@@ -780,7 +789,7 @@
 	[[PBJVision sharedInstance] setVideoFrameRate:24];
 	
 	_previewTintView = [[UIView alloc] initWithFrame:_cameraPreviewView.frame];
-	_previewTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	_previewTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
 	[self.view addSubview:_previewTintView];
 	
 	
@@ -830,18 +839,18 @@
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 64.0, 31.0, 50.0, 24.0)];
-	_participantsLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
+	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 60.0, 18.0, 50.0, 22.0)];
+	_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
 	_participantsLabel.backgroundColor = [UIColor clearColor];
 	_participantsLabel.textAlignment = NSTextAlignmentRight;
 	_participantsLabel.textColor = [UIColor whiteColor];
 	_participantsLabel.text = @"0";
 	[self.view addSubview:_participantsLabel];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6830) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
-	_expireLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:18];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 0.0 + ((self.view.frame.size.height * 0.6830) - 88.0), self.view.frame.size.width - 100.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6830) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
+	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
-	_expireLabel.numberOfLines = 2;
+//	_expireLabel.numberOfLines = 2;
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
 	_expireLabel.textColor = [UIColor whiteColor];
 	_expireLabel.text = @"Alerting channel…";
@@ -886,7 +895,7 @@
 	//[self.view addSubview:_toggleMicButton];
 	
 	_videoVisibleButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 47.0, 44.0, 44.0);
+	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 49.0, 44.0, 44.0);
 	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_nonActive"] forState:UIControlStateNormal];
 	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_Active"] forState:UIControlStateHighlighted];
 	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
@@ -932,7 +941,8 @@
 	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-	_openCommentButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - 2.0, 2.0 + (((self.view.frame.size.height * 0.6830) - _openCommentButton.frame.size.height) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
+	//_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 2.0 + (((self.view.frame.size.height * 0.6830) - _openCommentButton.frame.size.height) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
+	_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, (self.view.frame.size.height * 0.6830) - 47.0, _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
 	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
 	_openCommentButton.hidden = YES;
 	[self.view addSubview:_openCommentButton];
@@ -941,18 +951,20 @@
 	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	_messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, 2.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.height) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
-	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	_messengerButton.hidden = YES;
+	//_messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, 2.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.height) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	_messengerButton.frame = CGRectMake(((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, 0.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _messengerButton.frame.size.width) * 0.5)), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	[_messengerButton addTarget:self action:@selector(_goShareComment) forControlEvents:UIControlEventTouchUpInside];
+	//_messengerButton.hidden = YES;
 	[self.view addSubview:_messengerButton];
 	
 	_takePhotoButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_takePhotoButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
-	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 4.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+//	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 4.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(2.0 + (self.view.frame.size.width * 0.5), 0.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
-	_takePhotoButton.enabled = NO;
+	//_takePhotoButton.hidden = YES;
 	[self.view addSubview:_takePhotoButton];
 	
 	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
@@ -1118,6 +1130,14 @@
 					  otherButtonTitles:nil] show];
 }
 
+- (void)_goShareComment {
+	[[[UIAlertView alloc] initWithTitle:nil
+								message:@"Tan and hold to share"
+							   delegate:nil
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", @"Cancel")
+					  otherButtonTitles:nil] show];
+}
+
 - (void)_goSetName {
 	
 	_comment = _nameTextField.text;
@@ -1217,18 +1237,26 @@
 		CGPoint touchPoint = [gestureRecognizer locationInView:self.view];
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
-		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {
-			[[PBJVision sharedInstance] startVideoCapture];
+		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint) || CGRectContainsPoint(_messengerButton.frame, touchPoint)) {
+			_isShare = CGRectContainsPoint(_messengerButton.frame, touchPoint);
+			
+			PBJVision *vision = [PBJVision sharedInstance];
+			
+//			if (_isShare) {
+//				vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
+//			}
+			
+			[vision startVideoCapture];
 			
 			_imageView.alpha = 0.0;
 			
 			_previewTintView.hidden = YES;
 			_openCommentButton.hidden = YES;
-			_messengerButton.hidden = YES;
 			_animationImageView.hidden = YES;
 			
 			_openCommentButton.alpha = 0.0;
-			_messengerButton.alpha = 0.0;
+			_messengerButton.alpha = CGRectContainsPoint(_messengerButton.frame, touchPoint); //0.0
+			_takePhotoButton.alpha = CGRectContainsPoint(_takePhotoButton.frame, touchPoint); //0.0
 			
 			[_cameraTutorialImageView removeFromSuperview];
 			
@@ -1298,6 +1326,12 @@
 			
 			_openCommentButton.alpha = 1.0;
 			_messengerButton.alpha = 1.0;
+			_openCommentButton.hidden = NO;
+			_messengerButton.hidden = NO;
+			
+//			_openCommentButton.alpha = 1.0;
+//			_messengerButton.alpha = 1.0;
+			_takePhotoButton.alpha = 1.0;
 		
 			gestureRecognizer.enabled = YES;
 			
@@ -1342,28 +1376,25 @@
 - (void)_playbackStateChanged:(NSNotification *)notification {
 	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
 	
-	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
-//		_animationImageView.hidden = YES;
-//		
-		if (![_commentTextField isFirstResponder]) {
-			_openCommentButton.alpha = 1.0;
-			_messengerButton.alpha = 1.0;
-		}
-//
-//		_imageView.alpha = 0.0;
-//		_imageView.hidden = YES;
-	}
-	
-	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 2) {
+	if (_moviePlayer.duration == _moviePlayer.playableDuration) {
+//	if (_moviePlayer.loadState == 0 && _moviePlayer.playbackState == 1) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 		_loadingImageView.hidden = YES;
-		
 		_animationImageView.hidden = YES;
-		
+			
 		_imageView.alpha = 0.0;
 		_imageView.hidden = YES;
+		});
 	}
 	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
+		if (![_commentTextField isFirstResponder] && _openCommentButton.alpha != 0.0) {
+			_openCommentButton.alpha = 1.0;
+			_messengerButton.alpha = 1.0;
+			_openCommentButton.hidden = NO;
+			_messengerButton.hidden = NO;
+		}
+		
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
 																																	  @"channel"	: _channel.name}];
 		
@@ -2463,34 +2494,32 @@
 	_imageView.hidden = NO;
 	_imageView.alpha = 1.0;
 	
-	//	NSDictionary *params = @{@"action"	: @(1),
-	//							 @"channel"	: _channel.name,
-	//							 @"userID"	: @([[HONUserAssistant sharedInstance] activeUserID]),
-	//							 @"vidURL"	: _vidName};
-	//
-	//	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"http://gs.trydood.com", @"popup.php", params);
-	//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://gs.trydood.com"]];
-	//	[httpClient postPath:@"popup.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-	//		NSError *error = nil;
-	//		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-	//
-	//		if (error != nil) {
-	//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-	//			[[HONAPICaller sharedInstance] showDataErrorHUD];
-	//
-	//		} else {
-	//			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-	//
-	//
-	//		}
-	//
-	//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-	//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"http://gs.trydood.com", @"popup.php", [error localizedDescription]);
-	//		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	//	}];
+	
+	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
+	[matteView addSubview:[[UIImageView alloc] initWithImage:[[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
+	//matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.height * 0.5));
+	matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.width * 0.5));
+	
+	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareOverlay"]];
+	overlayImageView.frame = CGRectOffset(overlayImageView.frame, (matteView.frame.size.width - overlayImageView.frame.size.width) * 0.5, (matteView.frame.size.height - overlayImageView.frame.size.height) * 0.5);
+	[matteView addSubview:overlayImageView];
 	
 	
-	//	if (_gestureDur >= 1) {
+	_thumbURL = [NSString stringWithFormat:@"%d.jpg", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+	NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:_thumbURL];
+	[UIImageJPEGRepresentation([matteView createImageFromView], 0.50) writeToFile:filePath atomically:YES];
+	
+	
+	NSURL* fileUrl = [NSURL fileURLWithPath:filePath];
+	
+	//upload the image
+	AWSS3TransferManagerUploadRequest *imageUploadRequest = [AWSS3TransferManagerUploadRequest new];
+	imageUploadRequest.bucket = @"popup-thumbs";
+	imageUploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+	imageUploadRequest.key = _thumbURL;
+	imageUploadRequest.body = fileUrl;
+	imageUploadRequest.contentType = @"image/jpeg";
+	
 	
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
 	
@@ -2502,76 +2531,73 @@
 	uploadRequest.body = url;
 	
 	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
-	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+	[[transferManager upload:imageUploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
 		_lpGestureRecognizer.enabled = YES;
 		if (task.error) {
 			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
 			
-			_animationImageView.hidden = YES;
-			
-			_openCommentButton.alpha = 1.0;
-			_messengerButton.alpha = 1.0;
-			
-			
-			_openCommentButton.hidden = NO;
-			_messengerButton.hidden = YES;
-			
-			[_moviePlayer play];
-			
-			_imageView.alpha = 0.0;
-			_imageView.hidden = YES;
-		
 		} else {
 			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
 			
-			//				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://kikgames.trydood.com/"]];
-			//				[httpClient getPath:@"postVideo.php" parameters:@{@"channel"	: _channel.name,
-			//																	@"file"		: [[path pathComponents] lastObject]} success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			//																		 NSError *error = nil;
-			//																		 NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//
-			//																		 if (error != nil) {
-			//																			 SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-			//																			 [[HONAPICaller sharedInstance] showDataErrorHUD];
-			//
-			//																		 } else {
-			//																			 SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			//																		 }
-			//
-			//																		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			//																			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [[HONAPICaller sharedInstance] pythonAPIBasePath], @"newsfeed/member/", [error localizedDescription]);
-			//																			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			//																		}];
-			
-			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name,
-																																		  @"file"		: [[path pathComponents] lastObject]}];
-			
-			//				[PubNub sendMessage:@"Somebody posted a video!"
-			//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-			//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-			//						  }];
-			
-			[PubNub sendMessage:[[path pathComponents] lastObject]
-							toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-								NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-								
-								if (messageState == PNMessageSendingError) {
-									[PubNub connectWithSuccessBlock:^(NSString *origin) {
-										PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
-										NSLog(@"PubNub CONNECT:[%@]", origin);
-										[[HONUserAssistant sharedInstance] writeUserID:[PubNub sharedInstance].clientIdentifier];
-										[self _channelSetupForStatusUpdate];
-										
-									} errorBlock:^(PNError *connectionError) {
-										NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
-									}];
-								}
-							}];
+			if (_isShare) {
+				[self _goShare];
+				_animationImageView.hidden = YES;
+				
+				_openCommentButton.alpha = 1.0;
+				_messengerButton.alpha = 1.0;
+				
+				
+				_openCommentButton.hidden = NO;
+				_messengerButton.hidden = NO;
+				
+				[_moviePlayer play];
+				
+				_imageView.alpha = 0.0;
+				_imageView.hidden = YES;
+			}
 		}
 		
 		return (nil);
 	}];
-	//	}
+	
+	if (!_isShare) {
+		[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+			_lpGestureRecognizer.enabled = YES;
+			if (task.error) {
+				NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+//				[_moviePlayer play];
+			
+			} else {
+				NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
+				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name,
+																																			  @"file"		: [[path pathComponents] lastObject]}];
+				
+//				[PubNub sendMessage:@"Somebody posted a video!"
+//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+//						  }];
+				
+				[PubNub sendMessage:[[path pathComponents] lastObject]
+								toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
+									NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
+									
+									if (messageState == PNMessageSendingError) {
+										[PubNub connectWithSuccessBlock:^(NSString *origin) {
+											PNLog(PNLogGeneralLevel, self, @"{BLOCK} PubNub client connected to: %@", origin);
+											NSLog(@"PubNub CONNECT:[%@]", origin);
+											[[HONUserAssistant sharedInstance] writeUserID:[PubNub sharedInstance].clientIdentifier];
+											[self _channelSetupForStatusUpdate];
+											
+										} errorBlock:^(PNError *connectionError) {
+											NSLog(@"PubNub CONNECT ERROR:[%@]", connectionError);
+										}];
+									}
+								}];
+			}
+			
+			return (nil);
+		}];
+	}
 }
 
 
@@ -2629,9 +2655,16 @@
 		}
 		
 		if (image != nil) {
-			[linkObjs addObject:[KakaoTalkLinkObject createImage:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @""
-														   width:image.size.width
-														  height:image.size.height]];
+			[[NSUserDefaults standardUserDefaults] replaceObject:UIImagePNGRepresentation(_imageView.image) forKey:@"kakao_image"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			[linkObjs addObject:[KakaoTalkLinkObject createImage:[NSString stringWithFormat:@"https://s3.amazonaws.com/popup-thumbs/%@", _thumbURL]
+														   width:_imageView.image.size.width
+														  height:_imageView.image.size.height]];
+			
+//			[linkObjs addObject:[KakaoTalkLinkObject createImage:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @""
+//														   width:image.size.width
+//														  height:image.size.height]];
 		}
 		
 		if ([url length] > 0) {

@@ -40,18 +40,18 @@
 //	NSString *caption = ([[dictionary objectForKey:@"title"] isEqualToString:@"Feedback"] || [[dictionary objectForKey:@"title"] isEqualToString:@"New People"]) ? [dictionary objectForKey:@"title"] : ([dictionary objectForKey:@"url"] != nil) ? [[dictionary objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""] : @"pp1.link/…";
 	NSString *caption = [dictionary objectForKey:@"title"];//(self.indexPath.section == 1) ? [dictionary objectForKey:@"title"] : ([dictionary objectForKey:@"url"] != nil) ? [[dictionary objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""] : @"pp1.link/…";
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 12.0, self.frame.size.width - 50.0, 28.0)];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 12.0, self.frame.size.width - 24.0, 28.0)];
 	titleLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
 	titleLabel.textColor = [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.text = caption;
+	titleLabel.text = (self.indexPath.section == 1) ? [NSString stringWithFormat:@"%d %@", [[dictionary objectForKey:@"occupants"] intValue], ([[dictionary objectForKey:@"occupants"] intValue] == 1) ? @"person" : @"people"] : [NSString stringWithFormat:@"%@%@, %d %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:[dictionary objectForKey:@"timestamp"]], ([[[HONDateTimeAlloter sharedInstance] intervalSinceDate:[dictionary objectForKey:@"timestamp"]] isEqualToString:@"Just now"]) ? @"" : @" ago", [[dictionary objectForKey:@"occupants"] intValue], ([[dictionary objectForKey:@"occupants"] intValue] == 1) ? @"person" : @"people"];
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 36.0, self.frame.size.width - 50.0, 28.0)];
+	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 36.0, self.frame.size.width - 24.0, 28.0)];
 	participantsLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:15];
 	participantsLabel.textColor = [UIColor blackColor];
 	participantsLabel.backgroundColor = [UIColor clearColor];
-	participantsLabel.text = (self.indexPath.section == 1) ? [NSString stringWithFormat:@"%d %@", [[dictionary objectForKey:@"occupants"] intValue], ([[dictionary objectForKey:@"occupants"] intValue] == 1) ? @"person" : @"people"] : [NSString stringWithFormat:@"%@%@, %d %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:[dictionary objectForKey:@"timestamp"]], ([[[HONDateTimeAlloter sharedInstance] intervalSinceDate:[dictionary objectForKey:@"timestamp"]] isEqualToString:@"Just now"]) ? @"" : @" ago", [[dictionary objectForKey:@"occupants"] intValue], ([[dictionary objectForKey:@"occupants"] intValue] == 1) ? @"person" : @"people"];
+	participantsLabel.text = caption;
 	[self.contentView addSubview:participantsLabel];
 }
 
