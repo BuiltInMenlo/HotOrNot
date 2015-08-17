@@ -36,7 +36,7 @@
 		[self addSubview:_activityIndicatorView];
 		
 		_backButton = [HONButton buttonWithType:UIButtonTypeCustom];
-		_backButton.frame = CGRectMake(12.0, 1.0, 99.0, 46.0);
+		_backButton.frame = CGRectMake(12.0, 7.0, 99.0, 46.0);
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[_backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
@@ -90,12 +90,12 @@
 #pragma mark - Public APIs
 - (void)changeButton:(BOOL)isArrow {
 	if (isArrow) {
-		_backButton.frame = CGRectMake(12.0, 1.0, 99.0, 46.0);
+		_backButton.frame = CGRectMake(12.0, 7.0, 99.0, 46.0);
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		
 	} else {
-		_backButton.frame = CGRectMake(14.0, 3.0, 46.0, 46.0);
+		_backButton.frame = CGRectMake(14.0, 9.0, 46.0, 46.0);
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	}

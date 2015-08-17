@@ -839,7 +839,7 @@
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 60.0, 18.0, 50.0, 22.0)];
+	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 60.0, 24.0, 50.0, 22.0)];
 	_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
 	_participantsLabel.backgroundColor = [UIColor clearColor];
 	_participantsLabel.textAlignment = NSTextAlignmentRight;
@@ -895,7 +895,7 @@
 	//[self.view addSubview:_toggleMicButton];
 	
 	_videoVisibleButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 49.0, 44.0, 44.0);
+	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 49.0, 42.0, 42.0);
 	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_nonActive"] forState:UIControlStateNormal];
 	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_Active"] forState:UIControlStateHighlighted];
 	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
@@ -903,7 +903,7 @@
 	[self.view addSubview:_videoVisibleButton];
 	
 	_historyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_historyButton.frame = CGRectMake(self.view.frame.size.width - 50.0, (self.view.frame.size.height * 0.6830) - 54.0, 44.0, 44.0);
+	_historyButton.frame = CGRectMake(self.view.frame.size.width - 49.0, (self.view.frame.size.height * 0.6830) - 53.0, 42.0, 42.0);
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
 	//_historyButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
@@ -942,7 +942,7 @@
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
 	//_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 2.0 + (((self.view.frame.size.height * 0.6830) - _openCommentButton.frame.size.height) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
-	_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, (self.view.frame.size.height * 0.6830) - 47.0, _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
+	_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, (self.view.frame.size.height * 0.6830) - 48.0, _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
 	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
 	_openCommentButton.hidden = YES;
 	[self.view addSubview:_openCommentButton];
@@ -962,7 +962,7 @@
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 //	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 4.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-	_takePhotoButton.frame = CGRectMake(2.0 + (self.view.frame.size.width * 0.5), 0.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(3.0 + (self.view.frame.size.width * 0.5), 0.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	//_takePhotoButton.hidden = YES;
 	[self.view addSubview:_takePhotoButton];
