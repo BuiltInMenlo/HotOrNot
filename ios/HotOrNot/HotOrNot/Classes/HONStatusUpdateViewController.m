@@ -341,7 +341,7 @@
 }
 
 - (PNChannel *)_channelSetupForStatusUpdate {
-	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
+	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"CHANNEL_%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 		
 	[PubNub subscribeOn:@[channel]];
@@ -1190,7 +1190,6 @@
 	_scrollView.hidden = YES;
 	_toggleMicButton.hidden = NO;
 	_cameraFlipButton.hidden = NO;
-	_lpGestureRecognizer.enabled = YES;
 	_openCommentButton.alpha = 1.0;
 	_messengerButton.alpha = 1.0;
 	
@@ -1242,9 +1241,9 @@
 			
 			PBJVision *vision = [PBJVision sharedInstance];
 			
-//			if (_isShare) {
-//				vision.cameraDevice = (vision.cameraDevice == PBJCameraDeviceBack) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
-//			}
+			if (_isShare) {
+				vision.cameraDevice = PBJCameraDeviceFront;
+			}
 			
 			[vision startVideoCapture];
 			
@@ -1300,43 +1299,37 @@
 		}
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-		if (gestureRecognizer.enabled) {
-			//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
-			
-			NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-			_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6830, self.view.frame.size.width, self.view.frame.size.height * 0.6830);
-			
-			_statusLabel.text = @"Sending popup…";
-			_animationImageView.hidden = NO;
-			
-			[[PBJVision sharedInstance] endVideoCapture];
-			_statusUpdateHeaderView.hidden = NO;
-			_countdownLabel.text = @"";
-			_countdownLabel.hidden = YES;
-			_previewTintView.hidden = NO;
-			_moviePlayer.view.hidden = NO;
-			_playerLayer.hidden = NO;
-			_videoVisibleButton.hidden = NO;
-			_historyButton.hidden = NO;
-			_participantsLabel.hidden = NO;
-			_toggleMicButton.hidden = NO;
-			_logoImageView.hidden = YES;
-			_cameraFlipButton.hidden = NO;
-			_expireLabel.hidden = NO;
-			
-			_openCommentButton.alpha = 1.0;
-			_messengerButton.alpha = 1.0;
-			_openCommentButton.hidden = NO;
-			_messengerButton.hidden = NO;
-			
-//			_openCommentButton.alpha = 1.0;
-//			_messengerButton.alpha = 1.0;
-			_takePhotoButton.alpha = 1.0;
+		//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 		
-			gestureRecognizer.enabled = YES;
-			
-		} else
-			gestureRecognizer.enabled = YES;
+		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
+		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6830, self.view.frame.size.width, self.view.frame.size.height * 0.6830);
+		
+		_statusLabel.text = @"Sending popup…";
+		_animationImageView.hidden = NO;
+		
+		[[PBJVision sharedInstance] endVideoCapture];
+		_statusUpdateHeaderView.hidden = NO;
+		_countdownLabel.text = @"";
+		_countdownLabel.hidden = YES;
+		_previewTintView.hidden = NO;
+		_moviePlayer.view.hidden = NO;
+		_playerLayer.hidden = NO;
+		_videoVisibleButton.hidden = NO;
+		_historyButton.hidden = NO;
+		_participantsLabel.hidden = NO;
+		_toggleMicButton.hidden = NO;
+		_logoImageView.hidden = YES;
+		_cameraFlipButton.hidden = NO;
+		_expireLabel.hidden = NO;
+		
+		_openCommentButton.alpha = 1.0;
+		_messengerButton.alpha = 1.0;
+		_openCommentButton.hidden = NO;
+		_messengerButton.hidden = NO;
+		
+//		_openCommentButton.alpha = 1.0;
+//		_messengerButton.alpha = 1.0;
+		_takePhotoButton.alpha = 1.0;
 	}
 }
 
@@ -2479,7 +2472,7 @@
 
 - (void)vision:(PBJVision *)vision capturedVideo:(NSDictionary *)videoDict error:(NSError *)error {
 	NSLog(@"[*:*] vision:capturedVideo:[%@] [*:*]", videoDict);
-	_lpGestureRecognizer.enabled = NO;
+	vision.cameraDevice = PBJCameraDeviceBack;
 	
 	NSString *bucketName = @"popup-vids";//@"hotornot-challenges";
 	
@@ -2490,13 +2483,13 @@
 //	PNChannel *vidChannel = [PNChannel channelWithName:[NSString stringWithFormat:@"%@_%@", [PubNub sharedInstance].clientIdentifier, [[[[path pathComponents] lastObject] componentsSeparatedByString:@"_"] lastObject]]];
 //	[PubNub subscribeOn:@[vidChannel]];
 	
-	_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
+	_imageView.image = (_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
 	_imageView.hidden = NO;
 	_imageView.alpha = 1.0;
 	
 	
 	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
-	[matteView addSubview:[[UIImageView alloc] initWithImage:[[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
+	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
 	//matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.height * 0.5));
 	matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.width * 0.5));
 	
@@ -2532,7 +2525,6 @@
 	
 	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
 	[[transferManager upload:imageUploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-		_lpGestureRecognizer.enabled = YES;
 		if (task.error) {
 			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
 			
@@ -2541,41 +2533,34 @@
 			
 			if (_isShare) {
 				[self _goShare];
-				_animationImageView.hidden = YES;
-				
-				_openCommentButton.alpha = 1.0;
-				_messengerButton.alpha = 1.0;
-				
-				
-				_openCommentButton.hidden = NO;
-				_messengerButton.hidden = NO;
-				
-				[_moviePlayer play];
-				
-				_imageView.alpha = 0.0;
-				_imageView.hidden = YES;
+//				_animationImageView.hidden = YES;
+//				
+//				_openCommentButton.alpha = 1.0;
+//				_messengerButton.alpha = 1.0;
+//				
+//				
+//				_openCommentButton.hidden = NO;
+//				_messengerButton.hidden = NO;
+//				
+//				[_moviePlayer play];
+//				
+//				_imageView.alpha = 0.0;
+//				_imageView.hidden = YES;
 			}
 		}
 		
 		return (nil);
 	}];
 	
-	if (!_isShare) {
+	//if (!_isShare) {
 		[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-			_lpGestureRecognizer.enabled = YES;
 			if (task.error) {
 				NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
-//				[_moviePlayer play];
 			
 			} else {
 				NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
 				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channel.name,
 																																			  @"file"		: [[path pathComponents] lastObject]}];
-				
-//				[PubNub sendMessage:@"Somebody posted a video!"
-//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//						  }];
 				
 				[PubNub sendMessage:[[path pathComponents] lastObject]
 								toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
@@ -2597,7 +2582,7 @@
 			
 			return (nil);
 		}];
-	}
+//	}
 }
 
 
