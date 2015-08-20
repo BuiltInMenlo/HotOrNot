@@ -32,17 +32,17 @@ static HONDateTimeAlloter *sharedInstance = nil;
 
 
 - (NSString *)intervalSinceDate:(NSDate *)date {
-	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"second", @"s"],
-																									   @"minutes"	: @[@"minute", @"s"],
-																									   @"hours"		: @[@"hour", @"s"],
-																									   @"days"		: @[@"day", @"s"]} includeSuffix:@""]);
+	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"s", @""],
+																									   @"minutes"	: @[@"m", @""],
+																									   @"hours"		: @[@"h", @""],
+																									   @"days"		: @[@"d", @""]} includeSuffix:@""]);
 }
 
 - (NSString *)intervalSinceDate:(NSDate *)date includeSuffix:(NSString *)suffix {
-	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"second", @"s"],
-																									   @"minutes"	: @[@"minute", @"s"],
-																									   @"hours"		: @[@"hour", @"s"],
-																									   @"days"		: @[@"day", @"s"]} includeSuffix:suffix]);
+	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"s", @""],
+																									   @"minutes"	: @[@"m", @""],
+																									   @"hours"		: @[@"h", @""],
+																									   @"days"		: @[@"d", @""]} includeSuffix:suffix]);
 }
 
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix {
@@ -56,23 +56,23 @@ static HONDateTimeAlloter *sharedInstance = nil;
 //	NSLog(@"UTC_NOW:[%@] DATE:[%@] -=- SECS:[%d]", [NSDate utcNowDate], date, secs);
 	
 	if (days > 0)
-		interval = [[NSStringFromInt(days) stringByAppendingFormat:@" %@", [[indicators objectForKey:@"days"] objectAtIndex:0]] stringByAppendingString:(days != 1) ? [[indicators objectForKey:@"days"] objectAtIndex:1] : @""];
+		interval = [[NSStringFromInt(days) stringByAppendingFormat:@"%@", [[indicators objectForKey:@"days"] objectAtIndex:0]] stringByAppendingString:(days != 1) ? [[indicators objectForKey:@"days"] objectAtIndex:1] : @""];
 	
 	else {
 		if (hours > 0)
-			interval = [[NSStringFromInt(hours) stringByAppendingFormat:@" %@", [[indicators objectForKey:@"hours"] objectAtIndex:0]] stringByAppendingString:(hours != 1) ? [[indicators objectForKey:@"hours"] objectAtIndex:1] : @""];
+			interval = [[NSStringFromInt(hours) stringByAppendingFormat:@"%@", [[indicators objectForKey:@"hours"] objectAtIndex:0]] stringByAppendingString:(hours != 1) ? [[indicators objectForKey:@"hours"] objectAtIndex:1] : @""];
 		
 		else {
 			if (mins > 0)
-				interval = [[NSStringFromInt(mins) stringByAppendingFormat:@" %@", [[indicators objectForKey:@"minutes"] objectAtIndex:0]] stringByAppendingString:(mins != 1) ? [[indicators objectForKey:@"minutes"] objectAtIndex:1] : @""];
+				interval = [[NSStringFromInt(mins) stringByAppendingFormat:@"%@", [[indicators objectForKey:@"minutes"] objectAtIndex:0]] stringByAppendingString:(mins != 1) ? [[indicators objectForKey:@"minutes"] objectAtIndex:1] : @""];
 			
 			else
-				interval = [[NSStringFromInt(secs) stringByAppendingFormat:@" %@", [[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:(secs != 1) ? [[indicators objectForKey:@"seconds"] objectAtIndex:1] : @""];
+				interval = [[NSStringFromInt(secs) stringByAppendingFormat:@"%@", [[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:(secs != 1) ? [[indicators objectForKey:@"seconds"] objectAtIndex:1] : @""];
 		}
 	}
 	
 	interval = (suffix != nil && [suffix length] > 0) ? [interval stringByAppendingString:suffix] : interval;
-	return ((secs <= minSeconds) ? @"Just now" : interval);
+	return ((secs <= minSeconds) ? @"" : interval);
 }
 
 @end

@@ -552,6 +552,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	_messageURLHandler.delegate = self;
 	
 	
+	
 //	NSString *src = @"1426799062_2a85921f3cbf4f8f9e99d37842c09818";
 //	NSString *match = @"^\\d{10,}_[a-f0-9]{32}$";
 //	NSLog(@"RegEx TEST --- (%@) CONTAINS (%@) ::::: [%@]", src, match, NSStringFromBOOL([[[NSRegularExpression alloc] initWithPattern:match] isMatch:src]));
@@ -643,7 +644,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
 	
 #ifdef FONTS
-	[self _showFonts];
+	//[self _showFonts];
 #endif
 	//[UIImageDebugger startDebugging];
 	

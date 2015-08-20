@@ -53,6 +53,7 @@
 @property (nonatomic, strong) TransitionDelegate *transitionController;
 @property (nonatomic, strong) NSArray *colors;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) NSArray *appChannels;
 
 @property (nonatomic, strong) UIView *loadingView;
 
@@ -138,6 +139,22 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	_appChannels = @[@{@"title"		: @"Music",
+					   @"channel"	: @"79cd5259-a571-44e5-8d9d-32ac2fa11dab_1439925535",
+					   @"url"		: @"http://pp1.link/5gvGQn",
+					   @"timestamp"	: [NSDate date],
+					   @"occupants"	: @"1"},
+					 @{@"title"		: @"Games",
+					   @"channel"	: @"79cd5259-a571-44e5-8d9d-32ac2fa11dab_1439925562",
+					   @"url"		: @"http://pp1.link/SCcYIQ",
+					   @"timestamp"	: [NSDate date],
+					   @"occupants"	: @"1"},
+					 @{@"title"		: @"Explore",
+					   @"channel"	: @"79cd5259-a571-44e5-8d9d-32ac2fa11dab_1439925586",
+					   @"url"		: @"http://pp1.link/URXK7m",
+					   @"timestamp"	: [NSDate date],
+					   @"occupants"	: @"1"}];
+	
 	// blue
 	self.view.backgroundColor = [UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00];
 	
@@ -207,8 +224,9 @@
 	_composeButton.alpha = 1.0;
 	[self.view addSubview:_composeButton];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 2.0, 74.0, _scrollView.frame.size.width, _scrollView.frame.size.height - (74.0 + _composeButton.frame.size.height))];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * 2.0, 74.0, _scrollView.frame.size.width, _scrollView.frame.size.height - 74.0)];
 	_tableView.backgroundColor = [UIColor whiteColor];//[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00];
+	_tableView.contentInset = UIEdgeInsetsMake(0.0, 0.0, _composeButton.frame.size.height, 0.0);
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[_tableView setTag:2];
@@ -222,7 +240,7 @@
 	[self.view addSubview:_headerView];
 	
 	UIImageView *brandingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"brandingHeader"]];
-	brandingImageView.frame = CGRectOffset(brandingImageView.frame, (_scrollView.frame.size.width * 2.0) + (self.view.frame.size.width - brandingImageView.frame.size.width) * 0.5, 28.0);
+	brandingImageView.frame = CGRectOffset(brandingImageView.frame, (_scrollView.frame.size.width * 2.0) + (self.view.frame.size.width - brandingImageView.frame.size.width) * 0.5, 18.0);
 	[_scrollView addSubview:brandingImageView];
 	
 	HONButton *linkButton = [HONButton buttonWithType:UIButtonTypeCustom];
@@ -230,7 +248,7 @@
 	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
 	[linkButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 	[linkButton addTarget:self action:@selector(_goPrivacy) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:linkButton];
+	//[_headerView addSubview:linkButton];
 	
 	_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(_scrollView.frame.size.width * 0.5, self.view.frame.size.height - 40.0) withTotalPages:3 usingDiameter:7.0 andPadding:10.0];
 	[_paginationView updateToPage:0];
@@ -813,11 +831,11 @@
 
 #pragma mark - TableView DataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
+	return (3);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] : 1);
+	return ((section == 0) ? 1 : (section == 1) ? 3 : [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -830,19 +848,18 @@
 	cell.delegate = self;
 	
 	if (indexPath.section == 0) {
-		NSArray *sortedArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:NO]]];
-		[cell populateFields:[sortedArray objectAtIndex:indexPath.row]];
-		
-//		[cell populateFields:[[[[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] reverseObjectEnumerator] allObjects] objectAtIndex:indexPath.row]];
+		[cell populateFields:@{@"title"		: @"Friends",
+							   @"channel"	: @"79cd5259-a571-44e5-8d9d-32ac2fa11dab_1439925679",
+							   @"url"		: @"http://pp1.link/7IVlbk",
+							   @"timestamp"	: [NSDate date],
+							   @"occupants"	: @"1"}];
 		
 	} else if (indexPath.section == 1) {
-		[cell populateFields:@{@"title"		: @"Discover",
-							   @"timestamp"	: [NSDate date],
-							   @"occupants"	: @"1"}];
-	} else {
-		[cell populateFields:@{@"title"		: @"Feedback",
-							   @"timestamp"	: [NSDate date],
-							   @"occupants"	: @"1"}];
+		[cell populateFields:[_appChannels objectAtIndex:indexPath.row]];
+	
+	} else if (indexPath.section == 2) {
+		NSArray *sortedArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:NO]]];
+		[cell populateFields:[sortedArray objectAtIndex:indexPath.row]];
 	}
 	
 	
@@ -856,7 +873,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(section == 0) ? @"tableHeaderBG" : @"featureTableHeaderBG"]];
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
 	
 //	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, tableView.frame.size.width - 30.0, 15.0)];
 //	label.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:13];
@@ -875,8 +892,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 0) ? ([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] == 0) ? 0.0 : [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height : [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height);
-	return ((section == 0) ? [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height : 0.0);
+	CGFloat height = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]].frame.size.height;
+	return ((section == 0 || section == 1) ? height : ([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] == 0) ? 0.0 : height);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -888,7 +905,7 @@
 	//HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	
-	if (indexPath.section == 0) {
+	if (indexPath.section == 2) {
 		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 		[self.view addSubview:_loadingView];
@@ -914,27 +931,31 @@
 		});
 		
 	} else if (indexPath.section == 1) {
-		//[self _goRandom];
+		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+		[self.view addSubview:_loadingView];
 		
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/app.php"]];
+		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+		[activityIndicatorView startAnimating];
+		[_loadingView addSubview:activityIndicatorView];
+		
+		NSDictionary *dictionary = [_appChannels objectAtIndex:indexPath.row];
+		
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: [dictionary objectForKey:@"channel"]}];
+		
+		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"channel"]];
+		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+			[_loadingView removeFromSuperview];
+			[_tutorialImageView removeFromSuperview];
 			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Kik Not Available!"
-										message:@"Cannot open Kik on this device"
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
-//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://popup.rocks/route.php?d=01595d61-1934-40d0-a3c8-277f6f5098b8_1438926430&a=popup"]];
+			[_loadingOverlayView outro];
+			_textField.text = @"What is on your mind?";
+		});
 		
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONDiscoverViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:YES completion:^(void) {
-//		}];
-		
-	
-	} else if (indexPath.section == 2) {
+	} else if (indexPath.section == 0) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: @"e23d61a9-622c-45c1-b92e-fd7c5d586b3a_1438284321"}];
 		
 		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
@@ -946,7 +967,7 @@
 		[activityIndicatorView startAnimating];
 		[_loadingView addSubview:activityIndicatorView];
 		
-		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:@"e23d61a9-622c-45c1-b92e-fd7c5d586b3a_1438284321"];
+		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:@"79cd5259-a571-44e5-8d9d-32ac2fa11dab_1439925679"];
 		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
 		
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {

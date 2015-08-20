@@ -31,6 +31,7 @@
 		3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5DC1A7B200500231BA5 /* UIImageDebugger.m */; };
 		3024A5E61A7B769500231BA5 /* HONLoadingOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5E51A7B769500231BA5 /* HONLoadingOverlayView.m */; };
 		302588EA1B56F0F40036D2D7 /* selfie_notification.aif in Resources */ = {isa = PBXBuildFile; fileRef = 302588E91B56F0F40036D2D7 /* selfie_notification.aif */; };
+		3026912F1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf in Resources */ = {isa = PBXBuildFile; fileRef = 3026912E1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf */; };
 		30283B9A1B60BBEC00317EFE /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		302C9AB91A86AE5C009E7DD6 /* AnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = 302C9AB61A86AE5C009E7DD6 /* AnimatedTransitioning.m */; };
@@ -355,6 +356,7 @@
 		3024A5E41A7B769500231BA5 /* HONLoadingOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONLoadingOverlayView.h; sourceTree = "<group>"; };
 		3024A5E51A7B769500231BA5 /* HONLoadingOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLoadingOverlayView.m; sourceTree = "<group>"; };
 		302588E91B56F0F40036D2D7 /* selfie_notification.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.aif; sourceTree = "<group>"; };
+		3026912E1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = kakaotalki_6uqztCxm.caf; sourceTree = "<group>"; };
 		30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
@@ -2271,6 +2273,7 @@
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
+				3026912E1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf */,
 				302588E91B56F0F40036D2D7 /* selfie_notification.aif */,
 				303BAD0E19D5E78600CB2501 /* fpo_push.caf */,
 				4C83FD90190F62E800CAEABB /* fpo_upvote.mp3 */,
@@ -2595,6 +2598,7 @@
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
 				3073BB381ACB97EA00CE2441 /* iTunesArtwork.png in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
+				3026912F1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf in Resources */,
 				303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */,
 				30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */,
 				4C83FD9D190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf in Resources */,

@@ -95,7 +95,7 @@
 @property (nonatomic, strong) NSString *thumbURL;
 @property (nonatomic, strong) NSString *channelName;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
-@property (nonatomic, strong) NSTimer *gestureTimer;
+@property (nonatomic, strong) NSTimer *bufferTimer;
 @property (nonatomic, strong) NSMutableArray *videoPlaylist;
 @property (nonatomic, strong) NSString *lastVideo;
 @property (nonatomic, strong) UIImageView *logoImageView;
@@ -111,6 +111,7 @@
 @property (nonatomic) BOOL isSubmitting;
 @property (nonatomic) BOOL isActive;
 @property (nonatomic) BOOL isTutorial;
+@property (nonatomic) BOOL isPlaying;
 @property (nonatomic) int expireSeconds;
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
@@ -341,7 +342,7 @@
 }
 
 - (PNChannel *)_channelSetupForStatusUpdate {
-	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"CHANNEL_%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
+	NSString *channelName = ([_channelName length] == 0) ? [NSString stringWithFormat:@"%@_%d", [PubNub sharedInstance].clientIdentifier, [NSDate elapsedUTCSecondsSinceUnixEpoch]] : _channelName;
 	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
 		
 	[PubNub subscribeOn:@[channel]];
@@ -423,7 +424,7 @@
 			NSLog(@"\n::: SUBSCRIPTION OBSERVER - [%@](%@)\n", (state == PNSubscriptionProcessSubscribedState) ? @"Subscribed" : (state == PNSubscriptionProcessRestoredState) ? @"Restored" : (state == PNSubscriptionProcessNotSubscribedState) ? @"NotSubscribed" : (state == PNSubscriptionProcessWillRestoreState) ? @"WillRestore" : @"UNKNOWN", channel.name);
 			
 			if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
-				[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"fpo_push"];
+				[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"kakaotalki_6uqztCxm"];
 				
 				_channel = channel;
 				_participants = 0;
@@ -624,6 +625,7 @@
 					
 					_loadingImageView.hidden = NO;
 					
+					_isPlaying = NO;
 					_lastVideo = [commentVO.imagePrefix lastComponentByDelimeter:@"/"];
 					_moviePlayer.contentURL = url;
 					[_moviePlayer play];
@@ -655,6 +657,14 @@
 					
 					_openCommentButton.hidden = NO;
 					_messengerButton.hidden = NO;
+					
+				} else if ([txtContent rangeOfString:@"taps.io"].location != NSNotFound) {
+					NSString *url = [NSString stringWithFormat:@"http://%@", [[[txtContent substringFromIndex:[txtContent rangeOfString:@"taps.io"].location] componentsSeparatedByString:@" "] firstObject]];
+					NSLog(@"ChatMessageType:[TAPS.IO] (%@)", url);
+					
+					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+						[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+					});
 					
 				} else {
 					NSDictionary *dict = @{@"id"				: @"0",
@@ -777,7 +787,23 @@
 	_expireSeconds = 600;
 	_participants = 0;
 	
-	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.6830, self.view.frame.size.width, self.view.frame.size.height * 0.6830)];
+	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+	_moviePlayer.controlStyle = MPMovieControlStyleNone;
+	_moviePlayer.view.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	_moviePlayer.shouldAutoplay = YES;
+	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
+	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+	_moviePlayer.view.frame = self.view.frame;
+	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 0.7570)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.7570) + 1.0);
+	[self.view addSubview:_moviePlayer.view];
+	
+//	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake((_moviePlayer.view.frame.size.height - _moviePlayer.view.frame.size.width) * -0.5, 0.0, _moviePlayer.view.frame.size.height, _moviePlayer.view.frame.size.height)];
+	_imageView.hidden = YES;
+	[self.view addSubview:_imageView];
+	
+//---	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.7570, self.view.frame.size.width, self.view.frame.size.height * 0.7570)];
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 0.7570, self.view.frame.size.width, self.view.frame.size.height)];
 	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
 	
 	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
@@ -804,19 +830,10 @@
 //	_queuePlayer = [[AVQueuePlayer alloc] initWithItems:@[]];//[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
 //	_playerLayer = [AVPlayerLayer playerLayerWithPlayer:_queuePlayer];
 //	[self.view.layer insertSublayer:_playerLayer atIndex:0];
-//	_playerLayer.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6830) + 1.0);
+//	_playerLayer.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.7570) + 1.0);
 //	_playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 //	_queuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
 //	[_queuePlayer setMuted:YES];
-	
-	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-	_moviePlayer.view.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
-	_moviePlayer.shouldAutoplay = YES;
-	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
-	_moviePlayer.scalingMode = MPMovieScalingModeFill;
-	_moviePlayer.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.6830) + 1.0);
-	[self.view addSubview:_moviePlayer.view];
 	
 	
 	_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
@@ -824,11 +841,6 @@
 	_loadingImageView.backgroundColor = [UIColor redColor];
 	_loadingImageView.hidden = YES;
 	//[self.view addSubview:_loadingImageView];
-	
-	
-	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
-	_imageView.hidden = YES;
-	[self.view addSubview:_imageView];
 	
 	_statusUpdateHeaderView = [[HONStatusUpdateHeaderView alloc] initWithStatusUpdateVO:_statusUpdateVO];
 	_statusUpdateHeaderView.delegate = self;
@@ -845,9 +857,9 @@
 	_participantsLabel.textAlignment = NSTextAlignmentRight;
 	_participantsLabel.textColor = [UIColor whiteColor];
 	_participantsLabel.text = @"0";
-	[self.view addSubview:_participantsLabel];
+	//[self.view addSubview:_participantsLabel];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 0.0 + ((self.view.frame.size.height * 0.6830) - 88.0), self.view.frame.size.width - 100.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.6830) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 0.0 + ((self.view.frame.size.height * 0.7570) - 40.0), self.view.frame.size.width - 100.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.7570) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 //	_expireLabel.numberOfLines = 2;
@@ -874,13 +886,13 @@
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
-	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 20.0 + (((self.view.frame.size.height * 0.5) - 206.0) * 0.5), 206.0, 206.0)];
+	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 0.0 + (((self.view.frame.size.height * 0.7570) - 206.0) * 0.5), 206.0, 206.0)];
 	_animationImageView.hidden = NO;
 	[self.view addSubview:_animationImageView];
 	
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, (_animationImageView.bounds.size.height + 45.0) * 0.5);
+	activityIndicatorView.center = CGPointMake(_animationImageView.bounds.size.width * 0.5, _animationImageView.bounds.size.height * 0.5);
 	[activityIndicatorView startAnimating];
 	[_animationImageView addSubview:activityIndicatorView];
 	
@@ -888,33 +900,43 @@
 	[self.view addSubview:_commentFooterView];
 	
 	_toggleMicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_toggleMicButton.frame = CGRectMake(2.0, (self.view.frame.size.height * 0.6830) + 10.0, 44.0, 44.0);
+	_toggleMicButton.frame = CGRectMake(2.0, (self.view.frame.size.height * 0.7570) + 10.0, 44.0, 44.0);
 	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_nonActive"] forState:UIControlStateNormal];
 	[_toggleMicButton setBackgroundImage:[UIImage imageNamed:@"toggleMicButton_Active"] forState:UIControlStateHighlighted];
 	[_toggleMicButton addTarget:self action:@selector(_goToggleMic) forControlEvents:UIControlEventTouchUpInside];
 	//[self.view addSubview:_toggleMicButton];
 	
 	_videoVisibleButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.6830) - 49.0, 42.0, 42.0);
+	_videoVisibleButton.frame = CGRectMake(12.0, (self.view.frame.size.height * 0.7570) - 49.0, 42.0, 42.0);
 	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_nonActive"] forState:UIControlStateNormal];
 	[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:@"videoVisibleButton-off_Active"] forState:UIControlStateHighlighted];
-	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
+	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.7570) - (_videoVisibleButton.frame.size.height + 5.0));
 	[_videoVisibleButton addTarget:self action:@selector(_goToggleVideoVisible) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_videoVisibleButton];
+	//[self.view addSubview:_videoVisibleButton];
 	
-	_historyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_historyButton.frame = CGRectMake(self.view.frame.size.width - 49.0, (self.view.frame.size.height * 0.6830) - 53.0, 42.0, 42.0);
+	_historyButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_historyButton.frame = CGRectMake(0.0, 0.0, 42.0, 42.0);
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
-	//_historyButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.6830) - (_videoVisibleButton.frame.size.height + 5.0));
+	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) * 0.5, 24.0);
 	[_historyButton addTarget:self action:@selector(_goNextVideo) forControlEvents:UIControlEventTouchUpInside];
-//	_historyButton.alpha = 0.0;
 	[self.view addSubview:_historyButton];
 	
-	_cameraFlipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraFlipButton.frame = CGRectMake(self.view.frame.size.width - 50.0, (self.view.frame.size.height * 0.6830) + 9.0, 44.0, 44.0);
+	_openCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
+	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
+	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
+	//_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 2.0 + (((self.view.frame.size.height * 0.7570) - _openCommentButton.frame.size.height) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
+	_openCommentButton.frame = CGRectOffset(_openCommentButton.frame, (self.view.frame.size.width - _openCommentButton.frame.size.width) - 10.0, 24.0);
+	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
+	_openCommentButton.hidden = YES;
+	[self.view addSubview:_openCommentButton];
+	
+	_cameraFlipButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_cameraFlipButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+	_cameraFlipButton.frame = CGRectOffset(_cameraFlipButton.frame, self.view.frame.size.width - _cameraFlipButton.frame.size.width - 6.0, (self.view.frame.size.height * 0.7570) + 9.0);
 	[_cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_cameraFlipButton];
 	
@@ -937,22 +959,12 @@
 	_nameTextField.delegate = self;
 	[self.view addSubview:_nameTextField];
 	
-	_openCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
-	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
-	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-	//_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 2.0 + (((self.view.frame.size.height * 0.6830) - _openCommentButton.frame.size.height) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
-	_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, (self.view.frame.size.height * 0.6830) - 48.0, _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
-	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
-	_openCommentButton.hidden = YES;
-	[self.view addSubview:_openCommentButton];
-	
 	_messengerButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	//_messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, 2.0 + (((self.view.frame.size.height * 0.6830) - _messengerButton.frame.size.height) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
-	_messengerButton.frame = CGRectMake(((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, 0.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _messengerButton.frame.size.width) * 0.5)), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	//_messengerButton.frame = CGRectMake((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width, 2.0 + (((self.view.frame.size.height * 0.7570) - _messengerButton.frame.size.height) * 0.5), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	_messengerButton.frame = CGRectMake(((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, 6.0 + ((self.view.frame.size.height * 0.7570) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.7570)) - _messengerButton.frame.size.width) * 0.5)), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
 	[_messengerButton addTarget:self action:@selector(_goShareComment) forControlEvents:UIControlEventTouchUpInside];
 	//_messengerButton.hidden = YES;
 	[self.view addSubview:_messengerButton];
@@ -961,8 +973,8 @@
 	_takePhotoButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
-//	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 4.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-	_takePhotoButton.frame = CGRectMake(3.0 + (self.view.frame.size.width * 0.5), 0.0 + ((self.view.frame.size.height * 0.6830) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.6830)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+//	_takePhotoButton.frame = CGRectMake((self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5, 4.0 + ((self.view.frame.size.height * 0.7570) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.7570)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectMake(3.0 + (self.view.frame.size.width * 0.5), 6.0 + ((self.view.frame.size.height * 0.7570) + (((self.view.frame.size.height - (self.view.frame.size.height * 0.7570)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	//_takePhotoButton.hidden = YES;
 	[self.view addSubview:_takePhotoButton];
@@ -971,7 +983,7 @@
 	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 25.0 + (_messengerButton.frame.origin.y - _tutorialImageView.frame.size.height));
 	
 	_cameraTutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTutorial"]];
-	_cameraTutorialImageView.frame = CGRectOffset(_cameraTutorialImageView.frame, 0.0, 13.0 + ((self.view.frame.size.height * 0.6830) - _cameraTutorialImageView.frame.size.height));
+	_cameraTutorialImageView.frame = CGRectOffset(_cameraTutorialImageView.frame, 0.0, 13.0 + ((self.view.frame.size.height * 0.7570) - _cameraTutorialImageView.frame.size.height));
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"]) {
 		_isTutorial = YES;
@@ -1243,6 +1255,7 @@
 			
 			if (_isShare) {
 				vision.cameraDevice = PBJCameraDeviceFront;
+				_tutorialImageView.hidden = YES;
 			}
 			
 			[vision startVideoCapture];
@@ -1289,7 +1302,7 @@
 			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 			
 			[_moviePlayer stop];
-			//_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.6830);
+			//_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 0.7570);
 			_cameraPreviewView.frame = self.view.frame;
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
@@ -1302,7 +1315,8 @@
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 		
 		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.6830, self.view.frame.size.width, self.view.frame.size.height * 0.6830);
+//---		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.7570, self.view.frame.size.width, self.view.frame.size.height * 0.7570);
+		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.7570, self.view.frame.size.width, self.view.frame.size.height);
 		
 		_statusLabel.text = @"Sending popup…";
 		_animationImageView.hidden = NO;
@@ -1380,6 +1394,21 @@
 		});
 	}
 	
+	if (_moviePlayer.loadState == 0 && _moviePlayer.playbackState == 1 && !_isPlaying) {
+		_bufferTimer = [NSTimer scheduledTimerWithTimeInterval:5.00
+														target:self
+													  selector:@selector(_restartPlayback)
+													  userInfo:nil repeats:NO];
+	}
+	
+	if (_moviePlayer.loadState == 3) {
+		_isPlaying = YES;
+		[_bufferTimer invalidate];
+		
+		if (_bufferTimer != nil)
+			_bufferTimer = nil;
+	}
+	
 	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
 		if (![_commentTextField isFirstResponder] && _openCommentButton.alpha != 0.0) {
 			_openCommentButton.alpha = 1.0;
@@ -1388,7 +1417,7 @@
 			_messengerButton.hidden = NO;
 		}
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
+		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
 																																	  @"channel"	: _channel.name}];
 		
 	}
@@ -1499,6 +1528,14 @@
 - (void)_updateFocus {
 	CGPoint adjustPoint = [PBJVisionUtilities convertToPointOfInterestFromViewCoordinates:self.view.center inFrame:self.view.frame];
 	[[PBJVision sharedInstance] focusExposeAndAdjustWhiteBalanceAtAdjustedPoint:adjustPoint];
+}
+
+- (void)_restartPlayback {
+	[_bufferTimer invalidate];
+	_bufferTimer = nil;
+	
+	[_moviePlayer stop];
+	[_moviePlayer play];
 }
 
 - (void)_updateTint {

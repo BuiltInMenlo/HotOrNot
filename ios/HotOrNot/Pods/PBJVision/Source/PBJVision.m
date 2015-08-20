@@ -699,12 +699,12 @@ PBJMediaWriterDelegate>
 		}
 		[self _setupGL];
 		
-		_captureSessionPreset = AVCaptureSessionPresetMedium;
+		_captureSessionPreset = AVCaptureSessionPresetLow;//AVCaptureSessionPresetMedium;
 		_captureDirectory = nil;
 		
 		_autoUpdatePreviewOrientation = YES;
 		_autoFreezePreviewDuringCapture = YES;
-		_usesApplicationAudioSession = YES;
+		_usesApplicationAudioSession = NO;
 		
 		// Average bytes per second based on video dimensions
 		// lower the bitRate, higher the compression
@@ -716,7 +716,7 @@ PBJMediaWriterDelegate>
 		// default flags
 		_flags.thumbnailEnabled = YES;
 		_flags.defaultVideoThumbnails = YES;
-		_flags.audioCaptureEnabled = NO;
+		_flags.audioCaptureEnabled = YES;
 		
 		// setup queues
 		_captureSessionDispatchQueue = dispatch_queue_create("PBJVisionSession", DISPATCH_QUEUE_SERIAL); // protects session

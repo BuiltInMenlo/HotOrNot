@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "subheader@1x.png"
+      "filename" : "subHeader@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "subheader@2x.png"
+      "filename" : "subHeader@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "subheader@1x-1.png",
+      "filename" : "subHeader@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "subheader@3x.png"
+      "filename" : "subHeader@3x.png"
     }
   ],
   "info" : {

@@ -21,7 +21,7 @@
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "AppIcon180x180.png",
+      "filename" : "AppIcon180x180@3x.png",
       "scale" : "3x"
     }
   ],
