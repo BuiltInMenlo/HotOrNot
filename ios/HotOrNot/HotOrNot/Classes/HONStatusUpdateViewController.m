@@ -24,6 +24,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIView+BuiltinMenlo.h"
 
+#import "AVQueuePlayerPrevious.h"
 #import "KikAPI.h"
 #import "PBJVision.h"
 #import "PBJVisionUtilities.h"
@@ -52,7 +53,7 @@
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
-@property (nonatomic, strong) AVQueuePlayer *queuePlayer;
+@property (nonatomic, strong) AVQueuePlayerPrevious *queuePlayer;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
@@ -837,13 +838,14 @@
 //	view.autoresizesSubviews = TRUE;
 	
 	
-//	_queuePlayer = [[AVQueuePlayer alloc] initWithItems:@[]];//[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
+//	_queuePlayer = [[AVQueuePlayerPrevious alloc] initWithItems:@[]];//[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
 //	_playerLayer = [AVPlayerLayer playerLayerWithPlayer:_queuePlayer];
-//	[self.view.layer insertSublayer:_playerLayer atIndex:0];
-//	_playerLayer.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.7570) + 1.0);
+//	_playerLayer.frame = self.view.frame;
+//	_playerLayer.frame = CGRectOffset(_playerLayer.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 0.7570)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.7570) + 1.0);
 //	_playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 //	_queuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-//	[_queuePlayer setMuted:YES];
+////	[_queuePlayer setMuted:YES];
+//	[self.view.layer insertSublayer:_playerLayer atIndex:0];
 	
 	
 	_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];

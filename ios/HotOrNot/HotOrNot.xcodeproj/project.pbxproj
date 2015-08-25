@@ -45,6 +45,7 @@
 		3051F8AA1A08AE8D00CD85F2 /* HONNextNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */; };
 		3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */; };
 		3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */; };
+		305BB8611B8C3F1700947B5F /* AVQueuePlayerPrevious.m in Sources */ = {isa = PBXBuildFile; fileRef = 305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */; };
 		30727F7F1ABA4F7B00524075 /* NSArray+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F681ABA4F7B00524075 /* NSArray+BuiltInMenlo.m */; };
 		30727F801ABA4F7B00524075 /* NSCharacterSet+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F6A1ABA4F7B00524075 /* NSCharacterSet+BuiltInMenlo.m */; };
@@ -395,6 +396,8 @@
 		3051F8C11A08DD9600CD85F2 /* HONStaticInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStaticInlines.h; sourceTree = "<group>"; };
 		3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDoneNavButtonView.h; sourceTree = "<group>"; };
 		3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDoneNavButtonView.m; sourceTree = "<group>"; };
+		305BB85F1B8C3F1700947B5F /* AVQueuePlayerPrevious.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVQueuePlayerPrevious.h; sourceTree = "<group>"; };
+		305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVQueuePlayerPrevious.m; sourceTree = "<group>"; };
 		305ED7B419C3EE5100BDCB04 /* HONToggleLEDViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleLEDViewCell.h; sourceTree = "<group>"; };
 		305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleLEDViewCell.m; sourceTree = "<group>"; };
 		30727F671ABA4F7B00524075 /* NSArray+BuiltInMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+BuiltInMenlo.h"; sourceTree = "<group>"; };
@@ -1224,6 +1227,15 @@
 			name = Bundles;
 			sourceTree = "<group>";
 		};
+		305BB85E1B8C3F1700947B5F /* AVQueuePlayerPrevious */ = {
+			isa = PBXGroup;
+			children = (
+				305BB85F1B8C3F1700947B5F /* AVQueuePlayerPrevious.h */,
+				305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */,
+			);
+			path = AVQueuePlayerPrevious;
+			sourceTree = "<group>";
+		};
 		30727F661ABA4F7B00524075 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1870,6 +1882,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				305BB85E1B8C3F1700947B5F /* AVQueuePlayerPrevious */,
 				30B3874F1B51C3D700521714 /* Hoko */,
 				30B3872D1B51AD7A00521714 /* GoogleAnalyticsServicesiOS_3.12 */,
 				30AD79201B43A0E400F9C634 /* GameShare */,
@@ -2670,6 +2683,7 @@
 				30B387911B51C3D700521714 /* HOKHandling.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
+				305BB8611B8C3F1700947B5F /* AVQueuePlayerPrevious.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONActivityNavButtonView.m in Sources */,
 				3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */,
