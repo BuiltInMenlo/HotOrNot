@@ -38,7 +38,7 @@
 		_backButton = [HONButton buttonWithType:UIButtonTypeCustom];
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-		_backButton.frame = CGRectOffset(_backButton.frame, 9.0, 6.0);
+		_backButton.frame = CGRectOffset(_backButton.frame, 6.0, 6.0);
 		[_backButton addTarget:self action:@selector(_goBack:) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_backButton];
 		

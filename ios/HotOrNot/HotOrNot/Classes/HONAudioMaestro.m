@@ -41,6 +41,8 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	AudioServicesCreateSystemSoundID((__bridge_retained CFURLRef)url, &sound);
 	AudioServicesPlaySystemSound(sound);
+	
+	NSLog(@"cafPlaybackWithFilename:[%@]", url.absoluteString);
 }
 
 @end

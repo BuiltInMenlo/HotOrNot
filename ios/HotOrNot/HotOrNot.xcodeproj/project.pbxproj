@@ -30,15 +30,12 @@
 		3024A5D91A7B1EF800231BA5 /* JRSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5D81A7B1EF800231BA5 /* JRSwizzle.m */; };
 		3024A5DD1A7B200500231BA5 /* UIImageDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5DC1A7B200500231BA5 /* UIImageDebugger.m */; };
 		3024A5E61A7B769500231BA5 /* HONLoadingOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3024A5E51A7B769500231BA5 /* HONLoadingOverlayView.m */; };
-		302588EA1B56F0F40036D2D7 /* selfie_notification.aif in Resources */ = {isa = PBXBuildFile; fileRef = 302588E91B56F0F40036D2D7 /* selfie_notification.aif */; };
-		3026912F1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf in Resources */ = {isa = PBXBuildFile; fileRef = 3026912E1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf */; };
 		30283B9A1B60BBEC00317EFE /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */; };
 		302A022119D7E41500302CC4 /* HONNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302A022019D7E41500302CC4 /* HONNavigationController.m */; };
 		302C9AB91A86AE5C009E7DD6 /* AnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = 302C9AB61A86AE5C009E7DD6 /* AnimatedTransitioning.m */; };
 		302C9ABA1A86AE5C009E7DD6 /* TransitionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 302C9AB81A86AE5C009E7DD6 /* TransitionDelegate.m */; };
 		3030DF591A63344D00406AAF /* HONMoreNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */; };
 		3030DF5C1A6348ED00406AAF /* HONSubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3030DF5B1A6348ED00406AAF /* HONSubjectsViewController.m */; };
-		303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */ = {isa = PBXBuildFile; fileRef = 303BAD0E19D5E78600CB2501 /* fpo_push.caf */; };
 		3042D9141AB659A400F2D0B8 /* HONChannelInviteButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */; };
 		3045F9BD1A1E61AD00F4FA88 /* HONHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BC1A1E61AD00F4FA88 /* HONHomeViewController.m */; };
 		3045F9C01A1E621100F4FA88 /* HONHomeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3045F9BF1A1E621100F4FA88 /* HONHomeViewFlowLayout.m */; };
@@ -175,6 +172,7 @@
 		30E6782A1AFC0B55000F56D8 /* popup_sharefb.gif in Resources */ = {isa = PBXBuildFile; fileRef = 30E678291AFC0B55000F56D8 /* popup_sharefb.gif */; };
 		30E805181A15183300F0A130 /* libFlurry_5.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E805171A15183300F0A130 /* libFlurry_5.4.0.a */; };
 		30ECB5D41B6E8616008F8666 /* Avenir.ttc in Resources */ = {isa = PBXBuildFile; fileRef = 30ECB5D31B6E8616008F8666 /* Avenir.ttc */; };
+		30FAB8571B868C5100318C09 /* join_channel.caf in Resources */ = {isa = PBXBuildFile; fileRef = 30FAB8561B868C5100318C09 /* join_channel.caf */; };
 		30FC08A419B4125200085E7C /* searchInputBG_contacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC08A619B4125200085E7C /* searchInputBG_contacts@2x.png */; };
 		30FC8C3B19A6F3F500CDB2BC /* HONStoreTransactionObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FC8C3A19A6F3F500CDB2BC /* HONStoreTransactionObserver.m */; };
 		30FE37161A81D6AF00BAB7C9 /* HONDownloadNavButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 30FE37151A81D6AF00BAB7C9 /* HONDownloadNavButton.m */; };
@@ -355,8 +353,6 @@
 		3024A5DC1A7B200500231BA5 /* UIImageDebugger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageDebugger.m; sourceTree = "<group>"; };
 		3024A5E41A7B769500231BA5 /* HONLoadingOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONLoadingOverlayView.h; sourceTree = "<group>"; };
 		3024A5E51A7B769500231BA5 /* HONLoadingOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLoadingOverlayView.m; sourceTree = "<group>"; };
-		302588E91B56F0F40036D2D7 /* selfie_notification.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.aif; sourceTree = "<group>"; };
-		3026912E1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = kakaotalki_6uqztCxm.caf; sourceTree = "<group>"; };
 		30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		302A021F19D7E41500302CC4 /* HONNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNavigationController.h; sourceTree = "<group>"; };
 		302A022019D7E41500302CC4 /* HONNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNavigationController.m; sourceTree = "<group>"; };
@@ -368,7 +364,6 @@
 		3030DF581A63344D00406AAF /* HONMoreNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMoreNavButtonView.m; sourceTree = "<group>"; };
 		3030DF5A1A6348ED00406AAF /* HONSubjectsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubjectsViewController.h; sourceTree = "<group>"; };
 		3030DF5B1A6348ED00406AAF /* HONSubjectsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubjectsViewController.m; sourceTree = "<group>"; };
-		303BAD0E19D5E78600CB2501 /* fpo_push.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fpo_push.caf; sourceTree = "<group>"; };
 		3042D9121AB659A400F2D0B8 /* HONChannelInviteButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChannelInviteButtonView.h; sourceTree = "<group>"; };
 		3042D9131AB659A400F2D0B8 /* HONChannelInviteButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChannelInviteButtonView.m; sourceTree = "<group>"; };
 		3045E59C19E4CF65003FF312 /* HONStoreProductsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStoreProductsViewController.h; sourceTree = "<group>"; };
@@ -675,6 +670,7 @@
 		30E805161A15183300F0A130 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
 		30E805171A15183300F0A130 /* libFlurry_5.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_5.4.0.a; sourceTree = "<group>"; };
 		30ECB5D31B6E8616008F8666 /* Avenir.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Avenir.ttc; sourceTree = "<group>"; };
+		30FAB8561B868C5100318C09 /* join_channel.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = join_channel.caf; sourceTree = "<group>"; };
 		30FC08A319B3FFA200085E7C /* HONContactsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsSearchViewController.h; sourceTree = "<group>"; };
 		30FC08A519B4125200085E7C /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchInputBG_contacts@2x.png"; sourceTree = "<group>"; };
 		30FC08AA19B4125500085E7C /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchInputBG_contacts@2x.png"; sourceTree = "<group>"; };
@@ -2273,9 +2269,7 @@
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
-				3026912E1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf */,
-				302588E91B56F0F40036D2D7 /* selfie_notification.aif */,
-				303BAD0E19D5E78600CB2501 /* fpo_push.caf */,
+				30FAB8561B868C5100318C09 /* join_channel.caf */,
 				4C83FD90190F62E800CAEABB /* fpo_upvote.mp3 */,
 				8F2B187B197856870085AC03 /* selfie_notification.caf */,
 				4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */,
@@ -2572,8 +2566,8 @@
 			files = (
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
+				30FAB8571B868C5100318C09 /* join_channel.caf in Resources */,
 				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
-				302588EA1B56F0F40036D2D7 /* selfie_notification.aif in Resources */,
 				30AD79351B43A1AE00F9C634 /* GSMessengerShareInfo.plist in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				30DDD7831A2A62880032B898 /* Boca Raton.gpx in Resources */,
@@ -2598,8 +2592,6 @@
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
 				3073BB381ACB97EA00CE2441 /* iTunesArtwork.png in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
-				3026912F1B84400F008E10C1 /* kakaotalki_6uqztCxm.caf in Resources */,
-				303BAD0F19D5E78600CB2501 /* fpo_push.caf in Resources */,
 				30976BE01A2D02E9001DDA82 /* Vancouver, BC.gpx in Resources */,
 				4C83FD9D190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf in Resources */,
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,

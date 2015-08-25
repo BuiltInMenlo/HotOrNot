@@ -704,7 +704,7 @@ PBJMediaWriterDelegate>
 		
 		_autoUpdatePreviewOrientation = YES;
 		_autoFreezePreviewDuringCapture = YES;
-		_usesApplicationAudioSession = NO;
+		_usesApplicationAudioSession = YES;
 		
 		// Average bytes per second based on video dimensions
 		// lower the bitRate, higher the compression
