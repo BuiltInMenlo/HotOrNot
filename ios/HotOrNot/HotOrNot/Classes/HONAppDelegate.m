@@ -34,7 +34,7 @@
 #import "NSDate+BuiltinMenlo.h"
 #import "NSDictionary+BuiltinMenlo.h"
 #import "NSString+BuiltinMenlo.h"
-#import "PubNub+BuiltInMenlo.h"
+//#import "PubNub+BuiltInMenlo.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIViewController+BuiltInMenlo.h"
 
@@ -103,7 +103,7 @@ NSString * const kTwilioSMS = @"6475577873";
 #if __APPSTORE_BUILD__ == 0
 @interface HONAppDelegate() <BITHockeyManagerDelegate, FBSDKMessengerURLHandlerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
 #else
-@interface HONAppDelegate() <FBSDKMessengerURLHandlerDelegate, HONLoadingOverlayViewDelegate, PNDelegate>
+@interface HONAppDelegate() <FBSDKMessengerURLHandlerDelegate, HONLoadingOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -316,7 +316,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			//[Flurry setUserID:NSStringFromInt([[HONUserAssistant sharedInstance] activeUserID])];
 			
 			[[HONPubNubOverseer sharedInstance] activateService];
-			
+	
 			if ([[[HONUserAssistant sharedInstance] activeUserLoginDate] elapsedSecondsSinceDate:[[HONUserAssistant sharedInstance] activeUserSignupDate]] == 0)
 				[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
@@ -1313,7 +1313,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
 
-	[PubNub setDelegate:self];
+//	[PubNub setDelegate:self];
 	
 //	[Crittercism enableWithAppID:kCritersismAppID
 //					 andDelegate:self];
@@ -1415,17 +1415,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 			}
 		}];
 	}
-}
-
-
-
-#pragma mark - PubNub Delegates
-- (void)pubnubClient:(PubNub *)client didSubscribeOnChannels:(NSArray *)channels {
-//	NSLog(@"DELEGATE: Subscribed to channel:%@", channels);
-}
-
-- (void)pubnubClient:(PubNub *)client didReceiveMessage:(PNMessage *)message {
-//	NSLog(@"DELEGATE: Message received.");
 }
 
 

@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, HONCommentStatusType) {
 @interface HONCommentVO : NSObject
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary;
 + (HONCommentVO *)commentWithClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-+ (HONCommentVO *)commentWithMessage:(PNMessage *)message;
+//+ (HONCommentVO *)commentWithMessage:(PNMessage *)message;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int commentID;

@@ -8,7 +8,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#import "PNImports.h"
+#import <PubNub/PubNub.h>
 
 
 typedef NS_ENUM(NSUInteger, HONChatMessageType) {
@@ -58,29 +58,4 @@ extern NSString * const kHONChatMessageImageRoot;
 
 
 @interface PubNub (BuiltInMenlo)
-@end
-
-
-@interface PNChannel (BuiltInMenlo)
-@end
-
-
-@interface PNMessage (BuiltInMenlo)
-//+ (NSString *)messageFromOriginID:(int)originID atLocation:(CLLocation *)location ofType:(HONChatMessageType)msgType withContents:(NSString *)contents;
-//+ (instancetype)messageAtLocation:(CLLocation *)location ofType:(HONChatMessageType)msgType withContents:(NSString *)contents;
-//+ (instancetype)messageOfType:(HONChatMessageType)msgType withContents:(NSString *)contents;
-//
-
-+ (NSString *)formattedCoordsForDeviceLocation;
-+ (NSString *)formattedCoordsForLocation:(CLLocation *)location;
-+ (NSString *)keyForMessageType:(HONChatMessageType)messageType;
-+ (PNMessage *)publishSynchronizeMessageOnChannel:(PNChannel *)channel withCompletion:(PNClientMessageProcessingBlock)success;
-
-- (NSString *)coordsURI;
-- (NSString *)imageURLPrefix;
-- (CLLocation *)location;
-- (HONChatMessageType)messageType;
-- (int)originUserID;
-- (NSString *)originUsername;
-- (NSString *)contents;
 @end

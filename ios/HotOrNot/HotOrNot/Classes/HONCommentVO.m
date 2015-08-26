@@ -88,30 +88,30 @@
 	return ([HONCommentVO commentWithDictionary:dict]);
 }
 
-+ (HONCommentVO *)commentWithMessage:(PNMessage *)message {
-	NSLog(@"commentWithMessage:%@", message.message);
-	
-	int srcUserID = [message originUserID];
-	HONChatMessageType messageType = [message messageType];
-	
-	NSMutableDictionary *dict = [@{@"id"				: @(0),
-								   @"msg_id"			: @(0),
-								   @"content_type"		: @((int)messageType),
-								   @"owner_member"		: @{@"id"	: @(srcUserID),
-															@"name"	: message.originUsername},
-								   
-								   @"image"				: (messageType == HONChatMessageTypeIMG || messageType == HONChatMessageTypeVID) ? [message imageURLPrefix] : [message coordsURI],
-								   @"text"				: [message contents],
-								   
-								   @"net_vote_score"	: @(0),
-								   @"status"			: @(0),
-								   @"added"				: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601],
-								   @"updated"			: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
-	
-	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
-	
-	return ([HONCommentVO commentWithDictionary:dict]);
-}
+//+ (HONCommentVO *)commentWithMessage:(PNMessage *)message {
+//	NSLog(@"commentWithMessage:%@", message.message);
+//	
+//	int srcUserID = [message originUserID];
+//	HONChatMessageType messageType = [message messageType];
+//	
+//	NSMutableDictionary *dict = [@{@"id"				: @(0),
+//								   @"msg_id"			: @(0),
+//								   @"content_type"		: @((int)messageType),
+//								   @"owner_member"		: @{@"id"	: @(srcUserID),
+//															@"name"	: message.originUsername},
+//								   
+//								   @"image"				: (messageType == HONChatMessageTypeIMG || messageType == HONChatMessageTypeVID) ? [message imageURLPrefix] : [message coordsURI],
+//								   @"text"				: [message contents],
+//								   
+//								   @"net_vote_score"	: @(0),
+//								   @"status"			: @(0),
+//								   @"added"				: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601],
+//								   @"updated"			: (message.date != nil) ? [message.date.date formattedISO8601String] : [NSDate stringFormattedISO8601]} mutableCopy];
+//	
+//	NSLog(@"MESSAGE -> COMMENT:[%@]", dict);
+//	
+//	return ([HONCommentVO commentWithDictionary:dict]);
+//}
 
 - (void)dealloc {
 	self.dictionary = nil;

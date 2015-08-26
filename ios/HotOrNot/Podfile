@@ -3,9 +3,8 @@ platform :ios, '7.0'
 
 target 'HotOrNot' do
 pod "AWSiOSSDKv2"
-pod 'PubNub', '3.7.1'
+pod 'PubNub', '~> 4.0'
 pod 'PBJVision'
 pod "KikAPI"
-pod 'Hoko', '~> 2.0.2'
 
 end

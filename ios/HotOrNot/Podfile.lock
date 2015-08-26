@@ -96,6 +96,14 @@ PODS:
   - Bolts/AppLinks (1.1.5):
     - Bolts/Tasks
   - Bolts/Tasks (1.1.5)
+  - CocoaLumberjack (2.0.0):
+    - CocoaLumberjack/Default (= 2.0.0)
+    - CocoaLumberjack/Extensions (= 2.0.0)
+  - CocoaLumberjack/Core (2.0.0)
+  - CocoaLumberjack/Default (2.0.0):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.0.0):
+    - CocoaLumberjack/Default
   - FMDB (2.5):
     - FMDB/standard (= 2.5)
   - FMDB/common (2.5)
@@ -108,7 +116,8 @@ PODS:
     - Mantle/extobjc (= 1.5.4)
   - Mantle/extobjc (1.5.4)
   - PBJVision (0.4.1)
-  - PubNub (3.7.1)
+  - PubNub (4.0.3):
+    - CocoaLumberjack (= 2.0.0)
   - Reachability (3.2)
   - TMCache (1.2.4)
   - UICKeyChainStore (2.0.4)
@@ -119,7 +128,7 @@ DEPENDENCIES:
   - AWSiOSSDKv2
   - KikAPI
   - PBJVision
-  - PubNub (= 3.7.1)
+  - PubNub (~> 4.0)
 
 SPEC CHECKSUMS:
   AWSAutoScaling: 7dce9232ff39ba7261879ebee44e99e20ae19ddf
@@ -136,16 +145,17 @@ SPEC CHECKSUMS:
   AWSSNS: 49d9144ec52c8650ba9207232fdd17c68289fac8
   AWSSQS: bb6b810a5d9826b4b25ed520e344b71a90d6e48f
   Bolts: aac24961496d504aa56fc267cde95162a71bac39
+  CocoaLumberjack: a6f77d987d65dc7ba86b0f84db7d0b9084f77bcb
   FMDB: 96e8f1bcc1329e269330f99770ad4285d9003e52
   GZIP: f0863fda354e8f83316508c0a2c7bbe385e39129
   KikAPI: 3b187e17466cda0022fcbd1cc32df47f77ee5529
   Mantle: 60acd0cd363e27d945bda0a6b8e90577112d28f3
   PBJVision: 1d7fb2d44d41eff64cd641ba2b63024da9ab2deb
-  PubNub: bf61bddd9563e1859ce2c4865259cc469c4d159c
+  PubNub: bdcc6eae1e419fe88ea6ed9013b1f6357914c25b
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   TMCache: a93984b045a5ee84bd8941bd5e0b54296059cc52
   UICKeyChainStore: 69eb0c3a6f669bccf16ba88de3b9069b71501361
   UIImage-ResizeMagick: f08c2d14d1e8a5f0b402185408785540562f2fe7
   XMLDictionary: f9f51601ba76678b594ab485f2b00ec1fed23724
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.38.2
