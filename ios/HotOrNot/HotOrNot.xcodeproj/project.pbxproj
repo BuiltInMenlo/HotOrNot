@@ -46,6 +46,7 @@
 		3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */; };
 		3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */; };
 		305BB8611B8C3F1700947B5F /* AVQueuePlayerPrevious.m in Sources */ = {isa = PBXBuildFile; fileRef = 305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */; };
+		305BB8631B8E720100947B5F /* selfie_notification.aif in Resources */ = {isa = PBXBuildFile; fileRef = 305BB8621B8E720100947B5F /* selfie_notification.aif */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */; };
 		30727F7F1ABA4F7B00524075 /* NSArray+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F681ABA4F7B00524075 /* NSArray+BuiltInMenlo.m */; };
 		30727F801ABA4F7B00524075 /* NSCharacterSet+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F6A1ABA4F7B00524075 /* NSCharacterSet+BuiltInMenlo.m */; };
@@ -299,7 +300,6 @@
 		4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */; };
 		4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CF2040418F3647C00EB57B0 /* FPOElements.xcassets */; };
 		4CFA8B7A18918E8C00DCCCB1 /* HONUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA8B7918918E8C00DCCCB1 /* HONUserVO.m */; };
-		8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B187B197856870085AC03 /* selfie_notification.caf */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONRepleteUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONRepleteUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */; };
 		F7E6D20B72A5177C54C052C6 /* libPods-HotOrNot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BA555DA71DFCC4E3FF2066 /* libPods-HotOrNot.a */; };
@@ -398,6 +398,7 @@
 		3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDoneNavButtonView.m; sourceTree = "<group>"; };
 		305BB85F1B8C3F1700947B5F /* AVQueuePlayerPrevious.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVQueuePlayerPrevious.h; sourceTree = "<group>"; };
 		305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVQueuePlayerPrevious.m; sourceTree = "<group>"; };
+		305BB8621B8E720100947B5F /* selfie_notification.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.aif; sourceTree = "<group>"; };
 		305ED7B419C3EE5100BDCB04 /* HONToggleLEDViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleLEDViewCell.h; sourceTree = "<group>"; };
 		305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleLEDViewCell.m; sourceTree = "<group>"; };
 		30727F671ABA4F7B00524075 /* NSArray+BuiltInMenlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+BuiltInMenlo.h"; sourceTree = "<group>"; };
@@ -995,7 +996,6 @@
 		4CFA8B7818918E8C00DCCCB1 /* HONUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserVO.h; sourceTree = "<group>"; };
 		4CFA8B7918918E8C00DCCCB1 /* HONUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserVO.m; sourceTree = "<group>"; };
 		7A88648FBB09F16A3DFB48DE /* Pods-HotOrNot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HotOrNot.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HotOrNot/Pods-HotOrNot.debug.xcconfig"; sourceTree = "<group>"; };
-		8F2B187B197856870085AC03 /* selfie_notification.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.caf; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONRepleteUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRepleteUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONRepleteUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRepleteUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONSearchSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchSubjectVO.h; sourceTree = "<group>"; };
@@ -2282,9 +2282,9 @@
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
+				305BB8621B8E720100947B5F /* selfie_notification.aif */,
 				30FAB8561B868C5100318C09 /* join_channel.caf */,
 				4C83FD90190F62E800CAEABB /* fpo_upvote.mp3 */,
-				8F2B187B197856870085AC03 /* selfie_notification.caf */,
 				4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */,
 				4C83FD8E190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav */,
 				4C83FD8F190F62E800CAEABB /* BLASTWAVEFX_29648.caf */,
@@ -2580,6 +2580,7 @@
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				30FAB8571B868C5100318C09 /* join_channel.caf in Resources */,
+				305BB8631B8E720100947B5F /* selfie_notification.aif in Resources */,
 				30B3096C19E292D80017ACBF /* HockeySDKResources.bundle in Resources */,
 				30AD79351B43A1AE00F9C634 /* GSMessengerShareInfo.plist in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
@@ -2591,7 +2592,6 @@
 				30ECB5D41B6E8616008F8666 /* Avenir.ttc in Resources */,
 				4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */,
 				4C0F3CB51988DDE300703D09 /* Localizable.strings in Resources */,
-				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
 				30E6782A1AFC0B55000F56D8 /* popup_sharefb.gif in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				301F0D821A2A4DAD00A9BE3C /* Cupertino.gpx in Resources */,

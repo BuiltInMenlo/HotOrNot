@@ -316,6 +316,8 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewWillAppear:animated];
 	
+	//[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"join_channel"];
+	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_tableView reloadData];
 	

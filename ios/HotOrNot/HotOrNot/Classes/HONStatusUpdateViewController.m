@@ -82,6 +82,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIButton *cameraFlipButton;
 @property (nonatomic, strong) NSTimer *countdownTimer;
 @property (nonatomic, strong) NSTimer *focusTimer;
+@property (nonatomic, strong) NSTimer *preRecordTimer;
+@property (nonatomic, strong) UIImageView *recordImageView;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIButton *messengerButton;
 @property (nonatomic, strong) UIButton *openCommentButton;
@@ -118,7 +120,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic) BOOL isActive;
 @property (nonatomic) BOOL isTutorial;
 @property (nonatomic) BOOL isPlaying;
-@property (nonatomic) int expireSeconds;
+@property (nonatomic) int prerecordCounter;
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
 @property (nonatomic) int videoQueue;
@@ -405,6 +407,68 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_videoPlaylist = [NSMutableArray array];
 	_outboundURL = @"pp1.link/…";
 	
+	[[NSUserDefaults standardUserDefaults] setObject:_channelName forKey:@"channel_name"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", _channelName]};
+	SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g", params);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
+	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+	[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
+	[httpClient setParameterEncoding:AFJSONParameterEncoding];
+	[httpClient postPath:@"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+
+		} else {
+			SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			NSLog(@"short:[%@]", [result objectForKey:@"id"]);
+			_outboundURL = [[result objectForKey:@"id"] stringByReplacingOccurrencesOfString:@"goo.gl" withString:@"pp1.link"];
+			[_messengerShare overrrideWithOutboundURL:_outboundURL];
+
+			NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
+			__block BOOL isFound = NO;
+
+			[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
+				if ([[dict objectForKey:@"channel"] isEqualToString:_channelName]) {
+					[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""] forKey:@"title"];
+					[dict setObject:_channelName forKey:@"channel"];
+					[dict setObject:_outboundURL forKey:@"url"];
+					[dict setObject:[NSDate date] forKey:@"timestamp"];
+					[dict setObject:@(_participants) forKey:@"occupants"];
+
+					[channels replaceObjectAtIndex:idx withObject:[dict copy]];
+					[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+
+					isFound = YES;
+					*stop = YES;
+				}
+			}];
+
+
+			if (!isFound) {
+				[channels addObject:@{@"title"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""],
+									  @"channel"	: _channelName,
+									  @"url"		: _outboundURL,
+									  @"timestamp"	: [NSDate date],
+									  @"occupants"	: @(_participants)}];
+
+				[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}
+		}
+
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g", [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+	
 	[_client addListener:self];
 	[_client subscribeToChannels:@[_channelName] withPresence:YES];
 	[_client pushNotificationEnabledChannelsForDeviceWithPushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken] andCompletion:^(PNAPNSEnabledChannelsResult *result, PNErrorStatus *status) {
@@ -423,7 +487,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 								
 								_participants = (int)[result.data.uuids count];
 								_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants)];
-								_expireLabel.text = [NSString stringWithFormat:@"%d %@ here", MAX(0, _participants), (_participants - 1 == 1) ? @"person" : @"people"];
+								
+								if (_participants > 1)
+									_expireLabel.text = [NSString stringWithFormat:@"Alerting… %d %@", MAX(0, _participants), (_participants == 1) ? @"person" : @"people"];
 								
 								// Check whether request successfully completed or not.
 								if (!status.isError) {
@@ -921,14 +987,13 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_isSubmitting = NO;
 	
 	_comment = @"";
-	_expireSeconds = 600;
 	_participants = 0;
 	
 	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
 	_moviePlayer.view.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_moviePlayer.shouldAutoplay = YES;
-	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
+	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
 	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
 	_moviePlayer.view.frame = self.view.frame;
 	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 0.7570)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 0.7570) + 1.0);
@@ -989,10 +1054,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, (self.view.frame.size.height * 0.7570) - 40.0, 50.0, 22.0)];
+	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 200.0, 22.0)];
 	_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
 	_participantsLabel.backgroundColor = [UIColor clearColor];
-//	_participantsLabel.textAlignment = NSTextAlignmentRight;
+	_participantsLabel.textAlignment = NSTextAlignmentCenter;
 	_participantsLabel.textColor = [UIColor whiteColor];
 	_participantsLabel.text = @"0";
 	[self.view addSubview:_participantsLabel];
@@ -1025,6 +1090,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[activityIndicatorView startAnimating];
 	[_animationImageView addSubview:activityIndicatorView];
 	
+	
+	_historyButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_historyButton.frame = _moviePlayer.view.frame;// CGRectMake(0.0, 0.0, 42.0, 42.0);
+//	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
+//	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
+//	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) * 0.5, 24.0);
+	[_historyButton addTarget:self action:@selector(_goNextVideo) forControlEvents:UIControlEventTouchUpInside];
+	_historyButton.enabled = NO;
+	[self.view addSubview:_historyButton];
+	
+	
 	[self.view addSubview:_statusUpdateHeaderView];
 	[self.view addSubview:_commentFooterView];
 	
@@ -1042,16 +1118,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	//_videoVisibleButton.frame = CGRectOffset(_videoVisibleButton.frame, 2.0, (self.view.frame.size.height * 0.7570) - (_videoVisibleButton.frame.size.height + 5.0));
 	[_videoVisibleButton addTarget:self action:@selector(_goToggleVideoVisible) forControlEvents:UIControlEventTouchUpInside];
 	//[self.view addSubview:_videoVisibleButton];
-	
-	_historyButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_historyButton.frame = CGRectMake(0.0, 0.0, 42.0, 42.0);
-	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
-	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
-	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) * 0.5, 24.0);
-	[_historyButton addTarget:self action:@selector(_goNextVideo) forControlEvents:UIControlEventTouchUpInside];
-	_historyButton.enabled = NO;
-	[self.view addSubview:_historyButton];
-	
 	
 	_openCommentButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
@@ -1118,7 +1184,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"]) {
 		_isTutorial = YES;
-		//[self.view addSubview:_cameraTutorialImageView];
+		[self.view addSubview:_cameraTutorialImageView];
 	}
 	
 	_commentsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _scrollView.frame.size.width, 0.0)];
@@ -1149,10 +1215,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_submitCommentButton.hidden = YES;
 	[_commentFooterView addSubview:_submitCommentButton];
 	
-	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 200.0, 20.0)];
+	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 112.0, 20.0)];
 	_countdownLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
 	_countdownLabel.backgroundColor = [UIColor clearColor];
-	_countdownLabel.textAlignment = NSTextAlignmentCenter;
+	_countdownLabel.textAlignment = NSTextAlignmentRight;
 	_countdownLabel.textColor = [UIColor whiteColor];
 	_countdownLabel.text = @"5";
 	_countdownLabel.hidden = YES;
@@ -1175,7 +1241,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_logoImageView.hidden = YES;
 	[self.view addSubview:_logoImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 0.0 + ((self.view.frame.size.height * 0.7570) - 40.0), self.view.frame.size.width - 100.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.7570) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
+	_recordImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"recordDot"]];
+	_recordImageView.frame = CGRectOffset(_recordImageView.frame, 8.0, 28.0);
+	_recordImageView.hidden = YES;
+	[self.view addSubview:_recordImageView];
+	
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 0.0 + ((self.view.frame.size.height * 0.7570) - 40.0), self.view.frame.size.width - 50.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 0.7570) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
@@ -1259,6 +1330,14 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		NSLog(@"QUEUE IND:[%d][%d]", _videoQueue, [_videoPlaylist count]);
 		_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
 		[_moviePlayer play];
+		
+		_animationImageView.hidden = NO;
+		_expireLabel.text = @"Loading video…";
+		_expireLabel.alpha = 1.0;
+		[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+			_expireLabel.alpha = 0.0;
+		} completion:^(BOOL finished) {
+		}];
 	}
 }
 
@@ -1398,7 +1477,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 				_tutorialImageView.hidden = YES;
 			}
 			
-			[vision startVideoCapture];
+			_recordImageView.hidden = NO;
+			_prerecordCounter = 0;
+			_preRecordTimer = [NSTimer scheduledTimerWithTimeInterval:0.50
+															   target:self
+															 selector:@selector(_updatePrerecord)
+															 userInfo:nil repeats:YES];
 			
 			_imageView.alpha = 0.0;
 			
@@ -1428,15 +1512,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			
 			_playerLayer.hidden = YES;
 			_countdown = 5;
-			_countdownLabel.text = NSStringFromInt(_countdown);
+			_countdownLabel.text = [NSString stringWithFormat:@":%02d", _countdown];
 			_expireLabel.hidden = YES;
 			_countdownLabel.hidden = NO;
 			_moviePlayer.view.hidden = YES;
-			
-			_countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.00
-															   target:self
-															 selector:@selector(_updateCountdown)
-															 userInfo:nil repeats:YES];
 			
 			_submitCommentButton.hidden = YES;
 			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
@@ -1460,6 +1539,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		
 		_statusLabel.text = @"Sending popup…";
 		_animationImageView.hidden = NO;
+		_recordImageView.hidden = YES;
+		
+		if (_preRecordTimer) {
+			[_preRecordTimer invalidate];
+			_preRecordTimer = nil;
+		}
 		
 		[[PBJVision sharedInstance] endVideoCapture];
 		_statusUpdateHeaderView.hidden = NO;
@@ -1518,6 +1603,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_appLeavingBackground:(NSNotification *)notification {
 	_isActive = YES;
+	
+	if (_moviePlayer.contentURL != nil)
+		[_moviePlayer play];
 }
 
 - (void)_playbackStateChanged:(NSNotification *)notification {
@@ -1530,6 +1618,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_animationImageView.alpha = 0.0;
+				_expireLabel.alpha = 0.0;
 			} completion:^(BOOL finished) {
 				_animationImageView.hidden = YES;
 				_animationImageView.alpha = 1.0;
@@ -1601,6 +1690,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_playbackEnded:(NSNotification *)notification {
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
+	[self _goNextVideo];
 }
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
@@ -1624,7 +1714,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)_setupCamera {
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
-	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceBack]) ? PBJCameraDeviceBack : PBJCameraDeviceFront;
+	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceFront]) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
 //	[vision setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)];
 	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
@@ -1678,13 +1768,29 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //		_expireLabel.hidden = NO;
 	}
 	
-	_countdownLabel.text = NSStringFromInt(_countdown);
+	_countdownLabel.text = [NSString stringWithFormat:@":%02d", _countdown];
 }
 
 
 - (void)_updateFocus {
 	CGPoint adjustPoint = [PBJVisionUtilities convertToPointOfInterestFromViewCoordinates:self.view.center inFrame:self.view.frame];
 	[[PBJVision sharedInstance] focusExposeAndAdjustWhiteBalanceAtAdjustedPoint:adjustPoint];
+}
+
+- (void)_updatePrerecord {
+	_recordImageView.hidden = !_recordImageView.hidden;
+	
+	if (++_prerecordCounter == 6) {
+		[_preRecordTimer invalidate];
+		_preRecordTimer = nil;
+		_recordImageView.hidden = NO;
+		[[PBJVision sharedInstance] startVideoCapture];
+		
+		_countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.00
+														   target:self
+														 selector:@selector(_updateCountdown)
+														 userInfo:nil repeats:YES];
+	}
 }
 
 - (void)_restartPlayback {
@@ -1722,6 +1828,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		[_expireTimer invalidate];
 		_expireTimer = nil;
 	}
+	
+	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:MPMoviePlayerPlaybackStateDidChangeNotification
+												  object:_moviePlayer];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:MPMoviePlayerPlaybackDidFinishNotification
+												  object:_moviePlayer];
+	
 	
 	NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
 	__block BOOL isFound = NO;
@@ -1773,6 +1890,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //	[_queuePlayer ]
 	[_queuePlayer removeAllItems];
 	[_moviePlayer stop];
+	_moviePlayer.contentURL = nil;
+	_moviePlayer = nil;
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -2680,8 +2799,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //	[PubNub subscribeOn:@[vidChannel]];
 	
 	_imageView.image = (_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
-	_imageView.hidden = NO;
-	_imageView.alpha = 1.0;
+	//_imageView.hidden = NO;
+	//_imageView.alpha = 1.0;
 	
 	
 	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
@@ -2698,9 +2817,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:_thumbURL];
 	[UIImageJPEGRepresentation([matteView createImageFromView], 0.50) writeToFile:filePath atomically:YES];
 	
-	
-	NSURL* fileUrl = [NSURL fileURLWithPath:filePath];
-	
+	NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
 	//upload the image
 	AWSS3TransferManagerUploadRequest *imageUploadRequest = [AWSS3TransferManagerUploadRequest new];
 	imageUploadRequest.bucket = @"popup-thumbs";
@@ -2711,6 +2828,14 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
+	
+	_moviePlayer.contentURL = url;
+	[_moviePlayer play];
+	
+	
+	if (_participants <= 1)
+		[self _goShare];
+	
 	
 	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
 	uploadRequest.bucket = bucketName;
@@ -2805,8 +2930,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		
 		NSMutableArray *linkObjs = [NSMutableArray array];
 		NSString *title = ([[kakaoShareInfo objectForKey:@"title"] length] > 0) ? [kakaoShareInfo objectForKey:@"title"] : (!isOverride) ? [_baseShareInfo objectForKey:@"title"] : @"";
-		//UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"kakao_image"]];//([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
-		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
+		UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"kakao_image"]];//([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
+		//UIImage *image = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? @"kakao_image" : (!isOverride) ? @"main_image_url" : nil]];
 		NSString *url = ([_outboundURL length] > 0) ? _outboundURL : ([[kakaoShareInfo objectForKey:@"outbound_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"outbound_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"sub_image_url"] : @"";
 		
 		if ([title length] > 0) {
@@ -2814,16 +2939,16 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		}
 		
 		if (image != nil) {
-			[[NSUserDefaults standardUserDefaults] replaceObject:UIImagePNGRepresentation(_imageView.image) forKey:@"kakao_image"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+//			[[NSUserDefaults standardUserDefaults] replaceObject:UIImagePNGRepresentation(_imageView.image) forKey:@"kakao_image"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			[linkObjs addObject:[KakaoTalkLinkObject createImage:[NSString stringWithFormat:@"https://s3.amazonaws.com/popup-thumbs/%@", _thumbURL]
-														   width:_imageView.image.size.width
-														  height:_imageView.image.size.height]];
+//			[linkObjs addObject:[KakaoTalkLinkObject createImage:[NSString stringWithFormat:@"https://s3.amazonaws.com/popup-thumbs/%@", _thumbURL]
+//														   width:_imageView.image.size.width
+//														  height:_imageView.image.size.height]];
 			
-//			[linkObjs addObject:[KakaoTalkLinkObject createImage:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @""
-//														   width:image.size.width
-//														  height:image.size.height]];
+			[linkObjs addObject:[KakaoTalkLinkObject createImage:([[kakaoShareInfo objectForKey:@"image_url"] length] > 0) ? [kakaoShareInfo objectForKey:@"image_url"] : (!isOverride) ? [_baseShareInfo objectForKey:@"main_image_url"] : @""
+														   width:image.size.width
+														  height:image.size.height]];
 		}
 		
 		if ([url length] > 0) {
