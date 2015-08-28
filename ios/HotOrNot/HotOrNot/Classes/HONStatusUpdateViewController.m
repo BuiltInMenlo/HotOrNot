@@ -89,6 +89,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIButton *openCommentButton;
 @property (nonatomic, strong) UIButton *videoVisibleButton;
 @property (nonatomic, strong) HONButton *historyButton;
+@property (nonatomic, strong) HONButton *cancelCameraButton;
 @property (nonatomic, strong) UIView *tintView;
 @property (nonatomic, strong) UIImageView *animationImageView;
 @property (nonatomic, strong) UITextField *nameTextField;
@@ -337,13 +338,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			_moviePlayer.contentURL = url;
 			[_moviePlayer play];
 			
-			//_animationImageView.hidden = NO;
+//			_animationImageView.hidden = NO;
 			_expireLabel.text = @"Loading video…";
 			_expireLabel.alpha = 1.0;
-			//[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-			//	_expireLabel.alpha = 0.0;
-			//} completion:^(BOOL finished) {
-			//}];
 			
 			[_videoPlaylist addObject:url];
 		}
@@ -1133,7 +1130,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_cameraFlipButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-//	_cameraFlipButton.frame = CGRectOffset(_cameraFlipButton.frame, self.view.frame.size.width - _cameraFlipButton.frame.size.width - 8.0, (self.view.frame.size.height * 1.0000) + 9.0);
 	_cameraFlipButton.frame = CGRectOffset(_cameraFlipButton.frame, self.view.frame.size.width - _cameraFlipButton.frame.size.width - 8.0, (self.view.frame.size.height - _cameraFlipButton.frame.size.height) - 9.0);
 	[_cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 	_cameraFlipButton.enabled = NO;
@@ -1157,12 +1153,21 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_nameTextField.delegate = self;
 	[self.view addSubview:_nameTextField];
 	
+	
+	
+	_cancelCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cancelCameraButton.frame = CGRectMake(0.0, (self.view.frame.size.height * 0.5), self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	[_cancelCameraButton addTarget:self action:@selector(_goCancelCamera) forControlEvents:UIControlEventTouchUpInside];
+	_cancelCameraButton.hidden = YES;
+	[self.view addSubview:_cancelCameraButton];
+	
+	
+	
 	_messengerButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-//	_messengerButton.frame = CGRectMake(((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, 6.0 + ((self.view.frame.size.height * 1.0000) + (((self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) - _messengerButton.frame.size.width) * 0.5)), _messengerButton.frame.size.width, _messengerButton.frame.size.height);
-	_messengerButton.frame = CGRectMake(((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, (self.view.frame.size.height - _messengerButton.frame.size.height) - 40.0, _messengerButton.frame.size.width, _messengerButton.frame.size.height);
+	_messengerButton.frame = CGRectOffset(_messengerButton.frame, ((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, (self.view.frame.size.height - _messengerButton.frame.size.height) - 60.0);
 	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	_messengerButton.enabled = NO;
 	[self.view addSubview:_messengerButton];
@@ -1171,8 +1176,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_takePhotoButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
-//	_takePhotoButton.frame = CGRectMake(3.0 + (self.view.frame.size.width * 0.5), 6.0 + ((self.view.frame.size.height * 1.0000) + (((self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) - _takePhotoButton.frame.size.width) * 0.5)), _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
-	_takePhotoButton.frame = CGRectMake(3.0 + (self.view.frame.size.width * 0.5), (self.view.frame.size.height - _takePhotoButton.frame.size.height) - 40.0, _takePhotoButton.frame.size.width, _takePhotoButton.frame.size.height);
+	_takePhotoButton.frame = CGRectOffset(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5), (self.view.frame.size.height - _takePhotoButton.frame.size.height) - 60.0);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	_takePhotoButton.enabled = NO;
 	[self.view addSubview:_takePhotoButton];
@@ -1331,10 +1335,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
 		
 		
-		_moviePlayer.contentURL = url;//[_videoPlaylist objectAtIndex:_videoQueue];
+		_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
 		[_moviePlayer play];
 		
-		_animationImageView.hidden = NO;
+//		_animationImageView.hidden = NO;
 		_expireLabel.text = @"Loading video…";
 		_expireLabel.alpha = 1.0;
 		[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
@@ -1357,16 +1361,79 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_goImageComment {
-	[[[UIAlertView alloc] initWithTitle:nil
-								message:@"Tan and hold to record"
-							   delegate:nil
-					  cancelButtonTitle:NSLocalizedString(@"alert_ok", @"Cancel")
-					  otherButtonTitles:nil] show];
+	_imageView.alpha = 0.0;
+	_previewTintView.hidden = YES;
+	_openCommentButton.hidden = YES;
+	_animationImageView.hidden = YES;
+	
+	_openCommentButton.alpha = 0.0;
+	_messengerButton.alpha = 0.0;
+	
+	_logoImageView.hidden = YES;
+	_videoVisibleButton.hidden = YES;
+	_historyButton.hidden = YES;
+	
+	_toggleMicButton.hidden = YES;
+	_cameraFlipButton.hidden = YES;
+	
+	_participantsLabel.hidden = YES;
+	_expireLabel.alpha = 1.0;
+	_expireLabel.hidden = NO;
+	_expireLabel.text = @"Ready to record…";
+	_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, (self.view.frame.size.height * 0.5) - 10.0);
+	
+	_playerLayer.hidden = YES;
+	_moviePlayer.view.hidden = YES;
+	_submitCommentButton.hidden = YES;
+	
+	[_moviePlayer stop];
+	
+	_cameraPreviewView.frame = self.view.frame;
+	_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
+	_cameraPreviewLayer.opacity = 1.0;
+	
+	_cancelCameraButton.hidden = NO;
+	_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, (self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5);
+}
+
+- (void)_goCancelCamera {
+	_cancelCameraButton.hidden = YES;
+	
+	_statusUpdateHeaderView.hidden = NO;
+	_countdownLabel.text = @"";
+	_countdownLabel.hidden = YES;
+	_previewTintView.hidden = NO;
+	_moviePlayer.view.hidden = NO;
+	_playerLayer.hidden = NO;
+	_videoVisibleButton.hidden = NO;
+	_historyButton.hidden = NO;
+	_participantsLabel.hidden = NO;
+	_toggleMicButton.hidden = NO;
+	_logoImageView.hidden = YES;
+	_cameraFlipButton.hidden = NO;
+	_expireLabel.hidden = NO;
+	
+	_openCommentButton.alpha = 1.0;
+	_messengerButton.alpha = 1.0;
+	_openCommentButton.hidden = NO;
+	_messengerButton.hidden = NO;
+	
+	_expireLabel.text = @"";
+	_expireLabel.alpha = 0.0;
+	_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
+	
+	_takePhotoButton.alpha = 1.0;
+	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height);
+	_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5));
+	_cancelCameraButton.hidden = YES;
+	
+	if (_moviePlayer.contentURL != nil)
+		[_moviePlayer play];
 }
 
 - (void)_goShareComment {
 	[[[UIAlertView alloc] initWithTitle:nil
-								message:@"Tan and hold to share"
+								message:@"Tap and hold to share"
 							   delegate:nil
 					  cancelButtonTitle:NSLocalizedString(@"alert_ok", @"Cancel")
 					  otherButtonTitles:nil] show];
@@ -1473,31 +1540,18 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		if (CGRectContainsPoint(_takePhotoButton.frame, touchPoint)) {// || CGRectContainsPoint(_messengerButton.frame, touchPoint)) {
 			_isShare = CGRectContainsPoint(_messengerButton.frame, touchPoint);
 			
-			PBJVision *vision = [PBJVision sharedInstance];
+			if ([_commentTextField isFirstResponder])
+				[_commentTextField resignFirstResponder];
 			
-			if (_isShare) {
-				vision.cameraDevice = PBJCameraDeviceFront;
-				_tutorialImageView.hidden = YES;
-			}
-			
-			_recordImageView.hidden = NO;
-			_prerecordCounter = 0;
-			_preRecordTimer = [NSTimer scheduledTimerWithTimeInterval:0.50
-															   target:self
-															 selector:@selector(_updatePrerecord)
-															 userInfo:nil repeats:YES];
+			_commentTextField.text = @"";
 			
 			_imageView.alpha = 0.0;
-			
 			_previewTintView.hidden = YES;
 			_openCommentButton.hidden = YES;
 			_animationImageView.hidden = YES;
 			
 			_openCommentButton.alpha = 0.0;
-			_messengerButton.alpha = CGRectContainsPoint(_messengerButton.frame, touchPoint); //0.0
-			_takePhotoButton.alpha = CGRectContainsPoint(_takePhotoButton.frame, touchPoint); //0.0
-			
-			//[_cameraTutorialImageView removeFromSuperview];
+			_messengerButton.alpha = 0.0;
 			
 			_logoImageView.hidden = YES;
 			_videoVisibleButton.hidden = YES;
@@ -1507,30 +1561,44 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			_cameraFlipButton.hidden = YES;
 			
 			_participantsLabel.hidden = YES;
-			
-			if ([_commentTextField isFirstResponder])
-				[_commentTextField resignFirstResponder];
-			
-			_commentTextField.text = @"";
+			_expireLabel.hidden = YES;
+			_expireLabel.text = @"";
+			_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
 			
 			_playerLayer.hidden = YES;
-			_countdown = 5;
-			_countdownLabel.text = [NSString stringWithFormat:@":%02d", _countdown];
-			_expireLabel.hidden = YES;
-			_countdownLabel.hidden = NO;
 			_moviePlayer.view.hidden = YES;
-			
 			_submitCommentButton.hidden = YES;
-			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
 			
 			[_moviePlayer stop];
-			//_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 0.19, self.view.frame.size.width, self.view.frame.size.height * 1.0000);
 			_cameraPreviewView.frame = self.view.frame;
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
 			
 			_statusUpdateHeaderView.hidden = YES;
 			_scrollView.hidden = YES;
+			
+			_commentFooterView.frame = CGRectTranslateY(_commentFooterView.frame, self.view.frame.size.height - _commentFooterView.frame.size.height);
+			
+			
+			_countdown = 5;
+			_countdownLabel.text = [NSString stringWithFormat:@":%02d", _countdown];
+			_countdownLabel.hidden = NO;
+			
+			_recordImageView.hidden = NO;
+//			_prerecordCounter = 0;
+//			_preRecordTimer = [NSTimer scheduledTimerWithTimeInterval:0.50
+//															   target:self
+//															 selector:@selector(_updatePrerecord)
+//															 userInfo:nil repeats:YES];
+			
+			[[PBJVision sharedInstance] startVideoCapture];
+			
+			_countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.00
+															   target:self
+															 selector:@selector(_updateCountdown)
+															 userInfo:nil repeats:YES];
+
+			
 		}
 		
 	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
@@ -1569,9 +1637,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_openCommentButton.hidden = NO;
 		_messengerButton.hidden = NO;
 		
-//		_openCommentButton.alpha = 1.0;
-//		_messengerButton.alpha = 1.0;
 		_takePhotoButton.alpha = 1.0;
+		_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5));
+		_cancelCameraButton.hidden = YES;
 	}
 }
 
