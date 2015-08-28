@@ -1251,7 +1251,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_recordImageView.hidden = YES;
 	[self.view addSubview:_recordImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 0.0 + ((self.view.frame.size.height * 1.0000) - 40.0), self.view.frame.size.width - 50.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 1.0000) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, (self.view.frame.size.height * 0.5) - 10.0, self.view.frame.size.width - 50.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 1.0000) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
@@ -1420,7 +1420,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	_expireLabel.text = @"";
 	_expireLabel.alpha = 0.0;
-	_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
+//	_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
 	
 	_takePhotoButton.alpha = 1.0;
 	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height);
@@ -1563,7 +1563,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			_participantsLabel.hidden = YES;
 			_expireLabel.hidden = YES;
 			_expireLabel.text = @"";
-			_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
+			//_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
 			
 			_playerLayer.hidden = YES;
 			_moviePlayer.view.hidden = YES;
@@ -2858,7 +2858,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)vision:(PBJVision *)vision capturedVideo:(NSDictionary *)videoDict error:(NSError *)error {
 	NSLog(@"[*:*] vision:capturedVideo:[%@] [*:*]", videoDict);
-	vision.cameraDevice = PBJCameraDeviceBack;
 	
 	NSString *bucketName = @"popup-vids";//@"hotornot-challenges";
 	
