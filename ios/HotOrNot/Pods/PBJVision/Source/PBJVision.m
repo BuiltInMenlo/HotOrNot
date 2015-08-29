@@ -699,7 +699,7 @@ PBJMediaWriterDelegate>
 		}
 		[self _setupGL];
 		
-		_captureSessionPreset = AVCaptureSessionPreset640x480;//AVCaptureSessionPresetLow;//AVCaptureSessionPresetMedium;
+		_captureSessionPreset = AVCaptureSessionPresetMedium;//AVCaptureSessionPreset640x480;//AVCaptureSessionPresetLow;
 		_captureDirectory = nil;
 		
 		_autoUpdatePreviewOrientation = YES;
@@ -854,7 +854,7 @@ typedef void (^PBJVisionBlock)();
 	[_captureOutputVideo setSampleBufferDelegate:self queue:_captureCaptureDispatchQueue];
 	
 	// capture device initial settings
-	_videoFrameRate = 30;
+	_videoFrameRate = 15;
 	
 	// add notification observers
 	NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -2141,15 +2141,16 @@ typedef void (^PBJVisionBlock)();
 		
 	} else {
 		compressionSettings = @{ AVVideoAverageBitRateKey : @(_videoBitRate),
-								 AVVideoMaxKeyFrameIntervalKey : @(_videoFrameRate) };
+								 AVVideoMaxKeyFrameIntervalKey : @(_videoFrameRate)};
+		
 	}
 	
 	NSDictionary *videoSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
 									 AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
-									 AVVideoWidthKey : @(videoDimensions.width),
-									 AVVideoHeightKey : @(videoDimensions.width),
-//									 AVVideoWidthKey : @(videoDimensions.width + 20.0),
-//									 AVVideoHeightKey : @(videoDimensions.height + 80.0),
+//									 AVVideoWidthKey : @(videoDimensions.width),
+//									 AVVideoHeightKey : @(videoDimensions.width),
+									 AVVideoWidthKey : @(180.0), //320
+									 AVVideoHeightKey : @(320.0), //640
 									 AVVideoCompressionPropertiesKey : compressionSettings };
 	
 	return [_mediaWriter setupVideoWithSettings:videoSettings];

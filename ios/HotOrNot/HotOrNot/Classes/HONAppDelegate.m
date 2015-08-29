@@ -1255,6 +1255,7 @@ NSString * const kTwilioSMS = @"6475577873";
 								   @"home_club"			: @{},
 								   @"back_chat"			: NSStringFromBOOL(NO),
 								   @"invites"			: @[],
+								   @"cached"			: @[],
 								   @"location_club"		: @{},
 								   @"coords"			: @{@"lat" : @(0.00), @"lon" : @(0.00)},
 								   @"device_locale"		: @{},

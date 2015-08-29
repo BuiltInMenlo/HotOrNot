@@ -99,7 +99,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIImageView *cameraTutorialImageView;
 @property (nonatomic, strong) NSDictionary *baseShareInfo;
-@property (nonatomic, strong) NSString *vidName;
 @property (nonatomic, strong) NSString *thumbURL;
 @property (nonatomic, strong) NSString *channelName;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
@@ -334,15 +333,18 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			
 			
 			
+			
 			NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-			_moviePlayer.contentURL = url;
-			[_moviePlayer play];
-			
-//			_animationImageView.hidden = NO;
-			_expireLabel.text = @"Loading video…";
-			_expireLabel.alpha = 1.0;
-			
 			[_videoPlaylist addObject:url];
+			
+			if (![_lastVideo isEqualToString:txtContent]) {
+				_moviePlayer.contentURL = url;
+				[_moviePlayer play];
+				
+				_expireLabel.text = @"Loading video…";
+				_expireLabel.alpha = 1.0;
+			}
+			
 		}
 	}
 }
@@ -392,6 +394,29 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 
+- (void)_downloadVideo:(NSString *)filename {
+	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://s3.amazonaws.com/popup-vids/%@", filename]]];
+	AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:[request.URL.pathComponents lastObject]];
+	operation.outputStream = [NSOutputStream outputStreamToFileAtPath:path append:NO];
+	
+	[operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSLog(@"Successfully downloaded file to %@", path);
+		NSMutableArray *cachedVideos = [[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] mutableCopy];
+		
+		if (![cachedVideos containsObject:path])
+			[cachedVideos addObject:path];
+		
+		[[NSUserDefaults standardUserDefaults] replaceObject:[cachedVideos copy] forKey:@"cached"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"Error: %@", error);
+	}];
+	
+	[operation start];
+}
 
 
 - (void)_channelSetup {
@@ -483,10 +508,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 								NSLog(@"PARTICIPANTS:[%d]", (int)[result.data.uuids count]);
 								
 								_participants = (int)[result.data.uuids count];
-								_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants)];
+								_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
 								
 								if (_participants > 1)
-									_expireLabel.text = [NSString stringWithFormat:@"Alerting… %d %@", MAX(0, _participants), (_participants == 1) ? @"person" : @"people"];
+									_expireLabel.text = [NSString stringWithFormat:@"Alerting… %d %@", MAX(0, _participants - 1), ((_participants - 1) == 1) ? @"person" : @"people"];
 								
 								// Check whether request successfully completed or not.
 								if (!status.isError) {
@@ -519,10 +544,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 									if ([txtContent length] > 0 && [txtContent rangeOfString:@".mp4"].location != NSNotFound) {
 										NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
 										[_videoPlaylist addObject:url];
+										[self _downloadVideo:[url lastPathComponent]];
 										
 										if (_moviePlayer.contentURL == nil) {
-											_lastVideo = txtContent;
-											
 											_moviePlayer.contentURL = url;
 											[_moviePlayer play];
 											
@@ -1010,8 +1034,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
-	[[PBJVision sharedInstance] setPresentationFrame:_cameraPreviewView.frame];
-	[[PBJVision sharedInstance] setVideoFrameRate:24];
 	
 	_previewTintView = [[UIView alloc] initWithFrame:_cameraPreviewView.frame];
 	_previewTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
@@ -1330,22 +1352,33 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)_goNextVideo {
 	if ([_videoPlaylist count] > 0) {
 		[_moviePlayer stop];
+		_moviePlayer.contentURL = nil;
 		_videoQueue = ++_videoQueue % [_videoPlaylist count];
-		NSURL *url = [NSURL fileURLWithPath:[[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent] stringByReplacingOccurrencesOfString:@"Documents" withString:@"tmp"]];
+		NSURL *url = [NSURL fileURLWithPath:[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent]];
 		NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
 		
-		
-		_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
-		[_moviePlayer play];
-		
-//		_animationImageView.hidden = NO;
-		_expireLabel.text = @"Loading video…";
-		_expireLabel.alpha = 1.0;
-		[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-			_expireLabel.alpha = 0.0;
-		} completion:^(BOOL finished) {
+		[[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSString *cachedFile = (NSString *)obj;
+			
+			if ([cachedFile isEqualToString:[url.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""]]) {
+				NSLog(@"cachedFile: %@", cachedFile);
+				_moviePlayer.contentURL = url;
+				*stop = YES;
+			}
 		}];
+			
+			
+		if (_moviePlayer.contentURL == nil) {
+			_animationImageView.hidden = NO;
+			_expireLabel.text = @"Loading video…";
+			_expireLabel.alpha = 1.0;
+
+			[self _downloadVideo:[url lastPathComponent]];
+			_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
+		}
 	}
+	
+	[_moviePlayer play];
 }
 
 - (void)_goFlag {
@@ -1687,7 +1720,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
 			_loadingImageView.hidden = YES;
 			
-			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+			[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_animationImageView.alpha = 0.0;
 				_expireLabel.alpha = 0.0;
 			} completion:^(BOOL finished) {
@@ -1793,7 +1826,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	vision.exposureMode = PBJExposureModeContinuousAutoExposure;
 	vision.outputFormat = PBJOutputFormatStandard;
 	vision.videoRenderingEnabled = YES;
-	vision.additionalCompressionProperties = @{AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel}; //-- AVVideoProfileLevelH264Baseline30}; // AVVideoProfileLevelKey requires specific captureSessionPreset
+	vision.captureSessionPreset = AVCaptureSessionPresetLow;
+	[vision setPresentationFrame:_cameraPreviewView.frame];
+	[vision setVideoFrameRate:24];
+	vision.additionalCompressionProperties = @{AVVideoProfileLevelKey : AVVideoProfileLevelH264MainAutoLevel,
+											   AVVideoAllowFrameReorderingKey : @(NO)}; // AVVideoProfileLevelKey requires specific captureSessionPreset
 	
 	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:2.50
 												   target:self
@@ -2859,23 +2896,22 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)vision:(PBJVision *)vision capturedVideo:(NSDictionary *)videoDict error:(NSError *)error {
 	NSLog(@"[*:*] vision:capturedVideo:[%@] [*:*]", videoDict);
 	
-	NSString *bucketName = @"popup-vids";//@"hotornot-challenges";
+	NSString *bucketName = @"popup-vids";
 	
 	NSString *path = [videoDict objectForKey:PBJVisionVideoPathKey];
-	_vidName = [[path pathComponents] lastObject];
+	_lastVideo = [[path pathComponents] lastObject];
 	
-	
-//	PNChannel *vidChannel = [PNChannel channelWithName:[NSString stringWithFormat:@"%@_%@", [PubNub sharedInstance].clientIdentifier, [[[[path pathComponents] lastObject] componentsSeparatedByString:@"_"] lastObject]]];
-//	[PubNub subscribeOn:@[vidChannel]];
+	NSMutableArray *cachedVideos = [[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] mutableCopy];
+	[cachedVideos addObject:path];
+	[[NSUserDefaults standardUserDefaults] setObject:[cachedVideos copy] forKey:@"cached"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	_imageView.image = (_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
 	//_imageView.hidden = NO;
 	//_imageView.alpha = 1.0;
 	
-	
 	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
 	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
-	//matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.height * 0.5));
 	matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.width * 0.5));
 	
 	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareOverlay"]];
@@ -2883,18 +2919,18 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[matteView addSubview:overlayImageView];
 	
 	
-	_thumbURL = [NSString stringWithFormat:@"%d.jpg", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-	NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:_thumbURL];
-	[UIImageJPEGRepresentation([matteView createImageFromView], 0.50) writeToFile:filePath atomically:YES];
-	
-	NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-	//upload the image
-	AWSS3TransferManagerUploadRequest *imageUploadRequest = [AWSS3TransferManagerUploadRequest new];
-	imageUploadRequest.bucket = @"popup-thumbs";
-	imageUploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
-	imageUploadRequest.key = _thumbURL;
-	imageUploadRequest.body = fileUrl;
-	imageUploadRequest.contentType = @"image/jpeg";
+//	_thumbURL = [NSString stringWithFormat:@"%d.jpg", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
+//	NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:_thumbURL];
+//	[UIImageJPEGRepresentation([matteView createImageFromView], 0.50) writeToFile:filePath atomically:YES];
+//	
+//	NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+//	//upload the image
+//	AWSS3TransferManagerUploadRequest *imageUploadRequest = [AWSS3TransferManagerUploadRequest new];
+//	imageUploadRequest.bucket = @"popup-thumbs";
+//	imageUploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+//	imageUploadRequest.key = _thumbURL;
+//	imageUploadRequest.body = fileUrl;
+//	imageUploadRequest.contentType = @"image/jpeg";
 	
 	
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
@@ -2903,8 +2939,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_moviePlayer play];
 	
 	
-	if (_participants <= 1)
-		[self _goShare];
+	//if (_participants <= 1)
+	//	[self _goShare];
 	
 	
 	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
@@ -2915,20 +2951,20 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	uploadRequest.body = url;
 	
 	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
-	[[transferManager upload:imageUploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-		if (task.error) {
-			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
-			
-		} else {
-			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
-			
-			if (_isShare) {
-				[self _goShare];
-			}
-		}
-		
-		return (nil);
-	}];
+//	[[transferManager upload:imageUploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+//		if (task.error) {
+//			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+//			
+//		} else {
+//			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
+//			
+//			if (_isShare) {
+//				[self _goShare];
+//			}
+//		}
+//		
+//		return (nil);
+//	}];
 	
 	//if (!_isShare) {
 		[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
