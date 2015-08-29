@@ -1024,13 +1024,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradient"]]];
 	
-	
-//	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake((_moviePlayer.view.frame.size.height - _moviePlayer.view.frame.size.width) * -0.5, 0.0, _moviePlayer.view.frame.size.height, _moviePlayer.view.frame.size.height)];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, _moviePlayer.view.frame.size.width, _moviePlayer.view.frame.size.height)];
 	_imageView.hidden = YES;
 	[self.view addSubview:_imageView];
 	
-//---	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height * 1.0000)];
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height)];
 	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
 	
@@ -2934,7 +2931,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[[NSUserDefaults standardUserDefaults] setObject:[cachedVideos copy] forKey:@"cached"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	_imageView.image = (_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
+	//_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
 	
 	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
 	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
