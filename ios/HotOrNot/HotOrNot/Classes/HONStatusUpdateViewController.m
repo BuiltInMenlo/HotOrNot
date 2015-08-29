@@ -337,6 +337,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
 			[_videoPlaylist addObject:url];
 			
+			[self _downloadVideo:txtContent];
 			if (![_lastVideo isEqualToString:txtContent]) {
 				_moviePlayer.contentURL = url;
 				[_moviePlayer play];
@@ -1006,6 +1007,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_isInvite = NO;
 	_isActive = YES;
 	_isSubmitting = NO;
+	_isPlaying = NO;
 	
 	_comment = @"";
 	_participants = 0;
@@ -1099,7 +1101,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
-	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, 0.0 + (((self.view.frame.size.height * 1.0000) - 206.0) * 0.5), 206.0, 206.0)];
+	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 206.0) * 0.5, -40.0 + (((self.view.frame.size.height * 1.0000) - 206.0) * 0.5), 206.0, 206.0)];
 	_animationImageView.hidden = YES;
 	[self.view addSubview:_animationImageView];
 	
@@ -1350,35 +1352,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_goNextVideo {
-	if ([_videoPlaylist count] > 0) {
-		[_moviePlayer stop];
-		_moviePlayer.contentURL = nil;
-		_videoQueue = ++_videoQueue % [_videoPlaylist count];
-		NSURL *url = [NSURL fileURLWithPath:[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent]];
-		NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
-		
-		[[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			NSString *cachedFile = (NSString *)obj;
-			
-			if ([cachedFile isEqualToString:[url.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""]]) {
-				NSLog(@"cachedFile: %@", cachedFile);
-				_moviePlayer.contentURL = url;
-				*stop = YES;
-			}
-		}];
-			
-			
-		if (_moviePlayer.contentURL == nil) {
-			_animationImageView.hidden = NO;
-			_expireLabel.text = @"Loading video…";
-			_expireLabel.alpha = 1.0;
-
-			[self _downloadVideo:[url lastPathComponent]];
-			_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
-		}
-	}
+	//_isPlaying = YES;
 	
-	[_moviePlayer play];
+	//[_moviePlayer stop];
+	//_moviePlayer.contentURL = nil;
+	[self _advanceVideo];
 }
 
 - (void)_goFlag {
@@ -1739,7 +1717,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		});
 	}
 	
-	if (_moviePlayer.loadState == 0 && _moviePlayer.playbackState == 1 && !_isPlaying) {
+	if (_moviePlayer.loadState == 0 && _moviePlayer.playbackState == 1) {
 //		_bufferTimer = [NSTimer scheduledTimerWithTimeInterval:5.00
 //														target:self
 //													  selector:@selector(_restartPlayback)
@@ -1747,7 +1725,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	}
 	
 	if (_moviePlayer.loadState == 3) {
-		_isPlaying = YES;
 		[_bufferTimer invalidate];
 		
 		if (_bufferTimer != nil)
@@ -1794,7 +1771,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_playbackEnded:(NSNotification *)notification {
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
-	[self _goNextVideo];
+	
+	if (!_isPlaying)
+		[self _advanceVideo];
 }
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
@@ -1906,6 +1885,38 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_bufferTimer = nil;
 	
 	[_moviePlayer stop];
+	[_moviePlayer play];
+}
+
+- (void)_advanceVideo {
+	_isPlaying = NO;
+	
+	if ([_videoPlaylist count] > 0) {
+		_videoQueue = ++_videoQueue % [_videoPlaylist count];
+		NSURL *url = [NSURL fileURLWithPath:[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent]];
+		NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
+		
+		[[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSString *cachedFile = (NSString *)obj;
+			
+			if ([cachedFile isEqualToString:[url.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""]]) {
+				NSLog(@"cachedFile: %@", cachedFile);
+				_moviePlayer.contentURL = url;
+				*stop = YES;
+			}
+		}];
+		
+		
+		if (_moviePlayer.contentURL == nil) {
+			_animationImageView.hidden = NO;
+			_expireLabel.text = @"Loading video…";
+			_expireLabel.alpha = 1.0;
+			
+			[self _downloadVideo:[url lastPathComponent]];
+			_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
+		}
+	}
+	
 	[_moviePlayer play];
 }
 
