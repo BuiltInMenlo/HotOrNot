@@ -1014,13 +1014,16 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
 	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-	_moviePlayer.view.backgroundColor = [UIColor blackColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	_moviePlayer.view.backgroundColor = [UIColor clearColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	_moviePlayer.shouldAutoplay = YES;
 	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
 	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
 	_moviePlayer.view.frame = self.view.frame;
 	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
 	[self.view addSubview:_moviePlayer.view];
+	
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradient"]]];
+	
 	
 //	_imageView = [[UIImageView alloc] initWithFrame:_moviePlayer.view.frame];
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake((_moviePlayer.view.frame.size.height - _moviePlayer.view.frame.size.width) * -0.5, 0.0, _moviePlayer.view.frame.size.height, _moviePlayer.view.frame.size.height)];
@@ -1075,10 +1078,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 200.0, 22.0)];
+	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 90.0, 26.0, 80.0, 22.0)];
 	_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
 	_participantsLabel.backgroundColor = [UIColor clearColor];
-	_participantsLabel.textAlignment = NSTextAlignmentCenter;
+	_participantsLabel.textAlignment = NSTextAlignmentRight;
 	_participantsLabel.textColor = [UIColor whiteColor];
 	_participantsLabel.text = @"0";
 	[self.view addSubview:_participantsLabel];
@@ -1144,8 +1147,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_openCommentButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_nonActive"] forState:UIControlStateNormal];
 	[_openCommentButton setBackgroundImage:[UIImage imageNamed:@"commentButton_Active"] forState:UIControlStateHighlighted];
-	//_openCommentButton.frame = CGRectMake((self.view.frame.size.width - _openCommentButton.frame.size.width) * 0.5, 2.0 + (((self.view.frame.size.height * 1.0000) - _openCommentButton.frame.size.height) * 0.5), _openCommentButton.frame.size.width, _openCommentButton.frame.size.height);
-	_openCommentButton.frame = CGRectOffset(_openCommentButton.frame, (self.view.frame.size.width - _openCommentButton.frame.size.width) - 8.0, 24.0);
+	_openCommentButton.frame = CGRectOffset(_openCommentButton.frame, self.view.frame.size.width - _openCommentButton.frame.size.width - 8.0, (self.view.frame.size.height - _openCommentButton.frame.size.height) - 7.0);
 	[_openCommentButton addTarget:self action:@selector(_goOpenComment) forControlEvents:UIControlEventTouchUpInside];
 	_openCommentButton.enabled = NO;
 	[self.view addSubview:_openCommentButton];
@@ -1154,7 +1156,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_cameraFlipButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 	[_cameraFlipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-	_cameraFlipButton.frame = CGRectOffset(_cameraFlipButton.frame, self.view.frame.size.width - _cameraFlipButton.frame.size.width - 8.0, (self.view.frame.size.height - _cameraFlipButton.frame.size.height) - 9.0);
+	_cameraFlipButton.frame = CGRectOffset(_cameraFlipButton.frame, 10.0, (self.view.frame.size.height - _cameraFlipButton.frame.size.height) - 7.0);
 	[_cameraFlipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 	_cameraFlipButton.enabled = NO;
 	[self.view addSubview:_cameraFlipButton];
@@ -1179,8 +1181,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	
 	
-	_cancelCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cancelCameraButton.frame = CGRectMake(0.0, (self.view.frame.size.height * 0.5), self.view.frame.size.width, self.view.frame.size.height * 0.5);
+	_cancelCameraButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_cancelCameraButton.frame = CGRectMake(6.0, 26.0, 40.0, 40.0);
+	[_cancelCameraButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[_cancelCameraButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_cancelCameraButton addTarget:self action:@selector(_goCancelCamera) forControlEvents:UIControlEventTouchUpInside];
 	_cancelCameraButton.hidden = YES;
 	[self.view addSubview:_cancelCameraButton];
@@ -1191,7 +1195,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_messengerButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[_messengerButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	_messengerButton.frame = CGRectOffset(_messengerButton.frame, ((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 10.0, (self.view.frame.size.height - _messengerButton.frame.size.height) - 60.0);
+	_messengerButton.frame = CGRectOffset(_messengerButton.frame, ((self.view.frame.size.width * 0.5) - _messengerButton.frame.size.width) - 8.0, (self.view.frame.size.height - _messengerButton.frame.size.height) - 55.0);
 	[_messengerButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	_messengerButton.enabled = NO;
 	[self.view addSubview:_messengerButton];
@@ -1200,7 +1204,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_takePhotoButton.frame = CGRectMake(0.0, 0.0, 72.0, 72.0);
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
-	_takePhotoButton.frame = CGRectOffset(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5), (self.view.frame.size.height - _takePhotoButton.frame.size.height) - 60.0);
+	_takePhotoButton.frame = CGRectOffset(_takePhotoButton.frame, 6.0 + (self.view.frame.size.width * 0.5), (self.view.frame.size.height - _takePhotoButton.frame.size.height) - 55.0);
 	[_takePhotoButton addTarget:self action:@selector(_goImageComment) forControlEvents:UIControlEventTouchUpInside];
 	_takePhotoButton.enabled = NO;
 	[self.view addSubview:_takePhotoButton];
@@ -1275,7 +1279,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_recordImageView.hidden = YES;
 	[self.view addSubview:_recordImageView];
 	
-	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, (self.view.frame.size.height * 0.5) - 10.0, self.view.frame.size.width - 50.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 1.0000) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
+	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, (self.view.frame.size.height * 0.5) - 13.0, self.view.frame.size.width - 50.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 1.0000) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_expireLabel.backgroundColor = [UIColor clearColor];
 	_expireLabel.textAlignment = NSTextAlignmentCenter;
@@ -1372,6 +1376,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_goImageComment {
+	_statusUpdateHeaderView.hidden = YES;
+	
 	_imageView.alpha = 0.0;
 	_previewTintView.hidden = YES;
 	_openCommentButton.hidden = YES;
@@ -1391,7 +1397,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_expireLabel.alpha = 1.0;
 	_expireLabel.hidden = NO;
 	_expireLabel.text = @"Ready to record…";
-	_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, (self.view.frame.size.height * 0.5) - 10.0);
+	//_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, (self.view.frame.size.height * 0.5) - 10.0);
 	
 	_playerLayer.hidden = YES;
 	_moviePlayer.view.hidden = YES;
@@ -1404,10 +1410,13 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_cameraPreviewLayer.opacity = 1.0;
 	
 	_cancelCameraButton.hidden = NO;
+	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Hold"] forState:UIControlStateNormal];
+	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Pressed"] forState:UIControlStateHighlighted];
 	_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, (self.view.frame.size.width - _takePhotoButton.frame.size.width) * 0.5);
 }
 
 - (void)_goCancelCamera {
+	_statusUpdateHeaderView.hidden = NO;
 	_cancelCameraButton.hidden = YES;
 	
 	_statusUpdateHeaderView.hidden = NO;
@@ -1435,6 +1444,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	_takePhotoButton.alpha = 1.0;
 	_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height);
+	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
+	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 	_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5));
 	_cancelCameraButton.hidden = YES;
 	
@@ -1622,6 +1633,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_statusLabel.text = @"Sending popup…";
 		_animationImageView.hidden = NO;
 		_recordImageView.hidden = YES;
+		_statusUpdateHeaderView.hidden = NO;
 		
 		if (_preRecordTimer) {
 			[_preRecordTimer invalidate];
@@ -1649,6 +1661,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_messengerButton.hidden = NO;
 		
 		_takePhotoButton.alpha = 1.0;
+		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
+		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5));
 		_cancelCameraButton.hidden = YES;
 	}
@@ -1890,6 +1904,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_advanceVideo {
 	_isPlaying = NO;
+	
+	_imageView.hidden = NO;
+	_imageView.alpha = 1.0;
 	
 	if ([_videoPlaylist count] > 0) {
 		_videoQueue = ++_videoQueue % [_videoPlaylist count];
@@ -2918,8 +2935,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	_imageView.image = (_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
-	//_imageView.hidden = NO;
-	//_imageView.alpha = 1.0;
 	
 	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
 	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
