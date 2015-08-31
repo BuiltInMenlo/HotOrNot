@@ -3,7 +3,7 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "createPopup_nonActive1x.png"
+      "filename" : "createPopup_nonActive@1x.png"
     },
     {
       "idiom" : "iphone",
@@ -12,7 +12,7 @@
     },
     {
       "idiom" : "iphone",
-      "filename" : "createPopup_nonActive1x-1.png",
+      "filename" : "createPopup_nonActive@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },

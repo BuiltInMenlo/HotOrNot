@@ -96,7 +96,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIButton *nameButton;
 @property (nonatomic, strong) UIView *previewTintView;
 @property (nonatomic, strong) UIView *shareHolderView;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) UIImageView *shareTutorialImageView;
 @property (nonatomic, strong) UIImageView *cameraTutorialImageView;
 @property (nonatomic, strong) NSDictionary *baseShareInfo;
 @property (nonatomic, strong) NSString *thumbURL;
@@ -861,11 +861,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //					
 //					if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"] && _isTutorial) {
 //						_isTutorial = NO;
-//						_tutorialImageView.alpha = 0.0;
-//						//[self.view addSubview:_tutorialImageView];
+//						_shareTutorialImageView.alpha = 0.0;
+//						//[self.view addSubview:_shareTutorialImageView];
 //						
 //						[UIView animateWithDuration:0.333 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-//							_tutorialImageView.alpha = 1.0;
+//							_shareTutorialImageView.alpha = 1.0;
 //						} completion:^(BOOL finished) {
 //						}];
 //					}
@@ -1206,13 +1206,13 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_takePhotoButton.enabled = NO;
 	[self.view addSubview:_takePhotoButton];
 	
-	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
-	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 25.0 + (_messengerButton.frame.origin.y - _tutorialImageView.frame.size.height));
+	_shareTutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nameTutorial"]];
+	_shareTutorialImageView.frame = CGRectOffset(_shareTutorialImageView.frame, 0.0, 25.0 + (_messengerButton.frame.origin.y - _shareTutorialImageView.frame.size.height));
 	
 	_cameraTutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTutorial"]];
-	_cameraTutorialImageView.frame = CGRectOffset(_cameraTutorialImageView.frame, 0.0, 13.0 + ((self.view.frame.size.height * 1.0000) - _cameraTutorialImageView.frame.size.height));
+	_cameraTutorialImageView.frame = CGRectOffset(_cameraTutorialImageView.frame, 0.0, 27.0 + (_takePhotoButton.frame.origin.y - _cameraTutorialImageView.frame.size.height));
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"]) {
+	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"] isEqualToString:@"YES"]) {
 		_isTutorial = YES;
 		[self.view addSubview:_cameraTutorialImageView];
 	}
@@ -1325,7 +1325,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	_shareTypes = [NSMutableArray array];
 	
-	//[_tutorialImageView removeFromSuperview];
+	//[_shareTutorialImageView removeFromSuperview];
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Invite friends to this channel, select a messenger"
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
@@ -1374,6 +1374,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_goImageComment {
 	_statusUpdateHeaderView.hidden = YES;
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"channel_tutorial"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	[_cameraTutorialImageView removeFromSuperview];
 	
 	_imageView.alpha = 0.0;
 	_previewTintView.hidden = YES;
@@ -1563,6 +1567,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 				[_commentTextField resignFirstResponder];
 			
 			_commentTextField.text = @"";
+			
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"channel_tutorial"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			[_cameraTutorialImageView removeFromSuperview];
 			
 			_imageView.alpha = 0.0;
 			_previewTintView.hidden = YES;
@@ -2008,26 +2016,20 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	NSLog(@"CHANNEL_HISTORY:\n%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"]);
 	
-//	[PubNub unsubscribeFrom:@[_channel] withCompletionHandlingBlock:^(NSArray *array, PNError *error) {
-//	}];
-//	
-//	[[PNObservationCenter defaultCenter] removeClientChannelSubscriptionStateObserver:self];
-//	[[PNObservationCenter defaultCenter] removeMessageReceiveObserver:self];
-	
 	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[PBJVision sharedInstance] stopPreview];
-	[self.navigationController popToRootViewControllerAnimated:YES];
-	
-//	[_queuePlayer ]
-	[_queuePlayer removeAllItems];
-	[_moviePlayer stop];
-	_moviePlayer.contentURL = nil;
-	_moviePlayer = nil;
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		[[PBJVision sharedInstance] stopPreview];
+		[_moviePlayer stop];
+		_moviePlayer.contentURL = nil;
+		_moviePlayer = nil;
+	});
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 
@@ -2207,7 +2209,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 												 name:UITextFieldTextDidChangeNotification
 											   object:textField];
 	
-	_tutorialImageView.hidden = YES;
+	_shareTutorialImageView.hidden = YES;
 	_commentFooterView.hidden = NO;
 	_expireLabel.hidden = YES;
 	_scrollView.hidden = NO;

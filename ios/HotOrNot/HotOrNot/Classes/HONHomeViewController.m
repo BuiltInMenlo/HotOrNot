@@ -255,7 +255,7 @@
 	[self.view addSubview:_paginationView];
 	
 	_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createTutorial"]];
-	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, (_scrollView.frame.size.height + 10.0) - (_composeButton.frame.size.height + _tutorialImageView.frame.size.height));
+	_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, (_scrollView.frame.size.height + 9.0) - (_composeButton.frame.size.height + _tutorialImageView.frame.size.height));
 	_tutorialImageView.hidden = YES;
 	_tutorialImageView.alpha = 0.0;
 	
