@@ -88,6 +88,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIButton *messengerButton;
 @property (nonatomic, strong) UIButton *openCommentButton;
 @property (nonatomic, strong) UIButton *videoVisibleButton;
+@property (nonatomic, strong) HONButton *videoFocusButton;
 @property (nonatomic, strong) HONButton *historyButton;
 @property (nonatomic, strong) HONButton *replayButton;
 @property (nonatomic, strong) HONButton *flagButton;
@@ -609,6 +610,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 								_historyButton.enabled = YES;
 								_cameraFlipButton.enabled = YES;
 								_openCommentButton.enabled = YES;
+							
+							} else {
+								if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+									[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+								
+								[self _advanceVideo];
+								[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+									_finaleTintView.alpha = 1.0;
+									
+								} completion:^(BOOL finished) {
+								}];
 							}
 						}];
 		
@@ -1069,6 +1081,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_finaleTintView.alpha = 0.0;
 	[self.view addSubview:_finaleTintView];
 	
+	_videoFocusButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	_videoFocusButton.frame = _finaleTintView.frame;
+	[_videoFocusButton addTarget:self action:@selector(_goVideoFocus) forControlEvents:UIControlEventTouchUpInside];
+	[_finaleTintView addSubview:_videoFocusButton];
+	
 	
 //	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
 //	playerViewController.player = [AVPlayer playerWithURL:];
@@ -1144,6 +1161,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 	_flagButton.frame = CGRectOffset(_flagButton.frame, 33.0, -14.0 + ((self.view.frame.size.height - _flagButton.frame.size.height) * 0.5));
 	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	_flagButton.alpha = 0.0;
 	[_finaleTintView addSubview:_flagButton];
 	
 	_replayButton = [HONButton buttonWithType:UIButtonTypeCustom];
@@ -1151,6 +1169,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_replayButton setBackgroundImage:[UIImage imageNamed:@"replayButton_Active"] forState:UIControlStateHighlighted];
 	_replayButton.frame = CGRectOffset(_replayButton.frame, (self.view.frame.size.width - _replayButton.frame.size.width) * 0.5, -14.0 + ((self.view.frame.size.height - _replayButton.frame.size.height) * 0.5));
 	[_replayButton addTarget:self action:@selector(_goReplay) forControlEvents:UIControlEventTouchUpInside];
+	_replayButton.alpha = 0.0;
 	[_finaleTintView addSubview:_replayButton];
 	
 	_historyButton = [HONButton buttonWithType:UIButtonTypeCustom];
@@ -1158,6 +1177,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
 	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) - 33.0, -14.0 + ((self.view.frame.size.height - _historyButton.frame.size.height) * 0.5));
 	[_historyButton addTarget:self action:@selector(_goNextVideo) forControlEvents:UIControlEventTouchUpInside];
+	_historyButton.alpha = 0.0;
 	[_finaleTintView addSubview:_historyButton];
 	
 	
@@ -1389,6 +1409,19 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 													otherButtonTitles:[NSString stringWithFormat:@"%@ my camera", (_cameraPreviewView.alpha == 1.0) ? @"Hide" : @"Show"], [NSString stringWithFormat:@"%@ others", (_moviePlayer.view.alpha == 1.0) ? @"Hide" : @"Show"], nil];
 	[actionSheet setTag:1];
 	[actionSheet showInView:self.view];
+}
+
+- (void)_goVideoFocus {
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+	_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
+	_isFinale = YES;
+	_isPlaying = NO;
+	
+	[_moviePlayer play];
+	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+		_finaleTintView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+	}];
 }
 
 - (void)_goNextVideo {
@@ -1706,7 +1739,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height);
 		
 		_statusLabel.text = @"Sending popup…";
-		_animationImageView.hidden = NO;
 		_recordImageView.hidden = YES;
 		_statusUpdateHeaderView.hidden = NO;
 		
@@ -1868,14 +1900,16 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			[_moviePlayer play];
 		
 		} else {
-			if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
-				[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
-			
 			[self _advanceVideo];
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_finaleTintView.alpha = 1.0;
+				_flagButton.alpha = 1.0;
+				_replayButton.alpha = 1.0;
+				_historyButton.alpha = 1.0;
 
 			} completion:^(BOOL finished) {
+				if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
 			}];
 		}
 	}
