@@ -89,12 +89,14 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIButton *openCommentButton;
 @property (nonatomic, strong) UIButton *videoVisibleButton;
 @property (nonatomic, strong) HONButton *historyButton;
+@property (nonatomic, strong) HONButton *replayButton;
+@property (nonatomic, strong) HONButton *flagButton;
 @property (nonatomic, strong) HONButton *cancelCameraButton;
 @property (nonatomic, strong) UIView *tintView;
 @property (nonatomic, strong) UIImageView *animationImageView;
 @property (nonatomic, strong) UITextField *nameTextField;
 @property (nonatomic, strong) UIButton *nameButton;
-@property (nonatomic, strong) UIView *previewTintView;
+@property (nonatomic, strong) UIView *finaleTintView;
 @property (nonatomic, strong) UIView *shareHolderView;
 @property (nonatomic, strong) UIImageView *shareTutorialImageView;
 @property (nonatomic, strong) UIImageView *cameraTutorialImageView;
@@ -120,6 +122,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic) BOOL isActive;
 @property (nonatomic) BOOL isTutorial;
 @property (nonatomic) BOOL isPlaying;
+@property (nonatomic) BOOL isFinale;
 @property (nonatomic) int prerecordCounter;
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
@@ -331,13 +334,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: txtContent,
 																																		  @"channel"	: _channelName}];
 			
-			
-			
-			
 			NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-			[_videoPlaylist addObject:url];
+			[_videoPlaylist insertObject:url atIndex:0];
 			
 			[self _downloadVideo:txtContent];
+			[self _goReplay];
 			if (![_lastVideo isEqualToString:txtContent]) {
 				_moviePlayer.contentURL = url;
 				[_moviePlayer play];
@@ -346,6 +347,25 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 				_expireLabel.alpha = 1.0;
 			}
 			
+		} else {
+			NSDictionary *dict = @{@"id"				: @"0",
+								   @"msg_id"			: @"0",
+								   @"content_type"		: @((int)HONChatMessageTypeTXT),
+								   
+								   @"owner_member"		: @{@"id"	: @(2392),
+															@"name"	: @""},
+								   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
+								   @"text"				: txtContent,
+								   
+								   @"net_vote_score"	: @(0),
+								   @"status"			: NSStringFromInt(0),
+								   @"added"				: [NSDate stringFormattedISO8601],
+								   @"updated"			: [NSDate stringFormattedISO8601]};
+			
+			
+			HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
+			NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
+			[self _appendComment:commentVO];
 		}
 	}
 }
@@ -1008,6 +1028,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_isActive = YES;
 	_isSubmitting = NO;
 	_isPlaying = NO;
+	_isFinale = YES;
 	
 	_comment = @"";
 	_participants = 0;
@@ -1037,9 +1058,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
 	[self.view addSubview:_cameraPreviewView];
 	
-	_previewTintView = [[UIView alloc] initWithFrame:_cameraPreviewView.frame];
-	_previewTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
-	[self.view addSubview:_previewTintView];
+	_finaleTintView = [[UIView alloc] initWithFrame:self.view.frame];
+	_finaleTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
+	_finaleTintView.hidden = YES;
+	_finaleTintView.alpha = 0.0;
+	[self.view addSubview:_finaleTintView];
 	
 	
 //	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
@@ -1111,15 +1134,26 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[activityIndicatorView startAnimating];
 	[_animationImageView addSubview:activityIndicatorView];
 	
+	_flagButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+	_flagButton.frame = CGRectOffset(_flagButton.frame, (self.view.frame.size.width * 0.5) - (_flagButton.frame.size.width + 55.0), (self.view.frame.size.height - _flagButton.frame.size.height) * 0.5);
+	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	[_finaleTintView addSubview:_flagButton];
+	
+	_replayButton = [HONButton buttonWithType:UIButtonTypeCustom];
+	[_replayButton setBackgroundImage:[UIImage imageNamed:@"replayButton_nonActive"] forState:UIControlStateNormal];
+	[_replayButton setBackgroundImage:[UIImage imageNamed:@"replayButton_Active"] forState:UIControlStateHighlighted];
+	_replayButton.frame = CGRectOffset(_replayButton.frame, (self.view.frame.size.width - _replayButton.frame.size.width) * 0.5, (self.view.frame.size.height - _replayButton.frame.size.height) * 0.5);
+	[_replayButton addTarget:self action:@selector(_goReplay) forControlEvents:UIControlEventTouchUpInside];
+	[_finaleTintView addSubview:_replayButton];
 	
 	_historyButton = [HONButton buttonWithType:UIButtonTypeCustom];
-	_historyButton.frame = _moviePlayer.view.frame;// CGRectMake(0.0, 0.0, 42.0, 42.0);
-//	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
-//	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
-//	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) * 0.5, 24.0);
+	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
+	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
+	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) - 25.0, (self.view.frame.size.height - _historyButton.frame.size.height) * 0.5);
 	[_historyButton addTarget:self action:@selector(_goNextVideo) forControlEvents:UIControlEventTouchUpInside];
-	_historyButton.enabled = NO;
-	[self.view addSubview:_historyButton];
+	[_finaleTintView addSubview:_historyButton];
 	
 	
 	[self.view addSubview:_statusUpdateHeaderView];
@@ -1245,8 +1279,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_submitCommentButton.hidden = YES;
 	[_commentFooterView addSubview:_submitCommentButton];
 	
-	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 112.0, 20.0)];
-	_countdownLabel.font = [[[HONFontAllocator sharedInstance] avenirHeavy] fontWithSize:24];
+	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 112.0, 22.0)];
+	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
 	_countdownLabel.backgroundColor = [UIColor clearColor];
 	_countdownLabel.textAlignment = NSTextAlignmentRight;
 	_countdownLabel.textColor = [UIColor whiteColor];
@@ -1274,7 +1308,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_recordImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"recordDot"]];
 	_recordImageView.frame = CGRectOffset(_recordImageView.frame, 8.0, 28.0);
 	_recordImageView.hidden = YES;
-	[self.view addSubview:_recordImageView];
+	//[self.view addSubview:_recordImageView];
 	
 	_expireLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, (self.view.frame.size.height * 0.5) - 13.0, self.view.frame.size.width - 50.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake(10.0, (self.view.frame.size.height * 1.0000) - 60.0, self.view.frame.size.width - 20.0, 40.0)];
 	_expireLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
@@ -1371,6 +1405,19 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[alertView setTag:HONStatusUpdateAlertViewTypeFlag];
 	[alertView show];
 }
+- (void)_goReplay {
+	[_moviePlayer stop];
+	_videoQueue = 0;
+	_moviePlayer.contentURL = [_videoPlaylist firstObject];
+	_isFinale = YES;
+	
+	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+		_finaleTintView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_finaleTintView.hidden = YES;
+		[_moviePlayer play];
+	}];
+}
 
 - (void)_goImageComment {
 	_statusUpdateHeaderView.hidden = YES;
@@ -1379,8 +1426,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	[_cameraTutorialImageView removeFromSuperview];
 	
+	
+	_finaleTintView.alpha = 0.0;
+	_finaleTintView.hidden = YES;
+	_isFinale = YES;
+	
 	_imageView.alpha = 0.0;
-	_previewTintView.hidden = YES;
 	_openCommentButton.hidden = YES;
 	_animationImageView.hidden = YES;
 	
@@ -1420,10 +1471,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_statusUpdateHeaderView.hidden = NO;
 	_cancelCameraButton.hidden = YES;
 	
+	_isFinale = NO;
+	
+	if ([_videoPlaylist count] > 0) {
+		_finaleTintView.alpha = 1.0;
+		_finaleTintView.hidden = NO;
+	}
+	
 	_statusUpdateHeaderView.hidden = NO;
 	_countdownLabel.text = @"";
 	_countdownLabel.hidden = YES;
-	_previewTintView.hidden = NO;
+	_finaleTintView.hidden = NO;
 	_moviePlayer.view.hidden = NO;
 	_playerLayer.hidden = NO;
 	_videoVisibleButton.hidden = NO;
@@ -1573,12 +1631,16 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			[_cameraTutorialImageView removeFromSuperview];
 			
 			_imageView.alpha = 0.0;
-			_previewTintView.hidden = YES;
+			_finaleTintView.hidden = YES;
 			_openCommentButton.hidden = YES;
 			_animationImageView.hidden = YES;
 			
 			_openCommentButton.alpha = 0.0;
 			_messengerButton.alpha = 0.0;
+			
+			_isFinale = YES;
+			_finaleTintView.alpha = 0.0;
+			_finaleTintView.hidden = YES;
 			
 			_logoImageView.hidden = YES;
 			_videoVisibleButton.hidden = YES;
@@ -1649,7 +1711,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_statusUpdateHeaderView.hidden = NO;
 		_countdownLabel.text = @"";
 		_countdownLabel.hidden = YES;
-		_previewTintView.hidden = NO;
+		_finaleTintView.hidden = NO;
 		_moviePlayer.view.hidden = NO;
 		_playerLayer.hidden = NO;
 		_videoVisibleButton.hidden = NO;
@@ -1791,8 +1853,23 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)_playbackEnded:(NSNotification *)notification {
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
 	
-	if (!_isPlaying)
-		[self _advanceVideo];
+	if (!_isPlaying) {
+		if (_isFinale) {
+			_isFinale = NO;
+			[_moviePlayer play];
+		
+		} else {
+			_finaleTintView.hidden = NO;
+			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+				_finaleTintView.alpha = 1.0;
+				
+			} completion:^(BOOL finished) {
+				[self _advanceVideo];
+			}];
+			
+			
+		}
+	}
 }
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {

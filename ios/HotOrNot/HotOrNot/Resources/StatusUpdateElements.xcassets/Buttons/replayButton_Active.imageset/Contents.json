@@ -3,23 +3,23 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "flagButton_nonActive@1x.png"
+      "filename" : "replayButton_Active@1x.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "flagButton_nonActive@2x.png"
+      "filename" : "replayButton_Active@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "flagButton_nonActive@1x-1.png",
+      "filename" : "replayButton_Active@1x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "scale" : "3x",
-      "filename" : "flagButton_nonActive@3x.png"
+      "filename" : "replayButton_Active@3x.png"
     }
   ],
   "info" : {
