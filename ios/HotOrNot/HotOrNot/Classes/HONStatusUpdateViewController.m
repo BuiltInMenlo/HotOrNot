@@ -1027,7 +1027,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	
 	self.view.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];// [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
-	
+	self.view.backgroundColor = [UIColor blackColor];
 	//_sysVolume = [MPMusicPlayerController applicationMusicPlayer].volume;
 	_isShare = NO;
 	_isInvite = NO;

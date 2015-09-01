@@ -994,7 +994,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	} else if ([protocol isEqualToString:@"popuprocks"]) {
 		
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
-		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
+		NSArray *path = [[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		
 		NSLog(@"isNumeric:[%@][%@] -=- %@/%@", [path firstObject], [path lastObject], NSStringFromBOOL([[path firstObject] isNumeric]), NSStringFromBOOL([[path lastObject] isNumeric]));
 		NSLog(@"currentViewController:[%@]", [UIViewController currentViewController].class);
