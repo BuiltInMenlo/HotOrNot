@@ -744,8 +744,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	}];
 	
 	
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
+	//KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	//NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
 //	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
 //		//[[HONAnalyticsReporter sharedInstance] trackEvent:@"App - Backgrounding First Run"];

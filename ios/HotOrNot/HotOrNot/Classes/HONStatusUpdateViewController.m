@@ -127,6 +127,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic) int participants;
 @property (nonatomic) int comments;
 @property (nonatomic) int videoQueue;
+@property (nonatomic) float sysVolume;
 @end
 
 @implementation HONStatusUpdateViewController
@@ -338,13 +339,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			[_videoPlaylist insertObject:url atIndex:0];
 			
 			[self _downloadVideo:txtContent];
-			[self _goReplay];
 			if (![_lastVideo isEqualToString:txtContent]) {
-				_moviePlayer.contentURL = url;
-				[_moviePlayer play];
+				[self _goReplay];
+//				_videoQueue = 0;
+//				_moviePlayer.contentURL = url;
+//				[_moviePlayer play];
 				
 				_expireLabel.text = @"Loading video…";
 				_expireLabel.alpha = 1.0;
+			
+			} else {
+				
 			}
 			
 		} else {
@@ -1023,6 +1028,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	self.view.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];// [UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
 	
+	//_sysVolume = [MPMusicPlayerController applicationMusicPlayer].volume;
 	_isShare = NO;
 	_isInvite = NO;
 	_isActive = YES;
@@ -1098,8 +1104,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_footerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"commentInputBG"]];
 	[_commentFooterView addSubview:_footerImageView];
 	
-	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 90.0, 26.0, 80.0, 22.0)];
-	_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
+	_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 110.0, 28.0, 100.0, 26.0)];
+	_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:26];
 	_participantsLabel.backgroundColor = [UIColor clearColor];
 	_participantsLabel.textAlignment = NSTextAlignmentRight;
 	_participantsLabel.textColor = [UIColor whiteColor];
@@ -1137,21 +1143,21 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_flagButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 	[_flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-	_flagButton.frame = CGRectOffset(_flagButton.frame, (self.view.frame.size.width * 0.5) - (_flagButton.frame.size.width + 55.0), (self.view.frame.size.height - _flagButton.frame.size.height) * 0.5);
+	_flagButton.frame = CGRectOffset(_flagButton.frame, 33.0, -14.0 + ((self.view.frame.size.height - _flagButton.frame.size.height) * 0.5));
 	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	[_finaleTintView addSubview:_flagButton];
 	
 	_replayButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	[_replayButton setBackgroundImage:[UIImage imageNamed:@"replayButton_nonActive"] forState:UIControlStateNormal];
 	[_replayButton setBackgroundImage:[UIImage imageNamed:@"replayButton_Active"] forState:UIControlStateHighlighted];
-	_replayButton.frame = CGRectOffset(_replayButton.frame, (self.view.frame.size.width - _replayButton.frame.size.width) * 0.5, (self.view.frame.size.height - _replayButton.frame.size.height) * 0.5);
+	_replayButton.frame = CGRectOffset(_replayButton.frame, (self.view.frame.size.width - _replayButton.frame.size.width) * 0.5, -14.0 + ((self.view.frame.size.height - _replayButton.frame.size.height) * 0.5));
 	[_replayButton addTarget:self action:@selector(_goReplay) forControlEvents:UIControlEventTouchUpInside];
 	[_finaleTintView addSubview:_replayButton];
 	
 	_historyButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_nonActive"] forState:UIControlStateNormal];
 	[_historyButton setBackgroundImage:[UIImage imageNamed:@"historyButton_Active"] forState:UIControlStateHighlighted];
-	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) - 25.0, (self.view.frame.size.height - _historyButton.frame.size.height) * 0.5);
+	_historyButton.frame = CGRectOffset(_historyButton.frame, (self.view.frame.size.width - _historyButton.frame.size.width) - 33.0, -14.0 + ((self.view.frame.size.height - _historyButton.frame.size.height) * 0.5));
 	[_historyButton addTarget:self action:@selector(_goNextVideo) forControlEvents:UIControlEventTouchUpInside];
 	[_finaleTintView addSubview:_historyButton];
 	
@@ -1279,8 +1285,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_submitCommentButton.hidden = YES;
 	[_commentFooterView addSubview:_submitCommentButton];
 	
-	_countdownLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 30.0, self.view.frame.size.width - 112.0, 22.0)];
-	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:22];
+	_countdownLabel = [[UILabel alloc] initWithFrame:_participantsLabel.frame];
+	_countdownLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:26];
 	_countdownLabel.backgroundColor = [UIColor clearColor];
 	_countdownLabel.textAlignment = NSTextAlignmentRight;
 	_countdownLabel.textColor = [UIColor whiteColor];
@@ -1406,8 +1412,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[alertView show];
 }
 - (void)_goReplay {
-	[_moviePlayer stop];
+//	[_moviePlayer stop];
 	_videoQueue = 0;
+	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
 	_moviePlayer.contentURL = [_videoPlaylist firstObject];
 	_isFinale = YES;
 	
@@ -1762,6 +1769,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_moviePlayer.contentURL = nil;
 	_statusLabel.text = @"Send a pop…";
 	[_moviePlayer stop];
+	
+	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
 }
 
 - (void)_appLeavingBackground:(NSNotification *)notification {
@@ -1854,20 +1863,22 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
 	
 	if (!_isPlaying) {
+//		[self _advanceVideo];
 		if (_isFinale) {
 			_isFinale = NO;
 			[_moviePlayer play];
 		
 		} else {
+//			if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+//				[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+			
+			[self _advanceVideo];
 			_finaleTintView.hidden = NO;
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_finaleTintView.alpha = 1.0;
-				
+
 			} completion:^(BOOL finished) {
-				[self _advanceVideo];
 			}];
-			
-			
 		}
 	}
 }
@@ -2020,12 +2031,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_updateTint {
-	NSArray *colors = @[//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
-						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
-						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
-						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
+//	NSArray *colors = @[//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00],
+//						[UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00],
+//						[UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00],
+//						[UIColor colorWithRed:0.337 green:0.239 blue:0.510 alpha:1.00]];
 	
-	UIColor *color = [colors randomElement];
+	//UIColor *color = [colors randomElement];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 	} completion:nil];
 }
@@ -2095,6 +2106,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[[PBJVision sharedInstance] stopPreview];
@@ -3035,8 +3048,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //	imageUploadRequest.contentType = @"image/jpeg";
 	
 	
+	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
 	
+	_videoQueue = 0;
 	_moviePlayer.contentURL = url;
 	[_moviePlayer play];
 	
