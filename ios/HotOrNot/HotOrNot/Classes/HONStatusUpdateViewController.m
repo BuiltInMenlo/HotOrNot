@@ -1066,7 +1066,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	_finaleTintView = [[UIView alloc] initWithFrame:self.view.frame];
 	_finaleTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
-	_finaleTintView.hidden = YES;
 	_finaleTintView.alpha = 0.0;
 	[self.view addSubview:_finaleTintView];
 	
@@ -1412,16 +1411,15 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[alertView show];
 }
 - (void)_goReplay {
-//	[_moviePlayer stop];
 	_videoQueue = 0;
-	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	_moviePlayer.contentURL = [_videoPlaylist firstObject];
 	_isFinale = YES;
+	_isPlaying = NO;
 	
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 		_finaleTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_finaleTintView.hidden = YES;
 		[_moviePlayer play];
 	}];
 }
@@ -1434,7 +1432,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_cameraTutorialImageView removeFromSuperview];
 	
 	
-	_finaleTintView.alpha = 0.0;
 	_finaleTintView.hidden = YES;
 	_isFinale = YES;
 	
@@ -1447,7 +1444,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	_logoImageView.hidden = YES;
 	_videoVisibleButton.hidden = YES;
-	_historyButton.hidden = YES;
 	
 	_toggleMicButton.hidden = YES;
 	_cameraFlipButton.hidden = YES;
@@ -1462,6 +1458,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_moviePlayer.view.hidden = YES;
 	_submitCommentButton.hidden = YES;
 	
+	_isPlaying = YES;
 	[_moviePlayer stop];
 	
 	_cameraPreviewView.frame = self.view.frame;
@@ -1479,10 +1476,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_cancelCameraButton.hidden = YES;
 	
 	_isFinale = NO;
-	
+	_isPlaying = NO;
+	_finaleTintView.hidden = NO;
 	if ([_videoPlaylist count] > 0) {
-		_finaleTintView.alpha = 1.0;
-		_finaleTintView.hidden = NO;
+		[self _goReplay];
 	}
 	
 	_statusUpdateHeaderView.hidden = NO;
@@ -1491,7 +1488,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_moviePlayer.view.hidden = NO;
 	_playerLayer.hidden = NO;
 	_videoVisibleButton.hidden = NO;
-	_historyButton.hidden = NO;
 	_participantsLabel.hidden = NO;
 	_toggleMicButton.hidden = NO;
 	_logoImageView.hidden = YES;
@@ -1570,7 +1566,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[_statusUpdateHeaderView changeButton:YES];
 	
 	_videoVisibleButton.hidden = NO;
-	_historyButton.hidden = NO;
 	_commentTextField.text = @"";
 	_expireLabel.hidden = NO;
 	_commentFooterView.hidden = YES;
@@ -1644,12 +1639,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			_messengerButton.alpha = 0.0;
 			
 			_isFinale = YES;
-			_finaleTintView.alpha = 0.0;
 			_finaleTintView.hidden = YES;
 			
 			_logoImageView.hidden = YES;
 			_videoVisibleButton.hidden = YES;
-			_historyButton.hidden = YES;
 			
 			_toggleMicButton.hidden = YES;
 			_cameraFlipButton.hidden = YES;
@@ -1663,6 +1656,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			_moviePlayer.view.hidden = YES;
 			_submitCommentButton.hidden = YES;
 			
+			_isPlaying = YES;
 			[_moviePlayer stop];
 			_cameraPreviewView.frame = self.view.frame;
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
@@ -1712,6 +1706,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			_preRecordTimer = nil;
 		}
 		
+		_finaleTintView.hidden = NO;
+		
 		[[PBJVision sharedInstance] endVideoCapture];
 		_statusUpdateHeaderView.hidden = NO;
 		_countdownLabel.text = @"";
@@ -1719,7 +1715,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_moviePlayer.view.hidden = NO;
 		_playerLayer.hidden = NO;
 		_videoVisibleButton.hidden = NO;
-		_historyButton.hidden = NO;
 		_participantsLabel.hidden = NO;
 		_toggleMicButton.hidden = NO;
 		_logoImageView.hidden = YES;
@@ -1767,7 +1762,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_statusLabel.text = @"Send a pop…";
 	[_moviePlayer stop];
 	
-	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 }
 
 - (void)_appLeavingBackground:(NSNotification *)notification {
@@ -1798,7 +1793,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			
 			_takePhotoButton.enabled = YES;
 			_messengerButton.enabled = YES;
-			_historyButton.enabled = YES;
 			_cameraFlipButton.enabled = YES;
 			_openCommentButton.enabled = YES;
 		});
@@ -1860,17 +1854,15 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
 	
 	if (!_isPlaying) {
-//		[self _advanceVideo];
 		if (_isFinale) {
 			_isFinale = NO;
 			[_moviePlayer play];
 		
 		} else {
-//			if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
-//				[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+			if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+				[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
 			
 			[self _advanceVideo];
-			_finaleTintView.hidden = NO;
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_finaleTintView.alpha = 1.0;
 
@@ -2104,7 +2096,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[[PBJVision sharedInstance] stopPreview];
@@ -2303,7 +2295,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_toggleMicButton.hidden = YES;
 	_cameraFlipButton.hidden = YES;
 	_videoVisibleButton.hidden = YES;
-	_historyButton.hidden = YES;
 	_scrollView.frame = CGRectResizeHeight(_scrollView.frame, self.view.frame.size.height - (_statusUpdateHeaderView.frameEdges.bottom + _commentFooterView.frame.size.height + 216.0 + 10.0));
 	_submitCommentButton.hidden = NO;
 	_openCommentButton.alpha = 0.0;
@@ -3045,9 +3036,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //	imageUploadRequest.contentType = @"image/jpeg";
 	
 	
-	//[[MPMusicPlayerController applicationMusicPlayer] setVolume:_sysVolume];
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
-	
+	_isPlaying = NO;
 	_videoQueue = 0;
 	_moviePlayer.contentURL = url;
 	[_moviePlayer play];
