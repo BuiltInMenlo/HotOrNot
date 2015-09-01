@@ -1396,7 +1396,16 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	//[_moviePlayer stop];
 	//_moviePlayer.contentURL = nil;
+	
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+	
 	[self _advanceVideo];
+	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+		_finaleTintView.alpha = 0.0;
+		
+	} completion:^(BOOL finished) {
+		_isFinale = YES;
+	}];
 }
 
 - (void)_goFlag {
