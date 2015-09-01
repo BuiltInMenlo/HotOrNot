@@ -1488,7 +1488,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_statusUpdateHeaderView.hidden = NO;
 	_countdownLabel.text = @"";
 	_countdownLabel.hidden = YES;
-	_finaleTintView.hidden = NO;
 	_moviePlayer.view.hidden = NO;
 	_playerLayer.hidden = NO;
 	_videoVisibleButton.hidden = NO;
@@ -1638,7 +1637,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			[_cameraTutorialImageView removeFromSuperview];
 			
 			_imageView.alpha = 0.0;
-			_finaleTintView.hidden = YES;
 			_openCommentButton.hidden = YES;
 			_animationImageView.hidden = YES;
 			
@@ -1718,7 +1716,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_statusUpdateHeaderView.hidden = NO;
 		_countdownLabel.text = @"";
 		_countdownLabel.hidden = YES;
-		_finaleTintView.hidden = NO;
 		_moviePlayer.view.hidden = NO;
 		_playerLayer.hidden = NO;
 		_videoVisibleButton.hidden = NO;
