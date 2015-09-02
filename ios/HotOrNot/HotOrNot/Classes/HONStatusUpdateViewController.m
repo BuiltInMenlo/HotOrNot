@@ -1413,14 +1413,35 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_goVideoFocus {
 	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
-	_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
-	_isFinale = YES;
-	_isPlaying = NO;
+	
+	NSURL *url = [NSURL fileURLWithPath:[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent]];
+	NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
+	
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSString *cachedFile = (NSString *)obj;
+		
+		if ([cachedFile isEqualToString:[url.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""]]) {
+			NSLog(@"cachedFile: %@", cachedFile);
+			_moviePlayer.contentURL = url;
+			*stop = YES;
+		}
+	}];
+	
+	if (_moviePlayer.contentURL == nil) {
+		_animationImageView.hidden = NO;
+		_expireLabel.text = @"Loading video…";
+		_expireLabel.alpha = 1.0;
+		
+		[self _downloadVideo:[url lastPathComponent]];
+		_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
+	}
 	
 	[_moviePlayer play];
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 		_finaleTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
+		_isFinale = YES;
+		_isPlaying = NO;
 	}];
 }
 
