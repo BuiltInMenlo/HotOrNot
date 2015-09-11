@@ -123,6 +123,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, strong) NSTimer *tintTimer;
+@property (nonatomic, strong) NSTimer *buyTimer;
 
 @end
 
@@ -460,6 +461,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	*/
 }
 
+- (void)_activityAlert {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+														message:@"Thank you for your $.99 yearly subscription. If you want lifetime subscription to all channels invite Kik friends."
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Invite Friends", nil];
+	[alertView setTag:666];
+	[alertView show];
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -495,6 +506,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	id<GAITracker> tracker = [[GAI sharedInstance] trackerWithName:@"tracker"
 														trackingId:@"UA-65884502-1"];
 
+	
 	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -502,6 +514,12 @@ NSString * const kTwilioSMS = @"6475577873";
 	[builder set:@"start" forKey:kGAISessionControl];
 	[tracker set:kGAIScreenName value:@"Launch"];
 	[tracker send:[builder build]];
+	
+	_buyTimer = [NSTimer scheduledTimerWithTimeInterval:900
+												 target:self
+													 selector:@selector(_activityAlert)
+													 userInfo:nil repeats:NO];
+
 	
 //	[tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Barren Fields"
 //														  action:@"Rescue"
@@ -583,13 +601,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	[self.window addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appBG"]]];
 	_isFromBackground = NO;
 	
-	
-
-	
-	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"subscription"] == nil) {
+		[self _activityAlert];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"subscription"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 	
 
 #if __APPSTORE_BUILD__ == 0
@@ -759,7 +780,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //		localNotification.userInfo = @{};
 //		
 //		[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-//		
+//
 //		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"local_reg"];
 //		[[NSUserDefaults standardUserDefaults] synchronize];
 //	}
@@ -1046,14 +1067,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	//[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"selfie_notification"];
 	
 	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - localPush"]];
-	
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-//														message:notification.alertBody
-//													   delegate:self
-//											  cancelButtonTitle:@"OK"
-//											  otherButtonTitles:nil];
-//	[alertView setTag:666];
-//	[alertView show];
 }
 
 
@@ -1067,21 +1080,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:pushToken];
 	[[HONDeviceIntrinsics sharedInstance] writeDataPushToken:deviceToken];
-	
-//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:pushToken]) {
-//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:YES completion:^(NSDictionary *result) {
-//				if (![result isEqual:[NSNull null]])
-//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//			}];
-//		}];
-//	}
-	
-//	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
-//								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
-//							   delegate:nil
-//					  cancelButtonTitle:@"OK"
-//					  otherButtonTitles:nil] show];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
@@ -1090,21 +1088,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[HONDeviceIntrinsics sharedInstance] writePushToken:@""];
 	
 	//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@"0527Cohort - deniedPush"]];
-	
-//	if (![[[[HONUserAssistant sharedInstance] activeUserInfo] objectForKey:@"device_token"] isEqualToString:@""]) {
-//		[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
-//			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[HONUserAssistant sharedInstance] activeUserID] areEnabled:NO completion:^(NSDictionary *result) {
-//				if (![result isEqual:[NSNull null]])
-//					[[HONUserAssistant sharedInstance] writeActiveUserInfo:result];
-//			}];
-//		}];
-//	}
-	
-//	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
-//								message:@"didFailToRegisterForRemoteNotificationsWithError"
-//							   delegate:nil
-//					  cancelButtonTitle:@"OK"
-//					  otherButtonTitles:nil] show];
 }
 
 
@@ -1426,7 +1409,12 @@ void uncaughtExceptionHandler(NSException *exception) {
 	if (alertView.tag == HONAppDelegateAlertTypeExit)
 		NSLog(@"EXIT APP");//exit(0);
 	
-	else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
+	else if (alertView.tag == 666) {
+		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/picker.php"]];
+		}
+	
+	} else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
 		switch(buttonIndex) {
 			case 0:
 				break;

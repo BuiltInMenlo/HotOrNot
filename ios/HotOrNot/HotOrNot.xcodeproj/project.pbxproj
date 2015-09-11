@@ -2533,7 +2533,7 @@
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 				TargetAttributes = {
 					4C62652415F96C7100AA7FCE = {
-						DevelopmentTeam = 9WKT8E37QV;
+						DevelopmentTeam = 9549ESJ5ZU;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
 								enabled = 1;
@@ -2949,8 +2949,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (GC777H9RV6)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (GC777H9RV6)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2976,8 +2976,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
-				PROVISIONING_PROFILE = "1ada589a-9c87-40ca-946c-748d8037958c";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1ada589a-9c87-40ca-946c-748d8037958c";
+				PROVISIONING_PROFILE = "60fe3f48-237c-4228-a3b1-7066c7ca6d48";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "60fe3f48-237c-4228-a3b1-7066c7ca6d48";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7 armv7s";
@@ -2995,8 +2995,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: BUILT IN MENLO INC";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: BUILT IN MENLO INC";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3018,8 +3018,8 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
-				PROVISIONING_PROFILE = "68ae3b33-157c-4cdf-82f7-e19a635b54b7";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "68ae3b33-157c-4cdf-82f7-e19a635b54b7";
+				PROVISIONING_PROFILE = "a78ca952-30f2-4635-8818-c24bfd1c8299";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "a78ca952-30f2-4635-8818-c24bfd1c8299";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
