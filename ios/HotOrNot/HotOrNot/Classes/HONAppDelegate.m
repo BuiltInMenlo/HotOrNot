@@ -1410,8 +1410,10 @@ void uncaughtExceptionHandler(NSException *exception) {
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == 666) {
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/picker.php"]];
+        if (buttonIndex == 1) {
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/picker.php"]];
+            }
 		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {

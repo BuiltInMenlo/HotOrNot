@@ -1916,11 +1916,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
 	
 	if (!_isPlaying) {
-		if (_isFinale) {
-			_isFinale = NO;
-			[_moviePlayer play];
-		
-		} else {
+//		if (_isFinale) {
+//			_isFinale = NO;
+//			[_moviePlayer play];
+//		
+//		} else {
 			[self _advanceVideo];
 			[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_finaleTintView.alpha = 1.0;
@@ -1929,11 +1929,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 				_historyButton.alpha = 1.0;
 
 			} completion:^(BOOL finished) {
-				if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
-					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+//				if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+//					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
 			}];
 		}
-	}
+//	}
 }
 
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
