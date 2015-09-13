@@ -45,7 +45,6 @@
 		3051F8AA1A08AE8D00CD85F2 /* HONNextNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8A91A08AE8D00CD85F2 /* HONNextNavButtonView.m */; };
 		3051F8AD1A08AF7900CD85F2 /* HONCloseNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8AC1A08AF7900CD85F2 /* HONCloseNavButtonView.m */; };
 		3051F8C41A08E6AC00CD85F2 /* HONDoneNavButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */; };
-		305BB8611B8C3F1700947B5F /* AVQueuePlayerPrevious.m in Sources */ = {isa = PBXBuildFile; fileRef = 305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */; };
 		305BB8631B8E720100947B5F /* selfie_notification.aif in Resources */ = {isa = PBXBuildFile; fileRef = 305BB8621B8E720100947B5F /* selfie_notification.aif */; };
 		305ED7B619C3EE5100BDCB04 /* HONToggleLEDViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */; };
 		30727F7F1ABA4F7B00524075 /* NSArray+BuiltInMenlo.m in Sources */ = {isa = PBXBuildFile; fileRef = 30727F681ABA4F7B00524075 /* NSArray+BuiltInMenlo.m */; };
@@ -245,6 +244,9 @@
 		4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C72F6AC1894E2DD00CF67BC /* EventKitUI.framework */; };
 		4C7341921616C078001F9F11 /* HONPrivacyPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7341911616C078001F9F11 /* HONPrivacyPolicyViewController.m */; };
 		4C75502516D5699300833C18 /* HONCommentVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502416D5699200833C18 /* HONCommentVO.m */; };
+		4C7B82E11BA4BB3A000BAB8E /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C7B82E01BA4BB3A000BAB8E /* PhotosUI.framework */; };
+		4C7B82E31BA4D2C0000BAB8E /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C7B82E21BA4D2C0000BAB8E /* Photos.framework */; };
+		4C7B82E91BA522A3000BAB8E /* deadmau5.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C7B82E81BA522A3000BAB8E /* deadmau5.mp3 */; };
 		4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DBBB2194FEB9E00F7A487 /* HONCollectionView.m */; };
 		4C7DBBBE194FF43D00F7A487 /* HONTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DBBBD194FF43D00F7A487 /* HONTableView.m */; };
 		4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */; };
@@ -396,8 +398,6 @@
 		3051F8C11A08DD9600CD85F2 /* HONStaticInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONStaticInlines.h; sourceTree = "<group>"; };
 		3051F8C21A08E6AC00CD85F2 /* HONDoneNavButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDoneNavButtonView.h; sourceTree = "<group>"; };
 		3051F8C31A08E6AC00CD85F2 /* HONDoneNavButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDoneNavButtonView.m; sourceTree = "<group>"; };
-		305BB85F1B8C3F1700947B5F /* AVQueuePlayerPrevious.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVQueuePlayerPrevious.h; sourceTree = "<group>"; };
-		305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVQueuePlayerPrevious.m; sourceTree = "<group>"; };
 		305BB8621B8E720100947B5F /* selfie_notification.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.aif; sourceTree = "<group>"; };
 		305ED7B419C3EE5100BDCB04 /* HONToggleLEDViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONToggleLEDViewCell.h; sourceTree = "<group>"; };
 		305ED7B519C3EE5100BDCB04 /* HONToggleLEDViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONToggleLEDViewCell.m; sourceTree = "<group>"; };
@@ -868,6 +868,9 @@
 		4C75502416D5699200833C18 /* HONCommentVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentVO.m; sourceTree = "<group>"; };
 		4C75502616D5718900833C18 /* HONCommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentsViewController.h; sourceTree = "<group>"; };
 		4C75502716D5718A00833C18 /* HONCommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONCommentsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4C7B82E01BA4BB3A000BAB8E /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
+		4C7B82E21BA4D2C0000BAB8E /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		4C7B82E81BA522A3000BAB8E /* deadmau5.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = deadmau5.mp3; sourceTree = "<group>"; };
 		4C7DBBB1194FEB9E00F7A487 /* HONCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionView.h; sourceTree = "<group>"; };
 		4C7DBBB2194FEB9E00F7A487 /* HONCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionView.m; sourceTree = "<group>"; };
 		4C7DBBBC194FF43D00F7A487 /* HONTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableView.h; sourceTree = "<group>"; };
@@ -1007,6 +1010,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C7B82E31BA4D2C0000BAB8E /* Photos.framework in Frameworks */,
+				4C7B82E11BA4BB3A000BAB8E /* PhotosUI.framework in Frameworks */,
 				30B6F34F1B4463F1000BBF12 /* libc++.dylib in Frameworks */,
 				300BA8B31A7C50FC0087DFE0 /* libicucore.dylib in Frameworks */,
 				300BA8B41A7C50FC0087DFE0 /* libz.1.2.5.dylib in Frameworks */,
@@ -1225,15 +1230,6 @@
 				4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */,
 			);
 			name = Bundles;
-			sourceTree = "<group>";
-		};
-		305BB85E1B8C3F1700947B5F /* AVQueuePlayerPrevious */ = {
-			isa = PBXGroup;
-			children = (
-				305BB85F1B8C3F1700947B5F /* AVQueuePlayerPrevious.h */,
-				305BB8601B8C3F1700947B5F /* AVQueuePlayerPrevious.m */,
-			);
-			path = AVQueuePlayerPrevious;
 			sourceTree = "<group>";
 		};
 		30727F661ABA4F7B00524075 /* Foundation */ = {
@@ -1882,7 +1878,6 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				305BB85E1B8C3F1700947B5F /* AVQueuePlayerPrevious */,
 				30B3874F1B51C3D700521714 /* Hoko */,
 				30B3872D1B51AD7A00521714 /* GoogleAnalyticsServicesiOS_3.12 */,
 				30AD79201B43A0E400F9C634 /* GameShare */,
@@ -2136,6 +2131,8 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C7B82E21BA4D2C0000BAB8E /* Photos.framework */,
+				4C7B82E01BA4BB3A000BAB8E /* PhotosUI.framework */,
 				30B6F34E1B4463F1000BBF12 /* libc++.dylib */,
 				3073BB341ACB97B100CE2441 /* StoreKit.framework */,
 				300BA8B11A7C50FC0087DFE0 /* libicucore.dylib */,
@@ -2282,6 +2279,7 @@
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
+				4C7B82E81BA522A3000BAB8E /* deadmau5.mp3 */,
 				305BB8621B8E720100947B5F /* selfie_notification.aif */,
 				30FAB8561B868C5100318C09 /* join_channel.caf */,
 				4C83FD90190F62E800CAEABB /* fpo_upvote.mp3 */,
@@ -2621,6 +2619,7 @@
 				30B3872C1B519DBE00521714 /* boot_sc0011.json in Resources */,
 				3096E6E51B437079002EAD0B /* popup_share.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
+				4C7B82E91BA522A3000BAB8E /* deadmau5.mp3 in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
 			);
@@ -2683,7 +2682,6 @@
 				30B387911B51C3D700521714 /* HOKHandling.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
-				305BB8611B8C3F1700947B5F /* AVQueuePlayerPrevious.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONActivityNavButtonView.m in Sources */,
 				3022043C19D6228A00C3D677 /* HONActivityViewController.m in Sources */,
@@ -3034,8 +3032,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (GC777H9RV6)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (GC777H9RV6)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
@@ -3069,8 +3068,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = Popup;
-				PROVISIONING_PROFILE = "fafff231-5e9d-45cf-8357-b2d5885cb494";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "fafff231-5e9d-45cf-8357-b2d5885cb494";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7 armv7s";
@@ -3087,6 +3086,7 @@
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",

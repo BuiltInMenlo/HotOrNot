@@ -8,6 +8,8 @@
 
 
 #import <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#import <PhotosUI/PhotosUI.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import <AWSiOSSDKv2/S3.h>
@@ -25,7 +27,6 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIView+BuiltinMenlo.h"
 
-#import "AVQueuePlayerPrevious.h"
 #import "KikAPI.h"
 #import "PBJVision.h"
 #import "PBJVisionUtilities.h"
@@ -57,7 +58,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
-@property (nonatomic, strong) AVQueuePlayerPrevious *queuePlayer;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
@@ -556,7 +556,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		[self.client historyForChannel:_channelName start:nil end:nil limit:100
 						withCompletion:^(PNHistoryResult *result, PNErrorStatus *status) {
 							
-							[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"join_channel"];
+//--							[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"join_channel"];
 							NSLog(@"::: HISTORY OBSERVER - [%d] :::", (int)[result.data.messages count]);
 							
 							// Check whether request successfully completed or not.
@@ -575,7 +575,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 										
 										if (_moviePlayer.contentURL == nil) {
 											_moviePlayer.contentURL = url;
-											[_moviePlayer play];
+//--											[_moviePlayer play];
 											
 											_animationImageView.hidden = NO;
 											_expireLabel.text = @"Loading video…";
@@ -612,8 +612,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 								_openCommentButton.enabled = YES;
 							
 							} else {
-								if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
-									[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
+//--								if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.0)
+//--									[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.0];
 								
 								[self _advanceVideo];
 								[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
@@ -629,332 +629,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //		block((!status.isError ? result.data.channels : nil),
 //			  (status.isError ? status.errorData.information : nil));
 	}];
-	
-	
-//	PNChannel *channel = [PNChannel channelWithName:channelName shouldObservePresence:YES];//[[HONPubNubOverseer sharedInstance] channelForStatusUpdate:_statusUpdateVO];
-//		
-//	[PubNub subscribeOn:@[channel]];
-//	
-//	_lastVideo = @"";
-//	_expireLabel.text = @"loading the channel…";//([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] > 1) ? @"loading the channel…" : _expireLabel.text;
-//	_videoQueue = 0;
-//	_videoPlaylist = [NSMutableArray array];
-//	_outboundURL = @"pp1.link/…";
-//		
-//		[[NSUserDefaults standardUserDefaults] setObject:channelName forKey:@"channel_name"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
-//		
-//		
-//		//[_messengerShare overrrideWithOutboundURL:[NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]];
-//		NSDictionary *params = @{@"longUrl"	: [NSString stringWithFormat:@"http://popup.rocks/route.php?d=%@&a=popup", channelName]};
-//	
-//		SelfieclubJSONLog(@"_/:[%@]—//%@> (%@/%@) %@\n\n", [[self class] description], @"POST", @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g", params);
-//		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/urlshortener/v1"]];
-//		[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-//		[httpClient setDefaultHeader:@"Referrer" value:@"com.builtinmenlo.marsh"];
-//		[httpClient setParameterEncoding:AFJSONParameterEncoding];
-//		[httpClient postPath:@"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//			NSError *error = nil;
-//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//	
-//			if (error != nil) {
-//				SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) - Failed to parse JSON: %@", [[self class] description], [[operation request] URL], [error localizedFailureReason]);
-//				[[HONAPICaller sharedInstance] showDataErrorHUD];
-//	
-//			} else {
-//				SelfieclubJSONLog(@"//—> -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-//				NSLog(@"short:[%@]", [result objectForKey:@"id"]);
-//				_outboundURL = [[result objectForKey:@"id"] stringByReplacingOccurrencesOfString:@"goo.gl" withString:@"pp1.link"];
-//				[_messengerShare overrrideWithOutboundURL:_outboundURL];
-//				
-//				NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
-//				__block BOOL isFound = NO;
-//				
-//				[channels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//					NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];
-//					if ([[dict objectForKey:@"channel"] isEqualToString:_channelName]) {
-//						[dict setObject:[_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""] forKey:@"title"];
-//						[dict setObject:_channelName forKey:@"channel"];
-//						[dict setObject:_outboundURL forKey:@"url"];
-//						[dict setObject:[NSDate date] forKey:@"timestamp"];
-//						[dict setObject:@(_participants) forKey:@"occupants"];
-//						
-//						[channels replaceObjectAtIndex:idx withObject:[dict copy]];
-//						[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
-//						[[NSUserDefaults standardUserDefaults] synchronize];
-//						
-//						isFound = YES;
-//						*stop = YES;
-//					}
-//				}];
-//				
-//				
-//				if (!isFound) {
-//					[channels addObject:@{@"title"		: [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""],
-//										  @"channel"	: _channelName,
-//										  @"url"		: _outboundURL,
-//										  @"timestamp"	: [NSDate date],
-//										  @"occupants"	: @(_participants)}];
-//					
-//					[[NSUserDefaults standardUserDefaults] setObject:[channels copy] forKey:@"channel_history"];
-//					[[NSUserDefaults standardUserDefaults] synchronize];
-//				}
-//			}
-//	
-//		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], @"https://www.googleapis.com/urlshortener/v1", @"url?key=AIzaSyCkGnRnlwqsDW8B1N9qfj4Irxgf-G2rX7g", [error localizedDescription]);
-//			[[HONAPICaller sharedInstance] showDataErrorHUD];
-//		}];
-//		
-//		[[PNObservationCenter defaultCenter] addClientChannelSubscriptionStateObserver:self withCallbackBlock:^(PNSubscriptionProcessState state, NSArray *channels, PNError *error) {
-//			PNChannel *channel = [channels firstObject];
-//			
-//			NSLog(@"\n::: SUBSCRIPTION OBSERVER - [%@](%@)\n", (state == PNSubscriptionProcessSubscribedState) ? @"Subscribed" : (state == PNSubscriptionProcessRestoredState) ? @"Restored" : (state == PNSubscriptionProcessNotSubscribedState) ? @"NotSubscribed" : (state == PNSubscriptionProcessWillRestoreState) ? @"WillRestore" : @"UNKNOWN", channel.name);
-//			
-//			if (state == PNSubscriptionProcessSubscribedState || state == PNSubscriptionProcessRestoredState) {
-//				[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"join_channel"];
-//				
-//				_channel = channel;
-//				_participants = 0;
-//				_comments = 0;
-//				
-//				
-//				
-//				[PubNub sendMessage:[NSString stringWithFormat:@"{\"pn_apns\": {\"aps\": {\"alert\": \"Someone joined your Popup!\",\"badge\": %d,\"sound\": \"selfie_notification.aif\", \"channel\": \"%@\"}}}", _messageTotal, _channelName]
-//						  toChannel:_channel withCompletionBlock:^(PNMessageState messageState, id data) {
-//							  NSLog(@"\nSEND MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-//						  }];
-//				
-//				
-//				[[PubNub sharedInstance] requestHistoryForChannel:channel
-//															 from:nil
-//															   to:nil
-//															limit:100 reverseHistory:NO
-//											  withCompletionBlock:^(NSArray *messages, PNChannel *channel, PNDate *startDate,
-//																	PNDate *endDate, PNError *error) {
-//												  
-//												  if (error == nil) {
-//													  // PubNub client successfully retrieved history for channel.
-//													  NSLog(@"requestHistoryForChannel - messages:\n%@", messages);
-//													  
-//													  //[messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//													  [messages enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//														  PNMessage *message = (PNMessage *)obj;
-//														  
-//														  NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"text"] != nil) ? [message.message objectForKey:@"text"] : @"" : message.message;
-//														  NSLog(@"txtContent:[%@]", txtContent);
-//														  
-//														  if ([txtContent length] > 0) {
-//															  if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
-////																  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
-////																  [_queuePlayer insertItem:playerItem afterItem:nil];
-//																  
-//																  NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-//																  
-//																  [_videoPlaylist addObject:url];
-//																  
-//																  if (_moviePlayer.contentURL == nil) {
-//																	  _lastVideo = txtContent;
-//																	  
-//																	  _moviePlayer.contentURL = url;
-//																	  [_moviePlayer play];
-//																  }
-//																  
-//																  //*stop = YES;
-//															  }
-//														  }
-//													  }];
-//													  
-//													  //_historyButton.alpha = ([_videoPlaylist count] > 0);
-//													  [PubNub enablePushNotificationsOnChannel:channel
-//																		   withDevicePushToken:[[HONDeviceIntrinsics sharedInstance] dataPushToken]
-//																	andCompletionHandlingBlock:^(NSArray *channel, PNError *error){
-//																		NSLog(@"BLOCK: enablePushNotificationsOnChannel: %@ , Error %@", channel, error);
-//																	}];
-//												  
-//												  } else {
-//													  NSLog(@"requestHistoryForChannel - error:\n%@", error);
-//												  }
-//											  }];
-//				
-//				
-//		} else if (state == PNSubscriptionProcessNotSubscribedState) {
-//		} else if (state == PNSubscriptionProcessWillRestoreState) {
-//		}
-//		
-//		
-//		[[PNObservationCenter defaultCenter] addPresenceEventObserver:self withBlock:^(PNPresenceEvent *event) {
-//			NSLog(@"::: PRESENCE OBSERVER - [%@] :::", event);
-//			NSLog(@"PARTICIPANTS:[%d]", (int)event.channel.participantsCount);
-//			
-//			PNChannel *channel = event.channel;
-//			_participants = channel.participantsCount;
-//			
-//			if (event.type == PNPresenceEventChanged) {
-//				NSLog(@"PRESENCE OBSERVER: Changed Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-//				
-//			} else if (event.type == PNPresenceEventJoin) {
-//				NSLog(@"PRESENCE OBSERVER: Join Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-//				
-//			} else if (event.type == PNPresenceEventLeave) {
-//				NSLog(@"PRESENCE OBSERVER: Leave Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-//				
-//			} else if (event.type == PNPresenceEventStateChanged) {
-//				NSLog(@"PRESENCE OBSERVER: State Changed Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-//				
-//			} else if (event.type == PNPresenceEventTimeout) {
-//				NSLog(@"PRESENCE OBSERVER: Timeout Event on Channel: %@, w/ Participant: %@", event.channel.name, event.client.identifier);
-//			}
-//			
-//			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count] > 1) {
-//				//_expireLabel.text = (_participants == 1) ? @"no one is here, invite now" : [NSString stringWithFormat:@"%d %@ been alerted!", MAX(1, (_participants - 1)), (_participants == 2) ? @"person has" : @"people have"];
-//				
-//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//					_expireLabel.text = [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""];
-//					
-//					[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-//						_expireLabel.alpha = 0.0;
-//					} completion:^(BOOL finished) {
-//					}];
-//				});
-//			
-//			} else {
-//				_expireLabel.text = [_outboundURL stringByReplacingOccurrencesOfString:@"http://" withString:@""];
-//				[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-//					_expireLabel.alpha = 0.0;
-//				} completion:^(BOOL finished) {
-//				}];
-//			}
-//			
-//			_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
-//			
-//			_openCommentButton.hidden = NO;
-//			_messengerButton.hidden = NO;
-//			
-//			_animationImageView.hidden = YES;
-//			
-//			_takePhotoButton.hidden = NO;
-//			
-//			NSMutableDictionary *shares = [[[NSUserDefaults standardUserDefaults] objectForKey:@"share_channels"] mutableCopy];
-//			NSLog(@"SHARE_HISTORY:[%@]", shares);
-//			
-//			if (_participants <= 1 && !_isInvite && ![shares hasObjectForKey:_channelName]) {//[_channelName rangeOfString:[PubNub sharedInstance].clientIdentifier].location != NSNotFound) {
-//				_isInvite = YES;
-//				
-//				[shares setObject:@"YES" forKey:_channelName];
-//				[[NSUserDefaults standardUserDefaults] replaceObject:[shares copy] forKey:@"share_channels"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
-//			}
-//			
-//			self.view.backgroundColor = [UIColor blackColor];
-//			_cameraPreviewView.backgroundColor = [UIColor blackColor];
-//			_isInvite = YES;
-//		}];
-//		
-//		
-//		// Observer looks for message received events
-//		[[PNObservationCenter defaultCenter] addMessageReceiveObserver:self withBlock:^(PNMessage *message) {
-//			NSLog(@"\n::: MESSAGE REC OBSERVER:[%@](%@)", message.channel.name, message.message);
-//			
-//			_messageTotal++;
-//			
-//			NSString *txtContent = ([message.message isKindOfClass:[NSDictionary class]]) ? ([message.message objectForKey:@"pn_other"] != nil) ? [message.message objectForKey:@"pn_other"] : @"" : message.message;
-//			
-//			if ([txtContent length] > 0) {
-//				if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
-//					NSDictionary *dict = @{@"id"				: @"0",
-//										   @"msg_id"			: @"0",
-//										   @"content_type"		: @((int)HONChatMessageTypeVID),
-//										   
-//										   @"owner_member"		: @{@"id"	: @(2392),
-//																	@"name"	: @""},
-//										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-//										   @"text"				: @"Posted a video!",
-//										   
-//										   @"net_vote_score"	: @(0),
-//										   @"status"			: NSStringFromInt(0),
-//										   @"added"				: [NSDate stringFormattedISO8601],
-//										   @"updated"			: [NSDate stringFormattedISO8601]};
-//					
-//					HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
-//					NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
-//					
-//					[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"	: [commentVO.imagePrefix lastComponentByDelimeter:@"/"],
-//																																				  @"channel"	: _channelName}];
-//					
-//					NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-//					[_videoPlaylist addObject:url];
-//					
-//					_loadingImageView.hidden = NO;
-//					
-//					_isPlaying = NO;
-//					_lastVideo = [commentVO.imagePrefix lastComponentByDelimeter:@"/"];
-//					_moviePlayer.contentURL = url;
-//					[_moviePlayer play];
-//					
-//					_expireLabel.text = @"Loading video…";
-//					_expireLabel.alpha = 1.0;
-//					
-//					
-//					if (![[NSUserDefaults standardUserDefaults] objectForKey:@"channel_tutorial"] && _isTutorial) {
-//						_isTutorial = NO;
-//						_shareTutorialImageView.alpha = 0.0;
-//						//[self.view addSubview:_shareTutorialImageView];
-//						
-//						[UIView animateWithDuration:0.333 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
-//							_shareTutorialImageView.alpha = 1.0;
-//						} completion:^(BOOL finished) {
-//						}];
-//					}
-//					
-//					[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"channel_tutorial"];
-//					[[NSUserDefaults standardUserDefaults] synchronize];
-//
-//					
-////					AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]]];
-////					[_queuePlayer insertItem:playerItem afterItem:([_queuePlayer.items count] > 0) ? [_queuePlayer.items objectAtIndex:[_queuePlayer.items count] - 1] : nil];
-////					[_queuePlayer play];
-//					
-//					//_historyButton.alpha = ([_videoPlaylist count] > 0);
-//					
-//					if (![_commentTextField isFirstResponder]) {
-//						_openCommentButton.alpha = 1.0;
-//					}
-//					
-//					_openCommentButton.hidden = NO;
-//					_messengerButton.hidden = NO;
-//					
-//				} else if ([txtContent rangeOfString:@"taps.io"].location != NSNotFound) {
-//					NSString *url = [NSString stringWithFormat:@"http://%@", [[[txtContent substringFromIndex:[txtContent rangeOfString:@"taps.io"].location] componentsSeparatedByString:@" "] firstObject]];
-//					NSLog(@"ChatMessageType:[TAPS.IO] (%@)", url);
-//					
-//					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-//						[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-//					});
-//					
-//				} else {
-//					NSDictionary *dict = @{@"id"				: @"0",
-//										   @"msg_id"			: @"0",
-//										   @"content_type"		: @((int)HONChatMessageTypeTXT),
-//										   
-//										   @"owner_member"		: @{@"id"	: @(2392),
-//																	@"name"	: @""},
-//										   @"image"				: [@"coords://" stringByAppendingFormat:@"%.04f_%.04f", [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.latitude, [[HONDeviceIntrinsics sharedInstance] deviceLocation].coordinate.longitude],
-//										   @"text"				: txtContent,
-//										   
-//										   @"net_vote_score"	: @(0),
-//										   @"status"			: NSStringFromInt(0),
-//										   @"added"				: [NSDate stringFormattedISO8601],
-//										   @"updated"			: [NSDate stringFormattedISO8601]};
-//					
-//					
-//					HONCommentVO *commentVO = [HONCommentVO commentWithDictionary:dict];
-//					NSLog(@"ChatMessageType:[%@]", (commentVO.messageType == HONChatMessageTypeUndetermined) ? @"Undetermined" : (commentVO.messageType == HONChatMessageTypeACK) ? @"ACK" : (commentVO.messageType == HONChatMessageTypeBYE) ? @"BYE": (commentVO.messageType == HONChatMessageTypeTXT) ? @"Text" : (commentVO.messageType == HONChatMessageTypeIMG) ? @"Image" : (commentVO.messageType == HONChatMessageTypeVID) ? @"Video" : @"UNKNOWN");
-//					[self _appendComment:commentVO];
-//				}
-//			}
-//		}];
-//	}];
 }
 
 - (void)_flagStatusUpdate {
@@ -1051,15 +725,51 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_comment = @"";
 	_participants = 0;
 	
-	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-	_moviePlayer.view.backgroundColor = [UIColor clearColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
-	_moviePlayer.shouldAutoplay = YES;
-	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
-	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-	_moviePlayer.view.frame = self.view.frame;
-	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
-	[self.view addSubview:_moviePlayer.view];
+//	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+//	_moviePlayer.controlStyle = MPMovieControlStyleNone;
+//	_moviePlayer.view.backgroundColor = [UIColor clearColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+//	_moviePlayer.shouldAutoplay = YES;
+//	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
+//	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+//	_moviePlayer.view.frame = self.view.frame;
+//	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
+//	[self.view addSubview:_moviePlayer.view];
+    
+    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+    fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+    //    PHAsset *lastAsset = [fetchResult lastObject];
+    
+    
+    __block NSMutableArray *frames = [NSMutableArray array];
+    [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        PHAsset *lastAsset = (PHAsset *)obj;
+        [[PHImageManager defaultManager] requestImageForAsset:lastAsset
+                                                   targetSize:self.view.frame.size
+                                                  contentMode:PHImageContentModeAspectFill
+                                                      options:nil
+                                                resultHandler:^(UIImage *result, NSDictionary *info) {
+                                                    NSLog(@"PHImageManager request results %@ and info %@", result, info);
+                                                    [frames addObject:result];
+                                                }];
+    }];
+    
+    
+    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+    animImageView.animationImages = frames;
+    animImageView.animationDuration = [frames count] * 0.125;
+    animImageView.animationRepeatCount = 0;
+    [animImageView startAnimating];
+    [self.view addSubview:animImageView];
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"deadmau5" ofType: @"mp3"];
+    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath ];
+    AVAudioPlayer *myAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:nil];
+    myAudioPlayer.numberOfLoops = -1; //infinite loop
+    [myAudioPlayer play];
+//    });
+
 	
 	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradient"]]];
 	
@@ -1067,19 +777,19 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_imageView.hidden = YES;
 	[self.view addSubview:_imageView];
 	
-	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height)];
-	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
-	
-	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
-	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
-	[self.view addSubview:_cameraPreviewView];
+//	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height)];
+//	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
+//	
+//	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
+//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+//	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+//	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
+//	[self.view addSubview:_cameraPreviewView];
 	
 	_finaleTintView = [[UIView alloc] initWithFrame:self.view.frame];
 	_finaleTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
 	_finaleTintView.alpha = 0.0;
-	[self.view addSubview:_finaleTintView];
+	//[self.view addSubview:_finaleTintView];
 	
 	_videoFocusButton = [HONButton buttonWithType:UIButtonTypeCustom];
 	_videoFocusButton.frame = _finaleTintView.frame;
@@ -1093,16 +803,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //	[self resizePlayerToViewSize];
 //	[view addSubview:playerViewController.view];
 //	view.autoresizesSubviews = TRUE;
-	
-	
-//	_queuePlayer = [[AVQueuePlayerPrevious alloc] initWithItems:@[]];//[AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_13F3B054-C839-41D8-AABB-EED0930FCA5E.mp4"]], [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_C89EA076-233C-457B-A42C-CCB05BEC6984.mp4"]]]];
-//	_playerLayer = [AVPlayerLayer playerLayerWithPlayer:_queuePlayer];
-//	_playerLayer.frame = self.view.frame;
-//	_playerLayer.frame = CGRectOffset(_playerLayer.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
-//	_playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-//	_queuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-////	[_queuePlayer setMuted:YES];
-//	[self.view.layer insertSublayer:_playerLayer atIndex:0];
 	
 	
 	_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
@@ -1342,6 +1042,21 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_expireLabel.textColor = [UIColor whiteColor];
 	_expireLabel.text = @"Loading channel…";
 	[self.view addSubview:_expireLabel];
+    
+    PHLivePhotoView *livePhotoView = [[PHLivePhotoView alloc] initWithFrame:self.view.frame];
+    livePhotoView.backgroundColor = [UIColor redColor];
+    //[self.view addSubview:livePhotoView];
+    
+    
+    
+//    [[PHImageManager defaultManager] requestLivePhotoForAsset:lastAsset
+//                                                   targetSize:self.view.frame.size
+//                                                  contentMode:PHImageContentModeDefault
+//                                                      options:PHImageRequestOptionsDeliveryModeOpportunistic
+//                                                resultHandler:^(PHLivePhoto *livePhoto, NSDictionary *info) {
+//                                                    NSLog(@"LIVE PHOTO:\n%@", info);
+//                                                    [livePhotoView setLivePhoto:livePhoto];
+//                                                }];
 }
 
 - (void)viewDidLoad {
@@ -1359,6 +1074,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)viewDidDisappear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:animated:%@] [:|:]", self.class, NSStringFromBOOL(animated));
 	[super viewDidDisappear:animated];
+    [[MPMusicPlayerController applicationMusicPlayer] setVolume:0.8];
 }
 
 
@@ -1397,7 +1113,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)_goToggleMic {
 	//[[PBJVision sharedInstance] setAudioCaptureEnabled:![PBJVision sharedInstance].isAudioCaptureEnabled];
 	
-	[_queuePlayer setMuted:!_queuePlayer.isMuted];
+//	[_queuePlayer setMuted:!_queuePlayer.isMuted];
 }
 
 - (void)_goToggleVideoVisible {
@@ -1412,7 +1128,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_goVideoFocus {
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	
 	NSURL *url = [NSURL fileURLWithPath:[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent]];
 	NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
@@ -1436,7 +1152,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
 	}
 	
-	[_moviePlayer play];
+//--	[_moviePlayer play];
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 		_finaleTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -1451,7 +1167,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	//[_moviePlayer stop];
 	//_moviePlayer.contentURL = nil;
 	
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	
 	[self _advanceVideo];
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
@@ -1475,7 +1191,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 - (void)_goReplay {
 	_videoQueue = 0;
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	_moviePlayer.contentURL = [_videoPlaylist firstObject];
 	_isFinale = YES;
 	_isPlaying = NO;
@@ -1483,7 +1199,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 		_finaleTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		[_moviePlayer play];
+//--		[_moviePlayer play];
 	}];
 }
 
@@ -1573,8 +1289,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5));
 	_cancelCameraButton.hidden = YES;
 	
-	if (_moviePlayer.contentURL != nil)
-		[_moviePlayer play];
+//--	if (_moviePlayer.contentURL != nil)
+//--		[_moviePlayer play];
 }
 
 - (void)_goShareComment {
@@ -1824,14 +1540,14 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_statusLabel.text = @"Send a pop…";
 	[_moviePlayer stop];
 	
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 }
 
 - (void)_appLeavingBackground:(NSNotification *)notification {
 	_isActive = YES;
 	
-	if (_moviePlayer.contentURL != nil)
-		[_moviePlayer play];
+//--	if (_moviePlayer.contentURL != nil)
+//--		[_moviePlayer play];
 }
 
 - (void)_playbackStateChanged:(NSNotification *)notification {
@@ -1893,24 +1609,24 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	}
 }
 
-- (void)_playerItemEnded:(NSNotification *)notification {
-	NSLog(@"_playerItemEndedNotification:[%@]", [notification object]);
-	
-	_videoQueue = ++_videoQueue % [_queuePlayer.items count];
-	NSLog(@"QueuePlayerItems:[%d]\n%@", _videoQueue, _queuePlayer.items);
-	
-//	AVPlayerItem *playerItem = [_queuePlayer currentItem];
-	AVPlayerItem *playerItem = ([_queuePlayer.items count] > 1) ? [_queuePlayer.items lastObject] : [_queuePlayer currentItem];
-	[playerItem seekToTime:kCMTimeZero];
-	
-	if ([_queuePlayer.items count] > 1)
-		[_queuePlayer advanceToNextItem];
-	
-	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: [[((AVURLAsset *)playerItem.asset).URL absoluteString] lastComponentByDelimeter:@"/"],
-																																  @"channel"	: _channelName}];
-	
-	
-}
+//- (void)_playerItemEnded:(NSNotification *)notification {
+//	NSLog(@"_playerItemEndedNotification:[%@]", [notification object]);
+//	
+//	_videoQueue = ++_videoQueue % [_queuePlayer.items count];
+//	NSLog(@"QueuePlayerItems:[%d]\n%@", _videoQueue, _queuePlayer.items);
+//	
+////	AVPlayerItem *playerItem = [_queuePlayer currentItem];
+//	AVPlayerItem *playerItem = ([_queuePlayer.items count] > 1) ? [_queuePlayer.items lastObject] : [_queuePlayer currentItem];
+//	[playerItem seekToTime:kCMTimeZero];
+//	
+//	if ([_queuePlayer.items count] > 1)
+//		[_queuePlayer advanceToNextItem];
+//	
+//	[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: [[((AVURLAsset *)playerItem.asset).URL absoluteString] lastComponentByDelimeter:@"/"],
+//																																  @"channel"	: _channelName}];
+//	
+//	
+//}
 
 - (void)_playbackEnded:(NSNotification *)notification {
 	NSLog(@"_playbackEndedNotification:[%@]", [notification object]);
@@ -2045,7 +1761,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_bufferTimer = nil;
 	
 	[_moviePlayer stop];
-	[_moviePlayer play];
+//--	[_moviePlayer play];
 }
 
 - (void)_advanceVideo {
@@ -2080,7 +1796,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		}
 	}
 	
-	[_moviePlayer play];
+//--	[_moviePlayer play];
 }
 
 - (void)_updateTint {
@@ -2160,7 +1876,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[[NSUserDefaults standardUserDefaults] setObject:NSStringFromBOOL(NO) forKey:@"chat_share"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[[PBJVision sharedInstance] stopPreview];
@@ -2193,7 +1909,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	if ([[_moviePlayer.contentURL absoluteString] length] > 0) {
 		[_moviePlayer stop];
-		[_moviePlayer play];
+//--		[_moviePlayer play];
 	}
 }
 
@@ -3100,12 +2816,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //	imageUploadRequest.contentType = @"image/jpeg";
 	
 	
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
 	_isPlaying = NO;
 	_videoQueue = 0;
 	_moviePlayer.contentURL = url;
-	[_moviePlayer play];
+//--	[_moviePlayer play];
 	
 	
 	//if (_participants <= 1)
