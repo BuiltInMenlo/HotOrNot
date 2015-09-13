@@ -725,66 +725,64 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_comment = @"";
 	_participants = 0;
 	
-//	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-//	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-//	_moviePlayer.view.backgroundColor = [UIColor clearColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
-//	_moviePlayer.shouldAutoplay = YES;
-//	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
-//	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-//	_moviePlayer.view.frame = self.view.frame;
-//	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
-//	[self.view addSubview:_moviePlayer.view];
+	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
+	_moviePlayer.controlStyle = MPMovieControlStyleNone;
+	_moviePlayer.view.backgroundColor = [UIColor clearColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
+	_moviePlayer.shouldAutoplay = YES;
+	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
+	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+	_moviePlayer.view.frame = self.view.frame;
+	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
+	[self.view addSubview:_moviePlayer.view];
     
-    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
-    fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
-    //    PHAsset *lastAsset = [fetchResult lastObject];
-    
-    
-    __block NSMutableArray *frames = [NSMutableArray array];
-    [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        PHAsset *lastAsset = (PHAsset *)obj;
-        [[PHImageManager defaultManager] requestImageForAsset:lastAsset
-                                                   targetSize:self.view.frame.size
-                                                  contentMode:PHImageContentModeAspectFill
-                                                      options:nil
-                                                resultHandler:^(UIImage *result, NSDictionary *info) {
-                                                    NSLog(@"PHImageManager request results %@ and info %@", result, info);
-                                                    [frames addObject:result];
-                                                }];
-    }];
-    
-    
-    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-    animImageView.animationImages = frames;
-    animImageView.animationDuration = [frames count] * 0.125;
-    animImageView.animationRepeatCount = 0;
-    [animImageView startAnimating];
-    [self.view addSubview:animImageView];
-    
+//    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+//    fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+//    
+//    __block NSMutableArray *frames = [NSMutableArray array];
+//    [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//        PHAsset *lastAsset = (PHAsset *)obj;
+//        [[PHImageManager defaultManager] requestImageForAsset:lastAsset
+//                                                   targetSize:self.view.frame.size
+//                                                  contentMode:PHImageContentModeAspectFill
+//                                                      options:nil
+//                                                resultHandler:^(UIImage *result, NSDictionary *info) {
+//                                                    NSLog(@"PHImageManager request results %@ and info %@", result, info);
+//                                                    [frames addObject:result];
+//                                                }];
+//    }];
+//    
+//    
+//    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//    animImageView.animationImages = frames;
+//    animImageView.animationDuration = [frames count] * 0.125;
+//    animImageView.animationRepeatCount = 0;
+//    [animImageView startAnimating];
+//    [self.view addSubview:animImageView];
+//
 //    dispatch_async(dispatch_get_main_queue(), ^{
-    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"deadmau5" ofType: @"mp3"];
-    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath ];
-    AVAudioPlayer *myAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:nil];
-    myAudioPlayer.numberOfLoops = -1; //infinite loop
-    [myAudioPlayer play];
+//    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"deadmau5" ofType: @"mp3"];
+//    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath ];
+//    AVAudioPlayer *myAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:nil];
+//    myAudioPlayer.numberOfLoops = -1; //infinite loop
+//    [myAudioPlayer play];
 //    });
 
-	
+
 	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradient"]]];
 	
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, _moviePlayer.view.frame.size.width, _moviePlayer.view.frame.size.height)];
 	_imageView.hidden = YES;
 	[self.view addSubview:_imageView];
 	
-//	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height)];
-//	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
-//	
-//	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
-//	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
-//	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-//	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
-//	[self.view addSubview:_cameraPreviewView];
+	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height)];
+	_cameraPreviewView.backgroundColor = (_isDeepLink) ? [UIColor colorWithRed:0.400 green:0.839 blue:0.698 alpha:1.00] : [UIColor blackColor];
+	
+	_cameraPreviewLayer = [[PBJVision sharedInstance] previewLayer];
+	_cameraPreviewLayer.frame = _cameraPreviewView.bounds;
+	_cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+	[_cameraPreviewView.layer addSublayer:_cameraPreviewLayer];
+	[self.view addSubview:_cameraPreviewView];
 	
 	_finaleTintView = [[UIView alloc] initWithFrame:self.view.frame];
 	_finaleTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.60];
@@ -2660,6 +2658,41 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 #pragma mark - PBJVisionDelegate
 
+-(UIImage *)_imageFromVideoWithURL:(NSURL *)url atTime:(CGFloat) time {
+//    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
+//    AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+//    generator.appliesPreferredTrackTransform=TRUE;
+//    CMTime thumbTime = CMTimeMakeWithSeconds(0, 1);
+//    
+//    AVAssetImageGeneratorCompletionHandler handler = ^(CMTime requestedTime, CGImageRef im, CMTime actualTime, AVAssetImageGeneratorResult result, NSError *error){
+//        if (result != AVAssetImageGeneratorSucceeded) {
+//            NSLog(@"couldn't generate thumbnail, error:%@", error);
+//        }
+//        
+//        UIImage *thumbImg = [UIImage imageWithCGImage:im];
+//    };
+//    
+//    CGSize maxSize = CGSizeMake(320, 180);
+//    generator.maximumSize = maxSize;
+//    [generator generateCGImagesAsynchronouslyForTimes:[NSArray arrayWithObject:[NSValue valueWithCMTime:thumbTime]] completionHandler:handler];
+//    
+    
+    
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
+    AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    gen.appliesPreferredTrackTransform = YES;
+    NSError *error = nil;
+    
+    CMTime actualTime;
+    CMTime frameTime = CMTimeMakeWithSeconds(time, 1.0);
+    
+    CGImageRef image = [gen copyCGImageAtTime:frameTime actualTime:&actualTime error:&error];
+    UIImage *thumb = [[UIImage alloc] initWithCGImage:image];
+    CGImageRelease(image);
+    
+    return (thumb);
+}
+
 // session
 - (void)visionSessionWillStart:(PBJVision *)vision {
 	NSLog(@"[*:*] visionSessionWillStart [*:*]");
@@ -2797,9 +2830,44 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
 	matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.width * 0.5));
 	
-	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareOverlay"]];
-	overlayImageView.frame = CGRectOffset(overlayImageView.frame, (matteView.frame.size.width - overlayImageView.frame.size.width) * 0.5, (matteView.frame.size.height - overlayImageView.frame.size.height) * 0.5);
-	[matteView addSubview:overlayImageView];
+//	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareOverlay"]];
+//	overlayImageView.frame = CGRectOffset(overlayImageView.frame, (matteView.frame.size.width - overlayImageView.frame.size.width) * 0.5, (matteView.frame.size.height - overlayImageView.frame.size.height) * 0.5);
+//	[matteView addSubview:overlayImageView];
+    
+    NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
+    
+    AVAsset *videoAsset = (AVAsset *)[AVAsset assetWithURL:url];
+    AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+    int tot = (float)CMTimeGetSeconds(videoAssetTrack.timeRange.duration) * 10.0;
+    NSLog(@"TOT FRAMES:[%d]", tot);
+    
+//    NSNumber *dur = (CGFloat)[videoDict objectForKey:PBJVisionVideoPathKey];
+    
+    NSMutableArray *frames = [NSMutableArray array];
+    [frames addObject:[[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]];
+    [frames addObject:[self _imageFromVideoWithURL:url atTime:(float)CMTimeGetSeconds(videoAssetTrack.timeRange.duration) * 0.5]];
+    [frames addObject:[[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject]];
+    
+//    for (int i=0; i<tot; i++) {
+//        UIImage *image = [self _imageFromVideoWithURL:url atTime:i * 0.1];
+//        if (image == nil)
+//            continue;
+//        
+//        [frames addObject:image];
+//    }
+    
+    
+    NSLog(@"FRAMES:[%d]", [frames count]);
+    
+    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+    animImageView.animationImages = frames;
+    animImageView.animationDuration = [frames count] * 0.125;
+    animImageView.animationRepeatCount = 0;
+    [animImageView startAnimating];
+    [self.view addSubview:animImageView];
+
+    
+    
 	
 	
 //	_thumbURL = [NSString stringWithFormat:@"%d.jpg", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
@@ -2817,7 +2885,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	
 //--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
-	NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
+	
 	_isPlaying = NO;
 	_videoQueue = 0;
 	_moviePlayer.contentURL = url;

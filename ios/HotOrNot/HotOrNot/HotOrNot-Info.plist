@@ -17,7 +17,7 @@
 	<key>CFBundleIcons~ipad</key>
 	<dict/>
 	<key>CFBundleIdentifier</key>
-	<string>com.builtinmenlo.marsh</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -76,7 +76,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>44408</string>
+	<string>44438</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>

@@ -3032,8 +3032,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3048,7 +3048,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/HotOrNot/HotOrNot-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
@@ -3067,6 +3067,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.builtinmenlo.marsh;
 				PRODUCT_NAME = Popup;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -3084,8 +3085,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Built In Menlo, Inc. (9549ESJ5ZU)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3100,7 +3101,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/HotOrNot/HotOrNot-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
@@ -3120,6 +3121,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.builtinmenlo.marsh;
 				PRODUCT_NAME = Popup;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
