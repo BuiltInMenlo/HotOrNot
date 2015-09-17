@@ -34,7 +34,7 @@
 - (void)populateFields:(NSDictionary *)dictionary {
 	
 	_thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.height, self.frame.size.height)];
-	_thumbImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@Channel", (self.indexPath.section == 0) ? @"friends" : (self.indexPath.section == 1 && self.indexPath.row == 0) ? @"music" : (self.indexPath.section == 1 && self.indexPath.row == 1) ? @"games" : (self.indexPath.section == 1 && self.indexPath.row == 2) ? @"explore" : @"user"]];
+	_thumbImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@Channel", (self.indexPath.section == 0) ? @"friends" : @"user"]];
 	[self.contentView addSubview:_thumbImageView];
 	
 	NSString *caption = (self.indexPath.section == 2) ? [NSString stringWithFormat:@"%d %@", [[dictionary objectForKey:@"occupants"] intValue], ([[dictionary objectForKey:@"occupants"] intValue] == 1) ? @"person" : @"people"] : [dictionary objectForKey:@"title"];//(self.indexPath.section == 1) ? [dictionary objectForKey:@"title"] : ([dictionary objectForKey:@"url"] != nil) ? [[dictionary objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""] : @"pp1.link/…";

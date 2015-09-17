@@ -264,6 +264,7 @@
 		4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD99190F62FB00CAEABB /* CartoGothicStd-Book.otf */; };
 		4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD9A190F62FB00CAEABB /* CartoGothicStd-Italic.otf */; };
 		4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD9B190F62FB00CAEABB /* HelveticaNeue.dfont */; };
+		4C8EC4C11BA64178004C5692 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8EC4C01BA64178004C5692 /* Bolts.framework */; };
 		4C93EAE319140896001F43DE /* HONCallingCodesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */; };
 		4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C99EB56194D581B00283C1A /* HONDateTimeAlloter.m */; };
 		4CA34C5516F6B6550000751E /* HONTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONTableViewCell.m */; };
@@ -900,6 +901,7 @@
 		4C86C43417FF990A007DC458 /* HONFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONFollowingViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C86C43717FFA909007DC458 /* HONFollowUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowUserViewCell.h; sourceTree = "<group>"; };
 		4C86C43817FFA909007DC458 /* HONFollowUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowUserViewCell.m; sourceTree = "<group>"; };
+		4C8EC4C01BA64178004C5692 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
 		4C8FB3C71824406800B33FD8 /* HONVerifyCellHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVerifyCellHeaderView.h; sourceTree = "<group>"; };
 		4C8FB3C81824406800B33FD8 /* HONVerifyCellHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVerifyCellHeaderView.m; sourceTree = "<group>"; };
 		4C93EAE119140896001F43DE /* HONCallingCodesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCallingCodesViewController.h; sourceTree = "<group>"; };
@@ -1030,6 +1032,7 @@
 				30B6F34D1B445937000BBF12 /* libWeChatSDK.a in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
+				4C8EC4C11BA64178004C5692 /* Bolts.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
 				4C62652C15F96C7100AA7FCE /* Foundation.framework in Frameworks */,
@@ -1984,6 +1987,7 @@
 		4C4327FA18E3A9FA0035FF06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C8EC4C01BA64178004C5692 /* Bolts.framework */,
 				30283B991B60BBEC00317EFE /* FBSDKCoreKit.framework */,
 				30990E381AF95A06002D37D7 /* FBSDKMessengerShareKit.framework */,
 				30B3096519E292D80017ACBF /* HockeySDK.embeddedframework */,
@@ -2527,7 +2531,7 @@
 		4C62651C15F96C7100AA7FCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 				TargetAttributes = {
 					4C62652415F96C7100AA7FCE = {
@@ -2950,6 +2954,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jason Festa (L3ZEKNXSAP)";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2970,7 +2975,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = DOOD;
@@ -3011,7 +3016,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -3048,7 +3053,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/HotOrNot/HotOrNot-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",
@@ -3101,7 +3106,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/HotOrNot/HotOrNot-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/BuiltInMenlo/Foundation",

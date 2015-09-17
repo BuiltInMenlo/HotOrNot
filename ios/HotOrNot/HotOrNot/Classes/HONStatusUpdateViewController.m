@@ -17,7 +17,6 @@
 #import <KakaoOpenSDK/KakaoOpenSDK.h>
 #import <PubNub/PubNub.h>
 
-
 #import "NSArray+BuiltInMenlo.h"
 #import "NSCharacterSet+BuiltinMenlo.h"
 #import "NSDate+BuiltinMenlo.h"
@@ -59,7 +58,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) UIView *cameraPreviewView;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *cameraPreviewLayer;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
-@property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
 
 @property (nonatomic, strong) HONButton *submitCommentButton;
 @property (nonatomic, strong) UIImageView *footerImageView;
@@ -108,8 +106,8 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 @property (nonatomic, strong) NSTimer *bufferTimer;
 @property (nonatomic, strong) NSMutableArray *videoPlaylist;
 @property (nonatomic, strong) NSString *lastVideo;
+@property (nonatomic, strong) NSMutableArray *currentImageFrames;
 @property (nonatomic, strong) UIImageView *logoImageView;
-@property (nonatomic, strong) UIImageView *loadingImageView;
 @property (nonatomic, strong) NSMutableArray *shareTypes;
 @property (nonatomic, strong) PubNub *client;
 @property (nonatomic) int messageTotal;
@@ -146,13 +144,13 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 												 selector:@selector(_appLeavingBackground:)
 													 name:@"APP_LEAVING_BACKGROUND" object:nil];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_playbackStateChanged:)
-													 name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayer];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_playbackEnded:)
-													 name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayer];
+//		[[NSNotificationCenter defaultCenter] addObserver:self
+//												 selector:@selector(_playbackStateChanged:)
+//													 name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayer];
+//		
+//		[[NSNotificationCenter defaultCenter] addObserver:self
+//												 selector:@selector(_playbackEnded:)
+//													 name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayer];
 		
 //		[[NSNotificationCenter defaultCenter] addObserver:self
 //												 selector:@selector(_playerItemEnded:)
@@ -332,19 +330,34 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	NSLog(@"Received message: %@ on channel %@ at %@", txtContent, message.data.subscribedChannel, message.data.timetoken);
 	
 	if ([txtContent length] > 0) {
-		if ([txtContent rangeOfString:@".mp4"].location != NSNotFound) {
+		if ([txtContent rangeOfString:@"pic_"].location != NSNotFound) {
 			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: txtContent,
 																																		  @"channel"	: _channelName}];
-			
-			NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-			[_videoPlaylist insertObject:url atIndex:0];
-			
-			[self _downloadVideo:txtContent];
 			if (![_lastVideo isEqualToString:txtContent]) {
-				[self _goReplay];
-//				_videoQueue = 0;
-//				_moviePlayer.contentURL = url;
-//				[_moviePlayer play];
+				for (int i=0; i<3; i++) {
+					NSString *imageURL = [NSString stringWithFormat:@"http://s3.amazonaws.com/popup-thumbs/%@_%02d.jpg", txtContent, i];
+					AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]]
+																							  imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+																								  NSLog(@"IMAGE REQUEST:[%@]", NSStringFromCGSize(image.size));
+																								  [_currentImageFrames addObject:image];
+																								  _imageView.animationImages = _currentImageFrames;
+																								  _imageView.animationDuration = [_currentImageFrames count] * 0.333;
+																								  [_imageView startAnimating];
+																								  
+																								  [UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+																									  _animationImageView.alpha = 0.0;
+																									  _expireLabel.alpha = 0.0;
+																								  } completion:^(BOOL finished) {
+																									  _animationImageView.hidden = YES;
+																									  _animationImageView.alpha = 1.0;
+																								  }];
+																								  
+																							  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+																								  SelfieclubJSONLog(@"AFNetworking [-] %@: Failed Request - %@\n%@", [[self class] description], [error localizedDescription], request.URL.absoluteURL);
+																								  
+																							  }];
+					[operation start];
+				}
 				
 				_expireLabel.text = @"Loading video…";
 				_expireLabel.alpha = 1.0;
@@ -555,8 +568,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		
 		[self.client historyForChannel:_channelName start:nil end:nil limit:100
 						withCompletion:^(PNHistoryResult *result, PNErrorStatus *status) {
-							
-//--							[[HONAudioMaestro sharedInstance] cafPlaybackWithFilename:@"join_channel"];
 							NSLog(@"::: HISTORY OBSERVER - [%d] :::", (int)[result.data.messages count]);
 							
 							// Check whether request successfully completed or not.
@@ -568,17 +579,37 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 									NSString *txtContent = ([dict isKindOfClass:[NSDictionary class]]) ? ([dict objectForKey:@"pn_other"] != nil) ? [dict objectForKey:@"pn_other"] : ([dict objectForKey:@"text"] != nil) ? [dict objectForKey:@"text"] : @"" : @"";
 									NSLog(@"txtContent:[%@]", txtContent);
 									
-									if ([txtContent length] > 0 && [txtContent rangeOfString:@".mp4"].location != NSNotFound) {
-										NSURL *url = [NSURL URLWithString:[@"https://s3.amazonaws.com/popup-vids/" stringByAppendingString:txtContent]];
-										[_videoPlaylist addObject:url];
-										[self _downloadVideo:[url lastPathComponent]];
-										
-										if (_moviePlayer.contentURL == nil) {
-											_moviePlayer.contentURL = url;
-//--											[_moviePlayer play];
+									if ([txtContent length] > 0 && [txtContent rangeOfString:@"pic_"].location != NSNotFound) {
+										if (_imageView.animationImages == nil) {
+											
+											for (int i=0; i<3; i++) {
+												NSString *imageURL = [NSString stringWithFormat:@"http://s3.amazonaws.com/popup-thumbs/%@_%02d.jpg", txtContent, i];
+												AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]]
+																														  imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+																															  NSLog(@"IMAGE REQUEST:[%@]", NSStringFromCGSize(image.size));
+																															  [_currentImageFrames addObject:image];
+																															  _imageView.animationImages = _currentImageFrames;
+																															  _imageView.animationDuration = [_currentImageFrames count] * 0.333;
+																															  [_imageView startAnimating];
+																															  
+																															  [UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+																																  _animationImageView.alpha = 0.0;
+																																  _expireLabel.alpha = 0.0;
+																															  } completion:^(BOOL finished) {
+																																  _animationImageView.hidden = YES;
+																																  _animationImageView.alpha = 1.0;
+																															  }];
+																															  
+																														  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+																															  SelfieclubJSONLog(@"AFNetworking [-] %@: Failed Request - %@\n%@", [[self class] description], [error localizedDescription], request.URL.absoluteURL);
+																															  
+																														  }];
+												[operation start];
+											}
+											
 											
 											_animationImageView.hidden = NO;
-											_expireLabel.text = @"Loading video…";
+											_expireLabel.text = @"Channel playing…";
 											_expireLabel.alpha = 1.0;
 											[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 												_expireLabel.alpha = 0.0;
@@ -725,16 +756,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_comment = @"";
 	_participants = 0;
 	
-	_moviePlayer = [[MPMoviePlayerController alloc] init];//WithContentURL:[NSURL URLWithString:@"https://s3.amazonaws.com/popup-vids/video_97D31566-55C7-4142-9ED7-FAA62BF54DB1.mp4"]];
-	_moviePlayer.controlStyle = MPMovieControlStyleNone;
-	_moviePlayer.view.backgroundColor = [UIColor clearColor];//[UIColor colorWithRed:0.396 green:0.596 blue:0.922 alpha:1.00];
-	_moviePlayer.shouldAutoplay = YES;
-	_moviePlayer.repeatMode = MPMovieRepeatModeNone;// ModeOne;
-	_moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-	_moviePlayer.view.frame = self.view.frame;
-	_moviePlayer.view.frame = CGRectOffset(_moviePlayer.view.frame, 0.0, -(self.view.frame.size.height - (self.view.frame.size.height * 1.0000)) * 0.5);// self.view.frame;//CGRectMake(0.0, 0.0, self.view.frame.size.width, (self.view.frame.size.height * 1.0000) + 1.0);
-	[self.view addSubview:_moviePlayer.view];
-    
 //    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
 //    fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
 //    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
@@ -752,27 +773,21 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 //                                                }];
 //    }];
 //    
-//    
-//    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//    animImageView.animationImages = frames;
-//    animImageView.animationDuration = [frames count] * 0.125;
-//    animImageView.animationRepeatCount = 0;
-//    [animImageView startAnimating];
-//    [self.view addSubview:animImageView];
-//
 //    dispatch_async(dispatch_get_main_queue(), ^{
-//    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"deadmau5" ofType: @"mp3"];
-//    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath ];
-//    AVAudioPlayer *myAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:nil];
-//    myAudioPlayer.numberOfLoops = -1; //infinite loop
-//    [myAudioPlayer play];
+    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"deadmau5" ofType: @"mp3"];
+    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath ];
+    AVAudioPlayer *myAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:nil];
+    myAudioPlayer.numberOfLoops = -1; //infinite loop
+    [myAudioPlayer play];
 //    });
+	
+	
+	_currentImageFrames = [NSMutableArray array];
 
 
 	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradient"]]];
 	
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, _moviePlayer.view.frame.size.width, _moviePlayer.view.frame.size.height)];
-	_imageView.hidden = YES;
+	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_imageView];
 	
 	_cameraPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height)];
@@ -793,21 +808,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_videoFocusButton.frame = _finaleTintView.frame;
 	[_videoFocusButton addTarget:self action:@selector(_goVideoFocus) forControlEvents:UIControlEventTouchUpInside];
 	[_finaleTintView addSubview:_videoFocusButton];
-	
-	
-//	AVPlayerViewController *playerViewController = [[AVPlayerViewController alloc] init];
-//	playerViewController.player = [AVPlayer playerWithURL:];
-//	self.avPlayerViewcontroller = playerViewController;
-//	[self resizePlayerToViewSize];
-//	[view addSubview:playerViewController.view];
-//	view.autoresizesSubviews = TRUE;
-	
-	
-	_loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
-	_loadingImageView.frame = _moviePlayer.view.frame;
-	_loadingImageView.backgroundColor = [UIColor redColor];
-	_loadingImageView.hidden = YES;
-	//[self.view addSubview:_loadingImageView];
 	
 	_statusUpdateHeaderView = [[HONStatusUpdateHeaderView alloc] initWithStatusUpdateVO:_statusUpdateVO];
 	_statusUpdateHeaderView.delegate = self;
@@ -1116,41 +1116,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)_goToggleVideoVisible {
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"What to hide"
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:nil
-													otherButtonTitles:[NSString stringWithFormat:@"%@ my camera", (_cameraPreviewView.alpha == 1.0) ? @"Hide" : @"Show"], [NSString stringWithFormat:@"%@ others", (_moviePlayer.view.alpha == 1.0) ? @"Hide" : @"Show"], nil];
-	[actionSheet setTag:1];
-	[actionSheet showInView:self.view];
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"What to hide"
+//															 delegate:self
+//													cancelButtonTitle:@"Cancel"
+//											   destructiveButtonTitle:nil
+//													otherButtonTitles:[NSString stringWithFormat:@"%@ my camera", (_cameraPreviewView.alpha == 1.0) ? @"Hide" : @"Show"], [NSString stringWithFormat:@"%@ others", (_moviePlayer.view.alpha == 1.0) ? @"Hide" : @"Show"], nil];
+//	[actionSheet setTag:1];
+//	[actionSheet showInView:self.view];
 }
 
 - (void)_goVideoFocus {
-//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 	
-	NSURL *url = [NSURL fileURLWithPath:[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:((NSURL *)[_videoPlaylist objectAtIndex:_videoQueue]).lastPathComponent]];
-	NSLog(@"QUEUE IND:[%02d/%02d] (%@)(%@)", _videoQueue, [_videoPlaylist count], [_videoPlaylist objectAtIndex:_videoQueue], url);
-	
-	[[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		NSString *cachedFile = (NSString *)obj;
-		
-		if ([cachedFile isEqualToString:[url.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""]]) {
-			NSLog(@"cachedFile: %@", cachedFile);
-			_moviePlayer.contentURL = url;
-			*stop = YES;
-		}
-	}];
-	
-	if (_moviePlayer.contentURL == nil) {
-		_animationImageView.hidden = NO;
-		_expireLabel.text = @"Loading video…";
-		_expireLabel.alpha = 1.0;
-		
-		[self _downloadVideo:[url lastPathComponent]];
-		_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
-	}
-	
-//--	[_moviePlayer play];
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 		_finaleTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -1188,12 +1164,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	[alertView show];
 }
 - (void)_goReplay {
-	_videoQueue = 0;
-//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
-	_moviePlayer.contentURL = [_videoPlaylist firstObject];
-	_isFinale = YES;
-	_isPlaying = NO;
-	
 	[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 		_finaleTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -1212,7 +1182,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_finaleTintView.hidden = YES;
 	_isFinale = YES;
 	
-	_imageView.alpha = 0.0;
 	_openCommentButton.hidden = YES;
 	_animationImageView.hidden = YES;
 	
@@ -1232,11 +1201,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	//_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, (self.view.frame.size.height * 0.5) - 10.0);
 	
 	_playerLayer.hidden = YES;
-	_moviePlayer.view.hidden = YES;
 	_submitCommentButton.hidden = YES;
 	
 	_isPlaying = YES;
-	[_moviePlayer stop];
 	
 	_cameraPreviewView.frame = self.view.frame;
 	_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
@@ -1262,7 +1229,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	_statusUpdateHeaderView.hidden = NO;
 	_countdownLabel.text = @"";
 	_countdownLabel.hidden = YES;
-	_moviePlayer.view.hidden = NO;
 	_playerLayer.hidden = NO;
 	_videoVisibleButton.hidden = NO;
 	_participantsLabel.hidden = NO;
@@ -1408,7 +1374,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			[_cameraTutorialImageView removeFromSuperview];
 			
-			_imageView.alpha = 0.0;
 			_openCommentButton.hidden = YES;
 			_animationImageView.hidden = YES;
 			
@@ -1430,11 +1395,9 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			//_expireLabel.frame = CGRectTranslateY(_expireLabel.frame, self.view.frame.size.height - 40.0);
 			
 			_playerLayer.hidden = YES;
-			_moviePlayer.view.hidden = YES;
 			_submitCommentButton.hidden = YES;
 			
 			_isPlaying = YES;
-			[_moviePlayer stop];
 			_cameraPreviewView.frame = self.view.frame;
 			_cameraPreviewLayer.frame = CGRectFromSize(_cameraPreviewView.frame.size);
 			_cameraPreviewLayer.opacity = 1.0;
@@ -1488,7 +1451,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_statusUpdateHeaderView.hidden = NO;
 		_countdownLabel.text = @"";
 		_countdownLabel.hidden = YES;
-		_moviePlayer.view.hidden = NO;
 		_playerLayer.hidden = NO;
 		_videoVisibleButton.hidden = NO;
 		_participantsLabel.hidden = NO;
@@ -1534,9 +1496,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 #pragma mark - Notifications
 - (void)_appEnteringBackground:(NSNotification *)notification {
 	_isActive = NO;
-	_moviePlayer.contentURL = nil;
 	_statusLabel.text = @"Send a pop…";
-	[_moviePlayer stop];
 	
 //--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 }
@@ -1549,12 +1509,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_playbackStateChanged:(NSNotification *)notification {
-	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
+//	NSLog(@"_playbackStateChangedNotification:[%d][%d]", (int)_moviePlayer.loadState, (int)_moviePlayer.playbackState);
 	
-	if (_moviePlayer.duration == _moviePlayer.playableDuration) {
+//	if (_moviePlayer.duration == _moviePlayer.playableDuration) {
 //	if (_moviePlayer.loadState == 0 && _moviePlayer.playbackState == 1) {
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-			_loadingImageView.hidden = YES;
 			
 			[UIView animateWithDuration:0.125 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 				_animationImageView.alpha = 0.0;
@@ -1564,31 +1523,14 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 				_animationImageView.alpha = 1.0;
 			}];
 			
-			_imageView.alpha = 0.0;
-			_imageView.hidden = YES;
-			
 			_takePhotoButton.enabled = YES;
 			_messengerButton.enabled = YES;
 			_cameraFlipButton.enabled = YES;
 			_openCommentButton.enabled = YES;
 		});
-	}
+//	}
 	
-	if (_moviePlayer.loadState == 0 && _moviePlayer.playbackState == 1) {
-//		_bufferTimer = [NSTimer scheduledTimerWithTimeInterval:5.00
-//														target:self
-//													  selector:@selector(_restartPlayback)
-//													  userInfo:nil repeats:NO];
-	}
-	
-	if (_moviePlayer.loadState == 3) {
-		[_bufferTimer invalidate];
-		
-		if (_bufferTimer != nil)
-			_bufferTimer = nil;
-	}
-	
-	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
+//	if (_moviePlayer.loadState == 3 && _moviePlayer.playbackState == 1) {
 		if (![_commentTextField isFirstResponder] && _openCommentButton.alpha != 0.0) {
 			_openCommentButton.alpha = 1.0;
 			_messengerButton.alpha = 1.0;
@@ -1601,10 +1543,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			}];
 		}
 		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
-																																	  @"channel"	: _channelName}];
-		
-	}
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - playVideo"] withProperties:@{@"file"		: [[_moviePlayer.contentURL absoluteString] lastComponentByDelimeter:@"/"],
+//																																	  @"channel"	: _channelName}];
+
+//	}
 }
 
 //- (void)_playerItemEnded:(NSNotification *)notification {
@@ -1672,7 +1614,7 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	PBJVision *vision = [PBJVision sharedInstance];
 	vision.delegate = self;
 	vision.cameraDevice = ([vision isCameraDeviceAvailable:PBJCameraDeviceFront]) ? PBJCameraDeviceFront : PBJCameraDeviceBack;
-//	[vision setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)];
+	[vision setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)];
 	vision.cameraMode = PBJCameraModeVideo;
 	vision.cameraOrientation = PBJCameraOrientationPortrait;
 	vision.focusMode = PBJFocusModeLocked;// PBJFocusModeContinuousAutoFocus;
@@ -1755,18 +1697,11 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 }
 
 - (void)_restartPlayback {
-	[_bufferTimer invalidate];
-	_bufferTimer = nil;
 	
-	[_moviePlayer stop];
-//--	[_moviePlayer play];
 }
 
 - (void)_advanceVideo {
 	_isPlaying = NO;
-	
-	_imageView.hidden = NO;
-	_imageView.alpha = 1.0;
 	
 	if ([_videoPlaylist count] > 0) {
 		_videoQueue = ++_videoQueue % [_videoPlaylist count];
@@ -1778,20 +1713,20 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 			
 			if ([cachedFile isEqualToString:[url.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""]]) {
 				NSLog(@"cachedFile: %@", cachedFile);
-				_moviePlayer.contentURL = url;
+//				_moviePlayer.contentURL = url;
 				*stop = YES;
 			}
 		}];
 		
 		
-		if (_moviePlayer.contentURL == nil) {
+//		if (_moviePlayer.contentURL == nil) {
 			_animationImageView.hidden = NO;
 			_expireLabel.text = @"Loading video…";
 			_expireLabel.alpha = 1.0;
 			
 			[self _downloadVideo:[url lastPathComponent]];
-			_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
-		}
+//			_moviePlayer.contentURL = [_videoPlaylist objectAtIndex:_videoQueue];
+//		}
 	}
 	
 //--	[_moviePlayer play];
@@ -1825,15 +1760,13 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_expireTimer = nil;
 	}
 	
-	_moviePlayer.repeatMode = MPMovieRepeatModeOne;
-	
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:MPMoviePlayerPlaybackStateDidChangeNotification
-												  object:_moviePlayer];
-	
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:MPMoviePlayerPlaybackDidFinishNotification
-												  object:_moviePlayer];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self
+//													name:MPMoviePlayerPlaybackStateDidChangeNotification
+//												  object:_moviePlayer];
+//	
+//	[[NSNotificationCenter defaultCenter] removeObserver:self
+//													name:MPMoviePlayerPlaybackDidFinishNotification
+//												  object:_moviePlayer];
 	
 	
 	NSMutableArray *channels = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] mutableCopy];
@@ -1878,9 +1811,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[[PBJVision sharedInstance] stopPreview];
-		[_moviePlayer stop];
-		_moviePlayer.contentURL = nil;
-		_moviePlayer = nil;
 	});
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"in_chat"];
@@ -1904,11 +1834,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 
 - (void)didSkipMessengerShare {
 	NSLog(@"[*:*] didSkipMessengerShare [*:*]");
-	
-	if ([[_moviePlayer.contentURL absoluteString] length] > 0) {
-		[_moviePlayer stop];
-//--		[_moviePlayer play];
-	}
 }
 
 
@@ -2496,14 +2421,10 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 	
 	} else if (actionSheet.tag == 1) {
 		if (buttonIndex == 1) {
-			_moviePlayer.view.alpha = !(BOOL)_moviePlayer.view.alpha;
 			
 		} else if (buttonIndex == 0) {
 			_cameraPreviewView.alpha = !(BOOL)_cameraPreviewView.alpha;
 		}
-		
-		[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_nonActive", (_moviePlayer.view.alpha == 1.0) ? @"off" : @"on"]] forState:UIControlStateNormal];
-		[_videoVisibleButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"videoVisibleButton-%@_Active", (_moviePlayer.view.alpha == 1.0) ? @"off" : @"on"]] forState:UIControlStateHighlighted];
 	}
 }
 
@@ -2814,38 +2735,32 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 - (void)vision:(PBJVision *)vision capturedVideo:(NSDictionary *)videoDict error:(NSError *)error {
 	NSLog(@"[*:*] vision:capturedVideo:[%@] [*:*]", videoDict);
 	
-	NSString *bucketName = @"popup-vids";
+	[_imageView stopAnimating];
 	
-	NSString *path = [videoDict objectForKey:PBJVisionVideoPathKey];
-	_lastVideo = [[path pathComponents] lastObject];
+	NSString *videoPath = [videoDict objectForKey:PBJVisionVideoPathKey];
+	NSString *videoName = [[[videoPath pathComponents] lastObject] stringByReplacingOccurrencesOfString:@"video" withString:@"pic"];
+	NSURL *videoURL = [[NSURL alloc] initFileURLWithPath:videoPath];
+	
+	
+	_lastVideo = videoName;
 	
 	NSMutableArray *cachedVideos = [[[NSUserDefaults standardUserDefaults] objectForKey:@"cached"] mutableCopy];
-	[cachedVideos addObject:path];
+	[cachedVideos addObject:videoPath];
 	[[NSUserDefaults standardUserDefaults] setObject:[cachedVideos copy] forKey:@"cached"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	//_imageView.image = [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject];
-	
-	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
-	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
-	matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.width * 0.5));
-	
+//	UIView *matteView = [[UIView alloc] initWithFrame:_imageView.frame];
+//	[matteView addSubview:[[UIImageView alloc] initWithImage:(_isShare) ? [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject] : [[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]]];
+//	matteView.frame = CGRectResize(matteView.frame, CGSizeMake(matteView.frame.size.width * 0.5, matteView.frame.size.width * 0.5));
+//	
 //	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shareOverlay"]];
 //	overlayImageView.frame = CGRectOffset(overlayImageView.frame, (matteView.frame.size.width - overlayImageView.frame.size.width) * 0.5, (matteView.frame.size.height - overlayImageView.frame.size.height) * 0.5);
 //	[matteView addSubview:overlayImageView];
     
-    NSURL *url = [[NSURL alloc] initFileURLWithPath:path];
-    
-    AVAsset *videoAsset = (AVAsset *)[AVAsset assetWithURL:url];
-    AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-    int tot = (float)CMTimeGetSeconds(videoAssetTrack.timeRange.duration) * 10.0;
-    NSLog(@"TOT FRAMES:[%d]", tot);
-    
-//    NSNumber *dur = (CGFloat)[videoDict objectForKey:PBJVisionVideoPathKey];
-    
+	
     NSMutableArray *frames = [NSMutableArray array];
     [frames addObject:[[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] firstObject]];
-    [frames addObject:[self _imageFromVideoWithURL:url atTime:(float)CMTimeGetSeconds(videoAssetTrack.timeRange.duration) * 0.5]];
+    [frames addObject:[self _imageFromVideoWithURL:videoURL atTime:(int)[[videoDict objectForKey:PBJVisionVideoCapturedDurationKey] floatValue] * 0.5]];
     [frames addObject:[[videoDict objectForKey:PBJVisionVideoThumbnailArrayKey] lastObject]];
     
 //    for (int i=0; i<tot; i++) {
@@ -2858,88 +2773,103 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
     
     
     NSLog(@"FRAMES:[%d]", [frames count]);
+	
+	[_currentImageFrames insertObject:[frames lastObject] atIndex:0];
+	[_currentImageFrames insertObject:[frames objectAtIndex:1] atIndex:0];
+	[_currentImageFrames insertObject:[frames firstObject] atIndex:0];
+	
+	_imageView.animationImages = _currentImageFrames;
+	_imageView.animationDuration = [_currentImageFrames count] * 0.333;
+	[_imageView startAnimating];
     
-    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-    animImageView.animationImages = frames;
-    animImageView.animationDuration = [frames count] * 0.125;
-    animImageView.animationRepeatCount = 0;
-    [animImageView startAnimating];
-    [self.view addSubview:animImageView];
+//    UIImageView * animImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//    animImageView.animationImages = frames;
+//    animImageView.animationDuration = [frames count] * 0.125;
+//    animImageView.animationRepeatCount = 0;
+//    [animImageView startAnimating];
+//    [self.view addSubview:animImageView];
 
-    
-    
-	
-	
-//	_thumbURL = [NSString stringWithFormat:@"%d.jpg", [NSDate elapsedUTCSecondsSinceUnixEpoch]];
-//	NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:_thumbURL];
-//	[UIImageJPEGRepresentation([matteView createImageFromView], 0.50) writeToFile:filePath atomically:YES];
-//	
-//	NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-//	//upload the image
-//	AWSS3TransferManagerUploadRequest *imageUploadRequest = [AWSS3TransferManagerUploadRequest new];
-//	imageUploadRequest.bucket = @"popup-thumbs";
-//	imageUploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
-//	imageUploadRequest.key = _thumbURL;
-//	imageUploadRequest.body = fileUrl;
-//	imageUploadRequest.contentType = @"image/jpeg";
-	
-	
-//--	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
-	
-	_isPlaying = NO;
-	_videoQueue = 0;
-	_moviePlayer.contentURL = url;
-//--	[_moviePlayer play];
-	
-	
-	//if (_participants <= 1)
-	//	[self _goShare];
-	
-	
-	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
-	uploadRequest.bucket = bucketName;
-	uploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
-	uploadRequest.key = [[path pathComponents] lastObject];
-	uploadRequest.contentType = @"video/mp4";
-	uploadRequest.body = url;
 	
 	AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
-//	[[transferManager upload:imageUploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+	
+	__block int tot = 0;
+	for (int i=0; i<3; i++) {
+		NSString *imageName = [NSString stringWithFormat:@"%@_%02d.jpg", [[videoName componentsSeparatedByString:@"."] firstObject], i];
+		NSString *imagePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:imageName];
+		
+		[UIImageJPEGRepresentation([frames objectAtIndex:i], 0.50) writeToFile:imagePath atomically:YES];
+	}
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.33 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+		for (int i=0; i<3; i++) {
+			NSString *imageName = [NSString stringWithFormat:@"%@_%02d.jpg", [[videoName componentsSeparatedByString:@"."] firstObject], i];
+			NSString *imagePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:imageName];
+			NSURL *imageURL = [NSURL fileURLWithPath:imagePath];
+			
+			AWSS3TransferManagerUploadRequest *imageUploadRequest = [AWSS3TransferManagerUploadRequest new];
+			imageUploadRequest.bucket = @"popup-thumbs";
+			imageUploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+			imageUploadRequest.key = imageName;
+			imageUploadRequest.body = imageURL;
+			imageUploadRequest.contentType = @"image/jpeg";
+			
+			[[transferManager upload:imageUploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+				if (task.error) {
+					NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
+					
+				} else {
+					NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
+					if (++tot == 3) {
+						[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channelName,
+																																					  @"file"		: videoName}];
+						
+						
+						[_client publish:[[videoName componentsSeparatedByString:@"."] firstObject] toChannel:_channelName mobilePushPayload:@{@"apns"	: @{@"aps"	: @{@"alert"	: @"Someone has posted a video.",
+																																										@"sound"	: @"selfie_notification.aif",
+																																										@"channel"	: _channelName}}} withCompletion:^(PNPublishStatus *status) {
+																																											NSLog(@"\nSEND");
+																																										}];
+					}
+				}
+				
+				return (nil);
+			}];
+		}
+	});
+	
+	
+//	AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
+//	uploadRequest.bucket = @"popup-vids";
+//	uploadRequest.ACL = AWSS3ObjectCannedACLPublicRead;
+//	uploadRequest.key = videoName;
+//	uploadRequest.contentType = @"video/mp4";
+//	uploadRequest.body = videoURL;
+//	
+//	[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
 //		if (task.error) {
 //			NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
-//			
+//		
 //		} else {
 //			NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
+//			[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channelName,
+//																																		  @"file"		: videoName}];
 //			
-//			if (_isShare) {
-//				[self _goShare];
-//			}
+//			
+//			[_client publish:videoName toChannel:_channelName mobilePushPayload:@{@"apns"	: @{@"aps"	: @{@"alert"	: @"Someone has posted a video.",
+//																											@"sound"	: @"selfie_notification.aif",
+//																											@"channel"	: _channelName}}} withCompletion:^(PNPublishStatus *status) {
+//																												NSLog(@"\nSEND");
+//																											}];
 //		}
 //		
 //		return (nil);
 //	}];
-	
-	//if (!_isShare) {
-		[[transferManager upload:uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-			if (task.error) {
-				NSLog(@"AWSS3TransferManager: **ERROR** [%@]", task.error);
-			
-			} else {
-				NSLog(@"AWSS3TransferManager: !!SUCCESS!! [%@]", task.error);
-				[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: _channelName,
-																																			  @"file"		: [[path pathComponents] lastObject]}];
-				
-				
-				[_client publish:[[path pathComponents] lastObject] toChannel:_channelName mobilePushPayload:@{@"apns"	: @{@"aps"	: @{@"alert"	: @"Someone has posted a video.",
-																																		@"sound"	: @"selfie_notification.aif",
-																																		@"channel"	: _channelName}}} withCompletion:^(PNPublishStatus *status) {
-																																			NSLog(@"\nSEND");// MessageState - [%@](%@)", (messageState == PNMessageSent) ? @"MessageSent" : (messageState == PNMessageSending) ? @"MessageSending" : (messageState == PNMessageSendingError) ? @"MessageSendingError" : @"UNKNOWN", data);
-																																		}];
-			}
-			
-			return (nil);
-		}];
-//	}
+//	
+//	
+//	_isPlaying = NO;
+//	_videoQueue = 0;
+//	_moviePlayer.contentURL = videoURL;
+//--	[_moviePlayer play];
 }
 
 

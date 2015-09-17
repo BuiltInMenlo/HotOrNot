@@ -333,13 +333,13 @@
 	[super viewDidAppear:animated];
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
-															message:@"You agree to the following terms."
-														   delegate:self
-												  cancelButtonTitle:@"View Terms"
-												  otherButtonTitles:@"Agree", NSLocalizedString(@"alert_cancel", @"Cancel"), nil];
-		[alertView setTag:HONHomeAlertViewTypeTermsAgreement];
-		[alertView show];
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Terms of service\nYou agree to the following terms."
+																 delegate:self
+														cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												   destructiveButtonTitle:nil
+														otherButtonTitles:@"View Terms", @"Agree", nil];
+		[actionSheet setTag:HONHomeActionSheetTypeTermsAgreement];
+		[actionSheet showInView:[[UIApplication sharedApplication].windows firstObject]];
 	}
 	
 	[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] setObject:NSStringFromBOOL(YES) forKey:CFBridgingRelease(kSecAttrAccount)];
@@ -833,11 +833,12 @@
 
 #pragma mark - TableView DataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (3);
+	return (2);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? 3 : [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count]);
+	//return ((section == 0) ? 1 : (section == 1) ? 3 : [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count]);
+	return ((section == 0) ? 1 : [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] count]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -856,10 +857,10 @@
 							   @"timestamp"	: [NSDate date],
 							   @"occupants"	: @"1"}];
 		
-	} else if (indexPath.section == 1) {
-		[cell populateFields:[_appChannels objectAtIndex:indexPath.row]];
+//	} else if (indexPath.section == 1) {
+//		[cell populateFields:[_appChannels objectAtIndex:indexPath.row]];
 	
-	} else if (indexPath.section == 2) {
+	} else if (indexPath.section == 1) {
 		NSArray *sortedArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"channel_history"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:NO]]];
 		[cell populateFields:[sortedArray objectAtIndex:indexPath.row]];
 	}
@@ -907,7 +908,7 @@
 	//HONHomeViewCell *cell = (HONHomeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	
-	if (indexPath.section == 2) {
+	if (indexPath.section == 1) {
 		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
 		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
 		[self.view addSubview:_loadingView];
@@ -932,30 +933,30 @@
 			_textField.text = @"What is on your mind?";
 		});
 		
-	} else if (indexPath.section == 1) {
-		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
-		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
-		[self.view addSubview:_loadingView];
-		
-		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
-		[activityIndicatorView startAnimating];
-		[_loadingView addSubview:activityIndicatorView];
-		
-		NSDictionary *dictionary = [_appChannels objectAtIndex:indexPath.row];
-		
-		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: [dictionary objectForKey:@"channel"]}];
-		
-		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"channel"]];
-		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
-		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
-			[_loadingView removeFromSuperview];
-			[_tutorialImageView removeFromSuperview];
-			
-			[_loadingOverlayView outro];
-			_textField.text = @"What is on your mind?";
-		});
+//	} else if (indexPath.section == 1) {
+//		_loadingView = [[UIView alloc] initWithFrame:self.view.frame];
+//		_loadingView.backgroundColor = [UIColor colorWithRed:0.839 green:0.729 blue:0.400 alpha:1.00];
+//		[self.view addSubview:_loadingView];
+//		
+//		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+//		activityIndicatorView.center = CGPointMake(_loadingView.bounds.size.width * 0.5, (_loadingView.bounds.size.height + 20.0) * 0.5);
+//		[activityIndicatorView startAnimating];
+//		[_loadingView addSubview:activityIndicatorView];
+//		
+//		NSDictionary *dictionary = [_appChannels objectAtIndex:indexPath.row];
+//		
+//		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: [dictionary objectForKey:@"channel"]}];
+//		
+//		HONStatusUpdateViewController *statusUpdateViewController = [[HONStatusUpdateViewController alloc] initWithChannelName:[dictionary objectForKey:@"channel"]];
+//		[self.navigationController pushViewController:statusUpdateViewController animated:YES];
+//		
+//		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+//			[_loadingView removeFromSuperview];
+//			[_tutorialImageView removeFromSuperview];
+//			
+//			[_loadingOverlayView outro];
+//			_textField.text = @"What is on your mind?";
+//		});
 		
 	} else if (indexPath.section == 0) {
 		[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - joinPopup"] withProperties:@{@"channel"	: @"e23d61a9-622c-45c1-b92e-fd7c5d586b3a_1438284321"}];
@@ -1036,6 +1037,20 @@
 		if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
 			[self _registerPushNotifications];
 			
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"subscription"] == nil) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+																	message:@"Thank you for your $.99 yearly subscription. If you want lifetime subscription to all channels invite Kik friends."
+																   delegate:self
+														  cancelButtonTitle:@"Invite Friends"
+														  otherButtonTitles:@"No", nil];
+				[alertView setTag:HONHomeAlertViewTypePurchase];
+				[alertView show];
+				
+				
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"subscription"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}
+			
 			if (_composeButton.frame.origin.y == scrollView.frame.size.height) {
 				[UIView animateWithDuration:0.250 delay:0.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
 					_composeButton.alpha = 1.0;
@@ -1068,6 +1083,7 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
 //	NSLog(@"[*:*] scrollViewDidEndScrollingAnimation:[%@]", NSStringFromCGPoint(scrollView.contentOffset));
 	
+	
 	if (scrollView.tag == 1) {
 		[_paginationView updateToPage:scrollView.contentOffset.x / scrollView.frame.size.width];
 		if (scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
@@ -1088,6 +1104,7 @@
 				}];
 			}
 			
+			
 			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"terms"] length] == 0) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Terms of service"
 																	message:@"You agree to the following terms."
@@ -1101,6 +1118,21 @@
 	}
 }
 
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	NSLog(@"[*:*] actionSheet:[%ld] clickedButtonAtIndex:[%ld]", (long)actionSheet.tag, (long)buttonIndex);
+	
+	if (actionSheet.tag == HONHomeActionSheetTypeTermsAgreement) {
+		if (buttonIndex == 0) {
+			[self _goPrivacy];
+			
+		} else if (buttonIndex == 0) {
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"terms"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
+	}
+}
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -1225,13 +1257,11 @@
 			}
 		}
 	
-	} else if (alertView.tag == HONHomeAlertViewTypeTermsAgreement) {
-		if (buttonIndex == 1) {
-			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"terms"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		} else if (buttonIndex == 0) {
-			[self _goPrivacy];
+	} else if (alertView.tag == HONHomeAlertViewTypePurchase) {
+		if (buttonIndex == 0) {
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/picker.php"]];
+			}
 		}
 	}
 }

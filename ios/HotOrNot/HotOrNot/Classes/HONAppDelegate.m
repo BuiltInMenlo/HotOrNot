@@ -461,16 +461,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	*/
 }
 
-- (void)_activityAlert {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-														message:@"Thank you for your $.99 yearly subscription. If you want lifetime subscription to all channels invite Kik friends."
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Invite Friends", nil];
-	[alertView setTag:666];
-	[alertView show];
-}
-
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -604,13 +594,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"subscription"] == nil) {
-		[self _activityAlert];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"subscription"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
 	
 
 #if __APPSTORE_BUILD__ == 0
@@ -1406,15 +1389,8 @@ void uncaughtExceptionHandler(NSException *exception) {
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON:[%ld]", (long)buttonIndex);
 	
-	if (alertView.tag == HONAppDelegateAlertTypeExit)
+	if (alertView.tag == HONAppDelegateAlertTypeExit) {
 		NSLog(@"EXIT APP");//exit(0);
-	
-	else if (alertView.tag == 666) {
-        if (buttonIndex == 1) {
-            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/picker.php"]];
-            }
-		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
 		switch(buttonIndex) {

@@ -25,7 +25,7 @@
 #import "NSDictionary+BuiltinMenlo.h"
 
 #import "KeychainItemWrapper.h"
-#import "Reachability.h"
+//#import "Reachability.h"
 
 #import "HONDeviceIntrinsics.h"
 
@@ -258,9 +258,10 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 - (BOOL)hasNetwork {
-	Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
-	NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
-	return (networkStatus != NotReachable);
+	return (YES);
+//	Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
+//	NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
+//	return (networkStatus != NotReachable);
 }
 
 

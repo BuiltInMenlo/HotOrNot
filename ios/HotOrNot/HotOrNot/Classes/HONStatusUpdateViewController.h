@@ -7,6 +7,8 @@
 //
 
 #import <MediaPlayer/MediaPlayer.h>
+#import <MessageUI/MFMailComposeViewController.h>
+#import <MessageUI/MFMessageComposeViewController.h>
 
 #import "HONViewController.h"
 #import "HONStatusUpdateVO.h"

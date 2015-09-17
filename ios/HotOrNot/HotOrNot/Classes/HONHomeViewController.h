@@ -9,6 +9,10 @@
 
 #import "HONViewController.h"
 
+typedef NS_ENUM(NSUInteger, HONHomeActionSheetType) {
+	HONHomeActionSheetTypeTermsAgreement = 0
+};
+
 typedef NS_ENUM(NSUInteger, HONHomeAlertViewType) {
 	HONHomeAlertViewTypeFlag = 0,
 	HONHomeAlertViewTypeCompose,
@@ -17,10 +21,11 @@ typedef NS_ENUM(NSUInteger, HONHomeAlertViewType) {
 	HONHomeAlertViewTypeInvite,
 	HONHomeAlertViewTypeShowTerms,
 	HONHomeAlertViewTypeTermsAgreement,
+	HONHomeAlertViewTypePurchase
 };
 
 
 
 
-@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface HONHomeViewController : HONViewController <CLLocationManagerDelegate, MFMessageComposeViewControllerDelegate, UIActionSheetDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 @end
