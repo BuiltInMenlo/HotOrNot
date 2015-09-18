@@ -359,8 +359,12 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 					[operation start];
 				}
 				
-				_expireLabel.text = @"Loading video…";
+				_expireLabel.text = @"Loading moment…";
 				_expireLabel.alpha = 1.0;
+				[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+					_expireLabel.alpha = 0.0;
+				} completion:^(BOOL finished) {
+				}];
 			
 			} else {
 				
@@ -550,8 +554,17 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 								_participants = (int)[result.data.uuids count];
 								_participantsLabel.text = [NSString stringWithFormat:@"%d", MAX(0, _participants - 1)];
 								
-								if (_participants > 1)
+								if (_participants > 1) {
 									_expireLabel.text = [NSString stringWithFormat:@"Alerting… %d %@", MAX(0, _participants - 1), ((_participants - 1) == 1) ? @"person" : @"people"];
+								} else {
+									_expireLabel.text = @"No one is here, invite friends…";
+								}
+								
+								_expireLabel.alpha = 1.0;
+								[UIView animateWithDuration:0.250 delay:3.000 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationCurveEaseIn) animations:^(void) {
+									_expireLabel.alpha = 0.0;
+								} completion:^(BOOL finished) {
+								}];
 								
 								// Check whether request successfully completed or not.
 								if (!status.isError) {
@@ -1433,7 +1446,6 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		//[[HONAnalyticsReporter sharedInstance] trackEvent:[kAnalyticsCohort stringByAppendingString:@" - sendVideo"] withProperties:@{@"channel"	: @(_statusUpdateVO.statusUpdateID)}];
 		
 		NSLog(@"gestureRecognizer.state:[%@]", NSStringFromUIGestureRecognizerState(gestureRecognizer.state));
-//---		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height * 1.0000);
 		_cameraPreviewView.frame = CGRectMake(0.0, self.view.frame.size.height * 1.0000, self.view.frame.size.width, self.view.frame.size.height);
 		
 		_statusLabel.text = @"Sending popup…";
@@ -1470,6 +1482,14 @@ NSString * const kPubNubSecretKey = @"sec-c-OTI3ZWQ4NWYtZDRkNi00OGFjLTgxMjctZDkw
 		_takePhotoButton.frame = CGRectTranslateX(_takePhotoButton.frame, 3.0 + (self.view.frame.size.width * 0.5));
 		_cancelCameraButton.hidden = YES;
 	}
+}
+
+- (void)_goSubmit {
+	
+}
+
+- (void)_goRetake {
+	
 }
 
 - (void)_goFlipCamera {

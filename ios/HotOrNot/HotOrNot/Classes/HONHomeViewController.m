@@ -1039,10 +1039,10 @@
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"subscription"] == nil) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																	message:@"Thank you for your $.99 yearly subscription. If you want lifetime subscription to all channels invite Kik friends."
+																	message:@"You have successfully purchased a yearly Popup subscription. To unlock unlimited Popup for life replays invite 5 friends from Kik."
 																   delegate:self
 														  cancelButtonTitle:@"Invite Friends"
-														  otherButtonTitles:@"No", nil];
+														  otherButtonTitles:@"No, Thanks", nil];
 				[alertView setTag:HONHomeAlertViewTypePurchase];
 				[alertView show];
 				

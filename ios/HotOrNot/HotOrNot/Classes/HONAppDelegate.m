@@ -461,6 +461,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	*/
 }
 
+- (void)_activityAlert {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+														message:@"You have successfully purchased a yearly Popup subscription. To unlock unlimited Popup for life replays invite 5 friends from Kik."
+													   delegate:self
+											  cancelButtonTitle:@"Invite Friends"
+											  otherButtonTitles:@"No, Thanks", nil];
+	[alertView setTag:666];
+	[alertView show];
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -1389,8 +1399,15 @@ void uncaughtExceptionHandler(NSException *exception) {
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON:[%ld]", (long)buttonIndex);
 	
-	if (alertView.tag == HONAppDelegateAlertTypeExit) {
+	if (alertView.tag == HONAppDelegateAlertTypeExit)
 		NSLog(@"EXIT APP");//exit(0);
+	
+	else if (alertView.tag == 0) {
+        if (buttonIndex == 1) {
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"card://"]]) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"card://popup.rocks/picker.php"]];
+            }
+		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
 		switch(buttonIndex) {
